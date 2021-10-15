@@ -29,56 +29,152 @@
 
 #pragma once
 
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/port.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <inviwo/core/datastructures/datatraits.h>
-#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/porttraits.h>
+
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingInport
-    : public DataInport<BrushingAndLinkingManager> {
+class BrushingAndLinkingOutport;
+
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingInport : public Inport {
 public:
+    using type = void;
+
     BrushingAndLinkingInport(std::string identifier);
     virtual ~BrushingAndLinkingInport() = default;
 
-    void sendFilterEvent(const BitSet& indices);
+    /**
+     * check if the state of the manager was changed since the last network evaluation
+     *
+     * @return true if there have been recent changes
+     *
+     * \see modifiedActions
+     */
+    bool isModified() const;
 
-    void sendSelectionEvent(const BitSet& indices);
+    /**
+     * return which actions were performed since the last network evaluation
+     */
+    BrushingModifications modifiedActions() const;
+    /**
+     * return whether there was a filter action since the last network evaluation
+     *
+     * @return modifiedActions() & BrushingAction::Filter
+     */
+    bool modifiedFiltering() const;
+    /**
+     * return whether there was a select action since the last network evaluation
+     *
+     * @return modifiedActions() & BrushingAction::Select
+     */
+    bool modifiedSelection() const;
+    /**
+     * return whether there was a highlight action since the last network evaluation
+     *
+     * @return modifiedActions() & BrushingAction::Highlight
+     */
+    bool modifiedHighlight() const;
 
-    void sendHighlightEvent(const BitSet& indices);
+    /**
+     * Based on \p action update the internal selection with the given \p indices. For \p target
+     * matching BrushingAction::Select or BrushingAction::Highlight, the indices will replace the
+     * previous selection.
+     *
+     * In case of BrushingAction::Filter, a \p source must be provided. The indices are subsequently
+     * marked as removed. Note that multiple filter actions might overlap hence the need for a
+     * source.
+     *
+     * @param action   type of brushing action
+     * @param target   target of the action, determines which brushing and linking state to update
+     * @param indices  set of selected/filtered indices
+     * @param source   must be provided if action is equal to BrushingAction::Filter
+     *
+     * @throw Exception if action is BrushingAction::Filter and no source is given
+     *
+     * \see BrushingAndLinkingManager::brush
+     */
+    void brush(BrushingAction action, BrushingTarget target, const BitSet& indices,
+               std::string_view source = {});
 
-    void sendColumnSelectionEvent(const BitSet& indices);
+    void filter(std::string_view source, const BitSet& indices,
+                BrushingTarget target = BrushingTarget::Row);
+    void select(const BitSet& indices, BrushingTarget target = BrushingTarget::Row);
+    void highlight(const BitSet& indices, BrushingTarget target = BrushingTarget::Row);
 
-    bool isFiltered(uint32_t idx) const;
-    bool isSelected(uint32_t idx) const;
-    bool isHighlighted(uint32_t idx) const;
+    // clang-format off
+    [[deprecated("use brush() or filter() instead")]] void sendFilterEvent(const BitSet& indices, std::string_view source);
+    [[deprecated("use brush() or select() instead")]] void sendSelectionEvent(const BitSet& indices);
+    [[deprecated("use brush() or select() with a column target instead")]] void sendColumnSelectionEvent(const BitSet& indices);
+    // clang-format on
 
-    bool isColumnSelected(uint32_t idx) const;
+    bool isFiltered(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
+    bool isSelected(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
+    bool isHighlighted(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
 
-    const BitSet& getSelectedIndices() const;
-    const BitSet& getFilteredIndices() const;
-    const BitSet& getHighlightedIndices() const;
-    const BitSet& getSelectedColumns() const;
+    // clang-format off
+    [[deprecated("use isSelected() with a column target instead")]] bool isColumnSelected(uint32_t idx) const;
+    // clang-format on
+
+    const BitSet& getIndices(BrushingAction action,
+                             BrushingTarget target = BrushingTarget::Row) const;
+
+    const BitSet& getFilteredIndices(BrushingTarget target = BrushingTarget::Row) const;
+    const BitSet& getSelectedIndices(BrushingTarget target = BrushingTarget::Row) const;
+    const BitSet& getHighlightedIndices(BrushingTarget target = BrushingTarget::Row) const;
+
+    // clang-format off
+    [[deprecated("use getIndices() or getSelectedIndices() with a column target instead")]] const BitSet& getSelectedColumns() const;
+    // clang-format on
+
+    BrushingAndLinkingManager& getManager();
+    const BrushingAndLinkingManager& getManager() const;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+    virtual bool canConnectTo(const Port* port) const override;
+    virtual size_t getMaxNumberOfConnections() const override { return 1; }
 
     virtual std::string getClassIdentifier() const override;
+    virtual glm::uvec3 getColorCode() const override { return uvec3(160, 182, 240); }
+    virtual Document getInfo() const override;
 
-    BitSet filterCache_;
-    BitSet selectionCache_;
-    BitSet highlightCache_;
-    BitSet selectionColumnCache_;
+private:
+    virtual void setChanged(bool changed = true, const Outport* source = nullptr) override;
+
+    BrushingAndLinkingManager manager_;
 };
 
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport
-    : public DataOutport<BrushingAndLinkingManager> {
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport : public Outport {
 public:
+    using type = void;
+
     BrushingAndLinkingOutport(std::string identifier);
     virtual ~BrushingAndLinkingOutport() = default;
 
+    BrushingAndLinkingManager& getManager();
+    const BrushingAndLinkingManager& getManager() const;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+    virtual void setValid() override;
+
+    virtual bool hasData() const override { return false; }
+    virtual void clear() override {}
+
+    virtual glm::uvec3 getColorCode() const override { return uvec3(160, 182, 240); }
+    virtual Document getInfo() const override;
+
     virtual std::string getClassIdentifier() const override;
+
+private:
+    BrushingAndLinkingManager manager_;
 };
 
 template <>
@@ -90,48 +186,5 @@ template <>
 struct PortTraits<BrushingAndLinkingOutport> {
     static std::string classIdentifier() { return "BrushingAndLinkingOutport"; }
 };
-
-template <>
-struct DataTraits<BrushingAndLinkingManager> {
-    static std::string classIdentifier() { return "BrushingAndLinkingManager"; }
-    static std::string dataName() { return "BrushingAndLinkingManager"; }
-    static uvec3 colorCode() { return uvec3(160, 182, 240); }
-    static Document info(const BrushingAndLinkingManager& data) {
-        using P = Document::PathComponent;
-        using H = utildoc::TableBuilder::Header;
-        Document doc;
-        doc.append("b", "Brushing And Linking Manager", {{"style", "color:white;"}});
-        utildoc::TableBuilder tb(doc.handle(), P::end());
-        tb(H("Selected Indices"), data.getNumberOfSelected());
-        tb(H("Filtered Indices"), data.getNumberOfFiltered());
-        tb(H("Highlighted Indices"), data.getNumberOfHighlighted());
-        tb(H("Selected Columns"), data.getNumberOfSelectedColumns());
-        return doc;
-    }
-};
-
-inline bool BrushingAndLinkingInport::isFiltered(uint32_t idx) const {
-    if (isConnected()) {
-        return getData()->isFiltered(idx);
-    } else {
-        return filterCache_.contains(idx);
-    }
-}
-
-inline bool BrushingAndLinkingInport::isSelected(uint32_t idx) const {
-    if (isConnected()) {
-        return getData()->isSelected(idx);
-    } else {
-        return selectionCache_.contains(idx);
-    }
-}
-
-inline bool BrushingAndLinkingInport::isHighlighted(uint32_t idx) const {
-    if (isConnected()) {
-        return getData()->isHighlighted(idx);
-    } else {
-        return highlightCache_.contains(idx);
-    }
-}
 
 }  // namespace inviwo

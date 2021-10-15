@@ -30,94 +30,214 @@
 #pragma once
 
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/datastructures/indexlist.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/datastructures/bitset.h>
 
+#include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
+
+#include <variant>
+#include <array>
 #include <unordered_set>
 
 namespace inviwo {
 
 class BrushingAndLinkingInport;
+class BrushingAndLinkingOutport;
 class Processor;
 class Serializer;
 class Deserializer;
 
 /**
- * \class BrushingAndLinkingManager
- * \brief Manages row filtering, row selection and column selection from multiple sources.
+ * Manages brushing and linking events for filtering, selecting, and highlighting. When initialized
+ * with a BrushingAndLinking inport, changes are propagated using this port if connected.
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
 public:
-    BrushingAndLinkingManager(Processor* p,
+    BrushingAndLinkingManager(BrushingAndLinkingInport* inport,
+                              InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
+    BrushingAndLinkingManager(BrushingAndLinkingOutport* outport,
                               InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
     virtual ~BrushingAndLinkingManager();
-    /*
-     * Return the number of selected items/rows.
+
+    /**
+     * Based on \p action update the internal selection with the given \p indices. For \p target
+     * matching BrushingAction::Select or BrushingAction::Highlight, the indices will replace the
+     * previous selection.
+     *
+     * In case of BrushingAction::Filter, a \p source must be provided. The indices are subsequently
+     * marked as removed. Note that multiple filter actions might overlap hence the need for a
+     * source.
+     *
+     * For example, given indices {1, ..., 10} and two filter actions.
+     *   + filter action A filters 1-5
+     *   + filter action B filters 3-6
+     * This results in indices {7, 8, 9, 10} remaining. If then action A is updated to filter out
+     * indices 2-4, the overall result for filtering should be {1, 7, ..., 10}. Without different
+     * sources it would not be possible to update the result accordingly.
+     *
+     * @param action   type of brushing action
+     * @param target   target of the action, determines which brushing and linking state to update
+     * @param indices  set of selected/filtered indices
+     * @param source   must be provided if action is equal to BrushingAction::Filter
+     *
+     * @throw Exception if action is BrushingAction::Filter and no source is given
+     *
+     * \see BrushingAction
      */
-    size_t getNumberOfSelected() const;
-    /*
-     * Return the number of filtered items/rows, i.e. the number of items/rows that should not be
-     * displayed.
+    void brush(BrushingAction action, BrushingTarget target, const BitSet& indices,
+               std::string_view source = {});
+
+    /**
+     * check if the state of the manager was changed since the last network evaluation
+     *
+     * @return true if there have been recent changes
+     *
+     * \see modifiedActions
      */
-    size_t getNumberOfFiltered() const;
+    bool isModified() const;
 
-    size_t getNumberOfHighlighted() const;
-
-    /*
-     * Return the number of selected columns.
+    /**
+     * return which actions were performed since the last network evaluation
      */
-    size_t getNumberOfSelectedColumns() const;
+    BrushingModifications modifiedActions() const;
+    /**
+     * return whether there was a filter action since the last network evaluation
+     *
+     * @return modifiedActions() & BrushingModification::Filtered
+     */
+    bool modifiedFiltering() const;
+    /**
+     * return whether there was a select action since the last network evaluation
+     *
+     * @return modifiedActions() & BrushingModification::Selected
+     */
+    bool modifiedSelection() const;
+    /**
+     * return whether there was a highlight action since the last network evaluation
+     *
+     * @return modifiedActions() & BrushingModification::Highlighted
+     */
+    bool modifiedHighlight() const;
 
-    void remove(const BrushingAndLinkingInport* src);
+    /**
+     * check whether the manager has an index set for \p target and \p action
+     *
+     * @param action   type of brushing action
+     * @param target   target of the action
+     * @return true if indices exist
+     */
+    bool hasIndices(BrushingAction action, BrushingTarget target = BrushingTarget::Row) const;
 
-    bool isFiltered(uint32_t idx) const;
-    bool isSelected(uint32_t idx) const;
-    bool isHighlighted(uint32_t idx) const;
+    /**
+     * access indices for the given combination of \p action and \p target
+     *
+     * @param action    type of brushing action
+     * @param target    target of the action
+     * @return bitset corresponding to \p action and \p target
+     * @throw Exception if \p target does not exist for \p action
+     *
+     * \see hasIndices
+     */
+    const BitSet& getIndices(BrushingAction action,
+                             BrushingTarget target = BrushingTarget::Row) const;
 
-    bool isColumnSelected(uint32_t column) const;
+    /**
+     * clear the selection for \p action and \p target. \p action must be different from
+     * BrushingAction::Filter. Does nothing if \p target does not exist.
+     *
+     * @throw Exception if action is equal to BrushingAction::Filter since this may lead to an
+     * inconsistent state
+     */
+    void clearIndices(BrushingAction action, BrushingTarget target);
 
-    void setSelected(const BrushingAndLinkingInport* src, const BitSet& idx);
-    void clearSelected();
+    /**
+     * check whether the selection for \p action and \p target contains index \p idx
+     */
+    bool contains(uint32_t idx, BrushingAction action,
+                  BrushingTarget target = BrushingTarget::Row) const;
 
-    void setFiltered(const BrushingAndLinkingInport* src, const BitSet& idx);
-    void clearFiltered();
+    std::vector<std::pair<BrushingAction, BrushingTarget>> getTargets() const;
+    std::vector<BrushingTarget> getTargets(BrushingAction action) const;
 
-    void setHighlighted(const BrushingAndLinkingInport* src, const BitSet& idx);
-    void clearHighlighted();
+    /**
+     * update the internal state with respect to port connections. This function should be called
+     * whenever a connection is removed from a brushing and linking outport. This will only effect
+     * filter actions and has no effect if the manager is owned by an inport.
+     *
+     * \see action
+     */
+    void updatePortConnections();
 
-    void setSelectedColumn(const BrushingAndLinkingInport* src, const BitSet& columnIndices);
-    void clearColumns();
+    //! convenience function for action(BrushingAction::Filter, target, idx)
+    void filter(std::string_view src, const BitSet& idx,
+                BrushingTarget target = BrushingTarget::Row);
+    //! convenience function for action(BrushingAction::Select, target, idx)
+    void select(const BitSet& idx, BrushingTarget target = BrushingTarget::Row);
+    //! convenience function for action(BrushingAction::Highlight, target, idx)
+    void highlight(const BitSet& idx, BrushingTarget target = BrushingTarget::Row);
 
-    const BitSet& getSelectedIndices() const;
-    const BitSet& getFilteredIndices() const;
-    const BitSet& getHighlightedIndices() const;
-    const BitSet& getSelectedColumns() const;
+    [[deprecated("clearing filtered indices is no longer supported")]] void clearFiltered();
+    //! convenience function for clearIndices(BrushingAction::Select, target)
+    void clearSelected(BrushingTarget target = BrushingTarget::Row);
+    //! convenience function for clearIndices(BrushingAction::Highlight, target)
+    void clearHighlighted(BrushingTarget target = BrushingTarget::Row);
+
+    //! convenience function for getIndices(BrushingAction::Filter, target).size()
+    size_t getNumberOfFiltered(BrushingTarget target = BrushingTarget::Row) const;
+    //! convenience function for getIndices(BrushingAction::Select, target).size()
+    size_t getNumberOfSelected(BrushingTarget target = BrushingTarget::Row) const;
+    //! convenience function for getIndices(BrushingAction::Highlight, target).size()
+    size_t getNumberOfHighlighted(BrushingTarget target = BrushingTarget::Row) const;
+
+    //! convenience function for contains(idx, BrushingAction::Filter, target)
+    //! \see contains
+    bool isFiltered(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
+    //! convenience function for contains(idx, BrushingAction::Select, target)
+    //!\see contains
+    bool isSelected(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
+    //! convenience function for contains(idx, BrushingAction::Highlight, target)
+    //! \see contains
+    bool isHighlighted(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
+
+    const BitSet& getFilteredIndices(BrushingTarget target = BrushingTarget::Row) const;
+    const BitSet& getSelectedIndices(BrushingTarget target = BrushingTarget::Row) const;
+    const BitSet& getHighlightedIndices(BrushingTarget target = BrushingTarget::Row) const;
+
+    /**
+     * register a parent manager for the propagation of brushing actions
+     */
+    void setParent(BrushingAndLinkingManager* parent);
+
+    /**
+     * propagates the modified state to all child managers and resets the state. Should only be
+     * called by the brushing and linking ports _after_ the process() function has been called.
+     */
+    void markAsValid();
 
     void serialize(Serializer& s) const;
-    void deserialize(Deserializer& d, const BrushingAndLinkingOutport& port);
+    void deserialize(Deserializer& d);
 
 private:
-    BitSet selected_;
-    BitSet highlighted_;
-    BitSet selectedColumns_;
-    IndexList filtered_;  // Use IndexList to be able to remove filtered rows on port disconnection
-    std::shared_ptr<std::function<void()>> onFilteringChangeCallback_;
+    static int getActionIndex(BrushingAction action);
+    void propagate(BrushingAction action, BrushingTarget target);
+    void addChild(BrushingAndLinkingManager* child);
+    void removeChild(BrushingAndLinkingManager* child);
 
-    Processor* owner_;  // Non-owning reference
+    using BitSetTargets = std::unordered_map<BrushingTarget, BitSet>;
+    using IndexListTargets = std::unordered_map<BrushingTarget, IndexList>;
+
+    using SelectionMap = std::array<std::variant<BitSetTargets, IndexListTargets>,
+                                    static_cast<size_t>(BrushingAction::NumberOfActions)>;
+
+    SelectionMap selections_{{IndexListTargets(), BitSetTargets(), BitSetTargets()}};
+
+    std::variant<BrushingAndLinkingInport*, BrushingAndLinkingOutport*> owner_;
+    BrushingAndLinkingManager* parent_ = nullptr;
+    std::unordered_set<BrushingAndLinkingManager*> children_;
     InvalidationLevel invalidationLevel_;
+
+    BrushingModifications modifiedActions_{flags::empty};
 };
-
-inline bool BrushingAndLinkingManager::isFiltered(uint32_t idx) const {
-    return filtered_.contains(idx);
-}
-
-inline bool BrushingAndLinkingManager::isSelected(uint32_t idx) const {
-    return selected_.contains(idx);
-}
-
-inline bool BrushingAndLinkingManager::isHighlighted(uint32_t idx) const {
-    return highlighted_.contains(idx);
-}
 
 }  // namespace inviwo

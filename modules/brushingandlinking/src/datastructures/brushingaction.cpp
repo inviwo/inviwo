@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,23 +27,18 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-
-#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
+#include <iostream>
 
 namespace inviwo {
 
-/**
- * \class FilteringEvent
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API FilteringEvent : public BrushingAndLinkingEvent {
-public:
-    FilteringEvent(const BrushingAndLinkingInport* src, const BitSet& indices);
-    virtual ~FilteringEvent() = default;
+const BrushingTarget BrushingTarget::Row("row");
+const BrushingTarget BrushingTarget::Column("column");
 
-    virtual void print(std::ostream& os) const override;
-};
+std::ostream& operator<<(std::ostream& os, const BrushingTarget& bt) {
+    os << bt.target;
+    return os;
+}
 
 }  // namespace inviwo

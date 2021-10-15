@@ -33,68 +33,71 @@
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
 size_t IndexList::size() const { return indices_.size(); }
 
-void IndexList::set(const BrushingAndLinkingInport* src, const BitSet& indices) {
-    indicesBySource_[src] = indices;
-    update();
-}
-
-void IndexList::remove(const BrushingAndLinkingInport* src) {
-    indicesBySource_.erase(src);
-    update();
-}
-
-std::shared_ptr<std::function<void()>> IndexList::onChange(std::function<void()> V) {
-    return onUpdate_.add(V);
-}
-
-void IndexList::update() {
+void IndexList::clear() {
     indices_.clear();
+    indicesBySource_.clear();
+    indicesDirty_ = false;
+}
+
+const BitSet& IndexList::getIndices() const {
+    if (indicesDirty_) {
+        update();
+    }
+    return indices_;
+}
+
+void IndexList::set(std::string_view src, const BitSet& indices) {
+    if (indices.empty()) {
+        indicesBySource_.erase(std::string(src));
+    } else {
+        indicesBySource_[std::string(src)] = indices;
+    }
+    indicesDirty_ = true;
+}
+
+bool IndexList::contains(uint32_t idx) const {
+    if (indicesDirty_) {
+        update();
+    }
+    return indices_.contains(idx);
+}
+
+bool IndexList::removeSources(const std::vector<std::string>& sources) {
+    size_t modified = 0u;
+    for (auto& source : sources) {
+        modified += indicesBySource_.erase(source);
+    }
+    indicesDirty_ |= (modified != 0);
+    return (modified != 0);
+}
+
+void IndexList::update() const {
+    if (!indicesDirty_) return;
 
     using T = PortIndexMap::value_type;
-    util::map_erase_remove_if(indicesBySource_, [](const T& p) {
-        // remove if port is disconnected or if the set is empty
-        return !p.first->isConnected() || p.second.empty();
-    });
+    util::map_erase_remove_if(indicesBySource_, [](const T& p) { return p.second.empty(); });
 
     auto bitsets =
         util::transform(indicesBySource_, [](auto& p) -> const BitSet* { return &p.second; });
     indices_ = BitSet::fastUnion(bitsets);
 
-    onUpdate_.invoke();
-}
-
-void IndexList::clear() {
-    indices_.clear();
-    indicesBySource_.clear();
-    onUpdate_.invoke();
+    indicesDirty_ = false;
 }
 
 void IndexList::serialize(Serializer& s) const {
-    s.serialize(
-        "ports", indicesBySource_, "indices", {},
-        [](const BrushingAndLinkingInport* p) { return p->getPath(); }, util::identity());
+    s.serialize("source", indicesBySource_, "indices");
 }
 
-void IndexList::deserialize(Deserializer& d, const BrushingAndLinkingOutport& port) {
+void IndexList::deserialize(Deserializer& d) {
     indicesBySource_.clear();
-
-    std::unordered_map<std::string, BitSet> map;
-    d.deserialize("ports", map, "indices");
-
-    const auto connectedPorts = port.getConnectedInports();
-    for (auto&& [key, indices] : map) {
-        auto it =
-            util::find_if(connectedPorts, [path = key](Inport* p) { return p->getPath() == path; });
-        if (it != connectedPorts.end()) {
-            indicesBySource_[static_cast<BrushingAndLinkingInport*>(*it)] = std::move(indices);
-        }
-    }
-    update();
+    d.deserialize("source", indicesBySource_, "indices");
+    indicesDirty_ = true;
 }
 
 }  // namespace inviwo

@@ -27,11 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
-#include <modules/brushingandlinking/events/filteringevent.h>
-#include <modules/brushingandlinking/events/selectionevent.h>
-#include <modules/brushingandlinking/events/highlightevent.h>
-#include <modules/brushingandlinking/events/columnselectionevent.h>
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
 namespace inviwo {
@@ -49,42 +44,22 @@ const ProcessorInfo BrushingAndLinkingProcessor::getProcessorInfo() const { retu
 BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()
     , outport_("outport")
-    , clearSelection_("clearSelection", "Clear Selection", [&]() { manager_->clearSelected(); })
-    , clearFilter_("clearFilter", "Clear Filtering", [&]() { manager_->clearFiltered(); })
+    , clearSelection_("clearSelection", "Clear Selection",
+                      [&]() { outport_.getManager().clearSelected(); })
     , clearHighlight_("clearHighlight", "Clear Highlighting",
-                      [&]() { manager_->clearHighlighted(); })
-    , clearCols_("clearCols", "Clear Columns", [&]() { manager_->clearColumns(); })
-    , clearAll_("clearAll", "Clear All",
-                [&]() {
-                    manager_->clearSelected();
-                    manager_->clearFiltered();
-                    manager_->clearHighlighted();
-                    manager_->clearColumns();
-                })
-    , manager_(std::make_shared<BrushingAndLinkingManager>(this)) {
+                      [&]() { outport_.getManager().clearHighlighted(); })
+    , clearCols_("clearCols", "Clear Columns",
+                 [&]() { outport_.getManager().clearSelected(BrushingTarget::Column); })
+    , clearAll_("clearAll", "Clear All", [&]() {
+        outport_.getManager().clearSelected();
+        outport_.getManager().clearHighlighted();
+        outport_.getManager().clearSelected(BrushingTarget::Column);
+    }) {
+
     addPort(outport_);
-    addProperties(clearSelection_, clearFilter_, clearHighlight_, clearCols_, clearAll_);
+    addProperties(clearSelection_, clearHighlight_, clearCols_, clearAll_);
 }
 
-void BrushingAndLinkingProcessor::process() { outport_.setData(manager_); }
-
-void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
-    if (auto brushingEvent = dynamic_cast<BrushingAndLinkingEvent*>(event)) {
-        if (dynamic_cast<FilteringEvent*>(event)) {
-            manager_->setFiltered(brushingEvent->getSource(), brushingEvent->getIndices());
-            event->markAsUsed();
-        } else if (dynamic_cast<SelectionEvent*>(event)) {
-            manager_->setSelected(brushingEvent->getSource(), brushingEvent->getIndices());
-            event->markAsUsed();
-        } else if (dynamic_cast<HighlightEvent*>(event)) {
-            manager_->setHighlighted(brushingEvent->getSource(), brushingEvent->getIndices());
-            event->markAsUsed();
-        } else if (dynamic_cast<ColumnSelectionEvent*>(event)) {
-            manager_->setSelectedColumn(brushingEvent->getSource(), brushingEvent->getIndices());
-            event->markAsUsed();
-        }
-    }
-    Processor::invokeEvent(event);
-}
+void BrushingAndLinkingProcessor::process() {}
 
 }  // namespace inviwo
