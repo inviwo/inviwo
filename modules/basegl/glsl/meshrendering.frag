@@ -47,10 +47,9 @@ in vec4 color_;
 flat in vec4 pickColor_;
 
 void main() {
-    vec4 fragColor = color_;
+    if(color_.a == 0) { discard; }
 	
-	if(color_.a == 0)
-		discard;
+    vec4 fragColor = color_;
 	
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
 
