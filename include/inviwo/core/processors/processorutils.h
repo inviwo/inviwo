@@ -155,11 +155,11 @@ T& trySetProperty(Processor* proc, std::string_view identifier, V&& val, bool re
         } else {
             throw Exception(
                 fmt::format("Property '{}' not of type '{}'", identifier, typeid(T).name()),
-                IVW_CONTEXT_CUSTOM("VolumeRaycastVisualizer"));
+                IVW_CONTEXT_CUSTOM("util::trySetProperty"));
         }
     } else {
         throw Exception(fmt::format("Could not find property: '{}'", identifier),
-                        IVW_CONTEXT_CUSTOM("VolumeRaycastVisualizer"));
+                        IVW_CONTEXT_CUSTOM("util::trySetProperty"));
     }
 }
 }  // namespace util
