@@ -50,7 +50,7 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
                       [&]() { outport_.getManager().clearHighlighted(); })
     , clearCols_("clearCols", "Clear Columns",
                  [&]() { outport_.getManager().clearSelected(BrushingTarget::Column); })
-    , clearAll_("clearAll", "Clear All", [&]() {
+    , clearAll_("clearAll", "Clear Selections and Highlights", [&]() {
         outport_.getManager().clearSelected();
         outport_.getManager().clearHighlighted();
         outport_.getManager().clearSelected(BrushingTarget::Column);

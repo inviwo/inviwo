@@ -60,8 +60,8 @@ public:
 private:
     void update() const;
 
-    using PortIndexMap = std::unordered_map<std::string, BitSet>;
-    mutable PortIndexMap indicesBySource_;
+    using SourceIndexMap = std::unordered_map<std::string, BitSet>;
+    mutable SourceIndexMap indicesBySource_;
     mutable BitSet indices_;
 
     mutable bool indicesDirty_ = false;

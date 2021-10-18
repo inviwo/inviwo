@@ -46,9 +46,7 @@ void IndexList::clear() {
 }
 
 const BitSet& IndexList::getIndices() const {
-    if (indicesDirty_) {
-        update();
-    }
+    update();
     return indices_;
 }
 
@@ -62,9 +60,7 @@ void IndexList::set(std::string_view src, const BitSet& indices) {
 }
 
 bool IndexList::contains(uint32_t idx) const {
-    if (indicesDirty_) {
-        update();
-    }
+    update();
     return indices_.contains(idx);
 }
 
@@ -80,7 +76,7 @@ bool IndexList::removeSources(const std::vector<std::string>& sources) {
 void IndexList::update() const {
     if (!indicesDirty_) return;
 
-    using T = PortIndexMap::value_type;
+    using T = SourceIndexMap::value_type;
     util::map_erase_remove_if(indicesBySource_, [](const T& p) { return p.second.empty(); });
 
     auto bitsets =

@@ -177,7 +177,9 @@ public:
     //! convenience function for action(BrushingAction::Highlight, target, idx)
     void highlight(const BitSet& idx, BrushingTarget target = BrushingTarget::Row);
 
-    [[deprecated("clearing filtered indices is no longer supported")]] void clearFiltered();
+    // clang-format off
+    [[deprecated("clearing filtered indices is no longer supported. Use filter() with an empty BitSet")]] void clearFiltered();
+    // clang-format on
     //! convenience function for clearIndices(BrushingAction::Select, target)
     void clearSelected(BrushingTarget target = BrushingTarget::Row);
     //! convenience function for clearIndices(BrushingAction::Highlight, target)

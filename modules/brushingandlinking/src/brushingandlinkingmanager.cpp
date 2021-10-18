@@ -360,76 +360,17 @@ void BrushingAndLinkingManager::serialize(Serializer& s) const {
             if (map.empty()) continue;
 
             s.serialize(toString(action), map, "selection", {},
-                        [](BrushingTarget t) { return t.target; }, {});
+                        [](BrushingTarget t) { return t.getString(); }, {});
         } else if (std::holds_alternative<IndexListTargets>(targetmap)) {
             auto& map = std::get<BitSetTargets>(targetmap);
             if (map.empty()) continue;
 
             s.serialize(toString(action), map, "selection", {},
-                        [](BrushingTarget t) { return t.target; }, {});
+                        [](BrushingTarget t) { return t.getString(); }, {});
         }
     }
 }
-/*
-namespace detail {
 
-struct ItemDeserialization : public Serializable {
-
-    ItemDeserialization(BrushingAction action, SelectionMap& data) : action(action), map(data) {}
-    virtual ~ItemDeserialization() = default;
-
-    virtual void serialize(Serializer&) const override {}
-
-    virtual void deserialize(Deserializer& d) override {
-        size_t typeIndex = 0;
-        d.deserialize("typeIndex", typeIndex, SerializationTarget::Attribute);
-
-        if (typeIndex == 0) {
-            deserializeTargetMap<BitSet>(d);
-
-            // auto des = util::MapDeserializer<BrushingTarget, BitSet>(toString(action),
-            // "selection")
-            //               .setMakeNew([]() { return BitSet(); })
-            //               .onNew([&](const BrushingTarget& key, BitSet& b) { tmpMap[key] = b; })
-            //               .onRemove([&](const BrushingTarget& key) { tmpMap.erase(key); });
-            // des(d, tmpMap);
-        } else {
-            deserializeTargetMap<IndexList>(d);
-        }
-    }
-
-    template <typename T = BitSet>
-    void deserializeTargetMap(Deserializer& d) {
-        std::unordered_map<std::string, T> tmpMap;
-
-        auto des = util::MapDeserializer<std::string, T>(toString(action), "selection")
-                       .setMakeNew([]() { return T(); })
-                       .onNew([&](const std::string& key, T& b) { tmpMap[key] = b; })
-                       .onRemove([&](const std::string& key) { tmpMap.erase(key); });
-        des(d, tmpMap);
-
-        auto toRemove = util::transform(map, [](auto& item) { return item.first; });
-        for (auto& item : tmpMap) {
-            const BrushingTarget target = BrushingTarget(item.first);
-            util::erase_remove(toRemove, target);
-            auto it = map.find(target);
-            if (it != map.end()) {
-                it->second = item.second;
-            } else {
-                map.try_emplace(target, item.second);
-            }
-        }
-        for (auto& key : toRemove) {
-            map.erase(key);
-        }
-    }
-
-    BrushingAction action = BrushingAction::Filter;
-    SelectionMap& map;
-};
-
-}  // namespace detail
-*/
 void BrushingAndLinkingManager::deserialize(Deserializer& d) {
     for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
         if (std::holds_alternative<BitSetTargets>(targetmap)) {

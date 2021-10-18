@@ -36,8 +36,8 @@ namespace inviwo {
 const BrushingTarget BrushingTarget::Row("row");
 const BrushingTarget BrushingTarget::Column("column");
 
-std::ostream& operator<<(std::ostream& os, const BrushingTarget& bt) {
-    os << bt.target;
+std::ostream& operator<<(std::ostream& os, BrushingTarget bt) {
+    os << bt.getString();
     return os;
 }
 
