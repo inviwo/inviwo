@@ -47,6 +47,9 @@ in vec4 color_;
 flat in vec4 pickColor_;
 
 void main() {
+    // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
+    if(color_.a == 0) { discard; }
+
     vec4 fragColor = color_;
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
 
