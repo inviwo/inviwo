@@ -1,8 +1,4 @@
-import os
-import io
-import re
 import sys
-import json
 import codecs
 import pathlib
 import fnmatch
@@ -16,23 +12,26 @@ try:
 except ImportError:
     missing_modules['gitpython'] = "needed for git access"
 
-if len(missing_modules)>0: 
+if len(missing_modules) > 0:
     print("Error: Missing python modules:")
-    for k,v in missing_modules.items():
-        print("    {:20s} {}".format(k,v))    
+    for k, v in missing_modules.items():
+        print("    {:20s} {}".format(k, v))
     print("    To install run: 'python -m pip install {}'".format(" ".join(missing_modules.keys())))
     exit()
 
+
 def test_cmd(cmd):
-    try:  
+    try:
         subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).check_returncode()
         return True
-    except:
+    except Exception:
         return False
 
+
 def find_files(path, extensions, excludes=[""]):
-    return (f for ext in extensions for f in pathlib.Path(path).rglob(ext) 
+    return (f for ext in extensions for f in pathlib.Path(path).rglob(ext)
             if not any(fnmatch.fnmatch(f, x) for x in excludes))
+
 
 def getModifiedFiles(repo, extensions, excludes=[""]):
     repo.remotes.origin.fetch("+refs/heads/master:refs/remotes/origin/master", no_tags=True)
@@ -42,46 +41,49 @@ def getModifiedFiles(repo, extensions, excludes=[""]):
     for i in mb.diff(repo.head):
         relevantFiles.add(wdir / i.a_path)
         relevantFiles.add(wdir / i.b_path)
-    
-    return (pathlib.Path(f) for f in relevantFiles 
-                if any(f.match(ext) for ext in extensions) 
-                and not any(fnmatch.fnmatch(f, x) for x in excludes)
-                and f.exists())
-    
+
+    return (pathlib.Path(f) for f in relevantFiles
+            if any(f.match(ext) for ext in extensions)
+            and not any(fnmatch.fnmatch(f, x) for x in excludes)
+            and f.exists())
+
 
 def main():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument('-b', '--binary', help='Location of binary to use for clang-format')
     parser.add_argument('-o', '--output', default='clang-format-result.diff', help='Output file')
-    parser.add_argument('-m', '--master', action="store_true", help='Run on all found files not just modifed ones')
+    parser.add_argument('-m', '--master', action="store_true",
+                        help='Run on all found files not just modifed ones')
     parser.add_argument('-f', '--fix', action="store_true", help='Apply the format fixes')
-    parser.add_argument('-c', '--commit', help='Commit the format fixes to the given branch', metavar='BRANCH')
+    parser.add_argument(
+        '-c', '--commit', help='Commit the format fixes to the given branch', metavar='BRANCH')
     parser.add_argument('repo', type=str, nargs=1, help='path to a code repo')
-    
+
     args = parser.parse_args()
 
     if not args.binary:
         for ext in ["", "-6.0", "-7.0", "-8.0", "-9.0"]:
-            if test_cmd(["clang-format" + ext, "--version"]): 
+            if test_cmd(["clang-format" + ext, "--version"]):
                 args.binary = "clang-format" + ext
                 break
         else:
             sys.stdout.write("Could not find clang format please use the '-binary'\n")
-            sys.exit(1);
+            sys.exit(1)
 
     version = subprocess.getoutput(args.binary + " --version")
     sys.stdout.write(version + "\n")
-    
+
     repo = git.Repo(args.repo[0])
 
     if args.commit:
         print("Fixing format, checking out: " + args.commit)
-        fref = repo.remotes.origin.fetch("+refs/heads/"+args.commit+":refs/remotes/origin/"+args.commit, no_tags=True)
-        repo.git.execute(["git", "remote", "set-branches", "--add", "origin", args.commit])  
+        fref = repo.remotes.origin.fetch(
+            "+refs/heads/" + args.commit + ":refs/remotes/origin/" + args.commit, no_tags=True)
+        repo.git.execute(["git", "remote", "set-branches", "--add", "origin", args.commit])
         localBranch = fref[0].ref.checkout(B=args.commit, track=True)
 
     extensions = ['*.h', '*.hpp', '*.cpp']
-    excludes = ["*/ext/*", "*/templates/*", "*/tools/codegen/*" , "*moc_*", "*cmake*"]
+    excludes = ["*/ext/*", "*/templates/*", "*/tools/codegen/*", "*moc_*", "*cmake*"]
     if args.master:
         files = find_files(args.repo[0], extensions, excludes)
     else:
@@ -91,8 +93,8 @@ def main():
         for filename in files:
             command = [args.binary, str(filename)]
             p = subprocess.Popen(command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
             formatted_code_raw, err_raw = p.communicate()
             try:
                 formatted_code = codecs.decode(formatted_code_raw, encoding="UTF-8")
@@ -103,7 +105,7 @@ def main():
                 sys.stdout.write(str(e))
                 sys.stdout.write("\n")
                 sys.exit(1)
-            
+
             if p.returncode != 0:
                 sys.stdout.write("Problem checking format for: " + str(filename) + "\n")
                 err = codecs.decode(err_raw, encoding="UTF-8")
@@ -119,9 +121,9 @@ def main():
             with codecs.open(filename, 'r', encoding="UTF-8") as f:
                 code = f.read().split('\n')
 
-            diff = difflib.unified_diff(code, formatted_code.split('\n'), 
-                str(filename) + " (original)", 
-                str(filename) + " (formatted)", '', '', 3, "")
+            diff = difflib.unified_diff(code, formatted_code.split('\n'),
+                                        str(filename) + " (original)",
+                                        str(filename) + " (formatted)", '', '', 3, "")
             diff_string = '\n'.join(diff)
             if len(diff_string) > 0:
                 sys.stdout.write(str(filename) + " Warning: Inconsistent format\n")
@@ -141,7 +143,7 @@ def main():
             print("There were format fixes, pushing changes")
             repo.git.add(update=True)
             ivwteam = git.Actor("Inviwo Team", "team@inviwo.org")
-            repo.index.commit("Jenkins: Format fixes", author=ivwteam, committer=ivwteam)    
+            repo.index.commit("Jenkins: Format fixes", author=ivwteam, committer=ivwteam)
             repo.remotes.origin.push()
             # remove outfile if we have fixed formatting
             output = pathlib.Path(args.output)
@@ -153,7 +155,6 @@ def main():
         repo.git.checkout(repo.head.commit.hexsha)
         repo.delete_head(localBranch, force=True)
 
+
 if __name__ == '__main__':
     main()
-
- 
