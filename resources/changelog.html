@@ -52,7 +52,6 @@ Brushing &amp; Linking (B&amp;L) was completely reworked. Now the B&amp;L inport
         ...
     }
 }</pre></div>
-<p><strong>Update Note:</strong> In case you are using <code>port.isChanged()</code> on a <code>BrushingAndLinkingInport</code>, you <strong>must</strong> replace this with one of the calls above. Otherwise your selection might no longer be updated.</p>
 <h2>2021-09-27</h2>
 <p>Fixed some naming inconsistencies regarding texture coordinate vertex attributes and buffers. Renamed <code>BufferType::TexcoordAttrib</code> to <code>BufferType::TexCoordAttrib</code> (<code>geometrytypes.h</code>) and <code>buffertraits::TexcoordBuffer</code> to <code>buffertraits::TexCoordBuffer</code> (<code>typedmesh.h</code>). The buffer name of <code>TexCoordAttrib</code> now maps to <code>TexCoord</code> (previously <code>Texture</code>), which is relevant when using the <code>MeshShaderCache</code>.</p>
 <p>In case you use the <code>MeshShaderCache</code> in connection with <code>TexCoordAttrib</code> you may need to adjust your shader. If the attribute is available, <code>HAS_TEXCOORD</code> is defined and <code>in_TexCoord</code> holds the value (previously <code>HAS_TEXTURE/in_Texture</code>).</p>

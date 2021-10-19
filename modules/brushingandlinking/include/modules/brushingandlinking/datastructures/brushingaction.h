@@ -37,8 +37,6 @@
 #include <functional>
 #include <ostream>
 #include <istream>
-#include <mutex>
-#include <algorithm>
 
 #include <flags/flags.h>
 
@@ -112,6 +110,10 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
     BrushingTarget() : target_{Row.target_} {}
     explicit BrushingTarget(std::string_view target) : target_{findOrAdd(target)} {}
     BrushingTarget(const BrushingTarget& rhs) : target_{rhs.target_} {}
+    BrushingTarget& operator=(const BrushingTarget& rhs) {
+        target_ = rhs.target_;
+        return *this;
+    }
 
     inline friend bool operator==(BrushingTarget lhs, BrushingTarget rhs) {
         // Can optimize equal since we know each targets points to a unique str.
@@ -137,7 +139,12 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
                                                                       BrushingTarget bt);
     template <class Elem, class Traits>
     friend std::basic_istream<Elem, Traits>& operator>>(std::basic_istream<Elem, Traits>& ss,
-                                                        BrushingTarget& bt);
+                                                        BrushingTarget& bt) {
+        std::string str;
+        ss >> str;
+        bt = BrushingTarget(str);
+        return ss;
+    }
 
     std::string_view getString() const { return target_; }
 
@@ -145,31 +152,10 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
     static const BrushingTarget Column;
 
 private:
-    std::string_view findOrAdd(std::string_view target) {
-        static std::mutex mutex;
-        static std::vector<std::unique_ptr<const std::string>> targets{};
-        std::scoped_lock lock{mutex};
-        const auto it = std::find_if(
-            targets.begin(), targets.end(),
-            [&](const std::unique_ptr<const std::string>& ptr) { return *ptr == target; });
-        if (it == targets.end()) {
-            return std::string_view{
-                *targets.emplace_back(std::make_unique<const std::string>(target))};
-        } else {
-            return std::string_view{**it};
-        }
-    }
+    std::string_view findOrAdd(std::string_view target);
+
     std::string_view target_;
 };
-
-template <class Elem, class Traits>
-std::basic_istream<Elem, Traits>& operator>>(std::basic_istream<Elem, Traits>& ss,
-                                             BrushingTarget& bt) {
-    std::string str;
-    ss >> str;
-    bt = BrushingTarget(str);
-    return ss;
-}
 
 }  // namespace inviwo
 

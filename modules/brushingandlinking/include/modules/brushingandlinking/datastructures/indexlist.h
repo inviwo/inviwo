@@ -35,7 +35,6 @@
 #include <inviwo/core/util/dispatcher.h>
 
 #include <unordered_map>
-#include <unordered_set>
 
 namespace inviwo {
 

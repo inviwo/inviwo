@@ -30,7 +30,6 @@ void MyProcessor::process() {
     }
 }
 ```
-**Update Note:** In case you are using `port.isChanged()` on a `BrushingAndLinkingInport`, you **must** replace this with one of the calls above. Otherwise your selection might no longer be updated. 
 
 ## 2021-09-27
 Fixed some naming inconsistencies regarding texture coordinate vertex attributes and buffers. Renamed `BufferType::TexcoordAttrib` to `BufferType::TexCoordAttrib` (`geometrytypes.h`) and `buffertraits::TexcoordBuffer` to `buffertraits::TexCoordBuffer` (`typedmesh.h`). The buffer name of `TexCoordAttrib` now maps to `TexCoord` (previously `Texture`), which is relevant when using the `MeshShaderCache`.

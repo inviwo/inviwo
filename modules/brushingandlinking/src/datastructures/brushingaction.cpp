@@ -30,6 +30,8 @@
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
 
 #include <iostream>
+#include <mutex>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -39,6 +41,20 @@ const BrushingTarget BrushingTarget::Column("column");
 std::ostream& operator<<(std::ostream& os, BrushingTarget bt) {
     os << bt.getString();
     return os;
+}
+
+inline std::string_view BrushingTarget::findOrAdd(std::string_view target) {
+    static std::mutex mutex;
+    static std::vector<std::unique_ptr<const std::string>> targets{};
+    std::scoped_lock lock{mutex};
+    const auto it =
+        std::find_if(targets.begin(), targets.end(),
+                     [&](const std::unique_ptr<const std::string>& ptr) { return *ptr == target; });
+    if (it == targets.end()) {
+        return std::string_view{*targets.emplace_back(std::make_unique<const std::string>(target))};
+    } else {
+        return std::string_view{**it};
+    }
 }
 
 }  // namespace inviwo

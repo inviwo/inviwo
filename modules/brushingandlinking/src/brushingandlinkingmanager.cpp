@@ -56,10 +56,7 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingInport* i
 
 BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingOutport* outport,
                                                      InvalidationLevel validationLevel)
-    : owner_(outport), invalidationLevel_(validationLevel) {
-
-    outport->onDisconnect([&]() { updatePortConnections(); });
-}
+    : owner_(outport), invalidationLevel_(validationLevel) {}
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() = default;
 
@@ -88,15 +85,15 @@ BrushingModifications BrushingAndLinkingManager::modifiedActions() const {
 }
 
 bool BrushingAndLinkingManager::modifiedFiltering() const {
-    return bool(modifiedActions_ & BrushingModification::Filtered);
+    return modifiedActions_.contains(BrushingModification::Filtered);
 }
 
 bool BrushingAndLinkingManager::modifiedSelection() const {
-    return bool(modifiedActions_ & BrushingModification::Selected);
+    return modifiedActions_.contains(BrushingModification::Selected);
 }
 
 bool BrushingAndLinkingManager::modifiedHighlight() const {
-    return bool(modifiedActions_ & BrushingModification::Highlighted);
+    return modifiedActions_.contains(BrushingModification::Highlighted);
 }
 
 bool BrushingAndLinkingManager::hasIndices(BrushingAction action, BrushingTarget target) const {
@@ -117,24 +114,12 @@ const BitSet& BrushingAndLinkingManager::getIndices(BrushingAction action,
         return parent_->getIndices(action, target);
     }
 
-    static BitSet empty;
+    static const BitSet empty;
 
-    const int actionIdx = getActionIndex(action);
-
-    if (std::holds_alternative<BitSetTargets>(selections_[actionIdx])) {
-        const auto& map = std::get<BitSetTargets>(selections_[actionIdx]);
-        auto it = map.find(target);
-        if (it == map.end()) {
-            return empty;
-        }
-        return it->second;
+    if (auto indices = getBitSet(action, target)) {
+        return *indices;
     } else {
-        const auto& map = std::get<IndexListTargets>(selections_[actionIdx]);
-        auto it = map.find(target);
-        if (it == map.end()) {
-            return empty;
-        }
-        return it->second.getIndices();
+        return empty;
     }
 }
 
@@ -144,22 +129,14 @@ void BrushingAndLinkingManager::clearIndices(BrushingAction action, BrushingTarg
                         IVW_CONTEXT);
     }
 
-    const int actionIdx = getActionIndex(action);
-    std::visit(util::overloaded{[&](BitSetTargets& map) {
-                                    auto it = map.find(target);
-                                    if (it == map.end()) {
-                                        return;
-                                    }
-                                    it->second.clear();
-                                },
-                                [&](IndexListTargets& map) {
-                                    auto it = map.find(target);
-                                    if (it == map.end()) {
-                                        return;
-                                    }
-                                    it->second.clear();
-                                }},
-               selections_[actionIdx]);
+    std::visit(util::overloaded{[&](auto& map) {
+                   auto it = map.find(target);
+                   if (it == map.end()) {
+                       return;
+                   }
+                   it->second.clear();
+               }},
+               selections_[getActionIndex(action)]);
 
     propagate(action, target);
 }
@@ -171,20 +148,13 @@ bool BrushingAndLinkingManager::contains(uint32_t idx, BrushingAction action,
     }
 
     const int actionIdx = getActionIndex(action);
-    return std::visit(util::overloaded{[&](const BitSetTargets& map) {
-                                           auto it = map.find(target);
-                                           if (it == map.end()) {
-                                               return false;
-                                           }
-                                           return it->second.contains(idx);
-                                       },
-                                       [&](const IndexListTargets& map) {
-                                           auto it = map.find(target);
-                                           if (it == map.end()) {
-                                               return false;
-                                           }
-                                           return it->second.contains(idx);
-                                       }},
+    return std::visit(util::overloaded{[&](const auto& map) {
+                          auto it = map.find(target);
+                          if (it == map.end()) {
+                              return false;
+                          }
+                          return it->second.contains(idx);
+                      }},
                       selections_[actionIdx]);
 }
 
@@ -221,48 +191,15 @@ std::vector<BrushingTarget> BrushingAndLinkingManager::getTargets(BrushingAction
     }
 
     const int actionIdx = getActionIndex(action);
-    return std::visit(util::overloaded{[&](const BitSetTargets& map) {
-                                           return util::transform(
-                                               map, [](const auto& elem) { return elem.first; });
-                                       },
-                                       [&](const IndexListTargets& map) {
-                                           return util::transform(
-                                               map, [](const auto& elem) { return elem.first; });
-                                       }},
+    return std::visit(util::overloaded{[&](const auto& map) {
+                          return util::transform(map, [](const auto& elem) { return elem.first; });
+                      }},
                       selections_[actionIdx]);
 }
 
-void BrushingAndLinkingManager::updatePortConnections() {
-    if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
-        auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
-
-        std::vector<BrushingAndLinkingManager*> toRemove(children_.begin(), children_.end());
-        for (auto p : outport->getConnectedInports()) {
-            util::erase_remove(toRemove, &static_cast<BrushingAndLinkingInport*>(p)->getManager());
-        }
-
-        std::vector<std::string> removedPorts;
-        for (auto m : toRemove) {
-            children_.erase(m);
-            removedPorts.push_back(std::get<BrushingAndLinkingInport*>(m->owner_)->getPath());
-        }
-
-        for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
-            if (std::holds_alternative<IndexListTargets>(targetmap)) {
-                for (auto& elem : std::get<IndexListTargets>(targetmap)) {
-                    if (elem.second.removeSources(removedPorts)) {
-                        // inform parent manager
-                        propagate(action, elem.first);
-                    }
-                }
-            }
-        }
-    }
-}
-
-void BrushingAndLinkingManager::filter(std::string_view src, const BitSet& indices,
-                                       BrushingTarget target) {
-    brush(BrushingAction::Filter, target, indices, src);
+void BrushingAndLinkingManager::filter(const BitSet& indices, BrushingTarget target,
+                                       std::string_view source) {
+    brush(BrushingAction::Filter, target, indices, source);
 }
 
 void BrushingAndLinkingManager::select(const BitSet& indices, BrushingTarget target) {
@@ -283,6 +220,10 @@ void BrushingAndLinkingManager::clearSelected(BrushingTarget target) {
 
 void BrushingAndLinkingManager::clearHighlighted(BrushingTarget target) {
     clearIndices(BrushingAction::Highlight, target);
+}
+
+size_t BrushingAndLinkingManager::getNumber(BrushingAction action, BrushingTarget target) const {
+    return getIndices(action, target).size();
 }
 
 size_t BrushingAndLinkingManager::getNumberOfFiltered(BrushingTarget target) const {
@@ -326,9 +267,7 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
         parent_->removeChild(this);
 
         // set manager as modified since filter actions might have changed when removing the parent
-        modifiedActions_ =
-            BrushingModifications(BrushingModification::Filtered, BrushingModification::Selected,
-                                  BrushingModification::Highlighted);
+        modifiedActions_ = BrushingModifications(flags::any);
         if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
             auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
             outport->getProcessor()->invalidate(invalidationLevel_);
@@ -340,7 +279,7 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
         parent_->addChild(this);
 
         // propagate all selections of the manager to the parent
-        for (auto elem : getTargets()) {
+        for (auto& elem : getTargets()) {
             propagate(elem.first, elem.second);
         }
     }
@@ -412,27 +351,9 @@ void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget 
 
     if (parent_) {
         const std::string source =
-            std::visit(util::overloaded{[](BrushingAndLinkingInport* p) { return p->getPath(); },
-                                        [](BrushingAndLinkingOutport* p) { return p->getPath(); }},
-                       owner_);
+            std::visit(util::overloaded{[](auto* p) { return p->getPath(); }}, owner_);
 
-        const int actionIdx = getActionIndex(action);
-        auto localIndices =
-            std::visit(util::overloaded{[&](const BitSetTargets& map) -> const BitSet* {
-                                            auto it = map.find(target);
-                                            if (it == map.end()) {
-                                                return nullptr;
-                                            }
-                                            return &it->second;
-                                        },
-                                        [&](const IndexListTargets& map) -> const BitSet* {
-                                            auto it = map.find(target);
-                                            if (it == map.end()) {
-                                                return nullptr;
-                                            }
-                                            return &it->second.getIndices();
-                                        }},
-                       selections_[actionIdx]);
+        auto localIndices = getBitSet(action, target);
 
         if (localIndices) {
             parent_->brush(action, target, *localIndices, source);
@@ -446,7 +367,42 @@ void BrushingAndLinkingManager::addChild(BrushingAndLinkingManager* child) {
 }
 
 void BrushingAndLinkingManager::removeChild(BrushingAndLinkingManager* child) {
-    children_.erase(child);
+    if (child) {
+        children_.erase(child);
+        if (std::holds_alternative<BrushingAndLinkingInport*>(child->owner_)) {
+            auto inport = std::get<BrushingAndLinkingInport*>(child->owner_);
+
+            for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
+                if (std::holds_alternative<IndexListTargets>(targetmap)) {
+                    for (auto& elem : std::get<IndexListTargets>(targetmap)) {
+                        if (elem.second.removeSources({inport->getPath()})) {
+                            // inform parent manager
+                            propagate(action, elem.first);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+const BitSet* BrushingAndLinkingManager::getBitSet(BrushingAction action,
+                                                   BrushingTarget target) const {
+    return std::visit(util::overloaded{[&](const BitSetTargets& map) -> const BitSet* {
+                                           auto it = map.find(target);
+                                           if (it == map.end()) {
+                                               return nullptr;
+                                           }
+                                           return &it->second;
+                                       },
+                                       [&](const IndexListTargets& map) -> const BitSet* {
+                                           auto it = map.find(target);
+                                           if (it == map.end()) {
+                                               return nullptr;
+                                           }
+                                           return &it->second.getIndices();
+                                       }},
+                      selections_[getActionIndex(action)]);
 }
 
 }  // namespace inviwo

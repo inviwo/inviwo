@@ -306,7 +306,7 @@ void ParallelCoordinates::process() {
         buildLineMesh();
     } else if (enabledAxesModified_) {
         buildLineIndices();
-    } else if (brushingAndLinking_.isModified() || axisProperties_.isModified()) {
+    } else if (brushingAndLinking_.isChanged() || axisProperties_.isModified()) {
         partitionLines();
     }
     if ((!isDragging_ || enabledAxesModified_) &&

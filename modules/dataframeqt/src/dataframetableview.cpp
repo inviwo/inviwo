@@ -251,7 +251,7 @@ void DataFrameTableView::highlightRows(const BitSet& rows) {
     };
 
     if (rows.empty()) {
-        for (size_t i = 0; i < rowCount(); ++i) {
+        for (int i = 0; i < rowCount(); ++i) {
             setRowBackground(i, false);
         }
     }

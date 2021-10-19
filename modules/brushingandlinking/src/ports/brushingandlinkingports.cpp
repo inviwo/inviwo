@@ -38,7 +38,7 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     setOptional(true);
 }
 
-bool BrushingAndLinkingInport::isModified() const { return manager_.isModified(); }
+bool BrushingAndLinkingInport::isChanged() const { return manager_.isModified(); }
 
 BrushingModifications BrushingAndLinkingInport::modifiedActions() const {
     return manager_.modifiedActions();
@@ -123,12 +123,12 @@ const BrushingAndLinkingManager& BrushingAndLinkingInport::getManager() const { 
 
 void BrushingAndLinkingInport::serialize(Serializer& s) const {
     Inport::serialize(s);
-    manager_.serialize(s);
+    s.serialize("manager", manager_);
 }
 
 void BrushingAndLinkingInport::deserialize(Deserializer& d) {
     Inport::deserialize(d);
-    manager_.deserialize(d);
+    d.deserialize("manager", manager_);
 }
 
 bool BrushingAndLinkingInport::canConnectTo(const Port* port) const {

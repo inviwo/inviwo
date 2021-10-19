@@ -55,7 +55,7 @@ public:
      *
      * \see modifiedActions
      */
-    bool isModified() const;
+    virtual bool isChanged() const override;
 
     /**
      * return which actions were performed since the last network evaluation

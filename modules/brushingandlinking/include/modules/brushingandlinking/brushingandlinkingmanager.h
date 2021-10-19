@@ -32,6 +32,7 @@
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
 #include <modules/brushingandlinking/datastructures/indexlist.h>
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
@@ -52,7 +53,7 @@ class Deserializer;
  * Manages brushing and linking events for filtering, selecting, and highlighting. When initialized
  * with a BrushingAndLinking inport, changes are propagated using this port if connected.
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
+class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager : public Serializable {
 public:
     BrushingAndLinkingManager(BrushingAndLinkingInport* inport,
                               InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
@@ -87,6 +88,13 @@ public:
      */
     void brush(BrushingAction action, BrushingTarget target, const BitSet& indices,
                std::string_view source = {});
+
+    //! convenience function for brush(BrushingAction::Filter, target, idx, source)
+    void filter(const BitSet& idx, BrushingTarget target, std::string_view source);
+    //! convenience function for brush(BrushingAction::Select, target, idx)
+    void select(const BitSet& idx, BrushingTarget target = BrushingTarget::Row);
+    //! convenience function for brush(BrushingAction::Highlight, target, idx)
+    void highlight(const BitSet& idx, BrushingTarget target = BrushingTarget::Row);
 
     /**
      * check if the state of the manager was changed since the last network evaluation
@@ -142,6 +150,15 @@ public:
     const BitSet& getIndices(BrushingAction action,
                              BrushingTarget target = BrushingTarget::Row) const;
 
+    //! convenience function for getIndices(action, target).size()
+    size_t getNumber(BrushingAction action, BrushingTarget target = BrushingTarget::Row) const;
+    //! convenience function for getIndices(BrushingAction::Filter, target).size()
+    size_t getNumberOfFiltered(BrushingTarget target = BrushingTarget::Row) const;
+    //! convenience function for getIndices(BrushingAction::Select, target).size()
+    size_t getNumberOfSelected(BrushingTarget target = BrushingTarget::Row) const;
+    //! convenience function for getIndices(BrushingAction::Highlight, target).size()
+    size_t getNumberOfHighlighted(BrushingTarget target = BrushingTarget::Row) const;
+
     /**
      * clear the selection for \p action and \p target. \p action must be different from
      * BrushingAction::Filter. Does nothing if \p target does not exist.
@@ -151,32 +168,6 @@ public:
      */
     void clearIndices(BrushingAction action, BrushingTarget target);
 
-    /**
-     * check whether the selection for \p action and \p target contains index \p idx
-     */
-    bool contains(uint32_t idx, BrushingAction action,
-                  BrushingTarget target = BrushingTarget::Row) const;
-
-    std::vector<std::pair<BrushingAction, BrushingTarget>> getTargets() const;
-    std::vector<BrushingTarget> getTargets(BrushingAction action) const;
-
-    /**
-     * update the internal state with respect to port connections. This function should be called
-     * whenever a connection is removed from a brushing and linking outport. This will only effect
-     * filter actions and has no effect if the manager is owned by an inport.
-     *
-     * \see action
-     */
-    void updatePortConnections();
-
-    //! convenience function for action(BrushingAction::Filter, target, idx)
-    void filter(std::string_view src, const BitSet& idx,
-                BrushingTarget target = BrushingTarget::Row);
-    //! convenience function for action(BrushingAction::Select, target, idx)
-    void select(const BitSet& idx, BrushingTarget target = BrushingTarget::Row);
-    //! convenience function for action(BrushingAction::Highlight, target, idx)
-    void highlight(const BitSet& idx, BrushingTarget target = BrushingTarget::Row);
-
     // clang-format off
     [[deprecated("clearing filtered indices is no longer supported. Use filter() with an empty BitSet")]] void clearFiltered();
     // clang-format on
@@ -185,12 +176,11 @@ public:
     //! convenience function for clearIndices(BrushingAction::Highlight, target)
     void clearHighlighted(BrushingTarget target = BrushingTarget::Row);
 
-    //! convenience function for getIndices(BrushingAction::Filter, target).size()
-    size_t getNumberOfFiltered(BrushingTarget target = BrushingTarget::Row) const;
-    //! convenience function for getIndices(BrushingAction::Select, target).size()
-    size_t getNumberOfSelected(BrushingTarget target = BrushingTarget::Row) const;
-    //! convenience function for getIndices(BrushingAction::Highlight, target).size()
-    size_t getNumberOfHighlighted(BrushingTarget target = BrushingTarget::Row) const;
+    /**
+     * check whether the selection for \p action and \p target contains index \p idx
+     */
+    bool contains(uint32_t idx, BrushingAction action,
+                  BrushingTarget target = BrushingTarget::Row) const;
 
     //! convenience function for contains(idx, BrushingAction::Filter, target)
     //! \see contains
@@ -201,6 +191,9 @@ public:
     //! convenience function for contains(idx, BrushingAction::Highlight, target)
     //! \see contains
     bool isHighlighted(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
+
+    std::vector<std::pair<BrushingAction, BrushingTarget>> getTargets() const;
+    std::vector<BrushingTarget> getTargets(BrushingAction action) const;
 
     const BitSet& getFilteredIndices(BrushingTarget target = BrushingTarget::Row) const;
     const BitSet& getSelectedIndices(BrushingTarget target = BrushingTarget::Row) const;
@@ -217,14 +210,15 @@ public:
      */
     void markAsValid();
 
-    void serialize(Serializer& s) const;
-    void deserialize(Deserializer& d);
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     static int getActionIndex(BrushingAction action);
     void propagate(BrushingAction action, BrushingTarget target);
     void addChild(BrushingAndLinkingManager* child);
     void removeChild(BrushingAndLinkingManager* child);
+    const BitSet* getBitSet(BrushingAction action, BrushingTarget target) const;
 
     using BitSetTargets = std::unordered_map<BrushingTarget, BitSet>;
     using IndexListTargets = std::unordered_map<BrushingTarget, IndexList>;
