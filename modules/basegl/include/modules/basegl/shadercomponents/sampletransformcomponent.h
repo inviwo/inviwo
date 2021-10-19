@@ -35,7 +35,8 @@
 namespace inviwo {
 
 /**
- * This component
+ * Adds a shift and repeat property to modify where the volume gets sampled by shifting and scaling
+ * the ray's sample position. Useful when visualizing
  */
 class IVW_MODULE_BASEGL_API SampleTransformComponent : public ShaderComponent {
 public:

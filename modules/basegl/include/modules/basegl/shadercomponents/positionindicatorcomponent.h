@@ -35,6 +35,9 @@
 
 namespace inviwo {
 
+/**
+ * Adds a VolumeIndicatorProperty property and bind it to the `positionindicator` VolumeIndicatorParameters uniform. When enabled it composites the planes into the `result`.
+ */
 class IVW_MODULE_BASEGL_API PositionIndicatorComponent : public ShaderComponent {
 public:
     PositionIndicatorComponent();

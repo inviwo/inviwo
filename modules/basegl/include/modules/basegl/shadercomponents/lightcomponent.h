@@ -35,6 +35,9 @@
 
 namespace inviwo {
 
+/**
+ * Adds a SimpleLightingProperty and binds it to the `lighting` LightParameters uniform.
+ */
 class IVW_MODULE_BASEGL_API LightComponent : public ShaderComponent {
 public:
     LightComponent(CameraProperty* camera);

@@ -41,6 +41,10 @@ namespace inviwo {
 
 class IsoTFProperty;
 
+/**
+ * The voxel data from `<volume>Voxel[channel]` will be classified using the transferfunction and
+ * isovalues from the IsoTFProperty, and composited into `result`.
+ */
 class IVW_MODULE_BASEGL_API RaycastingComponent : public ShaderComponent {
 public:
     RaycastingComponent(std::string_view volume, IsoTFProperty& isotf);
@@ -65,6 +69,10 @@ private:
     RaycastingProperty raycasting_;
 };
 
+/**
+ * The voxel data from each channel in `<volume>Voxel` will be classified using the transferfunction
+ * and isovalues from the corresponding IsoTFProperty, and composited into `result`.
+ */
 class IVW_MODULE_BASEGL_API MultiRaycastingComponent : public ShaderComponent {
 public:
     MultiRaycastingComponent(std::string_view volume,

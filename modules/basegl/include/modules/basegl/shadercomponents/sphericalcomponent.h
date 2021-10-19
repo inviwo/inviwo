@@ -36,6 +36,10 @@
 
 namespace inviwo {
 
+/**
+ * Transforms the samplePosition from cartesian coordinates (texture coords 0 to 1) to spherical
+ * coordinates.
+ */
 class IVW_MODULE_BASEGL_API SphericalComponent : public ShaderComponent {
 public:
     SphericalComponent();

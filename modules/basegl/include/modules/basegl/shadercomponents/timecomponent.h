@@ -38,6 +38,10 @@
 
 namespace inviwo {
 
+/**
+ * Adds a ´<name>´ float uniform to the shader with the current "time" in milliseconds, it gets
+ * updated using a timer every 33ms.
+ */
 class IVW_MODULE_BASEGL_API TimeComponent : public ShaderComponent {
 public:
     TimeComponent(std::string_view name, std::function<void(InvalidationLevel)> invalidate);

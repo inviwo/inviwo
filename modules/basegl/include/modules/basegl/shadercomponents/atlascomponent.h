@@ -52,6 +52,10 @@ class PickingEvent;
 class Processor;
 class TimeComponent;
 
+/**
+ * Adds a atlas Volume inport, a BrushingAndLinking inport, and related functionality to do
+ * segmented or "atlas" volume raycasting.
+ */
 class IVW_MODULE_BASEGL_API AtlasComponent : public ShaderComponent {
 public:
     AtlasComponent(Processor* p, std::string_view color, TimeComponent* time);

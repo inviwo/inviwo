@@ -45,6 +45,9 @@
 
 namespace inviwo {
 
+/**
+ * Added a set of `N` IsoTFProperties, and binds them to uniforms in the shader. 
+ */
 template <size_t N>
 class IsoTFComponent : public ShaderComponent {
 public:

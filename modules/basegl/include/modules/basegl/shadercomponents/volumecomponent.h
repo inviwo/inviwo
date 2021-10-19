@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -36,6 +37,15 @@
 
 namespace inviwo {
 
+/**
+ * Adds a Volume inport, bind that volume and assigns it the a sampler with <name> and
+ * sets the <name>Parameters uniforms
+ * It will sample the volume into <name>Voxel and keep the previous value in <name>VoxelPrev`
+ * If Gradients::Single is set the gradient for `channel` will be computed into `<name>Gradient`,
+ * the previous graident will be store in ´<name>GradientPrev`.
+ * If Gradients::All is set the gradients for all channels will be computed into
+ * `<name>AllGradients`, the previous graident will be store in ´<name>AllGradientsPrev`
+ */
 class IVW_MODULE_BASEGL_API VolumeComponent : public ShaderComponent {
 public:
     enum class Gradients { None, Single, All };

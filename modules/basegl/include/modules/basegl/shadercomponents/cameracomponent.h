@@ -38,6 +38,10 @@
 
 namespace inviwo {
 
+
+/**
+ * Adds a CameraProperty and binds it the the `<name>` CameraParameters uniform
+ */
 class IVW_MODULE_BASEGL_API CameraComponent : public ShaderComponent {
 public:
     CameraComponent(std::string_view name, std::function<std::optional<mat4>()> boundingBox);

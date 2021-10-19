@@ -47,7 +47,10 @@ namespace inviwo {
 /** \docpage{org.inviwo.StandardVolumeRaycaster, Standard Volume Raycaster}
  * ![](org.inviwo.StandardVolumeRaycaster.png?classIdentifier=org.inviwo.StandardVolumeRaycaster)
  *
- * Description of the processor
+ * Processor for visualizing volumetric data by means of volume raycasting. Besides the
+ * volume data, entry and exit point locations of the bounding box are required. These
+ * can be created with the EntryExitPoints processor. The camera properties between these
+ * two processors need to be linked.
  *
  * ### Inports
  *   * __volume__ input volume (Only one channel will be rendered)

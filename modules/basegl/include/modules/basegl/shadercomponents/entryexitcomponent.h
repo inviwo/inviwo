@@ -34,6 +34,14 @@
 
 namespace inviwo {
 
+/**
+ * Adds an entry and an exit Image port. Binds the images into samplers `entryColor`, `entryDepth`,
+ * `exitColor`, and `exitDepth` and set the `entryParameters` and `exitParamters` uniforms.
+ * The `entryPoint`, `exitPoint`, `entryPointDepth`, and `exitPointDepth` will be sampled in the
+ * setup and the `rayLength` and `rayDirection` calculated.
+ * If the entry port has an extra color layer with surface normals, the `surfaceNormal` will be set
+ * and `useSurfaceNormals` will be true.
+ */
 class IVW_MODULE_BASEGL_API EntryExitComponent : public ShaderComponent {
 public:
     EntryExitComponent();

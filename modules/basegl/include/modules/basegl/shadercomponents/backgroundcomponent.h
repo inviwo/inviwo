@@ -34,6 +34,10 @@
 
 namespace inviwo {
 
+/**
+ * Adds an optional background inport, binds is and composites it into the result at when the ray
+ * passed the background depth.
+ */
 class IVW_MODULE_BASEGL_API BackgroundComponent : public ShaderComponent {
 public:
     BackgroundComponent(Processor& processor);
