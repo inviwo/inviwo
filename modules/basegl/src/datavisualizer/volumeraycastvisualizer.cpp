@@ -84,25 +84,6 @@ std::pair<Processor*, Outport*> VolumeRaycastVisualizer::addSourceProcessor(
     return {source, outport};
 }
 
-template <typename T, typename V>
-T& trySetProperty(Processor* proc, std::string_view identifier, V&& val, bool recursive = false) {
-
-    if (auto* p = recursive ? proc->getPropertyByIdentifier(identifier, true)
-                            : proc->getPropertyByPath(identifier)) {
-        if (auto* tp = dynamic_cast<T*>(p)) {
-            tp->set(std::forward<V>(val));
-            return *tp;
-        } else {
-            throw Exception(
-                fmt::format("Property '{}' not of type '{}'", identifier, typeid(T).name()),
-                IVW_CONTEXT_CUSTOM("VolumeRaycastVisualizer"));
-        }
-    } else {
-        throw Exception(fmt::format("Could not find property: '{}'", identifier),
-                        IVW_CONTEXT_CUSTOM("VolumeRaycastVisualizer"));
-    }
-}
-
 std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* outport,
                                                                       ProcessorNetwork* net) const {
 
@@ -115,13 +96,13 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
     auto vbb = net->addProcessor(util::makeProcessor<VolumeBoundingBox>(GP{8, 3}));
     auto lrp = net->addProcessor(util::makeProcessor<LineRendererProcessor>(GP{8, 6}));
 
-    trySetProperty<FloatVec4Property>(bak, "bgColor1", vec4(0.443f, 0.482f, 0.600f, 1.0f));
-    trySetProperty<FloatVec4Property>(bak, "bgColor2", vec4(0.831f, 0.831f, 0.831f, 1.0f));
+    util::trySetProperty<FloatVec4Property>(bak, "bgColor1", vec4(0.443f, 0.482f, 0.600f, 1.0f));
+    util::trySetProperty<FloatVec4Property>(bak, "bgColor2", vec4(0.831f, 0.831f, 0.831f, 1.0f));
 
-    trySetProperty<TemplateOptionProperty<ShadingMode>>(vrc, "shadingMode", ShadingMode::None,
-                                                        true);
-    trySetProperty<FloatVec3RefProperty>(vrc, "lookFrom", vec3(0.0f, 0.0f, 30.0f), true);
-    trySetProperty<FloatProperty>(lrp, "lineSettings.lineWidth", 1.5f);
+    util::trySetProperty<TemplateOptionProperty<ShadingMode>>(vrc, "shadingMode", ShadingMode::None,
+                                                              true);
+    util::trySetProperty<FloatVec3RefProperty>(vrc, "lookFrom", vec3(0.0f, 0.0f, 30.0f), true);
+    util::trySetProperty<FloatProperty>(lrp, "lineSettings.lineWidth", 1.5f);
 
     net->addConnection(outport, cpg->getInports()[0]);
     net->addConnection(cpg->getOutports()[0], eep->getInports()[0]);

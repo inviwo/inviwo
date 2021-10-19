@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <type_traits>
 #include <string_view>
@@ -132,6 +133,35 @@ IVW_CORE_API InviwoModule* getProcessorModule(const Processor* processor,
 IVW_CORE_API InviwoModule* getProcessorModule(std::string_view classIdentifier,
                                               const InviwoApplication& app);
 
+/**
+ * @brief Tries to set a processor's property to a given value.
+ * @tparam T Type of \p proc.
+ * @tparam V Type of \p val, deduced.
+ * @param proc Processor that has the target property.
+ * @param identifier Identifier of the property to be set.
+ * @param val Value to be set.
+ * @param recursive Enable/Disable recursive search for Processor::getPropertyByIdentifier.
+ * @return Reference to set property.
+ * @throws Exception
+ */
+template <typename T, typename V>
+T& trySetProperty(Processor* proc, std::string_view identifier, V&& val, bool recursive = false) {
+
+    if (auto* p = recursive ? proc->getPropertyByIdentifier(identifier, true)
+                            : proc->getPropertyByPath(identifier)) {
+        if (auto* tp = dynamic_cast<T*>(p)) {
+            tp->set(std::forward<V>(val));
+            return *tp;
+        } else {
+            throw Exception(
+                fmt::format("Property '{}' not of type '{}'", identifier, typeid(T).name()),
+                IVW_CONTEXT_CUSTOM("util::trySetProperty"));
+        }
+    } else {
+        throw Exception(fmt::format("Could not find property: '{}'", identifier),
+                        IVW_CONTEXT_CUSTOM("util::trySetProperty"));
+    }
+}
 }  // namespace util
 
 }  // namespace inviwo
