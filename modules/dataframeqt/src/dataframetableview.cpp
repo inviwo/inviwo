@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/zip.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <type_traits>
@@ -48,9 +49,26 @@ namespace inviwo {
 DataFrameTableView::DataFrameTableView(QWidget* parent) : QTableWidget(3, 3, parent) {
     horizontalHeader()->setStretchLastSection(true);
 
+    // need mouse tracking for issuing highlight events when entering a cell
+    setMouseTracking(true);
+
     // make it read-only
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setAlternatingRowColors(true);
+
+    QObject::connect(this, &QAbstractItemView::entered, this, [this](const QModelIndex& index) {
+        if (ignoreEvents_) return;
+        if (data_) {
+            // translate model indices to row IDs
+            const auto& indexCol = data_->getIndexColumn()
+                                       ->getTypedBuffer()
+                                       ->getRAMRepresentation()
+                                       ->getDataContainer();
+            BitSet highlighted;
+            highlighted.add(indexCol[index.row()]);
+            emit rowHighlightChanged(highlighted);
+        }
+    });
 
     QObject::connect(selectionModel(), &QItemSelectionModel::selectionChanged, this,
                      [this](const QItemSelection&, const QItemSelection&) {
@@ -63,9 +81,9 @@ DataFrameTableView::DataFrameTableView(QWidget* parent) : QTableWidget(3, 3, par
                                                         ->getRAMRepresentation()
                                                         ->getDataContainer();
 
-                             std::unordered_set<size_t> selection;
+                             BitSet selection;
                              for (auto& index : selectionModel()->selection().indexes()) {
-                                 selection.insert(indexCol[index.row()]);
+                                 selection.add(indexCol[index.row()]);
                              }
                              emit rowSelectionChanged(selection);
                          }
@@ -191,13 +209,13 @@ void DataFrameTableView::setIndexColumnVisible(bool visible) {
 
 bool DataFrameTableView::isIndexColumnVisible() const { return indexVisible_; }
 
-void DataFrameTableView::selectColumns(const std::unordered_set<size_t>& columns) {
+void DataFrameTableView::selectColumns(const BitSet& columns) {
     if (!data_ || ignoreUpdate_) return;
 
     setHorizontalHeaderLabels(generateHeaders(columns));
 }
 
-void DataFrameTableView::selectRows(const std::unordered_set<size_t>& rows) {
+void DataFrameTableView::selectRows(const BitSet& rows) {
     if (!data_ || ignoreUpdate_) return;
 
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
@@ -211,7 +229,7 @@ void DataFrameTableView::selectRows(const std::unordered_set<size_t>& rows) {
 
     QItemSelection s;
     for (size_t i = 0; i < indexCol.size(); ++i) {
-        if (rows.count(indexCol[i]) > 0) {
+        if (rows.contains(indexCol[i])) {
             QModelIndex start{model()->index(static_cast<int>(i), 0)};
             QModelIndex end{model()->index(static_cast<int>(i), columnCount() - 1)};
             s.select(start, end);
@@ -220,14 +238,40 @@ void DataFrameTableView::selectRows(const std::unordered_set<size_t>& rows) {
     selectionModel()->select(s, QItemSelectionModel::Select);
 }
 
-QStringList DataFrameTableView::generateHeaders(
-    const std::unordered_set<size_t>& selectedCols) const {
+void DataFrameTableView::highlightRows(const BitSet& rows) {
+    if (!data_ || ignoreUpdate_) return;
+
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+
+    auto setRowBackground = [this, colCount = columnCount()](size_t row, bool highlight) {
+        for (auto&& c : util::make_sequence<int>(0, static_cast<int>(colCount))) {
+            auto item = itemFromIndex(model()->index(static_cast<int>(row), c));
+            item->setBackground(highlight ? QBrush(QColor(102, 87, 50)) : QBrush());
+        }
+    };
+
+    if (rows.empty()) {
+        for (int i = 0; i < rowCount(); ++i) {
+            setRowBackground(i, false);
+        }
+    }
+
+    // translate row IDs into row numbers and fetch corresponding model indices
+    const auto& indexCol =
+        data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
+    for (size_t i = 0; i < indexCol.size(); ++i) {
+        setRowBackground(i, rows.contains(indexCol[i]));
+    }
+}
+
+QStringList DataFrameTableView::generateHeaders(const BitSet& selectedCols) const {
 
     const std::array<char, 4> componentNames = {'X', 'Y', 'Z', 'W'};
     QStringList headers;
-    size_t colIndex = 0;
+    uint32_t colIndex = 0;
     for (const auto& col : *data_) {
-        const std::string selected = (selectedCols.count(colIndex) > 0) ? " [+]" : "";
+        const std::string selected = selectedCols.contains(colIndex) ? " [+]" : "";
         const auto components = col->getBuffer()->getDataFormat()->getComponents();
         if (components > 1 && vectorsIntoCols_) {
             for (size_t k = 0; k < components; k++) {

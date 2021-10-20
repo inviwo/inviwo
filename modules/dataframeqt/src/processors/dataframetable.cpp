@@ -86,14 +86,18 @@ DataFrameTable::~DataFrameTable() {
 
 void DataFrameTable::process() {
     if (auto w = getWidget()) {
+        bool dataUpdated = false;
         if (inport_.isChanged() || vectorCompAsColumn_.isModified() ||
             showCategoryIndices_.isModified()) {
             w->setDataFrame(inport_.getData(), vectorCompAsColumn_, showCategoryIndices_);
-            w->updateSelection(brushLinkPort_.getSelectedColumns(),
-                               brushLinkPort_.getSelectedIndices());
-        } else if (brushLinkPort_.isChanged()) {
-            w->updateSelection(brushLinkPort_.getSelectedColumns(),
-                               brushLinkPort_.getSelectedIndices());
+            dataUpdated = true;
+        }
+        if (dataUpdated || brushLinkPort_.modifiedSelection()) {
+            w->updateColumnSelection(brushLinkPort_.getSelectedIndices(BrushingTarget::Column));
+            w->updateSelection(brushLinkPort_.getSelectedIndices());
+        }
+        if (dataUpdated || brushLinkPort_.modifiedHighlight()) {
+            w->updateHighlight(brushLinkPort_.getHighlightedIndices());
         }
     }
 }
@@ -107,10 +111,10 @@ void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> process
     }
 
     if (widget) {
-        rowSelectionChanged_ =
-            widget->setRowSelectionChangedCallback([this](const std::unordered_set<size_t>& rows) {
-                brushLinkPort_.sendSelectionEvent(rows);
-            });
+        rowSelectionChanged_ = widget->setRowSelectionChangedCallback(
+            [this](const BitSet& rows) { brushLinkPort_.select(rows); });
+        rowHighlightChanged_ = widget->setRowHighlightChangedCallback(
+            [this](const BitSet& rows) { brushLinkPort_.highlight(rows); });
     }
 
     Processor::setProcessorWidget(std::move(processorWidget));

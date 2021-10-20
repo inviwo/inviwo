@@ -29,89 +29,178 @@
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
+#include <inviwo/core/network/networkutils.h>
+
 namespace inviwo {
 
 BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
-    : DataInport<BrushingAndLinkingManager>(identifier) {
+    : Inport(identifier), manager_(this) {
     setOptional(true);
-
-    onConnect([&]() {
-        sendFilterEvent(filterCache_);
-        sendSelectionEvent(selectionCache_);
-    });
 }
 
-void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t>& indices) {
-    if (filterCache_.size() == 0 && indices.size() == 0) return;
-    filterCache_ = indices;
-    FilteringEvent event(this, filterCache_);
-    propagateEvent(&event, nullptr);
+bool BrushingAndLinkingInport::isChanged() const { return manager_.isModified(); }
+
+BrushingModifications BrushingAndLinkingInport::modifiedActions() const {
+    return manager_.modifiedActions();
 }
 
-void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t>& indices) {
-    bool noRemoteSelections = false;
-    if (isConnected() && hasData()) {
-        noRemoteSelections = getData()->getSelectedIndices().empty();
-    }
-    if (selectionCache_.empty() && indices.empty() && noRemoteSelections) {
-        return;
-    }
-    selectionCache_ = indices;
-    SelectionEvent event(this, selectionCache_);
-    propagateEvent(&event, nullptr);
+bool BrushingAndLinkingInport::modifiedFiltering() const { return manager_.modifiedFiltering(); }
+
+bool BrushingAndLinkingInport::modifiedSelection() const { return manager_.modifiedSelection(); }
+
+bool BrushingAndLinkingInport::modifiedHighlight() const { return manager_.modifiedHighlight(); }
+
+void BrushingAndLinkingInport::brush(BrushingAction action, BrushingTarget target,
+                                     const BitSet& indices, std::string_view source) {
+    manager_.brush(action, target, indices, source);
 }
 
-void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t>& indices) {
-    bool noRemoteSelections = false;
-    if (isConnected() && hasData()) {
-        noRemoteSelections = getData()->getSelectedColumns().empty();
-    }
-    if (selectionColumnCache_.empty() && indices.empty() && noRemoteSelections) {
-        return;
-    }
-    selectionColumnCache_ = indices;
-    ColumnSelectionEvent event(this, selectionColumnCache_);
-    propagateEvent(&event, nullptr);
+void BrushingAndLinkingInport::filter(std::string_view source, const BitSet& indices,
+                                      BrushingTarget target) {
+    manager_.brush(BrushingAction::Filter, target, indices, source);
 }
 
-bool BrushingAndLinkingInport::isColumnSelected(size_t idx) const {
-    if (isConnected()) {
-        return getData()->isColumnSelected(idx);
-    } else {
-        return selectionColumnCache_.find(idx) != selectionColumnCache_.end();
-    }
+void BrushingAndLinkingInport::select(const BitSet& indices, BrushingTarget target) {
+    manager_.brush(BrushingAction::Select, target, indices);
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getSelectedIndices() const {
-    if (isConnected()) {
-        return getData()->getSelectedIndices();
-    } else {
-        return selectionCache_;
-    }
+void BrushingAndLinkingInport::highlight(const BitSet& indices, BrushingTarget target) {
+    manager_.brush(BrushingAction::Highlight, target, indices);
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getFilteredIndices() const {
-    if (isConnected()) {
-        return getData()->getFilteredIndices();
-    } else {
-        return filterCache_;
-    }
+void BrushingAndLinkingInport::sendFilterEvent(const BitSet& indices, std::string_view source) {
+    manager_.brush(BrushingAction::Filter, BrushingTarget::Row, indices, source);
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getSelectedColumns() const {
-    if (isConnected()) {
-        return getData()->getSelectedColumns();
-    } else {
-        return selectionColumnCache_;
+void BrushingAndLinkingInport::sendSelectionEvent(const BitSet& indices) {
+    manager_.brush(BrushingAction::Select, BrushingTarget::Row, indices);
+}
+
+void BrushingAndLinkingInport::sendColumnSelectionEvent(const BitSet& indices) {
+    manager_.brush(BrushingAction::Select, BrushingTarget::Column, indices);
+}
+
+bool BrushingAndLinkingInport::isFiltered(uint32_t idx, BrushingTarget target) const {
+    return manager_.contains(idx, BrushingAction::Filter, target);
+}
+
+bool BrushingAndLinkingInport::isSelected(uint32_t idx, BrushingTarget target) const {
+    return manager_.contains(idx, BrushingAction::Select, target);
+}
+
+bool BrushingAndLinkingInport::isHighlighted(uint32_t idx, BrushingTarget target) const {
+    return manager_.contains(idx, BrushingAction::Highlight, target);
+}
+
+bool BrushingAndLinkingInport::isColumnSelected(uint32_t idx) const {
+    return manager_.contains(idx, BrushingAction::Select, BrushingTarget::Column);
+}
+
+const BitSet& BrushingAndLinkingInport::getIndices(BrushingAction action,
+                                                   BrushingTarget target) const {
+    return manager_.getIndices(action, target);
+}
+
+const BitSet& BrushingAndLinkingInport::getFilteredIndices(BrushingTarget target) const {
+    return manager_.getIndices(BrushingAction::Filter, target);
+}
+
+const BitSet& BrushingAndLinkingInport::getSelectedIndices(BrushingTarget target) const {
+    return manager_.getIndices(BrushingAction::Select, target);
+}
+
+const BitSet& BrushingAndLinkingInport::getHighlightedIndices(BrushingTarget target) const {
+    return manager_.getIndices(BrushingAction::Highlight, target);
+}
+
+const BitSet& BrushingAndLinkingInport::getSelectedColumns() const {
+    return manager_.getIndices(BrushingAction::Select, BrushingTarget::Column);
+}
+
+BrushingAndLinkingManager& BrushingAndLinkingInport::getManager() { return manager_; }
+
+const BrushingAndLinkingManager& BrushingAndLinkingInport::getManager() const { return manager_; }
+
+void BrushingAndLinkingInport::serialize(Serializer& s) const {
+    Inport::serialize(s);
+    s.serialize("manager", manager_);
+}
+
+void BrushingAndLinkingInport::deserialize(Deserializer& d) {
+    Inport::deserialize(d);
+    d.deserialize("manager", manager_);
+}
+
+bool BrushingAndLinkingInport::canConnectTo(const Port* port) const {
+    if (!port || port->getProcessor() == getProcessor()) return false;
+
+    // Check for circular depends.
+    auto pd = util::getPredecessors(port->getProcessor());
+    if (pd.find(getProcessor()) != pd.end()) return false;
+
+    if (dynamic_cast<const BrushingAndLinkingOutport*>(port)) {
+        return true;
     }
+
+    return false;
 }
 
 std::string BrushingAndLinkingInport::getClassIdentifier() const {
     return PortTraits<BrushingAndLinkingInport>::classIdentifier();
 }
 
+Document BrushingAndLinkingInport::getInfo() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    Document doc;
+    doc.append("b", "Brushing & Linking Inport", {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    for (auto& [action, target] : manager_.getTargets()) {
+        tb(H(action), target, manager_.getIndices(action, target).cardinality());
+    }
+    return doc;
+}
+
+void BrushingAndLinkingInport::setChanged(bool changed, const Outport* source) {
+    if (!changed) {
+        manager_.markAsValid();
+    }
+    Inport::setChanged(changed, source);
+}
+
 BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string identifier)
-    : DataOutport<BrushingAndLinkingManager>(identifier) {}
+    : Outport(identifier), manager_(this) {}
+
+BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() { return manager_; }
+
+const BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() const { return manager_; }
+
+void BrushingAndLinkingOutport::serialize(Serializer& s) const {
+    Outport::serialize(s);
+    manager_.serialize(s);
+}
+
+void BrushingAndLinkingOutport::deserialize(Deserializer& d) {
+    Outport::deserialize(d);
+    manager_.deserialize(d);
+}
+
+void BrushingAndLinkingOutport::setValid() {
+    manager_.markAsValid();
+    Outport::setValid();
+}
+
+Document BrushingAndLinkingOutport::getInfo() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    Document doc;
+    doc.append("b", "Brushing & Linking Outport", {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    for (auto& [action, target] : manager_.getTargets()) {
+        tb(H(action), target, manager_.getIndices(action, target).cardinality());
+    }
+    return doc;
+}
 
 std::string BrushingAndLinkingOutport::getClassIdentifier() const {
     return PortTraits<BrushingAndLinkingOutport>::classIdentifier();

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,23 +27,34 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
+#include <iostream>
+#include <mutex>
+#include <algorithm>
 
 namespace inviwo {
 
-/**
- * \class SelectionEvent
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API ColumnSelectionEvent : public BrushingAndLinkingEvent {
-public:
-    ColumnSelectionEvent(const BrushingAndLinkingInport* src,
-                         const std::unordered_set<size_t>& indices);
-    virtual ~ColumnSelectionEvent() = default;
+const BrushingTarget BrushingTarget::Row("row");
+const BrushingTarget BrushingTarget::Column("column");
 
-    virtual void print(std::ostream& os) const override;
-};
+std::ostream& operator<<(std::ostream& os, BrushingTarget bt) {
+    os << bt.getString();
+    return os;
+}
+
+inline std::string_view BrushingTarget::findOrAdd(std::string_view target) {
+    static std::mutex mutex;
+    static std::vector<std::unique_ptr<const std::string>> targets{};
+    std::scoped_lock lock{mutex};
+    const auto it =
+        std::find_if(targets.begin(), targets.end(),
+                     [&](const std::unique_ptr<const std::string>& ptr) { return *ptr == target; });
+    if (it == targets.end()) {
+        return std::string_view{*targets.emplace_back(std::make_unique<const std::string>(target))};
+    } else {
+        return std::string_view{**it};
+    }
+}
 
 }  // namespace inviwo

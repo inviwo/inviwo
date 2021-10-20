@@ -26,6 +26,32 @@
 </style>
 </head>
 <body>
+<h2>2021-10-15 Updated Brushing &amp; Linking</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="resources/changelog/brushing.jpg"><img src="resources/changelog/brushing.jpg" alt="Brushing &amp; Linking" style="max-width: 100%;"></a><br>
+Brushing &amp; Linking (B&amp;L) was completely reworked. Now the B&amp;L inports and outports have their own B&amp;L managers. Brushing events were deprecated and replaced with brushing actions in the B&amp;L manager. The manager supports brushing actions for <em>filtering</em>, <em>selecting</em>, and <em>highlighting</em>.</p>
+<ul>
+<li><code>BrushingAction::Filter</code> filters the given indices. The result is the union of all filter actions.</li>
+<li><code>BrushingAction::Select</code> replaces the current (global) selection</li>
+<li><code>BrushingAction::Highlight</code> allows to have an additional set of indices for highlighting things besides a regular selection, for example when hovering items with the mouse.</li>
+</ul>
+<p>To trigger a brushing action call <code>brush(BrushAction::Select, target, indices)</code> on either manager or B&amp;L port. The target defines the type of selection. Default targets exist for row selection (default) and column selection with the option to add custom ones if necessary.</p>
+<p>In addition, B&amp;L is now using <code>BitSet</code> (see <code>inviwo/core/datastructures/bitset.h</code>) to represent selections and filtering. Note that the data type of Brushing &amp; Linking indices was changed to <code>uint32_t</code>.</p>
+<p>The manager also provides functionality to query the latest updates: <code>isModified()</code>, <code>modifiedActions()</code>, and <code>modifiedSelection/Highlight/Filtering()</code>. For example</p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">void</span> <span class="pl-en">MyProcessor::process</span>() {
+
+    <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">modifiedSelection</span>()) {
+        <span class="pl-k">const</span> <span class="pl-bu">BitSet</span>&amp; selected = brushingPort_.<span class="pl-c1">getSelectedIndices</span>();
+        ...
+    }
+    <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">modifiedHighlight</span>()) {
+        <span class="pl-k">const</span> <span class="pl-bu">BitSet</span>&amp; highlighted = brushingPort_.<span class="pl-c1">getHighlightedIndices</span>();
+        ...
+    }
+    <span class="pl-c"><span class="pl-c">//</span> or check for individual modifications</span>
+    <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">modifiedActions</span>() &amp; BrushingModification::Filtered) {
+        ...
+    }
+}</pre></div>
 <h2>2021-09-27</h2>
 <p>Fixed some naming inconsistencies regarding texture coordinate vertex attributes and buffers. Renamed <code>BufferType::TexcoordAttrib</code> to <code>BufferType::TexCoordAttrib</code> (<code>geometrytypes.h</code>) and <code>buffertraits::TexcoordBuffer</code> to <code>buffertraits::TexCoordBuffer</code> (<code>typedmesh.h</code>). The buffer name of <code>TexCoordAttrib</code> now maps to <code>TexCoord</code> (previously <code>Texture</code>), which is relevant when using the <code>MeshShaderCache</code>.</p>
 <p>In case you use the <code>MeshShaderCache</code> in connection with <code>TexCoordAttrib</code> you may need to adjust your shader. If the attribute is available, <code>HAS_TEXCOORD</code> is defined and <code>in_TexCoord</code> holds the value (previously <code>HAS_TEXTURE/in_Texture</code>).</p>

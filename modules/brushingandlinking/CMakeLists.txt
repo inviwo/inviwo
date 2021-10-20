@@ -8,11 +8,8 @@ set(HEADER_FILES
     include/modules/brushingandlinking/brushingandlinkingmanager.h
     include/modules/brushingandlinking/brushingandlinkingmodule.h
     include/modules/brushingandlinking/brushingandlinkingmoduledefine.h
+    include/modules/brushingandlinking/datastructures/brushingaction.h
     include/modules/brushingandlinking/datastructures/indexlist.h
-    include/modules/brushingandlinking/events/brushingandlinkingevent.h
-    include/modules/brushingandlinking/events/filteringevent.h
-    include/modules/brushingandlinking/events/selectionevent.h
-    include/modules/brushingandlinking/events/columnselectionevent.h
     include/modules/brushingandlinking/ports/brushingandlinkingports.h
     include/modules/brushingandlinking/processors/brushingandlinkingprocessor.h
 )
@@ -23,11 +20,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/brushingandlinkingmanager.cpp
     src/brushingandlinkingmodule.cpp
+    src/datastructures/brushingaction.cpp
     src/datastructures/indexlist.cpp
-    src/events/brushingandlinkingevent.cpp
-    src/events/filteringevent.cpp
-    src/events/selectionevent.cpp
-    src/events/columnselectionevent.cpp
     src/ports/brushingandlinkingports.cpp
     src/processors/brushingandlinkingprocessor.cpp
 )

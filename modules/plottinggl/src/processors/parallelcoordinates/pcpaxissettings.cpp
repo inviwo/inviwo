@@ -72,7 +72,7 @@ PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName
     , usePercentiles("usePercentiles", "Use Percentiles", false)
     , invertRange("invertRange", "Invert Range")
     , range("range", "Axis Range")
-    , columnId_{columnId} {
+    , columnId_{static_cast<uint32_t>(columnId)} {
 
     addProperty(range);
     addProperty(invertRange);
@@ -314,7 +314,7 @@ bool PCPAxisSettings::getFlipped() const { return invertRange.get(); }
 
 vec4 PCPAxisSettings::getColor() const {
     const auto hover = pcp_->getHoveredAxis() == static_cast<int>(columnId_);
-    const auto selected = pcp_->brushingAndLinking_.isColumnSelected(columnId_);
+    const auto selected = pcp_->brushingAndLinking_.isSelected(columnId_, BrushingTarget::Column);
 
     if (hover && selected) {
         return glm::mix(pcp_->axisHoverColor_.get(), pcp_->axisSelectedColor_.get(), 0.5f);
@@ -330,7 +330,7 @@ vec4 PCPAxisSettings::getColor() const {
 float PCPAxisSettings::getWidth() const {
     if (pcp_->getHoveredAxis() == static_cast<int>(columnId_)) {
         return 1.5f * pcp_->axisSize_;
-    } else if (pcp_->brushingAndLinking_.isColumnSelected(columnId_)) {
+    } else if (pcp_->brushingAndLinking_.isSelected(columnId_, BrushingTarget::Column)) {
         return 1.5f * pcp_->axisSize_;
     } else {
         return 1.0f * pcp_->axisSize_;

@@ -77,7 +77,7 @@ class PCPAxisSettings;
 
 class IVW_MODULE_PLOTTINGGL_API ParallelCoordinates : public Processor {
 public:
-    enum class BlendMode { None = 0, Additive = 1, Sutractive = 2, Regular = 3 };
+    enum class BlendMode { None = 0, Additive = 1, Subtractive = 2, Regular = 3 };
     enum class LabelPosition { None, Above, Below };
     enum class AxisSelection { Single, Multiple, None };
 
@@ -199,8 +199,8 @@ private:
         std::vector<GLsizei> sizes;
         std::vector<size_t> starts;
 
-        // startFilter, startRegular, startSelected, end
-        std::array<size_t, 4> offsets;
+        // startFilter, startRegular, startSelected, startHighlighted, end
+        std::array<size_t, 5> offsets;
 
         std::vector<float> axisPositions;
         // using int here for performance reasons since bool is not supported as GLSL uniform
@@ -218,7 +218,7 @@ private:
     Lines lines_;
 
     std::pair<vec2, vec2> marginsInternal_;  // Margins with/without considering labels
-    int hoveredLine_ = -1;
+    BitSet highlightedLines_;
     int hoveredAxis_ = -1;
 
     bool brushingDirty_;

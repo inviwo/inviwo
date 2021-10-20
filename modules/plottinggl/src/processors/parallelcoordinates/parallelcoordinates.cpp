@@ -56,6 +56,8 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/zip.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 namespace plot {
@@ -86,7 +88,7 @@ ParallelCoordinates::ParallelCoordinates()
     , lineSettings_{"lines", "Line Settings"}
     , blendMode_("blendMode", "Blend Mode",
                  {{"additive", "Additive", BlendMode::Additive},
-                  {"subractive", "Subractive", BlendMode::Sutractive},
+                  {"subractive", "Subractive", BlendMode::Subtractive},
                   {"regular", "Regular", BlendMode::Regular},
                   {"noblend", "None", BlendMode::None}},
                  2)
@@ -276,7 +278,7 @@ ParallelCoordinates::~ParallelCoordinates() = default;
 void ParallelCoordinates::process() {
     if (axes_.empty()) {
         // Nothing render, just draw the background
-        const vec4 backgroundColor(blendMode_.get() == BlendMode::Sutractive ? 1.0f : 0.0f);
+        const vec4 backgroundColor(blendMode_.get() == BlendMode::Subtractive ? 1.0f : 0.0f);
         utilgl::ClearColor clearColor(backgroundColor);
         utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
         utilgl::deactivateCurrentTarget();
@@ -314,7 +316,7 @@ void ParallelCoordinates::process() {
         adjustMargins();
     }
 
-    const vec4 backgroundColor(blendMode_.get() == BlendMode::Sutractive ? 1.0f : 0.0f);
+    const vec4 backgroundColor(blendMode_.get() == BlendMode::Subtractive ? 1.0f : 0.0f);
     utilgl::ClearColor clearColor(backgroundColor);
     utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
@@ -360,7 +362,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
             return ptr;
         }();
         previousProperties.erase(prop);
-        prop->setColumnId(axes_.size());
+        prop->setColumnId(static_cast<uint32_t>(axes_.size()));
         prop->setVisible(true);
 
         // Create axis for rendering
@@ -463,8 +465,6 @@ void ParallelCoordinates::buildLineIndices() {
 
     buildAxisPositions();
     partitionLines();
-
-    hoveredLine_ = -1;  // reset the hover line since the sizes might have changed.
 }
 
 void ParallelCoordinates::buildAxisPositions() {
@@ -489,14 +489,19 @@ void ParallelCoordinates::partitionLines() {
                 indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)]);
         });
     const auto lastRegularIt = std::partition(lastFilteredIt, lines_.starts.end(), [&](auto ind) {
-        return !brushingAndLinking_.isSelected(
-            indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)]);
+        const auto idx = indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)];
+        return !brushingAndLinking_.isSelected(idx) && !brushingAndLinking_.isHighlighted(idx);
+    });
+    const auto lastSelectedIt = std::partition(lastRegularIt, lines_.starts.end(), [&](auto ind) {
+        const auto idx = indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)];
+        return brushingAndLinking_.isSelected(idx);
     });
 
     lines_.offsets[0] = 0;
     lines_.offsets[1] = std::distance(lines_.starts.begin(), lastFilteredIt);
     lines_.offsets[2] = std::distance(lines_.starts.begin(), lastRegularIt);
-    lines_.offsets[3] = lines_.starts.size();
+    lines_.offsets[3] = std::distance(lines_.starts.begin(), lastSelectedIt);
+    lines_.offsets[4] = lines_.starts.size();
 }
 
 void ParallelCoordinates::drawAxis(size2_t size) {
@@ -529,7 +534,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
         axis.sliderWidget->setWidgetExtent(
             ivec2{handleSize_.get(), ap.second.y - ap.first.y + handleWidth});
 
-        if (brushingAndLinking_.isColumnSelected(i)) {
+        if (brushingAndLinking_.isSelected(static_cast<uint32_t>(i), BrushingTarget::Column)) {
             sliderWidgetRenderer_.setUIColor(axisSelectedColor_);
         } else if (axis.pcp->isFiltering()) {
             sliderWidgetRenderer_.setUIColor(handleFilteredColor_);
@@ -551,7 +556,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
                 return std::make_tuple(
                     utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
                     utilgl::BlendModeEquationState(GL_SRC_ALPHA, GL_ONE, GL_FUNC_ADD));
-            case BlendMode::Sutractive:
+            case BlendMode::Subtractive:
                 return std::make_tuple(
                     utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
                     utilgl::BlendModeEquationState(GL_SRC_ALPHA, GL_ONE, GL_FUNC_REVERSE_SUBTRACT));
@@ -574,7 +579,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     utilgl::bindAndSetUniforms(lineShader_, unit, colormap_.tf);
 
     bool enableBlending =
-        (blendMode_.get() == BlendMode::Additive || blendMode_.get() == BlendMode::Sutractive ||
+        (blendMode_.get() == BlendMode::Additive || blendMode_.get() == BlendMode::Subtractive ||
          blendMode_.get() == BlendMode::Regular);
     // pcp_common.glsl
     lineShader_.setUniform("spacing", vec4(marginsInternal_.second.y, marginsInternal_.second.x,
@@ -589,8 +594,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
 
     // pcp_lines.frag
     lineShader_.setUniform("additiveBlend", enableBlending);
-    lineShader_.setUniform("subtractiveBelnding", blendMode_.get() == BlendMode::Sutractive);
-    lineShader_.setUniform("fallofPower", falllofPower_.get());
+    lineShader_.setUniform("subtractiveBelnding", blendMode_.get() == BlendMode::Subtractive);
     lineShader_.setUniform("color", vec4{filterColor_.get(), filterAlpha_.get()});
     lineShader_.setUniform("selectColor", selectedLineColor_.get());
     lineShader_.setUniform("filterIntensity", filterIntensity_.get());
@@ -600,11 +604,14 @@ void ParallelCoordinates::drawLines(size2_t size) {
         utilgl::Enable<MeshGL> enable{meshGL};
         lines_.indices.getRepresentation<BufferGL>()->bind();
 
-        std::array<float, 3> width = {lineWidth_, lineWidth_, selectedLineWidth_};
-        std::array<float, 3> mixColor = {filterIntensity_, 0.0f, 0.0f};
-        std::array<float, 3> mixSelection = {0.0f, 0.0f,
-                                             selectedLineColorOverride_.isChecked() ? 1.0f : 0.0f};
-        std::array<float, 3> mixAlpha = {1.0, 0.0f, 0.0f};
+        std::array<float, 4> width = {lineWidth_, lineWidth_, selectedLineWidth_,
+                                      selectedLineWidth_};
+        std::array<float, 4> mixColor = {filterIntensity_, 0.0f, 0.0f, 0.0f};
+        std::array<float, 4> mixSelection = {
+            0.0f, 0.0f, selectedLineColorOverride_.isChecked() ? 1.0f : 0.0f, 0.8f};
+        std::array<float, 4> mixAlpha = {1.0, 0.0f, 0.0f, 0.0f};
+        std::array<float, 4> mixFallOfPower = {falllofPower_.get(), falllofPower_.get(),
+                                               falllofPower_.get(), 0.5f * falllofPower_.get()};
 
         for (size_t i = showFiltered_ ? 0 : 1; i < lines_.offsets.size() - 1; ++i) {
             auto begin = lines_.offsets[i];
@@ -615,20 +622,12 @@ void ParallelCoordinates::drawLines(size2_t size) {
             lineShader_.setUniform("mixColor", mixColor[i]);
             lineShader_.setUniform("mixAlpha", mixAlpha[i]);
             lineShader_.setUniform("mixSelection", mixSelection[i]);
+            lineShader_.setUniform("fallofPower", mixFallOfPower[i]);
 
             glMultiDrawElements(
                 GL_LINE_STRIP, lines_.sizes.data() + begin, GL_UNSIGNED_INT,
                 reinterpret_cast<const GLvoid* const*>(lines_.starts.data() + begin),
                 static_cast<GLsizei>(end - begin));
-        }
-
-        if (hoveredLine_ >= 0 && hoveredLine_ < static_cast<int>(lines_.sizes.size()) &&
-            !brushingAndLinking_.isFiltered(hoveredLine_)) {
-            lineShader_.setUniform("fallofPower", 0.5f * falllofPower_.get());
-
-            glDrawElements(GL_LINE_STRIP, lines_.sizes[hoveredLine_], GL_UNSIGNED_INT,
-                           reinterpret_cast<GLvoid*>(
-                               Lines::indexToOffset(hoveredLine_, lines_.sizes[hoveredLine_])));
         }
     }
     lineShader_.deactivate();
@@ -640,12 +639,11 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
             p->setToolTip(dataframe::createToolTipForRow(*df, p->getPickedId()));
-            hoveredLine_ = static_cast<int>(p->getPickedId());
+            brushingAndLinking_.highlight({static_cast<uint32_t>(p->getPickedId())});
             invalidate(InvalidationLevel::InvalidOutput);
-
         } else {
             p->setToolTip("");
-            hoveredLine_ = -1;
+            brushingAndLinking_.highlight({});
             invalidate(InvalidationLevel::InvalidOutput);
         }
     }
@@ -659,12 +657,8 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
         auto id = p->getPickedId();
 
         auto selection = brushingAndLinking_.getSelectedIndices();
-        if (brushingAndLinking_.isSelected(indexCol[id])) {
-            selection.erase(indexCol[id]);
-        } else {
-            selection.insert(indexCol[id]);
-        }
-        brushingAndLinking_.sendSelectionEvent(selection);
+        selection.flip(indexCol[id]);
+        brushingAndLinking_.select(selection);
 
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
@@ -686,6 +680,8 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         }
     };
 
+    const uint32_t index = static_cast<uint32_t>(pickedID);
+
     if (p->getHoverState() == PickingHoverState::Enter) {
         hoveredAxis_ = static_cast<int>(pickedID);
         showValuesAsToolTip(pickedID, pt);
@@ -702,16 +698,16 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         glm::length2(p->getDeltaPressedPosition()) < 0.01 && pt != PickType::Lower &&
         pt != PickType::Upper && !isDragging_) {
 
-        auto selection = brushingAndLinking_.getSelectedColumns();
-        if (brushingAndLinking_.isColumnSelected(pickedID)) {
-            selection.erase(pickedID);
+        auto selection = brushingAndLinking_.getSelectedIndices(BrushingTarget::Column);
+        if (brushingAndLinking_.isSelected(index, BrushingTarget::Column)) {
+            selection.remove(index);
         } else if (axisSelection_.get() == AxisSelection::Multiple) {
-            selection.insert(pickedID);
+            selection.add(index);
         } else if (axisSelection_.get() == AxisSelection::Single) {
             selection.clear();
-            selection.insert(pickedID);
+            selection.add(index);
         }
-        brushingAndLinking_.sendColumnSelectionEvent(selection);
+        brushingAndLinking_.select(selection, BrushingTarget::Column);
 
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
@@ -721,13 +717,9 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
 
         axes_[pickedID].pcp->invertRange.set(!axes_[pickedID].pcp->invertRange);
         // undo spurious axis selection caused by the single click event prior to the double click
-        auto selection = brushingAndLinking_.getSelectedColumns();
-        if (brushingAndLinking_.isColumnSelected(pickedID)) {
-            selection.erase(pickedID);
-        } else {
-            selection.insert(pickedID);
-        }
-        brushingAndLinking_.sendColumnSelectionEvent(selection);
+        auto selection = brushingAndLinking_.getSelectedIndices(BrushingTarget::Column);
+        selection.flip(index);
+        brushingAndLinking_.select(selection, BrushingTarget::Column);
 
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
@@ -799,18 +791,19 @@ void ParallelCoordinates::updateBrushing() {
 
     std::vector<bool> brushed(nRows, false);
 
-    for (auto& axis : axes_) {
-        auto& brushedAxis = axis.pcp->getBrushed();
-        for (size_t i = 0; i < nRows; ++i) {
-            brushed[i] = brushed[i] || brushedAxis[i];
+    auto brushAxis = [&](const std::vector<bool>& filtered, std::string_view axisName) {
+        BitSet b;
+        for (size_t i = 0; i < filtered.size(); ++i) {
+            if (filtered[i]) {
+                b.add(indexCol[i]);
+            }
         }
-    }
+        brushingAndLinking_.filter(axisName, b);
+    };
 
-    std::unordered_set<size_t> brushedID;
-    for (size_t i = 0; i < nRows; ++i) {
-        if (brushed[i]) brushedID.insert(indexCol[i]);
+    for (auto& axis : axes_) {
+        brushAxis(axis.pcp->getBrushed(), axis.pcp->getCaption());
     }
-    brushingAndLinking_.sendFilterEvent(brushedID);
 }
 
 std::pair<size2_t, size2_t> ParallelCoordinates::axisPos(size_t columnId) const {

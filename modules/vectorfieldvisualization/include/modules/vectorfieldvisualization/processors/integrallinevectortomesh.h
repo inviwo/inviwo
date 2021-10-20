@@ -123,8 +123,8 @@ private:
 
     FloatVec4Property selectedColor_;
 
-    bool isFiltered(const IntegralLine& line, size_t idx) const;
-    bool isSelected(const IntegralLine& line, size_t idx) const;
+    bool isFiltered(const IntegralLine& line, uint32_t idx) const;
+    bool isSelected(const IntegralLine& line, uint32_t idx) const;
 
     void updateOptions();
 };

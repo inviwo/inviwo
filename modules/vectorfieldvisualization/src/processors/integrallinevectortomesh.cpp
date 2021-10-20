@@ -131,7 +131,7 @@ const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{
     Tags::CPU,                              // Tags
 };
 
-bool IntegralLineVectorToMesh::isFiltered(const IntegralLine& line, size_t idx) const {
+bool IntegralLineVectorToMesh::isFiltered(const IntegralLine& line, uint32_t idx) const {
     switch (brushBy_.get()) {
         case BrushBy::LineIndex:
             return brushingList_.isFiltered(line.getIndex());
@@ -143,7 +143,7 @@ bool IntegralLineVectorToMesh::isFiltered(const IntegralLine& line, size_t idx) 
     }
 }
 
-bool IntegralLineVectorToMesh::isSelected(const IntegralLine& line, size_t idx) const {
+bool IntegralLineVectorToMesh::isSelected(const IntegralLine& line, uint32_t idx) const {
     switch (brushBy_.get()) {
         case BrushBy::LineIndex:
             return brushingList_.isSelected(line.getIndex());
@@ -244,7 +244,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
             double minT = std::numeric_limits<double>::max();
             double maxT = std::numeric_limits<double>::lowest();
 
-            size_t idx = 0;
+            uint32_t idx = 0;
             const auto data = lines_.getData();
             for (auto& line : *data) {
                 util::OnScopeExit incIdx([&idx]() { idx++; });
@@ -329,7 +329,7 @@ void IntegralLineVectorToMesh::process() {
 
     Output output = output_.get();
 
-    size_t lineIdx = 0;
+    uint32_t lineIdx = 0;
     const auto data = lines_.getData();
     for (auto& line : *data) {
         util::OnScopeExit incIdx([&lineIdx]() { lineIdx++; });
@@ -350,7 +350,7 @@ void IntegralLineVectorToMesh::process() {
             throw Exception("Unsupported output type", IVW_CONTEXT);
         }();
 
-        auto coloring = [&, this](auto sample, size_t lineIndex, size_t lineNumber) -> vec4 {
+        auto coloring = [&, this](auto sample, uint32_t lineIndex, uint32_t lineNumber) -> vec4 {
             if (constantColor || this->isSelected(line, lineIdx)) {
                 return selectedColor_.get();
             }

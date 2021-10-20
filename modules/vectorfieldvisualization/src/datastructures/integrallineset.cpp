@@ -67,19 +67,19 @@ void IntegralLineSet::push_back(const IntegralLine& line, SetIndex updateIndex) 
 
 void IntegralLineSet::push_back(const IntegralLine& line, size_t idx) {
     IntegralLine copy(line);
-    copy.setIndex(idx);
+    copy.setIndex(static_cast<uint32_t>(idx));
     lines_.push_back(std::move(copy));
 }
 
 void IntegralLineSet::push_back(IntegralLine&& line, SetIndex updateIndex) {
     if (updateIndex == SetIndex::Yes) {
-        line.setIndex(lines_.size());
+        line.setIndex(static_cast<uint32_t>(lines_.size()));
     }
     lines_.push_back(line);
 }
 
 void IntegralLineSet::push_back(IntegralLine&& line, size_t idx) {
-    line.setIndex(idx);
+    line.setIndex(static_cast<uint32_t>(idx));
     lines_.push_back(line);
 }
 

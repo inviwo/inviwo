@@ -159,8 +159,8 @@ public:
 
     std::function<double(size_t)> at = [](size_t) { return 0.0; };
 
-    size_t columnId() const { return columnId_; }
-    void setColumnId(size_t id) { columnId_ = id; }
+    uint32_t columnId() const { return columnId_; }
+    void setColumnId(uint32_t id) { columnId_ = id; }
 
     void setParallelCoordinates(ParallelCoordinates* pcp);
 
@@ -216,7 +216,7 @@ private:
     double p75_;
     double p100_;
 
-    size_t columnId_;
+    uint32_t columnId_;
     std::vector<bool> brushed_;
 };
 

@@ -55,22 +55,15 @@ public:
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
-
-    virtual void invokeEvent(Event* event) override;
-
     static const ProcessorInfo processorInfo_;
-
-    BrushingAndLinkingOutport& getOutport() { return outport_; }
 
 private:
     BrushingAndLinkingOutport outport_;
 
     ButtonProperty clearSelection_;
-    ButtonProperty clearFilter_;
+    ButtonProperty clearHighlight_;
     ButtonProperty clearCols_;
     ButtonProperty clearAll_;
-
-    std::shared_ptr<BrushingAndLinkingManager> manager_;
 };
 
 }  // namespace inviwo

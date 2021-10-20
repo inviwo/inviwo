@@ -30,38 +30,40 @@
 #pragma once
 
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/dispatcher.h>
 
 #include <unordered_map>
-#include <unordered_set>
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingManager;
 
-class IVW_MODULE_BRUSHINGANDLINKING_API IndexList {
+class IVW_MODULE_BRUSHINGANDLINKING_API IndexList : public Serializable {
 public:
     IndexList() = default;
+    virtual ~IndexList() = default;
 
-    size_t getSize() const;
-    bool has(size_t idx) const;
-
-    void set(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& incices);
-    void remove(const BrushingAndLinkingInport* src);
-
-    std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
-
-    void update();
+    size_t size() const;
     void clear();
-    const std::unordered_set<size_t>& getIndices() const { return indices_; }
+
+    void set(std::string_view src, const BitSet& indices);
+    bool contains(uint32_t idx) const;
+
+    const BitSet& getIndices() const;
+
+    bool removeSources(const std::vector<std::string>& sources);
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
-    std::unordered_map<const BrushingAndLinkingInport*, std::unordered_set<size_t>>
-        indicesBySource_;
-    std::unordered_set<size_t> indices_;
-    Dispatcher<void()> onUpdate_;
-};
+    void update() const;
 
-inline bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
+    using SourceIndexMap = std::unordered_map<std::string, BitSet>;
+    mutable SourceIndexMap indicesBySource_;
+    mutable BitSet indices_;
+
+    mutable bool indicesDirty_ = false;
+};
 
 }  // namespace inviwo
