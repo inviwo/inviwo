@@ -35,7 +35,7 @@
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/persistencediagramplotgl.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 #include <set>

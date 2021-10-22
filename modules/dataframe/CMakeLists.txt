@@ -25,7 +25,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/volumetodataframe.h
     include/inviwo/dataframe/properties/colormapproperty.h
     include/inviwo/dataframe/properties/dataframecolormapproperty.h
-    include/inviwo/dataframe/properties/dataframeproperty.h
+    include/inviwo/dataframe/properties/dataframecolumnproperty.h
     include/inviwo/dataframe/util/dataframeutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -51,7 +51,7 @@ set(SOURCE_FILES
     src/processors/volumetodataframe.cpp
     src/properties/colormapproperty.cpp
     src/properties/dataframecolormapproperty.cpp
-    src/properties/dataframeproperty.cpp
+    src/properties/dataframecolumnproperty.cpp
     src/util/dataframeutil.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

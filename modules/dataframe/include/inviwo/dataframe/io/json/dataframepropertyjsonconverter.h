@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
 #include <modules/json/io/json/optionpropertyjsonconverter.h>
 #include <nlohmann/json.hpp>
 

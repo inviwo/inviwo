@@ -35,7 +35,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
 #include <optional>
 
 namespace inviwo {

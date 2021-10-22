@@ -36,7 +36,7 @@
 #include <inviwo/core/properties/listproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
 
 namespace inviwo {
 

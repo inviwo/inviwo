@@ -29,7 +29,7 @@
 #pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
 #include <inviwo/dataframe/properties/colormapproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
