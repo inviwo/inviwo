@@ -555,9 +555,9 @@ auto make_sequence(const T& begin, const T& end, const T& inc = T{1}) -> sequenc
  *
  * }
  */
-template <typename T, typename... Ts>
+template <typename TIndex = size_t, typename T, typename... Ts>
 auto enumerate(T&& cont, Ts&&... conts) {
-    return zip(sequence<size_t>(0u, std::numeric_limits<size_t>::max(), 1u), std::forward<T>(cont),
+    return zip(sequence<TIndex>(0u, std::numeric_limits<TIndex>::max(), 1u), std::forward<T>(cont),
                std::forward<Ts>(conts)...);
 }
 
