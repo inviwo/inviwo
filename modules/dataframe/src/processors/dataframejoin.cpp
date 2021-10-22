@@ -64,10 +64,10 @@ DataFrameJoin::DataFrameJoin()
     , columnMatching_("columnMatching", "Match Columns",
                       {{"byname", "By Name", ColumnMatch::ByName},
                        {"ordered", "By Order", ColumnMatch::Ordered}})
-    , key_("key", "Key Column", inportLeft_, false)
-    , secondaryKeys_("secondaryKeys", "Secondary Key Columns",
-                     std::make_unique<DataFrameColumnProperty>("keyColumn2", "Key Column 2",
-                                                               inportLeft_, false)) {
+    , key_("key", "Key Column", inportLeft_)
+    , secondaryKeys_(
+          "secondaryKeys", "Secondary Key Columns",
+          std::make_unique<DataFrameColumnProperty>("keyColumn2", "Key Column 2", inportLeft_)) {
 
     addPort(inportLeft_);
     addPort(inportRight_);

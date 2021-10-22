@@ -57,10 +57,12 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     , backgroundPort_("background")
     , outport_("outport")
     , scatterPlot_(this)
-    , xAxis_("xAxis", "X-axis", dataFramePort_, false, 0)
-    , yAxis_("yAxis", "Y-axis", dataFramePort_, false, 2)
-    , colorCol_("colorCol", "Color column", dataFramePort_, true, 3)
-    , radiusCol_("radiusCol", "Radius column", dataFramePort_, true, 4) {
+    , xAxis_("xAxis", "X-axis", dataFramePort_, DataFrameColumnProperty::EmptySelection::No, 0)
+    , yAxis_("yAxis", "Y-axis", dataFramePort_, DataFrameColumnProperty::EmptySelection::No, 2)
+    , colorCol_("colorCol", "Color column", dataFramePort_,
+                DataFrameColumnProperty::EmptySelection::Yes, 3)
+    , radiusCol_("radiusCol", "Radius column", dataFramePort_,
+                 DataFrameColumnProperty::EmptySelection::Yes, 4) {
 
     addPort(dataFramePort_);
     addPort(brushingPort_).setOptional(true);

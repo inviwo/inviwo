@@ -52,11 +52,15 @@ VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
     , dataFrame_("seedPoints")
     , outport_("outport")
     , weighted_("weighted", "Weighted voronoi", false)
-    , iCol_{"iCol", "Segment Index Column", dataFrame_, false, 0}
-    , xCol_{"xCol", "X Coordinate Column", dataFrame_, false, 1}
-    , yCol_{"yCol", "Y Coordinate Column", dataFrame_, false, 2}
-    , zCol_{"zCol", "Z Coordinate Column", dataFrame_, false, 3}
-    , wCol_{"wCol", "Weight Column", dataFrame_, true, 4} {
+    , iCol_{"iCol", "Segment Index Column", dataFrame_, DataFrameColumnProperty::EmptySelection::No,
+            0}
+    , xCol_{"xCol", "X Coordinate Column", dataFrame_, DataFrameColumnProperty::EmptySelection::No,
+            1}
+    , yCol_{"yCol", "Y Coordinate Column", dataFrame_, DataFrameColumnProperty::EmptySelection::No,
+            2}
+    , zCol_{"zCol", "Z Coordinate Column", dataFrame_, DataFrameColumnProperty::EmptySelection::No,
+            3}
+    , wCol_{"wCol", "Weight Column", dataFrame_, DataFrameColumnProperty::EmptySelection::Yes, 4} {
 
     addPort(volume_);
     addPort(dataFrame_);

@@ -61,11 +61,11 @@ DataFrameColumnToColorVector::DataFrameColumnToColorVector()
 }
 
 void DataFrameColumnToColorVector::process() {
-    auto dataFrame = dataFrame_.getData();
+    auto buffer =
+        dataFrame_.getData()->getColumn(selectedColorAxis_.getSelectedValue())->getBuffer();
 
     colors_.setData(
-        selectedColorAxis_.getBuffer()
-            ->getRepresentation<BufferRAM>()
+        buffer->getRepresentation<BufferRAM>()
             ->dispatch<std::shared_ptr<std::vector<vec4>>, dispatching::filter::Scalars>(
                 [&](auto buf) {
                     auto colors = std::make_shared<std::vector<vec4>>();

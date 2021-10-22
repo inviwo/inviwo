@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/properties/dataframecolumnproperty.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
@@ -35,109 +36,107 @@ const std::string DataFrameColumnProperty::classIdentifier = "org.inviwo.DataFra
 std::string DataFrameColumnProperty::getClassIdentifier() const { return classIdentifier; }
 
 DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::string displayName,
-                                                 bool allowNone, size_t firstIndex)
+                                                 EmptySelection emptySelection, size_t defaultIndex)
     : OptionPropertyInt(identifier, displayName)
-    , dataframe_(nullptr)
-    , allowNone_(allowNone)
-    , firstIndex_(firstIndex) {
+    , emptySelection_(emptySelection)
+    , defaultIndex_(defaultIndex) {
+
     setSerializationMode(PropertySerializationMode::All);
+    if (emptySelection_ == EmptySelection::Yes) {
+        addOption("none", "None", -1);
+    }
 }
 
 DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::string displayName,
-                                                 DataInport<DataFrame>& port, bool allowNone,
-                                                 size_t firstIndex)
+                                                 DataFrameInport& port,
+                                                 EmptySelection emptySelection, size_t defaultIndex)
     : OptionPropertyInt(identifier, displayName)
-    , dataframe_(port.getData())
-    , allowNone_(allowNone)
-    , firstIndex_(firstIndex) {
+    , emptySelection_(emptySelection)
+    , defaultIndex_(defaultIndex) {
 
     setSerializationMode(PropertySerializationMode::All);
-
-    port.onChange([this, portPtr = &port]() {
-        if (portPtr->hasData()) {
-            setOptions(portPtr->getData());
-        }
-    });
+    setPort(port);
 }
 
 DataFrameColumnProperty::DataFrameColumnProperty(const DataFrameColumnProperty& rhs)
     : OptionPropertyInt(rhs)
-    , dataframe_{nullptr}
-    , allowNone_{rhs.allowNone_}
-    , firstIndex_{rhs.firstIndex_} {}
+    , inport_(rhs.inport_)
+    , emptySelection_(rhs.emptySelection_)
+    , defaultIndex_(rhs.defaultIndex_) {
+
+    if (inport_) {
+        onChangeCallback_ = inport_->onChangeScoped([&]() {
+            if (inport_->hasData()) {
+                setOptions(inport_->getData());
+            }
+        });
+    }
+}
 
 DataFrameColumnProperty* DataFrameColumnProperty::clone() const {
     return new DataFrameColumnProperty(*this);
 }
 
+void DataFrameColumnProperty::setPort(DataFrameInport& inport) {
+    inport_ = &inport;
+
+    onChangeCallback_ = inport_->onChangeScoped([&]() {
+        if (inport_->hasData()) {
+            setOptions(inport_->getData());
+        }
+    });
+    setOptions(inport_->getData());
+}
+
 void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> dataframe) {
     if (!dataframe || dataframe->getNumberOfColumns() <= 1) return;
-    dataframe_ = dataframe;
-
-    bool wasEmpty = options_.empty();
 
     std::vector<OptionPropertyIntOption> options;
-    if (allowNone_) {
+    if (emptySelection_ == EmptySelection::Yes) {
         options.emplace_back("none", "None", -1);
     }
 
-    int idx = 0;
-    for (const auto& col : *dataframe) {
-        auto header = col->getHeader();
-        auto identifier = header;
-        util::erase_remove_if(identifier, [](char cc) {
+    auto createIdentifier = [](std::string str) {
+        util::erase_remove_if(str, [](char cc) {
             return !(cc >= -1) || !(std::isalnum(cc) || cc == '_' || cc == '-');
         });
-        options.emplace_back(identifier, header, idx);
-        idx++;
+        return str;
+    };
+
+    for (const auto&& [idx, col] : util::enumerate<int>(*dataframe)) {
+        const auto header = col->getHeader();
+        options.emplace_back(createIdentifier(header), header, idx);
     }
 
+    const bool wasEmpty =
+        options_.empty() || ((options_.size() == 1) && (options_[0].id_ == "none"));
     replaceOptions(std::move(options));
     if (wasEmpty) {
-        setSelectedIndex(firstIndex_);
+        setSelectedIndex(defaultIndex_);
     }
     setCurrentStateAsDefault();
 }
 
-std::string DataFrameColumnProperty::getColumnHeader() const {
-    if (auto col = getColumn(); col) {
-        return col->getHeader();
-    }
-    return {};
-}
+void DataFrameColumnProperty::setDefaultIndex(int index) { defaultIndex_ = index; }
 
-std::shared_ptr<const Column> DataFrameColumnProperty::getColumn() const {
-    if (!dataframe_) {
-        return nullptr;
+const std::string& DataFrameColumnProperty::getColumnHeader() const {
+    if (getSelectedIndex() < 0) {
+        static std::string empty = {};
+        return empty;
     }
-    auto id = get();
-    if (id == -1) {  // None is selected
-        return nullptr;
-    };
-    return dataframe_->getColumn(id);
-}
-
-std::shared_ptr<const BufferBase> DataFrameColumnProperty::getBuffer() const {
-    if (auto col = getColumn()) {
-        return col->getBuffer();
-    }
-    return nullptr;
+    return getSelectedDisplayName();
 }
 
 void DataFrameColumnProperty::set(const Property* srcProperty) {
     if (auto src = dynamic_cast<const DataFrameColumnProperty*>(srcProperty)) {
-        if (src->options_.size() == 0) return;
+        if ((src->options_.size() == 0) || (options_.size() == 0)) {
+            return;
+        }
 
-        if (options_.size() == 0) return;
-
-        auto i = src->getSelectedValue();
-        if (i == -1 && !allowNone_) {
+        if ((src->getSelectedValue() < 0) && (emptySelection_ == EmptySelection::No)) {
             // Do Nothing
         } else {
-            const auto id = src->getSelectedIdentifier();
-            if (id != getSelectedIdentifier()) {
-                setSelectedIdentifier(id);
-            }
+            setSelectedIdentifier(src->getSelectedIdentifier());
         }
     } else {
         OptionPropertyInt::set(srcProperty);

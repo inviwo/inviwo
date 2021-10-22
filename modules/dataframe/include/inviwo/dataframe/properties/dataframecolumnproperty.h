@@ -37,36 +37,69 @@ namespace inviwo {
 
 class IVW_MODULE_DATAFRAME_API DataFrameColumnProperty : public OptionPropertyInt {
 public:
+    enum class EmptySelection { No, Yes };
+    enum class FlattenedView { No, Yes };
+
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    DataFrameColumnProperty(std::string identifier, std::string displayName, bool allowNone = false,
-                            size_t firstIndex = 0);
+    /**
+     * Constructor, no options will be created
+     *
+     * @param emptySelection   if equal to EmptySelection::Yes, "None" will be added as option
+     * @param defaultIndex     index of the selected column when the property options are updated
+     */
     DataFrameColumnProperty(std::string identifier, std::string displayName,
-                            DataInport<DataFrame>& port, bool allowNone = false,
-                            size_t firstIndex = 0);
+                            EmptySelection emptySelection = EmptySelection::No,
+                            size_t defaultIndex = 0);
+    /**
+     * Constructor using an inport \p port to popuplate the options. The onChange event of \p port
+     * will trigger an update of the options.
+     *
+     * @param port
+     * @param emptySelection  if equal to EmptySelection::Yes, "None" will be added as option
+     * @param defaultIndex    index of the selected column when the property options are updated
+     */
+    DataFrameColumnProperty(std::string identifier, std::string displayName, DataFrameInport& port,
+                            EmptySelection emptySelection = EmptySelection::No,
+                            size_t defaultIndex = 0);
 
     DataFrameColumnProperty(const DataFrameColumnProperty& rhs);
     virtual DataFrameColumnProperty* clone() const override;
 
     virtual ~DataFrameColumnProperty() = default;
 
+    /**
+     * populate the options with the data owned by \p port. The onChange event of \p port
+     * will trigger an update of the options.
+     */
+    void setPort(DataFrameInport& port);
+    /**
+     * update the options based on the columns in \p dataframe
+     */
     void setOptions(std::shared_ptr<const DataFrame> dataframe);
 
-    std::string getColumnHeader() const;
-    std::shared_ptr<const Column> getColumn() const;
-    std::shared_ptr<const BufferBase> getBuffer() const;
+    void setDefaultIndex(int index);
 
-    virtual std::string getClassIdentifierForWidget() const override {
-        return TemplateOptionProperty<int>::getClassIdentifier();
-    }
+    /**
+     * return the header of the currently selected column
+     *
+     * @return column header. If "None" is selected, an empty string is returned
+     */
+    const std::string& getColumnHeader() const;
+
+    // virtual std::string getClassIdentifierForWidget() const override {
+    //    return TemplateOptionProperty<int>::getClassIdentifierForWidget();
+    //}
 
     virtual void set(const Property* p) override;
 
 private:
-    std::shared_ptr<const DataFrame> dataframe_;
-    bool allowNone_;
-    size_t firstIndex_;
+    DataFrameInport* inport_ = nullptr;
+    const EmptySelection emptySelection_;
+    size_t defaultIndex_;
+
+    std::shared_ptr<std::function<void()>> onChangeCallback_;
 };
 
 }  // namespace inviwo
