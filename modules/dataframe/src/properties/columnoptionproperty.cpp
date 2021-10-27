@@ -136,7 +136,7 @@ void ColumnOptionProperty::set(const Property* srcProperty) {
             return;
         }
 
-        if ((src->getSelectedValue() < 0) && (noneOption_ == AddNoneOption::No)) {
+        if (src->isNoneSelected() && (noneOption_ == AddNoneOption::No)) {
             // Do Nothing
         } else {
             setSelectedIdentifier(src->getSelectedIdentifier());
