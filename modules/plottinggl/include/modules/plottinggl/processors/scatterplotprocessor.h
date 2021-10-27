@@ -34,7 +34,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>
-#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
@@ -72,10 +72,10 @@ private:
 
     ScatterPlotGL scatterPlot_;
 
-    DataFrameColumnProperty xAxis_;
-    DataFrameColumnProperty yAxis_;
-    DataFrameColumnProperty colorCol_;
-    DataFrameColumnProperty radiusCol_;
+    ColumnOptionProperty xAxis_;
+    ColumnOptionProperty yAxis_;
+    ColumnOptionProperty colorCol_;
+    ColumnOptionProperty radiusCol_;
 
     void onXAxisChange();
     void onYAxisChange();

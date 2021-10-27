@@ -50,7 +50,7 @@
 #include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>
 
 #include <modules/plotting/properties/categoricalaxisproperty.h>
-#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <inviwo/dataframe/properties/dataframecolormapproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
 

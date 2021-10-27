@@ -27,99 +27,100 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/utilities.h>
 
 namespace inviwo {
 
-const std::string DataFrameColumnProperty::classIdentifier = "org.inviwo.DataFrameColumnProperty";
-std::string DataFrameColumnProperty::getClassIdentifier() const { return classIdentifier; }
+const std::string ColumnOptionProperty::classIdentifier = "org.inviwo.DataFrameColumnProperty";
+std::string ColumnOptionProperty::getClassIdentifier() const { return classIdentifier; }
 
-DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::string displayName,
-                                                 EmptySelection emptySelection, size_t defaultIndex)
-    : OptionPropertyInt(identifier, displayName)
-    , emptySelection_(emptySelection)
-    , defaultIndex_(defaultIndex) {
+ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier,
+                                           std::string_view displayName,
+                                           AddNoneOption emptySelection, int defaultIndex)
+    : OptionPropertyInt(std::string{identifier}, std::string{displayName})
+    , noneOption_(emptySelection)
+    , defaultColumnIndex_(defaultIndex) {
 
     setSerializationMode(PropertySerializationMode::All);
-    if (emptySelection_ == EmptySelection::Yes) {
+    if (noneOption_ == AddNoneOption::Yes) {
         addOption("none", "None", -1);
     }
 }
 
-DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::string displayName,
-                                                 DataFrameInport& port,
-                                                 EmptySelection emptySelection, size_t defaultIndex)
-    : OptionPropertyInt(identifier, displayName)
-    , emptySelection_(emptySelection)
-    , defaultIndex_(defaultIndex) {
+ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier,
+                                           std::string_view displayName, DataFrameInport& port,
+                                           AddNoneOption emptySelection, int defaultIndex)
+    : OptionPropertyInt(std::string{identifier}, std::string{displayName})
+    , noneOption_(emptySelection)
+    , defaultColumnIndex_(defaultIndex) {
 
     setSerializationMode(PropertySerializationMode::All);
     setPort(port);
 }
 
-DataFrameColumnProperty::DataFrameColumnProperty(const DataFrameColumnProperty& rhs)
+ColumnOptionProperty::ColumnOptionProperty(const ColumnOptionProperty& rhs)
     : OptionPropertyInt(rhs)
-    , inport_(rhs.inport_)
-    , emptySelection_(rhs.emptySelection_)
-    , defaultIndex_(rhs.defaultIndex_) {
+    , noneOption_(rhs.noneOption_)
+    , defaultColumnIndex_(rhs.defaultColumnIndex_) {
 
-    if (inport_) {
-        onChangeCallback_ = inport_->onChangeScoped([&]() {
-            if (inport_->hasData()) {
-                setOptions(inport_->getData());
-            }
-        });
+    if (rhs.inport_) {
+        setPort(*rhs.inport_);
     }
 }
 
-DataFrameColumnProperty* DataFrameColumnProperty::clone() const {
-    return new DataFrameColumnProperty(*this);
+ColumnOptionProperty* ColumnOptionProperty::clone() const {
+    return new ColumnOptionProperty(*this);
 }
 
-void DataFrameColumnProperty::setPort(DataFrameInport& inport) {
+void ColumnOptionProperty::setPort(DataFrameInport& inport) {
     inport_ = &inport;
 
     onChangeCallback_ = inport_->onChangeScoped([&]() {
         if (inport_->hasData()) {
-            setOptions(inport_->getData());
+            setOptions(*inport_->getData());
         }
     });
-    setOptions(inport_->getData());
+    if (inport_->hasData()) {
+        setOptions(*inport_->getData());
+    }
 }
 
-void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> dataframe) {
-    if (!dataframe || dataframe->getNumberOfColumns() <= 1) return;
+void ColumnOptionProperty::setOptions(const DataFrame& dataframe) {
+    if (dataframe.getNumberOfColumns() <= 1) return;
 
     std::vector<OptionPropertyIntOption> options;
-    if (emptySelection_ == EmptySelection::Yes) {
+    if (noneOption_ == AddNoneOption::Yes) {
         options.emplace_back("none", "None", -1);
     }
 
-    auto createIdentifier = [](std::string str) {
-        util::erase_remove_if(str, [](char cc) {
-            return !(cc >= -1) || !(std::isalnum(cc) || cc == '_' || cc == '-');
-        });
-        return str;
-    };
-
-    for (const auto&& [idx, col] : util::enumerate<int>(*dataframe)) {
+    for (const auto&& [idx, col] : util::enumerate<int>(dataframe)) {
         const auto header = col->getHeader();
-        options.emplace_back(createIdentifier(header), header, idx);
+        options.emplace_back(util::stripIdentifier(header), header, idx);
     }
 
     const bool wasEmpty =
         options_.empty() || ((options_.size() == 1) && (options_[0].id_ == "none"));
     replaceOptions(std::move(options));
     if (wasEmpty) {
-        setSelectedIndex(defaultIndex_);
+        setSelectedIndex(defaultColumnIndex_);
     }
     setCurrentStateAsDefault();
 }
 
-void DataFrameColumnProperty::setDefaultIndex(int index) { defaultIndex_ = index; }
+void ColumnOptionProperty::setDefaultSelectedIndex(int index) {
+    if (index < 0) {
+        if (noneOption_ == AddNoneOption::Yes) {
+            index = -1;
+        } else {
+            index = 0;
+        }
+    }
+    defaultColumnIndex_ = index;
+}
 
-const std::string& DataFrameColumnProperty::getColumnHeader() const {
+const std::string& ColumnOptionProperty::getSelectedColumnHeader() const {
     if (getSelectedIndex() < 0) {
         static std::string empty = {};
         return empty;
@@ -127,13 +128,15 @@ const std::string& DataFrameColumnProperty::getColumnHeader() const {
     return getSelectedDisplayName();
 }
 
-void DataFrameColumnProperty::set(const Property* srcProperty) {
-    if (auto src = dynamic_cast<const DataFrameColumnProperty*>(srcProperty)) {
+bool ColumnOptionProperty::isNoneSelected() const { return size() && (getSelectedValue() == -1); }
+
+void ColumnOptionProperty::set(const Property* srcProperty) {
+    if (auto src = dynamic_cast<const ColumnOptionProperty*>(srcProperty)) {
         if ((src->options_.size() == 0) || (options_.size() == 0)) {
             return;
         }
 
-        if ((src->getSelectedValue() < 0) && (emptySelection_ == EmptySelection::No)) {
+        if ((src->getSelectedValue() < 0) && (noneOption_ == AddNoneOption::No)) {
             // Do Nothing
         } else {
             setSelectedIdentifier(src->getSelectedIdentifier());

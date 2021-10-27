@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
-using json = nlohmann::json;
+#include <inviwo/dataframe/properties/optionconverter.h>
 
-namespace inviwo {
-
-void to_json(json& j, const ColumnOptionProperty& p) {
-    to_json(j, static_cast<const OptionPropertyInt&>(p));
-}
-
-void from_json(const json& j, ColumnOptionProperty& p) {
-    from_json(j, static_cast<OptionPropertyInt&>(p));
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

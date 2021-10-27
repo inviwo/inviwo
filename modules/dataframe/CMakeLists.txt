@@ -24,8 +24,9 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/volumesequencetodataframe.h
     include/inviwo/dataframe/processors/volumetodataframe.h
     include/inviwo/dataframe/properties/colormapproperty.h
+    include/inviwo/dataframe/properties/columnoptionproperty.h
     include/inviwo/dataframe/properties/dataframecolormapproperty.h
-    include/inviwo/dataframe/properties/dataframecolumnproperty.h
+    include/inviwo/dataframe/properties/optionconverter.h
     include/inviwo/dataframe/util/dataframeutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -50,8 +51,9 @@ set(SOURCE_FILES
     src/processors/volumesequencetodataframe.cpp
     src/processors/volumetodataframe.cpp
     src/properties/colormapproperty.cpp
+    src/properties/columnoptionproperty.cpp
     src/properties/dataframecolormapproperty.cpp
-    src/properties/dataframecolumnproperty.cpp
+    src/properties/optionconverter.cpp
     src/util/dataframeutil.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

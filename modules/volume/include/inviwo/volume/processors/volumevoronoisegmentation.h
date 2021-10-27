@@ -35,7 +35,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <optional>
 
 namespace inviwo {
@@ -78,11 +78,11 @@ private:
     VolumeOutport outport_;
     BoolProperty weighted_;
 
-    DataFrameColumnProperty iCol_;
-    DataFrameColumnProperty xCol_;
-    DataFrameColumnProperty yCol_;
-    DataFrameColumnProperty zCol_;
-    DataFrameColumnProperty wCol_;
+    ColumnOptionProperty iCol_;
+    ColumnOptionProperty xCol_;
+    ColumnOptionProperty yCol_;
+    ColumnOptionProperty zCol_;
+    ColumnOptionProperty wCol_;
 };
 
 }  // namespace inviwo

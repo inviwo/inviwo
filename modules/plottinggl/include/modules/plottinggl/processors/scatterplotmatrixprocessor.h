@@ -40,7 +40,7 @@
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>
-#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>
@@ -86,10 +86,10 @@ private:
     size_t numParams_;
 
     ScatterPlotGL::Properties scatterPlotproperties_;
-    DataFrameColumnProperty color_;
+    ColumnOptionProperty color_;
 
-    DataFrameColumnProperty selectedX_;
-    DataFrameColumnProperty selectedY_;
+    ColumnOptionProperty selectedX_;
+    ColumnOptionProperty selectedY_;
 
     CompositeProperty labels_;
     FloatVec4Property fontColor_;

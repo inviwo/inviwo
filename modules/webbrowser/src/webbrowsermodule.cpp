@@ -43,7 +43,7 @@
 #include <modules/json/io/json/templatepropertyjsonconverter.h>
 
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
-#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -128,7 +128,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     registerPropertyWidgetCEF<PropertyWidgetCEF, DirectoryProperty>();
     registerPropertyWidgetCEF<PropertyWidgetCEF, StringProperty>();
 
-    registerPropertyWidgetCEF<PropertyWidgetCEF, DataFrameColumnProperty>();
+    registerPropertyWidgetCEF<PropertyWidgetCEF, ColumnOptionProperty>();
 
     // Register ordinal property widgets
     using OrdinalTypes =

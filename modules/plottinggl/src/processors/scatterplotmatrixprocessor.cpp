@@ -59,10 +59,9 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , outport_("outport")
     , numParams_(0)
     , scatterPlotproperties_("scatterPlotproperties", "Properties")
-    , color_("colorCol", "Color column", dataFrame_, DataFrameColumnProperty::EmptySelection::Yes,
-             3)
-    , selectedX_("selectedX", "Select X", dataFrame_, DataFrameColumnProperty::EmptySelection::Yes)
-    , selectedY_("selectedY", "Select Y", dataFrame_, DataFrameColumnProperty::EmptySelection::Yes)
+    , color_("colorCol", "Color column", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes, 3)
+    , selectedX_("selectedX", "Select X", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes)
+    , selectedY_("selectedY", "Select Y", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes)
     , labels_("labels", "Labels")
     , fontColor_("fontColor", "Font Color", vec4(0, 0, 0, 1))
     , fontFace_("fontFace", "Font Face")
@@ -115,12 +114,14 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     addProperty(mouseEvent_);
 
     color_.onChange([&]() {
-        auto buf = dataFrame_.getData()->getColumn(color_.getSelectedValue())->getBuffer();
-        for (auto& p : plots_) {
-            p->setColorData(buf);
+        if (dataFrame_.hasData()) {
+            auto buf = dataFrame_.getData()->getColumn(color_.getSelectedValue())->getBuffer();
+            for (auto& p : plots_) {
+                p->setColorData(buf);
+            }
+            scatterPlotproperties_.tf_.setVisible(buf != nullptr);
+            scatterPlotproperties_.color_.setVisible(buf == nullptr);
         }
-        scatterPlotproperties_.tf_.setVisible(buf != nullptr);
-        scatterPlotproperties_.color_.setVisible(buf == nullptr);
     });
 
     correlectionTF_.get().clear();

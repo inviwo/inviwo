@@ -39,6 +39,8 @@
 #include <inviwo/dataframe/processors/volumetodataframe.h>
 #include <inviwo/dataframe/processors/volumesequencetodataframe.h>
 #include <inviwo/dataframe/properties/colormapproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <inviwo/dataframe/properties/optionconverter.h>
 
 #include <inviwo/dataframe/io/csvreader.h>
 #include <inviwo/dataframe/io/jsonreader.h>
@@ -48,6 +50,23 @@
 #include <modules/json/jsonmodule.h>
 
 namespace inviwo {
+
+enum class OptionRegEnumInt : int {};
+enum class OptionRegEnumUInt : unsigned int {};
+
+struct ColumnOptionConverterRegFunctor {
+    template <typename T>
+    auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
+        reg(std::make_unique<ColumnOptionToOptionConverter<TemplateOptionProperty<T>>>());
+    }
+};
+
+struct OptionColumnConverterRegFunctor {
+    template <typename T>
+    auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
+        reg(std::make_unique<OptionToColumnOptionConverter<TemplateOptionProperty<T>>>());
+    }
+};
 
 DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "DataFrame") {
     // Register objects that can be shared with the rest of inviwo here:
@@ -66,15 +85,30 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     registerDefaultsForDataType<DataFrame>();
     // Properties
     registerProperty<ColormapProperty>();
-    registerProperty<DataFrameColumnProperty>();
+    registerProperty<ColumnOptionProperty>();
 
     // Readers and writes
     registerDataReader(std::make_unique<CSVReader>());
     registerDataReader(std::make_unique<JSONDataFrameReader>());
 
     // Data converters
-    registerPropertyConverter(std::make_unique<OptionToStringConverter<DataFrameColumnProperty>>());
-    app->getModuleByType<JSONModule>()->registerPropertyJSONConverter<DataFrameColumnProperty>();
+    registerPropertyConverter(std::make_unique<OptionToStringConverter<ColumnOptionProperty>>());
+    app->getModuleByType<JSONModule>()->registerPropertyJSONConverter<ColumnOptionProperty>();
+
+    // We create a std::function to register the created converter since the registration function
+    // is protected in the inviwo module
+    std::function<void(std::unique_ptr<PropertyConverter>)> registerPC =
+        [this](std::unique_ptr<PropertyConverter> propertyConverter) {
+            InviwoModule::registerPropertyConverter(std::move(propertyConverter));
+        };
+
+    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
+    util::for_each_type<OptionTypes>{}(ColumnOptionConverterRegFunctor{}, registerPC);
+    util::for_each_type<OptionTypes>{}(OptionColumnConverterRegFunctor{}, registerPC);
+
+    using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
+    util::for_each_type<OptionEnumTypes>{}(ColumnOptionConverterRegFunctor{}, registerPC);
+    util::for_each_type<OptionEnumTypes>{}(OptionColumnConverterRegFunctor{}, registerPC);
 }
 
 }  // namespace inviwo

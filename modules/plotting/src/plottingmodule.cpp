@@ -35,26 +35,8 @@
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/plottextproperty.h>
 #include <modules/plotting/properties/tickproperty.h>
-#include <modules/plotting/properties/optionconverter.h>
 
 namespace inviwo {
-
-enum class OptionRegEnumInt : int {};
-enum class OptionRegEnumUInt : unsigned int {};
-
-struct DataFrameColumnOptionConverterRegFunctor {
-    template <typename T>
-    auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(std::make_unique<DataFrameColumnToOptionConverter<TemplateOptionProperty<T>>>());
-    }
-};
-
-struct OptionDataFrameColumnConverterRegFunctor {
-    template <typename T>
-    auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(std::make_unique<OptionToDataFrameColumnConverter<TemplateOptionProperty<T>>>());
-    }
-};
 
 PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plotting") {
 
@@ -67,21 +49,6 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::MinorTickProperty>();
     registerProperty<plot::PlotTextProperty>();
     registerProperty<plot::TickProperty>();
-
-    // We create a std::function to register the created converter since the registration function
-    // is protected in the inviwo module
-    std::function<void(std::unique_ptr<PropertyConverter>)> registerPC =
-        [this](std::unique_ptr<PropertyConverter> propertyConverter) {
-            InviwoModule::registerPropertyConverter(std::move(propertyConverter));
-        };
-
-    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
-    util::for_each_type<OptionTypes>{}(DataFrameColumnOptionConverterRegFunctor{}, registerPC);
-    util::for_each_type<OptionTypes>{}(OptionDataFrameColumnConverterRegFunctor{}, registerPC);
-
-    using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
-    util::for_each_type<OptionEnumTypes>{}(DataFrameColumnOptionConverterRegFunctor{}, registerPC);
-    util::for_each_type<OptionEnumTypes>{}(OptionDataFrameColumnConverterRegFunctor{}, registerPC);
 }
 
 int PlottingModule::getVersion() const { return 1; }

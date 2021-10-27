@@ -29,27 +29,27 @@
 
 #pragma once
 
-#include <inviwo/dataframe/properties/dataframecolumnproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <modules/json/io/json/optionpropertyjsonconverter.h>
 #include <nlohmann/json.hpp>
 
 namespace inviwo {
 
 /**
- * Converts an DataFrameColumnProperty to a JSON object.
+ * Converts an ColumnOptionProperty to a JSON object.
  * Produces layout according to the members of TemplateOptionProperty:
  * { {"value": val}, {"selectedIndex": selectedIndex},
  *   {"options": [OptionPropertyOption ... ]}
  * }
- * @see DataFrameColumnProperty
+ * @see ColumnOptionProperty
  *
  * Usage example:
  * \code{.cpp}
- * DataFrameColumnProperty p;
+ * ColumnOptionProperty p;
  * json j = p;
  * \endcode
  */
-IVW_MODULE_DATAFRAME_API void to_json(nlohmann::json& j, const DataFrameColumnProperty& p);
+IVW_MODULE_DATAFRAME_API void to_json(nlohmann::json& j, const ColumnOptionProperty& p);
 
 /**
  * Converts a JSON object to an TemplateOptionProperty.
@@ -64,6 +64,6 @@ IVW_MODULE_DATAFRAME_API void to_json(nlohmann::json& j, const DataFrameColumnPr
  * auto p = j.get<TemplateOptionProperty<double>>();
  * \endcode
  */
-IVW_MODULE_DATAFRAME_API void from_json(const nlohmann::json& j, DataFrameColumnProperty& p);
+IVW_MODULE_DATAFRAME_API void from_json(const nlohmann::json& j, ColumnOptionProperty& p);
 
 }  // namespace inviwo

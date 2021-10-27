@@ -56,10 +56,10 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     , backgroundPort_("background")
     , outport_("outport")
     , persistenceDiagramPlot_(this)
-    , xAxis_("xAxis", "X-axis", dataFrame_, DataFrameColumnProperty::EmptySelection::No, 1)
-    , yAxis_("yAxis", "Y-axis", dataFrame_, DataFrameColumnProperty::EmptySelection::No, 2)
-    , colorCol_("colorCol", "Color column", dataFrame_,
-                DataFrameColumnProperty::EmptySelection::Yes, 3) {
+    , xAxis_("xAxis", "X-axis", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 1)
+    , yAxis_("yAxis", "Y-axis", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2)
+    , colorCol_("colorCol", "Color column", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes,
+                3) {
 
     addPort(dataFrame_);
     addPort(brushingPort_);
