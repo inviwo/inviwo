@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/metadata/metadataowner.h>
 
 #include <inviwo/dataframe/datastructures/datapoint.h>
 
@@ -55,7 +56,7 @@ public:
 /**
  * @brief pure interface for representing a data column, i.e. a Buffer with a name
  */
-class IVW_MODULE_DATAFRAME_API Column {
+class IVW_MODULE_DATAFRAME_API Column : public MetaDataOwner {
 public:
     virtual ~Column() = default;
 

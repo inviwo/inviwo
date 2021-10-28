@@ -34,12 +34,15 @@
 #include <inviwo/dataframe/processors/dataframejoin.h>
 #include <inviwo/dataframe/processors/dataframesource.h>
 #include <inviwo/dataframe/processors/dataframeexporter.h>
+#include <inviwo/dataframe/processors/dataframemetadata.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>
 #include <inviwo/dataframe/processors/syntheticdataframe.h>
 #include <inviwo/dataframe/processors/volumetodataframe.h>
 #include <inviwo/dataframe/processors/volumesequencetodataframe.h>
 #include <inviwo/dataframe/properties/colormapproperty.h>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <inviwo/dataframe/properties/columnmetadataproperty.h>
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
 #include <inviwo/dataframe/properties/optionconverter.h>
 
 #include <inviwo/dataframe/io/csvreader.h>
@@ -77,6 +80,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     registerProcessor<DataFrameSource>();
     registerProcessor<DataFrameExporter>();
     registerProcessor<DataFrameFloat32Converter>();
+    registerProcessor<DataFrameMetaData>();
     registerProcessor<ImageToDataFrame>();
     registerProcessor<SyntheticDataFrame>();
     registerProcessor<VolumeToDataFrame>();
@@ -86,6 +90,8 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     // Properties
     registerProperty<ColormapProperty>();
     registerProperty<ColumnOptionProperty>();
+    registerProperty<ColumnMetaDataProperty>();
+    registerProperty<ColumnMetaDataListProperty>();
 
     // Readers and writes
     registerDataReader(std::make_unique<CSVReader>());
