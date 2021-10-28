@@ -18,6 +18,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/dataframeexporter.h
     include/inviwo/dataframe/processors/dataframefloat32converter.h
     include/inviwo/dataframe/processors/dataframejoin.h
+    include/inviwo/dataframe/processors/dataframemetadata.h
     include/inviwo/dataframe/processors/dataframesource.h
     include/inviwo/dataframe/processors/imagetodataframe.h
     include/inviwo/dataframe/processors/syntheticdataframe.h
@@ -47,6 +48,7 @@ set(SOURCE_FILES
     src/processors/dataframeexporter.cpp
     src/processors/dataframefloat32converter.cpp
     src/processors/dataframejoin.cpp
+    src/processors/dataframemetadata.cpp
     src/processors/dataframesource.cpp
     src/processors/imagetodataframe.cpp
     src/processors/syntheticdataframe.cpp
