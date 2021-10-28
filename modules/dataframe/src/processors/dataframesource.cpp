@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/processors/dataframesource.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
@@ -42,8 +43,19 @@ const ProcessorInfo DataFrameSource::processorInfo_{
 const ProcessorInfo DataFrameSource::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameSource::DataFrameSource(InviwoApplication* app, const std::string& file)
-    : DataSource<DataFrame, DataOutport<DataFrame>>(app, file, "spreadsheet") {
-    DataSource<DataFrame, DataOutport<DataFrame>>::file_.setDisplayName("Spreadsheet file");
+    : DataSource<DataFrame, DataFrameOutport>(app, file, "spreadsheet")
+    , columns_("columns", "Column MetaData") {
+
+    DataSource<DataFrame, DataFrameOutport>::file_.setDisplayName("Spreadsheet file");
+}
+
+void DataFrameSource::process() {
+    DataSource<DataFrame, DataFrameOutport>::process();
+
+    columns_.updateColumnProperties(*loadedData_);
+    for (auto&& [index, col] : util::enumerate(*loadedData_)) {
+        col->copyMetaDataFrom(columns_.getColumnMetaData(index));
+    }
 }
 
 }  // namespace inviwo

@@ -69,12 +69,18 @@ public:
     virtual ~CSVReader() = default;
 
     void setDelimiters(const std::string& delim);
+    const std::string& getDelimiters() const;
+
     void setFirstRowHeader(bool hasHeader);
+    bool hasFirstRowHeader() const;
+
     /**
      * sets the precision for columns containing floating point values. If \p doubleprec is true,
      * values are stored as double. Otherwise float32 is used.
      */
     void setEnableDoublePrecision(bool doubleprec);
+    bool hasDoublePrecision() const;
+
     using DataReaderType<DataFrame>::readData;
 
     /**
@@ -101,6 +107,9 @@ public:
      *   the stream
      */
     std::shared_ptr<DataFrame> readData(std::istream& stream) const;
+
+    virtual bool setOption(std::string_view key, std::any value) override;
+    virtual std::any getOption(std::string_view key) override;
 
 private:
     std::string delimiters_;

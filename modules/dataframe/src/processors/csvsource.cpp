@@ -31,6 +31,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/util/zip.h>
 
 #include <inviwo/dataframe/io/csvreader.h>
 
@@ -53,11 +54,13 @@ CSVSource::CSVSource(const std::string& file)
     , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
     , delimiters_("delimiters", "Delimiters", ",")
     , doublePrecision_("doublePrecision", "Double Precision", false)
-    , reloadData_("reloadData", "Reload Data") {
+    , reloadData_("reloadData", "Reload Data")
+    , columns_("columns", "Column MetaData") {
 
     addPort(data_);
 
-    addProperties(inputFile_, firstRowIsHeaders_, delimiters_, doublePrecision_, reloadData_);
+    addProperties(inputFile_, firstRowIsHeaders_, delimiters_, doublePrecision_, reloadData_,
+                  columns_);
 
     isReady_.setUpdate([this]() { return filesystem::fileExists(inputFile_.get()); });
     inputFile_.onChange([this]() { isReady_.update(); });
@@ -67,8 +70,14 @@ void CSVSource::process() {
     if (inputFile_.get().empty()) return;
 
     CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
+    auto dataframe = reader.readData(inputFile_.get());
 
-    data_.setData(reader.readData(inputFile_.get()));
+    columns_.updateColumnProperties(*dataframe);
+    for (auto&& [index, col] : util::enumerate(*dataframe)) {
+        col->copyMetaDataFrom(columns_.getColumnMetaData(index));
+    }
+
+    data_.setData(dataframe);
 }
 
 }  // namespace inviwo

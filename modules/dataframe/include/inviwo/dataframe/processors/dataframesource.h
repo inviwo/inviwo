@@ -33,6 +33,7 @@
 #include <inviwo/core/ports/dataoutport.h>
 #include <modules/base/processors/datasource.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
 
 namespace inviwo {
 
@@ -46,14 +47,18 @@ namespace inviwo {
  * ### Properties
  *   * __File name__ File to load.
  */
-class IVW_MODULE_DATAFRAME_API DataFrameSource
-    : public DataSource<DataFrame, DataOutport<DataFrame>> {
+class IVW_MODULE_DATAFRAME_API DataFrameSource : public DataSource<DataFrame, DataFrameOutport> {
 public:
     DataFrameSource(InviwoApplication* app, const std::string& file = "");
     virtual ~DataFrameSource() = default;
 
+    virtual void process() override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
+private:
+    ColumnMetaDataListProperty columns_;
 };
 
 }  // namespace inviwo

@@ -32,6 +32,7 @@
 #include <inviwo/dataframe/dataframemoduledefine.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/properties/fileproperty.h>
@@ -70,6 +71,8 @@ private:
     StringProperty delimiters_;
     BoolProperty doublePrecision_;
     ButtonProperty reloadData_;
+
+    ColumnMetaDataListProperty columns_;
 };
 
 }  // namespace inviwo

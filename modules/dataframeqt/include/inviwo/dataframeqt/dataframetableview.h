@@ -70,6 +70,7 @@ signals:
 
 private:
     QStringList generateHeaders(const BitSet& selectedCols = {}) const;
+    void setHeaders(const QStringList& labels);
 
     bool indexVisible_ = false;
     bool vectorsIntoCols_ = false;

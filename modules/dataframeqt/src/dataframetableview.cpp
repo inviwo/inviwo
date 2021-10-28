@@ -112,7 +112,7 @@ void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe
     setColumnCount(static_cast<int>(headers.size()));
     setRowCount(static_cast<int>(dataframe->getNumberOfRows()));
 
-    setHorizontalHeaderLabels(headers);
+    setHeaders(headers);
 
     int colIndex = 0;
     for (auto col : *dataframe) {
@@ -212,7 +212,22 @@ bool DataFrameTableView::isIndexColumnVisible() const { return indexVisible_; }
 void DataFrameTableView::selectColumns(const BitSet& columns) {
     if (!data_ || ignoreUpdate_) return;
 
-    setHorizontalHeaderLabels(generateHeaders(columns));
+    setHeaders(generateHeaders(columns));
+}
+
+void DataFrameTableView::setHeaders(const QStringList& labels) {
+    setHorizontalHeaderLabels(labels);
+
+    if (data_) {
+        for (int i = 0; i < columnCount(); ++i) {
+            auto col = data_->getColumn(i);
+            if (col->hasMetaData<DoubleVec2MetaData>("DataRange")) {
+                dvec2 range = col->getMetaData<DoubleVec2MetaData>("DataRange")->get();
+                horizontalHeaderItem(i)->setToolTip(
+                    QString("Column Range [%0, %1]").arg(range.x).arg(range.y));
+            }
+        }
+    }
 }
 
 void DataFrameTableView::selectRows(const BitSet& rows) {

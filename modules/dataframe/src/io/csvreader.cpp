@@ -54,9 +54,15 @@ CSVReader* CSVReader::clone() const { return new CSVReader(*this); }
 
 void CSVReader::setDelimiters(const std::string& delim) { delimiters_ = delim; }
 
+const std::string& CSVReader::getDelimiters() const { return delimiters_; }
+
 void CSVReader::setFirstRowHeader(bool hasHeader) { firstRowHeader_ = hasHeader; }
 
+bool CSVReader::hasFirstRowHeader() const { return firstRowHeader_; }
+
 void CSVReader::setEnableDoublePrecision(bool doubleprec) { doublePrecision_ = doubleprec; }
+
+bool CSVReader::hasDoublePrecision() const { return doublePrecision_; }
 
 std::shared_ptr<DataFrame> CSVReader::readData(const std::string& fileName) {
     auto file = filesystem::ifstream(fileName);
@@ -74,6 +80,33 @@ std::shared_ptr<DataFrame> CSVReader::readData(const std::string& fileName) {
     }
 
     return readData(file);
+}
+
+bool CSVReader::setOption(std::string_view key, std::any value) {
+    if (auto* delimiters = std::any_cast<std::string>(&value); delimiters && key == "Delimiters") {
+        setDelimiters(*delimiters);
+        return true;
+    } else if (auto* firstRowHeader = std::any_cast<bool>(&value);
+               firstRowHeader && key == "FirstRowHeader") {
+        setFirstRowHeader(*firstRowHeader);
+        return true;
+    } else if (auto* doublePrecision = std::any_cast<bool>(&value);
+               doublePrecision && key == "DoublePrecision") {
+        setEnableDoublePrecision(*doublePrecision);
+        return true;
+    }
+    return false;
+}
+
+std::any CSVReader::getOption(std::string_view key) {
+    if (key == "Delimiters") {
+        return getDelimiters();
+    } else if (key == "FirstRowHeader") {
+        return hasFirstRowHeader();
+    } else if (key == "DoublePrecision") {
+        return hasDoublePrecision();
+    }
+    return std::any{};
 }
 
 namespace detail {
