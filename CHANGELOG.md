@@ -1,7 +1,7 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2021-10-29 Internal Processor Links
-It is not possible to link different properties internally with in a processor. One can example link the style of x, y, and z Axis Property.
+It is now possible to link different properties internally within a processor. One can for example link the style of x, y, and z Axis Properties.
 The internal links are accessible in the processor context menu.
 ![Internal Links](resources/changelog/internal-links.png)
 

@@ -425,10 +425,10 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::getConnectionGraphicsItem
 DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRepresentation(
     const PropertyLink& propertyLink) {
 
-    /* This code is a bit convoluted to handle internal links there the src and dst processor are
-     * the same. We make sure to create links that always goes form src to dst or dst to src and not
+    /* This code is a bit convoluted to handle internal links where the src and dst processor are
+     * the same. We make sure to create links that always go form src to dst or dst to src and not
      * src to src or dst to dst. We do this by always selecting one item from the srcPropertyMap_
-     * and one from the dstPropertyMap_. We also have to verify that the "other" link is all ready
+     * and one from the dstPropertyMap_. We also have to verify that the "other" link is already
      * added hence the double checks with start1/end1 and start2/end2.
      */
 
