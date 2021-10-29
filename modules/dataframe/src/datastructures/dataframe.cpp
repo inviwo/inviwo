@@ -75,7 +75,7 @@ std::shared_ptr<Column> DataFrame::addColumn(std::shared_ptr<Column> column) {
     return column;
 }
 
-std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string& identifier,
+std::shared_ptr<Column> DataFrame::addColumnFromBuffer(std::string_view identifier,
                                                        std::shared_ptr<const BufferBase> buffer) {
     return buffer->getRepresentation<BufferRAM>()
         ->dispatch<std::shared_ptr<Column>, dispatching::filter::Scalars>([&](auto buf) {
@@ -89,7 +89,7 @@ std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string& identi
         });
 }
 
-void DataFrame::dropColumn(const std::string& header) {
+void DataFrame::dropColumn(std::string_view header) {
     columns_.erase(std::remove_if(std::begin(columns_), std::end(columns_),
                                   [&](std::shared_ptr<Column> col) -> bool {
                                       return col->getHeader() == header;
@@ -104,7 +104,7 @@ void DataFrame::dropColumn(const size_t index) {
     columns_.erase(std::begin(columns_) + index);
 }
 
-std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::string& header,
+std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(std::string_view header,
                                                                    size_t size) {
     auto col = std::make_shared<CategoricalColumn>(header);
     col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
@@ -113,7 +113,7 @@ std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::st
 }
 
 std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(
-    const std::string& header, const std::vector<std::string>& values) {
+    std::string_view header, const std::vector<std::string>& values) {
     auto col = std::make_shared<CategoricalColumn>(header, values);
     columns_.push_back(col);
     return col;
@@ -197,11 +197,11 @@ std::string DataFrame::getHeader(size_t idx) const { return columns_[idx]->getHe
 
 std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const { return columns_[index]; }
 
-std::shared_ptr<Column> DataFrame::getColumn(const std::string& name) {
+std::shared_ptr<Column> DataFrame::getColumn(std::string_view name) {
     return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
 }
 
-std::shared_ptr<const Column> DataFrame::getColumn(const std::string& name) const {
+std::shared_ptr<const Column> DataFrame::getColumn(std::string_view name) const {
     return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
 }
 

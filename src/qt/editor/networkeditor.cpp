@@ -601,6 +601,13 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 processor->adoptWidget(std::move(plw));
             });
 
+            QAction* internalLink = menu.addAction(tr("Show Internal &Links"));
+            connect(internalLink, &QAction::triggered,
+                    [this, processor = processor->getProcessor()]() {
+                        auto dialog = new LinkDialog(processor, processor, mainwindow_);
+                        dialog->show();
+                    });
+
             menu.addSeparator();
 
             QAction* helpAction = menu.addAction(QIcon(":/svgicons/help.svg"), tr("Show &Help"));

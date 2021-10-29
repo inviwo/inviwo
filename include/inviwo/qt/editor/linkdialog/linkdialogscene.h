@@ -39,6 +39,7 @@
 #include <QGraphicsItem>
 #include <warn/pop>
 #include <memory>
+#include <unordered_map>
 
 class QGraphicsSceneWheelEvent;
 class QGraphicsSceneMouseEvent;
@@ -120,8 +121,6 @@ protected:
     void offsetItems(double yIncrement, bool scrollLeft);
 
 private:
-    LinkDialogPropertyGraphicsItem* getPropertyGraphicsItemOf(Property* property) const;
-
     struct Curve {
         Curve(LinkDialogGraphicsScene* scene);
         void clear();
@@ -146,7 +145,8 @@ private:
     bool expandProperties_;
     bool showHidden_ = false;
 
-    std::map<Property*, LinkDialogPropertyGraphicsItem*> propertyMap_;
+    std::unordered_map<Property*, LinkDialogPropertyGraphicsItem*> srcPropertyMap_;
+    std::unordered_map<Property*, LinkDialogPropertyGraphicsItem*> dstPropertyMap_;
 };
 
 template <typename T>

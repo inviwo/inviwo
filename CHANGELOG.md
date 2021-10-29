@@ -1,5 +1,10 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2021-10-29 Internal Processor Links
+It is not possible to link different properties internally with in a processor. One can example link the style of x, y, and z Axis Property.
+The internal links are accessible in the processor context menu.
+![Internal Links](resources/changelog/internal-links.png)
+
 ## 2021-10-15 Updated Brushing & Linking
 ![Brushing & Linking](resources/changelog/brushing.jpg)
 Brushing & Linking (B&L) was completely reworked. Now the B&L inports and outports have their own B&L managers. Brushing events were deprecated and replaced with brushing actions in the B&L manager. The manager supports brushing actions for *filtering*, *selecting*, and *highlighting*. 

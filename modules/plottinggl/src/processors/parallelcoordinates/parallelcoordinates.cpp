@@ -92,7 +92,7 @@ ParallelCoordinates::ParallelCoordinates()
                   {"regular", "Regular", BlendMode::Regular},
                   {"noblend", "None", BlendMode::None}},
                  2)
-    , falllofPower_("falllofPower", "Falloff Power", 1.0f, 0.01f, 3.f, 0.01f)
+    , falloffPower_("falloffPower", "Falloff Power", 1.0f, 0.01f, 3.f, 0.01f)
     , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 20.0f)
     , selectedLine_("selectedLine", "Selected Line")
     , selectedLineWidth_("selectedLineWidth", "Line Width", 10.0f, 1.0f, 20.0f)
@@ -167,7 +167,7 @@ ParallelCoordinates::ParallelCoordinates()
     selectedLine_.setCollapsed(true);
 
     addProperty(lineSettings_);
-    lineSettings_.addProperties(blendMode_, falllofPower_, lineWidth_, selectedLine_, showFiltered_,
+    lineSettings_.addProperties(blendMode_, falloffPower_, lineWidth_, selectedLine_, showFiltered_,
                                 filterColor_, filterAlpha_, filterIntensity_);
     lineSettings_.setCollapsed(true);
 
@@ -341,13 +341,16 @@ void ParallelCoordinates::createOrUpdateProperties() {
     if (!data->getNumberOfRows()) return;
     if (!data->getNumberOfColumns()) return;
 
+    const auto nColumns = data->getNumberOfColumns();
+
     updating_ = true;
-    axisPicking_.resize(data->getNumberOfColumns());
-    lines_.axisFlipped.resize(data->getNumberOfColumns());
-    for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
-        auto c = data->getColumn(i);
-        std::string displayName = c->getHeader();
-        std::string identifier = util::stripIdentifier(displayName);
+    axisPicking_.resize(nColumns);
+    lines_.axisFlipped.resize(nColumns);
+
+    for (auto [columnIndex, column] : util::enumerate(*data)) {
+        const auto& displayName = column->getHeader();
+        const auto identifier = util::stripIdentifier(displayName);
+
         // Create axis for filtering
         auto prop = [&]() -> PCPAxisSettings* {
             if (auto p = axisProperties_.getPropertyByIdentifier(identifier)) {
@@ -356,18 +359,20 @@ void ParallelCoordinates::createOrUpdateProperties() {
                 }
                 axisProperties_.removeProperty(identifier);
             }
-            auto newProp = std::make_unique<PCPAxisSettings>(identifier, displayName, axes_.size());
-            auto ptr = newProp.get();
-            axisProperties_.addProperty(newProp.release());
+
+            auto prop = std::make_unique<PCPAxisSettings>(identifier, displayName, axes_.size());
+            auto ptr = prop.get();
+            axisProperties_.addProperty(std::move(prop));
             return ptr;
         }();
+
         previousProperties.erase(prop);
         prop->setColumnId(static_cast<uint32_t>(axes_.size()));
         prop->setVisible(true);
 
         // Create axis for rendering
         auto renderer = std::make_unique<AxisRenderer>(*prop);
-        renderer->setAxisPickingId(axisPicking_.getPickingId(i));
+        renderer->setAxisPickingId(axisPicking_.getPickingId(axes_.size()));
 
         auto slider = std::make_unique<glui::DoubleMinMaxPropertyWidget>(
             prop->range, *this, sliderWidgetRenderer_, ivec2{100, handleSize_.get()},
@@ -376,22 +381,23 @@ void ParallelCoordinates::createOrUpdateProperties() {
         slider->setShowGroove(false);
         slider->setFlipped(prop->invertRange);
 
-        slider->setPickingEventAction([this, id = axes_.size()](PickingEvent* e) {
-            axisPicked(e, id, static_cast<PickType>(e->getPickedId() + 1));
-        });
+        slider->setPickingEventAction(
+            [this, columnId = static_cast<uint32_t>(axes_.size())](PickingEvent* e) {
+                axisPicked(e, columnId, static_cast<PickType>(e->getPickedId() + 1));
+            });
 
-        prop->invertRange.onChange([this, i, s = slider.get(), prop]() {
+        prop->invertRange.onChange([this, id = axes_.size(), s = slider.get(), prop]() {
             s->setFlipped(prop->invertRange);
-            lines_.axisFlipped[i] = static_cast<int>(prop->invertRange);
+            lines_.axisFlipped[id] = static_cast<int>(prop->invertRange);
         });
         // initialize corresponding flipped flag for the line shader
-        lines_.axisFlipped[i] = static_cast<int>(prop->invertRange);
+        lines_.axisFlipped[axes_.size()] = static_cast<int>(prop->invertRange);
 
         axes_.push_back({prop, std::move(renderer), std::move(slider)});
     }
 
     for (auto& axis : axes_) {
-        axis.pcp->updateFromColumn(data->getColumn(axis.pcp->columnId()));
+        axis.pcp->update(data);
         axis.pcp->setParallelCoordinates(this);
     }
 
@@ -524,8 +530,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
     for (auto& axis : axes_) {
         if (!axis.pcp->isChecked()) continue;
 
-        const auto i = axis.pcp->columnId();
-        const auto ap = axisPos(i);
+        const auto ap = axisPos(axis.pcp->columnId());
 
         // Need to call setWidgetExtent twice, since getHandleWidth needs the extent width and
         // we need the handle width for the extent height.
@@ -534,7 +539,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
         axis.sliderWidget->setWidgetExtent(
             ivec2{handleSize_.get(), ap.second.y - ap.first.y + handleWidth});
 
-        if (brushingAndLinking_.isSelected(static_cast<uint32_t>(i), BrushingTarget::Column)) {
+        if (brushingAndLinking_.isSelected(axis.pcp->columnId(), BrushingTarget::Column)) {
             sliderWidgetRenderer_.setUIColor(axisSelectedColor_);
         } else if (axis.pcp->isFiltering()) {
             sliderWidgetRenderer_.setUIColor(handleFilteredColor_);
@@ -610,8 +615,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
         std::array<float, 4> mixSelection = {
             0.0f, 0.0f, selectedLineColorOverride_.isChecked() ? 1.0f : 0.0f, 0.8f};
         std::array<float, 4> mixAlpha = {1.0, 0.0f, 0.0f, 0.0f};
-        std::array<float, 4> mixFallOfPower = {falllofPower_.get(), falllofPower_.get(),
-                                               falllofPower_.get(), 0.5f * falllofPower_.get()};
+        std::array<float, 4> mixFallOfPower = {falloffPower_.get(), falloffPower_.get(),
+                                               falloffPower_.get(), 0.5f * falloffPower_.get()};
 
         for (size_t i = showFiltered_ ? 0 : 1; i < lines_.offsets.size() - 1; ++i) {
             auto begin = lines_.offsets[i];
@@ -665,26 +670,25 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
     }
 }
 
-void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType pt) {
-    auto showValuesAsToolTip = [&](size_t pickedID, PickType pt) {
-        if (axes_[pickedID].pcp->catCol_) return;
+void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickType pt) {
+
+    auto showValuesAsToolTip = [this, p](size_t id, PickType pt) {
+        if (axes_[id].pcp->catCol_) return;
 
         if (pt == PickType::Upper) {
             std::ostringstream oss;
-            oss << axes_[pickedID].pcp->range.getEnd();
+            oss << axes_[id].pcp->range.getEnd();
             p->setToolTip(oss.str());
         } else if (pt == PickType::Lower) {
             std::ostringstream oss;
-            oss << axes_[pickedID].pcp->range.getStart();
+            oss << axes_[id].pcp->range.getStart();
             p->setToolTip(oss.str());
         }
     };
 
-    const uint32_t index = static_cast<uint32_t>(pickedID);
-
     if (p->getHoverState() == PickingHoverState::Enter) {
-        hoveredAxis_ = static_cast<int>(pickedID);
-        showValuesAsToolTip(pickedID, pt);
+        hoveredAxis_ = static_cast<int>(columnId);
+        showValuesAsToolTip(columnId, pt);
         invalidate(InvalidationLevel::InvalidOutput);
     } else if (p->getHoverState() == PickingHoverState::Exit) {
         hoveredAxis_ = -1;
@@ -699,13 +703,13 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         pt != PickType::Upper && !isDragging_) {
 
         auto selection = brushingAndLinking_.getSelectedIndices(BrushingTarget::Column);
-        if (brushingAndLinking_.isSelected(index, BrushingTarget::Column)) {
-            selection.remove(index);
+        if (brushingAndLinking_.isSelected(columnId, BrushingTarget::Column)) {
+            selection.remove(columnId);
         } else if (axisSelection_.get() == AxisSelection::Multiple) {
-            selection.add(index);
+            selection.add(columnId);
         } else if (axisSelection_.get() == AxisSelection::Single) {
             selection.clear();
-            selection.add(index);
+            selection.add(columnId);
         }
         brushingAndLinking_.select(selection, BrushingTarget::Column);
 
@@ -715,10 +719,10 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
     if (p->getPressState() == PickingPressState::DoubleClick &&
         p->getPressItem() == PickingPressItem::Primary) {
 
-        axes_[pickedID].pcp->invertRange.set(!axes_[pickedID].pcp->invertRange);
+        axes_[columnId].pcp->invertRange.set(!axes_[columnId].pcp->invertRange);
         // undo spurious axis selection caused by the single click event prior to the double click
         auto selection = brushingAndLinking_.getSelectedIndices(BrushingTarget::Column);
-        selection.flip(index);
+        selection.flip(columnId);
         brushingAndLinking_.select(selection, BrushingTarget::Column);
 
         p->markAsUsed();
@@ -743,7 +747,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         auto delta = glm::abs(p->getDeltaPressedPosition());
 
         if (delta.x > delta.y) {
-            const auto it = util::find(enabledAxes_, pickedID);
+            const auto it = util::find(enabledAxes_, columnId);
             if (it != enabledAxes_.end()) {
                 const auto id = static_cast<size_t>(std::distance(enabledAxes_.begin(), it));
                 if (id > 0 && p->getPosition().x * p->getCanvasSize().x <
@@ -753,9 +757,9 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
                            p->getPosition().x * p->getCanvasSize().x >
                                static_cast<float>(axisPos(enabledAxes_[id + 1]).first.x)) {
                     swap(id, id + 1);
-                } else if (pickedID < axes_.size()) {
+                } else if (columnId < axes_.size()) {
                     const auto rect = getDisplayRect(outport_.getDimensions());
-                    lines_.axisPositions[pickedID] =
+                    lines_.axisPositions[columnId] =
                         glm::clamp(float(p->getPosition().x * p->getCanvasSize().x - rect.first.x) /
                                        (rect.second.x - rect.first.x),
                                    0.0f, 1.0f);

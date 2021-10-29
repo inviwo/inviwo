@@ -62,6 +62,7 @@ public:
 
     virtual void addProperty(Property* property, bool owner = true);
     virtual void addProperty(Property& property);
+    virtual Property* addProperty(std::unique_ptr<Property> property);
 
     template <typename... Ts>
     void addProperties(Ts&... properties);
@@ -84,6 +85,15 @@ public:
      * @param property   property to be inserted
      */
     virtual void insertProperty(size_t index, Property& property);
+    
+    /**
+     * \brief insert property \p property at position \p index
+     * If \p index is not valid, the property is appended.
+     *
+     * @param index      insertion point for property
+     * @param property   property to be inserted
+     */
+    virtual Property* insertProperty(size_t index, std::unique_ptr<Property> property);
 
     virtual Property* removeProperty(std::string_view identifier);
     virtual Property* removeProperty(Property* property);
@@ -121,6 +131,8 @@ public:
     const Property* operator[](size_t) const;
     iterator begin();
     iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
     const_iterator cbegin() const;
     const_iterator cend() const;
 
