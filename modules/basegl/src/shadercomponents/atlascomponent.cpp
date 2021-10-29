@@ -296,13 +296,8 @@ void AtlasComponent::onPickingEvent(PickingEvent* e) {
         e->modifiers().contains(KeyModifier::Control)) {
 
         auto selection = brushing_.getSelectedIndices();
-
-        if (brushing_.isSelected(id - 1)) {
-            selection.erase(id - 1);
-        } else {
-            selection.insert(id - 1);
-        }
-        brushing_.sendSelectionEvent(selection);
+        selection.flip(id - 1);
+        brushing_.select(selection);
 
         e->markAsUsed();
     } else if (e->getPressState() == PickingPressState::Release &&
@@ -310,13 +305,8 @@ void AtlasComponent::onPickingEvent(PickingEvent* e) {
                e->modifiers().contains(KeyModifier::Shift)) {
 
         auto filtered = brushing_.getFilteredIndices();
-
-        if (brushing_.isFiltered(id - 1)) {
-            filtered.erase(id - 1);
-        } else {
-            filtered.insert(id - 1);
-        }
-        brushing_.sendFilterEvent(filtered);
+        filtered.flip(id - 1);
+        brushing_.filter("atlas", filtered);
 
         e->markAsUsed();
     }
