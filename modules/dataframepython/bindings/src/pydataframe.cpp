@@ -99,7 +99,7 @@ struct TemplateColumnReg {
         col.def_property_readonly("buffer", [](C& c) { return c.getTypedBuffer(); })
             .def(py::init<const std::string&>())
             .def("add", py::overload_cast<const T&>(&C::add))
-            .def("add", py::overload_cast<const std::string&>(&C::add))
+            .def("add", py::overload_cast<std::string_view>(&C::add))
             .def("append", [](C& c, C& src) { c.append(src); })
             .def("set", &C::set)
             .def(
@@ -172,10 +172,10 @@ void exposeDataFrame(pybind11::module& m) {
         .def("column", [](DataFrame& self, size_t index) { return self.getColumn(index); })
         .def("addColumnFromBuffer", &DataFrame::addColumnFromBuffer)
         .def("addCategoricalColumn",
-             py::overload_cast<const std::string&, size_t>(&DataFrame::addCategoricalColumn),
+             py::overload_cast<std::string_view, size_t>(&DataFrame::addCategoricalColumn),
              py::arg("header"), py::arg("size") = 0)
         .def("addCategoricalColumn",
-             py::overload_cast<const std::string&, const std::vector<std::string>&>(
+             py::overload_cast<std::string_view, const std::vector<std::string>&>(
                  &DataFrame::addCategoricalColumn),
              py::arg("header"), py::arg("values"))
         .def("getRow", &DataFrame::getDataItem, py::arg("index"), py::arg("asString") = false)

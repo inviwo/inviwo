@@ -352,7 +352,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         const auto identifier = util::stripIdentifier(displayName);
 
         // Create axis for filtering
-        auto prop = [&]() -> PCPAxisSettings* {
+        auto prop = [&,id = columnIndex]() -> PCPAxisSettings* {
             if (auto p = axisProperties_.getPropertyByIdentifier(identifier)) {
                 if (auto pcasp = dynamic_cast<PCPAxisSettings*>(p)) {
                     return pcasp;
@@ -360,19 +360,19 @@ void ParallelCoordinates::createOrUpdateProperties() {
                 axisProperties_.removeProperty(identifier);
             }
 
-            auto prop = std::make_unique<PCPAxisSettings>(identifier, displayName, axes_.size());
+            auto prop = std::make_unique<PCPAxisSettings>(identifier, displayName, id);
             auto ptr = prop.get();
             axisProperties_.addProperty(std::move(prop));
             return ptr;
         }();
 
         previousProperties.erase(prop);
-        prop->setColumnId(static_cast<uint32_t>(axes_.size()));
+        prop->setColumnId(static_cast<uint32_t>(columnIndex));
         prop->setVisible(true);
 
         // Create axis for rendering
         auto renderer = std::make_unique<AxisRenderer>(*prop);
-        renderer->setAxisPickingId(axisPicking_.getPickingId(axes_.size()));
+        renderer->setAxisPickingId(axisPicking_.getPickingId(columnIndex));
 
         auto slider = std::make_unique<glui::DoubleMinMaxPropertyWidget>(
             prop->range, *this, sliderWidgetRenderer_, ivec2{100, handleSize_.get()},
@@ -382,11 +382,11 @@ void ParallelCoordinates::createOrUpdateProperties() {
         slider->setFlipped(prop->invertRange);
 
         slider->setPickingEventAction(
-            [this, columnId = static_cast<uint32_t>(axes_.size())](PickingEvent* e) {
+            [this, columnId = static_cast<uint32_t>(columnIndex)](PickingEvent* e) {
                 axisPicked(e, columnId, static_cast<PickType>(e->getPickedId() + 1));
             });
 
-        prop->invertRange.onChange([this, id = axes_.size(), s = slider.get(), prop]() {
+        prop->invertRange.onChange([this, id = columnIndex, s = slider.get(), prop]() {
             s->setFlipped(prop->invertRange);
             lines_.axisFlipped[id] = static_cast<int>(prop->invertRange);
         });

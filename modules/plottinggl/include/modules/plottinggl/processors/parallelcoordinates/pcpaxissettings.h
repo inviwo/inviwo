@@ -59,7 +59,7 @@ public:
     virtual const FontSettings& getFont() const override;
 
 private:
-    PCPAxisSettings* settings_ = nullptr;
+    PCPAxisSettings* settings_;
 };
 
 class IVW_MODULE_PLOTTINGGL_API PCPCaptionSettings : public PlotTextSettings {
@@ -75,7 +75,7 @@ public:
     virtual const FontSettings& getFont() const override;
 
 private:
-    PCPAxisSettings* settings_ = nullptr;
+    PCPAxisSettings* settings_;
 };
 
 class IVW_MODULE_PLOTTINGGL_API PCPMajorTickSettings : public MajorTickSettings {
@@ -91,7 +91,7 @@ public:
     virtual bool getRangeBasedTicks() const override;
 
 private:
-    PCPAxisSettings* settings_ = nullptr;
+    PCPAxisSettings* settings_;
 };
 
 class IVW_MODULE_PLOTTINGGL_API PCPMinorTickSettings : public MinorTickSettings {
@@ -107,7 +107,7 @@ public:
     virtual int getTickFrequency() const override;
 
 private:
-    PCPAxisSettings* settings_ = nullptr;
+    PCPAxisSettings* settings_;
 };
 
 /**
