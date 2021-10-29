@@ -85,7 +85,7 @@ public:
      * @param property   property to be inserted
      */
     virtual void insertProperty(size_t index, Property& property);
-    
+
     /**
      * \brief insert property \p property at position \p index
      * If \p index is not valid, the property is appended.

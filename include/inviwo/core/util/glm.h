@@ -154,7 +154,7 @@ template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct extent<glm::mat<C, R, T, Q>, 1> : public std::integral_constant<std::size_t, R> {};
 
 template <class T, unsigned N = 0>
-constexpr size_t extent_v = extent<T,N>::value;
+constexpr size_t extent_v = extent<T, N>::value;
 
 namespace detail {
 template <typename T, int N>
@@ -240,7 +240,6 @@ struct value_type<glm::tquat<T, Q>> {
 template <typename T>
 using value_type_t = typename value_type<T>::type;
 
-
 /**
  * Construct a type with the same extents as the given type but with a different value type
  */
@@ -262,7 +261,7 @@ struct same_extent<glm::tquat<T, Q>, U> {
 };
 
 template <typename T, typename U>
-using same_extent_t = typename same_extent<T,U>::type;
+using same_extent_t = typename same_extent<T, U>::type;
 
 // Type conversion
 

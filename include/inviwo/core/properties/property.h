@@ -411,7 +411,7 @@ protected:
 
 private:
     std::string identifier_;
-    mutable std::string path_; // To avoid having to create a string here all the time.
+    mutable std::string path_;  // To avoid having to create a string here all the time.
 
     ValueWrapper<std::string> displayName_;
     ValueWrapper<bool> readOnly_;

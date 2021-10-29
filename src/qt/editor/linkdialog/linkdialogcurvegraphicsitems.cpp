@@ -119,7 +119,7 @@ QPainterPath DialogConnectionGraphicsItem::obtainCurvePath(QPointF startPoint,
     const auto ctrlPointEnd = QPointF(endPoint.x() + deltaEnd, endPoint.y());
     QPainterPath bezierCurve;
     bezierCurve.moveTo(startPoint);
-    
+
     bezierCurve.cubicTo(ctrlPointStart, ctrlPointEnd, endPoint);
     return bezierCurve;
 }

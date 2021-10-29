@@ -352,7 +352,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         const auto identifier = util::stripIdentifier(displayName);
 
         // Create axis for filtering
-        auto prop = [&,id = columnIndex]() -> PCPAxisSettings* {
+        auto prop = [&, id = columnIndex]() -> PCPAxisSettings* {
             if (auto p = axisProperties_.getPropertyByIdentifier(identifier)) {
                 if (auto pcasp = dynamic_cast<PCPAxisSettings*>(p)) {
                     return pcasp;
