@@ -66,6 +66,19 @@ void PropertyOwner::addProperty(Property& property) {
     insertProperty(properties_.size(), &property, false);
 }
 
+Property* PropertyOwner::addProperty(std::unique_ptr<Property> property) {
+    return insertProperty(properties_.size(), std::move(property));
+}
+
+Property* PropertyOwner::insertProperty(size_t index, std::unique_ptr<Property> property) {
+    insertProperty(index, property.get(), false);
+    // Need to serialize everything for owned properties
+    property->setSerializationMode(PropertySerializationMode::All);
+
+    ownedProperties_.push_back(std::move(property));
+    return ownedProperties_.back().get();
+}
+
 void PropertyOwner::insertProperty(size_t index, Property* property, bool owner) {
     if (index > properties_.size()) {
         index = properties_.size();
@@ -230,6 +243,10 @@ const Property* PropertyOwner::operator[](size_t i) const { return properties_[i
 PropertyOwner::iterator PropertyOwner::begin() { return properties_.begin(); }
 
 PropertyOwner::iterator PropertyOwner::end() { return properties_.end(); }
+
+PropertyOwner::const_iterator PropertyOwner::begin() const { return properties_.begin(); }
+
+PropertyOwner::const_iterator PropertyOwner::end() const { return properties_.end(); }
 
 PropertyOwner::const_iterator PropertyOwner::cbegin() const { return properties_.cbegin(); }
 

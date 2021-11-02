@@ -132,6 +132,9 @@ struct rank<glm::tquat<T, Q>> : public std::integral_constant<std::size_t, 1> {}
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct rank<glm::mat<C, R, T, Q>> : public std::integral_constant<std::size_t, 2> {};
 
+template <class T>
+constexpr size_t rank_v = rank<T>::value;
+
 template <class T, unsigned N = 0>
 struct extent : std::integral_constant<std::size_t, 1> {};
 
@@ -150,6 +153,9 @@ struct extent<glm::mat<C, R, T, Q>, 0> : public std::integral_constant<std::size
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct extent<glm::mat<C, R, T, Q>, 1> : public std::integral_constant<std::size_t, R> {};
 
+template <class T, unsigned N = 0>
+constexpr size_t extent_v = extent<T, N>::value;
+
 namespace detail {
 template <typename T, int N>
 struct flat_extent_impl
@@ -162,6 +168,9 @@ struct flat_extent_impl<T, 0> : public std::integral_constant<std::size_t, 1> {}
 
 template <typename T>
 struct flat_extent : detail::flat_extent_impl<T, util::rank<T>::value> {};
+
+template <class T>
+constexpr size_t flat_extent_v = flat_extent<T>::value;
 
 template <class U, class T, class BinaryOperation>
 U accumulate(T x, U init, BinaryOperation op) {
@@ -204,6 +213,10 @@ struct glmtype<T, L, 1, P> {
     using type = glm::vec<L, T, P>;
 };
 
+template <typename T = double, glm::length_t C = 1, glm::length_t R = 1,
+          glm::qualifier Q = glm::defaultp>
+using glmtype_t = typename glmtype<T, C, R, Q>::type;
+
 /**
  * Extract the value_type from a scalar or glm type
  */
@@ -224,6 +237,9 @@ struct value_type<glm::tquat<T, Q>> {
     using type = typename glm::tquat<T, Q>::value_type;
 };
 
+template <typename T>
+using value_type_t = typename value_type<T>::type;
+
 /**
  * Construct a type with the same extents as the given type but with a different value type
  */
@@ -243,6 +259,9 @@ template <typename T, glm::qualifier Q, typename U>
 struct same_extent<glm::tquat<T, Q>, U> {
     using type = glm::tquat<U, Q>;
 };
+
+template <typename T, typename U>
+using same_extent_t = typename same_extent<T, U>::type;
 
 // Type conversion
 

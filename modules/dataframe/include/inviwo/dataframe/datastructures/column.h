@@ -37,6 +37,8 @@
 
 #include <inviwo/dataframe/datastructures/datapoint.h>
 
+#include <iostream>
+
 namespace inviwo {
 
 class DataPointBase;
@@ -60,9 +62,9 @@ public:
     virtual Column* clone() const = 0;
 
     virtual const std::string& getHeader() const = 0;
-    virtual void setHeader(const std::string& header) = 0;
+    virtual void setHeader(std::string_view header) = 0;
 
-    virtual void add(const std::string& value) = 0;
+    virtual void add(std::string_view value) = 0;
     /**
      * @brief appends all rows from column \p col
      * @param col
@@ -95,10 +97,10 @@ class TemplateColumn : public Column {
 public:
     using type = T;
 
-    TemplateColumn(const std::string& header,
+    TemplateColumn(std::string_view header,
                    std::shared_ptr<Buffer<T>> buffer = std::make_shared<Buffer<T>>());
 
-    TemplateColumn(const std::string& header, std::vector<T> data);
+    TemplateColumn(std::string_view header, std::vector<T> data);
 
     TemplateColumn(const TemplateColumn<T>& rhs);
     TemplateColumn(TemplateColumn<T>&& rhs);
@@ -111,7 +113,7 @@ public:
     virtual ~TemplateColumn() = default;
 
     virtual const std::string& getHeader() const override;
-    void setHeader(const std::string& header) override;
+    void setHeader(std::string_view header) override;
 
     virtual void add(const T& value);
     /**
@@ -120,7 +122,7 @@ public:
      * @param value
      * @throws InvalidConversion if the value cannot be converted to T
      */
-    virtual void add(const std::string& value) override;
+    virtual void add(std::string_view value) override;
 
     /**
      * \copydoc Column::append(const Column&)
@@ -187,7 +189,7 @@ protected:
  */
 class IVW_MODULE_DATAFRAME_API CategoricalColumn : public TemplateColumn<std::uint32_t> {
 public:
-    CategoricalColumn(const std::string& header, const std::vector<std::string>& values = {});
+    CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {});
     CategoricalColumn(const CategoricalColumn& rhs) = default;
     CategoricalColumn(CategoricalColumn&& rhs) = default;
 
@@ -215,7 +217,7 @@ public:
     using TemplateColumn<std::uint32_t>::set;
     virtual void set(size_t idx, const std::string& str);
 
-    virtual void add(const std::string& value) override;
+    virtual void add(std::string_view value) override;
 
     /**
      * \brief \copybrief Column::append(const Column&) and builds a union of all
@@ -250,20 +252,20 @@ public:
      *
      * @return index of the category
      */
-    std::uint32_t addCategory(const std::string& cat);
+    std::uint32_t addCategory(std::string_view cat);
 
 private:
-    virtual glm::uint32_t addOrGetID(const std::string& str);
+    virtual glm::uint32_t addOrGetID(std::string_view str);
 
     std::vector<std::string> lookUpTable_;
 };
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(const std::string& header, std::shared_ptr<Buffer<T>> buffer)
+TemplateColumn<T>::TemplateColumn(std::string_view header, std::shared_ptr<Buffer<T>> buffer)
     : header_(header), buffer_(buffer) {}
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(const std::string& header, std::vector<T> data)
+TemplateColumn<T>::TemplateColumn(std::string_view header, std::vector<T> data)
     : header_(header), buffer_(util::makeBuffer(std::move(data))) {}
 
 template <typename T>
@@ -304,7 +306,7 @@ const std::string& TemplateColumn<T>::getHeader() const {
 }
 
 template <typename T>
-void TemplateColumn<T>::setHeader(const std::string& header) {
+void TemplateColumn<T>::setHeader(std::string_view header) {
     header_ = header;
 }
 
@@ -316,24 +318,26 @@ void TemplateColumn<T>::add(const T& value) {
 namespace detail {
 
 template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
-void add(Buffer<T>* buffer, const std::string& value) {
+void add(Buffer<T>* buffer, std::string_view value) {
     T result;
     if (value.empty()) {
         result = T{0};  // no special value indicating missing data for integral types
     } else {
-        std::istringstream stream(value);
+        std::stringstream stream;
+        stream << value;
         stream >> result;
         if (stream.fail()) {
-            throw InvalidConversion("cannot convert \"" + value + "\" to target type");
+            throw InvalidConversion(fmt::format("cannot convert \"{}\" to target type", value));
         }
     }
     buffer->getEditableRAMRepresentation()->add(result);
 }
 // Specialization for float and double types, add NaN instead of throwing an error
 template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-void add(Buffer<T>* buffer, const std::string& value) {
+void add(Buffer<T>* buffer, std::string_view value) {
     T result;
-    std::istringstream stream(value);
+    std::stringstream stream;
+    stream << value;
     stream >> result;
     if (stream.fail()) {
         buffer->getEditableRAMRepresentation()->add(std::numeric_limits<T>::quiet_NaN());
@@ -345,14 +349,15 @@ void add(Buffer<T>* buffer, const std::string& value) {
 template <typename T,
           typename std::enable_if<!std::is_integral<T>::value && !std::is_floating_point<T>::value,
                                   int>::type = 0>
-void add(Buffer<T>* /*buffer*/, const std::string& value) {
-    throw InvalidConversion("conversion to target type not implemented (\"" + value + "\")");
+void add(Buffer<T>* /*buffer*/, std::string_view value) {
+    throw InvalidConversion(
+        fmt::format("conversion to target type not implemented (\"{}\")", value));
 }
 
 }  // namespace detail
 
 template <typename T>
-void TemplateColumn<T>::add(const std::string& value) {
+void TemplateColumn<T>::add(std::string_view value) {
     detail::add<T>(buffer_.get(), value);
 }
 

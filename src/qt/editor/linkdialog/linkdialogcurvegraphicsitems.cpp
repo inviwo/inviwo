@@ -47,12 +47,16 @@ DialogCurveGraphicsItem::DialogCurveGraphicsItem(QPointF startPoint, QPointF end
 DialogCurveGraphicsItem::~DialogCurveGraphicsItem() = default;
 
 QPainterPath DialogCurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endPoint) const {
-    double delta = endPoint.x() - startPoint.x();
-    QPointF ctrlPoint1 = QPointF(startPoint.x() + delta / 4.0, startPoint.y());
-    QPointF ctrlPoint2 = QPointF(endPoint.x() - delta / 4.0, endPoint.y());
+    const auto deltaStart = linkdialog::dialogWidth / 10 *
+                            ((startPoint.x() < linkdialog::dialogWidth / 2.0) ? 1.0 : -1.0);
+    const auto deltaEnd = linkdialog::dialogWidth / 10 *
+                          ((endPoint.x() < linkdialog::dialogWidth / 2.0) ? 1.0 : -1.0);
+
+    const auto ctrlPointStart = QPointF(startPoint.x() + deltaStart, startPoint.y());
+    const auto ctrlPointEnd = QPointF(endPoint.x() + deltaEnd, endPoint.y());
     QPainterPath bezierCurve;
     bezierCurve.moveTo(startPoint);
-    bezierCurve.cubicTo(ctrlPoint1, ctrlPoint2, endPoint);
+    bezierCurve.cubicTo(ctrlPointStart, ctrlPointEnd, endPoint);
     return bezierCurve;
 }
 
@@ -105,12 +109,18 @@ QPointF DialogConnectionGraphicsItem::getEndPoint() const {
 
 QPainterPath DialogConnectionGraphicsItem::obtainCurvePath(QPointF startPoint,
                                                            QPointF endPoint) const {
-    double delta = endPoint.x() - startPoint.x();
-    QPointF ctrlPoint1 = QPointF(startPoint.x() + delta / 4.0, startPoint.y());
-    QPointF ctrlPoint2 = QPointF(endPoint.x() - delta / 4.0, endPoint.y());
+
+    const auto deltaStart = linkdialog::dialogWidth / 10 *
+                            ((startPoint.x() < linkdialog::dialogWidth / 2.0) ? 1.0 : -1.0);
+    const auto deltaEnd = linkdialog::dialogWidth / 10 *
+                          ((endPoint.x() < linkdialog::dialogWidth / 2.0) ? 1.0 : -1.0);
+
+    const auto ctrlPointStart = QPointF(startPoint.x() + deltaStart, startPoint.y());
+    const auto ctrlPointEnd = QPointF(endPoint.x() + deltaEnd, endPoint.y());
     QPainterPath bezierCurve;
     bezierCurve.moveTo(startPoint);
-    bezierCurve.cubicTo(ctrlPoint1, ctrlPoint2, endPoint);
+
+    bezierCurve.cubicTo(ctrlPointStart, ctrlPointEnd, endPoint);
     return bezierCurve;
 }
 

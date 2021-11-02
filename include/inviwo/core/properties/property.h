@@ -161,13 +161,13 @@ public:
      * @return string of dot separated identifiers starting with a processor identifier followed
      * by property identifiers.
      */
-    virtual std::string getPath() const;
+    virtual const std::string& getPath() const;
 
     /**
      * \brief A property's name displayed to the user
      */
     virtual Property& setDisplayName(std::string_view displayName);
-    virtual std::string getDisplayName() const;
+    virtual const std::string& getDisplayName() const;
 
     /**
      * \brief Returns which property's widget should be used
@@ -411,6 +411,7 @@ protected:
 
 private:
     std::string identifier_;
+    mutable std::string path_;  // To avoid having to create a string here all the time.
 
     ValueWrapper<std::string> displayName_;
     ValueWrapper<bool> readOnly_;

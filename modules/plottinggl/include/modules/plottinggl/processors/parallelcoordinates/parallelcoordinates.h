@@ -107,7 +107,7 @@ public:
 
     CompositeProperty lineSettings_;
     TemplateOptionProperty<BlendMode> blendMode_;
-    FloatProperty falllofPower_;
+    FloatProperty falloffPower_;
     FloatProperty lineWidth_;
     CompositeProperty selectedLine_;
     FloatProperty selectedLineWidth_;
@@ -151,7 +151,7 @@ public:
 protected:
     void linePicked(PickingEvent* p);
     enum class PickType { Axis, Lower, Upper, Groove };
-    void axisPicked(PickingEvent* p, size_t pickedID, PickType pt);
+    void axisPicked(PickingEvent* p, uint32_t columnId, PickType pt);
 
 private:
     struct ColumnAxis {
@@ -183,6 +183,10 @@ private:
     std::vector<ColumnAxis> axes_;
 
     bool enabledAxesModified_ = false;
+
+    // The enabled axis and the order they are shown, i.e if and in which order the dataFrame
+    // columns are shown, The value correspond to an index in the axes_ array. Not a dataFrame
+    // column index since a dataFrame vec column will have multiple axes.
     std::vector<size_t> enabledAxes_;
 
     PickingMapper linePicking_;

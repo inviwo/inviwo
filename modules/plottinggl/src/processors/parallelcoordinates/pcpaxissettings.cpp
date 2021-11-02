@@ -29,9 +29,9 @@
 
 #include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>
 
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/datastructures/column.h>
 #include <modules/base/algorithm/dataminmax.h>
-#include <modules/plotting/utils/statsutils.h>
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
 #include <modules/plotting/utils/axisutils.h>
 
@@ -69,26 +69,24 @@ std::string PCPAxisSettings::getClassIdentifier() const { return classIdentifier
 
 PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName, size_t columnId)
     : BoolCompositeProperty(identifier, displayName, true)
-    , usePercentiles("usePercentiles", "Use Percentiles", false)
-    , invertRange("invertRange", "Invert Range")
     , range("range", "Axis Range")
+    , invertRange("invertRange", "Invert Range")
+    , captionSettings_(this)
+    , labelSettings_(this)
+    , major_(this)
+    , minor_(this)
     , columnId_{static_cast<uint32_t>(columnId)} {
 
-    addProperty(range);
-    addProperty(invertRange);
-    addProperty(usePercentiles);
+    addProperties(range, invertRange);
 
     setCollapsed(true);
     setSerializationMode(PropertySerializationMode::All);
     range.setSerializationMode(PropertySerializationMode::All);
     invertRange.setSerializationMode(PropertySerializationMode::All);
-    usePercentiles.setSerializationMode(PropertySerializationMode::All);
 
     range.onRangeChange([this]() {
         updateLabels();
-        if (pcp_) {
-            pcp_->updateAxisRange(*this);
-        }
+        if (pcp_) pcp_->updateAxisRange(*this);
     });
 
     range.onChange([this]() {
@@ -99,20 +97,19 @@ PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName
 
 PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
     : BoolCompositeProperty(rhs)
-    , usePercentiles{rhs.usePercentiles}
-    , invertRange(rhs.invertRange)
     , range{rhs.range}
+    , invertRange(rhs.invertRange)
+    , captionSettings_(this)
+    , labelSettings_(this)
+    , major_(this)
+    , minor_(this)
     , columnId_{rhs.columnId_} {
 
-    addProperty(range);
-    addProperty(invertRange);
-    addProperty(usePercentiles);
+    addProperties(range, invertRange);
 
     range.onRangeChange([this]() {
         updateLabels();
-        if (pcp_) {
-            pcp_->updateAxisRange(*this);
-        }
+        if (pcp_) pcp_->updateAxisRange(*this);
     });
 
     range.onChange([this]() {
@@ -123,29 +120,28 @@ PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
 
 PCPAxisSettings* PCPAxisSettings::clone() const { return new PCPAxisSettings(*this); }
 
-void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
-    col_ = col;
-    catCol_ = dynamic_cast<const CategoricalColumn*>(col.get());
+void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
+    col_ = frame->getColumn(columnId_);
+    catCol_ = dynamic_cast<const CategoricalColumn*>(col_.get());
 
-    col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
+    col_->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
         [&](auto ram) -> void {
             auto& dataVector = ram->getDataContainer();
 
             auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
-            double minV = minMax.first.x;
-            double maxV = minMax.second.x;
+            double minV = minMax.first[0];
+            double maxV = minMax.second[0];
 
             if (std::abs(maxV - minV) == 0.0) {
                 minV -= 1.0;
                 maxV += 1.0;
             }
 
-            dvec2 prevVal = range.get();
-            dvec2 prevRange = range.getRange();
-            double l = prevRange.y - prevRange.x;
-
-            double prevMinRatio = (prevVal.x - prevRange.x) / (l);
-            double prevMaxRatio = (prevVal.y - prevRange.x) / (l);
+            const dvec2 prevVal = range.get();
+            const dvec2 prevRange = range.getRange();
+            const double l = prevRange.y - prevRange.x;
+            const double prevMinRatio = (prevVal.x - prevRange.x) / l;
+            const double prevMaxRatio = (prevVal.y - prevRange.x) / l;
 
             Property::OnChangeBlocker block{range};
             range.setRange({minV, maxV});
@@ -153,11 +149,7 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
                 range.set(
                     {minV + prevMinRatio * (maxV - minV), minV + prevMaxRatio * (maxV - minV)});
             }
-            auto pecentiles = statsutil::percentiles(dataVector, {0., 0.25, 0.75, 1.});
-            p0_ = static_cast<double>(pecentiles[0]);
-            p25_ = static_cast<double>(pecentiles[1]);
-            p75_ = static_cast<double>(pecentiles[2]);
-            p100_ = static_cast<double>(pecentiles[3]);
+
             at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
         });
 
@@ -167,38 +159,12 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
 double PCPAxisSettings::getNormalized(double v) const {
     if (range.getRangeMax() == range.getRangeMin()) {
         return 0.5;
-    }
-    const auto rangeTmp = range.getRange();
-    if (v <= rangeTmp.x) {
-        return 0;
-    }
-    if (v >= rangeTmp.y) {
-        return 1;
-    }
-    if (!usePercentiles.get()) {
-        return (v - rangeTmp.x) / (rangeTmp.y - rangeTmp.x);
+    } else if (v <= range.getRangeMin()) {
+        return 0.0;
+    } else if (v >= range.getRangeMax()) {
+        return 1.0;
     } else {
-        double minV, maxV;
-        double o, r;
-        if (v < p25_) {
-            minV = p0_;
-            maxV = p25_;
-            o = 0;
-            r = 0.25f;
-        } else if (v < p75_) {
-            minV = p25_;
-            maxV = p75_;
-            o = 0.25;
-            r = 0.5;
-        } else {
-            minV = p75_;
-            maxV = p100_;
-            o = 0.75;
-            r = 0.25;
-        }
-
-        double t = (v - minV) / (maxV - minV);
-        return o + t * r;
+        return (v - range.getRangeMin()) / (range.getRangeMax() - range.getRangeMin());
     }
 }
 
@@ -209,55 +175,24 @@ double PCPAxisSettings::getValue(double v) const {
         v = 1.0 - v;
     }
 
-    const auto rangeTmp = range.getRange();
     if (v <= 0) {
-        return rangeTmp.x;
-    }
-    if (v >= 1) {
-        return rangeTmp.y;
-    }
-    if (!usePercentiles.get()) {
-        return rangeTmp.x + v * (rangeTmp.y - rangeTmp.x);
+        return range.getRangeMin();
+    } else if (v >= 1) {
+        return range.getRangeMax();
     } else {
-        if (v < 0.25) {
-            v /= 0.25;
-            return p0_ + v * (p25_ - p0_);
-        } else if (v < 0.75) {
-            v -= 0.25;
-            v /= 0.5;
-            return p25_ + v * (p75_ - p25_);
-        } else {
-            v -= 0.75;
-            v /= 0.25;
-            return p75_ + v * (p100_ - p75_);
-        }
+        return range.getRangeMin() + v * (range.getRangeMax() - range.getRangeMin());
     }
 }
 
 void PCPAxisSettings::moveHandle(bool upper, double mouseY) {
-    auto rangeTmp = range.get();
-    double value = getValue(mouseY);
-
-    if (upper) {
-        if (value < rangeTmp.x) {
-            value = rangeTmp.x;
-        }
-        rangeTmp.y = value;
-    } else {
-        if (value > rangeTmp.y) {
-            value = rangeTmp.y;
-        }
-        rangeTmp.x = value;
-    }
-    range.set(rangeTmp);
+    const double value = std::clamp(getValue(mouseY), range.getRangeMin(), range.getRangeMax());
+    const auto newRange =
+        upper ? dvec2{range.getRangeMin(), value} : dvec2{value, range.getRangeMax()};
+    range.set(newRange);
 }
 
 void PCPAxisSettings::setParallelCoordinates(ParallelCoordinates* pcp) {
     pcp_ = pcp;
-    labelSettings_.setSettings(this);
-    captionSettings_.setSettings(this);
-    major_.setSettings(this);
-    minor_.setSettings(this);
 
     labelUpdateCallback_ = pcp_->labelFormat_.onChangeScoped([this]() { updateLabels(); });
     updateLabels();
@@ -292,8 +227,9 @@ void PCPAxisSettings::updateLabels() {
     if (!pcp_) return;
 
     const auto tickmarks = plot::getMajorTickPositions(major_, range.getRange());
-    labels_.clear();
     const auto& format = pcp_->labelFormat_.get();
+
+    labels_.clear();
     std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(labels_),
                    [&](auto tick) { return fmt::sprintf(format, tick); });
 }
@@ -302,7 +238,7 @@ dvec2 PCPAxisSettings::getRange() const {
     if (catCol_) {
         return {0.0, static_cast<double>(catCol_->getCategories().size()) - 1.0};
     } else {
-        return dvec2{range.getRangeMin(), range.getRangeMax()};
+        return {range.getRangeMin(), range.getRangeMax()};
     }
 }
 
@@ -339,7 +275,7 @@ float PCPAxisSettings::getWidth() const {
 
 AxisSettings::Orientation PCPAxisSettings::getOrientation() const { return Orientation::Vertical; }
 AxisSettings::Placement PCPAxisSettings::getPlacement() const { return Placement::Inside; }
-const std::string& PCPAxisSettings::getCaption() const { return col_->getHeader(); }
+const std::string& PCPAxisSettings::getCaption() const { return getDisplayName(); }
 const PlotTextSettings& PCPAxisSettings::getCaptionSettings() const { return captionSettings_; }
 const std::vector<std::string>& PCPAxisSettings::getLabels() const {
     return catCol_ ? catCol_->getCategories() : labels_;

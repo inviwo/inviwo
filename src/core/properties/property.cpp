@@ -91,19 +91,24 @@ Property& Property::setIdentifier(std::string_view identifier) {
     return *this;
 }
 
-std::string Property::getPath() const {
-    std::vector<std::string_view> ids;
-    ids.emplace_back(identifier_);
-    PropertyOwner* owner = owner_;
-    while (owner) {
-        ids.emplace_back(owner->getIdentifier());
-        owner = owner->getOwner();
-    }
-    std::reverse(ids.begin(), ids.end());
-    return joinString(ids, ".");
+const std::string& Property::getPath() const {
+    path_.clear();
+
+    const auto traverse = [&](auto& self, PropertyOwner* owner) -> void {
+        if (owner) {
+            self(self, owner->getOwner());
+            std::copy(owner->getIdentifier().begin(), owner->getIdentifier().end(),
+                      std::back_inserter(path_));
+            path_.push_back('.');
+        }
+    };
+    traverse(traverse, owner_);
+    std::copy(identifier_.begin(), identifier_.end(), std::back_inserter(path_));
+
+    return path_;
 }
 
-std::string Property::getDisplayName() const { return displayName_; }
+const std::string& Property::getDisplayName() const { return displayName_; }
 
 Property& Property::setDisplayName(std::string_view displayName) {
     if (displayName_.value != displayName) {

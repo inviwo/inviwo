@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-CategoricalColumn::CategoricalColumn(const std::string& header,
+CategoricalColumn::CategoricalColumn(std::string_view header,
                                      const std::vector<std::string>& values)
     : TemplateColumn<std::uint32_t>(header) {
     append(values);
@@ -67,7 +67,7 @@ std::vector<std::string> CategoricalColumn::getValues() const {
     return util::transform(data, [&](auto idx) { return lookUpTable_[idx]; });
 }
 
-void CategoricalColumn::add(const std::string& value) {
+void CategoricalColumn::add(std::string_view value) {
     auto id = addOrGetID(value);
     getTypedBuffer()->getEditableRAMRepresentation()->add(id);
 }
@@ -124,14 +124,14 @@ void CategoricalColumn::append(const std::vector<std::string>& data) {
     buffer_->getEditableRAMRepresentation()->append(helper.data);
 }
 
-std::uint32_t CategoricalColumn::addCategory(const std::string& cat) { return addOrGetID(cat); }
+std::uint32_t CategoricalColumn::addCategory(std::string_view cat) { return addOrGetID(cat); }
 
-glm::uint32_t CategoricalColumn::addOrGetID(const std::string& str) {
+glm::uint32_t CategoricalColumn::addOrGetID(std::string_view str) {
     auto it = std::find(lookUpTable_.begin(), lookUpTable_.end(), str);
     if (it != lookUpTable_.end()) {
         return static_cast<glm::uint32_t>(std::distance(lookUpTable_.begin(), it));
     }
-    lookUpTable_.push_back(str);
+    lookUpTable_.emplace_back(str);
     return static_cast<glm::uint32_t>(lookUpTable_.size() - 1);
 }
 

@@ -98,7 +98,7 @@ public:
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
-    std::shared_ptr<Column> addColumnFromBuffer(const std::string& identifier,
+    std::shared_ptr<Column> addColumnFromBuffer(std::string_view identifier,
                                                 std::shared_ptr<const BufferBase> buffer);
 
     /**
@@ -107,7 +107,7 @@ public:
      * the DataFrame can be used
      */
     template <typename T>
-    std::shared_ptr<TemplateColumn<T>> addColumn(const std::string& header, size_t size = 0);
+    std::shared_ptr<TemplateColumn<T>> addColumn(std::string_view header, size_t size = 0);
 
     /**
      * \brief add column of type T from a std::vector<T>
@@ -115,7 +115,7 @@ public:
      * the DataFrame can be used
      */
     template <typename T>
-    auto addColumn(const std::string& header, std::vector<T> data);
+    auto addColumn(std::string_view header, std::vector<T> data);
 
     /**
      * \brief Drop a column from data frame
@@ -125,7 +125,7 @@ public:
      *
      * \param header Name of the column to be dropped
      */
-    void dropColumn(const std::string& header);
+    void dropColumn(std::string_view header);
 
     /**
      * \brief Drop a column from data frame
@@ -141,9 +141,9 @@ public:
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
-    std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string& header,
+    std::shared_ptr<CategoricalColumn> addCategoricalColumn(std::string_view header,
                                                             size_t size = 0);
-    std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string& header,
+    std::shared_ptr<CategoricalColumn> addCategoricalColumn(std::string_view header,
                                                             const std::vector<std::string>& values);
     /**
      * \brief add a new row given a vector of strings.
@@ -173,8 +173,8 @@ public:
      * fetch the first column where the header matches \p name.
      * @return  matching column if existing, else nullptr
      */
-    std::shared_ptr<Column> getColumn(const std::string& name);
-    std::shared_ptr<const Column> getColumn(const std::string& name) const;
+    std::shared_ptr<Column> getColumn(std::string_view name);
+    std::shared_ptr<const Column> getColumn(std::string_view name) const;
 
     std::shared_ptr<TemplateColumn<std::uint32_t>> getIndexColumn();
     std::shared_ptr<const TemplateColumn<std::uint32_t>> getIndexColumn() const;
@@ -219,7 +219,7 @@ createDataFrame(const std::vector<std::vector<std::string>>& exampleRows,
                 const std::vector<std::string>& colHeaders = {}, bool doublePrecision = false);
 
 template <typename T>
-std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string& header, size_t size) {
+std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(std::string_view header, size_t size) {
     auto col = std::make_shared<TemplateColumn<T>>(header);
     col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
     columns_.push_back(col);
@@ -227,7 +227,7 @@ std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string& heade
 }
 
 template <typename T>
-auto DataFrame::addColumn(const std::string& header, std::vector<T> data) {
+auto DataFrame::addColumn(std::string_view header, std::vector<T> data) {
     return columns_.emplace_back(
         std::move(std::make_shared<TemplateColumn<T>>(header, std::move(data))));
 }
