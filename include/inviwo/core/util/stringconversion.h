@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/unindent.h>
 
 #include <algorithm>
 #include <string>
@@ -279,6 +280,13 @@ IVW_CORE_API bool iCaseEndsWith(std::string_view str, std::string_view suffix);
  */
 IVW_CORE_API std::string elideLines(std::string_view str, std::string_view abbrev = "...",
                                     size_t maxLineLength = 500);
+
+constexpr auto fmtHelp = IVW_UNINDENT(R"(
+    To locate the error try breaking on fmt::format_error exceptions,
+    or put a breakpoint in fmt::detail::error_handler::on_error.
+    in lldb try "breakpoint set -E c++ -O fmt::format_error"
+    or "breakpoint set -M fmt::v7::detail::error_handler::on_error".
+    )");
 
 }  // namespace util
 

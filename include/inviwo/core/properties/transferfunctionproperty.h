@@ -70,14 +70,14 @@ public:
     static const std::string classIdentifier;
 
     TransferFunctionProperty(
-        const std::string& identifier, const std::string& displayName,
+        std::string_view identifier, std::string_view displayName,
         const TransferFunction& value = TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
                                                           {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
         VolumeInport* volumeInport = nullptr,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
-    TransferFunctionProperty(const std::string& identifier, const std::string& displayName,
+    TransferFunctionProperty(std::string_view identifier, std::string_view displayName,
                              VolumeInport* volumeInport,
                              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                              PropertySemantics semantics = PropertySemantics::Default);

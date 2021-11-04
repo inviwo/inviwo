@@ -133,7 +133,7 @@ class IVW_CORE_API Property : public PropertyObservable,
 public:
     virtual std::string getClassIdentifier() const = 0;
 
-    Property(const std::string& identifier = "", const std::string& displayName = "",
+    Property(std::string_view identifier = "", std::string_view displayName = "",
              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
              PropertySemantics semantics = PropertySemantics::Default);
 

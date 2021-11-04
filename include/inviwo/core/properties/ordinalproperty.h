@@ -74,14 +74,14 @@ public:
     using value_type = T;
     using component_type = typename util::value_type<T>::type;
 
-    OrdinalProperty(const std::string& identifier, const std::string& displayName, const T& value,
+    OrdinalProperty(std::string_view identifier, std::string_view displayName, const T& value,
                     const T& minValue, const T& maxValue = Defaultvalues<T>::getMax(),
                     const T& increment = Defaultvalues<T>::getInc(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
 
     OrdinalProperty(
-        const std::string& identifier, const std::string& displayName,
+        std::string_view identifier, std::string_view displayName,
         const T& value = Defaultvalues<T>::getVal(),
         const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
                                                                      ConstraintBehavior::Editable},
@@ -91,7 +91,7 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
 
-    OrdinalProperty(const std::string& identifier, const std::string& displayName,
+    OrdinalProperty(std::string_view identifier, std::string_view displayName,
                     OrdinalPropertyState<T> state);
 
     OrdinalProperty(const OrdinalProperty<T>& rhs);
@@ -275,7 +275,7 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 }
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
+OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
                                     const T& value,
                                     const std::pair<T, ConstraintBehavior>& minValue,
                                     const std::pair<T, ConstraintBehavior>& maxValue,
@@ -299,7 +299,7 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
 }
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
+OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
                                     OrdinalPropertyState<T> state)
     : OrdinalProperty{identifier,
                       displayName,
@@ -311,7 +311,7 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
                       state.semantics} {}
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
+OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
                                     const T& value, const T& minValue, const T& maxValue,
                                     const T& increment, InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)

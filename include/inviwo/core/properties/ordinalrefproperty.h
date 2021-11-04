@@ -78,7 +78,7 @@ public:
     using component_type = typename util::value_type<T>::type;
 
     OrdinalRefProperty(
-        const std::string& identifier, const std::string& displayName, std::function<T()> get,
+        std::string_view identifier, std::string_view displayName, std::function<T()> get,
         std::function<void(const T&)> set,
         const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
                                                                      ConstraintBehavior::Editable},
@@ -88,7 +88,7 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = OrdinalRefPropertyState<T>::defaultSemantics());
 
-    OrdinalRefProperty(const std::string& identifier, const std::string& displayName,
+    OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
                        std::function<const T&()> get, std::function<void(const T&)> set,
                        OrdinalRefPropertyState<T> state);
 
@@ -261,8 +261,8 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 }
 
 template <typename T>
-OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
-                                          const std::string& displayName, std::function<T()> get,
+OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier,
+                                          std::string_view displayName, std::function<T()> get,
                                           std::function<void(const T&)> set,
                                           const std::pair<T, ConstraintBehavior>& minValue,
                                           const std::pair<T, ConstraintBehavior>& maxValue,
@@ -290,8 +290,8 @@ OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
 }
 
 template <typename T>
-OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
-                                          const std::string& displayName,
+OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier,
+                                          std::string_view displayName,
                                           std::function<const T&()> get,
                                           std::function<void(const T&)> set,
                                           OrdinalRefPropertyState<T> state)

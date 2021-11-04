@@ -43,6 +43,8 @@
 #include <QMenu>
 #include <warn/pop>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TFEditorPrimitive*) {}
@@ -229,10 +231,10 @@ void TFEditorPrimitive::updateLabel() {
 
     QString label;
     if (auto tfe = qobject_cast<TFEditor*>(scene())) {
-        label = QString("%1 (%2) / %3")
-                    .arg(tfe->getDataMapper().mapFromNormalizedToValue(getPosition()))
-                    .arg(getPosition(), 0, 'g', 3)
-                    .arg(getColor().a, 0, 'g', 3);
+        label = utilqt::toQString(fmt::format(
+            "{:0.3g} {} ({:0.3g}) / {:0.3g}", tfe->getDataMapper().mapFromNormalizedToValue(getPosition()),
+            tfe->getDataMapper().valueAxis.unit, getPosition(), getColor().a));
+
     } else {
         label = QString("%1 / %2").arg(getPosition(), 0, 'g', 3).arg(getColor().a, 0, 'g', 3);
     }

@@ -59,7 +59,8 @@ public:
      *  The PropertySemantics can be set to Editor.
      *  Then a TextEditorWidget will be used instead of a StringPropertyWidget
      */
-    StringProperty(std::string identifier, std::string displayName, std::string value = "",
+    StringProperty(std::string_view identifier, std::string_view displayName,
+                   std::string_view value = "",
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 

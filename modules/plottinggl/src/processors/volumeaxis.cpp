@@ -99,9 +99,8 @@ VolumeAxis::VolumeAxis()
     , axisRenderers_{{xAxis_, yAxis_, zAxis_}}
     , propertyUpdate_{false} {
     imageInport_.setOptional(true);
-    addPort(inport_);
-    addPort(imageInport_);
-    addPort(outport_);
+
+    addPorts(inport_, imageInport_, outport_);
 
     rangeXaxis_.setSemantics(PropertySemantics::Text);
     rangeYaxis_.setSemantics(PropertySemantics::Text);
@@ -244,13 +243,21 @@ void VolumeAxis::adjustRanges() {
     dvec3 volDims(1.0);
     dvec3 offset(0.0);
     dvec3 basisLen(1.0);
-    auto volume = inport_.getData();
-    if (volume) {
+
+    std::string xCaption{"x"};
+    std::string yCaption{"y"};
+    std::string zCaption{"z"};
+
+    if (auto volume = inport_.getData()) {
         volDims = dvec3(volume->getDimensions());
         for (size_t i = 0; i < 3; ++i) {
             basisLen[i] = glm::length(volume->getBasis()[i]);
         }
         offset = volume->getOffset();
+
+        xCaption = fmt::format("{} ({})", volume->axes[0].name, volume->axes[0].unit);
+        yCaption = fmt::format("{} ({})", volume->axes[1].name, volume->axes[1].unit);
+        zCaption = fmt::format("{} ({})", volume->axes[2].name, volume->axes[2].unit);
     }
 
     util::KeepTrueWhileInScope b(&propertyUpdate_);
@@ -279,8 +286,21 @@ void VolumeAxis::adjustRanges() {
             break;
     }
 
+    auto setState = [](auto& p, const auto& state) {
+        if (p.isDefaultState()) {
+            p.set(state);
+            p.setCurrentStateAsDefault();
+        } else {
+            Property::setStateAsDefault(p, state);
+        }
+    };
+
+    setState(xAxis_.captionSettings_.title_, xCaption);
+    setState(yAxis_.captionSettings_.title_, yCaption);
+    setState(zAxis_.captionSettings_.title_, zCaption);
+
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
-}
+}  // namespace plot
 
 }  // namespace plot
 

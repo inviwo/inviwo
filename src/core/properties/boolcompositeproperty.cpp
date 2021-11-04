@@ -36,8 +36,9 @@ namespace inviwo {
 const std::string BoolCompositeProperty::classIdentifier = "org.inviwo.BoolCompositeProperty";
 std::string BoolCompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
-BoolCompositeProperty::BoolCompositeProperty(std::string identifier, std::string displayName,
-                                             bool checked, InvalidationLevel invalidationLevel,
+BoolCompositeProperty::BoolCompositeProperty(std::string_view identifier,
+                                             std::string_view displayName, bool checked,
+                                             InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , checked_("checked", "checked", checked, invalidationLevel, semantics) {

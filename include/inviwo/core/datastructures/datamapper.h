@@ -32,7 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
 
-#include <string>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/algorithm/linearmap.h>
 
 namespace inviwo {
 
@@ -54,36 +55,81 @@ public:
     DataMapper(const DataMapper& rhs);
     DataMapper& operator=(const DataMapper& that);
 
-    dvec2 dataRange;        ///< Minimum and maximum data range
-    dvec2 valueRange;       ///< Minimum and maximum value range
-    std::string valueUnit;  ///< Unit, i.e. Hounsfield/absorption/W.
+    /**
+     * The ´dataRange´ is used to normalise the "raw" values to [0,1]
+     * Typically the minimum and maximum of the "raw" data is used. For 8 and 16 integer data that
+     * is often the same or close to the same as the minimum and maximum of the data type. For data
+     * where the minimum and maximum is far from the minimum and maximum of the data type, the
+     * minimum and maximum has to either be calculated from the data, read from the input, or
+     * entered by the user.
+     */
+    dvec2 dataRange;
+
+    /**
+     * The `valueRange` correspond to the "true" values in the "raw" data. The "raw" data will first
+     * be normalized to [0,1] using the `dataRange` and map to the "true" range using the
+     * `valueRange`. An example might be useful, if water temperature values in the range of
+     * [0.0, 30.0] °C is stored as 8 bit unsigned int, using the full data range from [0,255]. Then
+     * the `dataRange` would be [0, 255] and the `valueRange` [0.0, 30.0].
+     * Using the same values for `dataRange` and `valueRange` means the the original "raw" values
+     * will be used.
+     */
+    dvec2 valueRange;
+
+    /**
+     * The `valueAxis` hols the `name` and `unit` of the quantity. Following the example above
+     * the`name` would be "water temperature" and `unit` "°C".
+     */
+    Axis valueAxis;  ///< Name and Unit, i.e. absorption, Hounsfield.
 
     void initWithFormat(const DataFormatBase* format);
 
+    /**
+     * Map from `dataRange` to the `valueRange`
+     */
     template <typename T>
     T mapFromDataToValue(T val) const {
-        return static_cast<T>((static_cast<double>(val) - dataRange.x) /
-                                  (dataRange.y - dataRange.x) * (valueRange.y - valueRange.x) +
-                              valueRange.x);
+        return static_cast<T>(util::linearMap(static_cast<double>(val), dataRange, valueRange));
     }
 
+    /**
+     * Map from the `valueRange` to the `dataRange`
+     */
     template <typename T>
     T mapFromValueToData(T val) const {
-        return static_cast<T>((static_cast<double>(val) - valueRange.x) /
-                                  (valueRange.y - valueRange.x) * (dataRange.y - dataRange.x) +
-                              dataRange.x);
+        return static_cast<T>(util::linearMap(static_cast<double>(val), valueRange, dataRange));
     }
 
+    /**
+     * Map from `dataRange` to the Normalized range [0,1]
+     */
+    template <typename T>
+    T mapFromDataToNormalized(T val) const {
+        return static_cast<T>(util::linearMapToNormalized(static_cast<double>(val), dataRange));
+    }
+
+    /**
+     * Map from the Normalized range [0,1] to the `dataRange`
+     */
+    template <typename T>
+    T mapFromNormalizedToData(T val) const {
+        return static_cast<T>(util::linearMapFromNormalized(static_cast<double>(val), dataRange));
+    }
+
+    /**
+     * Map from `valueRange` to the Normalized range [0,1]
+     */
     template <typename T>
     T mapFromValueToNormalized(T val) const {
-        return static_cast<T>((static_cast<double>(val) - valueRange.x) /
-                              (valueRange.y - valueRange.x));
+        return static_cast<T>(util::linearMapToNormalized(static_cast<double>(val), valueRange));
     }
 
+    /**
+     * Map from the Normalized range [0,1] to the `valueRange`
+     */
     template <typename T>
     T mapFromNormalizedToValue(T val) const {
-        return static_cast<T>(valueRange.x +
-                              static_cast<double>(val) * (valueRange.y - valueRange.x));
+        return static_cast<T>(util::linearMapFromNormalized(static_cast<double>(val), valueRange));
     }
 };
 

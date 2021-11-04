@@ -36,22 +36,34 @@
 
 #include <sstream>
 
+#include <inviwo/core/datastructures/unitsystem.h>
+
 namespace py = pybind11;
 
 namespace inviwo {
 
 void exposeDataMapper(py::module& m) {
 
+    py::class_<Unit>(m, "Unit")
+        .def(py::init([](std::string unit) { return units::unit_from_string(unit); }))
+        .def("to_string", [](const Unit& unit) { return units::to_string(unit); });
+
+    py::class_<Axis>(m, "Axis")
+        .def(py::init<std::string, Unit>())
+        .def_readwrite("name", &Axis::name)
+        .def_readwrite("unit", &Axis::unit);
+
     py::class_<DataMapper>(m, "DataMapper")
         .def(py::init())
         .def_readwrite("dataRange", &DataMapper::dataRange)
         .def_readwrite("valueRange", &DataMapper::valueRange)
-        .def_readwrite("valueUnit", &DataMapper::valueUnit)
-        .def("__repr__", [](const DataMapper& datamapper) {
+        .def_readwrite("valueAxis", &DataMapper::valueAxis)
+        .def("__repr__", [](const DataMapper& dataMapper) {
             std::ostringstream oss;
-            oss << "<DataMapper:  dataRange = " << datamapper.dataRange
-                << ",  valueRange = " << datamapper.valueRange << ",  valueUnit = \""
-                << datamapper.valueUnit << "\">";
+            oss << "<DataMapper:  dataRange = " << dataMapper.dataRange
+                << ",  valueRange = " << dataMapper.valueRange
+                << ",  valueName = " << dataMapper.valueAxis.name << ",  valueUnit = \""
+                << units::to_string(dataMapper.valueAxis.unit) << "\">";
             return oss.str();
         });
 }

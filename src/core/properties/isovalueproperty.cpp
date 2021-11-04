@@ -36,7 +36,7 @@ namespace inviwo {
 const std::string IsoValueProperty::classIdentifier = "org.inviwo.IsoValueProperty";
 std::string IsoValueProperty::getClassIdentifier() const { return classIdentifier; }
 
-IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::string& displayName,
+IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    const IsoValueCollection& value, VolumeInport* volumeInport,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics)
@@ -50,7 +50,7 @@ IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::str
     iso_.value.addObserver(this);
 }
 
-IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::string& displayName,
+IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                                    PropertySemantics semantics)
     : IsoValueProperty(identifier, displayName, {}, volumeInport, invalidationLevel, semantics) {}

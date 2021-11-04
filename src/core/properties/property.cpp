@@ -44,7 +44,7 @@ Property::Property(const std::string& identifier, const std::string& displayName
     , MetaDataOwner()
     , serializationMode_(PropertySerializationMode::Default)
     , identifier_(identifier)
-    , displayName_("displayName", displayName)
+    , displayName_("displayName", std::string(displayName))
     , readOnly_("readonly", false)
     , semantics_("semantics", semantics)
     , usageMode_("usageMode", UsageMode::Development)

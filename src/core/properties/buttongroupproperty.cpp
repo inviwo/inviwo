@@ -34,14 +34,14 @@ namespace inviwo {
 const std::string ButtonGroupProperty::classIdentifier = "org.inviwo.ButtonGroupProperty";
 std::string ButtonGroupProperty::getClassIdentifier() const { return classIdentifier; }
 
-ButtonGroupProperty::ButtonGroupProperty(std::string identifier, std::string displayName,
+ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics) {
     setValid();  // the initial state for a button should be valid
 }
 
-ButtonGroupProperty::ButtonGroupProperty(std::string identifier, std::string displayName,
+ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
                                          std::vector<Button> buttons,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)

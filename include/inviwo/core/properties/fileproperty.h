@@ -72,14 +72,14 @@ public:
      * @param invalidationLevel
      * @param semantics Can be set to Editor
      */
-    FileProperty(std::string identifier, std::string displayName, std::string value = "",
-                 std::string contentType = "default",
+    FileProperty(std::string_view identifier, std::string_view displayName, std::string_view value = "",
+                 std::string_view contentType = "default",
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
     FileProperty(const FileProperty& rhs) = default;
 
-    FileProperty& operator=(const std::string& value);
+    FileProperty& operator=(std::string_view value);
     virtual FileProperty* clone() const override;
     virtual ~FileProperty() = default;
 
@@ -90,7 +90,7 @@ public:
     /**
      * Set the file name and the selected extension.
      */
-    virtual void set(const std::string& file, const FileExtension& selectedExtension);
+    virtual void set(std::string_view file, const FileExtension& selectedExtension);
     virtual void set(const Property* property) override;
 
     operator std::string_view() const;
@@ -98,7 +98,7 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    virtual void addNameFilter(std::string);
+    virtual void addNameFilter(std::string_view);
     virtual void addNameFilter(FileExtension);
     virtual void addNameFilters(const std::vector<FileExtension>& filters);
     virtual void clearNameFilters();
@@ -110,7 +110,7 @@ public:
     virtual void setFileMode(FileMode mode);
     FileMode getFileMode() const;
 
-    void setContentType(const std::string& contentType);
+    void setContentType(std::string_view contentType);
     const std::string& getContentType() const;
 
     const FileExtension& getSelectedExtension() const;

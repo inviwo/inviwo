@@ -31,6 +31,8 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/document.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
@@ -41,6 +43,7 @@ Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
     , MetaDataOwner{}
     , HistogramSupplier{}
     , dataMap_{defaultFormat}
+    , axes{util::defaultAxes<3>()}
     , defaultDimensions_{defaultDimensions}
     , defaultDataFormat_{defaultFormat}
     , defaultSwizzleMask_{defaultSwizzleMask}
@@ -53,6 +56,7 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     , MetaDataOwner{}
     , HistogramSupplier{}
     , dataMap_{in->getDataFormat()}
+    , axes{util::defaultAxes<3>()}
     , defaultDimensions_{in->getDimensions()}
     , defaultDataFormat_{in->getDataFormat()}
     , defaultSwizzleMask_{in->getSwizzleMask()}
@@ -150,7 +154,11 @@ Document Volume::getInfo() const {
     tb(H("Wrapping"), getWrapping());
     tb(H("Data Range"), dataMap_.dataRange);
     tb(H("Value Range"), dataMap_.valueRange);
-    tb(H("Unit"), dataMap_.valueUnit);
+    tb(H("Value Name"), dataMap_.valueAxis.name);
+    tb(H("Value Unit"), fmt::format("{} ({})", dataMap_.valueAxis.name, dataMap_.valueAxis.unit));
+    tb(H("Axis 1"), fmt::format("{} ({})", axes[0].name, axes[0].unit));
+    tb(H("Axis 2"), fmt::format("{} ({})", axes[1].name, axes[1].unit));
+    tb(H("Axis 3"), fmt::format("{} ({})", axes[2].name, axes[2].unit));
 
     if (hasRepresentation<VolumeRAM>()) {
         if (hasHistograms()) {

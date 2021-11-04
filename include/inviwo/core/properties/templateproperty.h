@@ -45,7 +45,7 @@ class TemplateProperty : public Property {
 public:
     using value_type = T;
 
-    TemplateProperty(const std::string& identifier, const std::string& displayName,
+    TemplateProperty(std::string_view identifier, std::string_view displayName,
                      const T& value = T(),
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
@@ -55,7 +55,7 @@ public:
     virtual TemplateProperty<T>* clone() const override = 0;
     virtual ~TemplateProperty() = default;
 
-    operator const T&() const;
+    operator const T &() const;
     const T& get() const;
     const T& operator*() const;
     const T* operator->() const;
@@ -83,7 +83,7 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 }
 
 template <typename T>
-TemplateProperty<T>::TemplateProperty(const std::string& identifier, const std::string& displayName,
+TemplateProperty<T>::TemplateProperty(std::string_view identifier, std::string_view displayName,
                                       const T& value, InvalidationLevel invalidationLevel,
                                       PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics), value_("value", value) {}
@@ -95,7 +95,7 @@ TemplateProperty<T>& TemplateProperty<T>::operator=(const T& value) {
 }
 
 template <typename T>
-TemplateProperty<T>::operator const T&() const {
+TemplateProperty<T>::operator const T &() const {
     return value_;
 }
 

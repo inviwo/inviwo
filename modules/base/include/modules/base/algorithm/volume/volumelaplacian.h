@@ -35,6 +35,8 @@
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/templatesampler.h>
 
+#include <units/units.hpp>
+
 namespace inviwo {
 
 namespace util {
@@ -142,8 +144,11 @@ std::shared_ptr<Volume> VolumeLaplacianDispatcher::operator()(
             newVolume->dataMap_.valueRange = dvec2(-rangemax, rangemax);
             break;
     }
-
-    newVolume->dataMap_.valueUnit = "Laplacian";
+    
+    newVolume->axes = volume->axes;
+    newVolume->dataMap_.valueAxis.name = "laplacian";
+    newVolume->dataMap_.valueAxis.unit =
+        volume->dataMap_.valueAxis.unit / volume->axes[0].unit / volume->axes[0].unit;
 
     return newVolume;
 }

@@ -58,8 +58,9 @@ void ImageLabel::deserialize(Deserializer& d) {
 const std::string ImageEditorProperty::classIdentifier = "org.inviwo.ImageEditorProperty";
 std::string ImageEditorProperty::getClassIdentifier() const { return classIdentifier; }
 
-ImageEditorProperty::ImageEditorProperty(std::string identifier, std::string displayName,
-                                         std::string value, InvalidationLevel invalidationLevel,
+ImageEditorProperty::ImageEditorProperty(std::string_view identifier, std::string_view displayName,
+                                         std::string_view value,
+                                         InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : FileProperty(identifier, displayName, value, "image", invalidationLevel, semantics)
     , labels_() {}

@@ -35,8 +35,8 @@ namespace inviwo {
 const std::string DirectoryProperty::classIdentifier = "org.inviwo.DirectoryProperty";
 std::string DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
 
-DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
-                                     std::string value, std::string contentType,
+DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_view displayName,
+                                     std::string_view value, std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {

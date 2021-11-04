@@ -64,9 +64,9 @@ public:
      * @param invalidationLevel
      * @param semantics Can be set to Editor
      */
-    MultiFileProperty(std::string identifier, std::string displayName,
+    MultiFileProperty(std::string_view identifier, std::string_view displayName,
                       const std::vector<std::string>& value = {},
-                      std::string contentType = "default",
+                      std::string_view contentType = "default",
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
 
@@ -75,15 +75,15 @@ public:
     virtual MultiFileProperty* clone() const override;
     virtual ~MultiFileProperty() = default;
 
-    void set(const std::string& value);
+    void set(std::string_view value);
     virtual void set(const std::vector<std::string>& values) override;
     virtual void set(const Property* property) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    virtual void addNameFilter(std::string);
-    virtual void addNameFilter(FileExtension);
+    virtual void addNameFilter(std::string_view filter);
+    virtual void addNameFilter(FileExtension ext);
     virtual void addNameFilters(const std::vector<FileExtension>& filters);
     virtual void clearNameFilters();
     virtual std::vector<FileExtension> getNameFilters();
@@ -94,7 +94,7 @@ public:
     virtual void setFileMode(FileMode mode);
     FileMode getFileMode() const;
 
-    void setContentType(const std::string& contentType);
+    void setContentType(std::string_view contentType);
     std::string getContentType() const;
 
     const FileExtension& getSelectedExtension() const;

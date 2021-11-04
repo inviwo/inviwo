@@ -200,7 +200,7 @@ if(NOT IVW_USE_EXTERNAL_FMT)
     add_subdirectory(fmt)
     ivw_register_license_file(NAME "{fmt}" TARGET fmt::fmt MODULE Core EXT
         URL "https://github.com/fmtlib/fmt"
-        TYPE "TBSD 2-Clause"
+        TYPE "MIT license"
         FILES ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst
     )
     ivw_default_install_targets(fmt)
@@ -250,6 +250,21 @@ else()
     find_package(roaring CONFIG REQUIRED)
     ivw_vcpkg_install(roaring MODULE Core EXT)
 endif()
+
+# Units
+option(IVW_USE_EXTERNAL_UNITS "Units is provided externaly (https://github.com/LLNL/units)" OFF)
+if(NOT IVW_USE_EXTERNAL_UNITS)
+    add_subdirectory(units)
+    ivw_register_license_file(NAME "Units" VERSION 0.5.0 TARGET units::units MODULE Core EXT
+        URL "https://github.com/LLNL/units"
+        TYPE "BSD 3-Clause"
+        FILES ${IVW_EXTENSIONS_DIR}/units/units/LICENSE
+    )
+else()
+    find_package(units CONFIG REQUIRED)
+    ivw_vcpkg_install(units MODULE Core EXT)
+endif()
+
 
 if(WIN32) # Stackwalker for windows for stack traces in the log
     add_subdirectory(stackwalker) 

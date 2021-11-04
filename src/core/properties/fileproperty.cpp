@@ -39,18 +39,18 @@ namespace inviwo {
 const std::string FileProperty::classIdentifier = "org.inviwo.FileProperty";
 std::string FileProperty::getClassIdentifier() const { return classIdentifier; }
 
-FileProperty::FileProperty(std::string identifier, std::string displayName, std::string value,
-                           std::string contentType, InvalidationLevel invalidationLevel,
+FileProperty::FileProperty(std::string_view identifier, std::string_view displayName, std::string_view value,
+                           std::string_view contentType, InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
-    : TemplateProperty<std::string>(identifier, displayName, value, invalidationLevel, semantics)
+    : TemplateProperty<std::string>(identifier, displayName, std::string{value}, invalidationLevel, semantics)
     , acceptMode_(AcceptMode::Open)
     , fileMode_(FileMode::AnyFile)
     , contentType_(contentType) {
     addNameFilter(FileExtension::all());
 }
 
-FileProperty& FileProperty::operator=(const std::string& value) {
-    TemplateProperty<std::string>::operator=(value);
+FileProperty& FileProperty::operator=(std::string_view value) {
+    TemplateProperty<std::string>::operator=(std::string{value});
     return *this;
 }
 
@@ -85,7 +85,7 @@ void FileProperty::set(const std::string& file) {
     if (modified) propertyModified();
 }
 
-void FileProperty::set(const std::string& file, const FileExtension& selectedExtension) {
+void FileProperty::set(std::string_view file, const FileExtension& selectedExtension) {
     const auto value = filesystem::cleanupPath(file);
     bool modified = false;
     if (value_ != value) {
@@ -205,7 +205,7 @@ void FileProperty::deserialize(Deserializer& d) {
     }
 }
 
-void FileProperty::addNameFilter(std::string filter) {
+void FileProperty::addNameFilter(std::string_view filter) {
     nameFilters_.push_back(FileExtension::createFileExtensionFromString(filter));
 }
 
@@ -227,7 +227,7 @@ void FileProperty::setFileMode(FileMode mode) { fileMode_ = mode; }
 
 FileMode FileProperty::getFileMode() const { return fileMode_; }
 
-void FileProperty::setContentType(const std::string& contentType) { contentType_ = contentType; }
+void FileProperty::setContentType(std::string_view contentType) { contentType_ = contentType; }
 
 const std::string& FileProperty::getContentType() const { return contentType_; }
 

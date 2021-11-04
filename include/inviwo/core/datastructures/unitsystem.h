@@ -1,0 +1,344 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2021 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+#pragma once
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/logcentral.h>
+
+#include <flags/flags.h>
+#include <fmt/format.h>
+#include <units/units.hpp>
+#include <tcb/span.hpp>
+
+#include <string_view>
+#include <tuple>
+#include <unordered_map>
+#include <optional>
+#include <iterator>
+
+namespace inviwo {
+
+using Unit = units::precise_unit;
+
+struct IVW_CORE_API Axis {
+    std::string name;
+    Unit unit;
+};
+
+namespace util {
+
+constexpr std::array<std::string_view, 4> defaultAxesNames = {"x", "y", "z", "t"};
+constexpr std::array<Unit, 4> defaultAxesUnits = {Unit{}, Unit{}, Unit{}, Unit{}};
+
+template <size_t N>
+std::array<Axis, N> defaultAxes() {
+    static_assert(N <= defaultAxesNames.size());
+    return util::make_array<N>([](auto i) {
+        return Axis{std::string{defaultAxesNames[i]}, defaultAxesUnits[i]};
+    });
+}
+
+}  // namespace util
+
+enum class UnitFlag { None = 0, UsesPrefix = 1 << 0, OnlyPositivePowers = 1 << 1 };
+ALLOW_FLAGS_FOR_ENUM(UnitFlag)
+using UnitFlags = flags::flags<UnitFlag>;
+
+struct UnitDesc {
+    Unit unit;
+    std::string_view name;
+    std::string_view abbr;
+    UnitFlags flags;
+};
+
+namespace unitgroups {
+
+// clang-format off
+constexpr std::array<UnitDesc, 10> si = {{
+    {units::precise::meter,    "meter",    "m",   UnitFlag::UsesPrefix},
+    {units::precise::kg,       "kilogram", "kg",  UnitFlag::None},
+    {units::precise::second,   "second",   "s",   UnitFlag::UsesPrefix},
+    {units::precise::Ampere,   "ampere",   "A",   UnitFlag::UsesPrefix},
+    {units::precise::Kelvin,   "kelvin",   "K",   UnitFlag::UsesPrefix},
+    {units::precise::mol,      "mole",     "mol", UnitFlag::UsesPrefix},
+    {units::precise::candela,  "candela",  "Cd",  UnitFlag::UsesPrefix},
+    {units::precise::currency, "currency", "$",   UnitFlag::UsesPrefix},
+    {units::precise::count,    "count",    "#",   UnitFlag::None},
+    {units::precise::radian,   "radian",   "rad", UnitFlag::None}
+}};
+
+constexpr std::array<UnitDesc, 17> derived = {{
+    {units::precise::hertz,     "hertz",     "Hz",  UnitFlag::UsesPrefix |
+                                                    UnitFlag::OnlyPositivePowers},
+    {units::precise::volt,      "volt",      "V",   UnitFlag::UsesPrefix},
+    {units::precise::newton,    "newton",    "N",   UnitFlag::UsesPrefix},
+    {units::precise::pascal,    "pascal",    "Pa",  UnitFlag::UsesPrefix},
+    {units::precise::joule,     "joule",     "J",   UnitFlag::UsesPrefix},
+    {units::precise::watt,      "watt",      "W",   UnitFlag::UsesPrefix},
+    {units::precise::farad,     "farad",     "F",   UnitFlag::UsesPrefix},
+    {units::precise::siemens,   "siemens",   "S",   UnitFlag::UsesPrefix},
+    {units::precise::weber,     "weber",     "Wb",  UnitFlag::UsesPrefix},
+    {units::precise::tesla,     "tesla",     "T",   UnitFlag::UsesPrefix},
+    {units::precise::henry,     "henry",     "H",   UnitFlag::UsesPrefix},
+    {units::precise::lumen,     "lumen",     "lm",  UnitFlag::UsesPrefix},
+    {units::precise::lux,       "lux",       "lx",  UnitFlag::UsesPrefix},
+    {units::precise::becquerel, "becquerel", "Bq",  UnitFlag::UsesPrefix},
+    {units::precise::gray,      "gray",      "Gy",  UnitFlag::UsesPrefix},
+    {units::precise::sievert,   "sievert",   "Sv",  UnitFlag::UsesPrefix},
+    {units::precise::katal,     "katal",     "kat", UnitFlag::UsesPrefix}
+}};
+
+constexpr std::array<UnitDesc, 3> extra = {{
+    {units::precise::bar, "bar",   "bar", UnitFlag::UsesPrefix},
+    {units::precise::L,   "liter", "L",   UnitFlag::UsesPrefix},
+    {units::precise::g,   "gram",  "g",   UnitFlag::UsesPrefix}
+}};
+
+constexpr std::array<UnitDesc, 5> time = {{
+    {units::precise::time::min,  "minute", "min",  UnitFlag::None},
+    {units::precise::time::h,    "hour",   "h",    UnitFlag::None},
+    {units::precise::time::day,  "day",    "day",  UnitFlag::None},
+    {units::precise::time::week, "week",   "week", UnitFlag::None},
+    {units::precise::time::yr,   "year",   "yr",   UnitFlag::None}
+}};
+
+constexpr std::array<UnitDesc, 1> temperature = {{
+    {units::precise::temperature::celsius,  "celsius", "°C", UnitFlag::None},
+}};
+
+
+constexpr Unit elementary_charge{1.602176634e-19, units::precise::C};
+
+constexpr std::array<UnitDesc, 4> atomic = {{
+    {units::precise::distance::angstrom,  "\u00C5ngstr\u00F6m", "\u00C5", UnitFlag::None},
+    {units::precise::energy::eV,          "electron volt",      "eV",     UnitFlag::UsesPrefix},
+    {units::precise::energy::hartree,     "hartree",            "Ha",     UnitFlag::None},
+    {elementary_charge,                   "elementary charge",  "e",      UnitFlag::None}
+}};
+
+constexpr std::array<UnitDesc, 3> astronomical = {{
+    {units::precise::distance::parsec,  "parsec",            "pc", UnitFlag::None},
+    {units::precise::distance::au,      "astronomical unit", "au", UnitFlag::None},
+    {units::precise::distance::ly,      "light-year",        "ly", UnitFlag::None},
+}};
+
+
+constexpr std::array<UnitDesc, 17> prefixes = {{
+    {units::precise::yocto, "yocto", "y", UnitFlag::None},
+    {units::precise::zepto, "zepto", "z", UnitFlag::None},
+    {units::precise::atto,  "atto",  "a", UnitFlag::None},
+    {units::precise::femto, "femto", "f", UnitFlag::None},
+    {units::precise::pico,  "pico",  "p", UnitFlag::None},
+    {units::precise::nano,  "nano",  "n", UnitFlag::None},
+    {units::precise::micro, "micro", "\u00B5", UnitFlag::None},
+    {units::precise::milli, "milli", "m", UnitFlag::None},
+    {units::precise::one,   "",      "",  UnitFlag::None},
+    {units::precise::kilo,  "kilo",  "k", UnitFlag::None},
+    {units::precise::mega,  "mega",  "M", UnitFlag::None},
+    {units::precise::giga,  "giga",  "G", UnitFlag::None},
+    {units::precise::tera,  "tera",  "T", UnitFlag::None},
+    {units::precise::peta,  "peta",  "P", UnitFlag::None},
+    {units::precise::exa,   "exa",   "E", UnitFlag::None},
+    {units::precise::zetta, "zetta", "Z", UnitFlag::None},
+    {units::precise::yotta, "yotta", "Y", UnitFlag::None},
+}};
+
+// clang-format on
+
+struct Group {
+    std::string_view name;
+    util::span<const UnitDesc> units;
+};
+
+constexpr std::array<Group, 7> groups = {{{"SI", si},
+                                          {"Derived", derived},
+                                          {"Extra", extra},
+                                          {"Time", time},
+                                          {"Temperature", temperature},
+                                          {"Atomic", atomic},
+                                          {"Astronomical", astronomical}}};
+
+using EnabledGroups = std::array<bool, unitgroups::groups.size()>;
+constexpr unitgroups::EnabledGroups allGroups = {true,true,true,true,true,true,true};
+constexpr unitgroups::EnabledGroups siGroups = {true,false,false,false,false,false,false};
+
+}  // namespace unitgroups
+
+namespace detail {
+
+constexpr std::array<
+    std::tuple<std::string_view, std::string_view, int (units::detail::unit_data::*)() const>, 10>
+    baseUnits{{{"meter", "m", &units::detail::unit_data::meter},
+               {"kilogram", "kg", &units::detail::unit_data::kg},
+               {"second", "s", &units::detail::unit_data::second},
+               {"ampere", "A", &units::detail::unit_data::ampere},
+               {"kelvin", "K", &units::detail::unit_data::kelvin},
+               {"mole", "mol", &units::detail::unit_data::mole},
+               {"candela", "Cd", &units::detail::unit_data::candela},
+               {"currency", "$", &units::detail::unit_data::currency},
+               {"count", "#", &units::detail::unit_data::count},
+               {"radian", "rad", &units::detail::unit_data::radian}}};
+
+}  // namespace detail
+
+namespace util {
+
+enum class UseUnitPrefixes { Yes, No };
+
+IVW_CORE_API unitgroups::EnabledGroups getSystemUnitGroups();
+
+IVW_CORE_API std::unordered_map<units::detail::unit_data, std::vector<UnitDesc>> getUnitGroupsFor(
+    Unit unit, const unitgroups::EnabledGroups& enabledGroups);
+
+IVW_CORE_API std::pair<double, std::vector<std::tuple<std::string_view, std::string_view, int>>>
+findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enabledGroups,
+                        UseUnitPrefixes usesPrefixes);
+
+}  // namespace util
+
+}  // namespace inviwo
+
+/**
+ * Formatting specialization for Units
+ * The Units have a Format Specification Mini-Language
+ *
+ * spec      ::= [unit_spec][":" format_spec]
+ *
+ * format_spec ::= fmt standard format specifier
+ *
+ * unis_spec   ::= [prefix][units]
+ * prefix      ::= "p" | "P"
+ * units       ::= "si" | "sys" | "all"
+ *
+ * Prefix:
+ *    "p"     Use si prefixes y to Y to reduce any multiplier (default)
+ *    "P"     Don't use any prefixes
+ *
+ * Units:
+ *    "si"    Only use the basic SI unit and combination of those.
+ *    "sys"   Use the systems currently selected set of unit groups (default)
+ *    "all"   Use all known unit groups.
+ *
+ */
+template <>
+struct fmt::formatter<::inviwo::Unit> {
+    formatter<std::string_view> formatter_;
+
+    enum class UnitSystem { Si, Sys, All };
+
+    ::inviwo::util::UseUnitPrefixes usePrefix = ::inviwo::util::UseUnitPrefixes::Yes;
+    UnitSystem unitsystem = UnitSystem::Sys;
+
+    // All the unicode superscript digits from 0 to 9 but we let 0,1 ("\u2070", "\u00B9") be empty
+    // since they are not needed
+    static constexpr std::array<std::string_view, 10> powers = {
+        "", "", "\u00B2", "\u00B3", "\u2074", "\u2075", "\u2076", "\u2077", "\u2078", "\u2079"};
+
+    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin()) {
+        auto it = ctx.begin();
+        auto end = ctx.end();
+        auto fmtEnd = std::find(it, end, '}');
+        auto unitEnd = std::find(it, fmtEnd, ':');
+
+        std::string_view unitFormat(it, unitEnd - it);
+
+        if (unitFormat.size() > 0 && unitFormat[0] == 'p') {
+            usePrefix = ::inviwo::util::UseUnitPrefixes::Yes;
+            unitFormat.remove_prefix(1);
+        } else if (unitFormat.size() > 0 && unitFormat[0] == 'P') {
+            usePrefix = ::inviwo::util::UseUnitPrefixes::No;
+            unitFormat.remove_prefix(1);
+        }
+
+        if (unitFormat.empty()) {
+        } else if (unitFormat == "si") {
+            unitsystem = UnitSystem::Si;
+        } else if (unitFormat == "sys") {
+            unitsystem = UnitSystem::Sys;
+        } else if (unitFormat == "all") {
+            unitsystem = UnitSystem::All;
+        } else {
+            throw format_error("Invalid unit format found");
+        }
+
+        it = unitEnd;
+
+        if (it != fmtEnd) ++it;
+        ctx.advance_to(it);
+        return formatter_.parse(ctx);
+    }
+
+    // Formats the point p using the parsed format specification (presentation)
+    // stored in this formatter.
+    template <typename FormatContext>
+    auto format(const ::inviwo::Unit& unit, FormatContext& ctx) -> decltype(ctx.out()) {
+        // ctx.out() is an output iterator to write to.
+
+        const ::inviwo::unitgroups::EnabledGroups enabledGroups = [&]() {
+            if (unitsystem == UnitSystem::Si) {
+                return ::inviwo::unitgroups::siGroups;
+            } else if (unitsystem == UnitSystem::All) {
+                return  ::inviwo::unitgroups::allGroups;
+            } else {
+                return ::inviwo::util::getSystemUnitGroups();
+            }
+        }();
+
+        const auto [mult, niceUnits] =
+            ::inviwo::util::findBestSetOfNamedUnits(unit, enabledGroups, usePrefix);
+
+        fmt::memory_buffer buff;
+        auto it = std::back_inserter(buff);
+        
+        if (mult != 1.0) {
+            fmt::format_to(it, "{:4.2g} ", mult);
+        }
+        int neg = 0;
+        for (auto&& [prefix, abbr, pow] : niceUnits) {
+            if (pow > 0) {
+                fmt::format_to(it, "{}{}{}", prefix, abbr, powers[pow]);
+            } else if (pow < 0) {
+                ++neg;
+            }
+        }
+        if (neg != 0) {
+            *it++ = '/';
+            if (neg > 1) *it++ = '(';
+            for (auto&& [prefix, abbr, pow] : niceUnits) {
+                if (pow < 0) {
+                    fmt::format_to(it, "{}{}{}", prefix, abbr, powers[-pow]);
+                }
+            }
+            if (neg > 1) *it++ = ')';
+        }
+        
+        return formatter_.format(std::string_view{buff.data(), buff.size()}, ctx);
+    }
+};

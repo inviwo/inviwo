@@ -50,10 +50,10 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    PlaneProperty(const std::string& identifier, const std::string& displayName,
+    PlaneProperty(std::string_view identifier, std::string_view displayName,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
-    PlaneProperty(const std::string& identifier, const std::string& displayName, vec3 position,
+    PlaneProperty(std::string_view identifier, std::string_view displayName, vec3 position,
                   vec3 normal = vec3(0.0f, 0.0f, 1.0f), vec4 color = vec4(1.0f),
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);

@@ -39,8 +39,9 @@ namespace inviwo {
 const std::string MultiFileProperty::classIdentifier = "org.inviwo.MultiFileProperty";
 std::string MultiFileProperty::getClassIdentifier() const { return classIdentifier; }
 
-MultiFileProperty::MultiFileProperty(std::string identifier, std::string displayName,
-                                     const std::vector<std::string>& value, std::string contentType,
+MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_view displayName,
+                                     const std::vector<std::string>& value,
+                                     std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : TemplateProperty<std::vector<std::string>>(identifier, displayName, value, invalidationLevel,
@@ -64,7 +65,7 @@ MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::string>& 
 
 MultiFileProperty* MultiFileProperty::clone() const { return new MultiFileProperty(*this); }
 
-void MultiFileProperty::set(const std::string& value) {
+void MultiFileProperty::set(std::string_view value) {
     TemplateProperty<std::vector<std::string>>::set({filesystem::cleanupPath(value)});
 }
 
@@ -223,7 +224,7 @@ void MultiFileProperty::deserialize(Deserializer& d) {
     }
 }
 
-void MultiFileProperty::addNameFilter(std::string filter) {
+void MultiFileProperty::addNameFilter(std::string_view filter) {
     nameFilters_.push_back(FileExtension::createFileExtensionFromString(filter));
 }
 
@@ -245,9 +246,7 @@ void MultiFileProperty::setFileMode(FileMode mode) { fileMode_ = mode; }
 
 FileMode MultiFileProperty::getFileMode() const { return fileMode_; }
 
-void MultiFileProperty::setContentType(const std::string& contentType) {
-    contentType_ = contentType;
-}
+void MultiFileProperty::setContentType(std::string_view contentType) { contentType_ = contentType; }
 
 std::string MultiFileProperty::getContentType() const { return contentType_; }
 

@@ -29,6 +29,7 @@
 
 #pragma once
 
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>

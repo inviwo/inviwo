@@ -66,7 +66,7 @@ public:
         PrecomputedYZW
     };
 
-    RaycastingProperty(std::string identifier, std::string displayName,
+    RaycastingProperty(std::string_view identifier, std::string_view displayName,
                        InvalidationLevel = InvalidationLevel::InvalidResources,
                        PropertySemantics semantics = PropertySemantics::Default);
 

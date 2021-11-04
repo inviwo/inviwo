@@ -34,7 +34,7 @@ namespace inviwo {
 const std::string IsoTFProperty::classIdentifier = "org.inviwo.IsoTFProperty";
 std::string IsoTFProperty::getClassIdentifier() const { return classIdentifier; }
 
-IsoTFProperty::IsoTFProperty(const std::string& identifier, const std::string& displayName,
+IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
                              const IsoValueCollection& isovalues, const TransferFunction& tf,
                              VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
@@ -48,7 +48,7 @@ IsoTFProperty::IsoTFProperty(const std::string& identifier, const std::string& d
     isovalues_.TFPropertyObservable::addObserver(this);
 }
 
-IsoTFProperty::IsoTFProperty(const std::string& identifier, const std::string& displayName,
+IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
                              VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : IsoTFProperty(identifier, displayName, {},

@@ -33,7 +33,7 @@ namespace inviwo {
 const std::string PlaneProperty::classIdentifier = "org.inviwo.PlaneProperty";
 std::string PlaneProperty::getClassIdentifier() const { return classIdentifier; }
 
-PlaneProperty::PlaneProperty(const std::string& identifier, const std::string& displayName,
+PlaneProperty::PlaneProperty(std::string_view identifier, std::string_view displayName,
                              vec3 position, vec3 normal, vec4 color,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName, true, invalidationLevel, semantics)
@@ -51,7 +51,7 @@ PlaneProperty::PlaneProperty(const std::string& identifier, const std::string& d
     addProperty(color_);
 }
 
-PlaneProperty::PlaneProperty(const std::string& identifier, const std::string& displayName,
+PlaneProperty::PlaneProperty(std::string_view identifier, std::string_view displayName,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : PlaneProperty(identifier, displayName, vec3(0.5f), vec3(0.0f, 0.0f, 1.0f), vec4(1.0f),
                     invalidationLevel, semantics) {}

@@ -32,6 +32,7 @@
 #include <iterator>
 #include <type_traits>
 #include <utility>
+#include <optional>
 
 namespace inviwo {
 
@@ -65,12 +66,34 @@ struct TransformIterator {
         : transform_{std::move(transform)}, iterator_(iterator) {
         static_assert(std::is_same<base_reference, decltype(*std::declval<Iter>())>::value, "");
     }
+    TransformIterator(const TransformIterator& rhs) = default;
+    TransformIterator(TransformIterator&& rhs) = default;
+    TransformIterator& operator=(const TransformIterator& that) {
+        if (this != &that) {
+            iterator_ = that.iterator_;
+            transform_.reset();
+            if (that.transform_) {
+                transform_.emplace(*that.transform_);
+            }
+        }
+        return *this;
+    }
+    TransformIterator& operator=(TransformIterator&& that) {
+        if (this != &that) {
+            iterator_ = std::move(that.iterator_);
+            transform_.reset();
+            if (that.transform_) {
+                transform_.emplace(std::move(*that.transform_));
+            }
+        }
+        return *this;
+    }
 
     TransformIterator& operator++() {
         ++iterator_;
         return *this;
     }
-    TransformIterator operator++(int) { return {transform_, iterator_++}; }
+    TransformIterator operator++(int) { return {*transform_, iterator_++}; }
 
     template <typename I = Iter, typename = detail::require_t<std::bidirectional_iterator_tag, I>>
     TransformIterator& operator--() {
@@ -79,7 +102,7 @@ struct TransformIterator {
     }
     template <typename I = Iter, typename = detail::require_t<std::bidirectional_iterator_tag, I>>
     TransformIterator operator--(int) {
-        return {transform_, iterator_--};
+        return {*transform_, iterator_--};
     }
 
     template <typename I = Iter, typename = detail::require_t<std::random_access_iterator_tag, I>>
@@ -113,8 +136,8 @@ struct TransformIterator {
         return *iterator_[i];
     }
 
-    reference operator*() const { return transform_(*iterator_); }
-    pointer operator->() const { return &transform_(*iterator_); }
+    reference operator*() const { return (*transform_)(*iterator_); }
+    pointer operator->() const { return &(*transform_)(*iterator_); }
 
     const Iter& base() const { return iterator_; }
     Iter& base() { return iterator_; }
@@ -141,7 +164,10 @@ struct TransformIterator {
     }
 
 private:
-    Transform transform_;
+    // Need to wrap transform here since lambdas don't have an assignment operator. See
+    // https://www.fluentcpp.com/2020/10/02/how-to-implement-operator-when-a-data-member-is-a-lambda/
+    // for further details
+    std::optional<Transform> transform_;
     Iter iterator_;
 };
 

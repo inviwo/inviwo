@@ -36,17 +36,9 @@ DataMapper::DataMapper(const DataFormatBase* format) { initWithFormat(format); }
 
 DataMapper::DataMapper() { initWithFormat(DataUInt8::get()); }
 
-DataMapper::DataMapper(const DataMapper& rhs)
-    : dataRange(rhs.dataRange), valueRange(rhs.valueRange), valueUnit(rhs.valueUnit) {}
+DataMapper::DataMapper(const DataMapper& rhs) = default;
 
-DataMapper& DataMapper::operator=(const DataMapper& that) {
-    if (this != &that) {
-        dataRange = that.dataRange;
-        valueRange = that.valueRange;
-        valueUnit = that.valueUnit;
-    }
-    return *this;
-}
+DataMapper& DataMapper::operator=(const DataMapper& that) = default;
 
 void DataMapper::initWithFormat(const DataFormatBase* format) {
     dataRange.y = format->getMax();
@@ -66,7 +58,7 @@ void DataMapper::initWithFormat(const DataFormatBase* format) {
     }
 
     valueRange = dataRange;
-    valueUnit = "arb. unit.";
+    valueAxis = {"", Unit{}};
 }
 
 }  // namespace inviwo

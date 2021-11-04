@@ -52,7 +52,7 @@ public:
 
     enum class Space : int { WORLD, VIEW };
 
-    SimpleLightingProperty(std::string identifier, std::string displayName,
+    SimpleLightingProperty(std::string_view identifier, std::string_view displayName,
                            CameraProperty* camera = nullptr,
                            InvalidationLevel = InvalidationLevel::InvalidResources,
                            PropertySemantics semantics = PropertySemantics::Default);

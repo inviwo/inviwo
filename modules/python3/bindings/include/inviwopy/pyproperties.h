@@ -43,6 +43,8 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
+#include <fmt/format.h>
+
 namespace pybind11 {
 namespace detail {
 using namespace inviwo;
@@ -144,8 +146,8 @@ struct OrdinalPropertyIterator {
 };
 
 template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M& m, PC& pc, const std::string& suffix) {
-    const auto itclassname = Defaultvalues<T>::getName().string() + suffix;
+void addOrdinalPropertyIterator(M& m, PC& pc, std::string_view suffix) {
+    const auto itclassname = fmt::format("{}{}", Defaultvalues<T>::getName().view(), suffix);
     using IT = OrdinalPropertyIterator<P, T>;
     pybind11::class_<IT>(m, itclassname.c_str())
         .def(pybind11::init<P*>())
@@ -166,7 +168,7 @@ struct OrdinalPropertyHelper {
         auto classname = Defaultvalues<T>::getName() + "Property";
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string& identifier, const std::string& name, const T& value,
+        prop.def(py::init([](std::string_view identifier, std::string_view name, const T& value,
                              const T& min, const T& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, value, min, max, increment, invalidationLevel,
@@ -179,7 +181,7 @@ struct OrdinalPropertyHelper {
                  py::arg("increment") = Defaultvalues<T>::getInc(),
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
-            .def(py::init([](const std::string& identifier, const std::string& name, const T& value,
+            .def(py::init([](std::string_view identifier, std::string_view name, const T& value,
                              const std::pair<T, ConstraintBehavior>& min,
                              const std::pair<T, ConstraintBehavior>& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -219,7 +221,7 @@ struct OrdinalRefPropertyHelper {
         auto classname = Defaultvalues<T>::getName() + "RefProperty";
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string& identifier, const std::string& name,
+        prop.def(py::init([](std::string_view identifier, std::string_view name,
                              std::function<T()> get, std::function<void(const T&)> set,
                              const std::pair<T, ConstraintBehavior>& min,
                              const std::pair<T, ConstraintBehavior>& max, const T& increment,
@@ -262,9 +264,9 @@ struct MinMaxHelper {
         auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string& identifier, const std::string& name,
-                             const T& valueMin, const T& valueMax, const T& rangeMin,
-                             const T& rangeMax, const T& increment, const T& minSeperation,
+        prop.def(py::init([](std::string_view identifier, std::string_view name, const T& valueMin,
+                             const T& valueMax, const T& rangeMin, const T& rangeMax,
+                             const T& increment, const T& minSeperation,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
                                   increment, minSeperation, invalidationLevel, semantics);
@@ -302,13 +304,13 @@ struct OptionPropertyHelper {
 
         py::class_<O>(m, optionclassname.c_str())
             .def(py::init<>())
-            .def(py::init<const std::string&, const std::string&, const T&>())
+            .def(py::init<std::string_view, std::string_view, const T&>())
             .def_readwrite("id", &O::id_)
             .def_readwrite("name", &O::name_)
             .def_readwrite("value", &O::value_);
 
         py::class_<P, BaseOptionProperty, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string& identifier, const std::string& name,
+        prop.def(py::init([](std::string_view identifier, std::string_view name,
                              std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, options, selectedIndex, invalidationLevel,
@@ -320,12 +322,12 @@ struct OptionPropertyHelper {
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
 
-            .def("addOption", [](P* p, const std::string& id, const std::string& displayName,
+            .def("addOption", [](P* p, std::string_view id, std::string_view displayName,
                                  const T& t) { p->addOption(id, displayName, t); })
 
             .def_property_readonly("values", &P::getValues)
             .def("removeOption", py::overload_cast<size_t>(&P::removeOption))
-            .def("removeOption", py::overload_cast<const std::string&>(&P::removeOption))
+            .def("removeOption", py::overload_cast<std::string_view>(&P::removeOption))
 
             .def_property(
                 "value", [](P* p) { return p->get(); }, [](P* p, T& t) { p->set(t); })

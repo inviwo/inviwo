@@ -50,7 +50,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    MinMaxProperty(std::string identifier, std::string displayName,
+    MinMaxProperty(std::string_view identifier, std::string_view displayName,
                    T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
                    T rangeMin = Defaultvalues<T>::getMin(), T rangeMax = Defaultvalues<T>::getMax(),
                    T increment = Defaultvalues<T>::getInc(), T minSeperation = 0,
@@ -65,7 +65,7 @@ public:
 
     const value_type& get() const;
     void set(const value_type& value);
-    operator const value_type&() const;
+    operator const value_type &() const;
     const value_type& operator*() const;
     const value_type* operator->() const;
 
@@ -154,9 +154,10 @@ struct PropertyTraits<MinMaxProperty<T>> {
 };
 
 template <typename T>
-MinMaxProperty<T>::MinMaxProperty(std::string identifier, std::string displayName, T valueMin,
-                                  T valueMax, T rangeMin, T rangeMax, T increment, T minSeparation,
-                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
+MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
+                                  T valueMin, T valueMax, T rangeMin, T rangeMax, T increment,
+                                  T minSeparation, InvalidationLevel invalidationLevel,
+                                  PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics)
     , value_("value", value_type(valueMin, valueMax))
     , range_("range", value_type(rangeMin, rangeMax))
@@ -231,7 +232,7 @@ void MinMaxProperty<T>::set(const value_type& value) {
 }
 
 template <typename T>
-MinMaxProperty<T>::operator const value_type&() const {
+MinMaxProperty<T>::operator const value_type &() const {
     return value_.value;
 }
 

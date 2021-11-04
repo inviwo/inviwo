@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/document.h>
@@ -44,6 +45,7 @@
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+
 
 namespace inviwo {
 
@@ -145,7 +147,9 @@ public:
      * @return Step size for gradient computation in world space.
      */
     vec3 getWorldSpaceGradientSpacing() const;
+
     DataMapper dataMap_;
+    std::array<Axis, 3> axes;
 
     static uvec3 colorCode;
     static const std::string classIdentifier;

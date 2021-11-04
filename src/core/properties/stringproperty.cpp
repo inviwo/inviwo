@@ -34,9 +34,11 @@ namespace inviwo {
 const std::string StringProperty::classIdentifier = "org.inviwo.StringProperty";
 std::string StringProperty::getClassIdentifier() const { return classIdentifier; }
 
-StringProperty::StringProperty(std::string identifier, std::string displayName, std::string value,
-                               InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TemplateProperty<std::string>(identifier, displayName, value, invalidationLevel, semantics) {}
+StringProperty::StringProperty(std::string_view identifier, std::string_view displayName,
+                               std::string_view value, InvalidationLevel invalidationLevel,
+                               PropertySemantics semantics)
+    : TemplateProperty<std::string>(identifier, displayName, std::string{value}, invalidationLevel,
+                                    semantics) {}
 
 StringProperty::StringProperty(const StringProperty& rhs) : TemplateProperty<std::string>(rhs) {}
 

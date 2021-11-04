@@ -51,6 +51,7 @@
 
 // Utilizes
 #include <inviwo/core/util/settings/linksettings.h>
+#include <inviwo/core/util/settings/unitsettings.h>
 
 // Io
 #include <inviwo/core/io/rawvolumereader.h>
@@ -416,6 +417,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     // Register Settings
     // Do this after the property registration since the settings use properties.
     registerSettings(std::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
+    registerSettings(std::make_unique<UnitSettings>());
 }
 
 std::string InviwoCore::getPath() const { return filesystem::findBasePath(); }

@@ -49,6 +49,8 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/volumeport.h>
 
+#include <units/units.hpp>
+
 PYBIND11_MAKE_OPAQUE(VolumeSequence)
 
 namespace inviwo {
@@ -103,7 +105,7 @@ void exposeVolume(pybind11::module& m) {
                 << "\n  worldMatrix = " << volume.getWorldMatrix()
                 << "\n  <DataMapper:  dataRange = " << volume.dataMap_.dataRange
                 << ",  valueRange = " << volume.dataMap_.valueRange << ",  valueUnit = \""
-                << volume.dataMap_.valueUnit << "\"> >";
+                << units::to_string(volume.dataMap_.valueAxis.unit) << "\"> >";
             return oss.str();
         });
 

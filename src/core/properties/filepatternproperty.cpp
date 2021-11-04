@@ -41,15 +41,15 @@ namespace inviwo {
 const std::string FilePatternProperty::classIdentifier = "org.inviwo.FilePatternProperty";
 std::string FilePatternProperty::getClassIdentifier() const { return classIdentifier; }
 
-FilePatternProperty::FilePatternProperty(std::string identifier, std::string displayName,
-                                         std::string pattern, std::string contentType,
+FilePatternProperty::FilePatternProperty(std::string_view identifier, std::string_view displayName,
+                                         std::string_view pattern, std::string_view contentType,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , helpText_("helpText", "",
                 "A pattern might include '#' as placeholder for digits, where "
                 "multiple '###' indicate leading zeros. Wildcards('*', '?') are supported.")
-    , pattern_("pattern", "Pattern", {pattern}, contentType)
+    , pattern_("pattern", "Pattern", {std::string{pattern}}, contentType)
     , updateBtn_("updateBtn", "Update File List")
     , sort_("sorting", "Sort File Names", true)
     , matchShorterNumbers_("matchShorterNumbers", "Match Numbers with less Digits", true)

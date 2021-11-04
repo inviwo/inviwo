@@ -35,8 +35,8 @@ namespace inviwo {
 const std::string SimpleLightingProperty::classIdentifier = "org.inviwo.SimpleLightingProperty";
 std::string SimpleLightingProperty::getClassIdentifier() const { return classIdentifier; }
 
-SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::string displayName,
-                                               CameraProperty* camera,
+SimpleLightingProperty::SimpleLightingProperty(std::string_view identifier,
+                                               std::string_view displayName, CameraProperty* camera,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)

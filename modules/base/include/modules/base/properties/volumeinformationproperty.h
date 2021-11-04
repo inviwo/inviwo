@@ -36,6 +36,9 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
+#include <string_view>
+#include <array>
+
 namespace inviwo {
 
 /**
@@ -47,7 +50,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
     VolumeInformationProperty(
-        std::string identifier, std::string displayName,
+        std::string_view identifier, std::string_view displayName,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     VolumeInformationProperty(const VolumeInformationProperty& rhs);
@@ -66,10 +69,11 @@ public:
     // read / write
     DoubleMinMaxProperty dataRange_;
     DoubleMinMaxProperty valueRange_;
+    StringProperty valueName_;
     StringProperty valueUnit_;
-
-private:
-    auto props();
+    
+    std::array<StringProperty, 3> axesNames_;
+    std::array<StringProperty, 3> axesUnits_;
 };
 
 }  // namespace inviwo

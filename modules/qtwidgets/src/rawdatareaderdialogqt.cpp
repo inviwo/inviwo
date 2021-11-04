@@ -41,6 +41,8 @@
 #include <QDoubleValidator>
 #include <warn/pop>
 
+#include <units/units.hpp>
+
 namespace inviwo {
 
 RawDataReaderDialogQt::RawDataReaderDialogQt() {
@@ -292,7 +294,7 @@ DataMapper RawDataReaderDialogQt::getDataMapper() const {
     DataMapper dm;
     dm.dataRange = dvec2(dataRangeMin_->value(), dataRangeMax_->value());
     dm.valueRange = dvec2(valueRangeMin_->value(), valueRangeMax_->value());
-    dm.valueUnit = utilqt::fromLocalQString(valueUnit_->text());
+    dm.valueAxis.unit = units::unit_from_string(utilqt::fromLocalQString(valueUnit_->text()));
     return dm;
 }
 
@@ -301,7 +303,7 @@ void RawDataReaderDialogQt::setDataMapper(const DataMapper& datamapper) {
     dataRangeMax_->setValue(datamapper.dataRange.y);
     valueRangeMin_->setValue(datamapper.valueRange.x);
     valueRangeMax_->setValue(datamapper.valueRange.y);
-    valueUnit_->setText(utilqt::toLocalQString(datamapper.valueUnit));
+    valueUnit_->setText(utilqt::toLocalQString(units::to_string(datamapper.valueAxis.unit)));
 }
 
 size_t RawDataReaderDialogQt::getByteOffset() const {

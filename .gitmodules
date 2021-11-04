@@ -46,3 +46,6 @@
 [submodule "ext/span/span"]
 	path = ext/span/span
 	url = https://github.com/inviwo/span.git
+[submodule "ext/units/units"]
+	path = ext/units/units
+	url = https://github.com/LLNL/units.git

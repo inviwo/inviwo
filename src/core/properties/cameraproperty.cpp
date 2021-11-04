@@ -49,7 +49,7 @@ namespace inviwo {
 const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
 std::string CameraProperty::getClassIdentifier() const { return classIdentifier; }
 
-CameraProperty::CameraProperty(const std::string& identifier, const std::string& displayName,
+CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
                                std::function<std::optional<mat4>()> getBoundingBox, vec3 eye,
                                vec3 center, vec3 lookUp, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
@@ -127,8 +127,8 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
     defaultCamera_.reset(camera_->clone());
 }
 
-CameraProperty::CameraProperty(const std::string& identifier, const std::string& displayName,
-                               vec3 eye, vec3 center, vec3 lookUp, Inport* inport,
+CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName, vec3 eye,
+                               vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CameraProperty(
           identifier, displayName,
@@ -205,7 +205,7 @@ void CameraProperty::set(const Property* srcProperty) {
     }
 }
 
-CameraProperty::operator const Camera&() const { return *camera_; }
+CameraProperty::operator const Camera &() const { return *camera_; }
 
 CameraProperty* CameraProperty::clone() const { return new CameraProperty(*this); }
 
