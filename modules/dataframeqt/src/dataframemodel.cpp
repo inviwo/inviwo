@@ -1,0 +1,264 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2021 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#include <inviwo/dataframeqt/dataframemodel.h>
+
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/column.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+
+namespace inviwo {
+
+DataFrameModel::DataFrameModel(QObject* parent) : QAbstractTableModel(parent) {}
+
+DataFrameModel::~DataFrameModel() = default;
+
+void DataFrameModel::setManager(BrushingAndLinkingManager& manager) { manager_ = &manager; }
+
+void DataFrameModel::setData(std::shared_ptr<const DataFrame> dataframe, bool categoryIndices) {
+    util::OnScopeExit onscopeexit([&]() { endResetModel(); });
+
+    beginResetModel();
+    data_ = dataframe;
+    valueFuncs_.clear();
+    tooltipFuncs_.clear();
+
+    if (!data_) {
+        return;
+    }
+
+    auto getValueFunc = [categoryIndices](const Column* col) -> ValueFunc {
+        switch (col->getColumnType()) {
+            case ColumnType::Categorical:
+                if (!categoryIndices) {
+                    return [cc = static_cast<const CategoricalColumn*>(col)](int row) -> QVariant {
+                        return utilqt::toQString(cc->getAsString(row));
+                    };
+                } else {
+                    return col->getBuffer()
+                        ->getRepresentation<BufferRAM>()
+                        ->dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
+                            return [br](int row) -> QVariant {
+                                auto val = br->getDataContainer()[row];
+                                return QVariant{static_cast<qulonglong>(val)};
+                            };
+                        });
+                }
+                break;
+            case ColumnType::Ordinal: {
+                auto df = col->getBuffer()->getDataFormat();
+                if (df->getComponents() == 1) {
+                    return col->getBuffer()
+                        ->getRepresentation<BufferRAM>()
+                        ->dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
+                            return [br](int row) -> QVariant {
+                                auto val = br->getDataContainer()[row];
+                                if constexpr (std::is_floating_point_v<decltype(val)>) {
+                                    return QVariant{val};
+                                } else if constexpr (std::is_signed_v<decltype(val)>) {
+                                    return QVariant{static_cast<qlonglong>(val)};
+                                } else {
+                                    return QVariant{static_cast<qulonglong>(val)};
+                                }
+                            };
+                        });
+                } else {
+                    // more than one component, convert to string
+                    return col->getBuffer()
+                        ->getRepresentation<BufferRAM>()
+                        ->dispatch<ValueFunc, dispatching::filter::Vecs>([](auto br) {
+                            return [br](int row) {
+                                return QVariant{
+                                    utilqt::toQString(toString(br->getDataContainer()[row]))};
+                            };
+                        });
+                }
+            } break;
+            case ColumnType::Unspecified:
+            default:
+                return [](int) { return QVariant(); };
+        }
+    };
+    auto getToolTipFunc = [categoryIndices](const Column* col) -> std::function<QVariant(int)> {
+        switch (col->getColumnType()) {
+            case ColumnType::Categorical:
+                if (!categoryIndices) {
+                    return [cc = static_cast<const CategoricalColumn*>(col)](int row) -> QVariant {
+                        return QString("Key: %1").arg(cc->TemplateColumn<std::uint32_t>::get(row));
+                    };
+                } else {
+                    return [](int) { return QVariant(); };
+                }
+                break;
+            case ColumnType::Ordinal:
+            case ColumnType::Unspecified:
+            default:
+                return [](int) { return QVariant(); };
+        }
+    };
+
+    for (auto col : *data_) {
+        valueFuncs_.push_back(getValueFunc(col.get()));
+        tooltipFuncs_.push_back(getToolTipFunc(col.get()));
+    }
+}
+
+int DataFrameModel::rowCount(const QModelIndex&) const {
+    if (data_) return static_cast<int>(data_->getNumberOfRows());
+    return 0;
+}
+
+int DataFrameModel::columnCount(const QModelIndex&) const {
+    if (data_) return static_cast<int>(data_->getNumberOfColumns());
+    return 0;
+}
+
+QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
+    if (!index.isValid()) return QVariant();
+
+    const bool highlighted = manager_
+                                 ? (manager_->isHighlighted(index.row()) ||
+                                    manager_->isHighlighted(index.column(), BrushingTarget::Column))
+                                 : false;
+    const bool selected = manager_ ? manager_->isSelected(index.row()) : false;
+
+    switch (role) {
+        case Qt::DisplayRole: {
+            QVariant val = valueFuncs_[index.column()](index.row());
+            switch (static_cast<QMetaType::Type>(val.type())) {
+                case QMetaType::Double:
+                    return QString::number(val.toDouble(), 'g', 6);
+                case QMetaType::Float:
+                    return QString::number(val.toFloat());
+                case QMetaType::QString:
+                default:
+                    return val.toString();
+            }
+        }
+        case Roles::Data:
+            return valueFuncs_[index.column()](index.row());
+        case Qt::ToolTipRole:
+            return tooltipFuncs_[index.column()](index.row());
+        case Qt::BackgroundRole:
+            if (highlighted) {
+                return QBrush(QColor(102, 87, 50));
+            } else if (selected) {
+                return QBrush(QColor("#47474b"));
+            } else {
+                return QBrush();
+            }
+        default:
+            return QVariant();
+    }
+}
+
+void DataFrameModel::brushingUpdate() {
+    if (!data_ || !manager_) return;
+
+    if (manager_->modifiedSelection(BrushingTarget::Column)) {
+        emit headerDataChanged(Qt::Horizontal, 0, columnCount() - 1);
+    }
+    if (manager_->modifiedSelection(BrushingTarget::Row) ||
+        manager_->modifiedHighlight(BrushingTarget::Row)) {
+        emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1),
+                         {Qt::BackgroundRole});
+    }
+}
+
+QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, int role) const {
+    if (!data_) return QVariant();
+
+    if (role == Qt::DisplayRole) {
+        if (orientation == Qt::Vertical) {
+            return valueFuncs_[0](section).toString();
+        } else {
+            const std::string selected =
+                manager_ ? (manager_->isSelected(section, BrushingTarget::Column) ? " [+]" : "")
+                         : "";
+            return utilqt::toQString(data_->getHeader(section) + selected);
+        }
+    } else if ((role == Qt::ToolTipRole) && (orientation == Qt::Horizontal)) {
+        const Column* col = data_->getColumn(section).get();
+        if (col->getColumnType() == ColumnType::Categorical) {
+            return QString("Categorical (%0 categories)")
+                .arg(static_cast<const CategoricalColumn*>(col)->getCategories().size());
+        } else {
+            return QString("Ordinal (%0)").arg(col->getBuffer()->getDataFormat()->getString());
+        }
+    }
+    return QVariant();
+}
+
+void DataFrameModel::highlightRow(const QModelIndex& index) {
+    if (!data_ || !manager_) return;
+
+    // translate model indices to row IDs
+    const auto& indexCol =
+        data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+    BitSet highlighted;
+    highlighted.add(indexCol[index.row()]);
+    manager_->brush(BrushingAction::Highlight, BrushingTarget::Row, highlighted);
+}
+
+void DataFrameModel::selectRows(const QModelIndexList& indices) {
+    if (!data_ || !manager_) return;
+
+    // translate model indices to row IDs
+    const auto& indexCol =
+        data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
+    BitSet selection;
+    for (auto& index : indices) {
+        selection.add(indexCol[index.row()]);
+    }
+    manager_->brush(BrushingAction::Select, BrushingTarget::Row, selection);
+}
+
+std::vector<int> DataFrameModel::getSelectedRows() const {
+    if (!data_ || !manager_) return {};
+
+    const BitSet& selected = manager_->getSelectedIndices(BrushingTarget::Row);
+    if (selected.empty()) return {};
+
+    const auto& indexCol =
+        data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
+    std::vector<int> rows;
+    for (auto&& [i, index] : util::enumerate<int>(indexCol)) {
+        if (selected.contains(index)) {
+            rows.push_back(i);
+        }
+    }
+    return rows;
+}
+
+}  // namespace inviwo
