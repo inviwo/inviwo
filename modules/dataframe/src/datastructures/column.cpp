@@ -44,6 +44,8 @@ CategoricalColumn::CategoricalColumn(std::string_view header,
 
 CategoricalColumn* CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
 
+ColumnType CategoricalColumn::getColumnType() const { return ColumnType::Categorical; }
+
 std::string CategoricalColumn::getAsString(size_t idx) const {
     auto index = getTypedBuffer()->getRAMRepresentation()->getDataContainer()[idx];
     return lookUpTable_[index];

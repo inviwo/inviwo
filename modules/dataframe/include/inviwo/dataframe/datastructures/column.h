@@ -53,6 +53,8 @@ public:
     virtual ~InvalidConversion() throw() {}
 };
 
+enum class ColumnType { Unspecified, Ordinal, Categorical };
+
 /**
  * @brief pure interface for representing a data column, i.e. a Buffer with a name
  */
@@ -61,6 +63,8 @@ public:
     virtual ~Column() = default;
 
     virtual Column* clone() const = 0;
+
+    virtual ColumnType getColumnType() const = 0;
 
     virtual const std::string& getHeader() const = 0;
     virtual void setHeader(std::string_view header) = 0;
@@ -112,6 +116,8 @@ public:
     virtual TemplateColumn* clone() const override;
 
     virtual ~TemplateColumn() = default;
+
+    virtual ColumnType getColumnType() const override;
 
     virtual const std::string& getHeader() const override;
     void setHeader(std::string_view header) override;
@@ -200,6 +206,8 @@ public:
     virtual CategoricalColumn* clone() const override;
 
     virtual ~CategoricalColumn() = default;
+
+    virtual ColumnType getColumnType() const override;
 
     virtual std::string getAsString(size_t idx) const override;
 
@@ -299,6 +307,11 @@ TemplateColumn<T>& TemplateColumn<T>::operator=(TemplateColumn<T>&& rhs) {
 template <typename T>
 TemplateColumn<T>* TemplateColumn<T>::clone() const {
     return new TemplateColumn(*this);
+}
+
+template <typename T>
+ColumnType TemplateColumn<T>::getColumnType() const {
+    return ColumnType::Ordinal;
 }
 
 template <typename T>

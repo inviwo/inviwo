@@ -40,10 +40,10 @@ namespace inviwo {
 
 namespace dataframe {
 
-std::shared_ptr<BufferBase> IVW_MODULE_DATAFRAME_API
-cloneBufferRange(std::shared_ptr<const BufferBase> buffer, ivec2 range);
+IVW_MODULE_DATAFRAME_API std::shared_ptr<BufferBase> cloneBufferRange(
+    std::shared_ptr<const BufferBase> buffer, ivec2 range);
 
-void IVW_MODULE_DATAFRAME_API copyBufferRange(std::shared_ptr<const BufferBase> src,
+IVW_MODULE_DATAFRAME_API void copyBufferRange(std::shared_ptr<const BufferBase> src,
                                               std::shared_ptr<BufferBase> dst, ivec2 range,
                                               size_t dstStart = 0);
 
@@ -58,7 +58,7 @@ void IVW_MODULE_DATAFRAME_API copyBufferRange(std::shared_ptr<const BufferBase> 
  * @return joined DataFrame with columns from \p left and \p right DataFrame
  * @throws Exception if number of rows is different and \p fillMissingRows is false
  */
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API appendColumns(const DataFrame& left,
+IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendColumns(const DataFrame& left,
                                                                   const DataFrame& right,
                                                                   bool ignoreDuplicates = false,
                                                                   bool fillMissingRows = false);
@@ -72,7 +72,7 @@ std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API appendColumns(const DataFram
  * @return joined DataFrame with columns from \p left and \p right DataFrame
  * @throws Exception if number of columns is different or a column cannot be found (matchByName)
  */
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API appendRows(const DataFrame& top,
+IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendRows(const DataFrame& top,
                                                                const DataFrame& bottom,
                                                                bool matchByName = false);
 ///@{
@@ -88,9 +88,9 @@ std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API appendRows(const DataFrame& 
  * @return inner join of \p left and \p right DataFrame
  * @throws Exception if keyColumn does not exist in either \p left or \p right
  */
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
-innerJoin(const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API innerJoin(
+IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
+    const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
+IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
     const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
 ///@}
 
@@ -109,15 +109,15 @@ std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API innerJoin(
  * @return left join of \p left and \p right DataFrame
  * @throws Exception if keyColumn does not exist in either \p left or \p right
  */
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
-leftJoin(const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
-leftJoin(const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
+IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> leftJoin(
+    const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
+IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> leftJoin(
+    const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
 ///@}
 
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
-combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipIndexColumn = false,
-                  std::string skipcol = "index");
+IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> combineDataFrames(
+    std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipIndexColumn = false,
+    std::string skipcol = "index");
 
 /**
  * \brief apply predicate \p pred to each value of column \p col and return the row indices where
@@ -149,7 +149,7 @@ combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipI
 template <typename Pred>
 std::vector<size_t> filteredRows(std::shared_ptr<const Column> col, Pred pred);
 
-std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const DataFrame& dataframe, size_t rowId);
+IVW_MODULE_DATAFRAME_API std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId);
 
 #include <warn/push>
 #include <warn/ignore/conversion>
