@@ -84,16 +84,24 @@ BrushingModifications BrushingAndLinkingManager::modifiedActions() const {
     return modifiedActions_;
 }
 
-bool BrushingAndLinkingManager::modifiedFiltering() const {
-    return modifiedActions_.contains(BrushingModification::Filtered);
+bool BrushingAndLinkingManager::modifiedFiltering(BrushingTarget target) const {
+    return modifiedActions_.contains(BrushingModification::Filtered) && modifiedTarget(target);
 }
 
-bool BrushingAndLinkingManager::modifiedSelection() const {
-    return modifiedActions_.contains(BrushingModification::Selected);
+bool BrushingAndLinkingManager::modifiedSelection(BrushingTarget target) const {
+    return modifiedActions_.contains(BrushingModification::Selected) && modifiedTarget(target);
 }
 
-bool BrushingAndLinkingManager::modifiedHighlight() const {
-    return modifiedActions_.contains(BrushingModification::Highlighted);
+bool BrushingAndLinkingManager::modifiedHighlight(BrushingTarget target) const {
+    return modifiedActions_.contains(BrushingModification::Highlighted) && modifiedTarget(target);
+}
+
+const std::vector<BrushingTarget>& BrushingAndLinkingManager::modifiedTargets() const {
+    return modifiedTargets_;
+}
+
+bool BrushingAndLinkingManager::modifiedTarget(BrushingTarget target) const {
+    return util::contains(modifiedTargets_, target);
 }
 
 bool BrushingAndLinkingManager::hasIndices(BrushingAction action, BrushingTarget target) const {
@@ -271,6 +279,8 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
 
         // set manager as modified since filter actions might have changed when removing the parent
         modifiedActions_ = BrushingModifications(flags::any);
+        util::push_back_unique(modifiedTargets_, BrushingTarget::Column);
+        util::push_back_unique(modifiedTargets_, BrushingTarget::Row);
         if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
             auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
             outport->getProcessor()->invalidate(invalidationLevel_);
@@ -291,8 +301,12 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
 void BrushingAndLinkingManager::markAsValid() {
     for (auto c : children_) {
         c->modifiedActions_ |= modifiedActions_;
+        for (const auto& t : modifiedTargets_) {
+            util::push_back_unique(c->modifiedTargets_, t);
+        }
     }
     modifiedActions_.clear();
+    modifiedTargets_.clear();
 }
 
 void BrushingAndLinkingManager::serialize(Serializer& s) const {
@@ -346,6 +360,7 @@ int BrushingAndLinkingManager::getActionIndex(BrushingAction action) {
 
 void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget target) {
     modifiedActions_ |= fromAction(action);
+    util::push_back_unique(modifiedTargets_, target);
 
     if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
         auto outport = std::get<BrushingAndLinkingOutport*>(owner_);

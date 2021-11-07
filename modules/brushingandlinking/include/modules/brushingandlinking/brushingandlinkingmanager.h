@@ -110,23 +110,31 @@ public:
      */
     BrushingModifications modifiedActions() const;
     /**
-     * return whether there was a filter action since the last network evaluation
+     * return whether there was a filter action on \p target since the last network evaluation
      *
-     * @return modifiedActions() & BrushingModification::Filtered
+     * @return modifiedActions() & BrushingModification::Filtered && modifiedTarget(target)
      */
-    bool modifiedFiltering() const;
+    bool modifiedFiltering(BrushingTarget target = BrushingTarget::Row) const;
     /**
-     * return whether there was a select action since the last network evaluation
+     * return whether there was a select action on \p target since the last network evaluation
      *
-     * @return modifiedActions() & BrushingModification::Selected
+     * @return modifiedActions() & BrushingModification::Selected && modifiedTarget(target)
      */
-    bool modifiedSelection() const;
+    bool modifiedSelection(BrushingTarget target = BrushingTarget::Row) const;
     /**
-     * return whether there was a highlight action since the last network evaluation
+     * return whether there was a highlight action on \p target since the last network evaluation
      *
-     * @return modifiedActions() & BrushingModification::Highlighted
+     * @return modifiedActions() & BrushingModification::Highlighted && modifiedTarget(target)
      */
-    bool modifiedHighlight() const;
+    bool modifiedHighlight(BrushingTarget target = BrushingTarget::Row) const;
+    /**
+     * return which targets were changed since the last network evaluation
+     */
+    const std::vector<BrushingTarget>& modifiedTargets() const;
+    /**
+     * return whether \p target was modified since the last network evaluation
+     */
+    bool modifiedTarget(BrushingTarget target) const;
 
     /**
      * check whether the manager has an index set for \p target and \p action
@@ -234,6 +242,7 @@ private:
     InvalidationLevel invalidationLevel_;
 
     BrushingModifications modifiedActions_{flags::empty};
+    std::vector<BrushingTarget> modifiedTargets_;
 };
 
 }  // namespace inviwo
