@@ -38,6 +38,7 @@ namespace inviwo {
 
 class DataFrame;
 class DataFrameTableView;
+class BrushingAndLinkingManager;
 
 /**
  * \brief A processor widget showing a DataFrame in a table view.
@@ -48,34 +49,29 @@ class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public Processo
     Q_OBJECT
 #include <warn/pop>
 public:
-    using SelectionChangedFunc = void(const BitSet&);
-    using CallbackHandle = std::shared_ptr<std::function<SelectionChangedFunc>>;
-
     DataFrameTableProcessorWidget(Processor* p);
     virtual ~DataFrameTableProcessorWidget() = default;
 
     virtual void setVisible(bool visible) override;
 
-    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false,
-                      bool categoryIndices = false);
+    void setManager(BrushingAndLinkingManager& manager);
+    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool categoryIndices = false);
     void setIndexColumnVisible(bool visible);
+    void setFilteredRowsVisible(bool visible);
 
-    void updateSelection(const BitSet& rows);
-    void updateColumnSelection(const BitSet& columns);
-    void updateHighlight(const BitSet& highlightedRows);
-
-    CallbackHandle setColumnSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
-    CallbackHandle setRowSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
-    CallbackHandle setRowHighlightChangedCallback(std::function<SelectionChangedFunc> callback);
+    /**
+     * update the selection, filtering, and highlight state of the widget using the brushing and
+     * linking manager. Call this function in Processor::process(). This function performs the
+     * checks itself whether there have been any changes.
+     *
+     * \see setManager
+     */
+    void brushingUpdate();
 
 private:
     using tableview_ptr =
         std::unique_ptr<DataFrameTableView, std::function<void(DataFrameTableView*)>>;
     tableview_ptr tableview_;
-
-    Dispatcher<SelectionChangedFunc> columnSelectionChanged_;
-    Dispatcher<SelectionChangedFunc> rowSelectionChanged_;
-    Dispatcher<SelectionChangedFunc> rowHighlightChanged_;
 
     Processor::NameDispatcherHandle nameChange_;
 };

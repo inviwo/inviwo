@@ -57,7 +57,7 @@ DataFrameTable::DataFrameTable()
                 ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
     , showIndexColumn_("showIndexColumn", "Show Index Column", false, InvalidationLevel::Valid)
     , showCategoryIndices_("showCategoryIndices", "Show Category Indices", false)
-    , vectorCompAsColumn_("vectorCompAsColumn", "Vector Components as Columns", true)
+    , showFilteredRowCols_("showFilteredItems", "Show Filtered Items", true)
     , widgetMetaData_{
           createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
     widgetMetaData_->addObserver(this);
@@ -65,7 +65,7 @@ DataFrameTable::DataFrameTable()
     addPort(inport_);
     addPort(brushLinkPort_);
     addProperties(dimensions_, position_, showIndexColumn_, showCategoryIndices_,
-                  vectorCompAsColumn_);
+                  showFilteredRowCols_);
 
     dimensions_.setSerializationMode(PropertySerializationMode::None);
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
@@ -74,6 +74,11 @@ DataFrameTable::DataFrameTable()
     showIndexColumn_.onChange([this]() {
         if (auto w = getWidget()) {
             w->setIndexColumnVisible(showIndexColumn_);
+        }
+    });
+    showFilteredRowCols_.onChange([this]() {
+        if (auto w = getWidget()) {
+            w->setFilteredRowsVisible(showFilteredRowCols_);
         }
     });
 }
@@ -87,18 +92,11 @@ DataFrameTable::~DataFrameTable() {
 void DataFrameTable::process() {
     if (auto w = getWidget()) {
         bool dataUpdated = false;
-        if (inport_.isChanged() || vectorCompAsColumn_.isModified() ||
-            showCategoryIndices_.isModified()) {
-            w->setDataFrame(inport_.getData(), vectorCompAsColumn_, showCategoryIndices_);
+        if (inport_.isChanged() || showCategoryIndices_.isModified()) {
+            w->setDataFrame(inport_.getData(), showCategoryIndices_);
             dataUpdated = true;
         }
-        if (dataUpdated || brushLinkPort_.modifiedSelection()) {
-            w->updateColumnSelection(brushLinkPort_.getSelectedIndices(BrushingTarget::Column));
-            w->updateSelection(brushLinkPort_.getSelectedIndices());
-        }
-        if (dataUpdated || brushLinkPort_.modifiedHighlight()) {
-            w->updateHighlight(brushLinkPort_.getHighlightedIndices());
-        }
+        w->brushingUpdate();
     }
 }
 
@@ -111,10 +109,8 @@ void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> process
     }
 
     if (widget) {
-        rowSelectionChanged_ = widget->setRowSelectionChangedCallback(
-            [this](const BitSet& rows) { brushLinkPort_.select(rows); });
-        rowHighlightChanged_ = widget->setRowHighlightChangedCallback(
-            [this](const BitSet& rows) { brushLinkPort_.highlight(rows); });
+        widget->setManager(brushLinkPort_.getManager());
+        widget->setFilteredRowsVisible(showFilteredRowCols_);
     }
 
     Processor::setProcessorWidget(std::move(processorWidget));

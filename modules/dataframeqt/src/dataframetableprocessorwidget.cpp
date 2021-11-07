@@ -57,13 +57,6 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     tableview_->setMouseTracking(true);
     tableview_->setAttribute(Qt::WA_OpaquePaintEvent);
 
-    QObject::connect(tableview_.get(), &DataFrameTableView::columnSelectionChanged, this,
-                     [this](const BitSet& columns) { columnSelectionChanged_.invoke(columns); });
-    QObject::connect(tableview_.get(), &DataFrameTableView::rowSelectionChanged, this,
-                     [this](const BitSet& rows) { rowSelectionChanged_.invoke(rows); });
-    QObject::connect(tableview_.get(), &DataFrameTableView::rowHighlightChanged, this,
-                     [this](const BitSet& rows) { rowHighlightChanged_.invoke(rows); });
-
     setFocusProxy(tableview_.get());
 
     auto* layout = new QVBoxLayout(this);
@@ -77,40 +70,23 @@ void DataFrameTableProcessorWidget::setVisible(bool visible) {
     }
 }
 
+void DataFrameTableProcessorWidget::setManager(BrushingAndLinkingManager& manager) {
+    tableview_->setManager(manager);
+}
+
 void DataFrameTableProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
-                                                 bool vectorsIntoColumns, bool categoryIndices) {
-    tableview_->setDataFrame(dataframe, vectorsIntoColumns, categoryIndices);
+                                                 bool categoryIndices) {
+    tableview_->setDataFrame(dataframe, categoryIndices);
 }
 
 void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {
     tableview_->setIndexColumnVisible(visible);
 }
 
-void DataFrameTableProcessorWidget::updateSelection(const BitSet& rows) {
-    tableview_->selectRows(rows);
+void DataFrameTableProcessorWidget::setFilteredRowsVisible(bool visible) {
+    tableview_->setFilteredRowsVisible(visible);
 }
 
-void DataFrameTableProcessorWidget::updateColumnSelection(const BitSet& columns) {
-    tableview_->selectColumns(columns);
-}
-
-void DataFrameTableProcessorWidget::updateHighlight(const BitSet& highlightedRows) {
-    tableview_->highlightRows(highlightedRows);
-}
-
-auto DataFrameTableProcessorWidget::setColumnSelectionChangedCallback(
-    std::function<SelectionChangedFunc> callback) -> CallbackHandle {
-    return columnSelectionChanged_.add(callback);
-}
-
-auto DataFrameTableProcessorWidget::setRowSelectionChangedCallback(
-    std::function<SelectionChangedFunc> callback) -> CallbackHandle {
-    return rowSelectionChanged_.add(callback);
-}
-
-auto DataFrameTableProcessorWidget::setRowHighlightChangedCallback(
-    std::function<SelectionChangedFunc> callback) -> CallbackHandle {
-    return rowHighlightChanged_.add(callback);
-}
+void DataFrameTableProcessorWidget::brushingUpdate() { tableview_->brushingUpdate(); }
 
 }  // namespace inviwo

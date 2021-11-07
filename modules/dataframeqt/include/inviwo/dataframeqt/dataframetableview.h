@@ -33,18 +33,20 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QTableWidget>
+#include <QTableView>
 #include <warn/pop>
 
 namespace inviwo {
 
 class DataFrame;
-class DataFrameTableView;
+class DataFrameModel;
+class DataFrameSortFilterProxy;
+class BrushingAndLinkingManager;
 
 /**
  * \brief Widget for showing a DataFrame in a QTableView
  */
-class IVW_MODULE_DATAFRAMEQT_API DataFrameTableView : public QTableWidget {
+class IVW_MODULE_DATAFRAMEQT_API DataFrameTableView : public QTableView {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -53,30 +55,23 @@ public:
     DataFrameTableView(QWidget* parent = nullptr);
     virtual ~DataFrameTableView() = default;
 
-    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false,
-                      bool categoryIndices = false);
+    void setManager(BrushingAndLinkingManager& manager);
+    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool categoryIndices = false);
+
+    void brushingUpdate();
 
     void setIndexColumnVisible(bool visible);
     bool isIndexColumnVisible() const;
 
-    void selectColumns(const BitSet& columns);
-    void selectRows(const BitSet& rows);
-    void highlightRows(const BitSet& rows);
-
-signals:
-    void columnSelectionChanged(const BitSet& columns);
-    void rowSelectionChanged(const BitSet& rows);
-    void rowHighlightChanged(const BitSet& rows);
+    void setFilteredRowsVisible(bool visible);
+    bool getFilteredRowsVisible() const;
 
 private:
-    QStringList generateHeaders(const BitSet& selectedCols = {}) const;
-    void setHeaders(const QStringList& labels);
+    DataFrameModel* model_;
+    DataFrameSortFilterProxy* sortProxy_;
 
     bool indexVisible_ = false;
-    bool vectorsIntoCols_ = false;
     bool categoryIndices_ = false;
-
-    std::shared_ptr<const DataFrame> data_;
 
     bool ignoreEvents_{false};
     bool ignoreUpdate_{false};
