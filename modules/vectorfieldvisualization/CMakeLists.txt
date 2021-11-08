@@ -21,6 +21,7 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h
     include/modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h
     include/modules/vectorfieldvisualization/processors/discardshortlines.h
+    include/modules/vectorfieldvisualization/processors/flowfieldprocessor.h
     include/modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h
     include/modules/vectorfieldvisualization/processors/integrallinevectortomesh.h
     include/modules/vectorfieldvisualization/processors/seed3dto4d.h
@@ -53,6 +54,7 @@ set(SOURCE_FILES
     src/processors/datageneration/seedpointgenerator.cpp
     src/processors/datageneration/seedpointsfrommask.cpp
     src/processors/discardshortlines.cpp
+    src/processors/flowfieldprocessor.cpp
     src/processors/integrallinevectortomesh.cpp
     src/processors/seed3dto4d.cpp
     src/processors/seedsfrommasksequence.cpp

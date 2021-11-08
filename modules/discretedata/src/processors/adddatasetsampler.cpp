@@ -55,7 +55,7 @@ AddDataSetSampler::AddDataSetSampler()
     , dataOut_("datasetWithSamplerOut")
     , meshOut_("debugMeshOut")
     , positionChannel_(
-          dataIn_, "positionChannel", "Position Channel (double)",
+          "positionChannel", "Position Channel (double)", &dataIn_,
           [&](const std::shared_ptr<const Channel> channel) {
               return channel->getGridPrimitiveType() == GridPrimitive::Vertex &&
                      channel->getNumComponents() ==
@@ -108,9 +108,9 @@ AddDataSetSampler::AddDataSetSampler()
 }
 
 void AddDataSetSampler::process() {
-    static bool firstTime = true;
-    if (!firstTime) return;
-    firstTime = false;
+    // static bool firstTime = true;
+    // // if (!firstTime) return;
+    // firstTime = false;
 
     LogWarn("= Process!");
     std::cout << "X== Proccess! ==" << std::endl;

@@ -48,7 +48,7 @@ ComputeGridMeasure::ComputeGridMeasure()
     : Processor()
     , dataInport("InputData")
     , dataOutport("ExtendedData")
-    , propChannelCoordinates(dataInport, "ChannelCoordinates", "Coordinates",
+    , propChannelCoordinates("ChannelCoordinates", "Coordinates", &dataInport,
                              [](const std::shared_ptr<const Channel> a) {
                                  return (a->getGridPrimitiveType() == GridPrimitive::Vertex &&
                                          a->getNumComponents() == 3);

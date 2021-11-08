@@ -62,7 +62,9 @@ DataSetSampler<SpatialDims>::DataSetSampler(
     for (unsigned dim = 0; dim < SpatialDims; ++dim) {
         modelMat[dim][dim] = coordsMax[dim] - coordsMin[dim];
         modelMat[SpatialDims][dim] = coordsMin[dim];
+        // std::cout << "# " << coordsMin[dim] << " - " << coordsMax[dim] << std::endl;
     }
+    modelMat[SpatialDims][SpatialDims] = 1;
     this->setModelMatrix(modelMat);
 }
 

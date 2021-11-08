@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/propertyfactoryobject.h>
 
 namespace inviwo {
 
@@ -46,6 +47,10 @@ namespace discretedata {
 using GridPrimitiveProperty = TemplateOptionProperty<GridPrimitive>;
 
 class IVW_MODULE_DISCRETEDATA_API DataChannelProperty : public CompositeProperty {
+    // friend class PropertyFactoryObjectTemplate<DataChannelProperty>;
+    // friend class std::unique_ptr<DataChannelProperty>;
+    // friend
+
 public:
     using ChannelFilter = std::function<bool(const std::shared_ptr<const Channel>&)>;
     static bool FilterPassAll(const std::shared_ptr<const Channel>) { return true; }
@@ -56,24 +61,44 @@ public:
 
     // Methods
 public:
-    // static const std::string classIdentifier;
+    static const std::string classIdentifier;
+    // const std::string classIdentifierConst =
+    //     "inviwo.discretedata.datachannelproperty";  //"org.inviwo.ColormapProperty";
     virtual std::string getClassIdentifier() const override {
-        return "inviwo.discretedata.datachannelproperty";
+        return classIdentifier;  //"inviwo.discretedata.datachannelproperty";
     }
 
-    DataChannelProperty(DataSetInport& dataInport, const std::string& identifier,
-                        const std::string& displayName, ChannelFilter filter = &FilterPassAll,
+    DataChannelProperty(const std::string& identifier, const std::string& displayName,
+                        DataSetInport* dataInport = nullptr, ChannelFilter filter = &FilterPassAll,
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
+
+    // protected:
+    //     DataChannelProperty(const std::string& identifier, const std::string& displayName,
+    //                         ChannelFilter filter = &FilterPassAll,
+    //                         InvalidationLevel invalidationLevel =
+    //                         InvalidationLevel::InvalidOutput, PropertySemantics semantics =
+    //                         PropertySemantics::Default);
+
+public:
     DataChannelProperty(const DataChannelProperty& prop);
+    DataChannelProperty& operator=(const DataChannelProperty& prop);
     virtual DataChannelProperty* clone() const override { return new DataChannelProperty(*this); }
     virtual ~DataChannelProperty() {}
 
     virtual void updateChannelList();
     std::shared_ptr<const Channel> getCurrentChannel() const;
     bool hasSelectableChannels() const { return channelName_.size() > 1; }
+    DataSetInport* getDatasetInput() { return datasetInput_; }
+    void setDatasetInput(DataSetInport* port);
 
-    DataSetInport& datasetInput_;
+    // virtual void deserialize(Deserializer&) override;
+    // virtual void serialize(Serializer& s) const override;
+
+protected:
+    DataSetInport* datasetInput_;
+
+public:
     ChannelFilter channelFilter_;
     OptionPropertyString channelName_;
     GridPrimitiveProperty gridPrimitive_;

@@ -74,10 +74,14 @@ inline double tetrahedronVolume(double corners[4][3]) {
 
 template <typename ToType>
 struct ChannelToBufferDispatcher {
+    ToType invalidValue_;
+    ChannelToBufferDispatcher(ToType invalidValue) : invalidValue_(invalidValue) {}
+    ChannelToBufferDispatcher() {}
 
     template <typename T, ind N>
-    std::shared_ptr<BufferBase> operator()(const DataChannel<T, N>* positions) {
-        typedef typename DataChannel<T, N>::DefaultVec DefaultVec;
+    std::shared_ptr<BufferBase> operator()(
+        const DataChannel<T, N>* positions) {  // const vec4* invalidValue = nullptr
+        typedef typename DataChannel<T, N>::DefaultVec DefaultVec;  // std::array<T, N>
         ind numElements = positions->size();
         std::vector<DefaultVec> data(numElements);
         positions->fill(*data.data(), 0, numElements);
@@ -85,7 +89,11 @@ struct ChannelToBufferDispatcher {
         std::vector<ToType> convBuffer;
         convBuffer.reserve(data.size());
         for (const DefaultVec& val : data) {
-            convBuffer.push_back(util::glm_convert<ToType>(val));
+            if (!positions->isValid(reinterpret_cast<const T*>(&val)[0])) {
+                convBuffer.push_back(invalidValue_);
+            } else {
+                convBuffer.push_back(util::glm_convert<ToType>(val));
+            }
         }
 
         auto buffer = util::makeBuffer(std::move(convBuffer));
@@ -157,8 +165,8 @@ static typename std::array<size_t, Choose> initNchooseK() {
     return init;
 }
 
-/** Given a previous chosen selection, return the next one in the sequence. Returns false if the end
- * is reached. **/
+/** Given a previous chosen selection, return the next one in the sequence. Returns false if the
+ * end is reached. **/
 template <size_t Choose>
 static constexpr bool nextNchooseK(size_t from, typename std::array<size_t, Choose>& choice) {
     for (size_t k = 1; k <= Choose; ++k) {

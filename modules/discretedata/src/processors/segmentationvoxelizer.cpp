@@ -66,8 +66,8 @@ SegmentationVoxelizer::SegmentationVoxelizer()
     : Processor()
     , portInData_("DataSet")
     , portOutMesh_("MeshOutput")
-    , segmentationChannel_(portInData_, "segmentationChannel", "Segmentation Data")
-    , vertexChannel_(portInData_, "vertexChannel", "Vertex positions") {
+    , segmentationChannel_("segmentationChannel", "Segmentation Data", &portInData_)
+    , vertexChannel_("vertexChannel", "Vertex positions", &portInData_) {
     addPort(portInData_);
     addPort(portOutMesh_);
     addProperty(segmentationChannel_);

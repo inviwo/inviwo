@@ -51,20 +51,24 @@ const ProcessorInfo MeshFromDataSet::getProcessorInfo() const { return processor
 MeshFromDataSet::MeshFromDataSet()
     : portInDataSet_("InDataSet")
     , portOutMesh_("OutMesh")
-    , positionChannel_(portInDataSet_, "positionChannel", "Position Channel",
+    , positionChannel_("positionChannel", "Position Channel", &portInDataSet_,
                        DataChannelProperty::FilterPassDim<0>)
-    , colorChannel_(portInDataSet_, "colorChannel", "Color Channel",
+    , colorChannel_("colorChannel", "Color Channel", &portInDataSet_,
                     DataChannelProperty::FilterPassDim<0>)
-    , textureChannel_(portInDataSet_, "textureChannel", "Texture Coordinate Channel",
+    , textureChannel_("textureChannel", "Texture Coordinate Channel", &portInDataSet_,
                       DataChannelProperty::FilterPassDim<0>)
     , normalizeTextureCoords_("normalizeTextureCoords", "Normalize Tex Coords")
     , primitive_("primitive", "Mesh Primitive")
-    , cutAtBorder_("cutAtBorder", "Don't connect borders", false) {
+    , cutAtBorder_("cutAtBorder", "Don't connect borders", false)
+    , invalidColor_("invalidColor", "Invalid Color",
+                    {{"transparent", "Transparent", InvalidColor::Transparent},
+                     {"black", "Black", InvalidColor::Black},
+                     {"white", "White", InvalidColor::White}}) {
 
     addPort(portInDataSet_);
     addPort(portOutMesh_);
     addProperties(positionChannel_, colorChannel_, textureChannel_, normalizeTextureCoords_,
-                  primitive_, cutAtBorder_);
+                  primitive_, cutAtBorder_, invalidColor_);
 }
 
 // namespace {
@@ -137,18 +141,30 @@ void MeshFromDataSet::process() {
     result->addBuffer(BufferType::PositionAttrib, positions);
 
     // Add colors.
+    dvec4 invalidColor;
+    switch (invalidColor_.get()) {
+        case InvalidColor::Black:
+            invalidColor = {0, 0, 0, 1};
+            break;
+        case InvalidColor::White:
+            invalidColor = {1, 1, 1, 1};
+            break;
+        default:
+            invalidColor = {0, 0, 0, 0};
+            break;
+    }
     if (colorChannel) {
         std::shared_ptr<BufferBase> colors;
         if (colorChannel->getNumComponents() == 4) {
             colors =
                 colorChannel
                     ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 4, 4>(
-                        dd_util::ChannelToBufferDispatcher<vec4>());
+                        dd_util::ChannelToBufferDispatcher<vec4>(invalidColor));
         } else {
             colors =
                 colorChannel
                     ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 3>(
-                        dd_util::ChannelToBufferDispatcher<vec3>());
+                        dd_util::ChannelToBufferDispatcher<vec3>(invalidColor));
         }
 
         result->addBuffer(BufferType::ColorAttrib, colors);

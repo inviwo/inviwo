@@ -85,6 +85,8 @@ public:
         for (auto channel : channels_) {
             // combinedFormat = DataFormatBase::get(channel->getDataFormatId());
             auto scalarType = channel->getDataFormatId();
+            std::cout << fmt::format("<< For channel {}, invalid value is {}", channel->getName(),
+                                     channel->getInvalidValueDouble());
             //  DataFormatBase::get(combinedFormat->getNumericType(), 1,
             //                                       combinedFormat->getPrecision());
 
@@ -125,7 +127,7 @@ protected:
         detail::FillRawDispatcher<T, N> dispatcher;
         // for (ind el = 0; el < numElements; ++el) {
         for (auto& channel : channels_) {  // std::tuple<T>
-                                          // TODO: Make less sucky.
+                                           // TODO: Make less sucky.
             // channel->dispatch<voi, dispatching::filter::Scalars, 1, N - 1>(
             channeldispatching::dispatchNumber<void, 1, N - 1>(
                 channel->getNumComponents(), dispatcher, *channel, copyDest, index, numElements);

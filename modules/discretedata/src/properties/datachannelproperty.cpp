@@ -31,10 +31,11 @@
 
 namespace inviwo {
 namespace discretedata {
+const std::string DataChannelProperty::classIdentifier = "inviwo.discretedata.datachannelproperty";
 
-DataChannelProperty::DataChannelProperty(DataSetInport& dataInport, const std::string& identifier,
-                                         const std::string& displayName, ChannelFilter filter,
-                                         InvalidationLevel invalidationLevel,
+DataChannelProperty::DataChannelProperty(const std::string& identifier,
+                                         const std::string& displayName, DataSetInport* dataInport,
+                                         ChannelFilter filter, InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , datasetInput_(dataInport)
@@ -43,12 +44,35 @@ DataChannelProperty::DataChannelProperty(DataSetInport& dataInport, const std::s
     , gridPrimitive_("gridPrimitive", "Primitive with data")
     , ongoingChange_(false) {
     auto updateCallback = [&]() { updateChannelList(); };
-    datasetInput_.onChange(updateCallback);
+    if (datasetInput_) datasetInput_->onChange(updateCallback);
     gridPrimitive_.onChange(updateCallback);
 
     addProperty(gridPrimitive_);
     addProperty(channelName_);
 }
+
+void DataChannelProperty::setDatasetInput(DataSetInport* port) {
+    datasetInput_ = port;
+    if (datasetInput_) datasetInput_->onChange([&]() { updateChannelList(); });
+}
+
+// DataChannelProperty::DataChannelProperty(const std::string& identifier,
+//                                          const std::string& displayName, ChannelFilter filter,
+//                                          InvalidationLevel invalidationLevel,
+//                                          PropertySemantics semantics)
+//     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+//     , datasetInput_(nullptr)
+//     , channelFilter_(filter)
+//     , channelName_("channelName", "Channel name", {{"NONE", "NONE"}})
+//     , gridPrimitive_("gridPrimitive", "Primitive with data")
+//     , ongoingChange_(false) {
+//     auto updateCallback = [&]() { updateChannelList(); };
+//     gridPrimitive_.onChange(updateCallback);
+
+//     addProperty(gridPrimitive_);
+//     addProperty(channelName_);
+// }
+
 DataChannelProperty::DataChannelProperty(const DataChannelProperty& prop)
     : CompositeProperty(prop)
     , datasetInput_(prop.datasetInput_)
@@ -57,7 +81,7 @@ DataChannelProperty::DataChannelProperty(const DataChannelProperty& prop)
     , gridPrimitive_("gridPrimitive", "Primitive with data")
     , ongoingChange_(false) {
     auto updateCallback = [&]() { updateChannelList(); };
-    datasetInput_.onChange(updateCallback);
+    if (datasetInput_) datasetInput_->onChange(updateCallback);
     gridPrimitive_.onChange(updateCallback);
 
     addProperty(gridPrimitive_);
@@ -65,8 +89,29 @@ DataChannelProperty::DataChannelProperty(const DataChannelProperty& prop)
     updateChannelList();
 }
 
+DataChannelProperty& DataChannelProperty::operator=(const DataChannelProperty& prop) {
+    // CompositeProperty::operator=(prop);
+    setIdentifier(prop.getIdentifier());
+    setDisplayName(prop.getDisplayName());
+    if (prop.datasetInput_) datasetInput_ = prop.datasetInput_;
+    channelFilter_ = {prop.channelFilter_};
+    channelName_.replaceOptions({{"NONE", "NONE"}});
+    // gridPrimitive_ = {"gridPrimitive", "Primitive with data"};
+    ongoingChange_ = false;
+
+    auto updateCallback = [&]() { updateChannelList(); };
+    if (datasetInput_) datasetInput_->onChange(updateCallback);
+    gridPrimitive_.onChange(updateCallback);
+
+    // addProperty(gridPrimitive_);
+    // addProperty(channelName_);
+    updateChannelList();
+}
+
 std::shared_ptr<const Channel> DataChannelProperty::getCurrentChannel() const {
-    auto pInDataSet = datasetInput_.getData();
+    if (!datasetInput_) return nullptr;
+
+    auto pInDataSet = datasetInput_->getData();
     if (!pInDataSet || channelName_.size() == 0 || gridPrimitive_.size() == 0 ||
         channelName_.get().compare("NONE") == 0)
         return nullptr;
@@ -75,7 +120,6 @@ std::shared_ptr<const Channel> DataChannelProperty::getCurrentChannel() const {
 
 void DataChannelProperty::updateChannelList() {
     if (ongoingChange_) return;
-    auto dataset = datasetInput_.getData();
 
     // Get the current name to select same name if possible.
     std::string lastName = channelName_.get();  // channelName_.size() ? channelName_.get() : "";
@@ -86,6 +130,8 @@ void DataChannelProperty::updateChannelList() {
     gridPrimitive_.clearOptions();
     channelName_.addOption("NONE", "NONE");
 
+    if (!datasetInput_) return;
+    auto dataset = datasetInput_->getData();
     if (!dataset) return;
 
     // Update channel list with filter.
@@ -120,6 +166,15 @@ void DataChannelProperty::updateChannelList() {
     // gridPrimitive_.
     // gridPrimitiveOnChange_ = gridPrimitive_.onChangeScoped([&]() { updateChannelList(); });
 }
+
+// void DataChannelProperty::deserialize(Deserializer& d) {
+//     CompositeProperty::deserialize(d);
+//     updateChannelList();
+// }
+// void DataChannelProperty::serialize(Serializer& s) {
+//     CompositeProperty::serialize(s);
+//     updateChannelList();
+// }
 
 }  // namespace discretedata
 }  // namespace inviwo

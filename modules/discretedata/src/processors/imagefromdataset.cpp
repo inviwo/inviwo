@@ -56,7 +56,7 @@ ImageFromDataSet::ImageFromDataSet()
                           {"squared", "Squared Distance", InterpolationType::SquaredDistance},
                           {"linear", "Linear", InterpolationType::Linear}},
                          2)
-    , dataChannel_(dataIn_, "channelName", "Data Channel",
+    , dataChannel_("channelName", "Data Channel", &dataIn_,
                    [&](const std::shared_ptr<const Channel> channel) -> bool {
                        //    return std::dynamic_pointer_cast<const DataChannel<double,
                        //    2>>(ch).get();
@@ -177,12 +177,6 @@ std::shared_ptr<inviwo::Image> ImageFromDataSet::sampleImage(
     if (!data) return nullptr;
     std::cout << "! Got vec4 data" << std::endl;
 
-    if (!data) {
-        LogError("Could not create image");
-        std::cout << "! Could not create image" << std::endl;
-    }
-    std::cout << "! Got data pointer" << std::endl;
-
     // const auto minBound = sampler->getMin();
     // const auto maxBound = sampler->getMax();
     // dvec2 extent = {maxBound[0] - minBound[0], maxBound[1] - minBound[1]};
@@ -205,7 +199,8 @@ std::shared_ptr<inviwo::Image> ImageFromDataSet::sampleImage(
             // }
             dvec2 samplePos = {double(x) / (imageSize.x - 1), double(y) / (imageSize.y - 1)};
             dvec2 sampled = spatialSampler.sampleDataSpace(samplePos);
-            bool color = std::abs(sampled.x) > 0;
+            bool color = std::abs(sampled.x) + std::abs(sampled.y) >
+                         0;  // dataChannel->isValid(sampled.x);  //
             data[x + y * imageSize.x] = {sampled.x, sampled.y, color ? 0.0 : 1.0, 1};
 
             // if (!color) {

@@ -49,7 +49,7 @@ const ProcessorInfo VolumeFromDataSet::getProcessorInfo() const { return process
 VolumeFromDataSet::VolumeFromDataSet()
     : portInDataSet("InDataSet")
     , portOutVolume("OutVolume")
-    , channelName(portInDataSet, "channelName", "Data Channel")
+    , channelName("channelName", "Data Channel", &portInDataSet)
     //, useVoxelData("useVoxelData", "Use Voxel Data", false)
     , floatVolumeOutput("floatVolumeOutput", "Convert Data to Float 32") {
     addPort(portInDataSet);

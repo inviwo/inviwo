@@ -53,6 +53,7 @@
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
 #include <modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h>
 #include <modules/base/processors/volumetospatialsampler.h>
+#include <modules/vectorfieldvisualization/processors/flowfieldprocessor.h>
 #include <modules/vectorfieldvisualization/processors/seedsfrommesh.h>
 
 namespace inviwo {
@@ -73,6 +74,7 @@ struct ProcessorTraits<LineSetSelector> {
 
 VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
     : InviwoModule(app, "VectorFieldVisualization") {
+    registerProcessor<FlowField2DProcessor>();
     registerProcessor<RBFVectorFieldGenerator2D>();
     registerProcessor<RBFVectorFieldGenerator3D>();
     registerProcessor<SeedPointGenerator>();

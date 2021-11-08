@@ -88,6 +88,9 @@ public:
     GridPrimitiveProperty primitive_;
 
     BoolProperty cutAtBorder_;
+
+    enum InvalidColor { Transparent, Black, White };
+    TemplateOptionProperty<InvalidColor> invalidColor_;
 };
 
 }  // namespace discretedata

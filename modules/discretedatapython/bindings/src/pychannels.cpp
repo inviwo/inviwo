@@ -82,6 +82,11 @@ void exposeChannels(pybind11::module& m) {
         .def("getNumComponents", &Channel::getNumComponents,
              "The number of vector components, e.g. 3 for vec3 data.")
         .def("size", &Channel::size, "Number of elements, e.g. number of vec3s.")
+        .def("getInvalidValue", &Channel::getInvalidValueDouble,
+             "Get the invalid value as a double.")
+        .def("setInvalidValue", &Channel::setInvalidValueDouble,
+             "Set the invalid value from a double.")
+        .def("setName", &Channel::setName, "name"_a, "Set the channel name.")
         .def_static("createChannel", &discretepyutil::createPyChannel,
                     //  "dataArray"_a, "name"_a, "definedOnPrimitive"_a,
                     "Create a new NumPyChannel from the array given.");
@@ -125,8 +130,8 @@ std::shared_ptr<Channel> discretepyutil::createBufferChannel(const pybind11::arr
     auto combinedFormat = inviwo::pyutil::getDataFormat(ndim == 1 ? 1 : data.shape(1), data);
 
     detail::CreateBufferChannelHelper dispatcher;
-    return channeldispatching::dispatch<std::shared_ptr<Channel>, dispatching::filter::All, 1, 7>(
-        combinedFormat, dispatcher, data, name, definedOn);
+    return channeldispatching::dispatch<std::shared_ptr<Channel>, dispatching::filter::Scalars, 1,
+                                        7>(combinedFormat, dispatcher, data, name, definedOn);
 }
 
 }  // namespace inviwo

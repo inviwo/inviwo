@@ -84,7 +84,7 @@ void traverse(inout float v, inout int c, vec2 posF, float stepSize, int steps) 
 
 void main() {
     vec2 test = texture(vectorFieldColor, texCoord_.xy).rg;
-    if (test.r == 0) discard;
+    if (test.r == 0 && test.g == 0) discard;
     float v = texture(noiseTextureColor, texCoord_.xy).r;
 
     int c = 1;

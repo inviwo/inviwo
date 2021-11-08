@@ -79,6 +79,10 @@ public:
 
     virtual ind size() const = 0;
 
+    virtual double getInvalidValueDouble() const = 0;
+
+    virtual void setInvalidValueDouble(double val) = 0;
+
 protected:
     /**
      * Sets the "GridPrimitiveType" meta data
@@ -125,6 +129,21 @@ public:
     template <typename Result, typename Callable, typename... Args>
     auto dispatch(Callable&& callable, Args&&... args) const -> Result;
 
+    /**
+     * Dispatching a function that gets a templated DataChannel as first argument.
+     * Standard filter and dimension range.
+     */
+    // template <typename Result, typename Callable, typename... Args>
+    // static auto dispatchSharedPointer(std::shared_ptr<Channel> channel, Callable&& callable,
+    //                                   Args&&... args) -> Result;
+    /**
+     * Dispatching a function that gets a templated DataChannel as first argument.
+     * Standard filter and dimension range.
+     */
+    template <typename Result, typename Callable, typename... Args>
+    static auto dispatchSharedPointer(std::shared_ptr<const Channel> channel, Callable&& callable,
+                                      Args&&... args) -> Result;
+
 private:
     std::string name_;
     const DataFormatBase* format_;
@@ -151,6 +170,23 @@ struct ChannelConstDispatcher {
     Result operator()(Callable&& obj, const Channel* channel, Args... args) {
         static_assert(N > 0);
         return obj(dynamic_cast<const DataChannel<typename T::type, N>*>(channel),
+                   std::forward<Args>(args)...);
+    }
+};
+
+struct ChannelSharedDispatcher {
+    template <typename Result, typename T, ind N, typename Callable, typename... Args>
+    Result operator()(Callable&& obj, std::shared_ptr<Channel> channel, Args... args) {
+        return obj(std::dynamic_pointer_cast<DataChannel<typename T::type, N>>(channel),
+                   std::forward<Args>(args)...);
+    }
+};
+
+struct ChannelSharedConstDispatcher {
+    template <typename Result, typename T, ind N, typename Callable, typename... Args>
+    Result operator()(Callable&& obj, std::shared_ptr<const Channel> channel, Args... args) {
+        static_assert(N > 0);
+        return obj(std::dynamic_pointer_cast<const DataChannel<typename T::type, N>>(channel),
                    std::forward<Args>(args)...);
     }
 };
@@ -193,5 +229,24 @@ auto Channel::dispatch(Callable&& callable, Args&&... args) const -> Result {
         getDataFormatId(), getNumComponents(), dispatcher, std::forward<Callable>(callable), this,
         std::forward<Args>(args)...);
 }
+
+// template <typename Result, typename Callable, typename... Args>
+// static auto dispatchSharedPointer(std::shared_ptr<Channel> channel, Callable&& callable,
+//                                   Args&&... args) -> Result {
+//     detail_dd::ChannelSharedDispatcher dispatcher;
+//     return channeldispatching::dispatch<Result, dispatching::filter::Scalars, 1, 4>(
+//         channel->getDataFormatId(), channel->getNumComponents(), dispatcher,
+//         std::forward<Callable>(callable), channel, std::forward<Args>(args)...);
+// }
+
+template <typename Result, typename Callable, typename... Args>
+auto Channel::dispatchSharedPointer(std::shared_ptr<const Channel> channel, Callable&& callable,
+                                    Args&&... args) -> Result {
+    detail_dd::ChannelSharedConstDispatcher dispatcher;
+    return channeldispatching::dispatch<Result, dispatching::filter::Scalars, 1, 4>(
+        channel->getDataFormatId(), channel->getNumComponents(), dispatcher,
+        std::forward<Callable>(callable), channel, std::forward<Args>(args)...);
+}
+
 }  // namespace discretedata
 }  // namespace inviwo

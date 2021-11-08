@@ -56,6 +56,9 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void deserialize(Deserializer&) override;
+    virtual void serialize(Serializer& s) const override;
+
 private:
     DataSetInport dataIn_;
     DataSetOutport dataOut_;
@@ -64,7 +67,8 @@ private:
 
 struct ChannelOpPropertyBase : public CompositeProperty {
     ChannelOpPropertyBase(
-        const std::string& identifier, const std::string& displayName, DataSetInport& dataInport,
+        const std::string& identifier, const std::string& displayName, DataSetInport* dataInport,
+        const std::string& defaultName,
         DataChannelProperty::ChannelFilter filter = &DataChannelProperty::FilterPassAll);
     ChannelOpPropertyBase(const ChannelOpPropertyBase& prop);
     // ChannelOpPropertyBase& operator=(const ChannelOpPropertyBase& prop) = delete;
@@ -76,14 +80,21 @@ struct ChannelOpPropertyBase : public CompositeProperty {
 
 template <typename ChannelOp>
 struct ChannelOpProperty : public ChannelOpPropertyBase {
+    // static const std::string classIdentifier = ChannelOp::getIdentifier();
+    // fmt::format("inviwo.discretedata.channeloperation{}", ChannelOp::getIdentifier());
+
     ChannelOpProperty(
-        const std::string& identifier, const std::string& displayName, DataSetInport& dataInport,
+        const std::string& identifier, const std::string& displayName,
+        DataSetInport* dataInport = nullptr, const std::string& defaultName = "NONE",
         DataChannelProperty::ChannelFilter filter = &DataChannelProperty::FilterPassAll);
+    ChannelOpProperty& operator=(const ChannelOpProperty<ChannelOp>& prop);
     // ChannelOpProperty(const ChannelOpProperty<ChannelOp>& prop);
     virtual std::shared_ptr<Channel> applyOperation() override;
     virtual ChannelOpProperty<ChannelOp>* clone() const override {
         return new ChannelOpProperty<ChannelOp>(*this);
     }
+
+    virtual std::string getClassIdentifier() const override;
 
     ChannelOp channelOperation_;
 };
@@ -92,67 +103,146 @@ struct NormalizeChannelOperation {
     NormalizeChannelOperation(ChannelOpProperty<NormalizeChannelOperation>* property) {}
 
     template <typename T, ind N>
-    std::shared_ptr<Channel> operator()(const DataChannel<T, N>* channel,
-                                        ChannelOpProperty<NormalizeChannelOperation>* property) {
+    struct NormalizedFunctor {
+        std::shared_ptr<const DataChannel<T, N>> channel_;
+        glm::vec<N, T> min_, ext_;
 
+        NormalizedFunctor(std::shared_ptr<const DataChannel<T, N>> channel, glm::vec<N, T> min,
+                          glm::vec<N, T> ext)
+            : channel_(channel), min_(min), ext_(ext) {}
+
+        void operator()(std::array<T, N>& vec, ind idx) {
+            channel_->fill(vec, idx);
+            if (!channel_->isValid(vec[0])) {
+                return;
+            }
+
+            for (ind dim = 0; dim < N; ++dim) {
+                if (ext_[dim] != 0) vec[dim] = (vec[dim] - min_[dim]) / ext_[dim];
+            }
+        }
+    };
+
+    template <typename T, ind N>
+    std::shared_ptr<Channel> operator()(std::shared_ptr<const DataChannel<T, N>> channel,
+                                        ChannelOpProperty<NormalizeChannelOperation>* property) {
         glm::vec<N, T> min, max;
         channel->getMinMax(min, max);
-        std::cout << fmt::format("+ MinMax: {} -> {}", min, max - min);
+        std::cout << fmt::format("+ MinExtent: {} -> {}", min, max - min);
 
-        return std::make_shared<AnalyticChannel<T, N>>(
-            [channel, minVec = min, extVec = max - min](auto vec, ind idx) {
-                channel->fill(vec, idx);
-                if (idx % 10000 == 0)
-                    std::cout << fmt::format("+   || ({}, {}) ||", vec[0], vec[1]);
-
-                for (ind dim = 0; dim < N; ++dim) {
-                    vec[dim] = (vec[dim] - minVec[dim]) / extVec[dim];
-                }
-                if (idx % 10000 == 0)
-                    std::cout << fmt::format(" = ({}, {})", vec[0], vec[1]) << std::endl;
-
-                // static size_t NUM_OUTPUTS = 0;
-                // if (first < 50) {
-                //     std::cout <<
-                // }
-                // first++;
-            },
-            channel->size(), property->channelName_.get(), channel->getGridPrimitiveType());
+        auto normalizedChannel = std::make_shared<AnalyticChannel<T, N>>(
+            NormalizedFunctor<T, N>(channel, min, max - min), channel->size(),
+            property->channelName_.get(), channel->getGridPrimitiveType());
+        normalizedChannel->setInvalidValue(channel->getInvalidValue());
+        return normalizedChannel;
     }
+
+    static std::string getIdentifier() { return "normalized"; }
 };
 
 struct MagnitudeOperation {
     MagnitudeOperation(ChannelOpProperty<MagnitudeOperation>* property) {}
 
     template <typename T, ind N>
-    std::shared_ptr<Channel> operator()(const DataChannel<T, N>* channel,
+    struct MagnitudeFunctor {
+        std::shared_ptr<const DataChannel<T, N>> channel_;
+
+        MagnitudeFunctor(std::shared_ptr<const DataChannel<T, N>> channel) : channel_(channel) {}
+
+        void operator()(double& magnitude, ind idx) {
+            std::array<T, N> vec;
+            channel_->fill(vec, idx);
+
+            magnitude = 0;
+            if (!channel_->isValid(vec[0])) return;
+
+            for (ind dim = 0; dim < N; ++dim) {
+                magnitude += vec[dim] * vec[dim];
+            }
+            magnitude = std::sqrt(magnitude);
+        }
+    };
+
+    template <typename T, ind N>
+    std::shared_ptr<Channel> operator()(std::shared_ptr<const DataChannel<T, N>> channel,
                                         ChannelOpProperty<MagnitudeOperation>* property) {
 
         return std::make_shared<AnalyticChannel<double, 1, double>>(
-            [channel](auto magnitude, ind idx) {
-                std::array<T, N> vec;
-                channel->fill(vec, idx);
+            MagnitudeFunctor<T, N>(channel), channel->size(), property->channelName_.get(),
+            channel->getGridPrimitiveType());
+    }
 
-                if (idx % 10000 == 0)
-                    std::cout << fmt::format("-   || ({}, {}) || = ", vec[0], vec[1]);
+    static std::string getIdentifier() { return "magnitude"; }
+};
 
-                magnitude = 0;
-                for (ind dim = 0; dim < N; ++dim) {
-                    magnitude += vec[dim] * vec[dim];
-                }
-                magnitude = std::sqrt(magnitude);
-                if (idx % 10000 == 0) std::cout << magnitude << std::endl;
+struct NormalizedMagnitudeOperation {
+    NormalizedMagnitudeOperation(ChannelOpProperty<NormalizedMagnitudeOperation>* property) {}
+
+    template <typename T, ind N>
+    std::shared_ptr<Channel> operator()(std::shared_ptr<const DataChannel<T, N>> channel,
+                                        ChannelOpProperty<NormalizedMagnitudeOperation>* property) {
+
+        auto magnitudeChannel = std::make_shared<AnalyticChannel<double, 1, double>>(
+            MagnitudeOperation::MagnitudeFunctor<T, N>(channel), channel->size(),
+            property->channelName_.get(), channel->getGridPrimitiveType());
+
+        glm::vec<1, double> min, max;
+        magnitudeChannel->getMinMax(min, max);
+        auto normalizedChannel = std::make_shared<AnalyticChannel<double, 1>>(
+            NormalizeChannelOperation::NormalizedFunctor<double, 1>(magnitudeChannel, min,
+                                                                    max - min),
+            channel->size(), property->channelName_.get(), channel->getGridPrimitiveType());
+        normalizedChannel->setInvalidValue(channel->getInvalidValue());
+
+        return normalizedChannel;
+    }
+
+    static std::string getIdentifier() { return "normmag"; }
+};
+
+struct AppendOperation {
+    AppendOperation(ChannelOpProperty<AppendOperation>* property)
+        : appendValue_("appendValue", "Value", 1, 0, 10, 0.1) {
+        property->addProperty(appendValue_);
+    }
+
+    template <typename T, ind N>
+    std::shared_ptr<Channel> operator()(std::shared_ptr<const DataChannel<T, N>> channel,
+                                        ChannelOpProperty<AppendOperation>* property) {
+
+        return std::make_shared<AnalyticChannel<T, N + 1>>(
+            [appendValue = appendValue_.get(), channel](auto& magnitude, ind idx) {
+                std::array<T, N + 1> vec;
+                channel->fillRaw(reinterpret_cast<T*>(&vec), idx);
+                vec[N] = appendValue;
             },
             channel->size(), property->channelName_.get(), channel->getGridPrimitiveType());
     }
+
+    static std::string getIdentifier() { return "append"; }
+
+    DoubleProperty appendValue_;
 };
 
 template <typename ChannelOp>
 ChannelOpProperty<ChannelOp>::ChannelOpProperty(const std::string& identifier,
                                                 const std::string& displayName,
-                                                DataSetInport& dataInport,
+                                                DataSetInport* dataInport,
+                                                const std::string& defaultName,
                                                 DataChannelProperty::ChannelFilter filter)
-    : ChannelOpPropertyBase(identifier, displayName, dataInport, filter), channelOperation_(this) {}
+    : ChannelOpPropertyBase(identifier, displayName, dataInport, defaultName, filter)
+    , channelOperation_(this) {}
+
+template <typename ChannelOp>
+ChannelOpProperty<ChannelOp>& ChannelOpProperty<ChannelOp>::operator=(
+    const ChannelOpProperty<ChannelOp>& prop) {
+    if (prop.channelName_.get().compare("NONE") != 0) channelName_.set(prop.channelName_.get());
+    if (prop.baseChannel_.datasetInput_)
+        baseChannel_.datasetInput_ = prop.baseChannel_.datasetInput_;
+    // CompositeProperty::operator=(prop);
+    setIdentifier(prop.getIdentifier());
+    setDisplayName(prop.getDisplayName());
+}
 
 template <typename ChannelOp>
 std::shared_ptr<Channel> ChannelOpProperty<ChannelOp>::applyOperation() {
@@ -161,8 +251,22 @@ std::shared_ptr<Channel> ChannelOpProperty<ChannelOp>::applyOperation() {
         return nullptr;
 
     ChannelOp dispatcher(this);
-    return channel->dispatch<std::shared_ptr<Channel>>(dispatcher, this);
+    return Channel::dispatchSharedPointer<std::shared_ptr<Channel>>(channel, dispatcher, this);
 }
 
 }  // namespace discretedata
+
+template <typename ChannelOp>
+struct PropertyTraits<discretedata::ChannelOpProperty<ChannelOp>> {
+    static std::string classIdentifier() {
+        return "inviwo.discretedata.channeloperation" + ChannelOp::getIdentifier();
+    }
+};
+
+template <typename ChannelOp>
+std::string discretedata::ChannelOpProperty<ChannelOp>::getClassIdentifier() const {
+    // return "inviwo.discretedata.channeloperation" + ChannelOp::getIdentifier();
+    return PropertyTraits<ChannelOpProperty<ChannelOp>>::classIdentifier();
+}
+
 }  // namespace inviwo

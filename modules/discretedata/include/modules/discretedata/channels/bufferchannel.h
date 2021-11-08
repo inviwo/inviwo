@@ -102,6 +102,7 @@ public:
         : DataChannel<T, N>(channel.getName(), channel.getGridPrimitiveType())
         , buffer_(channel.size() * N) {
         channel.fillRaw(buffer_.data(), 0, channel.size());
+        setInvalidValue(channel.getInvalidValue);
     }
 
     virtual Channel* clone() const override { return new BufferChannel<T, N>(*this); }

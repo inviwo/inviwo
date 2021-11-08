@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/meshport.h>
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
 
 namespace inviwo {
 
@@ -54,6 +55,7 @@ public:
 private:
     SeedPoints2DInport seedPointsIn_;
     MeshOutport meshOut_;
+    // TemplateOptionProperty<CoordinateSpace> seedPointsSpace_;
 };
 
 }  // namespace inviwo

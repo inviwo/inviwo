@@ -29,6 +29,7 @@
 
 #include <modules/discretedata/processors/exampledataset.h>
 #include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/connectivity/tripolargrid.h>
 #include <modules/discretedata/channels/analyticchannel.h>
 #include <modules/discretedata/dataset.h>
 
@@ -46,12 +47,23 @@ const ProcessorInfo ExampleDataSet::processorInfo_{
 
 const ProcessorInfo ExampleDataSet::getProcessorInfo() const { return processorInfo_; }
 
-ExampleDataSet::ExampleDataSet() : Processor(), dataOutport("ExampleData") { addPort(dataOutport); }
+ExampleDataSet::ExampleDataSet()
+    : Processor()
+    , dataOutport("ExampleData")
+    , selectedData_("selectedData", "Data Set",
+                    {{"curvilinear", "Curvilinear"}, {"sphere", "Sphere"}}) {
+    addPort(dataOutport);
+    addProperty(selectedData_);
+}
 
 void ExampleDataSet::process() {
+    if (selectedData_.getIdentifier().compare("curvilinear")) makeCurvilinearDataSet();
+    if (selectedData_.getIdentifier().compare("sphere")) makeSphereDataSet();
+}
 
+void ExampleDataSet::makeCurvilinearDataSet() {
     const std::array<ind, 3> dataSize = {9, 6, 11};
-    auto dataset = std::make_shared<DataSet>("ExampleData", dataSize);
+    auto dataset = std::make_shared<DataSet>("ExampleCurvilinearData", dataSize);
     auto wave = std::make_shared<AnalyticChannel<double, 3, glm::dvec3>>(
         [dataSize](auto& vec, ind idx) {
             glm::dvec3 pos = {
@@ -109,6 +121,48 @@ void ExampleDataSet::process() {
     dataset->addChannel(wave);
     dataset->addChannel(donut);
     dataset->addChannel(color);
+    dataOutport.setData(dataset);
+}
+
+void ExampleDataSet::makeSphereDataSet() {
+    const std::array<ind, 2> dataSize = {36, 18};
+    auto grid = std::make_shared<TripolarGrid<2>>(dataSize);
+
+    auto dataset = std::make_shared<DataSet>("ExampleSphereData", grid);
+    auto latLon = std::make_shared<AnalyticChannel<double, 2, glm::dvec2>>(
+        [dataSize](auto& vec, ind idx) {
+            vec = {
+                (double)(idx % dataSize[0]) / dataSize[0] * 170.0 - 85.0,
+                (double)((idx % (dataSize[0] * dataSize[1])) / dataSize[0]) / dataSize[1] * 360.0 -
+                    270.0};
+        },
+        dataset->getGrid()->getNumElements(), "LatLonPos");
+
+    auto linearLon = std::make_shared<AnalyticChannel<float, 2, glm::vec2>>(
+        [dataSize](auto& vec, ind idx) {
+            ind x = idx % dataSize[0];
+            ind y = idx / dataSize[0];
+            ind halfXSize = dataSize[0] / 2;
+            vec = {0, float(y) / dataSize[0]};
+        },
+        dataset->getGrid()->getNumElements(), "LinearLon");
+
+    auto constantLat = std::make_shared<AnalyticChannel<float, 2, glm::vec2>>(
+        [dataSize](auto& vec, ind idx) {
+            vec = {1, 0.5f};
+        },
+        dataset->getGrid()->getNumElements(), "ConstantLat");
+
+    auto constantLon = std::make_shared<AnalyticChannel<float, 2, glm::vec2>>(
+        [dataSize](auto& vec, ind idx) {
+            vec = {0, 0.5f};
+        },
+        dataset->getGrid()->getNumElements(), "ConstantLon");
+
+    dataset->addChannel(latLon);
+    dataset->addChannel(constantLon);
+    dataset->addChannel(constantLat);
+    dataset->addChannel(linearLon);
     dataOutport.setData(dataset);
 }
 

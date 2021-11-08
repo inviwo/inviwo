@@ -53,44 +53,59 @@
 
 #include <modules/discretedata/sampling/interpolant.h>
 #include <modules/discretedata/sampling/celltree.h>
+using namespace inviwo::discretedata;
 
 namespace inviwo {
 
 DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
     // Processors
-    registerProcessor<discretedata::ChannelOperations>();
-    registerProcessor<discretedata::DataSetROI>();
-    registerProcessor<discretedata::CombineDataSets>();
-    registerProcessor<discretedata::DataSetInformation>();
-    registerProcessor<discretedata::AddDataSetSampler>();
-    // registerProcessor<discretedata::DataSetToSpatialSampler>();
-    registerProcessor<discretedata::DataSetToSpatialSampler2D>();
-    registerProcessor<discretedata::DataSetToSpatialSampler3D>();
-    registerProcessor<discretedata::SphericalCoordinates>();
-    registerProcessor<discretedata::ColormapChannel>();
-    registerProcessor<discretedata::CombineChannels>();
-    registerProcessor<discretedata::CreateConstantChannel>();
-    registerProcessor<discretedata::CreateIndexChannel>();
-    registerProcessor<discretedata::CreateUniformGrid>();
-    registerProcessor<discretedata::DataSetFromVolume>();
-    registerProcessor<discretedata::ComputeGridMeasure>();
-    registerProcessor<discretedata::MeshFromDataSet>();
-    registerProcessor<discretedata::ImageFromDataSet>();
-    registerProcessor<discretedata::VolumeFromDataSet>();
-    registerProcessor<discretedata::SegmentationVoxelizer>();
-    registerProcessor<discretedata::DataSetSource>();
-    registerProcessor<discretedata::ExampleDataSet>();
+    registerProcessor<ChannelOperations>();
+    registerProcessor<DataSetROI>();
+    registerProcessor<CombineDataSets>();
+    registerProcessor<DataSetInformation>();
+    registerProcessor<AddDataSetSampler>();
+    // registerProcessor<DataSetToSpatialSampler>();
+    registerProcessor<DataSetToSpatialSampler2D>();
+    registerProcessor<DataSetToSpatialSampler3D>();
+    registerProcessor<SphericalCoordinates>();
+    registerProcessor<ColormapChannel>();
+    registerProcessor<CombineChannels>();
+    registerProcessor<CreateConstantChannel>();
+    registerProcessor<CreateIndexChannel>();
+    registerProcessor<CreateUniformGrid>();
+    registerProcessor<DataSetFromVolume>();
+    registerProcessor<ComputeGridMeasure>();
+    registerProcessor<MeshFromDataSet>();
+    registerProcessor<ImageFromDataSet>();
+    registerProcessor<VolumeFromDataSet>();
+    registerProcessor<SegmentationVoxelizer>();
+    registerProcessor<DataSetSource>();
+    registerProcessor<ExampleDataSet>();
 
     // Ports
-    registerPort<discretedata::DataSetOutport>();
-    registerPort<discretedata::DataSetInport>();
+    registerPort<DataSetOutport>();
+    registerPort<DataSetInport>();
 
     // Properties
-    registerProperty<discretedata::DimensionProperty>();
+    registerProperty<DimensionProperty>();
+    registerProperty<DataChannelProperty>();
+    registerProperty<ChannelOpProperty<NormalizeChannelOperation>>();
+    registerProperty<ChannelOpProperty<MagnitudeOperation>>();
+    registerProperty<ChannelOpProperty<NormalizedMagnitudeOperation>>();
+    registerProperty<ChannelOpProperty<AppendOperation>>();
+    // Property* prop = new DataChannelProperty("Anke", "Anke");
+    // // new ChannelOpProperty<NormalizedMagnitudeOperation>("Anke", "Anke");
+    // std::cout << fmt::format("@@@ IDENTIFIER {}", prop->getClassIdentifier())
+    //           // std::make_unique<ChannelOpProperty<NormalizedMagnitudeOperation>>
+    //           //    ("Anke", "Anke")->getClassIdentifier())
+    //           << std::endl;
+    // std::cout << fmt::format("@@@ IDENTIFIER {}",
+    //                          std::make_unique<DataChannelProperty>("Anke", "Anke")
+    //                              ->getClassIdentifier())
+    //           << std::endl;
 
-    discretedata::AddDataSetSampler::addInterpolantType<discretedata::SkewedBoxInterpolant>(
-        "skewedBox", "Skewed Box");
-    discretedata::AddDataSetSampler::addSamplerType<discretedata::CellTree>("celltree", "CellTree");
+    AddDataSetSampler::addInterpolantType<SkewedBoxInterpolant>("skewedBox", "Skewed Box");
+    AddDataSetSampler::addSamplerType<CellTree>("celltree", "CellTree");
 }
 
 }  // namespace inviwo

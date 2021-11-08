@@ -119,6 +119,8 @@ private:
                 coordsMax[dim] = static_cast<float>(coordsMaxDouble[dim]);
             }
 
+            std::cout << "AddDatasetSampler - invalid value: " << usableCoords->getInvalidValue()
+                      << std::endl;
             return std::make_shared<SamplerType<N>>(grid, usableCoords, *usableInterpolant,
                                                     coordsMin, coordsMax);
         }

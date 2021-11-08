@@ -48,7 +48,7 @@ ColormapChannel::ColormapChannel()
     : Processor()
     , dataIn_("dataSetIn")
     , dataOut_("dataSetOut")
-    , scalarChannel_(dataIn_, "scalarChannel", "Scalar Channel",
+    , scalarChannel_("scalarChannel", "Scalar Channel", &dataIn_,
                      [](auto ch) { return ch->getNumComponents() == 1; })
     , colormap_("colormap", "Colormap")
     , channelName_("channelName", "Color Output Name", "Color")

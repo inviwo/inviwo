@@ -101,7 +101,7 @@ DataSetToSpatialSampler<SpatialDims, DataDims, T>::DataSetToSpatialSampler()
                           {"squared", "Squared Distance", InterpolationType::SquaredDistance},
                           {"linear", "Linear", InterpolationType::Linear}},
                          2)
-    , dataChannel_(dataIn_, "dataChannel", "Data Channel",
+    , dataChannel_("dataChannel", "Data Channel", &dataIn_,
                    [](const std::shared_ptr<const Channel> ch) -> bool {
                        return std::dynamic_pointer_cast<const DataChannel<T, DataDims>>(ch).get();
                    })

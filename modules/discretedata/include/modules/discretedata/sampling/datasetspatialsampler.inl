@@ -106,7 +106,7 @@ Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataS
         //     return Vector<DataDims, T>(0.0);
         // }
         // result += sample * weight;
-        if (sample[0] > 1.0e-19) {
+        if (data_->isValid(sample[0])) {
             result += sample * weight;
         }
         // std::cout << fmt::format("\tWeighting ({}, {}) by {}", sample[0],

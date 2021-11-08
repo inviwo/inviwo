@@ -117,15 +117,28 @@ struct SphericalCoordinateDispatcher {
                     // static const double DEGREE_TO_METER_MULT = 180.0 / (M_PI * AVG_EARTH_RADIUS);
                     std::array<typename T::type, N> latLon;
                     dataChannel->fill(latLon, idx);
+                    if (!dataChannel->isValid(latLon[0])) {
+                        velocityDegrees[0] = velocityChannel->getInvalidValue();
+                        return;
+                    }
 
                     std::array<float, 2> uv{0};
                     velocityChannel->fill(uv, idx);
+                    if (!velocityChannel->isValid(uv[0])) {
+                        velocityDegrees[0] = velocityChannel->getInvalidValue();
+                        return;
+                    }
 
                     velocityDegrees[0] = uv[0] / (DEGREE_TO_RAD * AVG_EARTH_RADIUS);
                     double latRadius = std::cos(latLon[0] * DEGREE_TO_RAD) * AVG_EARTH_RADIUS;
-                    velocityDegrees[1] = uv[1] / (DEGREE_TO_RAD * latRadius);
-
-                    velocityDegrees[0] = std::cos(latLon[0] * DEGREE_TO_RAD);
+                    velocityDegrees[1] = -uv[1] / (DEGREE_TO_RAD * latRadius);
+                    // double mag = std::sqrt(velocityDegrees[0] * velocityDegrees[0] +
+                    //                        velocityDegrees[1] * velocityDegrees[1]);
+                    // velocityDegrees[0] /= mag;
+                    // velocityDegrees[1] /= mag;
+                    // velocityDegrees[0] = std::abs(velocityDegrees[0] * 3600000 / 50);
+                    // velocityDegrees[1] = std::abs(velocityDegrees[1] * 3600000 / 50);
+                    // velocityDegrees[1] *= 3600000;
                 },
                 velocityChannel->size(),
                 fmt::format("{}_in_lat_lon_per_second", velocityChannel->getName()));

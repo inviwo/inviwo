@@ -47,13 +47,13 @@ SphericalCoordinates::SphericalCoordinates()
     : Processor()
     , dataIn_("DataIn")
     , dataOut_("DataOut")
-    , positions_(dataIn_, "positions", "Lon/Lat Channel",
+    , positions_("positions", "Lon/Lat Channel", &dataIn_,
                  [](auto channel) { return channel->getNumComponents() >= 2; })
     , name_("outName", "Channel Name", "SphericalCoords")
     , autoName_("autoName", "Auto Name?", true)
     , radius_("radius", "Radius", 10, 0.1, 100)
     , verticalScale_("vertScale", "Vertical Scale", 0.01, 0.001, 10, 0.001)
-    , velocities_(dataIn_, "velocity_m_s", "Velocity in m/s",
+    , velocities_("velocity_m_s", "Velocity in m/s", &dataIn_,
                   [](auto channel) {
                       return channel->getNumComponents() == 2 &&
                              channel->getDataFormatId() == DataFormatId::Float32;
@@ -85,6 +85,8 @@ void SphericalCoordinates::process() {
     auto channel = positions_.getCurrentChannel();
     if (!channel) return;
 
+    LogInfo("|| SphericalCoordinates Updated! ||");
+
     if (autoName_.get()) {
         name_.set(fmt::format("Spherical{}", channel->getName()));
     }
@@ -92,7 +94,7 @@ void SphericalCoordinates::process() {
     verticalScale_.setVisible(channel->getNumComponents() >= 3);
 
     std::shared_ptr<DataSet> outData = std::make_shared<DataSet>(*dataIn_.getData());
-    std::shared_ptr<const DataChannel<float, 2>> velocityChannel;
+    std::shared_ptr<const DataChannel<float, 2>> velocityChannel = nullptr;
     if (velocities_.hasSelectableChannels())
         velocityChannel =
             std::dynamic_pointer_cast<const DataChannel<float, 2>>(velocities_.getCurrentChannel());

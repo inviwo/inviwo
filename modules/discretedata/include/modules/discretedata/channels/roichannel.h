@@ -95,7 +95,7 @@ struct CreateROIChannel {
 std::shared_ptr<const Channel> createROIChannel(const std::shared_ptr<const Channel>& channel,
                                                 size_t offset, size_t size) {
     CreateROIChannel dispatcher;
-    return channeldispatching::dispatch<std::shared_ptr<Channel>, dispatching::filter::All, 1,
+    return channeldispatching::dispatch<std::shared_ptr<Channel>, dispatching::filter::Scalars, 1,
                                         DISCRETEDATA_MAX_NUM_DIMENSIONS>(
         channel->getDataFormatId(), channel->getNumComponents(), dispatcher, channel, offset, size);
 }

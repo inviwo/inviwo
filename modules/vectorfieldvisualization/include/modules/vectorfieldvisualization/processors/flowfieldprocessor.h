@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,45 +29,47 @@
 
 #pragma once
 
-#include <modules/discretedata/discretedatamoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <modules/discretedata/ports/datasetport.h>
-#include <modules/discretedata/channels/analyticchannel.h>
-#include <modules/discretedata/channels/channeldispatching.h>
-#include <modules/discretedata/properties/datachannelproperty.h>
+#include <inviwo/core/processors/processortraits.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/foreach.h>
+#include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
 namespace inviwo {
-namespace discretedata {
 
-/** \class CreateConstantChannel
-    \brief Create a channel with constant values
-*/
-class IVW_MODULE_DISCRETEDATA_API ExampleDataSet : public Processor {
+class FlowField2DProcessor : public Processor {
+    using Sampler = SpatialSampler<3, 3, double>;
+    using Tracer = IntegralLineTracer<Sampler>;
 
-    // Construction / Deconstruction
 public:
-    ExampleDataSet();
-    virtual ~ExampleDataSet() = default;
+    FlowField2DProcessor();
+    virtual ~FlowField2DProcessor();
 
-    // Methods
-public:
+    virtual void process() override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    /// Our main computation function
-    virtual void process() override;
-    void makeCurvilinearDataSet();
-    void makeSphereDataSet();
+private:
+    DataInport<Sampler> sampler_;
+    // DataOutport<Sampler> flowSampler_;
+    ImageOutport ftleOut_, hallerField_, dispersionOut_;
+    IntegralLineSetOutport linesOut_;
 
-    // Ports
-public:
-    DataSetOutport dataOutport;
-    OptionPropertyString selectedData_;
+    IntegralLineProperties properties_;
+    IntSize2Property fieldSize_;
+    FloatProperty seedAngle_;
+    FloatProperty seedEpsilon_;
+
+    std::shared_ptr<IntegralLineSet> lines_;
 };
 
-}  // namespace discretedata
 }  // namespace inviwo

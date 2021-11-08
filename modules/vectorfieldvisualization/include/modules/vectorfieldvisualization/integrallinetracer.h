@@ -250,6 +250,15 @@ bool IntegralLineTracer<SpatialSampler, TimeDependent>::addPoint(
     if (glm::length(worldVelocity) < std::numeric_limits<double>::epsilon()) {
         return false;
     }
+    // SpatialVector offsetPos =
+    //     pos + util::glm_convert<SpatialVector>(
+    //               sampler_->getModelMatrix()[SpatialSampler::SpatialDimensions]);
+    // offsetPos[SpatialSampler::SpatialDimensions] -= 1;
+    // SpatialVector offsetPos = pos;
+    // std::cout << "$ Integral offsets: " << sampler_->getModelMatrix() << std::endl;
+    // for (auto dim = 0; dim < SpatialSampler::SpatialDimensions; ++dim) {
+    //     offsetPos[dim] += sampler_->getModelMatrix()[SpatialSampler::SpatialDimensions][dim];
+    // }
 
     line.getPositions().emplace_back(util::glm_convert<dvec3>(pos));
     line.getMetaData<dvec3>("velocity").emplace_back(util::glm_convert<dvec3>(worldVelocity));
