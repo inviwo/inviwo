@@ -101,7 +101,7 @@ void CEFInteractionHandler::handlePickingEvent(PickingEvent* p) {
             }
             bool mouseUp = MouseState::Release & mouseEvent->state() ? true : false;
             int clickCount = MouseState::DoubleClick & mouseEvent->state() ? 2 : 1;
-            if (p->getPressedLocalPickingId().first) { // Only handle self-initiated press
+            if (p->getPressedLocalPickingId().first) {  // Only handle self-initiated press
                 host_->SendMouseClickEvent(cefMouseEvent, type, mouseUp, clickCount);
                 p->markAsUsed();
             }
