@@ -88,8 +88,9 @@ void CEFInteractionHandler::handlePickingEvent(PickingEvent* p) {
             bool mouseLeave = false;
             host_->SendMouseMoveEvent(cefMouseEvent, mouseLeave);
             p->markAsUsed();
-        } else if (mouseEvent->state() & MouseState::Press ||
-                   mouseEvent->state() & MouseState::Release) {
+        } else if (p->getPressedLocalPickingId().first &&  // Only handle self-initiated press
+                   (mouseEvent->state() & MouseState::Press ||
+                    mouseEvent->state() & MouseState::Release)) {
             CefBrowserHost::MouseButtonType type;
 
             if (mouseEvent->button() & MouseButton::Left) {
@@ -101,10 +102,9 @@ void CEFInteractionHandler::handlePickingEvent(PickingEvent* p) {
             }
             bool mouseUp = MouseState::Release & mouseEvent->state() ? true : false;
             int clickCount = MouseState::DoubleClick & mouseEvent->state() ? 2 : 1;
-            if (p->getPressedLocalPickingId().first) {  // Only handle self-initiated press
-                host_->SendMouseClickEvent(cefMouseEvent, type, mouseUp, clickCount);
-                p->markAsUsed();
-            }
+
+            host_->SendMouseClickEvent(cefMouseEvent, type, mouseUp, clickCount);
+            p->markAsUsed();
         }
     } else if (auto touchEvent = p->getEventAs<TouchEvent>()) {
 
