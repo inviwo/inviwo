@@ -97,7 +97,7 @@ struct TemplateColumnReg {
 
         py::class_<C, Column, std::shared_ptr<C>> col(m, classname.c_str());
         col.def_property_readonly("buffer", [](C& c) { return c.getTypedBuffer(); })
-            .def(py::init<const std::string&>())
+            .def(py::init<std::string_view>())
             .def("add", py::overload_cast<const T&>(&C::add))
             .def("add", py::overload_cast<std::string_view>(&C::add))
             .def("append", [](C& c, C& src) { c.append(src); })
@@ -130,10 +130,27 @@ void exposeDataFrame(pybind11::module& m) {
         .def("__repr__",
              [](DataPointBase& p) { return fmt::format("<DataPoint: '{}'>", p.toString()); });
 
+    py::enum_<ColumnType>(m, "ColumnType")
+        .value("Index", ColumnType::Index)
+        .value("Ordinal", ColumnType::Ordinal)
+        .value("Categorical", ColumnType::Categorical);
+
     py::class_<Column, std::shared_ptr<Column>>(m, "Column")
         .def_property("header", &Column::getHeader, &Column::setHeader)
         .def_property_readonly("buffer", [](Column& self) { return self.getBuffer(); })
         .def_property_readonly("size", &Column::getSize)
+        .def_property_readonly("type", &Column::getColumnType)
+        .def(
+            "setRange",
+            [](Column& c, std::optional<dvec2> range) {
+                if (range) {
+                    c.setRange(*range);
+                } else {
+                    c.unsetRange();
+                }
+            },
+            py::arg("range"))
+        .def_property_readonly("range", &Column::getRange)
         .def("__repr__", [](Column& c) {
             return fmt::format("<Column: '{}', {}, {}>", c.getHeader(), c.getSize(),
                                c.getBuffer()->getDataFormat()->getString());
@@ -145,7 +162,7 @@ void exposeDataFrame(pybind11::module& m) {
 
     py::class_<CategoricalColumn, TemplateColumn<std::uint32_t>,
                std::shared_ptr<CategoricalColumn>>(m, "CategoricalColumn")
-        .def(py::init<const std::string&>())
+        .def(py::init<std::string_view>())
         .def_property_readonly("categories", &CategoricalColumn::getCategories,
                                py::return_value_policy::copy)
         .def("add", [](CategoricalColumn& c, const std::string& str) { c.add(str); })
@@ -163,6 +180,10 @@ void exposeDataFrame(pybind11::module& m) {
             return fmt::format("<CategoricalColumn: '{}', {}, {} categories>", c.getHeader(),
                                c.getSize(), c.getCategories().size());
         });
+
+    py::class_<IndexColumn, TemplateColumn<std::uint32_t>, std::shared_ptr<IndexColumn>>(
+        m, "IndexColumn")
+        .def(py::init<std::string_view>());
 
     py::class_<DataFrame, std::shared_ptr<DataFrame>> dataframe(m, "DataFrame");
     dataframe.def(py::init<std::uint32_t>(), py::arg("size") = 0)
