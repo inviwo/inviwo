@@ -32,6 +32,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/valuewrapper.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
@@ -47,7 +48,7 @@ class IVW_MODULE_DATAFRAME_API ColumnMetaDataProperty : public CompositeProperty
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
-    
+
     ColumnMetaDataProperty(
         std::string_view identifier, std::string_view displayName, dvec2 range = {0.0, 1.0},
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -59,7 +60,7 @@ public:
 
     virtual ~ColumnMetaDataProperty() = default;
 
-    void setRange(dvec2 range);
+    void setRange(dvec2 columnRange, dvec2 dataRange = {0.0, 1.0});
     dvec2 getRange() const;
 
     void setColumnIndex(size_t index);
@@ -69,10 +70,12 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
-    DoubleMinMaxProperty dataRange_;
+    DoubleMinMaxProperty columnRange_;
     BoolCompositeProperty overrideRange_;
     DoubleMinMaxProperty customRange_;
+    ButtonProperty resetToData_;
 
+    ValueWrapper<dvec2> dataRange_;
     ValueWrapper<size_t> columnIndex_;
 };
 

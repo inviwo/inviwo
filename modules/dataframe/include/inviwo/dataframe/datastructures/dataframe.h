@@ -260,8 +260,8 @@ struct DataTraits<DataFrame> {
         const size_t ncols = (data.getNumberOfColumns() > 20) ? 10 : data.getNumberOfColumns();
 
         auto range = [](const Column* col) {
-            if (col->hasMetaData<DoubleVec2MetaData>("DataRange")) {
-                return toString(col->getMetaData<DoubleVec2MetaData>("DataRange")->get());
+            if (col->getRange()) {
+                return toString(col->getRange().value());
             } else {
                 return std::string("-");
             }

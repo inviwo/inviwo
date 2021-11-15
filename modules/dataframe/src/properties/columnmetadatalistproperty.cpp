@@ -49,7 +49,9 @@ ColumnMetaDataListProperty::ColumnMetaDataListProperty(std::string_view identifi
                                                        PropertySemantics semantics)
     : ListProperty(std::string(identifier), std::string(displayName),
                    std::make_unique<ColumnMetaDataProperty>("column1", "Column 1"), 0,
-                   ListPropertyUIFlag::Static, invalidationLevel, semantics) {}
+                   ListPropertyUIFlag::Static, invalidationLevel, semantics) {
+    setSerializationMode(PropertySerializationMode::All);
+}
 
 ColumnMetaDataListProperty::ColumnMetaDataListProperty(std::string_view identifier,
                                                        std::string_view displayName,
@@ -61,10 +63,13 @@ ColumnMetaDataListProperty::ColumnMetaDataListProperty(std::string_view identifi
                    ListPropertyUIFlag::Static, invalidationLevel, semantics) {
 
     setPort(port);
+    setSerializationMode(PropertySerializationMode::All);
 }
 
 ColumnMetaDataListProperty::ColumnMetaDataListProperty(const ColumnMetaDataListProperty& rhs)
-    : ListProperty(rhs) {}
+    : ListProperty(rhs) {
+    setSerializationMode(PropertySerializationMode::All);
+}
 
 ColumnMetaDataListProperty* ColumnMetaDataListProperty::clone() const {
     return new ColumnMetaDataListProperty(*this);
@@ -81,6 +86,17 @@ void ColumnMetaDataListProperty::setPort(DataFrameInport& inport) {
     if (inport_->hasData()) {
         updateColumnProperties(*inport_->getData());
     }
+}
+
+dvec2 ColumnMetaDataListProperty::getRange(size_t columnIndex) const {
+    auto p = util::find_if_or_null(getProperties(), [columnIndex](const Property* p) {
+        return static_cast<const ColumnMetaDataProperty*>(p)->getColumnIndex() == columnIndex;
+    });
+    if (p) {
+        auto colprop = static_cast<const ColumnMetaDataProperty*>(p);
+        return colprop->getRange();
+    }
+    return dvec2(0.0, 0.0);
 }
 
 MetaDataOwner ColumnMetaDataListProperty::getColumnMetaData(size_t columnIndex) const {
@@ -109,13 +125,16 @@ ColumnMetaDataListProperty& ColumnMetaDataListProperty::resetToDefaultState() {
 void ColumnMetaDataListProperty::updateColumnProperties(const DataFrame& dataframe) {
     if (dataframe.getNumberOfColumns() <= 1) return;
 
-    auto columnRange = [](auto& col) {
-        return col->getBuffer()
-            ->getRepresentation<BufferRAM>()
-            ->dispatch<dvec2, dispatching::filter::Scalars>([&](auto br) {
-                auto [min, max] = util::bufferMinMax(br, IgnoreSpecialValues::No);
-                return dvec2{min.x, max.x};
-            });
+    auto columnRange = [](auto& col) -> std::pair<dvec2, dvec2> {
+        const dvec2 dataRange =
+            col->getBuffer()
+                ->template getRepresentation<BufferRAM>()
+                ->template dispatch<dvec2, dispatching::filter::Scalars>([&](auto br) {
+                    auto [min, max] = util::bufferMinMax(br, IgnoreSpecialValues::No);
+                    return dvec2{min.x, max.x};
+                });
+        const dvec2 currentRange = col->getRange().value_or(dataRange);
+        return {currentRange, dataRange};
     };
 
     auto toRemove = util::transform(
@@ -126,15 +145,17 @@ void ColumnMetaDataListProperty::updateColumnProperties(const DataFrame& datafra
         auto it = util::find_if(toRemove, [header = col->getHeader()](auto p) {
             return p->getDisplayName() == header;
         });
+        auto [currentRange, dataRange] = columnRange(col);
         if (it != toRemove.end()) {
             (*it)->setColumnIndex(idx);
-            (*it)->setRange(columnRange(col));
+            (*it)->setRange(currentRange, dataRange);
             util::erase_remove(toRemove, *it);
         } else {
             auto p = static_cast<ColumnMetaDataProperty*>(constructProperty(0));
             p->setDisplayName(col->getHeader());
             p->setColumnIndex(idx);
-            p->setRange(columnRange(col));
+            p->setRange(currentRange, dataRange);
+            p->setCurrentStateAsDefault();
         }
     }
     for (auto* p : toRemove) {

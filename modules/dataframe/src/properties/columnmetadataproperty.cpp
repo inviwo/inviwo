@@ -30,6 +30,7 @@
 #include <inviwo/dataframe/properties/columnmetadataproperty.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/network/networklock.h>
 #include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
@@ -43,40 +44,48 @@ ColumnMetaDataProperty::ColumnMetaDataProperty(std::string_view identifier,
                                                PropertySemantics semantics)
     : CompositeProperty(std::string(identifier), std::string(displayName), invalidationLevel,
                         semantics)
-    , dataRange_("dataRange", "Data Range", range.x, range.y, -DataFloat64::max(),
-                 DataFloat64::max(), 0.0, 0.0, InvalidationLevel::InvalidOutput,
-                 PropertySemantics("Text"))
+    , columnRange_("columnRange", "Column Range", range.x, range.y, -DataFloat64::max(),
+                   DataFloat64::max(), 0.0, 0.0, InvalidationLevel::InvalidOutput,
+                   PropertySemantics("Text"))
     , overrideRange_("overrideRange", "Override Range", false)
     , customRange_("customRange", "Custom Range", 0.0, 1.0, -DataFloat64::max(), DataFloat64::max(),
                    0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
+    , resetToData_("resetToData", "Reset to Data",
+                   [&]() {
+                       NetworkLock lock(this);
+                       overrideRange_.setChecked(true);
+                       customRange_.set(dataRange_);
+                   })
+    , dataRange_("dataRange", dvec2(0.0))
     , columnIndex_("columnIndex", 0u) {
 
-    addProperties(dataRange_, overrideRange_);
-    overrideRange_.addProperty(customRange_);
+    addProperties(columnRange_, overrideRange_);
+    overrideRange_.addProperties(customRange_, resetToData_);
 
     setCollapsed(true);
 
-    dataRange_.setReadOnly(true);
-    dataRange_.setSerializationMode(PropertySerializationMode::All);
-    customRange_.setSerializationMode(PropertySerializationMode::All);
+    columnRange_.setReadOnly(true);
 }
 
 ColumnMetaDataProperty::ColumnMetaDataProperty(const ColumnMetaDataProperty& rhs)
     : CompositeProperty(rhs)
-    , dataRange_(rhs.dataRange_)
+    , columnRange_(rhs.columnRange_)
     , overrideRange_(rhs.overrideRange_)
     , customRange_(rhs.customRange_)
+    , resetToData_(rhs.resetToData_)
+    , dataRange_(rhs.dataRange_)
     , columnIndex_(rhs.columnIndex_) {
 
-    addProperties(dataRange_, overrideRange_);
-    overrideRange_.addProperty(customRange_);
+    addProperties(columnRange_, overrideRange_);
+    overrideRange_.addProperties(customRange_, resetToData_);
 }
 
 ColumnMetaDataProperty& ColumnMetaDataProperty::operator=(const ColumnMetaDataProperty& rhs) {
     if (this != &rhs) {
-        dataRange_.set(rhs.dataRange_);
+        columnRange_.set(rhs.columnRange_);
         overrideRange_.set(&rhs.overrideRange_);
         customRange_.set(rhs.customRange_);
+        dataRange_ = rhs.dataRange_;
         columnIndex_ = rhs.columnIndex_;
     }
     return *this;
@@ -86,13 +95,16 @@ ColumnMetaDataProperty* ColumnMetaDataProperty::clone() const {
     return new ColumnMetaDataProperty(*this);
 }
 
-void ColumnMetaDataProperty::setRange(dvec2 range) { dataRange_.set(range); }
+void ColumnMetaDataProperty::setRange(dvec2 columnRange, dvec2 dataRange) {
+    columnRange_.set(columnRange);
+    dataRange_ = dataRange;
+}
 
 dvec2 ColumnMetaDataProperty::getRange() const {
     if (overrideRange_.isChecked()) {
         return customRange_;
     } else {
-        return dataRange_;
+        return columnRange_;
     }
 }
 
@@ -102,11 +114,13 @@ size_t ColumnMetaDataProperty::getColumnIndex() const { return columnIndex_; }
 
 void ColumnMetaDataProperty::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);
+    dataRange_.serialize(s, getSerializationMode());
     columnIndex_.serialize(s, getSerializationMode());
 }
 
 void ColumnMetaDataProperty::deserialize(Deserializer& d) {
     CompositeProperty::deserialize(d);
+    dataRange_.deserialize(d, getSerializationMode());
     columnIndex_.deserialize(d, getSerializationMode());
 }
 
