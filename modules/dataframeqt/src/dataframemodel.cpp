@@ -185,11 +185,11 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
 void DataFrameModel::brushingUpdate() {
     if (!data_ || !manager_) return;
 
-    if (manager_->modifiedSelection(BrushingTarget::Column)) {
+    if (manager_->isSelectionModified(BrushingTarget::Column)) {
         emit headerDataChanged(Qt::Horizontal, 0, columnCount() - 1);
     }
-    if (manager_->modifiedSelection(BrushingTarget::Row) ||
-        manager_->modifiedHighlight(BrushingTarget::Row)) {
+    if (manager_->isSelectionModified(BrushingTarget::Row) ||
+        manager_->isHighlightModified(BrushingTarget::Row)) {
         emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1),
                          {Qt::BackgroundRole});
     }

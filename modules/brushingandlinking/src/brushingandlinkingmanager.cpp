@@ -78,30 +78,46 @@ void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget targ
     propagate(action, target);
 }
 
-bool BrushingAndLinkingManager::isModified() const { return !modifiedActions_.empty(); }
+bool BrushingAndLinkingManager::isModified() const { return !modifications_.empty(); }
 
-BrushingModifications BrushingAndLinkingManager::modifiedActions() const {
-    return modifiedActions_;
+BrushingModifications BrushingAndLinkingManager::getModifiedActions() const {
+    BrushingModifications modifiedActions(flags::empty);
+
+    for (const auto& elem : modifications_) {
+        modifiedActions |= elem.second;
+    }
+    return modifiedActions;
 }
 
-bool BrushingAndLinkingManager::modifiedFiltering(BrushingTarget target) const {
-    return modifiedActions_.contains(BrushingModification::Filtered) && modifiedTarget(target);
+bool BrushingAndLinkingManager::isFilteringModified(BrushingTarget target) const {
+    return isTargetModified(target, BrushingModification::Filtered);
 }
 
-bool BrushingAndLinkingManager::modifiedSelection(BrushingTarget target) const {
-    return modifiedActions_.contains(BrushingModification::Selected) && modifiedTarget(target);
+bool BrushingAndLinkingManager::isSelectionModified(BrushingTarget target) const {
+    return isTargetModified(target, BrushingModification::Selected);
 }
 
-bool BrushingAndLinkingManager::modifiedHighlight(BrushingTarget target) const {
-    return modifiedActions_.contains(BrushingModification::Highlighted) && modifiedTarget(target);
+bool BrushingAndLinkingManager::isHighlightModified(BrushingTarget target) const {
+    return isTargetModified(target, BrushingModification::Highlighted);
 }
 
-const std::vector<BrushingTarget>& BrushingAndLinkingManager::modifiedTargets() const {
-    return modifiedTargets_;
+std::vector<BrushingTarget> BrushingAndLinkingManager::getModifiedTargets() const {
+    return util::transform(modifications_, [](const auto& elem) { return elem.first; });
 }
 
-bool BrushingAndLinkingManager::modifiedTarget(BrushingTarget target) const {
-    return util::contains(modifiedTargets_, target);
+bool BrushingAndLinkingManager::isTargetModified(BrushingTarget target,
+                                                 BrushingAction action) const {
+    return isTargetModified(target, fromAction(action));
+}
+
+bool BrushingAndLinkingManager::isTargetModified(BrushingTarget target,
+                                                 BrushingModifications modifications) const {
+    auto it = modifications_.find(target);
+    if (it != modifications_.end()) {
+        return !(it->second | modifications).empty();
+    }
+
+    return false;
 }
 
 bool BrushingAndLinkingManager::hasIndices(BrushingAction action, BrushingTarget target) const {
@@ -168,20 +184,17 @@ bool BrushingAndLinkingManager::contains(uint32_t idx, BrushingAction action,
         selections_[actionIdx]);
 }
 
-std::vector<std::pair<BrushingAction, BrushingTarget>> BrushingAndLinkingManager::getTargets()
-    const {
+std::vector<std::pair<BrushingAction, std::vector<BrushingTarget>>>
+BrushingAndLinkingManager::getTargets() const {
     if (parent_) {
         return parent_->getTargets();
     }
 
-    using ActionTarget = std::pair<BrushingAction, BrushingTarget>;
+    using ActionTarget = std::pair<BrushingAction, std::vector<BrushingTarget>>;
 
     std::vector<ActionTarget> targets;
     auto extractTargets = [&](BrushingAction action, const auto& map) {
-        std::transform(map.begin(), map.end(), std::back_inserter(targets),
-                       [action](auto elem) -> ActionTarget {
-                           return {action, elem.first};
-                       });
+        targets.emplace_back(action, util::transform(map, [](auto elem) { return elem.first; }));
     };
 
     for (auto&& [action, map] : util::zip(BrushingActions, selections_)) {
@@ -278,9 +291,12 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
         parent_->removeChild(this);
 
         // set manager as modified since filter actions might have changed when removing the parent
-        modifiedActions_ = BrushingModifications(flags::any);
-        util::push_back_unique(modifiedTargets_, BrushingTarget::Column);
-        util::push_back_unique(modifiedTargets_, BrushingTarget::Row);
+        for (const auto& [action, targets] : parent_->getTargets()) {
+            for (auto& t : targets) {
+                modifications_[t] |= fromAction(action);
+            }
+        }
+
         if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
             auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
             outport->getProcessor()->invalidate(invalidationLevel_);
@@ -291,22 +307,30 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
     if (parent_) {
         parent_->addChild(this);
 
+        auto propagateTargets = [&](BrushingAction action, const auto& map) {
+            propagate(action, util::transform(map, [](auto elem) { return elem.first; }));
+        };
+
         // propagate all selections of the manager to the parent
-        for (auto& elem : getTargets()) {
-            propagate(elem.first, elem.second);
+        for (auto&& [action, map] : util::zip(BrushingActions, selections_)) {
+            std::visit(util::overloaded{[&, action = action](const BitSetTargets& map) {
+                                            propagateTargets(action, map);
+                                        },
+                                        [&, action = action](const IndexListTargets& map) {
+                                            propagateTargets(action, map);
+                                        }},
+                       map);
         }
     }
 }
 
 void BrushingAndLinkingManager::markAsValid() {
     for (auto c : children_) {
-        c->modifiedActions_ |= modifiedActions_;
-        for (const auto& t : modifiedTargets_) {
-            util::push_back_unique(c->modifiedTargets_, t);
+        for (const auto& [target, modification] : modifications_) {
+            c->modifications_[target] |= modification;
         }
     }
-    modifiedActions_.clear();
-    modifiedTargets_.clear();
+    modifications_.clear();
 }
 
 void BrushingAndLinkingManager::serialize(Serializer& s) const {
@@ -359,8 +383,7 @@ int BrushingAndLinkingManager::getActionIndex(BrushingAction action) {
 }
 
 void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget target) {
-    modifiedActions_ |= fromAction(action);
-    util::push_back_unique(modifiedTargets_, target);
+    modifications_[target] |= fromAction(action);
 
     if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
         auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
@@ -374,6 +397,30 @@ void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget 
 
         if (localIndices) {
             parent_->brush(action, target, *localIndices, source);
+        }
+    }
+}
+
+void BrushingAndLinkingManager::propagate(BrushingAction action,
+                                          const std::vector<BrushingTarget>& targets) {
+    for (auto t : targets) {
+        modifications_[t] |= fromAction(action);
+    }
+
+    if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
+        auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
+        outport->getProcessor()->invalidate(invalidationLevel_);
+    }
+
+    if (parent_) {
+        const std::string source = std::visit([](auto* p) { return p->getPath(); }, owner_);
+
+        for (auto target : targets) {
+            auto localIndices = getBitSet(action, target);
+
+            if (localIndices) {
+                parent_->brush(action, target, *localIndices, source);
+            }
         }
     }
 }

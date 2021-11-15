@@ -169,10 +169,10 @@ void ScatterPlotProcessor::process() {
         return rows;
     };
 
-    if (brushingPort_.modifiedSelection()) {
+    if (brushingPort_.isSelectionModified()) {
         scatterPlot_.setSelectedIndices(transformIdsToRows(brushingPort_.getSelectedIndices()));
     }
-    if (brushingPort_.modifiedHighlight()) {
+    if (brushingPort_.isHighlightModified()) {
         scatterPlot_.setHighlightedIndices(
             transformIdsToRows(brushingPort_.getHighlightedIndices()));
     }

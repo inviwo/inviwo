@@ -53,32 +53,32 @@ public:
      *
      * @return true if there have been recent changes
      *
-     * \see modifiedActions
+     * \see getModifiedActions
      */
     virtual bool isChanged() const override;
 
     /**
      * return which actions were performed since the last network evaluation
      */
-    BrushingModifications modifiedActions() const;
+    BrushingModifications getModifiedActions() const;
     /**
      * return whether there was a filter action since the last network evaluation
      *
-     * @return modifiedActions() & BrushingAction::Filter
+     * @return getModifiedActions() & BrushingAction::Filter
      */
-    bool modifiedFiltering() const;
+    bool isFilteringModified() const;
     /**
      * return whether there was a select action since the last network evaluation
      *
-     * @return modifiedActions() & BrushingAction::Select
+     * @return getModifiedActions() & BrushingAction::Select
      */
-    bool modifiedSelection() const;
+    bool isSelectionModified() const;
     /**
      * return whether there was a highlight action since the last network evaluation
      *
-     * @return modifiedActions() & BrushingAction::Highlight
+     * @return getModifiedActions() & BrushingAction::Highlight
      */
-    bool modifiedHighlight() const;
+    bool isHighlightModified() const;
 
     /**
      * Based on \p action update the internal selection with the given \p indices. For \p target
