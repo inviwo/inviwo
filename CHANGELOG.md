@@ -1,5 +1,11 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2021-11-15 Custom ranges for DataFrame columns
+Each DataFrame column has now an optional data range that can be used for normalization, plotting, and similar things. Use the convenience function `columnutil::getRange(const Column&)` to get the custom range, if set, or the buffer min/max values.
+
+## 2021-11-08 Updated table view for DataFrame
+The tabular view of the `DataFrame Table` processor was updated: support for sorting columns, column tool tips (data format and column range), and optionally hiding filtered rows. In order to undo any column sorting, left-click into the upper left corner of the table.
+
 ## 2021-10-29 Internal Processor Links
 It is now possible to link different properties internally within a processor. One can for example link the style of x, y, and z Axis Properties.
 The internal links are accessible in the processor context menu.
