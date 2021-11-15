@@ -115,12 +115,12 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
 
     color_.onChange([&]() {
         if (dataFrame_.hasData()) {
-            auto buf = dataFrame_.getData()->getColumn(color_.getSelectedValue())->getBuffer();
+            auto colorCol = dataFrame_.getData()->getColumn(color_.getSelectedValue());
             for (auto& p : plots_) {
-                p->setColorData(buf);
+                p->setColorData(colorCol);
             }
-            scatterPlotproperties_.tf_.setVisible(buf != nullptr);
-            scatterPlotproperties_.color_.setVisible(buf == nullptr);
+            scatterPlotproperties_.tf_.setVisible(colorCol != nullptr);
+            scatterPlotproperties_.color_.setVisible(colorCol == nullptr);
         }
     });
 
@@ -256,12 +256,12 @@ void ScatterPlotMatrixProcessor::createScatterPlots() {
     if (outport_.hasData()) {
         auto& dataFrame = *dataFrame_.getData();
 
-        auto buffer = [&]() -> std::shared_ptr<const BufferBase> {
+        auto colorCol = [&]() -> std::shared_ptr<const Column> {
             auto idx = color_.get();
             if (idx == -1) {
                 return nullptr;
             } else {
-                return dataFrame.getColumn(idx)->getBuffer();
+                return dataFrame.getColumn(idx);
             }
         }();
 
@@ -280,7 +280,7 @@ void ScatterPlotMatrixProcessor::createScatterPlots() {
                 plot->setXAxis((*x));
                 plot->setYAxis((*y));
 
-                plot->setColorData(buffer);
+                plot->setColorData(colorCol);
 
                 plots_.push_back(std::move(plot));
             }

@@ -128,14 +128,20 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
         [&](auto ram) -> void {
             auto& dataVector = ram->getDataContainer();
 
-            auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
-            double minV = minMax.first[0];
-            double maxV = minMax.second[0];
+            dvec2 minmax = [&]() {
+                if (col_->getRange()) {
+                    return col_->getRange().value();
+                } else {
+                    auto [min, max] = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
+                    return dvec2(glm::compMin(min), glm::compMax(max));
+                }
+            }();
 
-            if (std::abs(maxV - minV) == 0.0) {
-                minV -= 1.0;
-                maxV += 1.0;
+            if (std::abs(minmax.y - minmax.x) < glm::epsilon<double>()) {
+                minmax += dvec2(-1.0, 1.0);
             }
+            const double& minV = minmax.x;
+            const double& maxV = minmax.y;
 
             const dvec2 prevVal = range.get();
             const dvec2 prevRange = range.getRange();
@@ -149,7 +155,6 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
                 range.set(
                     {minV + prevMinRatio * (maxV - minV), minV + prevMaxRatio * (maxV - minV)});
             }
-
             at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
         });
 
@@ -326,4 +331,5 @@ float PCPMinorTickSettings::getTickWidth() const { return 0.0f; }
 int PCPMinorTickSettings::getTickFrequency() const { return 0; }
 
 }  // namespace plot
+
 }  // namespace inviwo

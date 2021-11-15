@@ -214,8 +214,7 @@ void ScatterPlotProcessor::onColorChange() {
     if (idx == -1) {
         scatterPlot_.setColorData(nullptr);
     } else {
-        auto buffer = data->getColumn(idx)->getBuffer();
-        scatterPlot_.setColorData(buffer);
+        scatterPlot_.setColorData(data->getColumn(idx));
     }
 }
 
@@ -226,8 +225,7 @@ void ScatterPlotProcessor::onRadiusChange() {
     if (idx == -1) {
         scatterPlot_.setRadiusData(nullptr);
     } else {
-        auto buffer = data->getColumn(idx)->getBuffer();
-        scatterPlot_.setRadiusData(buffer);
+        scatterPlot_.setRadiusData(data->getColumn(idx));
     }
 }
 
