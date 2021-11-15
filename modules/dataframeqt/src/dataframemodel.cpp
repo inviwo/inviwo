@@ -200,7 +200,8 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
 
     if (role == Qt::DisplayRole) {
         if (orientation == Qt::Vertical) {
-            return valueFuncs_[0](section).toString();
+            // use regular row numbers starting at 1
+            return section + 1;
         } else {
             const std::string selected =
                 manager_ ? (manager_->isSelected(section, BrushingTarget::Column) ? " [+]" : "")
@@ -209,12 +210,19 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
         }
     } else if ((role == Qt::ToolTipRole) && (orientation == Qt::Horizontal)) {
         const Column* col = data_->getColumn(section).get();
-        if (col->getColumnType() == ColumnType::Categorical) {
-            return QString("Categorical (%0 categories)")
-                .arg(static_cast<const CategoricalColumn*>(col)->getCategories().size());
-        } else {
-            return QString("Ordinal (%0)").arg(col->getBuffer()->getDataFormat()->getString());
+        auto tooltip = [col]() {
+            if (col->getColumnType() == ColumnType::Categorical) {
+                return QString("Categorical (%0 categories)")
+                    .arg(static_cast<const CategoricalColumn*>(col)->getCategories().size());
+            } else {
+                return QString("Ordinal (%0)").arg(col->getBuffer()->getDataFormat()->getString());
+            }
+        }();
+        if (col->getRange()) {
+            const dvec2 range = col->getRange().value();
+            tooltip.append(QString("\nColumn Range [%1, %2]").arg(range.x).arg(range.y));
         }
+        return tooltip;
     }
     return QVariant();
 }
