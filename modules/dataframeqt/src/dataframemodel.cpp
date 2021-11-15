@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-DataFrameModel::DataFrameModel(QObject* parent) : QAbstractTableModel(parent) {}
+DataFrameModel::DataFrameModel(QObject* parent) : QAbstractTableModel(parent), manager_(nullptr) {}
 
 DataFrameModel::~DataFrameModel() = default;
 
@@ -66,7 +66,7 @@ void DataFrameModel::setData(std::shared_ptr<const DataFrame> dataframe, bool ca
                 } else {
                     return col->getBuffer()
                         ->getRepresentation<BufferRAM>()
-                        ->dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
+                        ->template dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
                             return [br](int row) -> QVariant {
                                 auto val = br->getDataContainer()[row];
                                 return QVariant{static_cast<qulonglong>(val)};
@@ -74,12 +74,13 @@ void DataFrameModel::setData(std::shared_ptr<const DataFrame> dataframe, bool ca
                         });
                 }
                 break;
+            case ColumnType::Index:
             case ColumnType::Ordinal: {
                 auto df = col->getBuffer()->getDataFormat();
                 if (df->getComponents() == 1) {
                     return col->getBuffer()
                         ->getRepresentation<BufferRAM>()
-                        ->dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
+                        ->template dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
                             return [br](int row) -> QVariant {
                                 auto val = br->getDataContainer()[row];
                                 if constexpr (std::is_floating_point_v<decltype(val)>) {
@@ -95,15 +96,15 @@ void DataFrameModel::setData(std::shared_ptr<const DataFrame> dataframe, bool ca
                     // more than one component, convert to string
                     return col->getBuffer()
                         ->getRepresentation<BufferRAM>()
-                        ->dispatch<ValueFunc, dispatching::filter::Vecs>([](auto br) {
+                        ->template dispatch<ValueFunc, dispatching::filter::Vecs>([](auto br) {
                             return [br](int row) {
                                 return QVariant{
                                     utilqt::toQString(toString(br->getDataContainer()[row]))};
                             };
                         });
                 }
-            } break;
-            case ColumnType::Unspecified:
+                break;
+            }
             default:
                 return [](int) { return QVariant(); };
         }
@@ -120,7 +121,7 @@ void DataFrameModel::setData(std::shared_ptr<const DataFrame> dataframe, bool ca
                 }
                 break;
             case ColumnType::Ordinal:
-            case ColumnType::Unspecified:
+            case ColumnType::Index:
             default:
                 return [](int) { return QVariant(); };
         }

@@ -38,6 +38,7 @@
 
 #include <inviwo/dataframe/datastructures/datapoint.h>
 
+#include <optional>
 #include <iostream>
 
 namespace inviwo {
@@ -53,7 +54,7 @@ public:
     virtual ~InvalidConversion() throw() {}
 };
 
-enum class ColumnType { Unspecified, Ordinal, Categorical };
+enum class ColumnType { Index, Ordinal, Categorical };
 
 /**
  * @brief pure interface for representing a data column, i.e. a Buffer with a name
@@ -89,9 +90,35 @@ public:
     virtual std::string getAsString(size_t idx) const = 0;
     virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const = 0;
 
+    /**
+     * Set a custom range for the column which can be used for normalization, plotting, color
+     * mapping, etc.
+     */
+    virtual void setRange(dvec2 range);
+    virtual void unsetRange();
+    /**
+     * Return the currently set column range. If no range has been set previously, the return value
+     * will be std::nullopt.
+     */
+    std::optional<dvec2> getRange() const;
+
 protected:
     Column() = default;
+    std::optional<dvec2> columnRange_;
 };
+
+namespace columnutil {
+
+/**
+ * Return the column range for \p col. If the column's range is empty, the min/max values of the
+ * underlying buffer are returned. If the buffer holds vectors, the componentwise minimum and
+ * maximum are used.
+ *
+ * @return Column::getRange() if set, min/max values of getBuffer() otherwise
+ */
+IVW_MODULE_DATAFRAME_API dvec2 getRange(const Column& col);
+
+}  // namespace columnutil
 
 /**
  * @brief Data column used for plotting which represents a named buffer of type T. The name
@@ -180,6 +207,24 @@ public:
 protected:
     std::string header_;
     std::shared_ptr<Buffer<T>> buffer_;
+};
+
+class IVW_MODULE_DATAFRAME_API IndexColumn : public TemplateColumn<std::uint32_t> {
+public:
+    IndexColumn(std::string_view header, std::shared_ptr<Buffer<std::uint32_t>> buffer =
+                                             std::make_shared<Buffer<std::uint32_t>>());
+    IndexColumn(std::string_view header, std::vector<std::uint32_t> data);
+    IndexColumn(const IndexColumn& rhs) = default;
+    IndexColumn(IndexColumn&& rhs) = default;
+
+    IndexColumn& operator=(const IndexColumn& rhs) = default;
+    IndexColumn& operator=(IndexColumn&& rhs) = default;
+
+    virtual IndexColumn* clone() const override;
+
+    virtual ~IndexColumn() = default;
+
+    virtual ColumnType getColumnType() const override;
 };
 
 /**

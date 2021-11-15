@@ -176,8 +176,8 @@ public:
     std::shared_ptr<Column> getColumn(std::string_view name);
     std::shared_ptr<const Column> getColumn(std::string_view name) const;
 
-    std::shared_ptr<TemplateColumn<std::uint32_t>> getIndexColumn();
-    std::shared_ptr<const TemplateColumn<std::uint32_t>> getIndexColumn() const;
+    std::shared_ptr<IndexColumn> getIndexColumn();
+    std::shared_ptr<const IndexColumn> getIndexColumn() const;
 
     size_t getNumberOfColumns() const;
     /**
