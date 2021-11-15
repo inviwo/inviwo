@@ -52,7 +52,7 @@ namespace columnutil {
 
 dvec2 getRange(const Column& col) {
     if (col.getRange()) {
-        return col.getRange().value();
+        return *col.getRange();
     }
     auto [min, max] = util::bufferMinMax(col.getBuffer().get(), IgnoreSpecialValues::Yes);
     return dvec2(glm::compMin(min), glm::compMax(max));

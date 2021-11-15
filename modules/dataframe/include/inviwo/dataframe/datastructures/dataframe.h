@@ -261,7 +261,7 @@ struct DataTraits<DataFrame> {
 
         auto range = [](const Column* col) {
             if (col->getRange()) {
-                return toString(col->getRange().value());
+                return toString(*col->getRange());
             } else {
                 return std::string("-");
             }
@@ -270,9 +270,10 @@ struct DataTraits<DataFrame> {
         bool inconsistenRowCount = false;
         for (size_t i = 0; i < ncols; i++) {
             inconsistenRowCount |= (data.getColumn(i)->getSize() != rowCount);
-            if (auto col_c = dynamic_cast<const CategoricalColumn*>(data.getColumn(i).get())) {
+            if (auto col_c =
+                    std::dynamic_pointer_cast<const CategoricalColumn>(data.getColumn(i))) {
                 tb2(std::to_string(i + 1), "categorical", col_c->getBuffer()->getSize(),
-                    data.getHeader(i), range(col_c));
+                    data.getHeader(i), range(col_c.get()));
                 std::string categories;
                 for (const auto& str : col_c->getCategories()) {
                     if (!categories.empty()) {
