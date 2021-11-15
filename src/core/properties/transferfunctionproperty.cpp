@@ -45,7 +45,7 @@ void TFPropertyObserver::onZoomVChange(const dvec2&) {}
 
 void TFPropertyObserver::onHistogramModeChange(HistogramMode) {}
 
-void TFPropertyObserver::onHistogramSelectionChange(HistogramSelection selection) {}
+void TFPropertyObserver::onHistogramSelectionChange(HistogramSelection) {}
 
 void TFPropertyObservable::notifyMaskChange(const dvec2& mask) {
     forEachObserver([&](TFPropertyObserver* o) { o->onMaskChange(mask); });
