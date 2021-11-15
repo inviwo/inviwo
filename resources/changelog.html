@@ -31,7 +31,7 @@
 <h2>2021-11-08 Updated table view for DataFrame</h2>
 <p>The tabular view of the <code>DataFrame Table</code> processor was updated: support for sorting columns, column tool tips (data format and column range), and optionally hiding filtered rows. In order to undo any column sorting, left-click into the upper left corner of the table.</p>
 <h2>2021-10-29 Internal Processor Links</h2>
-<p>It is now possible to link different properties internally with in a processor. One can for example link the style of x, y, and z Axis Property.<br>
+<p>It is now possible to link different properties internally within a processor. One can for example link the style of x, y, and z Axis Properties.<br>
 The internal links are accessible in the processor context menu.<br>
 <a target="_blank" rel="noopener noreferrer" href="resources/changelog/internal-links.png"><img src="resources/changelog/internal-links.png" alt="Internal Links" style="max-width: 100%;"></a></p>
 <h2>2021-10-15 Updated Brushing &amp; Linking</h2>
@@ -44,19 +44,19 @@ Brushing &amp; Linking (B&amp;L) was completely reworked. Now the B&amp;L inport
 </ul>
 <p>To trigger a brushing action call <code>brush(BrushAction::Select, target, indices)</code> on either manager or B&amp;L port. The target defines the type of selection. Default targets exist for row selection (default) and column selection with the option to add custom ones if necessary.</p>
 <p>In addition, B&amp;L is now using <code>BitSet</code> (see <code>inviwo/core/datastructures/bitset.h</code>) to represent selections and filtering. Note that the data type of Brushing &amp; Linking indices was changed to <code>uint32_t</code>.</p>
-<p>The manager also provides functionality to query the latest updates: <code>isModified()</code>, <code>modifiedActions()</code>, and <code>modifiedSelection/Highlight/Filtering()</code>. For example</p>
+<p>The manager also provides functionality to query the latest updates: <code>isModified()</code>, <code>getModifiedActions()</code>, <code>isTargetModified()</code>, <code>isSelectionModified()</code>, <code>isHighlightModified()</code>, <code>isFilteringModified()</code>, and more. For example</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">void</span> <span class="pl-en">MyProcessor::process</span>() {
 
-    <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">modifiedSelection</span>()) {
+    <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">isSelectionModified</span>()) {
         <span class="pl-k">const</span> <span class="pl-bu">BitSet</span>&amp; selected = brushingPort_.<span class="pl-c1">getSelectedIndices</span>();
         ...
     }
-    <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">modifiedHighlight</span>()) {
+    <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">isHighlightModified</span>()) {
         <span class="pl-k">const</span> <span class="pl-bu">BitSet</span>&amp; highlighted = brushingPort_.<span class="pl-c1">getHighlightedIndices</span>();
         ...
     }
     <span class="pl-c"><span class="pl-c">//</span> or check for individual modifications</span>
-    <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">modifiedActions</span>() &amp; BrushingModification::Filtered) {
+    <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">getModifiedActions</span>() &amp; BrushingModification::Filtered) {
         ...
     }
 }</pre></div>

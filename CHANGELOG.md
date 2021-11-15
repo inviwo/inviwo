@@ -23,20 +23,20 @@ To trigger a brushing action call `brush(BrushAction::Select, target, indices)` 
 
 In addition, B&L is now using `BitSet` (see `inviwo/core/datastructures/bitset.h`) to represent selections and filtering. Note that the data type of Brushing & Linking indices was changed to `uint32_t`. 
 
-The manager also provides functionality to query the latest updates: `isModified()`, `modifiedActions()`, and `modifiedSelection/Highlight/Filtering()`. For example
+The manager also provides functionality to query the latest updates: `isModified()`, `getModifiedActions()`, `isTargetModified()`, `isSelectionModified()`, `isHighlightModified()`, `isFilteringModified()`, and more. For example
 ```c++
 void MyProcessor::process() {
 
-    if (brushingPort_.modifiedSelection()) {
+    if (brushingPort_.isSelectionModified()) {
         const BitSet& selected = brushingPort_.getSelectedIndices();
         ...
     }
-    if (brushingPort_.modifiedHighlight()) {
+    if (brushingPort_.isHighlightModified()) {
         const BitSet& highlighted = brushingPort_.getHighlightedIndices();
         ...
     }
     // or check for individual modifications
-    if (brushingPort_.modifiedActions() & BrushingModification::Filtered) {
+    if (brushingPort_.getModifiedActions() & BrushingModification::Filtered) {
         ...
     }
 }
