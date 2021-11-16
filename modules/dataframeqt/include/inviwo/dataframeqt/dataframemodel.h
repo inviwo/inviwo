@@ -57,7 +57,7 @@ public:
     virtual ~DataFrameModel();
 
     void setManager(BrushingAndLinkingManager& manager);
-    void setData(std::shared_ptr<const DataFrame> dataframe, bool categoryIndices = false);
+    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool categoryIndices = false);
 
     void brushingUpdate();
 

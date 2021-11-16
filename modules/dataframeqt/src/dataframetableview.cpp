@@ -100,7 +100,7 @@ void DataFrameTableView::setManager(BrushingAndLinkingManager& manager) {
 
 void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                       bool categoryIndices) {
-    model_->setData(dataframe, categoryIndices);
+    model_->setDataFrame(dataframe, categoryIndices);
 
     if (model_->columnCount() > 0) {
         horizontalHeader()->setSectionHidden(0, !indexVisible_);
