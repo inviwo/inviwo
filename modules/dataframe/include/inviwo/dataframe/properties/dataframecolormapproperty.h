@@ -29,7 +29,7 @@
 #pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <inviwo/dataframe/properties/colormapproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -59,7 +59,7 @@ public:
 
     void createOrUpdateProperties(std::shared_ptr<const DataFrame> dataframe);
 
-    DataFrameColumnProperty selectedColorAxis;
+    ColumnOptionProperty selectedColorAxis;
     BoolProperty overrideColormap;
     TransferFunctionProperty tf;
 

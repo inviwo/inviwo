@@ -1,5 +1,11 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2021-11-15 Custom ranges for DataFrame columns
+Each DataFrame column has now an optional data range that can be used for normalization, plotting, and similar things. Use the convenience function `columnutil::getRange(const Column&)` to get the custom range, if set, or the buffer min/max values.
+
+## 2021-11-08 Updated table view for DataFrame
+The tabular view of the `DataFrame Table` processor was updated: support for sorting columns, column tool tips (data format and column range), and optionally hiding filtered rows. In order to undo any column sorting, left-click into the upper left corner of the table.
+
 ## 2021-10-29 Internal Processor Links
 It is now possible to link different properties internally within a processor. One can for example link the style of x, y, and z Axis Properties.
 The internal links are accessible in the processor context menu.
@@ -17,20 +23,20 @@ To trigger a brushing action call `brush(BrushAction::Select, target, indices)` 
 
 In addition, B&L is now using `BitSet` (see `inviwo/core/datastructures/bitset.h`) to represent selections and filtering. Note that the data type of Brushing & Linking indices was changed to `uint32_t`. 
 
-The manager also provides functionality to query the latest updates: `isModified()`, `modifiedActions()`, and `modifiedSelection/Highlight/Filtering()`. For example
+The manager also provides functionality to query the latest updates: `isModified()`, `getModifiedActions()`, `isTargetModified()`, `isSelectionModified()`, `isHighlightModified()`, `isFilteringModified()`, and more. For example
 ```c++
 void MyProcessor::process() {
 
-    if (brushingPort_.modifiedSelection()) {
+    if (brushingPort_.isSelectionModified()) {
         const BitSet& selected = brushingPort_.getSelectedIndices();
         ...
     }
-    if (brushingPort_.modifiedHighlight()) {
+    if (brushingPort_.isHighlightModified()) {
         const BitSet& highlighted = brushingPort_.getHighlightedIndices();
         ...
     }
     // or check for individual modifications
-    if (brushingPort_.modifiedActions() & BrushingModification::Filtered) {
+    if (brushingPort_.getModifiedActions() & BrushingModification::Filtered) {
         ...
     }
 }

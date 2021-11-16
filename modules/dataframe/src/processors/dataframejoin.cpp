@@ -64,10 +64,10 @@ DataFrameJoin::DataFrameJoin()
     , columnMatching_("columnMatching", "Match Columns",
                       {{"byname", "By Name", ColumnMatch::ByName},
                        {"ordered", "By Order", ColumnMatch::Ordered}})
-    , key_("key", "Key Column", inportLeft_, false)
-    , secondaryKeys_("secondaryKeys", "Secondary Key Columns",
-                     std::make_unique<DataFrameColumnProperty>("keyColumn2", "Key Column 2",
-                                                               inportLeft_, false)) {
+    , key_("key", "Key Column", inportLeft_)
+    , secondaryKeys_(
+          "secondaryKeys", "Secondary Key Columns",
+          std::make_unique<ColumnOptionProperty>("keyColumn2", "Key Column 2", inportLeft_)) {
 
     addPort(inportLeft_);
     addPort(inportRight_);
@@ -90,8 +90,10 @@ DataFrameJoin::DataFrameJoin()
 
     inportLeft_.onChange([&]() {
         for (auto p : secondaryKeys_) {
-            if (auto keyProp = dynamic_cast<DataFrameColumnProperty*>(p)) {
-                keyProp->setOptions(inportLeft_.getData());
+            if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
+                if (inportLeft_.hasData()) {
+                    keyProp->setOptions(*inportLeft_.getData());
+                }
             }
         }
     });
@@ -101,10 +103,10 @@ DataFrameJoin::DataFrameJoin()
 
 void DataFrameJoin::process() {
     std::vector<std::string> keys;
-    keys.push_back(key_.getColumnHeader());
+    keys.push_back(key_.getSelectedColumnHeader());
     for (auto p : secondaryKeys_) {
-        if (auto keyProp = dynamic_cast<DataFrameColumnProperty*>(p)) {
-            keys.push_back(keyProp->getColumnHeader());
+        if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
+            keys.push_back(keyProp->getSelectedColumnHeader());
         }
     }
 
@@ -131,8 +133,10 @@ void DataFrameJoin::process() {
 }
 
 void DataFrameJoin::onDidAddProperty(Property* property, size_t) {
-    if (auto keyProp = dynamic_cast<DataFrameColumnProperty*>(property)) {
-        keyProp->setOptions(inportLeft_.getData());
+    if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(property)) {
+        if (inportLeft_.hasData()) {
+            keyProp->setOptions(*inportLeft_.getData());
+        }
     }
 }
 

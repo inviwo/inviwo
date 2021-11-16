@@ -176,8 +176,8 @@ public:
     std::shared_ptr<Column> getColumn(std::string_view name);
     std::shared_ptr<const Column> getColumn(std::string_view name) const;
 
-    std::shared_ptr<TemplateColumn<std::uint32_t>> getIndexColumn();
-    std::shared_ptr<const TemplateColumn<std::uint32_t>> getIndexColumn() const;
+    std::shared_ptr<IndexColumn> getIndexColumn();
+    std::shared_ptr<const IndexColumn> getIndexColumn() const;
 
     size_t getNumberOfColumns() const;
     /**
@@ -255,16 +255,25 @@ struct DataTraits<DataFrame> {
         tb(H("Number of Rows: "), rowCount);
 
         utildoc::TableBuilder tb2(doc.handle(), P::end());
-        tb2(H("Col"), H("Format"), H("Rows"), H("Name"));
+        tb2(H("Col"), H("Format"), H("Rows"), H("Name"), H("Column Range"));
         // abbreviate list of columns if there are more than 20
         const size_t ncols = (data.getNumberOfColumns() > 20) ? 10 : data.getNumberOfColumns();
+
+        auto range = [](const Column* col) {
+            if (col->getRange()) {
+                return toString(*col->getRange());
+            } else {
+                return std::string("-");
+            }
+        };
 
         bool inconsistenRowCount = false;
         for (size_t i = 0; i < ncols; i++) {
             inconsistenRowCount |= (data.getColumn(i)->getSize() != rowCount);
-            if (auto col_c = dynamic_cast<const CategoricalColumn*>(data.getColumn(i).get())) {
+            if (auto col_c =
+                    std::dynamic_pointer_cast<const CategoricalColumn>(data.getColumn(i))) {
                 tb2(std::to_string(i + 1), "categorical", col_c->getBuffer()->getSize(),
-                    data.getHeader(i));
+                    data.getHeader(i), range(col_c.get()));
                 std::string categories;
                 for (const auto& str : col_c->getCategories()) {
                     if (!categories.empty()) {
@@ -335,8 +344,8 @@ struct DataTraits<DataFrame> {
 
                 tb2(std::to_string(i + 1),
                     data.getColumn(i)->getBuffer()->getDataFormat()->getString(),
-                    data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i), minString,
-                    maxString);
+                    data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i),
+                    range(col_q.get()), minString, maxString);
             }
         }
         if (ncols != data.getNumberOfColumns()) {

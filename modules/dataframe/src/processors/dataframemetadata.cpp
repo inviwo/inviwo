@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,52 +27,40 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/dataframe/dataframemoduledefine.h>
-
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/dataframe/processors/dataframemetadata.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.CSVSource, CSVSource}
- * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
- * Reads comma separated values (CSV) and converts it into a DataFrame.
- *
- * ### Outports
- *   * __data__  DataFrame representation of the CSV input file
- *
- * ### Properties
- *   * __First Row Headers__   if true, the first row is used as column names in the DataFrame
- *   * __Delimiters__          defines the delimiter between values (default ',')
- */
-
-class IVW_MODULE_DATAFRAME_API CSVSource : public Processor {
-public:
-    CSVSource(const std::string& file = "");
-    virtual ~CSVSource() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    DataOutport<DataFrame> data_;
-    FileProperty inputFile_;
-    BoolProperty firstRowIsHeaders_;
-    StringProperty delimiters_;
-    BoolProperty doublePrecision_;
-    ButtonProperty reloadData_;
-
-    ColumnMetaDataListProperty columns_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo DataFrameMetaData::processorInfo_{
+    "org.inviwo.DataFrameMetaData",  // Class identifier
+    "DataFrame MetaData",            // Display name
+    "DataFrame",                     // Category
+    CodeState::Experimental,         // Code state
+    "CPU, DataFrame",                // Tags
 };
+const ProcessorInfo DataFrameMetaData::getProcessorInfo() const { return processorInfo_; }
+
+DataFrameMetaData::DataFrameMetaData()
+    : Processor()
+    , inport_("inport")
+    , outport_("outport")
+    , columns_("columns", "Column MetaData", inport_) {
+
+    addPort(inport_);
+    addPort(outport_);
+    addProperty(columns_);
+}
+
+void DataFrameMetaData::process() {
+    auto dataframe = std::make_shared<DataFrame>(*inport_.getData().get());
+    for (auto&& [index, col] : util::enumerate(*dataframe)) {
+        col->setRange(columns_.getRange(index));
+        col->copyMetaDataFrom(columns_.getColumnMetaData(index));
+    }
+
+    outport_.setData(dataframe);
+}
 
 }  // namespace inviwo

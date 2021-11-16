@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,35 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dataframe/processors/dataframesource.h>
-#include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/properties/optionconverter.h>
 
-namespace inviwo {
-
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo DataFrameSource::processorInfo_{
-    "org.inviwo.DataFrameSource",                                // Class identifier
-    "DataFrame Source",                                          // Display name
-    "Data Input",                                                // Category
-    CodeState::Stable,                                           // Code state
-    "CPU, Plotting, Source, CSV, JSON, DataFrame, Spreadsheet",  // Tags
-};
-const ProcessorInfo DataFrameSource::getProcessorInfo() const { return processorInfo_; }
-
-DataFrameSource::DataFrameSource(InviwoApplication* app, const std::string& file)
-    : DataSource<DataFrame, DataFrameOutport>(app, file, "spreadsheet")
-    , columns_("columns", "Column MetaData") {
-
-    DataSource<DataFrame, DataFrameOutport>::file_.setDisplayName("Spreadsheet file");
-}
-
-void DataFrameSource::process() {
-    DataSource<DataFrame, DataFrameOutport>::process();
-
-    columns_.updateColumnProperties(*loadedData_);
-    for (auto&& [index, col] : util::enumerate(*loadedData_)) {
-        col->copyMetaDataFrom(columns_.getColumnMetaData(index));
-    }
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

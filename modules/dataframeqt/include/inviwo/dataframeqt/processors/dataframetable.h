@@ -62,9 +62,6 @@ class DataFrameTableProcessorWidget;
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTable : public Processor,
                                                   public ProcessorWidgetMetaDataObserver {
 public:
-    using SelectionChangedFunc = void(const BitSet&);
-    using CallbackHandle = std::shared_ptr<std::function<SelectionChangedFunc>>;
-
     DataFrameTable();
     virtual ~DataFrameTable();
 
@@ -93,12 +90,9 @@ private:
     IntVec2Property position_;
     BoolProperty showIndexColumn_;
     BoolProperty showCategoryIndices_;
-    BoolProperty vectorCompAsColumn_;
+    BoolProperty showFilteredRowCols_;
 
     ProcessorWidgetMetaData* widgetMetaData_;
-
-    CallbackHandle rowSelectionChanged_;
-    CallbackHandle rowHighlightChanged_;
 };
 
 }  // namespace inviwo

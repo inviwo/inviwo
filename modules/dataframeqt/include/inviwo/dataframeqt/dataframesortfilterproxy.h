@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QSortFilterProxyModel>
+#include <warn/pop>
 
 namespace inviwo {
 
-class IVW_MODULE_DATAFRAME_API DataFrameColumnProperty : public OptionPropertyInt {
+class BrushingAndLinkingManager;
+
+class IVW_MODULE_DATAFRAMEQT_API DataFrameSortFilterProxy : public QSortFilterProxyModel {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    enum Roles { Data = Qt::UserRole, Filter };
 
-    DataFrameColumnProperty(std::string identifier, std::string displayName, bool allowNone = false,
-                            size_t firstIndex = 0);
-    DataFrameColumnProperty(std::string identifier, std::string displayName,
-                            DataInport<DataFrame>& port, bool allowNone = false,
-                            size_t firstIndex = 0);
+    DataFrameSortFilterProxy(QObject* parent = nullptr);
+    virtual ~DataFrameSortFilterProxy() = default;
 
-    DataFrameColumnProperty(const DataFrameColumnProperty& rhs);
-    virtual DataFrameColumnProperty* clone() const override;
+    void setManager(BrushingAndLinkingManager& manager);
+    void brushingUpdate();
 
-    virtual ~DataFrameColumnProperty() = default;
+    void setFiltering(bool enable);
+    bool getFiltering() const;
 
-    void setOptions(std::shared_ptr<const DataFrame> dataframe);
+protected:
+    virtual bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
+    virtual bool filterAcceptsColumn(int sourceColumn,
+                                     const QModelIndex& sourceParent) const override;
 
-    std::string getColumnHeader() const;
-    std::shared_ptr<const Column> getColumn() const;
-    std::shared_ptr<const BufferBase> getBuffer() const;
-
-    virtual std::string getClassIdentifierForWidget() const override {
-        return TemplateOptionProperty<int>::getClassIdentifier();
-    }
-
-    virtual void set(const Property* p) override;
-
-private:
-    std::shared_ptr<const DataFrame> dataframe_;
-    bool allowNone_;
-    size_t firstIndex_;
+    BrushingAndLinkingManager* manager_ = nullptr;
+    bool filtering_ = false;
 };
 
 }  // namespace inviwo

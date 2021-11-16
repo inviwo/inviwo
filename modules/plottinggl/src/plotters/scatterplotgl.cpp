@@ -466,57 +466,55 @@ void ScatterPlotGL::setYAxisLabel(const std::string& label) {
 
 void ScatterPlotGL::setXAxis(std::shared_ptr<const Column> col) {
     setXAxisLabel(col->getHeader());
-    setXAxisData(col->getBuffer());
+    setXAxisData(col);
 }
 
 void ScatterPlotGL::setYAxis(std::shared_ptr<const Column> col) {
     setYAxisLabel(col->getHeader());
-    setYAxisData(col->getBuffer());
+    setYAxisData(col);
 }
 
-void ScatterPlotGL::setXAxisData(std::shared_ptr<const BufferBase> buffer) {
-    xAxis_ = buffer;
-    if (buffer) {
-        auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
-        minmaxX_.x = static_cast<float>(minmax.first.x);
-        minmaxX_.y = static_cast<float>(minmax.second.x);
-
+void ScatterPlotGL::setXAxisData(std::shared_ptr<const Column> col) {
+    if (col) {
+        xAxis_ = col->getBuffer();
+        minmaxX_ = vec2(columnutil::getRange(*col.get()));
         properties_.xAxis_.setRange(minmaxX_);
+    } else {
+        xAxis_ = nullptr;
     }
-    boxSelectionHandler_.setXAxisData(buffer);
+    boxSelectionHandler_.setXAxisData(xAxis_);
 }
 
-void ScatterPlotGL::setYAxisData(std::shared_ptr<const BufferBase> buffer) {
-    yAxis_ = buffer;
-    if (buffer) {
-        auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
-        minmaxY_.x = static_cast<float>(minmax.first.x);
-        minmaxY_.y = static_cast<float>(minmax.second.x);
-
+void ScatterPlotGL::setYAxisData(std::shared_ptr<const Column> col) {
+    if (col) {
+        yAxis_ = col->getBuffer();
+        minmaxY_ = vec2(columnutil::getRange(*col.get()));
         properties_.yAxis_.setRange(minmaxY_);
+    } else {
+        yAxis_ = nullptr;
     }
-    boxSelectionHandler_.setYAxisData(buffer);
+    boxSelectionHandler_.setYAxisData(yAxis_);
 }
 
-void ScatterPlotGL::setColorData(std::shared_ptr<const BufferBase> buffer) {
-    color_ = buffer;
-    if (buffer) {
-        auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
-        minmaxC_.x = static_cast<float>(minmax.first.x);
-        minmaxC_.y = static_cast<float>(minmax.second.x);
+void ScatterPlotGL::setColorData(std::shared_ptr<const Column> col) {
+    if (col) {
+        color_ = col->getBuffer();
+        minmaxC_ = vec2(columnutil::getRange(*col.get()));
+    } else {
+        color_ = nullptr;
     }
-    properties_.tf_.setVisible(buffer != nullptr);
-    properties_.color_.setVisible(buffer == nullptr);
+    properties_.tf_.setVisible(color_ != nullptr);
+    properties_.color_.setVisible(color_ == nullptr);
 }
 
-void ScatterPlotGL::setRadiusData(std::shared_ptr<const BufferBase> buffer) {
-    radius_ = buffer;
-    if (buffer) {
-        auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
-        minmaxR_.x = static_cast<float>(minmax.first.x);
-        minmaxR_.y = static_cast<float>(minmax.second.x);
+void ScatterPlotGL::setRadiusData(std::shared_ptr<const Column> col) {
+    if (col) {
+        radius_ = col->getBuffer();
+        minmaxR_ = vec2(columnutil::getRange(*col.get()));
+    } else {
+        radius_ = nullptr;
     }
-    properties_.minRadius_.setVisible(buffer != nullptr);
+    properties_.minRadius_.setVisible(radius_ != nullptr);
 }
 
 void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol) {

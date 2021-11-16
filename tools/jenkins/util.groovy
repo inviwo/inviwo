@@ -318,6 +318,7 @@ Map defaultCMakeOptions(String buildType) {
         "IVW_TEST_UNIT_TESTS" : "ON",
         "IVW_TEST_UNIT_TESTS_RUN_ON_BUILD" : "OFF",
         "IVW_TEST_INTEGRATION_TESTS" : "ON",
+        "IVW_USE_SIGAR" : "OFF",
     ]
 }
 Map ccacheOption() {

@@ -36,7 +36,7 @@
 #include <inviwo/core/properties/listproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 
 namespace inviwo {
 
@@ -89,7 +89,7 @@ private:
     BoolProperty ignoreDuplicateCols_;
     BoolProperty fillMissingRows_;
     TemplateOptionProperty<ColumnMatch> columnMatching_;
-    DataFrameColumnProperty key_;
+    ColumnOptionProperty key_;
     ListProperty secondaryKeys_;
 };
 

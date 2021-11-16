@@ -23,7 +23,6 @@ set(HEADER_FILES
     include/modules/plotting/properties/boxselectionproperty.h
     include/modules/plotting/properties/categoricalaxisproperty.h
     include/modules/plotting/properties/marginproperty.h
-    include/modules/plotting/properties/optionconverter.h
     include/modules/plotting/properties/plottextproperty.h
     include/modules/plotting/properties/tickproperty.h
     include/modules/plotting/utils/axisutils.h

@@ -40,8 +40,6 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/properties/boolproperty.h>
 
-#include <modules/base/algorithm/dataminmax.h>
-
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>

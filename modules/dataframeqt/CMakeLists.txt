@@ -9,6 +9,8 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg REQUIRED)
 # Add MOC files
 set(MOC_FILES
     include/inviwo/dataframeqt/dataframetableview.h
+    include/inviwo/dataframeqt/dataframemodel.h
+    include/inviwo/dataframeqt/dataframesortfilterproxy.h
     include/inviwo/dataframeqt/dataframetableprocessorwidget.h
 )
 
@@ -24,7 +26,9 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 # Add source files
 set(SOURCE_FILES
+    src/dataframemodel.cpp
     src/dataframeqtmodule.cpp
+    src/dataframesortfilterproxy.cpp
     src/dataframetableprocessorwidget.cpp
     src/dataframetableview.cpp
     src/datavisualizer/dataframetablevisualizer.cpp

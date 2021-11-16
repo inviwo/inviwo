@@ -40,15 +40,21 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
 
 bool BrushingAndLinkingInport::isChanged() const { return manager_.isModified(); }
 
-BrushingModifications BrushingAndLinkingInport::modifiedActions() const {
-    return manager_.modifiedActions();
+BrushingModifications BrushingAndLinkingInport::getModifiedActions() const {
+    return manager_.getModifiedActions();
 }
 
-bool BrushingAndLinkingInport::modifiedFiltering() const { return manager_.modifiedFiltering(); }
+bool BrushingAndLinkingInport::isFilteringModified() const {
+    return manager_.isFilteringModified();
+}
 
-bool BrushingAndLinkingInport::modifiedSelection() const { return manager_.modifiedSelection(); }
+bool BrushingAndLinkingInport::isSelectionModified() const {
+    return manager_.isSelectionModified();
+}
 
-bool BrushingAndLinkingInport::modifiedHighlight() const { return manager_.modifiedHighlight(); }
+bool BrushingAndLinkingInport::isHighlightModified() const {
+    return manager_.isHighlightModified();
+}
 
 void BrushingAndLinkingInport::brush(BrushingAction action, BrushingTarget target,
                                      const BitSet& indices, std::string_view source) {
@@ -155,8 +161,10 @@ Document BrushingAndLinkingInport::getInfo() const {
     Document doc;
     doc.append("b", "Brushing & Linking Inport", {{"style", "color:white;"}});
     utildoc::TableBuilder tb(doc.handle(), P::end());
-    for (auto& [action, target] : manager_.getTargets()) {
-        tb(H(action), target, manager_.getIndices(action, target).cardinality());
+    for (auto& [action, targets] : manager_.getTargets()) {
+        for (auto& target : targets) {
+            tb(H(action), target, manager_.getIndices(action, target).cardinality());
+        }
     }
     return doc;
 }
@@ -196,8 +204,10 @@ Document BrushingAndLinkingOutport::getInfo() const {
     Document doc;
     doc.append("b", "Brushing & Linking Outport", {{"style", "color:white;"}});
     utildoc::TableBuilder tb(doc.handle(), P::end());
-    for (auto& [action, target] : manager_.getTargets()) {
-        tb(H(action), target, manager_.getIndices(action, target).cardinality());
+    for (auto& [action, targets] : manager_.getTargets()) {
+        for (auto& target : targets) {
+            tb(H(action), target, manager_.getIndices(action, target).cardinality());
+        }
     }
     return doc;
 }

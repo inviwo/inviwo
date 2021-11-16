@@ -57,10 +57,12 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     , backgroundPort_("background")
     , outport_("outport")
     , scatterPlot_(this)
-    , xAxis_("xAxis", "X-axis", dataFramePort_, false, 0)
-    , yAxis_("yAxis", "Y-axis", dataFramePort_, false, 2)
-    , colorCol_("colorCol", "Color column", dataFramePort_, true, 3)
-    , radiusCol_("radiusCol", "Radius column", dataFramePort_, true, 4) {
+    , xAxis_("xAxis", "X-axis", dataFramePort_, ColumnOptionProperty::AddNoneOption::No, 0)
+    , yAxis_("yAxis", "Y-axis", dataFramePort_, ColumnOptionProperty::AddNoneOption::No, 2)
+    , colorCol_("colorCol", "Color column", dataFramePort_,
+                ColumnOptionProperty::AddNoneOption::Yes, 3)
+    , radiusCol_("radiusCol", "Radius column", dataFramePort_,
+                 ColumnOptionProperty::AddNoneOption::Yes, 4) {
 
     addPort(dataFramePort_);
     addPort(brushingPort_).setOptional(true);
@@ -167,10 +169,10 @@ void ScatterPlotProcessor::process() {
         return rows;
     };
 
-    if (brushingPort_.modifiedSelection()) {
+    if (brushingPort_.isSelectionModified()) {
         scatterPlot_.setSelectedIndices(transformIdsToRows(brushingPort_.getSelectedIndices()));
     }
-    if (brushingPort_.modifiedHighlight()) {
+    if (brushingPort_.isHighlightModified()) {
         scatterPlot_.setHighlightedIndices(
             transformIdsToRows(brushingPort_.getHighlightedIndices()));
     }
@@ -212,8 +214,7 @@ void ScatterPlotProcessor::onColorChange() {
     if (idx == -1) {
         scatterPlot_.setColorData(nullptr);
     } else {
-        auto buffer = data->getColumn(idx)->getBuffer();
-        scatterPlot_.setColorData(buffer);
+        scatterPlot_.setColorData(data->getColumn(idx));
     }
 }
 
@@ -224,8 +225,7 @@ void ScatterPlotProcessor::onRadiusChange() {
     if (idx == -1) {
         scatterPlot_.setRadiusData(nullptr);
     } else {
-        auto buffer = data->getColumn(idx)->getBuffer();
-        scatterPlot_.setRadiusData(buffer);
+        scatterPlot_.setRadiusData(data->getColumn(idx));
     }
 }
 

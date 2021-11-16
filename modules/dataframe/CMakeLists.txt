@@ -18,14 +18,18 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/dataframeexporter.h
     include/inviwo/dataframe/processors/dataframefloat32converter.h
     include/inviwo/dataframe/processors/dataframejoin.h
+    include/inviwo/dataframe/processors/dataframemetadata.h
     include/inviwo/dataframe/processors/dataframesource.h
     include/inviwo/dataframe/processors/imagetodataframe.h
     include/inviwo/dataframe/processors/syntheticdataframe.h
     include/inviwo/dataframe/processors/volumesequencetodataframe.h
     include/inviwo/dataframe/processors/volumetodataframe.h
     include/inviwo/dataframe/properties/colormapproperty.h
+    include/inviwo/dataframe/properties/columnmetadatalistproperty.h
+    include/inviwo/dataframe/properties/columnmetadataproperty.h
+    include/inviwo/dataframe/properties/columnoptionproperty.h
     include/inviwo/dataframe/properties/dataframecolormapproperty.h
-    include/inviwo/dataframe/properties/dataframeproperty.h
+    include/inviwo/dataframe/properties/optionconverter.h
     include/inviwo/dataframe/util/dataframeutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -44,14 +48,18 @@ set(SOURCE_FILES
     src/processors/dataframeexporter.cpp
     src/processors/dataframefloat32converter.cpp
     src/processors/dataframejoin.cpp
+    src/processors/dataframemetadata.cpp
     src/processors/dataframesource.cpp
     src/processors/imagetodataframe.cpp
     src/processors/syntheticdataframe.cpp
     src/processors/volumesequencetodataframe.cpp
     src/processors/volumetodataframe.cpp
     src/properties/colormapproperty.cpp
+    src/properties/columnmetadatalistproperty.cpp
+    src/properties/columnmetadataproperty.cpp
+    src/properties/columnoptionproperty.cpp
     src/properties/dataframecolormapproperty.cpp
-    src/properties/dataframeproperty.cpp
+    src/properties/optionconverter.cpp
     src/util/dataframeutil.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

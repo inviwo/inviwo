@@ -101,32 +101,46 @@ public:
      *
      * @return true if there have been recent changes
      *
-     * \see modifiedActions
+     * \see getModifiedActions
      */
     bool isModified() const;
 
     /**
      * return which actions were performed since the last network evaluation
      */
-    BrushingModifications modifiedActions() const;
+    BrushingModifications getModifiedActions() const;
     /**
-     * return whether there was a filter action since the last network evaluation
+     * return whether there was a filter action on \p target since the last network evaluation
      *
-     * @return modifiedActions() & BrushingModification::Filtered
+     * @return isTargetModified(target, BrushingModification::Filtered)
      */
-    bool modifiedFiltering() const;
+    bool isFilteringModified(BrushingTarget target = BrushingTarget::Row) const;
     /**
-     * return whether there was a select action since the last network evaluation
+     * return whether there was a select action on \p target since the last network evaluation
      *
-     * @return modifiedActions() & BrushingModification::Selected
+     * @return isTargetModified(target, BrushingModification::Selected)
      */
-    bool modifiedSelection() const;
+    bool isSelectionModified(BrushingTarget target = BrushingTarget::Row) const;
     /**
-     * return whether there was a highlight action since the last network evaluation
+     * return whether there was a highlight action on \p target since the last network evaluation
      *
-     * @return modifiedActions() & BrushingModification::Highlighted
+     * @return isTargetModified(target, BrushingModification::Highlighted)
      */
-    bool modifiedHighlight() const;
+    bool isHighlightModified(BrushingTarget target = BrushingTarget::Row) const;
+    /**
+     * return which targets were changed since the last network evaluation
+     */
+    std::vector<BrushingTarget> getModifiedTargets() const;
+    /**
+     * return whether \p target was modified by any of \p modifications since the last network
+     * evaluation
+     */
+    bool isTargetModified(BrushingTarget target, BrushingModifications modifications =
+                                                     BrushingModifications(flags::any)) const;
+    /**
+     * return whether \p target was modified by \p action since the last network evaluation
+     */
+    bool isTargetModified(BrushingTarget target, BrushingAction action) const;
 
     /**
      * check whether the manager has an index set for \p target and \p action
@@ -192,7 +206,7 @@ public:
     //! \see contains
     bool isHighlighted(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
 
-    std::vector<std::pair<BrushingAction, BrushingTarget>> getTargets() const;
+    std::vector<std::pair<BrushingAction, std::vector<BrushingTarget>>> getTargets() const;
     std::vector<BrushingTarget> getTargets(BrushingAction action) const;
 
     const BitSet& getFilteredIndices(BrushingTarget target = BrushingTarget::Row) const;
@@ -216,6 +230,7 @@ public:
 private:
     static int getActionIndex(BrushingAction action);
     void propagate(BrushingAction action, BrushingTarget target);
+    void propagate(BrushingAction action, const std::vector<BrushingTarget>& targets);
     void addChild(BrushingAndLinkingManager* child);
     void removeChild(BrushingAndLinkingManager* child);
     const BitSet* getBitSet(BrushingAction action, BrushingTarget target) const;
@@ -233,7 +248,7 @@ private:
     std::unordered_set<BrushingAndLinkingManager*> children_;
     InvalidationLevel invalidationLevel_;
 
-    BrushingModifications modifiedActions_{flags::empty};
+    std::unordered_map<BrushingTarget, BrushingModifications> modifications_;
 };
 
 }  // namespace inviwo

@@ -74,6 +74,8 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
         settings_ = LineSettings(settings);
     }
 
+    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
     MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo());
     if (mesh.getNumberOfIndicies() > 0) {
         for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {

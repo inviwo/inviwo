@@ -35,7 +35,7 @@
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/persistencediagramplotgl.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 #include <set>
@@ -88,9 +88,9 @@ private:
 
     PersistenceDiagramPlotGL persistenceDiagramPlot_;
 
-    DataFrameColumnProperty xAxis_;
-    DataFrameColumnProperty yAxis_;
-    DataFrameColumnProperty colorCol_;
+    ColumnOptionProperty xAxis_;
+    ColumnOptionProperty yAxis_;
+    ColumnOptionProperty colorCol_;
 
     using CallbackHandle = std::shared_ptr<std::function<void(PickingEvent*, size_t)>>;
     CallbackHandle tooltipCallBack_;

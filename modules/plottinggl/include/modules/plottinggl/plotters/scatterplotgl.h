@@ -140,10 +140,10 @@ public:
 
     void setYAxis(std::shared_ptr<const Column> col);
 
-    void setXAxisData(std::shared_ptr<const BufferBase> buffer);
-    void setYAxisData(std::shared_ptr<const BufferBase> buffer);
-    void setColorData(std::shared_ptr<const BufferBase> buffer);
-    void setRadiusData(std::shared_ptr<const BufferBase> buffer);
+    void setXAxisData(std::shared_ptr<const Column> col);
+    void setYAxisData(std::shared_ptr<const Column> col);
+    void setColorData(std::shared_ptr<const Column> col);
+    void setRadiusData(std::shared_ptr<const Column> col);
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
     void setSelectedIndices(const BitSet& indices);

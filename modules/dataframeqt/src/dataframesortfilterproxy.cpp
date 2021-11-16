@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,54 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
-#include <modules/qtwidgets/processors/processorwidgetqt.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/datastructures/bitset.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/dataframeqt/dataframesortfilterproxy.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
 
 namespace inviwo {
 
-class DataFrame;
-class DataFrameTableView;
-class BrushingAndLinkingManager;
+DataFrameSortFilterProxy::DataFrameSortFilterProxy(QObject* parent)
+    : QSortFilterProxyModel(parent) {
+    setFilterRole(Roles::Filter);
+    setSortRole(Roles::Data);
+}
 
-/**
- * \brief A processor widget showing a DataFrame in a table view.
- */
-class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public ProcessorWidgetQt {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    DataFrameTableProcessorWidget(Processor* p);
-    virtual ~DataFrameTableProcessorWidget() = default;
+void DataFrameSortFilterProxy::setManager(BrushingAndLinkingManager& manager) {
+    manager_ = &manager;
+}
 
-    virtual void setVisible(bool visible) override;
+void DataFrameSortFilterProxy::brushingUpdate() { invalidateFilter(); }
 
-    void setManager(BrushingAndLinkingManager& manager);
-    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool categoryIndices = false);
-    void setIndexColumnVisible(bool visible);
-    void setFilteredRowsVisible(bool visible);
+void DataFrameSortFilterProxy::setFiltering(bool enable) {
+    if (filtering_ == enable) return;
 
-    /**
-     * update the selection, filtering, and highlight state of the widget using the brushing and
-     * linking manager. Call this function in Processor::process(). This function performs the
-     * checks itself whether there have been any changes.
-     *
-     * \see setManager
-     */
-    void brushingUpdate();
+    filtering_ = enable;
+    invalidateFilter();
+}
 
-private:
-    using tableview_ptr =
-        std::unique_ptr<DataFrameTableView, std::function<void(DataFrameTableView*)>>;
-    tableview_ptr tableview_;
+bool DataFrameSortFilterProxy::getFiltering() const { return filtering_; }
 
-    Processor::NameDispatcherHandle nameChange_;
-};
+bool DataFrameSortFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex&) const {
+    if (!filtering_ || !manager_) return true;
+
+    return !manager_->isFiltered(sourceRow, BrushingTarget::Row);
+}
+
+bool DataFrameSortFilterProxy::filterAcceptsColumn(int sourceColumn, const QModelIndex&) const {
+    if (!filtering_ || !manager_) return true;
+
+    return !manager_->isFiltered(sourceColumn, BrushingTarget::Column);
+}
 
 }  // namespace inviwo

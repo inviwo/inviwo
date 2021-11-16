@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,53 +26,57 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+
+#include <string_view>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.CSVSource, CSVSource}
- * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
- * Reads comma separated values (CSV) and converts it into a DataFrame.
- *
- * ### Outports
- *   * __data__  DataFrame representation of the CSV input file
- *
- * ### Properties
- *   * __First Row Headers__   if true, the first row is used as column names in the DataFrame
- *   * __Delimiters__          defines the delimiter between values (default ',')
+/**
+ * \ingroup properties
+ * A property for accessing and overriding column-specific metadata of a DataFrame
  */
-
-class IVW_MODULE_DATAFRAME_API CSVSource : public Processor {
+class IVW_MODULE_DATAFRAME_API ColumnMetaDataProperty : public CompositeProperty {
 public:
-    CSVSource(const std::string& file = "");
-    virtual ~CSVSource() = default;
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
-    virtual void process() override;
+    ColumnMetaDataProperty(
+        std::string_view identifier, std::string_view displayName, dvec2 range = {0.0, 1.0},
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+        PropertySemantics semantics = PropertySemantics::Default);
+    ColumnMetaDataProperty(const ColumnMetaDataProperty& rhs);
+    ColumnMetaDataProperty& operator=(const ColumnMetaDataProperty& rhs);
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    virtual ColumnMetaDataProperty* clone() const override;
 
-private:
-    DataOutport<DataFrame> data_;
-    FileProperty inputFile_;
-    BoolProperty firstRowIsHeaders_;
-    StringProperty delimiters_;
-    BoolProperty doublePrecision_;
-    ButtonProperty reloadData_;
+    virtual ~ColumnMetaDataProperty() = default;
 
-    ColumnMetaDataListProperty columns_;
+    void setRange(dvec2 columnRange, dvec2 dataRange = {0.0, 1.0});
+    dvec2 getRange() const;
+
+    void setColumnIndex(size_t index);
+    size_t getColumnIndex() const;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+protected:
+    DoubleMinMaxProperty columnRange_;
+    BoolCompositeProperty overrideRange_;
+    DoubleMinMaxProperty customRange_;
+    ButtonProperty resetToData_;
+
+    ValueWrapper<dvec2> dataRange_;
+    ValueWrapper<size_t> columnIndex_;
 };
 
 }  // namespace inviwo

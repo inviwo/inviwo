@@ -37,7 +37,7 @@
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 
 namespace inviwo {
 
@@ -72,7 +72,7 @@ private:
     DataInport<DataFrame> dataFrame_;
     DataOutport<std::vector<vec4>> colors_;
 
-    DataFrameColumnProperty selectedColorAxis_;
+    ColumnOptionProperty selectedColorAxis_;
     TransferFunctionProperty tf_;
 };
 

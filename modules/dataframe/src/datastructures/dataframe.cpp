@@ -47,11 +47,9 @@ namespace inviwo {
  */
 DataFrame::DataFrame(std::uint32_t size) : columns_{} {
     // at the moment, GPUs only support uints up to 32bit
-    auto& cont = addColumn<std::uint32_t>("index", size)
-                     ->getTypedBuffer()
-                     ->getEditableRAMRepresentation()
-                     ->getDataContainer();
-    std::iota(cont.begin(), cont.end(), 0);
+    auto seq = util::make_sequence<std::uint32_t>(0, static_cast<std::uint32_t>(size));
+    std::vector<std::uint32_t> indices(seq.begin(), seq.end());
+    addColumn(std::make_shared<IndexColumn>("index", std::move(indices)));
 }
 DataFrame::DataFrame(const DataFrame& rhs) : columns_{} {
     for (const auto& col : rhs.columns_) {
@@ -207,12 +205,20 @@ std::shared_ptr<const Column> DataFrame::getColumn(std::string_view name) const 
 
 std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_[index]; }
 
-std::shared_ptr<const TemplateColumn<std::uint32_t>> DataFrame::getIndexColumn() const {
-    return std::dynamic_pointer_cast<const TemplateColumn<std::uint32_t>>(columns_[0]);
+std::shared_ptr<const IndexColumn> DataFrame::getIndexColumn() const {
+    if (columns_[0]->getColumnType() == ColumnType::Index) {
+        return std::static_pointer_cast<const IndexColumn>(columns_[0]);
+    } else {
+        return nullptr;
+    }
 }
 
-std::shared_ptr<TemplateColumn<std::uint32_t>> DataFrame::getIndexColumn() {
-    return std::dynamic_pointer_cast<TemplateColumn<std::uint32_t>>(columns_[0]);
+std::shared_ptr<IndexColumn> DataFrame::getIndexColumn() {
+    if (columns_[0]->getColumnType() == ColumnType::Index) {
+        return std::static_pointer_cast<IndexColumn>(columns_[0]);
+    } else {
+        return nullptr;
+    }
 }
 
 std::vector<std::shared_ptr<Column>>::iterator DataFrame::begin() { return columns_.begin(); }

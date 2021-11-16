@@ -34,9 +34,11 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/metadata/metadataowner.h>
 
 #include <inviwo/dataframe/datastructures/datapoint.h>
 
+#include <optional>
 #include <iostream>
 
 namespace inviwo {
@@ -52,14 +54,18 @@ public:
     virtual ~InvalidConversion() throw() {}
 };
 
+enum class ColumnType { Index, Ordinal, Categorical };
+
 /**
  * @brief pure interface for representing a data column, i.e. a Buffer with a name
  */
-class IVW_MODULE_DATAFRAME_API Column {
+class IVW_MODULE_DATAFRAME_API Column : public MetaDataOwner {
 public:
     virtual ~Column() = default;
 
     virtual Column* clone() const = 0;
+
+    virtual ColumnType getColumnType() const = 0;
 
     virtual const std::string& getHeader() const = 0;
     virtual void setHeader(std::string_view header) = 0;
@@ -84,9 +90,35 @@ public:
     virtual std::string getAsString(size_t idx) const = 0;
     virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const = 0;
 
+    /**
+     * Set a custom range for the column which can be used for normalization, plotting, color
+     * mapping, etc.
+     */
+    virtual void setRange(dvec2 range);
+    virtual void unsetRange();
+    /**
+     * Return the currently set column range. If no range has been set previously, the return value
+     * will be std::nullopt.
+     */
+    std::optional<dvec2> getRange() const;
+
 protected:
     Column() = default;
+    std::optional<dvec2> columnRange_;
 };
+
+namespace columnutil {
+
+/**
+ * Return the column range for \p col. If the column's range is empty, the min/max values of the
+ * underlying buffer are returned. If the buffer holds vectors, the componentwise minimum and
+ * maximum are used.
+ *
+ * @return Column::getRange() if set, min/max values of getBuffer() otherwise
+ */
+IVW_MODULE_DATAFRAME_API dvec2 getRange(const Column& col);
+
+}  // namespace columnutil
 
 /**
  * @brief Data column used for plotting which represents a named buffer of type T. The name
@@ -111,6 +143,8 @@ public:
     virtual TemplateColumn* clone() const override;
 
     virtual ~TemplateColumn() = default;
+
+    virtual ColumnType getColumnType() const override;
 
     virtual const std::string& getHeader() const override;
     void setHeader(std::string_view header) override;
@@ -175,6 +209,24 @@ protected:
     std::shared_ptr<Buffer<T>> buffer_;
 };
 
+class IVW_MODULE_DATAFRAME_API IndexColumn : public TemplateColumn<std::uint32_t> {
+public:
+    IndexColumn(std::string_view header, std::shared_ptr<Buffer<std::uint32_t>> buffer =
+                                             std::make_shared<Buffer<std::uint32_t>>());
+    IndexColumn(std::string_view header, std::vector<std::uint32_t> data);
+    IndexColumn(const IndexColumn& rhs) = default;
+    IndexColumn(IndexColumn&& rhs) = default;
+
+    IndexColumn& operator=(const IndexColumn& rhs) = default;
+    IndexColumn& operator=(IndexColumn&& rhs) = default;
+
+    virtual IndexColumn* clone() const override;
+
+    virtual ~IndexColumn() = default;
+
+    virtual ColumnType getColumnType() const override;
+};
+
 /**
  * \class CategoricalColumn
  * \brief Specialized data column representing categorical values, i.e. strings.
@@ -199,6 +251,8 @@ public:
     virtual CategoricalColumn* clone() const override;
 
     virtual ~CategoricalColumn() = default;
+
+    virtual ColumnType getColumnType() const override;
 
     virtual std::string getAsString(size_t idx) const override;
 
@@ -298,6 +352,11 @@ TemplateColumn<T>& TemplateColumn<T>::operator=(TemplateColumn<T>&& rhs) {
 template <typename T>
 TemplateColumn<T>* TemplateColumn<T>::clone() const {
     return new TemplateColumn(*this);
+}
+
+template <typename T>
+ColumnType TemplateColumn<T>::getColumnType() const {
+    return ColumnType::Ordinal;
 }
 
 template <typename T>

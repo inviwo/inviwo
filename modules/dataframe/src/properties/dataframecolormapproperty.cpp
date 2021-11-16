@@ -42,7 +42,8 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
                                                      InvalidationLevel invalidationLevel,
                                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , selectedColorAxis{"selectedColorAxis", "Column", port, false, 1}
+    , selectedColorAxis{"selectedColorAxis", "Column", port,
+                        ColumnOptionProperty::AddNoneOption::No, 1}
     , overrideColormap("overrideColormap", "Override", false)
     , tf{"tf", "Colormap"}
     , dataframe_(port.getData()) {

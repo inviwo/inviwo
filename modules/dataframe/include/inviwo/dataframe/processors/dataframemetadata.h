@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,26 @@
 #pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.CSVSource, CSVSource}
- * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
- * Reads comma separated values (CSV) and converts it into a DataFrame.
+/** \docpage{org.inviwo.DataFrameMetaData, Data Frame Meta Data}
+ * ![](org.inviwo.DataFrameMetaData.png?classIdentifier=org.inviwo.DataFrameMetaData)
+ * Augment a DataFrame with column-specific metadata like minimum and maximum values.
+ *
+ * ### Inports
+ *   * __inport__ input DataFrame to be augmented
  *
  * ### Outports
- *   * __data__  DataFrame representation of the CSV input file
- *
- * ### Properties
- *   * __First Row Headers__   if true, the first row is used as column names in the DataFrame
- *   * __Delimiters__          defines the delimiter between values (default ',')
+ *   * __outport__ copy of the input DataFrame along with column MetaData
  */
-
-class IVW_MODULE_DATAFRAME_API CSVSource : public Processor {
+class IVW_MODULE_DATAFRAME_API DataFrameMetaData : public Processor {
 public:
-    CSVSource(const std::string& file = "");
-    virtual ~CSVSource() = default;
+    DataFrameMetaData();
+    virtual ~DataFrameMetaData() = default;
 
     virtual void process() override;
 
@@ -65,12 +57,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataOutport<DataFrame> data_;
-    FileProperty inputFile_;
-    BoolProperty firstRowIsHeaders_;
-    StringProperty delimiters_;
-    BoolProperty doublePrecision_;
-    ButtonProperty reloadData_;
+    DataFrameInport inport_;
+    DataFrameOutport outport_;
 
     ColumnMetaDataListProperty columns_;
 };

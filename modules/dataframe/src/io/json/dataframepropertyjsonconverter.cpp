@@ -32,11 +32,11 @@ using json = nlohmann::json;
 
 namespace inviwo {
 
-void to_json(json& j, const DataFrameColumnProperty& p) {
+void to_json(json& j, const ColumnOptionProperty& p) {
     to_json(j, static_cast<const OptionPropertyInt&>(p));
 }
 
-void from_json(const json& j, DataFrameColumnProperty& p) {
+void from_json(const json& j, ColumnOptionProperty& p) {
     from_json(j, static_cast<OptionPropertyInt&>(p));
 }
 
