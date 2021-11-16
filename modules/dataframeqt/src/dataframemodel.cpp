@@ -44,7 +44,8 @@ DataFrameModel::~DataFrameModel() = default;
 
 void DataFrameModel::setManager(BrushingAndLinkingManager& manager) { manager_ = &manager; }
 
-void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool categoryIndices) {
+void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
+                                  bool categoryIndices) {
     util::OnScopeExit onscopeexit([&]() { endResetModel(); });
 
     beginResetModel();
