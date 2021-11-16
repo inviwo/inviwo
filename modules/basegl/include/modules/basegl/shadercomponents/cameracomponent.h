@@ -38,7 +38,6 @@
 
 namespace inviwo {
 
-
 /**
  * Adds a CameraProperty and binds it the the `<name>` CameraParameters uniform
  */
