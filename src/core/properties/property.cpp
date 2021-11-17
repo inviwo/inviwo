@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-Property::Property(const std::string& identifier, const std::string& displayName,
+Property::Property(std::string_view identifier, std::string_view displayName,
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : PropertyObservable()
     , MetaDataOwner()

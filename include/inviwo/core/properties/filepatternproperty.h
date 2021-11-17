@@ -63,8 +63,8 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    FilePatternProperty(std::string_view identifier, std::string_view displayName, std::string_view pattern = "",
-                        std::string_view contentType = "default",
+    FilePatternProperty(std::string_view identifier, std::string_view displayName,
+                        std::string_view pattern = "", std::string_view contentType = "default",
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
 

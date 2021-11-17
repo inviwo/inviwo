@@ -29,7 +29,4 @@
 
 #include <inviwo/core/algorithm/linearmap.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -176,7 +176,6 @@ private:
 template <typename T, size_t N>
 Combinations(util::span<T, N>, size_t) -> Combinations<T>;
 
-
 /**
  * Generate \p r length subsequences of elements from the input \p values.
  * \see https://docs.python.org/3/library/itertools.html#itertools.product

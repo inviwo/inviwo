@@ -145,7 +145,7 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
 
             Property::OnChangeBlocker block{range};
             range.setRange(minmax);
-            
+
             const double minV = minmax.x;
             const double maxV = minmax.y;
             if (l > 0 && maxV != minV) {

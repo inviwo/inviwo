@@ -144,7 +144,7 @@ std::shared_ptr<Volume> VolumeLaplacianDispatcher::operator()(
             newVolume->dataMap_.valueRange = dvec2(-rangemax, rangemax);
             break;
     }
-    
+
     newVolume->axes = volume->axes;
     newVolume->dataMap_.valueAxis.name = "laplacian";
     newVolume->dataMap_.valueAxis.unit =

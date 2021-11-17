@@ -86,9 +86,7 @@ void writeDatVolume(const Volume& data, const std::string filePath, bool overwri
         [&](std::string_view key, const Wrapping3D& wrapping) {
             fmt::print(ss, "{}: {} {} {}\n", key, wrapping[0], wrapping[1], wrapping[2]);
         },
-        [&](std::string_view key, const Unit& unit) {
-            fmt::print(ss, "{}: {}\n", key, unit);
-        },
+        [&](std::string_view key, const Unit& unit) { fmt::print(ss, "{}: {}\n", key, unit); },
         [&](std::string_view key, const auto& vec) {
             fmt::print(ss, "{}: {}\n", key, fmt::join(begin(vec), end(vec), " "));
         }};

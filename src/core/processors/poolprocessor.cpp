@@ -132,7 +132,9 @@ void PoolProcessor::handleError() {
     } catch (const Exception& e) {
         util::log(e.getContext(), e.getMessage(), LogLevel::Error);
     } catch (const fmt::format_error& e) {
-        util::log(IVW_CONTEXT, fmt::format("fmt format error: {}\n{}", e.what(), util::fmtHelp.view()), LogLevel::Error);
+        util::log(IVW_CONTEXT,
+                  fmt::format("fmt format error: {}\n{}", e.what(), util::fmtHelp.view()),
+                  LogLevel::Error);
     } catch (const std::exception& e) {
         util::log(IVW_CONTEXT, std::string(e.what()), LogLevel::Error);
     } catch (...) {

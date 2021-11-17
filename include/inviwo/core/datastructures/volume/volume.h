@@ -46,7 +46,6 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
-
 namespace inviwo {
 
 class Camera;

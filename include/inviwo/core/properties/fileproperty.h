@@ -72,8 +72,8 @@ public:
      * @param invalidationLevel
      * @param semantics Can be set to Editor
      */
-    FileProperty(std::string_view identifier, std::string_view displayName, std::string_view value = "",
-                 std::string_view contentType = "default",
+    FileProperty(std::string_view identifier, std::string_view displayName,
+                 std::string_view value = "", std::string_view contentType = "default",
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 

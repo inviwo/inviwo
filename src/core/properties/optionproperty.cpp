@@ -31,8 +31,7 @@
 
 namespace inviwo {
 
-BaseOptionProperty::BaseOptionProperty(std::string_view identifier,
-                                       std::string_view displayName,
+BaseOptionProperty::BaseOptionProperty(std::string_view identifier, std::string_view displayName,
                                        InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics) {}

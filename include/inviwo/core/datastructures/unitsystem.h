@@ -186,8 +186,8 @@ constexpr std::array<Group, 7> groups = {{{"SI", si},
                                           {"Astronomical", astronomical}}};
 
 using EnabledGroups = std::array<bool, unitgroups::groups.size()>;
-constexpr unitgroups::EnabledGroups allGroups = {true,true,true,true,true,true,true};
-constexpr unitgroups::EnabledGroups siGroups = {true,false,false,false,false,false,false};
+constexpr unitgroups::EnabledGroups allGroups = {true, true, true, true, true, true, true};
+constexpr unitgroups::EnabledGroups siGroups = {true, false, false, false, false, false, false};
 
 }  // namespace unitgroups
 
@@ -305,7 +305,7 @@ struct fmt::formatter<::inviwo::Unit> {
             if (unitsystem == UnitSystem::Si) {
                 return ::inviwo::unitgroups::siGroups;
             } else if (unitsystem == UnitSystem::All) {
-                return  ::inviwo::unitgroups::allGroups;
+                return ::inviwo::unitgroups::allGroups;
             } else {
                 return ::inviwo::util::getSystemUnitGroups();
             }
@@ -316,7 +316,7 @@ struct fmt::formatter<::inviwo::Unit> {
 
         fmt::memory_buffer buff;
         auto it = std::back_inserter(buff);
-        
+
         if (mult != 1.0) {
             fmt::format_to(it, "{:4.2g} ", mult);
         }
@@ -338,7 +338,7 @@ struct fmt::formatter<::inviwo::Unit> {
             }
             if (neg > 1) *it++ = ')';
         }
-        
+
         return formatter_.format(std::string_view{buff.data(), buff.size()}, ctx);
     }
 };

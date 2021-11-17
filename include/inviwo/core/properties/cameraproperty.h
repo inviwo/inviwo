@@ -76,7 +76,7 @@ public:
 
     CameraProperty(const CameraProperty& rhs);
 
-    operator const Camera &() const;
+    operator const Camera&() const;
 
     virtual CameraProperty* clone() const override;
     virtual ~CameraProperty();

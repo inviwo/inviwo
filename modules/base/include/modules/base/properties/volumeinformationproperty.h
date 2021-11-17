@@ -71,7 +71,7 @@ public:
     DoubleMinMaxProperty valueRange_;
     StringProperty valueName_;
     StringProperty valueUnit_;
-    
+
     std::array<StringProperty, 3> axesNames_;
     std::array<StringProperty, 3> axesUnits_;
 };

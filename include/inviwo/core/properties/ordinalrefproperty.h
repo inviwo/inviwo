@@ -261,9 +261,8 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 }
 
 template <typename T>
-OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier,
-                                          std::string_view displayName, std::function<T()> get,
-                                          std::function<void(const T&)> set,
+OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
+                                          std::function<T()> get, std::function<void(const T&)> set,
                                           const std::pair<T, ConstraintBehavior>& minValue,
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
@@ -290,8 +289,7 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier,
 }
 
 template <typename T>
-OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier,
-                                          std::string_view displayName,
+OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
                                           std::function<const T&()> get,
                                           std::function<void(const T&)> set,
                                           OrdinalRefPropertyState<T> state)
