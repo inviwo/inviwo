@@ -125,7 +125,7 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
     catCol_ = dynamic_cast<const CategoricalColumn*>(col_.get());
 
     caption_ = col_->getColumnType() == ColumnType::Ordinal
-                   ? fmt::format("{} ({})", col_->getHeader(), col_->getUnit())
+                   ? fmt::format("{} {: [sys}", col_->getHeader(), col_->getUnit())
                    : col_->getHeader();
 
     col_->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(

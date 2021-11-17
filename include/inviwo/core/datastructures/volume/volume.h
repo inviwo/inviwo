@@ -73,6 +73,7 @@ public:
                     const Wrapping3D& wrapping = wrapping3d::clampAll);
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
+    Volume(const Volume&, NoData);
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();
@@ -88,16 +89,14 @@ public:
     virtual size3_t getDimensions() const override;
 
     /**
-     * Set the format of the data.
+     * Set the default data format. Existing representations will not be affected.
+     * @note Only useful before any representations have been created.
      * @see DataFormatBase
      * @param format The format of the data.
      */
-    // clang-format off
-    [[ deprecated("use VolumeRepresentation::setDataFormat() instead (deprecated since 2019-06-26)")]]
     void setDataFormat(const DataFormatBase* format);
     const DataFormatBase* getDataFormat() const;
-    // clang-format on
-
+    
     /**
      * \brief update the swizzle mask of the color channels when sampling the volume
      *

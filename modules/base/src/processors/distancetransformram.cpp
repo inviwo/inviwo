@@ -102,11 +102,10 @@ void DistanceTransformRAM::process() {
         util::volumeDistanceTransform(volume.get(), dstRepr.get(), upsample, threshold, normalize,
                                       flip, square, scale, progress);
 
-        auto dstVol = std::make_shared<Volume>(dstRepr);
-        // pass meta data on
-        dstVol->setModelMatrix(volume->getModelMatrix());
-        dstVol->setWorldMatrix(volume->getWorldMatrix());
-        dstVol->copyMetaDataFrom(*volume);
+        auto dstVol = std::make_shared<Volume>(*volume, noData);
+        dstVol->addRepresentation(dstRepr);
+        dstVol->dataMap_.valueAxis.name = "distance";
+        dstVol->dataMap_.valueAxis.unit = volume->axes[0].unit;
 
         switch (dataRangeMode) {
             case DistanceTransformRAM::DataRangeMode::Diagonal: {

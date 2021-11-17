@@ -253,14 +253,7 @@ void VolumeCombiner::updateProperties() {
 
 void VolumeCombiner::process() {
     if (inport_.isChanged()) {
-        const DataFormatBase* format = inport_.getData()->getDataFormat();
-        volume_ = std::make_shared<Volume>(inport_.getData()->getDimensions(), format);
-        volume_->setModelMatrix(inport_.getData()->getModelMatrix());
-        volume_->setWorldMatrix(inport_.getData()->getWorldMatrix());
-        // pass on metadata
-        volume_->copyMetaDataFrom(*inport_.getData());
-        volume_->dataMap_ = inport_.getData()->dataMap_;
-        outport_.setData(volume_);
+        volume_ = std::make_shared<Volume>(*inport_.getData(), noData);
     }
 
     updateDataRange();

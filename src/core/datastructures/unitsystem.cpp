@@ -41,9 +41,22 @@ namespace inviwo {
 
 namespace {
 
+constexpr std::array<
+    std::tuple<std::string_view, std::string_view, int (units::detail::unit_data::*)() const>, 10>
+    baseUnits{{{"meter", "m", &units::detail::unit_data::meter},
+               {"kilogram", "kg", &units::detail::unit_data::kg},
+               {"second", "s", &units::detail::unit_data::second},
+               {"ampere", "A", &units::detail::unit_data::ampere},
+               {"kelvin", "K", &units::detail::unit_data::kelvin},
+               {"mole", "mol", &units::detail::unit_data::mole},
+               {"candela", "Cd", &units::detail::unit_data::candela},
+               {"currency", "$", &units::detail::unit_data::currency},
+               {"count", "#", &units::detail::unit_data::count},
+               {"radian", "rad", &units::detail::unit_data::radian}}};
+
 template <typename OP>
 constexpr bool any(units::detail::unit_data a, units::detail::unit_data b, OP op) {
-    for (auto&& [name, abbr, getter] : detail::baseUnits) {
+    for (auto&& [name, abbr, getter] : baseUnits) {
         auto aPow = std::invoke(getter, a);
         auto bPow = std::invoke(getter, b);
         if (std::invoke(op, aPow, bPow)) {
@@ -54,7 +67,7 @@ constexpr bool any(units::detail::unit_data a, units::detail::unit_data b, OP op
 }
 template <typename OP>
 constexpr bool all(units::detail::unit_data a, units::detail::unit_data b, OP op) {
-    for (auto&& [name, abbr, getter] : detail::baseUnits) {
+    for (auto&& [name, abbr, getter] : baseUnits) {
         const auto aPow = std::invoke(getter, a);
         const auto bPow = std::invoke(getter, b);
         if (!std::invoke(op, aPow, bPow)) {
@@ -65,7 +78,7 @@ constexpr bool all(units::detail::unit_data a, units::detail::unit_data b, OP op
 }
 
 constexpr bool isSubset(units::detail::unit_data part, units::detail::unit_data whole) {
-    for (auto&& [name, abbr, getter] : detail::baseUnits) {
+    for (auto&& [name, abbr, getter] : baseUnits) {
         const auto pPow = std::invoke(getter, part);
         const auto wPow = std::invoke(getter, whole);
 
@@ -79,7 +92,7 @@ constexpr bool isSubset(units::detail::unit_data part, units::detail::unit_data 
  */
 constexpr int maxPower(units::detail::unit_data part, units::detail::unit_data whole) {
     int factor = 0;
-    for (auto&& [name, abbr, getter] : detail::baseUnits) {
+    for (auto&& [name, abbr, getter] : baseUnits) {
         auto pPow = std::invoke(getter, part);
         auto wPow = std::invoke(getter, whole);
 

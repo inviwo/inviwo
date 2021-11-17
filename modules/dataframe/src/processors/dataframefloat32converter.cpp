@@ -63,7 +63,9 @@ void DataFrameFloat32Converter::process() {
 
                     auto dst = util::transform(typedBuf->getDataContainer(),
                                                [](const auto& v) { return static_cast<T>(v); });
-                    dataframe->addColumn(srcCol->getHeader(), std::move(dst));
+
+                    dataframe->addColumn(srcCol->getHeader(), std::move(dst), srcCol->getUnit(),
+                                         srcCol->getRange());
                 });
         } else {
             dataframe->addColumn(std::shared_ptr<Column>(srcCol->clone()));

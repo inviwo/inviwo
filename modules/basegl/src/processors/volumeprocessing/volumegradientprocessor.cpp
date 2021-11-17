@@ -70,13 +70,19 @@ VolumeGradientProcessor::VolumeGradientProcessor()
     addProperty(dataInChannel4_);
 }
 
-VolumeGradientProcessor::~VolumeGradientProcessor() {}
+VolumeGradientProcessor::~VolumeGradientProcessor() = default;
 
 void VolumeGradientProcessor::preProcess(TextureUnitContainer&) {
     shader_.setUniform("channel", channel_.getSelectedValue());
 }
 
-void VolumeGradientProcessor::postProcess() { volume_->dataMap_.dataRange = dvec2(-1.0, 1.0); }
+void VolumeGradientProcessor::postProcess() {
+    volume_->dataMap_.valueAxis.name = "gradient";
+    volume_->dataMap_.valueAxis.unit =
+        inport_.getData()->dataMap_.valueAxis.unit / inport_.getData()->axes[0].unit;
+    volume_->dataMap_.dataRange = dvec2(-1.0, 1.0);
+    volume_->dataMap_.valueRange = dvec2(-1.0, 1.0);
+}
 
 void VolumeGradientProcessor::initializeResources() {
     if (dataInChannel4_.get()) {

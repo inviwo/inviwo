@@ -66,7 +66,7 @@ public:
     virtual ~Column() = default;
 
     virtual Column* clone() const = 0;
-    virtual Column* clone(const std::vector<size_t>& rowSelection) const = 0;
+    virtual Column* clone(const std::vector<std::uint32_t>& rowSelection) const = 0;
 
     virtual ColumnType getColumnType() const = 0;
 
@@ -143,14 +143,14 @@ public:
                    std::optional<dvec2> range = std::nullopt);
 
     TemplateColumn(const TemplateColumn<T>& rhs);
-    TemplateColumn(const TemplateColumn<T>& rhs, const std::vector<size_t>& rowSelection);
+    TemplateColumn(const TemplateColumn<T>& rhs, const std::vector<std::uint32_t>& rowSelection);
     TemplateColumn(TemplateColumn<T>&& rhs);
 
     TemplateColumn<T>& operator=(const TemplateColumn<T>& rhs);
     TemplateColumn<T>& operator=(TemplateColumn<T>&& rhs);
 
     virtual TemplateColumn* clone() const override;
-    virtual TemplateColumn* clone(const std::vector<size_t>& rowSelection) const override;
+    virtual TemplateColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
 
     virtual ~TemplateColumn() = default;
 
@@ -236,13 +236,13 @@ public:
                                              std::make_shared<Buffer<std::uint32_t>>());
     IndexColumn(std::string_view header, std::vector<std::uint32_t> data);
     IndexColumn(const IndexColumn& rhs) = default;
-    IndexColumn(const IndexColumn& rhs, const std::vector<size_t>& rowSelection);
+    IndexColumn(const IndexColumn& rhs, const std::vector<std::uint32_t>& rowSelection);
     IndexColumn(IndexColumn&& rhs) = default;
     IndexColumn& operator=(const IndexColumn& rhs) = default;
     IndexColumn& operator=(IndexColumn&& rhs) = default;
 
     virtual IndexColumn* clone() const override;
-    virtual IndexColumn* clone(const std::vector<size_t>& rowSelection) const override;
+    virtual IndexColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
 
     virtual ~IndexColumn() = default;
 
@@ -265,13 +265,13 @@ class IVW_MODULE_DATAFRAME_API CategoricalColumn : public TemplateColumn<std::ui
 public:
     CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {});
     CategoricalColumn(const CategoricalColumn& rhs) = default;
-    CategoricalColumn(const CategoricalColumn& rhs, const std::vector<size_t>& rowSelection);
+    CategoricalColumn(const CategoricalColumn& rhs, const std::vector<std::uint32_t>& rowSelection);
     CategoricalColumn(CategoricalColumn&& rhs) = default;
     CategoricalColumn& operator=(const CategoricalColumn& rhs) = default;
     CategoricalColumn& operator=(CategoricalColumn&& rhs) = default;
 
     virtual CategoricalColumn* clone() const override;
-    virtual CategoricalColumn* clone(const std::vector<size_t>& rowSelection) const override;
+    virtual CategoricalColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
 
     virtual ~CategoricalColumn() = default;
 
@@ -368,7 +368,7 @@ TemplateColumn<T>::TemplateColumn(TemplateColumn<T>&& rhs)
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(const TemplateColumn& rhs,
-                                  const std::vector<size_t>& rowSelection)
+                                  const std::vector<std::uint32_t>& rowSelection)
     : header_(rhs.getHeader())
     , unit_(rhs.unit_)
     , range_(rhs.range_)
@@ -409,7 +409,7 @@ TemplateColumn<T>* TemplateColumn<T>::clone() const {
 }
 
 template <typename T>
-TemplateColumn<T>* TemplateColumn<T>::clone(const std::vector<size_t>& rowSelection) const {
+TemplateColumn<T>* TemplateColumn<T>::clone(const std::vector<std::uint32_t>& rowSelection) const {
     return new TemplateColumn(*this, rowSelection);
 }
 

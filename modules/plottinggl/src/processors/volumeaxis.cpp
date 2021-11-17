@@ -255,9 +255,9 @@ void VolumeAxis::adjustRanges() {
         }
         offset = volume->getOffset();
 
-        xCaption = fmt::format("{} ({})", volume->axes[0].name, volume->axes[0].unit);
-        yCaption = fmt::format("{} ({})", volume->axes[1].name, volume->axes[1].unit);
-        zCaption = fmt::format("{} ({})", volume->axes[2].name, volume->axes[2].unit);
+        xCaption = fmt::format("{}{: [}", volume->axes[0].name, volume->axes[0].unit);
+        yCaption = fmt::format("{}{: [}", volume->axes[1].name, volume->axes[1].unit);
+        zCaption = fmt::format("{}{: [}", volume->axes[2].name, volume->axes[2].unit);
     }
 
     util::KeepTrueWhileInScope b(&propertyUpdate_);

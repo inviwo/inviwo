@@ -476,13 +476,13 @@ void ScatterPlotGL::setYAxisLabel(const std::string& label) {
 }
 
 void ScatterPlotGL::setXAxis(const Column* col) {
-    setXAxisLabel(col->getHeader());
     setXAxisData(col);
+    setXAxisLabel(fmt::format("{}{: [}", col->getHeader(), col->getUnit()));
 }
 
 void ScatterPlotGL::setYAxis(const Column* col) {
-    setYAxisLabel(col->getHeader());
     setYAxisData(col);
+    setYAxisLabel(fmt::format("{}{: [}", col->getHeader(), col->getUnit()));
 }
 
 void ScatterPlotGL::setXAxisData(const Column* col) {

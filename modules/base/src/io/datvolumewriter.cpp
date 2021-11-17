@@ -138,7 +138,7 @@ void writeDatVolume(const Volume& data, const std::string filePath, bool overwri
         throw DataWriterException("Could not write to raw file: " + rawPath,
                                   IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
     }
-}  // namespace inviwo
+}
 }  // namespace util
 
 }  // namespace inviwo

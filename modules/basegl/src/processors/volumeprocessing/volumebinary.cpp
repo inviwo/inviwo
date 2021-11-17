@@ -62,7 +62,12 @@ VolumeBinary::VolumeBinary()
 
 void VolumeBinary::preProcess(TextureUnitContainer&) { utilgl::setUniforms(shader_, threshold_); }
 
-void VolumeBinary::postProcess() { volume_->dataMap_.dataRange = vec2(0, 255); }
+void VolumeBinary::postProcess() {
+    volume_->dataMap_.dataRange = vec2(0, 255);
+    volume_->dataMap_.valueRange = vec2(0, 255);
+    volume_->dataMap_.valueAxis.name = "mask";
+    volume_->dataMap_.valueAxis.unit = Unit{};
+}
 
 void VolumeBinary::initializeResources() {
 

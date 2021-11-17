@@ -75,6 +75,7 @@ public:
     Image(std::shared_ptr<Layer> layer);
 
     Image(const Image& rhs);
+    Image(const Image& rhs, NoData);
     Image& operator=(const Image& that);
     virtual Image* clone() const;
     virtual ~Image() = default;

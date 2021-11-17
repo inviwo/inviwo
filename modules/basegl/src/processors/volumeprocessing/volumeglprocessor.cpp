@@ -49,8 +49,7 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
                {ShaderType::Fragment, fragmentShader}},
               buildShader ? Shader::Build::Yes : Shader::Build::No)
     , fbo_() {
-    addPort(inport_);
-    addPort(outport_);
+    addPorts(inport_, outport_);
 
     inport_.onChange([this]() {
         markInvalid();
@@ -62,7 +61,7 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
 VolumeGLProcessor::VolumeGLProcessor(const std::string& fragmentShader, bool buildShader)
     : VolumeGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
 
-VolumeGLProcessor::~VolumeGLProcessor() {}
+VolumeGLProcessor::~VolumeGLProcessor() = default;
 
 void VolumeGLProcessor::process() {
     bool reattach = false;
@@ -70,14 +69,8 @@ void VolumeGLProcessor::process() {
     if (internalInvalid_) {
         reattach = true;
         internalInvalid_ = false;
-        const DataFormatBase* format =
-            dataFormat_ ? dataFormat_ : inport_.getData()->getDataFormat();
-        volume_ = std::make_shared<Volume>(inport_.getData()->getDimensions(), format);
-        volume_->setModelMatrix(inport_.getData()->getModelMatrix());
-        volume_->setWorldMatrix(inport_.getData()->getWorldMatrix());
-        // pass meta data on
-        volume_->copyMetaDataFrom(*inport_.getData());
-        volume_->dataMap_ = inport_.getData()->dataMap_;
+        volume_ = std::make_shared<Volume>(*inport_.getData(), noData);
+        if (dataFormat_) volume_->setDataFormat(dataFormat_);
         outport_.setData(volume_);
     }
 

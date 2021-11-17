@@ -147,7 +147,7 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> combineDataFrames(
  * @return list of row indices where rows fulfill the predicate
  */
 template <typename Pred>
-std::vector<size_t> filteredRows(std::shared_ptr<const Column> col, Pred pred);
+std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred pred);
 
 IVW_MODULE_DATAFRAME_API std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId);
 

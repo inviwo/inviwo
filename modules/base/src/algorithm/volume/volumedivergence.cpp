@@ -44,11 +44,10 @@ std::unique_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
 }
 
 std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
+    auto newVolume = std::make_unique<Volume>(volume, noData);
     auto newVolumeRep = std::make_shared<VolumeRAMPrecision<float>>(volume.getDimensions());
-    auto newVolume = std::make_unique<Volume>(newVolumeRep);
-    newVolume->setModelMatrix(volume.getModelMatrix());
-    newVolume->setWorldMatrix(volume.getWorldMatrix());
-    newVolume->dataMap_ = volume.dataMap_;
+    newVolume->addRepresentation(newVolumeRep);
+
 
     const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
@@ -101,6 +100,8 @@ std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
         auto range = std::max(std::abs(minV), std::abs(maxV));
         newVolume->dataMap_.dataRange = dvec2(-range, range);
         newVolume->dataMap_.valueRange = dvec2(minV, maxV);
+        newVolume->dataMap_.valueAxis.name = "divergence";
+        newVolume->dataMap_.valueAxis.unit = volume.dataMap_.valueAxis.unit / volume.axes[0].unit;
     });
 
     return newVolume;

@@ -207,7 +207,10 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
             const std::string selected =
                 manager_ ? (manager_->isSelected(section, BrushingTarget::Column) ? " [+]" : "")
                          : "";
-            return utilqt::toQString(data_->getHeader(section) + selected);
+            const auto& col = data_->getColumn(section);
+            const auto header =
+                fmt::format("{}{}{: [}", selected, col->getHeader(), col->getUnit());
+            return utilqt::toQString(header);
         }
     } else if ((role == Qt::ToolTipRole) && (orientation == Qt::Horizontal)) {
         const Column* col = data_->getColumn(section).get();

@@ -371,7 +371,7 @@ void MeshRasterizer::updateMeshes() {
         std::shared_ptr<Mesh> copy = nullptr;
 
         if (drawSilhouette_) {
-            copy = std::make_shared<Mesh>(Mesh::DontCopyBuffers{}, *mesh);
+            copy = std::make_shared<Mesh>(*mesh, noData);
             for (auto&& [info, buffer] : mesh->getBuffers()) {
                 copy->addBuffer(info, std::shared_ptr<BufferBase>(buffer->clone()));
             }

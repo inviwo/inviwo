@@ -191,23 +191,6 @@ constexpr unitgroups::EnabledGroups siGroups = {true, false, false, false, false
 
 }  // namespace unitgroups
 
-namespace detail {
-
-constexpr std::array<
-    std::tuple<std::string_view, std::string_view, int (units::detail::unit_data::*)() const>, 10>
-    baseUnits{{{"meter", "m", &units::detail::unit_data::meter},
-               {"kilogram", "kg", &units::detail::unit_data::kg},
-               {"second", "s", &units::detail::unit_data::second},
-               {"ampere", "A", &units::detail::unit_data::ampere},
-               {"kelvin", "K", &units::detail::unit_data::kelvin},
-               {"mole", "mol", &units::detail::unit_data::mole},
-               {"candela", "Cd", &units::detail::unit_data::candela},
-               {"currency", "$", &units::detail::unit_data::currency},
-               {"count", "#", &units::detail::unit_data::count},
-               {"radian", "rad", &units::detail::unit_data::radian}}};
-
-}  // namespace detail
-
 namespace util {
 
 enum class UseUnitPrefixes { Yes, No };
@@ -229,13 +212,23 @@ findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enabledGroup
  * Formatting specialization for Units
  * The Units have a Format Specification Mini-Language
  *
- * spec      ::= [unit_spec][":" format_spec]
+ * spec         ::= [unit_spec][":" format_spec]
  *
  * format_spec ::= fmt standard format specifier
  *
- * unis_spec   ::= [prefix][units]
+ * unit_spec   ::= [space][braces][prefix][units]
+ *
+ * space       ::= " "
+ * braces      ::= "(" | "["
  * prefix      ::= "p" | "P"
  * units       ::= "si" | "sys" | "all"
+ *
+ * Space:
+ *    " "     Add a leading space to the unit
+ *
+ * Braces:    By default no braces are added.
+ *    "("     Surround the unit in (unit)
+ *    "["     Surround the unit in [unit]
  *
  * Prefix:
  *    "p"     Use si prefixes y to Y to reduce any multiplier (default)
@@ -252,14 +245,12 @@ struct fmt::formatter<::inviwo::Unit> {
     formatter<std::string_view> formatter_;
 
     enum class UnitSystem { Si, Sys, All };
+    enum class Braces { None = 0, Paren, Square};
 
     ::inviwo::util::UseUnitPrefixes usePrefix = ::inviwo::util::UseUnitPrefixes::Yes;
     UnitSystem unitsystem = UnitSystem::Sys;
-
-    // All the unicode superscript digits from 0 to 9 but we let 0,1 ("\u2070", "\u00B9") be empty
-    // since they are not needed
-    static constexpr std::array<std::string_view, 10> powers = {
-        "", "", "\u00B2", "\u00B3", "\u2074", "\u2075", "\u2076", "\u2077", "\u2078", "\u2079"};
+    Braces braces = Braces::None;
+    bool leadingSpace = false;
 
     constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin()) {
         auto it = ctx.begin();
@@ -268,6 +259,19 @@ struct fmt::formatter<::inviwo::Unit> {
         auto unitEnd = std::find(it, fmtEnd, ':');
 
         std::string_view unitFormat(it, unitEnd - it);
+
+        if (unitFormat.size() > 0 && unitFormat[0] == ' ') {
+            leadingSpace = true;
+            unitFormat.remove_prefix(1);
+        }
+        
+        if (unitFormat.size() > 0 && unitFormat[0] == '(') {
+            braces = Braces::Paren;
+            unitFormat.remove_prefix(1);
+        } else if (unitFormat.size() > 0 && unitFormat[0] == '[') {
+            braces = Braces::Square;
+            unitFormat.remove_prefix(1);
+        }
 
         if (unitFormat.size() > 0 && unitFormat[0] == 'p') {
             usePrefix = ::inviwo::util::UseUnitPrefixes::Yes;
@@ -301,6 +305,15 @@ struct fmt::formatter<::inviwo::Unit> {
     auto format(const ::inviwo::Unit& unit, FormatContext& ctx) -> decltype(ctx.out()) {
         // ctx.out() is an output iterator to write to.
 
+        // All the unicode superscript digits from 0 to 9 but we let 0,1 ("\u2070", "\u00B9") be
+        // empty since they are not needed
+        constexpr std::array<std::string_view, 10> powers = {
+            "", "", "\u00B2", "\u00B3", "\u2074", "\u2075", "\u2076", "\u2077", "\u2078", "\u2079"};
+        constexpr std::array<std::string_view, 3> braceOpen = {"", "(", "["};
+        constexpr std::array<std::string_view, 3> braceClose = {"", ")", "]"};
+
+        if (unit == ::inviwo::Unit{}) return ctx.out();
+
         const ::inviwo::unitgroups::EnabledGroups enabledGroups = [&]() {
             if (unitsystem == UnitSystem::Si) {
                 return ::inviwo::unitgroups::siGroups;
@@ -316,6 +329,10 @@ struct fmt::formatter<::inviwo::Unit> {
 
         fmt::memory_buffer buff;
         auto it = std::back_inserter(buff);
+
+        if (leadingSpace) *it++ = ' ';
+
+        fmt::format_to(it, "{}", braceOpen[static_cast<int>(braces)]);
 
         if (mult != 1.0) {
             fmt::format_to(it, "{:4.2g} ", mult);
@@ -338,6 +355,7 @@ struct fmt::formatter<::inviwo::Unit> {
             }
             if (neg > 1) *it++ = ')';
         }
+        fmt::format_to(it, "{}", braceClose[static_cast<int>(braces)]);
 
         return formatter_.format(std::string_view{buff.data(), buff.size()}, ctx);
     }

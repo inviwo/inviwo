@@ -46,6 +46,28 @@ TEST(Unitsystem, unitsystem) {
     EXPECT_EQ(fmt::format("{:all}", chargeDensity), "e/Å³");
     EXPECT_EQ(fmt::format("{:all}", chargeDensity * length.pow(3)), "e");
 
+    
+    Unit m = units::unit_from_string("m");
+    Unit km = units::unit_from_string("km");
+    
+    EXPECT_EQ(fmt::format("{:si}", m), "m");
+    EXPECT_EQ(fmt::format("{: si}", m), " m");
+    EXPECT_EQ(fmt::format("{:(si}", m), "(m)");
+    EXPECT_EQ(fmt::format("{:[si}", m), "[m]");
+    EXPECT_EQ(fmt::format("{: (si}", m), " (m)");
+    EXPECT_EQ(fmt::format("{: [si}", m), " [m]");
+    EXPECT_EQ(fmt::format("{: [psi}", km), " [km]");
+    EXPECT_EQ(fmt::format("{: [Psi}", km), " [1000 m]");
+    
+    EXPECT_EQ(fmt::format("{: [si}", m.pow(3)), " [m³]");
+    EXPECT_EQ(fmt::format("{: [si}", m.pow(-1)), " [1/m]");
+    EXPECT_EQ(fmt::format("{: [si}", m.pow(-3)), " [1/m³]");
+
+    EXPECT_EQ(fmt::format("{:[si:<7}", m), "[m]    ");
+    EXPECT_EQ(fmt::format("{:[si:^7}", m), "  [m]  ");
+    EXPECT_EQ(fmt::format("{:[si:>7}", m), "    [m]");
+    EXPECT_EQ(fmt::format("{:[si:*^7}", m), "**[m]**");
+
     std::cout << fmt::format("{}", chargeDensity) << "\n";
     std::cout << fmt::format("{}", chargeDensity * length.pow(3)) << "\n";
 
