@@ -81,13 +81,6 @@ public:
      */
     dvec2 getRange(size_t columnIndex) const;
 
-    /**
-     * Create metadata for the column with index \p columnIndex. The following metadata is created:
-     *   - "DataRange" (dvec2) corresponding to either min/max values of the column or a custom
-     * range
-     */
-    MetaDataOwner getColumnMetaData(size_t columnIndex) const;
-
 private:
     DataFrameInport* inport_ = nullptr;
     std::shared_ptr<std::function<void()>> onChangeCallback_;

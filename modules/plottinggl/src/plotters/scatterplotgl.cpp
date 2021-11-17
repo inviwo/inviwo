@@ -488,7 +488,7 @@ void ScatterPlotGL::setYAxis(const Column* col) {
 void ScatterPlotGL::setXAxisData(const Column* col) {
     if (col) {
         xAxis_ = col->getBuffer();
-        minmaxX_ = vec2(columnutil::getRange(*col));
+        minmaxX_ = vec2(col->getRange());
         properties_.xAxis_.setRange(minmaxX_);
     } else {
         xAxis_ = nullptr;
@@ -499,7 +499,7 @@ void ScatterPlotGL::setXAxisData(const Column* col) {
 void ScatterPlotGL::setYAxisData(const Column* col) {
     if (col) {
         yAxis_ = col->getBuffer();
-        minmaxY_ = vec2(columnutil::getRange(*col));
+        minmaxY_ = vec2(col->getRange());
         properties_.yAxis_.setRange(minmaxY_);
     } else {
         yAxis_ = nullptr;
@@ -510,7 +510,7 @@ void ScatterPlotGL::setYAxisData(const Column* col) {
 void ScatterPlotGL::setColorData(const Column* col) {
     if (col) {
         color_ = col->getBuffer();
-        minmaxC_ = vec2(columnutil::getRange(*col));
+        minmaxC_ = col->getRange();
     } else {
         color_ = nullptr;
     }
@@ -521,7 +521,7 @@ void ScatterPlotGL::setColorData(const Column* col) {
 void ScatterPlotGL::setRadiusData(const Column* col) {
     if (col) {
         radius_ = col->getBuffer();
-        minmaxR_ = vec2(columnutil::getRange(*col));
+        minmaxR_ = vec2(col->getRange());
     } else {
         radius_ = nullptr;
     }

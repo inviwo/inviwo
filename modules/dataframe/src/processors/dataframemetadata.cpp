@@ -56,8 +56,7 @@ DataFrameMetaData::DataFrameMetaData()
 void DataFrameMetaData::process() {
     auto dataframe = std::make_shared<DataFrame>(*inport_.getData().get());
     for (auto&& [index, col] : util::enumerate(*dataframe)) {
-        col->setRange(columns_.getRange(index));
-        col->copyMetaDataFrom(columns_.getColumnMetaData(index));
+        col->setCustomRange(columns_.getRange(index));
     }
 
     outport_.setData(dataframe);

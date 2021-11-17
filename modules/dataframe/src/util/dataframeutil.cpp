@@ -289,9 +289,8 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (auto srcCol : srcDataFrame) {
         if (srcCol == srcDataFrame.getIndexColumn()) continue;
-        if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) {
-            continue;
-        }
+        if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
+
         dst->addColumn(std::shared_ptr<Column>{srcCol->clone()});
     }
 }
@@ -301,21 +300,9 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 bool skipKeyCol) {
     for (auto srcCol : srcDataFrame) {
         if (srcCol == srcDataFrame.getIndexColumn()) continue;
-        if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) {
-            continue;
-        }
+        if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
-        if (auto c = dynamic_cast<CategoricalColumn*>(srcCol.get())) {
-            auto data = util::transform(rows, [src = c->getValues()](size_t i) { return src[i]; });
-            dst->addCategoricalColumn(c->getHeader(), data);
-        } else {
-            srcCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
-                [dst, srcCol, header = srcCol->getHeader(), rows](auto typedBuf) {
-                    auto dstData = util::transform(
-                        rows, [&src = typedBuf->getDataContainer()](size_t i) { return src[i]; });
-                    dst->addColumn(header, std::move(dstData));
-                });
-        }
+        dst->addColumn(std::shared_ptr<Column>(srcCol->clone(rows)));
     }
 }
 
@@ -324,9 +311,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (auto srcCol : srcDataFrame) {
         if (srcCol == srcDataFrame.getIndexColumn()) continue;
-        if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) {
-            continue;
-        }
+        if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
         if (auto c = dynamic_cast<CategoricalColumn*>(srcCol.get())) {
             auto data = util::transform(rows, [src = c->getValues()](auto v) {
@@ -462,7 +447,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                         IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"));
     }
     if (dataFrames.size() == 1) {  // just one df, clone it;
-        return std::make_shared<DataFrame>(*dataFrames.front().get());
+        return std::make_shared<DataFrame>(*dataFrames.front());
     }
 
     size_t newSize = 0;

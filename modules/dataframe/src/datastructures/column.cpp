@@ -31,34 +31,10 @@
 
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <modules/base/algorithm/dataminmax.h>
 
 #include <unordered_map>
 
 namespace inviwo {
-
-void Column::setRange(dvec2 range) { columnRange_ = range; }
-
-void Column::unsetRange() { columnRange_ = std::nullopt; }
-
-std::optional<dvec2> Column::getRange() const {
-    if (columnRange_.has_value()) {
-        return columnRange_;
-    }
-    return std::nullopt;
-}
-
-namespace columnutil {
-
-dvec2 getRange(const Column& col) {
-    if (col.getRange()) {
-        return *col.getRange();
-    }
-    auto [min, max] = util::bufferMinMax(col.getBuffer().get(), IgnoreSpecialValues::Yes);
-    return dvec2(glm::compMin(min), glm::compMax(max));
-}
-
-}  // namespace columnutil
 
 IndexColumn::IndexColumn(std::string_view header, std::shared_ptr<Buffer<std::uint32_t>> buffer)
     : TemplateColumn<std::uint32_t>(header, buffer) {}
@@ -66,7 +42,13 @@ IndexColumn::IndexColumn(std::string_view header, std::shared_ptr<Buffer<std::ui
 IndexColumn::IndexColumn(std::string_view header, std::vector<std::uint32_t> data)
     : TemplateColumn<std::uint32_t>(header, data) {}
 
+IndexColumn::IndexColumn(const IndexColumn& rhs, const std::vector<size_t>& rowSelection)
+    : TemplateColumn<std::uint32_t>(rhs, rowSelection) {}
+
 IndexColumn* IndexColumn::clone() const { return new IndexColumn(*this); }
+IndexColumn* IndexColumn::clone(const std::vector<size_t>& rowSelection) const {
+    return new IndexColumn(*this, rowSelection);
+}
 
 ColumnType IndexColumn::getColumnType() const { return ColumnType::Index; }
 
@@ -76,7 +58,15 @@ CategoricalColumn::CategoricalColumn(std::string_view header,
     append(values);
 }
 
+CategoricalColumn::CategoricalColumn(const CategoricalColumn& rhs,
+                                     const std::vector<size_t>& rowSelection)
+    : TemplateColumn<std::uint32_t>(rhs, rowSelection), lookUpTable_{rhs.lookUpTable_} {}
+
 CategoricalColumn* CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
+
+CategoricalColumn* CategoricalColumn::clone(const std::vector<size_t>& rowSelection) const {
+    return new CategoricalColumn(*this, rowSelection);
+}
 
 ColumnType CategoricalColumn::getColumnType() const { return ColumnType::Categorical; }
 

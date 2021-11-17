@@ -1066,4 +1066,28 @@ struct prefix<size_t> {
 #endif
 }  // namespace detail
 
+// Get function for the glm vecs. std::get is not a customization point
+template <std::size_t N, glm::length_t L, typename T, glm::qualifier Q>
+decltype(auto) get(const glm::vec<L, T, Q>& vec) {
+    return vec[N];
+}
+
+template <std::size_t N, glm::length_t L, typename T, glm::qualifier Q>
+decltype(auto) get(glm::vec<L, T, Q>& vec) {
+    return vec[N];
+}
+
 }  // namespace glm
+
+namespace std {
+
+// Needed to get structured bindings to work for glm vecs
+template <glm::length_t L, typename T, glm::qualifier Q>
+struct tuple_size<glm::vec<L, T, Q>> : std::integral_constant<std::size_t, L> {};
+
+template <std::size_t N, glm::length_t L, typename T, glm::qualifier Q>
+struct tuple_element<N, glm::vec<L, T, Q>> {
+    using type = T;
+};
+
+}  // namespace std

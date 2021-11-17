@@ -74,8 +74,7 @@ void CSVSource::process() {
 
     columns_.updateColumnProperties(*dataframe);
     for (auto&& [index, col] : util::enumerate(*dataframe)) {
-        col->setRange(columns_.getRange(index));
-        col->copyMetaDataFrom(columns_.getColumnMetaData(index));
+        col->setCustomRange(columns_.getRange(index));
     }
 
     data_.setData(dataframe);

@@ -54,7 +54,7 @@ void DataFrameSource::process() {
 
     columns_.updateColumnProperties(*loadedData_);
     for (auto&& [index, col] : util::enumerate(*loadedData_)) {
-        col->copyMetaDataFrom(columns_.getColumnMetaData(index));
+        col->setCustomRange(columns_.getRange(index));
     }
 }
 

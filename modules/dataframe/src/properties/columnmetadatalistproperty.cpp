@@ -99,20 +99,6 @@ dvec2 ColumnMetaDataListProperty::getRange(size_t columnIndex) const {
     return dvec2(0.0, 0.0);
 }
 
-MetaDataOwner ColumnMetaDataListProperty::getColumnMetaData(size_t columnIndex) const {
-    MetaDataOwner metadata;
-
-    auto p = util::find_if_or_null(getProperties(), [columnIndex](const Property* p) {
-        return static_cast<const ColumnMetaDataProperty*>(p)->getColumnIndex() == columnIndex;
-    });
-    if (p) {
-        auto colprop = static_cast<const ColumnMetaDataProperty*>(p);
-        metadata.setMetaData<DoubleVec2MetaData>("DataRange", colprop->getRange());
-    }
-
-    return metadata;
-}
-
 ColumnMetaDataListProperty& ColumnMetaDataListProperty::resetToDefaultState() {
     NetworkLock lock(this);
     clear();
@@ -126,14 +112,8 @@ void ColumnMetaDataListProperty::updateColumnProperties(const DataFrame& datafra
     if (dataframe.getNumberOfColumns() <= 1) return;
 
     auto columnRange = [](auto& col) -> std::pair<dvec2, dvec2> {
-        const dvec2 dataRange =
-            col->getBuffer()
-                ->template getRepresentation<BufferRAM>()
-                ->template dispatch<dvec2, dispatching::filter::Scalars>([&](auto br) {
-                    auto [min, max] = util::bufferMinMax(br, IgnoreSpecialValues::No);
-                    return dvec2{min.x, max.x};
-                });
-        const dvec2 currentRange = col->getRange().value_or(dataRange);
+        const dvec2 dataRange = col->getDataRange();
+        const dvec2 currentRange = col->getCustomRange().value_or(dataRange);
         return {currentRange, dataRange};
     };
 

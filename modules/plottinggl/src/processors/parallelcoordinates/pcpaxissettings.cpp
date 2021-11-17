@@ -124,24 +124,18 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
     col_ = frame->getColumn(columnId_);
     catCol_ = dynamic_cast<const CategoricalColumn*>(col_.get());
 
+    caption_ = col_->getColumnType() == ColumnType::Ordinal
+                   ? fmt::format("{} ({})", col_->getHeader(), col_->getUnit())
+                   : col_->getHeader();
+
     col_->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
         [&](auto ram) -> void {
             auto& dataVector = ram->getDataContainer();
 
-            dvec2 minmax = [&]() {
-                if (col_->getRange()) {
-                    return col_->getRange().value();
-                } else {
-                    auto [min, max] = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
-                    return dvec2(glm::compMin(min), glm::compMax(max));
-                }
-            }();
-
+            dvec2 minmax = col_->getRange();
             if (std::abs(minmax.y - minmax.x) < glm::epsilon<double>()) {
                 minmax += dvec2(-1.0, 1.0);
             }
-            const double& minV = minmax.x;
-            const double& maxV = minmax.y;
 
             const dvec2 prevVal = range.get();
             const dvec2 prevRange = range.getRange();
@@ -150,7 +144,10 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
             const double prevMaxRatio = (prevVal.y - prevRange.x) / l;
 
             Property::OnChangeBlocker block{range};
-            range.setRange({minV, maxV});
+            range.setRange(minmax);
+            
+            const double minV = minmax.x;
+            const double maxV = minmax.y;
             if (l > 0 && maxV != minV) {
                 range.set(
                     {minV + prevMinRatio * (maxV - minV), minV + prevMaxRatio * (maxV - minV)});
@@ -280,7 +277,7 @@ float PCPAxisSettings::getWidth() const {
 
 AxisSettings::Orientation PCPAxisSettings::getOrientation() const { return Orientation::Vertical; }
 AxisSettings::Placement PCPAxisSettings::getPlacement() const { return Placement::Inside; }
-const std::string& PCPAxisSettings::getCaption() const { return getDisplayName(); }
+const std::string& PCPAxisSettings::getCaption() const { return caption_; }
 const PlotTextSettings& PCPAxisSettings::getCaptionSettings() const { return captionSettings_; }
 const std::vector<std::string>& PCPAxisSettings::getLabels() const {
     return catCol_ ? catCol_->getCategories() : labels_;

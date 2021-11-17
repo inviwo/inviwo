@@ -144,13 +144,15 @@ void exposeDataFrame(pybind11::module& m) {
             "setRange",
             [](Column& c, std::optional<dvec2> range) {
                 if (range) {
-                    c.setRange(*range);
+                    c.setCustomRange(*range);
                 } else {
-                    c.unsetRange();
+                    c.clearCustomRange();
                 }
             },
             py::arg("range"))
         .def_property_readonly("range", &Column::getRange)
+        .def_property_readonly("customRange", &Column::getCustomRange)
+        .def_property_readonly("dataRange", &Column::getDataRange)
         .def("__repr__", [](Column& c) {
             return fmt::format("<Column: '{}', {}, {}>", c.getHeader(), c.getSize(),
                                c.getBuffer()->getDataFormat()->getString());

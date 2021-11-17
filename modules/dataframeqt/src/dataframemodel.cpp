@@ -219,8 +219,8 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
                 return QString("Ordinal (%0)").arg(col->getBuffer()->getDataFormat()->getString());
             }
         }();
-        if (col->getRange()) {
-            const dvec2 range = col->getRange().value();
+        if (col->getCustomRange()) {
+            const dvec2 range = col->getCustomRange().value();
             tooltip.append(QString("\nColumn Range [%1, %2]").arg(range.x).arg(range.y));
         }
         return tooltip;

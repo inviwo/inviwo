@@ -199,6 +199,7 @@ private:
     void updateBrushing();
     void updateLabels();
 
+    std::string caption_;
     std::vector<std::string> labels_;
     std::shared_ptr<std::function<void()>> labelUpdateCallback_;
 

@@ -88,48 +88,54 @@ public:
      * Map from `dataRange` to the `valueRange`
      */
     template <typename T>
-    T mapFromDataToValue(T val) const {
-        return static_cast<T>(util::linearMap(static_cast<double>(val), dataRange, valueRange));
+    util::same_extent_t<T, double> mapFromDataToValue(T val) const {
+        return util::linearMap(static_cast<util::same_extent_t<T, double>>(val), dataRange,
+                               valueRange);
     }
 
     /**
      * Map from the `valueRange` to the `dataRange`
      */
     template <typename T>
-    T mapFromValueToData(T val) const {
-        return static_cast<T>(util::linearMap(static_cast<double>(val), valueRange, dataRange));
+    util::same_extent_t<T, double> mapFromValueToData(T val) const {
+        return util::linearMap(static_cast<util::same_extent_t<T, double>>(val), valueRange,
+                               dataRange);
     }
 
     /**
      * Map from `dataRange` to the Normalized range [0,1]
      */
     template <typename T>
-    T mapFromDataToNormalized(T val) const {
-        return static_cast<T>(util::linearMapToNormalized(static_cast<double>(val), dataRange));
+    util::same_extent_t<T, double> mapFromDataToNormalized(T val) const {
+        return util::linearMapToNormalized(static_cast<util::same_extent_t<T, double>>(val),
+                                           dataRange);
     }
 
     /**
      * Map from the Normalized range [0,1] to the `dataRange`
      */
     template <typename T>
-    T mapFromNormalizedToData(T val) const {
-        return static_cast<T>(util::linearMapFromNormalized(static_cast<double>(val), dataRange));
+    util::same_extent_t<T, double> mapFromNormalizedToData(T val) const {
+        return util::linearMapFromNormalized(static_cast<util::same_extent_t<T, double>>(val),
+                                             dataRange);
     }
 
     /**
      * Map from `valueRange` to the Normalized range [0,1]
      */
     template <typename T>
-    T mapFromValueToNormalized(T val) const {
-        return static_cast<T>(util::linearMapToNormalized(static_cast<double>(val), valueRange));
+    util::same_extent_t<T, double> mapFromValueToNormalized(T val) const {
+        return util::linearMapToNormalized(static_cast<util::same_extent_t<T, double>>(val),
+                                           valueRange);
     }
 
     /**
      * Map from the Normalized range [0,1] to the `valueRange`
      */
     template <typename T>
-    T mapFromNormalizedToValue(T val) const {
-        return static_cast<T>(util::linearMapFromNormalized(static_cast<double>(val), valueRange));
+    util::same_extent_t<T, double> mapFromNormalizedToValue(T val) const {
+        return util::linearMapFromNormalized(static_cast<util::same_extent_t<T, double>>(val),
+                                             valueRange);
     }
 };
 

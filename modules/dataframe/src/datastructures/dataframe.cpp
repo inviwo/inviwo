@@ -74,15 +74,13 @@ std::shared_ptr<Column> DataFrame::addColumn(std::shared_ptr<Column> column) {
 }
 
 std::shared_ptr<Column> DataFrame::addColumnFromBuffer(std::string_view identifier,
-                                                       std::shared_ptr<const BufferBase> buffer) {
+                                                       std::shared_ptr<const BufferBase> buffer,
+                                                       Unit unit, std::optional<dvec2> range) {
     return buffer->getRepresentation<BufferRAM>()
         ->dispatch<std::shared_ptr<Column>, dispatching::filter::Scalars>([&](auto buf) {
             using ValueType = util::PrecisionValueType<decltype(buf)>;
-            auto col = this->addColumn<ValueType>(identifier);
-            auto newBuf = col->getTypedBuffer();
-            auto& newVec = newBuf->getEditableRAMRepresentation()->getDataContainer();
-            auto& oldVec = buf->getDataContainer();
-            newVec.insert(newVec.end(), oldVec.begin(), oldVec.end());
+            // this will copy the data container.
+            auto col = this->addColumn<ValueType>(identifier, buf->getDataContainer(), unit, range);
             return col;
         });
 }
