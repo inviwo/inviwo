@@ -40,16 +40,9 @@ namespace inviwo {
 
 TEST(Unitsystem, unitsystem) {
 
-    Unit chargeDensity = units::unit_from_string("e/Å^3");
-    Unit length = units::unit_from_string("Å");
-
-    EXPECT_EQ(fmt::format("{:all}", chargeDensity), "e/Å³");
-    EXPECT_EQ(fmt::format("{:all}", chargeDensity * length.pow(3)), "e");
-
-    
     Unit m = units::unit_from_string("m");
     Unit km = units::unit_from_string("km");
-    
+
     EXPECT_EQ(fmt::format("{:si}", m), "m");
     EXPECT_EQ(fmt::format("{: si}", m), " m");
     EXPECT_EQ(fmt::format("{:(si}", m), "(m)");
@@ -57,8 +50,8 @@ TEST(Unitsystem, unitsystem) {
     EXPECT_EQ(fmt::format("{: (si}", m), " (m)");
     EXPECT_EQ(fmt::format("{: [si}", m), " [m]");
     EXPECT_EQ(fmt::format("{: [psi}", km), " [km]");
-    EXPECT_EQ(fmt::format("{: [Psi}", km), " [1000 m]");
-    
+    EXPECT_EQ(fmt::format("{: [Psi}", km), " [1e+03 m]");
+
     EXPECT_EQ(fmt::format("{: [si}", m.pow(3)), " [m³]");
     EXPECT_EQ(fmt::format("{: [si}", m.pow(-1)), " [1/m]");
     EXPECT_EQ(fmt::format("{: [si}", m.pow(-3)), " [1/m³]");
@@ -68,17 +61,16 @@ TEST(Unitsystem, unitsystem) {
     EXPECT_EQ(fmt::format("{:[si:>7}", m), "    [m]");
     EXPECT_EQ(fmt::format("{:[si:*^7}", m), "**[m]**");
 
-    std::cout << fmt::format("{}", chargeDensity) << "\n";
-    std::cout << fmt::format("{}", chargeDensity * length.pow(3)) << "\n";
+    Unit N = units::unit_from_string("N");
 
-    std::cout << fmt::format("{0:all:<20}", chargeDensity) << "\n";
-    std::cout << fmt::format("{0:all:^20}", chargeDensity) << "\n";
-    std::cout << fmt::format("{0:all:>20}", chargeDensity) << "\n";
-    std::cout << fmt::format("{0:Psi:}", chargeDensity) << "\n";
-    std::cout << fmt::format("{0:psi:}", chargeDensity) << "\n";
-    std::cout << fmt::format("{0:si}", chargeDensity) << "\n";
-    std::cout << fmt::format("{0:}", chargeDensity) << "\n";
-    std::cout << fmt::format("{0}", chargeDensity) << "\n";
+    EXPECT_EQ(fmt::format("{:si}", N), "kgm/s²");
+    EXPECT_EQ(fmt::format("{:ext}", N), "N");
+
+    Unit chargeDensity = units::unit_from_string("e/Å^3");
+    Unit length = units::unit_from_string("Å");
+
+    EXPECT_EQ(fmt::format("{:all}", chargeDensity), "e/Å³");
+    EXPECT_EQ(fmt::format("{:all}", chargeDensity * length.pow(3)), "e");
 }
 
 }  // namespace inviwo

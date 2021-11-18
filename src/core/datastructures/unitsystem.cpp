@@ -201,6 +201,9 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
                 if (pow < 0 && desc.flags.contains(UnitFlag::OnlyPositivePowers)) {
                     testMultiplier = std::numeric_limits<double>::max();
                 }
+                if (match.size() > 1 && desc.flags.contains(UnitFlag::OnlyByItSelf)) {
+                    testMultiplier = std::numeric_limits<double>::max();
+                }
                 testMultiplier *= std::pow(desc.unit.multiplier(), pow);
             }
 

@@ -67,7 +67,12 @@ std::array<Axis, N> defaultAxes() {
 
 }  // namespace util
 
-enum class UnitFlag { None = 0, UsesPrefix = 1 << 0, OnlyPositivePowers = 1 << 1 };
+enum class UnitFlag {
+    None = 0,
+    UsesPrefix = 1 << 0,
+    OnlyPositivePowers = 1 << 1,
+    OnlyByItSelf = 1 << 2
+};
 ALLOW_FLAGS_FOR_ENUM(UnitFlag)
 using UnitFlags = flags::flags<UnitFlag>;
 
@@ -96,7 +101,8 @@ constexpr std::array<UnitDesc, 10> si = {{
 
 constexpr std::array<UnitDesc, 17> derived = {{
     {units::precise::hertz,     "hertz",     "Hz",  UnitFlag::UsesPrefix |
-                                                    UnitFlag::OnlyPositivePowers},
+                                                        UnitFlag::OnlyPositivePowers |
+                                                        UnitFlag::OnlyByItSelf},
     {units::precise::volt,      "volt",      "V",   UnitFlag::UsesPrefix},
     {units::precise::newton,    "newton",    "N",   UnitFlag::UsesPrefix},
     {units::precise::pascal,    "pascal",    "Pa",  UnitFlag::UsesPrefix},
@@ -188,6 +194,7 @@ constexpr std::array<Group, 7> groups = {{{"SI", si},
 using EnabledGroups = std::array<bool, unitgroups::groups.size()>;
 constexpr unitgroups::EnabledGroups allGroups = {true, true, true, true, true, true, true};
 constexpr unitgroups::EnabledGroups siGroups = {true, false, false, false, false, false, false};
+constexpr unitgroups::EnabledGroups extGroups = {true, true, true, false, false, false, false};
 
 }  // namespace unitgroups
 
@@ -221,7 +228,7 @@ findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enabledGroup
  * space       ::= " "
  * braces      ::= "(" | "["
  * prefix      ::= "p" | "P"
- * units       ::= "si" | "sys" | "all"
+ * units       ::= "si" | "ext" | "sys" | "all"
  *
  * Space:
  *    " "     Add a leading space to the unit
@@ -236,6 +243,7 @@ findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enabledGroup
  *
  * Units:
  *    "si"    Only use the basic SI unit and combination of those.
+ *    "ext"   Use unit from the si, derived and extra grops.
  *    "sys"   Use the systems currently selected set of unit groups (default)
  *    "all"   Use all known unit groups.
  *
@@ -244,8 +252,8 @@ template <>
 struct fmt::formatter<::inviwo::Unit> {
     formatter<std::string_view> formatter_;
 
-    enum class UnitSystem { Si, Sys, All };
-    enum class Braces { None = 0, Paren, Square};
+    enum class UnitSystem { Si, Ext, Sys, All };
+    enum class Braces { None = 0, Paren, Square };
 
     ::inviwo::util::UseUnitPrefixes usePrefix = ::inviwo::util::UseUnitPrefixes::Yes;
     UnitSystem unitsystem = UnitSystem::Sys;
@@ -264,7 +272,7 @@ struct fmt::formatter<::inviwo::Unit> {
             leadingSpace = true;
             unitFormat.remove_prefix(1);
         }
-        
+
         if (unitFormat.size() > 0 && unitFormat[0] == '(') {
             braces = Braces::Paren;
             unitFormat.remove_prefix(1);
@@ -284,6 +292,8 @@ struct fmt::formatter<::inviwo::Unit> {
         if (unitFormat.empty()) {
         } else if (unitFormat == "si") {
             unitsystem = UnitSystem::Si;
+        } else if (unitFormat == "ext") {
+            unitsystem = UnitSystem::Ext;
         } else if (unitFormat == "sys") {
             unitsystem = UnitSystem::Sys;
         } else if (unitFormat == "all") {
@@ -317,6 +327,8 @@ struct fmt::formatter<::inviwo::Unit> {
         const ::inviwo::unitgroups::EnabledGroups enabledGroups = [&]() {
             if (unitsystem == UnitSystem::Si) {
                 return ::inviwo::unitgroups::siGroups;
+            } else if (unitsystem == UnitSystem::Ext) {
+                return ::inviwo::unitgroups::extGroups;
             } else if (unitsystem == UnitSystem::All) {
                 return ::inviwo::unitgroups::allGroups;
             } else {
@@ -338,13 +350,18 @@ struct fmt::formatter<::inviwo::Unit> {
             fmt::format_to(it, "{:4.2g} ", mult);
         }
         int neg = 0;
+        int pos = 0;
         for (auto&& [prefix, abbr, pow] : niceUnits) {
             if (pow > 0) {
                 fmt::format_to(it, "{}{}{}", prefix, abbr, powers[pow]);
+                ++pos;
             } else if (pow < 0) {
                 ++neg;
             }
         }
+
+        if (pos == 0) *it++ = '1';
+
         if (neg != 0) {
             *it++ = '/';
             if (neg > 1) *it++ = '(';
