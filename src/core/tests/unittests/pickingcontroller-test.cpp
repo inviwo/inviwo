@@ -38,7 +38,9 @@
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/pickingcontrollermousestate.h>
+#include <inviwo/core/interaction/pickingcontrollertouchstate.h>
 
 #include <sml/sml.hpp>
 namespace sml = boost::sml;
@@ -210,6 +212,17 @@ MouseEvent mouseEvent(MouseButton mb, MouseState ms, MouseButtons mbs, uvec2 pos
     return MouseEvent{mb, ms, mbs, KeyModifiers(flags::empty), dvec2{pos} / dvec2{cdim}, cdim, 0.5};
 }
 
+
+TouchEvent touchEvent(TouchState ts, uvec2 pos, uvec2 cdim, TouchDevice touchDevice = TouchDevice(TouchDevice::DeviceType::TouchPad)) {
+    auto prevPosNorm = dvec2{pos} / dvec2{cdim};
+    auto pressedPosNormalized = dvec2{pos} / dvec2{cdim};
+    double pressure = 0.5;
+    return TouchEvent({TouchPoint(0, ts, dvec2{pos} / dvec2{cdim}, prevPosNorm,
+                                  pressedPosNormalized, cdim, pressure, 0.5)},
+                      &touchDevice,
+                      KeyModifiers(flags::empty));
+    }
+
 void testPickingEvent(Event* event, PickingState state, PickingHoverState hoverState,
                       PickingPressState pressState, PickingPressItem pressItem,
                       PickingPressItems pressedState, size_t pickedGlobalId, size_t currentGlobalId,
@@ -283,6 +296,111 @@ TEST(PickingControllerTest, IdleMove) {
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 0);
+    }
+}
+
+TEST(PickingControllerTest, IdleMoveTouch) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    {
+        uvec2 pos{1, 2};  // id = 0
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+    {
+        SCOPED_TRACE("Move 1,1 -> 1,2");
+        uvec2 pos{1, 2};  // id = 0
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+}
+
+TEST(PickingControllerTest, MoveTouchAround) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    {
+        uvec2 pos{1, 1};  // id = 0
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+    {
+        SCOPED_TRACE("Move 1,1 -> 3,3");
+        // uvec2 pre{1, 1};  // id = 0
+        uvec2 pos{3, 3};  // id = 1
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::None, PPI::None,
+                         PPI::None, 2, 2, 0, 0, 1, 1, 0, 0, ndc(pos), dvec3{0.0}, dvec3{0.0});
+    }
+    {
+        SCOPED_TRACE("Move 3,3 -> 3,4");
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{3, 4};  // id = 1
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::None, PPI::None,
+                         PPI::None, 2, 2, 2, 0, 1, 1, 1, 0, ndc(pos), ndc(pre), dvec3{0.0});
+    }
+    {
+        SCOPED_TRACE("Move 3,4 -> 1,4");
+        uvec2 pre{3, 4};  // id = 1
+        uvec2 pos{1, 4};  // id = 0
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Finished, PHS::Exit, PPS::None, PPI::None,
+                         PPI::None, 2, 0, 2, 0, 1, 0, 1, 0, ndc(pos), ndc(pre), dvec3{0.0});
+    }
+    {
+        SCOPED_TRACE("Move 1,4 -> 3,3 again");
+        uvec2 pre{1, 4};  // id = 0
+        uvec2 pos{3, 3};  // id = 1
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::None, PPI::None,
+                         PPI::None, 2, 2, 2, 0, 1, 1, 1, 0, ndc(pos), ndc(pre), dvec3{0.0});
+    }
+    {
+        SCOPED_TRACE("Move 3,3 -> 6,6");
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{6, 6};  // id = 2
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 2);
+        {
+            SCOPED_TRACE("Exit event");
+            testPickingEvent(tp.events[0].get(), PS::Finished, PHS::Exit, PPS::None, PPI::None,
+                             PPI::None, 2, 5, 2, 0, 1, 2, 1, 0, ndc(pos), ndc(pre), dvec3{0.0});
+        }
+        {
+            SCOPED_TRACE("Enter event");
+            testPickingEvent(tp.events[1].get(), PS::Started, PHS::Enter, PPS::None, PPI::None,
+                             PPI::None, 5, 5, 2, 0, 2, 2, 1, 0, ndc(pos), ndc(pre), dvec3{0.0});
+        }
     }
 }
 
