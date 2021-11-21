@@ -118,6 +118,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontroller.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontrollermousestate.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontrollertouchstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingstate.h
@@ -464,6 +465,7 @@ set(SOURCE_FILES
     interaction/pickingaction.cpp
     interaction/pickingcontroller.cpp
     interaction/pickingcontrollermousestate.cpp
+    interaction/pickingcontrollertouchstate.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
     interaction/trackball.cpp
