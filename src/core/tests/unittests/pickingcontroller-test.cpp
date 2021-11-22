@@ -274,6 +274,23 @@ const auto canvas = makeCanvas();
 const uvec2 dim{canvas.size(), canvas.size()};
 const auto ndc = [](uvec2 pos) { return dvec3{2.0 * dvec2{pos} / dvec2{10.0} - dvec2{1.0}, 0.5}; };
 
+template <typename PickingController>
+void testPickingEvent(PickingController& controller, uvec2 pos, Event* event, PickingState state,
+                      PickingHoverState hoverState, PickingPressState pressState,
+                      PickingPressItem pressItem, PickingPressItems pressedState,
+                      size_t pickedGlobalId, size_t currentGlobalId, size_t previousGlobalId,
+                      size_t pressedGlobalId, size_t pickedLocalId, size_t currentLocalId,
+                      size_t previousLocalId, size_t pressedLocalId, dvec3 currentNDC,
+                      dvec3 previousNDC, dvec3 pressedNDC) {
+    TestPropagator tp;
+    controller.propagateEvent(event, &tp, canvas[dim.y - pos.y][pos.x]);
+    ASSERT_EQ(tp.events.size(), 1);
+    testPickingEvent(tp.events[0].get(), state, hoverState, pressState, pressItem, pressedState,
+                     pickedGlobalId, currentGlobalId, previousGlobalId, pressedGlobalId,
+                     pickedLocalId, currentLocalId, previousLocalId, pressedLocalId, currentNDC,
+                     previousNDC, pressedNDC);
+}
+
 TEST(PickingControllerTest, IdleMove) {
     PickingManager pm;
     pm.registerPickingAction(
@@ -331,7 +348,7 @@ TEST(PickingControllerTest, MoveTouchAround) {
     PickingControllerTouchState ms(&pm);
     {
         uvec2 pos{1, 1};  // id = 0
-        auto event = touchEvent(TouchState::Updated, pos, dim);
+        auto event = touchEvent(TouchState::Started, pos, dim);
 
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -484,6 +501,143 @@ TEST(PickingControllerTest, MoveMouseAround) {
     }
 }
 
+void doTouchPress(PickingControllerTouchState& ms) {
+    {
+        uvec2 pos{1, 1};  // id = 0
+        auto event = touchEvent(TouchState::Started, pos, dim);
+
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+    {  // Move
+        // uvec2 pre{1, 1};  // id = 0
+        uvec2 pos{3, 3};  // id = 1
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        SCOPED_TRACE("Enter 3,3");
+        testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::None, PPI::None,
+                         PPI::None, 2, 2, 0, 0, 1, 1, 0, 0, ndc(pos), dvec3{0.0}, dvec3{0.0});
+    }
+    {                     // Press
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{3, 3};  // id = 1
+        auto event = touchEvent(TouchState::Stationary, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        SCOPED_TRACE("Press 3,3");
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::None, PPS::Press, PPI::Primary,
+                         PPIs{PPI::Primary}, 2, 2, 2, 2, 1, 1, 1, 1, ndc(pos), ndc(pre), ndc(pos));
+    }
+}
+
+void doTouchScreenPress(PickingControllerTouchState& ms) {
+    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    {                     // Press
+        uvec2 pre{0, 0};  // none
+        uvec2 pos{3, 3};  // id = 1
+        auto event = touchEvent(TouchState::Started, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        SCOPED_TRACE("Press 3,3");
+        testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::Press, PPI::Primary,
+                         PPIs{PPI::Primary}, 2, 2, 0, 2, 1, 1, 0, 1, ndc(pos), dvec3{0.0}, ndc(pos));
+    }
+}
+
+
+TEST(PickingControllerTest, TouchPressRelease) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    {
+        SCOPED_TRACE("Press-Release");
+        doTouchPress(ms);
+    }
+    {
+        SCOPED_TRACE("Drag 3,3 -> 3,4");
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{3, 4};  // id = 1
+
+        auto event = touchEvent(TouchState::Stationary, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::Move, PPI::None,
+                         PPIs{PPI::Primary}, 2, 2, 2, 2, 1, 1, 1, 1, ndc(pos), ndc(pre),
+                         ndc(uvec2{3, 3}));
+    }
+    {
+        SCOPED_TRACE("Release 3,4");
+        uvec2 pre{3, 4};  // id = 1
+        uvec2 pos{3, 4};  // id = 1
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::None, PPS::Release, PPI::Primary,
+                         PPIs{flags::empty}, 2, 2, 2, 2, 1, 1, 1, 1, ndc(pos), ndc(pre),
+                         ndc(uvec2{3, 3}));
+    }
+    {
+        SCOPED_TRACE("Move 3,4 -> 3,3");
+        uvec2 pre{3, 4};  // id = 1
+        uvec2 pos{3, 3};  // id = 1
+        auto event = touchEvent(TouchState::Updated, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::None, PPI::None,
+                         PPI::None, 2, 2, 2, 0, 1, 1, 1, 0, ndc(pos), ndc(pre), dvec3{0.0});
+    }
+}
+
+TEST(PickingControllerTest, TouchScreenPressRelease) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    {
+        SCOPED_TRACE("Press-Release");
+        doTouchScreenPress(ms);
+    }
+    {
+        SCOPED_TRACE("Drag 3,3 -> 3,4");
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{3, 4};  // id = 1
+
+        auto event = touchEvent(TouchState::Updated, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::Move, PPI::None,
+                         PPIs{PPI::Primary}, 2, 2, 2, 2, 1, 1, 1, 1, ndc(pos), ndc(pre),
+                         ndc(uvec2{3, 3}));
+    }
+    {
+        SCOPED_TRACE("Release 3,4");
+        uvec2 pre{3, 4};  // id = 1
+        uvec2 pos{3, 4};  // id = 1
+        auto event = touchEvent(TouchState::Finished, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Finished, PHS::None, PPS::Release, PPI::Primary,
+                         PPIs{flags::empty}, 2, 2, 2, 2, 1, 1, 1, 1, ndc(pos), ndc(pre),
+                         ndc(uvec2{3, 3}));
+    }
+}
+
 void doMousePress(PickingControllerMouseState& ms) {
     {
         uvec2 pos{1, 1};  // id = 0
@@ -566,6 +720,55 @@ TEST(PickingControllerTest, MousePressRelease) {
     }
 }
 
+TEST(PickingControllerTest, TouchDrag1to2) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    {
+        SCOPED_TRACE("Drag");
+        doTouchPress(ms);
+    }
+    {
+        SCOPED_TRACE("Drag 3,3 -> 6,6");
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{6, 6};  // id = 2
+        auto event = touchEvent(TouchState::Stationary, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::Move, PPI::None,
+                         PPI::Primary, 2, 5, 2, 2, 1, 0, 1, 1, ndc(pos), ndc(pre), ndc(pre));
+    }
+}
+
+TEST(PickingControllerTest, TouchScreenDrag1to2) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    {
+        SCOPED_TRACE("Drag");
+        doTouchScreenPress(ms);
+    }
+    {
+        SCOPED_TRACE("Drag 3,3 -> 6,6");
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{6, 6};  // id = 2
+        auto event = touchEvent(TouchState::Updated, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::Move, PPI::None,
+                         PPI::Primary, 2, 5, 2, 2, 1, 0, 1, 1, ndc(pos), ndc(pre), ndc(pre));
+    }
+}
+
 TEST(PickingControllerTest, MouseDrag1to2) {
     PickingManager pm;
     pm.registerPickingAction(
@@ -630,6 +833,86 @@ TEST(PickingControllerTest, MouseDrag1to0) {
     }
 }
 
+TEST(PickingControllerTest, TouchDrag1to0) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    TouchDevice device{TouchDevice::DeviceType::TouchPad};
+    {
+        SCOPED_TRACE("Drag");
+        doTouchPress(ms);
+    }
+    {
+        SCOPED_TRACE("Drag 3,3 -> 1,1");
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{1, 1};  // id = 0
+
+        auto event = touchEvent(TouchState::Stationary, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::Move, PPI::None,
+                         PPIs{PPI::Primary}, 2, 0, 2, 2, 1, 0, 1, 1, ndc(pos), ndc(pre),
+                         ndc(uvec2{3, 3}));
+    }
+    {
+        SCOPED_TRACE("Release 1,1");
+        uvec2 pre{1, 1};  // id = 0
+        uvec2 pos{1, 1};  // id = 0
+
+        auto event = touchEvent(TouchState::Updated, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Finished, PHS::Exit, PPS::Release, PPI::Primary,
+                         PPIs{flags::empty}, 2, 0, 2, 2, 1, 0, 1, 1, ndc(pos), ndc(pre),
+                         ndc(uvec2{3, 3}));
+    }
+}
+
+TEST(PickingControllerTest, TouchScreenDrag1to0) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    {
+        SCOPED_TRACE("Drag");
+        doTouchScreenPress(ms);
+    }
+    {
+        SCOPED_TRACE("Drag 3,3 -> 1,1");
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{1, 1};  // id = 0
+
+        auto event = touchEvent(TouchState::Updated, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::Move, PPI::None,
+                         PPIs{PPI::Primary}, 2, 0, 2, 2, 1, 0, 1, 1, ndc(pos), ndc(pre),
+                         ndc(uvec2{3, 3}));
+    }
+    {
+        SCOPED_TRACE("Release 1,1");
+        uvec2 pre{1, 1};  // id = 0
+        uvec2 pos{1, 1};  // id = 0
+
+        auto event = touchEvent(TouchState::Finished, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Finished, PHS::Exit, PPS::Release, PPI::Primary,
+                         PPIs{flags::empty}, 2, 0, 2, 2, 1, 0, 1, 1, ndc(pos), ndc(pre),
+                         ndc(uvec2{3, 3}));
+    }
+}
+
 TEST(PickingControllerTest, MouseDrag0to1) {
     PickingManager pm;
     pm.registerPickingAction(
@@ -678,6 +961,108 @@ TEST(PickingControllerTest, MouseDrag0to1) {
         testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::None, PPI::Primary,
                          PPIs{flags::empty}, 2, 2, 0, 0, 1, 1, 1, 1, ndc(pos), dvec3{0.0},
                          dvec3{0.0});
+    }
+}
+
+TEST(PickingControllerTest, TouchDrag0to1) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    TouchDevice device{TouchDevice::DeviceType::TouchPad};
+    {
+        uvec2 pos{1, 1};  // id = 0
+        auto event = touchEvent(TouchState::Started, pos, dim, device);
+
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+    {
+        SCOPED_TRACE("Press 1,1");
+        // uvec2 pre{1, 1};  // id = 0
+        uvec2 pos{1, 1};  // id = 0
+
+        auto event = touchEvent(TouchState::Stationary, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+
+    {
+        SCOPED_TRACE("Drag 1,1 -> 3,3");
+        // uvec2 pre{1, 1};  // id = 0
+        uvec2 pos{3, 3};  // id = 1
+
+        auto event = touchEvent(TouchState::Stationary, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+    {
+        SCOPED_TRACE("Release 3,3");
+        // uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{3, 3};  // id = 1
+
+        auto event = touchEvent(TouchState::Updated, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        // NOTE: PPI is changed to None, should it really be Primary as is the case for Mouse
+        testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::None, PPI::None,
+                         PPIs{PickingPressItem::Primary}, 2, 2, 0, 0, 1, 1, 1, 1, ndc(pos), dvec3{0.0},
+                         dvec3{0.0});
+    }
+}
+
+TEST(PickingControllerTest, TouchScreenDrag0to1) {
+    PickingManager pm;
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerTouchState ms(&pm);
+    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    {
+        uvec2 pos{1, 1};  // id = 0
+        auto event = touchEvent(TouchState::Started, pos, dim, device);
+
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+    //{
+    //    SCOPED_TRACE("Press 1,1");
+    //    // uvec2 pre{1, 1};  // id = 0
+    //    uvec2 pos{1, 1};  // id = 0
+
+    //    auto event = touchEvent(TouchState::Stationary, pos, dim, device);
+    //    TestPropagator tp;
+    //    ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+    //    ASSERT_EQ(tp.events.size(), 0);
+    //}
+
+    {
+        SCOPED_TRACE("Drag 1,1 -> 3,3");
+        // uvec2 pre{1, 1};  // id = 0
+        uvec2 pos{3, 3};  // id = 1
+
+        auto event = touchEvent(TouchState::Updated, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+    {
+        SCOPED_TRACE("Release 3,3");
+        // uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{3, 3};  // id = 1
+
+        auto event = touchEvent(TouchState::Finished, pos, dim, device);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
     }
 }
 

@@ -56,12 +56,14 @@ struct PreviousFsmState {
 struct PressFsmState {
     size_t globalId = 0;
     dvec3 ndc{0};
+    PickingPressItems pressedState = PickingPressItem::None;  // Items initiating a press
 };
 
 // States
 struct Idle {};
 struct HasId {};
 struct Pressing {};
+struct PressingOutside {};
 
 // events;
 struct BaseEvent {
@@ -71,13 +73,13 @@ struct BaseEvent {
     TouchEvent* event;
     EventPropagator* propagator;
 };
-struct Move : BaseEvent {
+struct Started : BaseEvent {
     using BaseEvent::BaseEvent;
 };
-struct Press : BaseEvent {
+struct Updated : BaseEvent {
     using BaseEvent::BaseEvent;
 };
-struct Release : BaseEvent {
+struct Finished : BaseEvent {
     using BaseEvent::BaseEvent;
 };
 
@@ -134,10 +136,31 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
         if (res.index == 0 || !res.action) return;
 
         auto te = fsmEvent.event;
-        const PickingPressItem pressItem =
-            (te->hash() == TouchEvent::chash() ? touchToPressItems(te, te->touchPoints())
-                                               : PickingPressItem::None);
-        const PickingPressItems pressedState = pressItem;
+        PickingPressItem pressItem = PickingPressItem::None;
+        PickingPressItems pressedState = press.pressedState;
+        if (pressState == PickingPressState::Press) {
+            pressItem = touchToPressItems(te, te->touchPoints());
+        } else if (pressState == PickingPressState::Release) {
+            pressItem = touchToPressItems(te, te->touchPoints());
+            // Remove current press state
+            pressedState.erase(pressItem);
+            if (pressedState & PickingPressItem::Primary) {
+                pressItem = PickingPressItem::Primary;
+            } else if (pressedState & PickingPressItem::Secondary) {
+                pressItem = PickingPressItem::Secondary;
+            } else if (pressedState & PickingPressItem::Tertiary) {
+                pressItem = PickingPressItem::Tertiary;
+            } else {
+                // Do nothing:
+                // For touch screen pressItem will always be PickingPressItem::Primary, which has
+                // been erased above
+            }
+            // Erasing a non-existing bit will flip it...
+            if (pressedState & pressItem) {
+                // Remove the item causing the press
+                pressedState.erase(pressItem);
+            }
+        }
 
         PickingEvent pe(res.action, te, state, pressState, pressItem, hoverState, pressedState,
                         fsmState.active_globalId, fsmEvent.globalId, press.globalId, prev.globalId,
@@ -163,16 +186,17 @@ struct Fsm {
         const auto idle = sml::state<Idle>;
         const auto hasId = sml::state<HasId>;
         const auto pressing = sml::state<Pressing>;
+        const auto pressingOutside = sml::state<PressingOutside>;
 
-        const auto uidm = uid<Move>();
-        const auto uidp = uid<Press>();
-        const auto uidr = uid<Release>();
+        const auto uids = uid<Started>();
+        const auto uidu = uid<Updated>();
+        const auto uidf = uid<Finished>();
 
         using S = PickingState;
         using P = PickingPressState;
         using H = PickingHoverState;
 
-        const auto ups = [](const Press& e, PressFsmState& pressState) {
+        const auto ups = [](const auto& e, PressFsmState& pressState) {
             pressState.globalId = e.globalId;
             for (const auto& p : e.event->touchPoints()) {
                 if (isPressed(p, e.event->getDevice()->getType())) {
@@ -180,15 +204,20 @@ struct Fsm {
                     break;
                 }
             }
+            pressState.pressedState = touchToPressItems(e.event, e.event->touchPoints());
+        };
+        const auto upPressedOutside = [](const auto& e, PressFsmState& pressState) {
+            pressState.pressedState = touchToPressItems(e.event, e.event->touchPoints());
         };
         const auto rps = [](PressFsmState& pressState) {
             pressState.globalId = 0;
             pressState.ndc = dvec3{0};
+            pressState.pressedState = PickingPressItem::None;
         };
 
         // guards
         const auto sameId = [](const FsmState& state, const auto& e) -> bool {
-            return e.globalId == state.active_globalId;
+            return e.globalId == state.active_globalId && e.globalId != 0;
         };
         const auto diffId = [](const FsmState& state, const auto& e) -> bool {
             return e.globalId != state.active_globalId && e.globalId != 0;
@@ -197,32 +226,44 @@ struct Fsm {
         const auto zeroMB = [](const FsmState&, const auto& e) -> bool {
             return touchToPressItems(e.event, e.event->touchPoints()) == PickingPressItem::None;
         };
+        const auto moved = [](const PreviousFsmState& state, const auto& e) -> bool {
+            return glm::distance(state.ndc, e.event->centerNDC()) > 0;
+        };
 
         // clang-format off
         return sml::make_transition_table(
-           *idle + event<Move>  [!zeroId && !zeroMB] / (uidm, send<Move>(S::Started, P::Press, H::Enter)) = hasId,
-            idle + event<Move>  [!zeroId && zeroMB] / (uidm, send<Move>(S::Started, P::None, H::Enter)) = hasId,
-            idle + event<Press> [!zeroId] / (uidp, send<Press>(S::Updated, P::Press, H::Enter)) = pressing,
-            idle + event<Release> [!zeroId] / (uidr,  send<Release>(S::Started, P::None, H::Enter)) = hasId,
+           *idle + event<Started>  [!zeroId && zeroMB]  / (uids, send<Started>(S::Started, P::None, H::Enter)) = hasId,
+            idle + event<Started>  [!zeroId && !zeroMB] / (uids, ups, send<Started>(S::Started, P::Press, H::Enter)) = pressing,
+            idle + event<Started>  [zeroId && !zeroMB]  / (upPressedOutside) = pressingOutside,
+            idle + event<Updated>  [!zeroId && zeroMB]  / (uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
+            idle + event<Updated>  [zeroId && !zeroMB]  / (upPressedOutside) = pressingOutside,
+            idle + event<Finished> [!zeroId && zeroMB]  / (uidf,  send<Finished>(S::Started, P::None, H::Enter)) = hasId,
+            //idle + event<Finished> [!zeroId && !zeroMB] / (uidf, ups,  send<Finished>(S::Started, P::Press, H::Enter)) = pressing,
             idle + sml::on_entry<_> / rps,
-             
-            hasId + event<Move>  [sameId] / (send<Move>(S::Updated,  P::None, H::Move)),
-            hasId + event<Move>  [zeroId] / (send<Move>(S::Finished, P::None, H::Exit), uidm) = idle,
-            hasId + event<Move>  [diffId] / (send<Move>(S::Finished, P::None, H::Exit, false, false), uidm, send<Move>(S::Started, P::None, H::Enter)),
-            hasId + event<Press> [sameId] / (ups, send<Press>(S::Updated, P::Press, H::None)) = pressing,
-            hasId + event<Press> [diffId] / (send<Press>(S::Finished, P::None, H::Exit, false, false), ups, uidp, send<Press>(S::Updated, P::Press, H::Enter)) = pressing,
+
+            hasId + event<Updated> [sameId && zeroMB] / (send<Updated>(S::Updated, P::None, H::Move)),
+            hasId + event<Updated> [zeroId && zeroMB] / (send<Updated>(S::Finished, P::None, H::Exit), uidu) = idle,
+            hasId + event<Updated> [diffId && zeroMB] / (send<Updated>(S::Finished, P::None, H::Exit, false, false), uidu, send<Updated>(S::Started, P::None, H::Enter)),
+            hasId + event<Updated>  [sameId && !zeroMB] / (ups, send<Updated>(S::Updated, P::Press, H::None)) = pressing,
+            hasId + event<Updated>  [diffId && !zeroMB] / (send<Updated>(S::Finished, P::None, H::Exit, false, false), ups, uidu, send<Updated>(S::Updated, P::Press, H::Enter)) = pressing,
+            hasId + event<Finished> [sameId && zeroMB] / (send<Finished>(S::Finished, P::None, H::Move), uidf) = idle,
+            //hasId + event<Finished> [diffId && zeroMB] / (send<Finished>(S::Finished, P::None, H::Exit, false, false), uidf, send<Finished>(S::Started, P::None, H::Enter)),
+            //hasId + event<Finished>  [sameId && !zeroMB] / (send<Finished>(S::Updated, P::Release, H::None)) = id,
             hasId + sml::on_entry<_> / rps,
 
-            pressing + event<Move>    [sameId]           / (send<Move>(S::Updated, P::Move, H::Move)),
-            pressing + event<Move>    [diffId]           / (send<Move>(S::Updated, P::Move, H::Move)),
-            pressing + event<Move>    [zeroId]           / (send<Move>(S::Updated, P::Move, H::Move)),
+            pressing + event<Updated> [sameId && zeroMB] / (send<Updated>(S::Updated, P::Release, H::None)) = hasId,
+            pressing + event<Updated> [zeroId && zeroMB] / (send<Updated>(S::Finished, P::Release, H::Exit), uidu) = idle,
+            pressing + event<Updated> [diffId && zeroMB] / (send<Updated>(S::Finished, P::Release, H::Exit, true, false), uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
+            pressing + event<Updated> [sameId && !zeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
+            pressing + event<Updated> [zeroId && !zeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
+            pressing + event<Updated>  [diffId && !zeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
+            pressing + event<Finished> [sameId] / (send<Finished>(S::Finished, P::Release, H::None), uidf) = idle,
+            pressing + event<Finished> [zeroId] / (send<Finished>(S::Finished, P::Release, H::Exit), uidf) = idle,
+            pressing + event<Finished> [diffId] / (send<Finished>(S::Finished, P::Release, H::Exit, true, false), uidf, send<Finished>(S::Started, P::None, H::Enter)) = hasId,
 
-            pressing + event<Release> [sameId && zeroMB] / (send<Release>(S::Updated,  P::Release, H::None)) = hasId,
-            pressing + event<Release> [zeroId && zeroMB] / (send<Release>(S::Finished, P::Release, H::Exit), uidr) = idle,
-            pressing + event<Release> [diffId && zeroMB] / (send<Release>(S::Finished, P::Release, H::Exit, true, false), uidr, send<Release>(S::Started, P::None, H::Enter)) = hasId,
-            pressing + event<Release> [!zeroMB]          / (send<Release>(S::Updated,  P::Release, H::None)),
-            pressing + event<Press>                      / (send<Press>  (S::Updated,  P::Press,   H::None))
-
+            pressingOutside + event<Updated> [!zeroId && zeroMB] / (uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
+            pressingOutside + event<Updated> [zeroMB] = idle,
+            pressingOutside + event<Finished> = idle
         );
         // clang-format on
     }
@@ -256,24 +297,17 @@ void PickingControllerTouchState::propagateEvent(TouchEvent* e, EventPropagator*
                                                  size_t globalId) {
     const auto points = e->touchPoints();
     auto ps = TouchEvent::getPickingState(points);
-    auto pressItems = fsmt::touchToPressItems(e, points);
     switch (ps) {
         case PickingState::None:
             break;
         case PickingState::Started:
+            tsm->sm.process_event(fsmt::Started{globalId, e, propagator});
+            break;
         case PickingState::Updated:
-            if (pressItems == PickingPressItem::None) {
-                tsm->sm.process_event(fsmt::Move{globalId, e, propagator});
-            } else {
-                tsm->sm.process_event(fsmt::Press{globalId, e, propagator});
-            }
+            tsm->sm.process_event(fsmt::Updated{globalId, e, propagator});
             break;
         case PickingState::Finished:
-            if (pressItems == PickingPressItem::None) {
-                tsm->sm.process_event(fsmt::Move{globalId, e, propagator});
-            } else {
-                tsm->sm.process_event(fsmt::Release{globalId, e, propagator});
-            }
+            tsm->sm.process_event(fsmt::Finished{globalId, e, propagator});
             break;
     }
 }
