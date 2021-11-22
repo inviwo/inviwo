@@ -397,6 +397,9 @@ void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget 
     if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
         auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
         outport->getProcessor()->invalidate(invalidationLevel_);
+    } else if (!parent_) {
+        auto inport = std::get<BrushingAndLinkingInport*>(owner_);
+        inport->getProcessor()->invalidate(invalidationLevel_);
     }
 
     if (parent_) {
