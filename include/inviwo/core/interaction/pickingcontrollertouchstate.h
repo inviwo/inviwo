@@ -34,7 +34,6 @@
 
 namespace inviwo {
 
-
 struct PickingControllerTouchStateSM;
 class TouchEvent;
 class EventPropagator;

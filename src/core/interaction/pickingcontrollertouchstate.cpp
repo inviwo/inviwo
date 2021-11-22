@@ -29,7 +29,6 @@
 
 #include <inviwo/core/interaction/pickingcontrollertouchstate.h>
 
-
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/events/touchevent.h>
@@ -82,7 +81,6 @@ struct Release : BaseEvent {
     using BaseEvent::BaseEvent;
 };
 
-
 PickingPressState touchToPressState(PickingState ps) {
     switch (ps) {
         case PickingState::Started:
@@ -106,21 +104,21 @@ bool isPressed(const TouchPoint& point, const TouchDevice::DeviceType& deviceTyp
 
 PickingPressItem touchToPressItems(TouchEvent* e, const std::vector<TouchPoint>& points) {
     if (e->getDevice()->getType() == TouchDevice::DeviceType::TouchPad) {
-            // Possible to press touchpads
-            auto nPressed = std::accumulate(
-                points.begin(), points.end(), 0u, [](size_t v, const auto& p) -> size_t {
-                    return v + (p.state() == TouchState::Stationary ? 1 : 0);
-                });
-            if (nPressed == 0) {
-                return PickingPressItem::None;
-            } else if (nPressed == 1) {
-                return PickingPressItem::Primary;
-            } else if (nPressed == 2) {
-                return PickingPressItem::Secondary;
-            } else {  // nPressed > 2
-                return PickingPressItem::Tertiary;
-            }
-        } else {
+        // Possible to press touchpads
+        auto nPressed = std::accumulate(
+            points.begin(), points.end(), 0u, [](size_t v, const auto& p) -> size_t {
+                return v + (p.state() == TouchState::Stationary ? 1 : 0);
+            });
+        if (nPressed == 0) {
+            return PickingPressItem::None;
+        } else if (nPressed == 1) {
+            return PickingPressItem::Primary;
+        } else if (nPressed == 2) {
+            return PickingPressItem::Secondary;
+        } else {  // nPressed > 2
+            return PickingPressItem::Tertiary;
+        }
+    } else {
         // Treat touch point on TouchScreen as "button down"
         return PickingPressItem::Primary;
     }
@@ -137,9 +135,8 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
 
         auto te = fsmEvent.event;
         const PickingPressItem pressItem =
-            (te->hash() == TouchEvent::chash()
-                 ? touchToPressItems(te, te->touchPoints())
-                 : PickingPressItem::None);
+            (te->hash() == TouchEvent::chash() ? touchToPressItems(te, te->touchPoints())
+                                               : PickingPressItem::None);
         const PickingPressItems pressedState = pressItem;
 
         PickingEvent pe(res.action, te, state, pressState, pressItem, hoverState, pressedState,
@@ -247,7 +244,8 @@ struct PickingControllerTouchStateSM {
 PickingControllerTouchState::PickingControllerTouchState(PickingManager* pickingManager)
     : tsm{std::make_unique<PickingControllerTouchStateSM>(pickingManager)} {}
 
-PickingControllerTouchState& PickingControllerTouchState::operator=(PickingControllerTouchState&& other) {
+PickingControllerTouchState& PickingControllerTouchState::operator=(
+    PickingControllerTouchState&& other) {
     tsm = std::move(other.tsm);
     return *this;
 }
