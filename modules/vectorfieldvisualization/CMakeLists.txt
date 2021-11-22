@@ -24,6 +24,7 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/processors/flowfieldprocessor.h
     include/modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h
     include/modules/vectorfieldvisualization/processors/integrallinevectortomesh.h
+    include/modules/vectorfieldvisualization/processors/linesourceascii.h
     include/modules/vectorfieldvisualization/processors/seed3dto4d.h
     include/modules/vectorfieldvisualization/processors/seedsfrommasksequence.h
     include/modules/vectorfieldvisualization/processors/seedsfrommesh.h
@@ -56,6 +57,7 @@ set(SOURCE_FILES
     src/processors/discardshortlines.cpp
     src/processors/flowfieldprocessor.cpp
     src/processors/integrallinevectortomesh.cpp
+    src/processors/linesourceascii.cpp
     src/processors/seed3dto4d.cpp
     src/processors/seedsfrommasksequence.cpp
     src/processors/seedsfrommesh.cpp

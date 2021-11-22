@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,66 +31,49 @@
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processortraits.h>
+#include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/foreach.h>
-#include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
-#include <modules/vectorfieldvisualization/integrallinetracer.h>
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
 
-class FlowField2DProcessor : public Processor {
-    using Sampler = SpatialSampler<3, 3, double>;
-    using Tracer = IntegralLineTracer<Sampler>;
-
+/** \docpage{org.inviwo.LineSourceASCII, Line Source ASCII}
+ * ![](org.inviwo.LineSourceASCII.png?classIdentifier=org.inviwo.LineSourceASCII)
+ * Loads GDP drifter data into an IntegralLineSet.
+ * GDP drifter data is given in an ASCII table.
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API LineSourceASCII : public Processor {
 public:
-    FlowField2DProcessor();
-    virtual ~FlowField2DProcessor();
+    LineSourceASCII();
+    virtual ~LineSourceASCII() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    enum MeasureType : int {
-        UV = 0,
-        FTLE = 1,
-        RelativeDispersion = 2,
-        FlowMap = 3,
-        TSE = 4,
-        TSE_line = 5,
-
-        PARAM_TYPES,
-        paramRelativeDispersion,
-        paramTSE,
-        paramTSE_line
-    };
-
 private:
-    DataInport<Sampler> sampler_;
-    // DataOutport<Sampler> flowSampler_;
-    ImageOutport imageOut_;  //, dispersionOut_;  //  hallerField_,
     IntegralLineSetOutport linesOut_;
 
-    TemplateOptionProperty<MeasureType> measureType_;
+    FileProperty inputFile_;
+    BoolProperty maxLines_;
+    IntSizeTProperty maxNumLines_;
+    BoolProperty overflowWrapping_;
+    class SeedFilter : public BoolCompositeProperty {
+    public:
+        DoubleVec3Property center_;
+        DoubleProperty radius_;
 
-    IntegralLineProperties properties_;
-    IntSize2Property fieldSize_;
-    DoubleProperty fieldSubSize_;
-    FloatProperty seedAngle_;
-    FloatProperty seedEpsilon_;
-    DoubleProperty v0_;
-    DoubleVec2Property dataRange_;
-    BoolProperty normalize_;
-    BoolProperty logScale_;
-
-    std::shared_ptr<IntegralLineSet> lines_;
+        SeedFilter(const std::string& identifier, const std::string& displayName)
+            : BoolCompositeProperty(identifier, displayName)
+            , center_("center", "Center", dvec3{0, 0, 0}, dvec3{-180, -90, 0}, dvec3{180, 90, 0})
+            , radius_("radius", "Radius", 10, 0.001, 45) {
+            addProperties(center_, radius_);
+        }
+    } filterSeed_;
+    // DoubleVec2Property
 };
 
 }  // namespace inviwo
