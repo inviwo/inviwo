@@ -90,12 +90,12 @@ public:
     virtual std::optional<dvec2> getCustomRange() const = 0;
 
     /**
-     * Returns the range of the data, ignoring any custom range
+     * Returns the range (i.e. the min/max) of the data, ignoring any custom range
      */
     virtual dvec2 getDataRange() const = 0;
 
     /**
-     * Returns the custom range if set or else the range of the data
+     * Returns the custom range if set or else the range (i.e. the min/max) of the data
      */
     virtual dvec2 getRange() const = 0;
 

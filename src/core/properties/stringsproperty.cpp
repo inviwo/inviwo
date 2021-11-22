@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,9 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/properties/stringsproperty.h>
 
 namespace inviwo {
 
-class Property;
-class PropertyEditorWidget;
-
-/**
- * A PropertyWidget is a graphical representation of a Property.
- * A widget will get updateFromProperty call to update its representation when ever the property
- * changes and should update the property when ever the user modifies the widget.
- */
-class IVW_CORE_API PropertyWidget {
-public:
-    PropertyWidget();
-
-    /**
-     * The PropertyWidget will register it self with the property.
-     */
-    PropertyWidget(Property* property);
-    PropertyWidget(const PropertyWidget&);
-    PropertyWidget(PropertyWidget&&);
-    PropertyWidget& operator=(const PropertyWidget&);
-    PropertyWidget& operator=(PropertyWidget&&);
-
-    /**
-     * The PropertyWidget will deregister it self with the property.
-     */
-    virtual ~PropertyWidget();
-
-    /**
-     * Implement this function to update the widget after the property has been modified.
-     */
-    virtual void updateFromProperty() = 0;
-
-    virtual PropertyEditorWidget* getEditorWidget() const;
-    virtual bool hasEditorWidget() const;
-    virtual Property* getProperty();
-
-protected:
-    Property* property_ = nullptr;  //< Non owning reference, can be null
-};
 
 }  // namespace inviwo

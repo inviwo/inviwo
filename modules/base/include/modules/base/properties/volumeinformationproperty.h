@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
 #include <string_view>
@@ -72,8 +73,8 @@ public:
     StringProperty valueName_;
     StringProperty valueUnit_;
 
-    std::array<StringProperty, 3> axesNames_;
-    std::array<StringProperty, 3> axesUnits_;
+    StringsProperty<3> axesNames_;
+    StringsProperty<3> axesUnits_;
 };
 
 }  // namespace inviwo

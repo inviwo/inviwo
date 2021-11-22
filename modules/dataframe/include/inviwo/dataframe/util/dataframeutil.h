@@ -154,9 +154,9 @@ IVW_MODULE_DATAFRAME_API std::string createToolTipForRow(const DataFrame& datafr
 #include <warn/push>
 #include <warn/ignore/conversion>
 template <typename Pred>
-std::vector<size_t> filteredRows(std::shared_ptr<const Column> col, Pred pred) {
+std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred pred) {
     if (auto catCol = dynamic_cast<const CategoricalColumn*>(col.get())) {
-        std::vector<size_t> rows;
+        std::vector<std::uint32_t> rows;
         for (auto&& [row, v] : util::enumerate(catCol->getValues())) {
             if (pred(v)) {
                 rows.push_back(row);
@@ -164,9 +164,10 @@ std::vector<size_t> filteredRows(std::shared_ptr<const Column> col, Pred pred) {
         }
         return rows;
     } else {
-        return col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<std::vector<size_t>>(
-            [pred](auto typedBuf) {
-                std::vector<size_t> rows;
+        return col->getBuffer()
+            ->getRepresentation<BufferRAM>()
+            ->dispatch<std::vector<std::uint32_t>>([pred](auto typedBuf) {
+                std::vector<std::uint32_t> rows;
                 for (auto&& [row, value] : util::enumerate(typedBuf->getDataContainer())) {
                     // find all rows fulfilling the predicate
                     if (pred(value)) {

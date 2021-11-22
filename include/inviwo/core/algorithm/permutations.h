@@ -79,7 +79,7 @@ public:
         , hasMore{true} {
 
         if (r > pool.size() || r < 1) {
-            throw Exception("Invalid permutation size larger then input");
+            throw Exception("Invalid permutation size larger than input");
         }
     }
 
@@ -142,7 +142,7 @@ public:
         : pool{values}, indices{makeVectorRange<ptrdiff_t>(0, r)} {
 
         if (indices.size() > pool.size() || indices.empty()) {
-            throw Exception("Invalid combinations size larger then input");
+            throw Exception("Invalid combinations size larger than input");
         }
     }
 

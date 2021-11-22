@@ -35,32 +35,38 @@ namespace inviwo::util {
 
 template <typename T>
 constexpr T linearMap(T val, glm::vec<2, T> from, glm::vec<2, T> to) noexcept {
+    static_assert(std::is_floating_point_v<T>);
     return (val - from.x) / (from.y - from.x) * (to.y - to.x) + to.x;
 }
 
 template <typename T, size_t N>
 constexpr glm::vec<N, T> linearMap(glm::vec<N, T> val, glm::vec<2, T> from,
                                    glm::vec<2, T> to) noexcept {
+    static_assert(std::is_floating_point_v<T>);
     return (val - from.x) / (from.y - from.x) * (to.y - to.x) + to.x;
 }
 
 template <typename T>
 constexpr T linearMapToNormalized(T val, glm::vec<2, T> from) noexcept {
+    static_assert(std::is_floating_point_v<T>);
     return (val - from.x) / (from.y - from.x);
 }
 
 template <typename T, size_t N>
 constexpr glm::vec<N, T> linearMapToNormalized(glm::vec<N, T> val, glm::vec<2, T> from) noexcept {
+    static_assert(std::is_floating_point_v<T>);
     return (val - from.x) / (from.y - from.x);
 }
 
 template <typename T>
 constexpr T linearMapFromNormalized(T val, glm::vec<2, T> to) noexcept {
+    static_assert(std::is_floating_point_v<T>);
     return val * (to.y - to.x) + to.x;
 }
 
 template <typename T, size_t N>
 constexpr glm::vec<N, T> linearMapFromNormalized(glm::vec<N, T> val, glm::vec<2, T> to) noexcept {
+    static_assert(std::is_floating_point_v<T>);
     return val * (to.y - to.x) + to.x;
 }
 

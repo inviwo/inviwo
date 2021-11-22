@@ -44,6 +44,14 @@ LineEditQt::LineEditQt(QWidget* parent) : QLineEdit(parent) {
     // do nothing when editing is finished (either return pressed or focus lost)
 }
 
+void LineEditQt::paintEvent(QPaintEvent* e) {
+    QPalette p = palette();
+    p.setColor(QPalette::PlaceholderText, Qt::red);
+    //p.setBrush(QPalette::PlaceholderText, QBrush{Qt::red});
+    setPalette(p);
+    QLineEdit::paintEvent(e);
+}
+
 void LineEditQt::keyPressEvent(QKeyEvent* e) {
     // check whether pressed key is escape, if yes then trigger undo
     if (e->key() == Qt::Key_Escape) {

@@ -434,6 +434,27 @@ private:
     std::vector<std::pair<std::string, std::string>> autoLinkTo_;
 };
 
+namespace util {
+
+/**
+ * Update the default state of \p property to \p state and set the current state to \p state if \p
+ * property is in the default state
+ */
+template <typename T, typename U>
+void updateDefaultState(T& property, const U& state) {
+    if (property.isDefaultState()) {
+        property.set(state);
+        property.setCurrentStateAsDefault();
+    } else {
+        auto current = property.get();
+        property.set(state);
+        property.setCurrentStateAsDefault();
+        property.set(current);
+    }
+}
+
+}  // namespace util
+
 template <typename T, typename U>
 void Property::setStateAsDefault(T& property, const U& state) {
     U tmp = property;

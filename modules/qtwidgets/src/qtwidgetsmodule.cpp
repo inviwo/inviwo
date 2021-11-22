@@ -69,6 +69,7 @@
 #include <modules/qtwidgets/properties/ordinalminmaxtextpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/stringspropertywidgetqt.h>
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 #include <modules/qtwidgets/properties/tfprimitivesetwidgetqt.h>
@@ -201,6 +202,11 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Default");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Password");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::TextEditor);
+
+    registerPropertyWidget<StringsPropertyWidgetQt<1>, StringsProperty<1>>("Default");
+    registerPropertyWidget<StringsPropertyWidgetQt<2>, StringsProperty<2>>("Default");
+    registerPropertyWidget<StringsPropertyWidgetQt<3>, StringsProperty<3>>("Default");
+    registerPropertyWidget<StringsPropertyWidgetQt<4>, StringsProperty<4>>("Default");
 
     registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
 

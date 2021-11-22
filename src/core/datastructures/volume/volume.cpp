@@ -167,11 +167,10 @@ Document Volume::getInfo() const {
     tb(H("Wrapping"), getWrapping());
     tb(H("Data Range"), dataMap_.dataRange);
     tb(H("Value Range"), dataMap_.valueRange);
-    tb(H("Value Name"), dataMap_.valueAxis.name);
-    tb(H("Value Unit"), fmt::format("{} ({})", dataMap_.valueAxis.name, dataMap_.valueAxis.unit));
-    tb(H("Axis 1"), fmt::format("{} ({})", axes[0].name, axes[0].unit));
-    tb(H("Axis 2"), fmt::format("{} ({})", axes[1].name, axes[1].unit));
-    tb(H("Axis 3"), fmt::format("{} ({})", axes[2].name, axes[2].unit));
+    tb(H("Value"), fmt::format("{}{: [}", dataMap_.valueAxis.name, dataMap_.valueAxis.unit));
+    tb(H("Axis 1"), fmt::format("{}{: [}", axes[0].name, axes[0].unit));
+    tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
+    tb(H("Axis 3"), fmt::format("{}{: [}", axes[2].name, axes[2].unit));
 
     if (hasRepresentation<VolumeRAM>()) {
         if (hasHistograms()) {

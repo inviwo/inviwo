@@ -286,18 +286,9 @@ void VolumeAxis::adjustRanges() {
             break;
     }
 
-    auto setState = [](auto& p, const auto& state) {
-        if (p.isDefaultState()) {
-            p.set(state);
-            p.setCurrentStateAsDefault();
-        } else {
-            Property::setStateAsDefault(p, state);
-        }
-    };
-
-    setState(xAxis_.captionSettings_.title_, xCaption);
-    setState(yAxis_.captionSettings_.title_, yCaption);
-    setState(zAxis_.captionSettings_.title_, zCaption);
+    util::updateDefaultState(xAxis_.captionSettings_.title_, xCaption);
+    util::updateDefaultState(yAxis_.captionSettings_.title_, yCaption);
+    util::updateDefaultState(zAxis_.captionSettings_.title_, zCaption);
 
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
 }  // namespace plot

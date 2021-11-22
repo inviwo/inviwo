@@ -48,8 +48,7 @@ auto props(VolumeInformationProperty& prop) {
 
 auto meta(VolumeInformationProperty& prop) {
     return std::tie(prop.dataRange_, prop.valueRange_, prop.valueName_, prop.valueUnit_,
-                    prop.axesNames_[0], prop.axesNames_[1], prop.axesNames_[2], prop.axesUnits_[0],
-                    prop.axesUnits_[1], prop.axesUnits_[2]);
+                    prop.axesNames_, prop.axesUnits_);
 }
 
 }  // namespace
@@ -72,13 +71,8 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
                   0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
     , valueName_("valueName", "Value name", "")
     , valueUnit_("valueUnit", "Value unit", "")
-    , axesNames_{StringProperty{"axis1Name", "Axis 1 Name", util::defaultAxesNames[0]},
-                 StringProperty{"axis2Name", "Axis 2 Name", util::defaultAxesNames[1]},
-                 StringProperty{"axis3Name", "Axis 3 Name", util::defaultAxesNames[2]}}
-    , axesUnits_{
-          StringProperty{"axis1Unit", "Axis 1 Unit", fmt::to_string(util::defaultAxesUnits[0])},
-          StringProperty{"axis2Unit", "Axis 2 Unit", fmt::to_string(util::defaultAxesUnits[1])},
-          StringProperty{"axis3Unit", "Axis 3 Unit", fmt::to_string(util::defaultAxesUnits[2])}} {
+    , axesNames_{"axesNames", "Axes Names"}
+    , axesUnits_{"axesUnits", "Axes Units"} {
 
     util::for_each_in_tuple(
         [&](auto& e) {
@@ -134,10 +128,10 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool de
         Property::setStateAsDefault(valueName_, volume.dataMap_.valueAxis.name);
         Property::setStateAsDefault(valueUnit_, fmt::to_string(volume.dataMap_.valueAxis.unit));
 
-        for (auto&& [prop, axis] : util::zip(axesNames_, volume.axes)) {
+        for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
             Property::setStateAsDefault(prop, axis.name);
         }
-        for (auto&& [prop, axis] : util::zip(axesUnits_, volume.axes)) {
+        for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
             Property::setStateAsDefault(prop, fmt::to_string(axis.unit));
         }
 
@@ -145,12 +139,12 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool de
         dataRange_.set(volume.dataMap_.dataRange);
         valueRange_.set(volume.dataMap_.valueRange);
         valueName_.set(volume.dataMap_.valueAxis.name);
-        valueUnit_.set(units::to_string(volume.dataMap_.valueAxis.unit));
+        valueUnit_.set(fmt::to_string(volume.dataMap_.valueAxis.unit));
 
-        for (auto&& [prop, axis] : util::zip(axesNames_, volume.axes)) {
+        for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
             prop.set(axis.name);
         }
-        for (auto&& [prop, axis] : util::zip(axesUnits_, volume.axes)) {
+        for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
             prop.set(fmt::to_string(axis.unit));
         }
 
@@ -170,10 +164,10 @@ void VolumeInformationProperty::updateVolume(Volume& volume) {
     volume.dataMap_.valueAxis.name = valueName_.get();
     volume.dataMap_.valueAxis.unit = units::unit_from_string(valueUnit_.get());
 
-    for (auto&& [prop, axis] : util::zip(axesNames_, volume.axes)) {
+    for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
         axis.name = prop.get();
     }
-    for (auto&& [prop, axis] : util::zip(axesUnits_, volume.axes)) {
+    for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
         axis.unit = units::unit_from_string(prop.get());
     }
 }

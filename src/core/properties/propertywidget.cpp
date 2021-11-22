@@ -38,6 +38,30 @@ PropertyWidget::PropertyWidget(Property* property) : property_(property) {
     if (property_) property_->registerWidget(this);
 }
 
+PropertyWidget::PropertyWidget(const PropertyWidget& rhs) : property_(rhs.property_) {
+    if (property_) property_->registerWidget(this);
+}
+PropertyWidget::PropertyWidget(PropertyWidget&& rhs) : property_(rhs.property_) {
+    if (property_) property_->registerWidget(this);
+}
+
+PropertyWidget& PropertyWidget::operator=(const PropertyWidget& that) {
+    if (this != &that) {
+        if (property_) property_->deregisterWidget(this);
+        property_ = that.property_;
+        if (property_) property_->registerWidget(this);
+    }
+    return *this;
+}
+PropertyWidget& PropertyWidget::operator=(PropertyWidget&& that) {
+    if (this != &that) {
+        if (property_) property_->deregisterWidget(this);
+        property_ = that.property_;
+        if (property_) property_->registerWidget(this);
+    }
+    return *this;
+}
+
 PropertyWidget::~PropertyWidget() {
     if (property_) property_->deregisterWidget(this);
 }

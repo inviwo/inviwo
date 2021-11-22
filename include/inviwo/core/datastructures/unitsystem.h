@@ -238,12 +238,12 @@ findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enabledGroup
  *    "["     Surround the unit in [unit]
  *
  * Prefix:
- *    "p"     Use si prefixes y to Y to reduce any multiplier (default)
+ *    "p"     Use SI prefixes (yocto to Yotta) to reduce any multiplier (default)
  *    "P"     Don't use any prefixes
  *
  * Units:
  *    "si"    Only use the basic SI unit and combination of those.
- *    "ext"   Use unit from the si, derived and extra grops.
+ *    "ext"   Use unit from the SI, derived and extra groups.
  *    "sys"   Use the systems currently selected set of unit groups (default)
  *    "all"   Use all known unit groups.
  *
@@ -252,7 +252,7 @@ template <>
 struct fmt::formatter<::inviwo::Unit> {
     formatter<std::string_view> formatter_;
 
-    enum class UnitSystem { Si, Ext, Sys, All };
+    enum class UnitSystem { SI, Ext, Sys, All };
     enum class Braces { None = 0, Paren, Square };
 
     ::inviwo::util::UseUnitPrefixes usePrefix = ::inviwo::util::UseUnitPrefixes::Yes;
@@ -263,10 +263,12 @@ struct fmt::formatter<::inviwo::Unit> {
     constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin()) {
         auto it = ctx.begin();
         auto end = ctx.end();
-        auto fmtEnd = std::find(it, end, '}');
-        auto unitEnd = std::find(it, fmtEnd, ':');
 
-        std::string_view unitFormat(it, unitEnd - it);
+        const auto range = std::string_view(it, end - it);
+        const auto endPos = range.find_first_of(":}");
+        const auto endIt =
+            endPos != std::string_view::npos ? it + endPos + (range[endPos] == ':' ? 1 : 0) : end;
+        auto unitFormat = range.substr(0, endPos);
 
         if (unitFormat.size() > 0 && unitFormat[0] == ' ') {
             leadingSpace = true;
@@ -291,7 +293,7 @@ struct fmt::formatter<::inviwo::Unit> {
 
         if (unitFormat.empty()) {
         } else if (unitFormat == "si") {
-            unitsystem = UnitSystem::Si;
+            unitsystem = UnitSystem::SI;
         } else if (unitFormat == "ext") {
             unitsystem = UnitSystem::Ext;
         } else if (unitFormat == "sys") {
@@ -302,10 +304,7 @@ struct fmt::formatter<::inviwo::Unit> {
             throw format_error("Invalid unit format found");
         }
 
-        it = unitEnd;
-
-        if (it != fmtEnd) ++it;
-        ctx.advance_to(it);
+        ctx.advance_to(endIt);
         return formatter_.parse(ctx);
     }
 
@@ -325,7 +324,7 @@ struct fmt::formatter<::inviwo::Unit> {
         if (unit == ::inviwo::Unit{}) return ctx.out();
 
         const ::inviwo::unitgroups::EnabledGroups enabledGroups = [&]() {
-            if (unitsystem == UnitSystem::Si) {
+            if (unitsystem == UnitSystem::SI) {
                 return ::inviwo::unitgroups::siGroups;
             } else if (unitsystem == UnitSystem::Ext) {
                 return ::inviwo::unitgroups::extGroups;
