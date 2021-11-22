@@ -104,11 +104,12 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     };
 
     // Strategy for treating touch points for picking objects
-    // 
+    //
     // One touch event per initially picked object.
     //  + Single picking event per object
     //  + Picked objects will have access to multiple touch points
-    //  - Points initially picking an object may split to multiple object: tricky to maintain state (ignored here)
+    //  - Points initially picking an object may split to multiple object: tricky to maintain state
+    //  (ignored here)
     //
     // Other alternative considered:
     // Treat each touch point individually.
@@ -117,18 +118,19 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     //  - Picked objects will not have access to multiple touch points
     //
 
-
     // Strategy: One touch event per initially picked object.
     std::unordered_map<size_t, std::vector<TouchPoint>> pickingIdToTouchPoints;
-    
+
     for (auto& point : touchPoints) {
         if (auto it = touchPointStartPickingId_.find(point.id());
             it == touchPointStartPickingId_.end()) {
             // Should mean that point.state() == TouchState::Started
-            const auto coord = glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
+            const auto coord =
+                glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
             touchPointStartPickingId_[point.id()] = pickId(coord);
         }
-        // Not sure if this check is necessary anymore (I recall that there previously have been instabilities)
+        // Not sure if this check is necessary anymore (I recall that there previously have been
+        // instabilities)
         auto it = touchPointStartPickingId_.find(point.id());
         auto pickedId = it->second;
         if (touchStates_.find(pickedId) == touchStates_.end()) {
@@ -145,7 +147,8 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         // Select first non-background object
         size_t pickedId = 0;
         for (const auto& point : points) {
-            const auto coord = glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
+            const auto coord =
+                glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
             pickedId = pickId(coord);
             if (pickedId != 0) {
                 break;
@@ -170,7 +173,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     }
 
     // Strategy: Treat each touch point separetly
-    //for (auto& point : touchPoints) {
+    // for (auto& point : touchPoints) {
     //    if (point.state() == TouchState::Started) {
     //        touchStates_[point.id()] =
     //            std::move(PickingControllerTouchState{PickingManager::getPtr()});
@@ -188,7 +191,6 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     //        touchStates_.erase(point.id());
     //    }
     //}
-
 
     // remove the "used" points from the event
     util::erase_remove_if(touchPoints,

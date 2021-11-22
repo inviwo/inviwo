@@ -70,8 +70,8 @@ private:
     std::weak_ptr<const Image> src_;
 
     PickingControllerMouseState mouseState_;
-    std::unordered_map<size_t, PickingControllerTouchState> touchStates_; 
-    std::unordered_map<int, size_t> touchPointStartPickingId_; /// {TouchPointId, PickingId}
+    std::unordered_map<size_t, PickingControllerTouchState> touchStates_;
+    std::unordered_map<int, size_t> touchPointStartPickingId_;  /// {TouchPointId, PickingId}
 };
 
 }  // namespace inviwo

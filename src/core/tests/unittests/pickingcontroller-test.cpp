@@ -212,16 +212,15 @@ MouseEvent mouseEvent(MouseButton mb, MouseState ms, MouseButtons mbs, uvec2 pos
     return MouseEvent{mb, ms, mbs, KeyModifiers(flags::empty), dvec2{pos} / dvec2{cdim}, cdim, 0.5};
 }
 
-
-TouchEvent touchEvent(TouchState ts, uvec2 pos, uvec2 cdim, TouchDevice touchDevice = TouchDevice(TouchDevice::DeviceType::TouchPad)) {
+TouchEvent touchEvent(TouchState ts, uvec2 pos, uvec2 cdim,
+                      TouchDevice touchDevice = TouchDevice(TouchDevice::DeviceType::TouchPad)) {
     auto prevPosNorm = dvec2{pos} / dvec2{cdim};
     auto pressedPosNormalized = dvec2{pos} / dvec2{cdim};
     double pressure = 0.5;
     return TouchEvent({TouchPoint(0, ts, dvec2{pos} / dvec2{cdim}, prevPosNorm,
                                   pressedPosNormalized, cdim, pressure, 0.5)},
-                      &touchDevice,
-                      KeyModifiers(flags::empty));
-    }
+                      &touchDevice, KeyModifiers(flags::empty));
+}
 
 void testPickingEvent(Event* event, PickingState state, PickingHoverState hoverState,
                       PickingPressState pressState, PickingPressItem pressItem,
