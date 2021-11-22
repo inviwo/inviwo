@@ -143,7 +143,7 @@ constexpr std::array<UnitDesc, 1> temperature = {{
 constexpr Unit elementary_charge{1.602176634e-19, units::precise::C};
 
 constexpr std::array<UnitDesc, 4> atomic = {{
-    {units::precise::distance::angstrom,  "\u00C5ngstr\u00F6m", "\u00C5", UnitFlag::None},
+    {units::precise::distance::angstrom,  u8"\u00C5ngstr\u00F6m", u8"\u00C5", UnitFlag::None},
     {units::precise::energy::eV,          "electron volt",      "eV",     UnitFlag::UsesPrefix},
     {units::precise::energy::hartree,     "hartree",            "Ha",     UnitFlag::None},
     {elementary_charge,                   "elementary charge",  "e",      UnitFlag::None}
@@ -163,7 +163,7 @@ constexpr std::array<UnitDesc, 17> prefixes = {{
     {units::precise::femto, "femto", "f", UnitFlag::None},
     {units::precise::pico,  "pico",  "p", UnitFlag::None},
     {units::precise::nano,  "nano",  "n", UnitFlag::None},
-    {units::precise::micro, "micro", "\u00B5", UnitFlag::None},
+    {units::precise::micro, "micro", u8"\u00B5", UnitFlag::None},
     {units::precise::milli, "milli", "m", UnitFlag::None},
     {units::precise::one,   "",      "",  UnitFlag::None},
     {units::precise::kilo,  "kilo",  "k", UnitFlag::None},
@@ -317,7 +317,8 @@ struct fmt::formatter<::inviwo::Unit> {
         // All the unicode superscript digits from 0 to 9 but we let 0,1 ("\u2070", "\u00B9") be
         // empty since they are not needed
         constexpr std::array<std::string_view, 10> powers = {
-            "", "", "\u00B2", "\u00B3", "\u2074", "\u2075", "\u2076", "\u2077", "\u2078", "\u2079"};
+            "",         "",         u8"\u00B2", u8"\u00B3", u8"\u2074",
+            u8"\u2075", u8"\u2076", u8"\u2077", u8"\u2078", u8"\u2079"};
         constexpr std::array<std::string_view, 3> braceOpen = {"", "(", "["};
         constexpr std::array<std::string_view, 3> braceClose = {"", ")", "]"};
 

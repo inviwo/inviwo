@@ -47,9 +47,8 @@ template <size_t N>
 class StringsProperty : public CompositeProperty {
 public:
     StringsProperty(std::string_view identifier, std::string_view displayName,
-                    util::span<const std::string_view, N> values = util::make_array<N>([](auto i) {
-                        return empty;
-                    }),
+                    util::span<const std::string_view, N> values =
+                        util::make_array<N>([empty = empty](auto) { return empty; }),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
 
