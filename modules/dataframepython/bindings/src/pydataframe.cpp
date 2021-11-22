@@ -61,17 +61,21 @@ struct DataFrameAddColumnReg {
 
         d.def(
             fmt::format("add{}Column", classname).c_str(),
-            [](DataFrame& d, const std::string& header, const size_t size = 0) {
-                return d.addColumn<T>(header, size);
+            [](DataFrame& d, const std::string& header, const size_t size = 0, Unit unit = Unit(),
+               std::optional<dvec2> range = std::nullopt) {
+                return d.addColumn<T>(header, size, unit, range);
             },
-            py::arg("header"), py::arg("size") = 0);
+            py::arg("header"), py::arg("size") = 0, py::arg("unit") = Unit(),
+            py::arg("range") = std::nullopt);
 
         d.def(
             fmt::format("add{}Column", classname).c_str(),
-            [](DataFrame& d, std::string header, std::vector<T> data) {
-                return d.addColumn(std::move(header), std::move(data));
+            [](DataFrame& d, std::string header, std::vector<T> data, Unit unit = Unit(),
+               std::optional<dvec2> range = std::nullopt) {
+                return d.addColumn(std::move(header), std::move(data), unit, range);
             },
-            py::arg("header"), py::arg("data"));
+            py::arg("header"), py::arg("data"), py::arg("unit") = Unit(),
+            py::arg("range") = std::nullopt);
     }
 };
 
@@ -193,7 +197,12 @@ void exposeDataFrame(pybind11::module& m) {
         .def_property_readonly("rows", &DataFrame::getNumberOfRows)
         .def("indexcol", [](DataFrame& d) { return d.getIndexColumn(); })
         .def("column", [](DataFrame& self, size_t index) { return self.getColumn(index); })
-        .def("addColumnFromBuffer", &DataFrame::addColumnFromBuffer)
+        .def("addColumn",
+             static_cast<std::shared_ptr<Column> (DataFrame::*)(std::shared_ptr<Column>)>(
+                 &DataFrame::addColumn),
+             py::arg("column"))
+        .def("addColumnFromBuffer", &DataFrame::addColumnFromBuffer, py::arg("identifier"),
+             py::arg("buffer"), py::arg("unit") = Unit(), py::arg("range") = std::nullopt)
         .def("addCategoricalColumn",
              py::overload_cast<std::string_view, size_t>(&DataFrame::addCategoricalColumn),
              py::arg("header"), py::arg("size") = 0)
