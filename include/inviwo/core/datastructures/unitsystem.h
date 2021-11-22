@@ -105,7 +105,7 @@ constexpr std::array<UnitDesc, 17> derived = {{
                                                         UnitFlag::OnlyByItSelf},
     {units::precise::volt,      "volt",      "V",   UnitFlag::UsesPrefix},
     {units::precise::newton,    "newton",    "N",   UnitFlag::UsesPrefix},
-    {units::precise::pascal,    "pascal",    "Pa",  UnitFlag::UsesPrefix},
+    {units::precise::Pa,        "pascal",    "Pa",  UnitFlag::UsesPrefix},
     {units::precise::joule,     "joule",     "J",   UnitFlag::UsesPrefix},
     {units::precise::watt,      "watt",      "W",   UnitFlag::UsesPrefix},
     {units::precise::farad,     "farad",     "F",   UnitFlag::UsesPrefix},
@@ -191,10 +191,10 @@ constexpr std::array<Group, 7> groups = {{{"SI", si},
                                           {"Atomic", atomic},
                                           {"Astronomical", astronomical}}};
 
-using EnabledGroups = std::array<bool, unitgroups::groups.size()>;
-constexpr unitgroups::EnabledGroups allGroups = {true, true, true, true, true, true, true};
-constexpr unitgroups::EnabledGroups siGroups = {true, false, false, false, false, false, false};
-constexpr unitgroups::EnabledGroups extGroups = {true, true, true, false, false, false, false};
+using EnabledGroups = std::array<bool, groups.size()>;
+constexpr EnabledGroups allGroups = {true, true, true, true, true, true, true};
+constexpr EnabledGroups siGroups = {true, false, false, false, false, false, false};
+constexpr EnabledGroups extGroups = {true, true, true, false, false, false, false};
 
 }  // namespace unitgroups
 

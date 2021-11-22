@@ -157,7 +157,7 @@ template <typename Pred>
 std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred pred) {
     if (auto catCol = dynamic_cast<const CategoricalColumn*>(col.get())) {
         std::vector<std::uint32_t> rows;
-        for (auto&& [row, v] : util::enumerate(catCol->getValues())) {
+        for (auto&& [row, v] : util::enumerate<std::uint32_t>(catCol->getValues())) {
             if (pred(v)) {
                 rows.push_back(row);
             }
@@ -168,7 +168,8 @@ std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred 
             ->getRepresentation<BufferRAM>()
             ->dispatch<std::vector<std::uint32_t>>([pred](auto typedBuf) {
                 std::vector<std::uint32_t> rows;
-                for (auto&& [row, value] : util::enumerate(typedBuf->getDataContainer())) {
+                for (auto&& [row, value] :
+                     util::enumerate<std::uint32_t>(typedBuf->getDataContainer())) {
                     // find all rows fulfilling the predicate
                     if (pred(value)) {
                         rows.push_back(row);

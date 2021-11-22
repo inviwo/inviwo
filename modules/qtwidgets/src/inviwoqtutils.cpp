@@ -88,8 +88,8 @@ std::locale getCurrentStdLocale() {
                     LogWarnCustom("getStdLocale", fmt::format("Falling back to locale '{}'", name));
                 }
 
-                auto loc = std::locale(name);
-                return loc;
+                auto location = std::locale(name);
+                return location;
             } catch (std::exception& e) {
                 LogWarnCustom("getStdLocale",
                               fmt::format("Locale could not be set to '{}', {}", name, e.what()));

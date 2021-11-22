@@ -229,7 +229,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Co
                 for (auto&& [i, key] : util::enumerate<std::uint32_t>(left)) {
                     // find all matching rows in right
                     std::vector<std::uint32_t> matches;
-                    for (auto&& [r, value] : util::enumerate(right)) {
+                    for (auto&& [r, value] : util::enumerate<std::uint32_t>(right)) {
                         if (key == value) {
                             matches.emplace_back(r);
                             if constexpr (firstMatchOnly) break;
@@ -259,7 +259,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
 
             auto valuesLeft = catCol1->getValues();
             auto valuesRight = catCol2->getValues();
-            for (auto&& [i, rowMatches] : util::enumerate(rows)) {
+            for (auto&& [i, rowMatches] : util::enumerate<std::uint32_t>(rows)) {
                 util::erase_remove_if(rowMatches, [key = valuesLeft[i], &valuesRight](auto row) {
                     return key != valuesRight[row];
                 });
