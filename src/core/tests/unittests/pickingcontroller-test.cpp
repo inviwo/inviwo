@@ -537,7 +537,6 @@ void doTouchPress(PickingControllerTouchState& ms) {
 void doTouchScreenPress(PickingControllerTouchState& ms) {
     TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {                     // Press
-        uvec2 pre{0, 0};  // none
         uvec2 pos{3, 3};  // id = 1
         auto event = touchEvent(TouchState::Started, pos, dim, device);
         TestPropagator tp;
@@ -632,7 +631,9 @@ TEST(PickingControllerTest, TouchScreenPressRelease) {
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 1);
-        testPickingEvent(tp.events[0].get(), PS::Finished, PHS::None, PPS::Release, PPI::Primary,
+        // Note: Releasing on touch screen means that hover also exits, 
+        // compared to mouse where it still is there (None)
+        testPickingEvent(tp.events[0].get(), PS::Finished, PHS::Exit, PPS::Release, PPI::Primary,
                          PPIs{flags::empty}, 2, 2, 2, 2, 1, 1, 1, 1, ndc(pos), ndc(pre),
                          ndc(uvec2{3, 3}));
     }

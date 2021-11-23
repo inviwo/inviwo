@@ -45,18 +45,18 @@ namespace fsmt {
 
 // State
 struct FsmState {
-    size_t active_globalId = 0;
+    size_t active_globalId = PickingManager::VoidId;
 };
 
 struct PreviousFsmState {
-    size_t globalId = 0;
+    size_t globalId = PickingManager::VoidId;
     dvec3 ndc{0};
 };
 
 struct PressFsmState {
-    size_t globalId = 0;
+    size_t globalId = PickingManager::VoidId;
     dvec3 ndc{0};
-    PickingPressItems pressedState = PickingPressItem::None;  // Items initiating a press
+    PickingPressItems pressedState = PickingPressItem::None;  ///< Items initiated the press
 };
 
 // States
@@ -83,18 +83,6 @@ struct Finished : BaseEvent {
     using BaseEvent::BaseEvent;
 };
 
-PickingPressState touchToPressState(PickingState ps) {
-    switch (ps) {
-        case PickingState::Started:
-            return PickingPressState::Press;
-        case PickingState::Updated:
-            return PickingPressState::Move;
-        case PickingState::Finished:
-            return PickingPressState::Release;
-        default:
-            return PickingPressState::None;
-    }
-}
 bool isPressed(const TouchPoint& point, const TouchDevice::DeviceType& deviceType) {
     if (deviceType == TouchDevice::DeviceType::TouchPad) {
         return point.state() == TouchState::Stationary;
@@ -133,7 +121,7 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
                const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
                PickingManager* pickingManager) {
         auto res = pickingManager->getPickingActionFromIndex(fsmState.active_globalId);
-        if (res.index == 0 || !res.action) return;
+        if (res.index == PickingManager::VoidId || !res.action) return;
 
         auto te = fsmEvent.event;
         PickingPressItem pressItem = PickingPressItem::None;
@@ -143,7 +131,11 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
         } else if (pressState == PickingPressState::Release) {
             pressItem = touchToPressItems(te, te->touchPoints());
             // Remove current press state
-            pressedState.erase(pressItem);
+            // (erasing a non-existing bit will flip the bit...)
+            if (pressedState & pressItem) {
+                pressedState.erase(pressItem);
+            }
+
             if (pressedState & PickingPressItem::Primary) {
                 pressItem = PickingPressItem::Primary;
             } else if (pressedState & PickingPressItem::Secondary) {
@@ -155,7 +147,7 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
                 // For touch screen pressItem will always be PickingPressItem::Primary, which has
                 // been erased above
             }
-            // Erasing a non-existing bit will flip it...
+
             if (pressedState & pressItem) {
                 // Remove the item causing the press
                 pressedState.erase(pressItem);
@@ -197,6 +189,7 @@ struct Fsm {
         using H = PickingHoverState;
 
         const auto ups = [](const auto& e, PressFsmState& pressState) {
+            // Update pressed state
             pressState.globalId = e.globalId;
             for (const auto& p : e.event->touchPoints()) {
                 if (isPressed(p, e.event->getDevice()->getType())) {
@@ -206,10 +199,12 @@ struct Fsm {
             }
             pressState.pressedState = touchToPressItems(e.event, e.event->touchPoints());
         };
-        const auto upPressedOutside = [](const auto& e, PressFsmState& pressState) {
+        const auto updatePressedOutside = [](const auto& e, PressFsmState& pressState) {
+            // update pressed outside
             pressState.pressedState = touchToPressItems(e.event, e.event->touchPoints());
         };
         const auto rps = [](PressFsmState& pressState) {
+            // Reset press state
             pressState.globalId = 0;
             pressState.ndc = dvec3{0};
             pressState.pressedState = PickingPressItem::None;
@@ -217,28 +212,31 @@ struct Fsm {
 
         // guards
         const auto sameId = [](const FsmState& state, const auto& e) -> bool {
-            return e.globalId == state.active_globalId && e.globalId != 0;
+            return e.globalId == state.active_globalId && e.globalId != PickingManager::VoidId;
         };
         const auto diffId = [](const FsmState& state, const auto& e) -> bool {
-            return e.globalId != state.active_globalId && e.globalId != 0;
+            return e.globalId != state.active_globalId && e.globalId != PickingManager::VoidId;
         };
         const auto zeroId = [](const auto& e) -> bool { return e.globalId == 0; };
         const auto zeroMB = [](const FsmState&, const auto& e) -> bool {
             return touchToPressItems(e.event, e.event->touchPoints()) == PickingPressItem::None;
         };
-        const auto moved = [](const PreviousFsmState& state, const auto& e) -> bool {
-            return glm::distance(state.ndc, e.event->centerNDC()) > 0;
-        };
+
+        // Keep track of states related to entering/moving/exiting picking objects
+        // idle: Not over any picking object
+        // hasId: Over a picking object
+        // pressing: Any touch point is pressed (TODO: separate different types of pressitems)
+
+        // Possible TODO: Detect double click
 
         // clang-format off
         return sml::make_transition_table(
            *idle + event<Started>  [!zeroId && zeroMB]  / (uids, send<Started>(S::Started, P::None, H::Enter)) = hasId,
             idle + event<Started>  [!zeroId && !zeroMB] / (uids, ups, send<Started>(S::Started, P::Press, H::Enter)) = pressing,
-            idle + event<Started>  [zeroId && !zeroMB]  / (upPressedOutside) = pressingOutside,
+            idle + event<Started>  [zeroId && !zeroMB]  / (updatePressedOutside) = pressingOutside,
             idle + event<Updated>  [!zeroId && zeroMB]  / (uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
-            idle + event<Updated>  [zeroId && !zeroMB]  / (upPressedOutside) = pressingOutside,
-            idle + event<Finished> [!zeroId && zeroMB]  / (uidf,  send<Finished>(S::Started, P::None, H::Enter)) = hasId,
-            //idle + event<Finished> [!zeroId && !zeroMB] / (uidf, ups,  send<Finished>(S::Started, P::Press, H::Enter)) = pressing,
+            idle + event<Updated>  [zeroId && !zeroMB]  / (updatePressedOutside) = pressingOutside,
+            idle + event<Finished> = idle,
             idle + sml::on_entry<_> / rps,
 
             hasId + event<Updated> [sameId && zeroMB] / (send<Updated>(S::Updated, P::None, H::Move)),
@@ -246,9 +244,7 @@ struct Fsm {
             hasId + event<Updated> [diffId && zeroMB] / (send<Updated>(S::Finished, P::None, H::Exit, false, false), uidu, send<Updated>(S::Started, P::None, H::Enter)),
             hasId + event<Updated>  [sameId && !zeroMB] / (ups, send<Updated>(S::Updated, P::Press, H::None)) = pressing,
             hasId + event<Updated>  [diffId && !zeroMB] / (send<Updated>(S::Finished, P::None, H::Exit, false, false), ups, uidu, send<Updated>(S::Updated, P::Press, H::Enter)) = pressing,
-            hasId + event<Finished> [sameId && zeroMB] / (send<Finished>(S::Finished, P::None, H::Move), uidf) = idle,
-            //hasId + event<Finished> [diffId && zeroMB] / (send<Finished>(S::Finished, P::None, H::Exit, false, false), uidf, send<Finished>(S::Started, P::None, H::Enter)),
-            //hasId + event<Finished>  [sameId && !zeroMB] / (send<Finished>(S::Updated, P::Release, H::None)) = id,
+            hasId + event<Finished> / (send<Finished>(S::Finished, P::None, H::Exit)) = idle,
             hasId + sml::on_entry<_> / rps,
 
             pressing + event<Updated> [sameId && zeroMB] / (send<Updated>(S::Updated, P::Release, H::None)) = hasId,
@@ -257,10 +253,9 @@ struct Fsm {
             pressing + event<Updated> [sameId && !zeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
             pressing + event<Updated> [zeroId && !zeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
             pressing + event<Updated>  [diffId && !zeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
-            pressing + event<Finished> [sameId] / (send<Finished>(S::Finished, P::Release, H::None), uidf) = idle,
-            pressing + event<Finished> [zeroId] / (send<Finished>(S::Finished, P::Release, H::Exit), uidf) = idle,
-            pressing + event<Finished> [diffId] / (send<Finished>(S::Finished, P::Release, H::Exit, true, false), uidf, send<Finished>(S::Started, P::None, H::Enter)) = hasId,
-
+            pressing + event<Finished> / (send<Finished>(S::Finished, P::Release, H::Exit)) = idle,
+            
+            // Store the press state (Mouse events keep this state internally, but touch do not)
             pressingOutside + event<Updated> [!zeroId && zeroMB] / (uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
             pressingOutside + event<Updated> [zeroMB] = idle,
             pressingOutside + event<Finished> = idle
@@ -284,6 +279,9 @@ struct PickingControllerTouchStateSM {
 
 PickingControllerTouchState::PickingControllerTouchState(PickingManager* pickingManager)
     : tsm{std::make_unique<PickingControllerTouchStateSM>(pickingManager)} {}
+
+PickingControllerTouchState::PickingControllerTouchState(PickingControllerTouchState&& other)
+    : tsm{std::move(other.tsm)} {}
 
 PickingControllerTouchState& PickingControllerTouchState::operator=(
     PickingControllerTouchState&& other) {
