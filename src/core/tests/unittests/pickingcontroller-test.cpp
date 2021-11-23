@@ -545,10 +545,10 @@ void doTouchScreenPress(PickingControllerTouchState& ms) {
         ASSERT_EQ(tp.events.size(), 1);
         SCOPED_TRACE("Press 3,3");
         testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::Press, PPI::Primary,
-                         PPIs{PPI::Primary}, 2, 2, 0, 2, 1, 1, 0, 1, ndc(pos), dvec3{0.0}, ndc(pos));
+                         PPIs{PPI::Primary}, 2, 2, 0, 2, 1, 1, 0, 1, ndc(pos), dvec3{0.0},
+                         ndc(pos));
     }
 }
-
 
 TEST(PickingControllerTest, TouchPressRelease) {
     PickingManager pm;
@@ -1012,8 +1012,8 @@ TEST(PickingControllerTest, TouchDrag0to1) {
         ASSERT_EQ(tp.events.size(), 1);
         // NOTE: PPI is changed to None, should it really be Primary as is the case for Mouse
         testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::None, PPI::None,
-                         PPIs{PickingPressItem::Primary}, 2, 2, 0, 0, 1, 1, 1, 1, ndc(pos), dvec3{0.0},
-                         dvec3{0.0});
+                         PPIs{PickingPressItem::Primary}, 2, 2, 0, 0, 1, 1, 1, 1, ndc(pos),
+                         dvec3{0.0}, dvec3{0.0});
     }
 }
 
