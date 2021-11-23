@@ -631,7 +631,7 @@ TEST(PickingControllerTest, TouchScreenPressRelease) {
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 1);
-        // Note: Releasing on touch screen means that hover also exits, 
+        // Note: Releasing on touch screen means that hover also exits,
         // compared to mouse where it still is there (None)
         testPickingEvent(tp.events[0].get(), PS::Finished, PHS::Exit, PPS::Release, PPI::Primary,
                          PPIs{flags::empty}, 2, 2, 2, 2, 1, 1, 1, 1, ndc(pos), ndc(pre),

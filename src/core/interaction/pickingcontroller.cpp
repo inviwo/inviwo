@@ -93,7 +93,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     //            Two touch points over object A. One touch point moves over object B, both A and B
     //            should enter hover state - tricky to maintain state since the point state is
     //            treated as one!
-    //          
+    //
     //
     // Other alternative considered:
     // Treat each touch point individually.
