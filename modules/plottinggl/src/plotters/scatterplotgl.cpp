@@ -475,20 +475,20 @@ void ScatterPlotGL::setYAxisLabel(const std::string& label) {
     properties_.yAxis_.setCaption(label);
 }
 
-void ScatterPlotGL::setXAxis(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setXAxis(const Column* col) {
     setXAxisLabel(col->getHeader());
     setXAxisData(col);
 }
 
-void ScatterPlotGL::setYAxis(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setYAxis(const Column* col) {
     setYAxisLabel(col->getHeader());
     setYAxisData(col);
 }
 
-void ScatterPlotGL::setXAxisData(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setXAxisData(const Column* col) {
     if (col) {
         xAxis_ = col->getBuffer();
-        minmaxX_ = vec2(columnutil::getRange(*col.get()));
+        minmaxX_ = vec2(columnutil::getRange(*col));
         properties_.xAxis_.setRange(minmaxX_);
     } else {
         xAxis_ = nullptr;
@@ -496,10 +496,10 @@ void ScatterPlotGL::setXAxisData(std::shared_ptr<const Column> col) {
     boxSelectionHandler_.setXAxisData(xAxis_);
 }
 
-void ScatterPlotGL::setYAxisData(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setYAxisData(const Column* col) {
     if (col) {
         yAxis_ = col->getBuffer();
-        minmaxY_ = vec2(columnutil::getRange(*col.get()));
+        minmaxY_ = vec2(columnutil::getRange(*col));
         properties_.yAxis_.setRange(minmaxY_);
     } else {
         yAxis_ = nullptr;
@@ -507,10 +507,10 @@ void ScatterPlotGL::setYAxisData(std::shared_ptr<const Column> col) {
     boxSelectionHandler_.setYAxisData(yAxis_);
 }
 
-void ScatterPlotGL::setColorData(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setColorData(const Column* col) {
     if (col) {
         color_ = col->getBuffer();
-        minmaxC_ = vec2(columnutil::getRange(*col.get()));
+        minmaxC_ = vec2(columnutil::getRange(*col));
     } else {
         color_ = nullptr;
     }
@@ -518,20 +518,19 @@ void ScatterPlotGL::setColorData(std::shared_ptr<const Column> col) {
     properties_.color_.setVisible(color_ == nullptr);
 }
 
-void ScatterPlotGL::setRadiusData(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setRadiusData(const Column* col) {
     if (col) {
         radius_ = col->getBuffer();
-        minmaxR_ = vec2(columnutil::getRange(*col.get()));
+        minmaxR_ = vec2(columnutil::getRange(*col));
     } else {
         radius_ = nullptr;
     }
     properties_.minRadius_.setVisible(radius_ != nullptr);
 }
 
-void ScatterPlotGL::setSortingData(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setSortingData(const Column* col) {
     if (col) {
         sorting_ = col->getBuffer();
-        minmaxR_ = vec2(col->getRange());
     } else {
         sorting_ = nullptr;
     }

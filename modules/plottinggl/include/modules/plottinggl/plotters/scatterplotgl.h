@@ -138,15 +138,15 @@ public:
 
     void setYAxisLabel(const std::string& label);
 
-    void setXAxis(std::shared_ptr<const Column> col);
+    void setXAxis(const Column* col);
 
-    void setYAxis(std::shared_ptr<const Column> col);
+    void setYAxis(const Column* col);
 
-    void setXAxisData(std::shared_ptr<const Column> col);
-    void setYAxisData(std::shared_ptr<const Column> col);
-    void setColorData(std::shared_ptr<const Column> col);
-    void setRadiusData(std::shared_ptr<const Column> col);
-    void setSortingData(std::shared_ptr<const Column> col);
+    void setXAxisData(const Column* col);
+    void setYAxisData(const Column* col);
+    void setColorData(const Column* col);
+    void setRadiusData(const Column* col);
+    void setSortingData(const Column* col);
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
     void setSortingOrder(SortingOrder order);

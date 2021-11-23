@@ -117,7 +117,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
         if (dataFrame_.hasData()) {
             auto colorCol = dataFrame_.getData()->getColumn(color_.getSelectedValue());
             for (auto& p : plots_) {
-                p->setColorData(colorCol);
+                p->setColorData(colorCol.get());
             }
             scatterPlotproperties_.tf_.setVisible(colorCol != nullptr);
             scatterPlotproperties_.color_.setVisible(colorCol == nullptr);
@@ -277,10 +277,10 @@ void ScatterPlotMatrixProcessor::createScatterPlots() {
                 if (!isIncluded(*y)) continue;
                 auto plot = std::make_unique<ScatterPlotGL>();
                 plot->properties_.set(&scatterPlotproperties_);
-                plot->setXAxis((*x));
-                plot->setYAxis((*y));
+                plot->setXAxis((*x).get());
+                plot->setYAxis((*y).get());
 
-                plot->setColorData(colorCol);
+                plot->setColorData(colorCol.get());
 
                 plots_.push_back(std::move(plot));
             }

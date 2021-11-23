@@ -138,7 +138,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
         if (auto idx = property.get(); idx == -1) {
             std::invoke(memberfunc, scatterPlot_, nullptr);
         } else {
-            std::invoke(memberfunc, scatterPlot_, dataFramePort_.getData()->getColumn(idx));
+            std::invoke(memberfunc, scatterPlot_, dataFramePort_.getData()->getColumn(idx).get());
         }
     };
 
