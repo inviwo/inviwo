@@ -49,7 +49,7 @@ public:
 
         size_t getLocalPickingId() const { return action->getLocalPickingId(index); };
     };
-    static const size_t VoidId = 0; ///< Picking id when nothing is picked
+    static const size_t VoidId = 0;  ///< Picking id when nothing is picked
 
     PickingManager();
     PickingManager(PickingManager const&) = delete;
