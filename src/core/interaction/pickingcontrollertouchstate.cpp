@@ -205,7 +205,7 @@ struct Fsm {
         };
         const auto rps = [](PressFsmState& pressState) {
             // Reset press state
-            pressState.globalId = 0;
+            pressState.globalId = PickingManager::VoidId;
             pressState.ndc = dvec3{0};
             pressState.pressedState = PickingPressItem::None;
         };

@@ -46,16 +46,16 @@ namespace fsm {
 
 // State
 struct FsmState {
-    size_t active_globalId = 0;
+    size_t active_globalId = PickingManager::VoidId;
 };
 
 struct PreviousFsmState {
-    size_t globalId = 0;
+    size_t globalId = PickingManager::VoidId;
     dvec3 ndc{0};
 };
 
 struct PressFsmState {
-    size_t globalId = 0;
+    size_t globalId = PickingManager::VoidId;
     dvec3 ndc{0};
 };
 
@@ -117,7 +117,7 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
                const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
                PickingManager* pickingManager) {
         auto res = pickingManager->getPickingActionFromIndex(fsmState.active_globalId);
-        if (res.index == 0 || !res.action) return;
+        if (res.index == PickingManager::VoidId || !res.action) return;
 
         auto me = fsmEvent.event;
         const PickingPressItem pressItem =
@@ -164,7 +164,7 @@ struct Fsm {
             pressState.ndc = e.event->ndc();
         };
         const auto rps = [](PressFsmState& pressState) {
-            pressState.globalId = 0;
+            pressState.globalId = PickingManager::VoidId;
             pressState.ndc = dvec3{0};
         };
 
