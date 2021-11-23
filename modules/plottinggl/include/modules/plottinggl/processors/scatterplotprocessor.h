@@ -35,6 +35,7 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
@@ -76,11 +77,8 @@ private:
     ColumnOptionProperty yAxis_;
     ColumnOptionProperty colorCol_;
     ColumnOptionProperty radiusCol_;
-
-    void onXAxisChange();
-    void onYAxisChange();
-    void onColorChange();
-    void onRadiusChange();
+    ColumnOptionProperty sortCol_;
+    TemplateOptionProperty<ScatterPlotGL::SortingOrder> sortOrder_;
 
     using CallbackHandle = std::shared_ptr<std::function<void(PickingEvent*, size_t)>>;
     CallbackHandle tooltipCallBack_;

@@ -62,7 +62,12 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     , colorCol_("colorCol", "Color column", dataFramePort_,
                 ColumnOptionProperty::AddNoneOption::Yes, 3)
     , radiusCol_("radiusCol", "Radius column", dataFramePort_,
-                 ColumnOptionProperty::AddNoneOption::Yes, 4) {
+                 ColumnOptionProperty::AddNoneOption::Yes, 4)
+    , sortCol_("sortCol", "Sorting column", dataFramePort_,
+               ColumnOptionProperty::AddNoneOption::Yes, 0)
+    , sortOrder_("sortOrder", "Sorting Order",
+                 {{"ascending", "Ascending", ScatterPlotGL::SortingOrder::Ascending},
+                  {"descending", "Descending", ScatterPlotGL::SortingOrder::Descending}}) {
 
     addPort(dataFramePort_);
     addPort(brushingPort_).setOptional(true);
@@ -125,18 +130,32 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     scatterPlot_.properties_.yAxis_.captionSettings_.offset_.set(30.0f);
     scatterPlot_.properties_.setCurrentStateAsDefault();
 
-    addProperties(scatterPlot_.properties_, xAxis_, yAxis_, colorCol_, radiusCol_);
+    addProperties(scatterPlot_.properties_, xAxis_, yAxis_, colorCol_, radiusCol_, sortCol_,
+                  sortOrder_);
 
-    xAxis_.onChange([this]() { onXAxisChange(); });
-    yAxis_.onChange([this]() { onYAxisChange(); });
-    colorCol_.onChange([this]() { onColorChange(); });
-    radiusCol_.onChange([this]() { onRadiusChange(); });
+    auto setColumn = [this](const ColumnOptionProperty& property, auto memberfunc) {
+        if (!dataFramePort_.hasData()) return;
+        if (auto idx = property.get(); idx == -1) {
+            std::invoke(memberfunc, scatterPlot_, nullptr);
+        } else {
+            std::invoke(memberfunc, scatterPlot_, dataFramePort_.getData()->getColumn(idx));
+        }
+    };
 
-    dataFramePort_.onChange([this]() {
-        onXAxisChange();
-        onYAxisChange();
-        onColorChange();
-        onRadiusChange();
+    xAxis_.onChange([this, setColumn]() { setColumn(xAxis_, &ScatterPlotGL::setXAxis); });
+    yAxis_.onChange([this, setColumn]() { setColumn(yAxis_, &ScatterPlotGL::setYAxis); });
+    colorCol_.onChange([this, setColumn]() { setColumn(colorCol_, &ScatterPlotGL::setColorData); });
+    radiusCol_.onChange(
+        [this, setColumn]() { setColumn(radiusCol_, &ScatterPlotGL::setRadiusData); });
+    sortCol_.onChange([this, setColumn]() { setColumn(sortCol_, &ScatterPlotGL::setSortingData); });
+    sortOrder_.onChange([this]() { scatterPlot_.setSortingOrder(sortOrder_); });
+
+    dataFramePort_.onChange([this, setColumn]() {
+        setColumn(xAxis_, &ScatterPlotGL::setXAxis);
+        setColumn(yAxis_, &ScatterPlotGL::setYAxis);
+        setColumn(colorCol_, &ScatterPlotGL::setColorData);
+        setColumn(radiusCol_, &ScatterPlotGL::setRadiusData);
+        setColumn(sortCol_, &ScatterPlotGL::setSortingData);
 
         if (dataFramePort_.hasData()) {
             scatterPlot_.setIndexColumn(dataFramePort_.getData()->getIndexColumn());
@@ -190,42 +209,6 @@ void ScatterPlotProcessor::process() {
         scatterPlot_.plot(outport_, backgroundPort_, &indicies, true);
     } else {
         scatterPlot_.plot(outport_, &indicies, true);
-    }
-}
-
-void ScatterPlotProcessor::onXAxisChange() {
-    if (!dataFramePort_.hasData()) return;
-    auto data = dataFramePort_.getData();
-    auto idx = xAxis_.get();
-    scatterPlot_.setXAxis(data->getColumn(idx));
-}
-
-void ScatterPlotProcessor::onYAxisChange() {
-    if (!dataFramePort_.hasData()) return;
-    auto data = dataFramePort_.getData();
-    auto idx = yAxis_.get();
-    scatterPlot_.setYAxis(data->getColumn(idx));
-}
-
-void ScatterPlotProcessor::onColorChange() {
-    if (!dataFramePort_.hasData()) return;
-    auto data = dataFramePort_.getData();
-    auto idx = colorCol_.get();
-    if (idx == -1) {
-        scatterPlot_.setColorData(nullptr);
-    } else {
-        scatterPlot_.setColorData(data->getColumn(idx));
-    }
-}
-
-void ScatterPlotProcessor::onRadiusChange() {
-    if (!dataFramePort_.hasData()) return;
-    auto data = dataFramePort_.getData();
-    auto idx = radiusCol_.get();
-    if (idx == -1) {
-        scatterPlot_.setRadiusData(nullptr);
-    } else {
-        scatterPlot_.setRadiusData(data->getColumn(idx));
     }
 }
 
