@@ -201,4 +201,32 @@ CompositeProperty& CompositeProperty::setCollapsed(bool value) {
     return *this;
 }
 
+CompositeProperty& CompositeProperty::setCollapsed(CollapseAction action, CollapseTarget target) {
+    switch (target) {
+        case CollapseTarget::Recursive:
+            setCollapsed(action == CollapseAction::Collapse);
+            for (auto p : getCompositeProperties()) {
+                p->setCollapsed(action, target);
+            }
+            break;
+        case CollapseTarget::Children:
+            for (auto p : getCompositeProperties()) {
+                p->setCollapsed(action == CollapseAction::Collapse);
+            }
+            break;
+        case CollapseTarget::Siblings:
+            if (auto parent = this->getOwner()) {
+                for (auto p : parent->getCompositeProperties()) {
+                    p->setCollapsed(action == CollapseAction::Collapse);
+                }
+            }
+            break;
+        case CollapseTarget::Current:
+        default:
+            setCollapsed(action == CollapseAction::Collapse);
+            break;
+    }
+    return *this;
+}
+
 }  // namespace inviwo
