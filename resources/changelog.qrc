@@ -7,5 +7,6 @@
         <file alias="canvas-with-properties.png">changelog/canvas-with-properties.png</file>
         <file alias="brushing.jpg">changelog/brushing.jpg</file>
         <file alias="internal-links.png">changelog/internal-links.png</file>
+        <file alias="compositeproperty-collapse.jpg">changelog/compositeproperty-collapse.jpg</file>
     </qresource>
 </RCC>

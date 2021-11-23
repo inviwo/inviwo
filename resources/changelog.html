@@ -26,6 +26,16 @@
 </style>
 </head>
 <body>
+<h2>2021-11-23 CompositeProperty collapse &amp; expand</h2>
+<p>Composite properties can now be collapsed and expanded in different ways using <code>CompositeProperty::setCollapsed(CollapseAction action, CollapseTarget target)</code>. Action is either <code>Collapse</code> or <code>Expand</code> whereas the target defines the affected properties:</p>
+<ul>
+<li><code>CollapseTarget::Current</code> affects only the property</li>
+<li><code>CollapseTarget::Recursive</code> affects the property and all nested composite properties</li>
+<li><code>CollapseTarget::Children</code> affects only direct child composite properties</li>
+<li><code>CollapseTarget::Siblings</code> affects all siblings of the property which are composite properties</li>
+</ul>
+<p>This functionality is also accessible via the context menu of a composite property in the property list.<br>
+<a target="_blank" rel="noopener noreferrer" href="resources/changelog/compositeproperty-collapse.jpg"><img src="resources/changelog/compositeproperty-collapse.jpg" alt="CompositeProperty Collapse &amp; Expand" style="max-width: 100%;"></a></p>
 <h2>2021-11-15 Custom ranges for DataFrame columns</h2>
 <p>Each DataFrame column has now an optional data range that can be used for normalization, plotting, and similar things. Use the convenience function <code>columnutil::getRange(const Column&amp;)</code> to get the custom range, if set, or the buffer min/max values.</p>
 <h2>2021-11-08 Updated table view for DataFrame</h2>
