@@ -52,16 +52,6 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
     if (!event) return;
     if (!pickingEnabled()) return;
 
-    const auto pickId = [&](size2_t coord) -> size_t {
-        if (auto src = src_.lock()) {
-            const auto value = src->readPixel(coord, LayerType::Picking);
-            if (value.a > 0.0) {
-                return PickingManager::colorToIndex(uvec3(value));
-            }
-        }
-        return 0;
-    };
-
     switch (event->hash()) {
         case MouseEvent::chash(): {
             auto me = static_cast<MouseEvent*>(event);
@@ -89,36 +79,33 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
 }
 
 void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagator) {
-    auto& touchPoints = e->touchPoints();
-
-    std::vector<int> usedPointIds;
-
-    const auto pickId = [&](size2_t coord) -> size_t {
-        if (auto src = src_.lock()) {
-            const auto value = src->readPixel(coord, LayerType::Picking);
-            if (value.a > 0.0) {
-                return PickingManager::colorToIndex(uvec3(value));
-            }
-        }
-        return 0;
-    };
-
+    if (!propagator) return;
+    if (!e) return;
+    if (!pickingEnabled()) return;
     // Strategy for treating touch points for picking objects
     //
     // One touch event per initially picked object.
-    //  + Single picking event per object
+    //  + Single PickingEvent (enter/move/leave) with multiple points for initially picked object
     //  + Picked objects will have access to multiple touch points
-    //  - Points initially picking an object may split to multiple object: tricky to maintain state
-    //  (ignored here)
+    //  - Points initially picking an object may split to multiple object (ignored here)
+    //     - Mostly only relevant for touchpad where a touch point may not mean "button pressed"
+    //     - Case:
+    //            Two touch points over object A. One touch point moves over object B, both A and B
+    //            should enter hover state - tricky to maintain state since the point state is
+    //            treated as one!
+    //          
     //
     // Other alternative considered:
     // Treat each touch point individually.
     //  + Easy to track state
     //  - Multiple picking events (Enter/Leave/Press) per object possible
-    //  - Picked objects will not have access to multiple touch points
+    //  - PickingEvent will only contain a single touch point, making it difficult to handle
+    //  multiple touch points.
     //
 
     // Strategy: One touch event per initially picked object.
+    auto& touchPoints = e->touchPoints();
+    std::vector<int> usedPointIds;
     std::unordered_map<size_t, std::vector<TouchPoint>> pickingIdToTouchPoints;
 
     for (auto& point : touchPoints) {
@@ -144,13 +131,14 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         const auto& points = item.second;
         TouchEvent te(points, e->getDevice(), e->modifiers());
         // Heuristic for obtaining picked object among the touch points:
-        // Select first non-background object
-        size_t pickedId = 0;
+        // Select first non-background object (points are generally sorted in the order they where
+        // pressed)
+        size_t pickedId = PickingManager::VoidId;
         for (const auto& point : points) {
             const auto coord =
                 glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
             pickedId = pickId(coord);
-            if (pickedId != 0) {
+            if (pickedId != PickingManager::VoidId) {
                 break;
             }
         }
@@ -172,26 +160,6 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         }
     }
 
-    // Strategy: Treat each touch point separetly
-    // for (auto& point : touchPoints) {
-    //    if (point.state() == TouchState::Started) {
-    //        touchStates_[point.id()] =
-    //            std::move(PickingControllerTouchState{PickingManager::getPtr()});
-    //    }
-    //    TouchEvent te({point}, e->getDevice(), e->modifiers());
-    //    const auto coord = glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
-    //    touchStates_[point.id()].propagateEvent(&te, propagator, pickId(coord));
-    //    if (te.hasBeenUsed()) {
-    //        for (const auto& p : te.touchPoints()) {
-    //            usedPointIds.push_back(p.id());
-    //        }
-    //    }
-
-    //    if (point.state() == TouchState::Finished) {
-    //        touchStates_.erase(point.id());
-    //    }
-    //}
-
     // remove the "used" points from the event
     util::erase_remove_if(touchPoints,
                           [&](const auto& p) { return util::contains(usedPointIds, p.id()); });
@@ -204,14 +172,14 @@ void PickingController::propagateEvent(GestureEvent*, EventPropagator*) {
 
 void PickingController::setPickingSource(const std::shared_ptr<const Image>& src) { src_ = src; }
 
-PickingManager::Result PickingController::findPickingAction(const uvec2& coord) {
-    if (auto src = src_.lock(); src && pickingEnabled()) {
-        auto value = src->readPixel(size2_t(coord), LayerType::Picking);
+size_t PickingController::pickId(const uvec2& coord) {
+    if (auto src = src_.lock()) {
+        const auto value = src->readPixel(coord, LayerType::Picking);
         if (value.a > 0.0) {
-            return PickingManager::getPtr()->getPickingActionFromColor(uvec3(value));
+            return PickingManager::colorToIndex(uvec3(value));
         }
     }
-    return {0, nullptr};
+    return PickingManager::VoidId;
 }
 
 bool PickingController::pickingEnabled() const {

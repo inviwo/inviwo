@@ -66,12 +66,15 @@ private:
     void propagateEvent(TouchEvent*, EventPropagator*);
     void propagateEvent(GestureEvent*, EventPropagator*);
 
-    PickingManager::Result findPickingAction(const uvec2& coord);
+    size_t pickId(const uvec2& coord);
     std::weak_ptr<const Image> src_;
 
     PickingControllerMouseState mouseState_;
-    std::unordered_map<size_t, PickingControllerTouchState> touchStates_;
-    std::unordered_map<int, size_t> touchPointStartPickingId_;  /// {TouchPointId, PickingId}
+
+    using TouchPointIdToPickingIdMap = std::unordered_map<int, size_t>;
+    using PickingIdToTochStateMap = std::unordered_map<size_t, PickingControllerTouchState>;
+    PickingIdToTochStateMap touchStates_;
+    TouchPointIdToPickingIdMap touchPointStartPickingId_;  ///< {TouchPointId, PickingId}
 };
 
 }  // namespace inviwo

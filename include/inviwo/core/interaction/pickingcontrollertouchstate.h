@@ -39,9 +39,14 @@ class TouchEvent;
 class EventPropagator;
 class PickingManager;
 
+/*
+ * \brief Keeps track of when touch events enter/move/exit picking objects.
+ * @see PickingController
+ */
 class IVW_CORE_API PickingControllerTouchState {
 public:
     PickingControllerTouchState(PickingManager* pickingManager = nullptr);
+    PickingControllerTouchState(PickingControllerTouchState&&);
     PickingControllerTouchState(const PickingControllerTouchState&) = delete;
     PickingControllerTouchState& operator=(const PickingControllerTouchState&) = delete;
     PickingControllerTouchState& operator=(PickingControllerTouchState&&);
