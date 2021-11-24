@@ -175,6 +175,37 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
 std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
 
+    menu->addSeparator();
+
+    if (auto compProperty = dynamic_cast<CompositeProperty*>(property_)) {
+        auto addActions = [this, compProperty](QMenu* menu,
+                                               CompositeProperty::CollapseAction action) {
+            auto current = menu->addAction("&Current");
+            auto recursive = menu->addAction("&Recursive");
+            auto children = menu->addAction("C&hildren");
+            auto siblings = menu->addAction("&Siblings");
+
+            connect(current, &QAction::triggered, this, [compProperty, action]() {
+                compProperty->setCollapsed(action, CompositeProperty::CollapseTarget::Current);
+            });
+            connect(recursive, &QAction::triggered, this, [compProperty, action]() {
+                compProperty->setCollapsed(action, CompositeProperty::CollapseTarget::Recursive);
+            });
+            connect(children, &QAction::triggered, this, [compProperty, action]() {
+                compProperty->setCollapsed(action, CompositeProperty::CollapseTarget::Children);
+            });
+            connect(siblings, &QAction::triggered, this, [compProperty, action]() {
+                compProperty->setCollapsed(action, CompositeProperty::CollapseTarget::Siblings);
+            });
+        };
+
+        auto collapse = menu->addMenu("C&ollapse");
+        addActions(collapse, CompositeProperty::CollapseAction::Collapse);
+
+        auto expand = menu->addMenu("&Expand");
+        addActions(expand, CompositeProperty::CollapseAction::Expand);
+    }
+
     if (propertyOwner_ && !property_) {
         menu->addAction(utilqt::toQString(displayName_));
         menu->addSeparator();

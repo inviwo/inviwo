@@ -148,10 +148,10 @@ void exposeProperties(py::module& m) {
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
              py::arg("semantics") = PropertySemantics::Default)
-        .def("setCollapsed", &CompositeProperty::setCollapsed)
+        .def("setCollapsed", py::overload_cast<bool>(&CompositeProperty::setCollapsed))
         .def("isCollapsed", &CompositeProperty::isCollapsed)
         .def_property("collapsed", &BoolCompositeProperty::isCollapsed,
-                      &BoolCompositeProperty::setCollapsed)
+                      py::overload_cast<bool>(&CompositeProperty::setCollapsed))
         .def(
             "__getattr__",
             [](CompositeProperty& po, const std::string& key) {

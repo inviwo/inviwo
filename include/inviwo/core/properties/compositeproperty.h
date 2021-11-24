@@ -53,6 +53,9 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
+    enum class CollapseAction { Collapse, Expand };
+    enum class CollapseTarget { Current, Recursive, Children, Siblings };
+
     CompositeProperty(const std::string& identifier, const std::string& displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
@@ -68,6 +71,7 @@ public:
 
     virtual bool isCollapsed() const;
     virtual CompositeProperty& setCollapsed(bool value);
+    CompositeProperty& setCollapsed(CollapseAction action, CollapseTarget target);
 
     // Override original functions in Property
     virtual void setOwner(PropertyOwner* owner) override;
