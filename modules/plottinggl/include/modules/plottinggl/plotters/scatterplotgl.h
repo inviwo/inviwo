@@ -74,6 +74,8 @@ public:
     using SelectionFunc = void(const std::vector<bool>&);
     using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
 
+    enum class SortingOrder { Ascending, Descending };
+
     class Properties : public CompositeProperty {
     public:
         virtual std::string getClassIdentifier() const override;
@@ -136,15 +138,18 @@ public:
 
     void setYAxisLabel(const std::string& label);
 
-    void setXAxis(std::shared_ptr<const Column> col);
+    void setXAxis(const Column* col);
 
-    void setYAxis(std::shared_ptr<const Column> col);
+    void setYAxis(const Column* col);
 
-    void setXAxisData(std::shared_ptr<const Column> col);
-    void setYAxisData(std::shared_ptr<const Column> col);
-    void setColorData(std::shared_ptr<const Column> col);
-    void setRadiusData(std::shared_ptr<const Column> col);
+    void setXAxisData(const Column* col);
+    void setYAxisData(const Column* col);
+    void setColorData(const Column* col);
+    void setRadiusData(const Column* col);
+    void setSortingData(const Column* col);
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
+
+    void setSortingOrder(SortingOrder order);
 
     void setSelectedIndices(const BitSet& indices);
     void setHighlightedIndices(const BitSet& indices);
@@ -176,9 +181,12 @@ protected:
     std::shared_ptr<const BufferBase> yAxis_;
     std::shared_ptr<const BufferBase> color_;
     std::shared_ptr<const BufferBase> radius_;
+    std::shared_ptr<const BufferBase> sorting_;
     std::shared_ptr<const TemplateColumn<uint32_t>> indexColumn_;
 
     std::shared_ptr<BufferBase> pickIds_;
+
+    SortingOrder sortOrder_ = SortingOrder::Ascending;
 
     vec2 minmaxX_;
     vec2 minmaxY_;

@@ -130,6 +130,7 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     , yAxis_(nullptr)
     , color_(nullptr)
     , radius_(nullptr)
+    , sorting_(nullptr)
     , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , processor_(processor)
@@ -354,7 +355,9 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
         filteringDirty_ = false;
     };
     IndexBuffer* indices;
-    if (radius_) {
+    if (sorting_ || radius_) {
+        // prefer sorting column over radius if defined
+        std::shared_ptr<const BufferBase>& buffer = sorting_ ? sorting_ : radius_;
 
         if (indexBuffer) {
             // copy selected indices
@@ -367,12 +370,20 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
         // sort according to radii, larger first
         auto& inds = indices->getEditableRAMRepresentation()->getDataContainer();
 
-        radius_->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
-            [&inds](auto bufferpr) {
-                auto& radii = bufferpr->getDataContainer();
-                std::sort(inds.begin(), inds.end(), [&radii](const uint32_t& a, const uint32_t& b) {
-                    return radii[a] > radii[b];
-                });
+        buffer->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
+            [&](auto bufferpr) {
+                const auto& data = bufferpr->getDataContainer();
+                if (sortOrder_ == SortingOrder::Ascending) {
+                    std::sort(inds.begin(), inds.end(),
+                              [&data](const uint32_t& a, const uint32_t& b) {
+                                  return data[a] < data[b];
+                              });
+                } else {
+                    std::sort(inds.begin(), inds.end(),
+                              [&data](const uint32_t& a, const uint32_t& b) {
+                                  return data[a] > data[b];
+                              });
+                }
             });
     } else {
         if (indexBuffer) {
@@ -464,20 +475,20 @@ void ScatterPlotGL::setYAxisLabel(const std::string& label) {
     properties_.yAxis_.setCaption(label);
 }
 
-void ScatterPlotGL::setXAxis(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setXAxis(const Column* col) {
     setXAxisLabel(col->getHeader());
     setXAxisData(col);
 }
 
-void ScatterPlotGL::setYAxis(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setYAxis(const Column* col) {
     setYAxisLabel(col->getHeader());
     setYAxisData(col);
 }
 
-void ScatterPlotGL::setXAxisData(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setXAxisData(const Column* col) {
     if (col) {
         xAxis_ = col->getBuffer();
-        minmaxX_ = vec2(columnutil::getRange(*col.get()));
+        minmaxX_ = vec2(columnutil::getRange(*col));
         properties_.xAxis_.setRange(minmaxX_);
     } else {
         xAxis_ = nullptr;
@@ -485,10 +496,10 @@ void ScatterPlotGL::setXAxisData(std::shared_ptr<const Column> col) {
     boxSelectionHandler_.setXAxisData(xAxis_);
 }
 
-void ScatterPlotGL::setYAxisData(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setYAxisData(const Column* col) {
     if (col) {
         yAxis_ = col->getBuffer();
-        minmaxY_ = vec2(columnutil::getRange(*col.get()));
+        minmaxY_ = vec2(columnutil::getRange(*col));
         properties_.yAxis_.setRange(minmaxY_);
     } else {
         yAxis_ = nullptr;
@@ -496,10 +507,10 @@ void ScatterPlotGL::setYAxisData(std::shared_ptr<const Column> col) {
     boxSelectionHandler_.setYAxisData(yAxis_);
 }
 
-void ScatterPlotGL::setColorData(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setColorData(const Column* col) {
     if (col) {
         color_ = col->getBuffer();
-        minmaxC_ = vec2(columnutil::getRange(*col.get()));
+        minmaxC_ = vec2(columnutil::getRange(*col));
     } else {
         color_ = nullptr;
     }
@@ -507,14 +518,22 @@ void ScatterPlotGL::setColorData(std::shared_ptr<const Column> col) {
     properties_.color_.setVisible(color_ == nullptr);
 }
 
-void ScatterPlotGL::setRadiusData(std::shared_ptr<const Column> col) {
+void ScatterPlotGL::setRadiusData(const Column* col) {
     if (col) {
         radius_ = col->getBuffer();
-        minmaxR_ = vec2(columnutil::getRange(*col.get()));
+        minmaxR_ = vec2(columnutil::getRange(*col));
     } else {
         radius_ = nullptr;
     }
     properties_.minRadius_.setVisible(radius_ != nullptr);
+}
+
+void ScatterPlotGL::setSortingData(const Column* col) {
+    if (col) {
+        sorting_ = col->getBuffer();
+    } else {
+        sorting_ = nullptr;
+    }
 }
 
 void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol) {
@@ -532,6 +551,8 @@ void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t
         pickIds_.reset();
     }
 }
+
+void ScatterPlotGL::setSortingOrder(SortingOrder order) { sortOrder_ = order; }
 
 void ScatterPlotGL::setHighlightedIndices(const BitSet& indices) {
     highlighted_ = indices;
