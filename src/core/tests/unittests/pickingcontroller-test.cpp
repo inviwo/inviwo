@@ -1034,16 +1034,6 @@ TEST(PickingControllerTest, TouchScreenDrag0to1) {
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 0);
     }
-    //{
-    //    SCOPED_TRACE("Press 1,1");
-    //    // uvec2 pre{1, 1};  // id = 0
-    //    uvec2 pos{1, 1};  // id = 0
-
-    //    auto event = touchEvent(TouchState::Stationary, pos, dim, device);
-    //    TestPropagator tp;
-    //    ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
-    //    ASSERT_EQ(tp.events.size(), 0);
-    //}
 
     {
         SCOPED_TRACE("Drag 1,1 -> 3,3");

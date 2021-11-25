@@ -55,16 +55,12 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
     switch (event->hash()) {
         case MouseEvent::chash(): {
             auto me = static_cast<MouseEvent*>(event);
-            const auto coord =
-                glm::clamp(me->pos(), dvec2(0.0), dvec2(me->canvasSize() - uvec2(1)));
-            mouseState_.propagateEvent(me, propagator, pickId(coord));
+            mouseState_.propagateEvent(me, propagator, pickId(me->pos()));
             break;
         }
         case WheelEvent::chash(): {
             auto me = static_cast<WheelEvent*>(event);
-            const auto coord =
-                glm::clamp(me->pos(), dvec2(0.0), dvec2(me->canvasSize() - uvec2(1)));
-            mouseState_.propagateEvent(me, propagator, pickId(coord));
+            mouseState_.propagateEvent(me, propagator, pickId(me->pos()));
             break;
         }
         case GestureEvent::chash(): {
@@ -109,16 +105,16 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     std::unordered_map<size_t, std::vector<TouchPoint>> pickingIdToTouchPoints;
 
     for (auto& point : touchPoints) {
-        if (auto it = touchPointStartPickingId_.find(point.id());
-            it == touchPointStartPickingId_.end()) {
-            // Should mean that point.state() == TouchState::Started
-            const auto coord =
-                glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
-            touchPointStartPickingId_[point.id()] = pickId(coord);
-        }
+
+        auto it = touchPointStartPickingId_.find(point.id());
         // Not sure if this check is necessary anymore (I recall that there previously have been
         // instabilities)
-        auto it = touchPointStartPickingId_.find(point.id());
+        if (it == touchPointStartPickingId_.end()) {
+            // Should mean that point.state() == TouchState::Started
+            touchPointStartPickingId_[point.id()] = pickId(point.pos());
+            it = touchPointStartPickingId_.find(point.id());
+        }
+
         auto pickedId = it->second;
         if (touchStates_.find(pickedId) == touchStates_.end()) {
             touchStates_[pickedId] = PickingControllerTouchState{PickingManager::getPtr()};
@@ -135,9 +131,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         // pressed)
         size_t pickedId = PickingManager::VoidId;
         for (const auto& point : points) {
-            const auto coord =
-                glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
-            pickedId = pickId(coord);
+            pickedId = pickId(point.pos());
             if (pickedId != PickingManager::VoidId) {
                 break;
             }
@@ -174,6 +168,10 @@ void PickingController::setPickingSource(const std::shared_ptr<const Image>& src
 
 size_t PickingController::pickId(const uvec2& coord) {
     if (auto src = src_.lock()) {
+        if (auto dim = src->getDimensions();
+            glm::any(glm::lessThan(uvec2{0}, coord) | glm::greaterThan(uvec2{dim} - uvec2{1}, coord))) {
+            return PickingManager::VoidId;
+        }
         const auto value = src->readPixel(coord, LayerType::Picking);
         if (value.a > 0.0) {
             return PickingManager::colorToIndex(uvec3(value));
