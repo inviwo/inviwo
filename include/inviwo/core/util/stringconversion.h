@@ -261,13 +261,24 @@ constexpr std::string_view trim(std::string_view str) noexcept {
     return str.substr(idx1, idx2 + 1 - idx1);
 }
 
-/*
+/**
  * \brief Checks if provided string ends with suffix using case insensitive equal comparison.
  * @param str string to check last part of. Allowed to be smaller than suffix.
  * @param suffix Ending to match.
  * @return True if last part of str is equal to suffix, false otherwise.
  */
 IVW_CORE_API bool iCaseEndsWith(std::string_view str, std::string_view suffix);
+
+/**
+ * \brief Elide parts of lines in \p str which are longer than \p maxLineLength and append \p abbrev
+ * instead.
+ * @param str            string with lines to abbreviate
+ * @param abbrev         placeholder that gets added at the end of abbreviated lines
+ * @param maxLineLength  lines that are longer are abbreviated
+ * @return input string where no line is longer than \p maxLineLength + \p abbrev.size()
+ */
+IVW_CORE_API std::string elideLines(std::string_view str, std::string_view abbrev = "...",
+                                    size_t maxLineLength = 500);
 
 }  // namespace util
 
