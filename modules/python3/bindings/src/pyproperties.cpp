@@ -123,7 +123,8 @@ void exposeProperties(py::module& m) {
         .def_property_readonly("classIdentifier", &Property::getClassIdentifier)
         .def_property_readonly("classIdentifierForWidget", &Property::getClassIdentifierForWidget)
         .def_property_readonly("path", &Property::getPath)
-        .def_property_readonly("invalidationLevel", &Property::getInvalidationLevel)
+        .def_property("invalidationLevel", &Property::getInvalidationLevel,
+                      &Property::setInvalidationLevel)
         .def_property_readonly("widgets", &Property::getWidgets)
         .def_property_readonly("isModified", &Property::isModified)
         .def("hasWidgets", &Property::hasWidgets)
