@@ -70,6 +70,12 @@
 
 namespace inviwo {
 
+namespace detail {
+
+enum Roles { Fulltext = Qt::UserRole + 1 };
+
+}  // namespace detail
+
 TextSelectionDelegate::TextSelectionDelegate(QWidget* parent) : QItemDelegate(parent) {}
 
 QWidget* TextSelectionDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option,
@@ -543,7 +549,11 @@ void ConsoleWidget::copy() {
             } else if (!first) {
                 text.append('\n');
             }
-            text.append(ind.data(Qt::DisplayRole).toString());
+            if (auto v = ind.data(detail::Roles::Fulltext); !v.isNull()) {
+                text.append(v.toString());
+            } else {
+                text.append(ind.data(Qt::DisplayRole).toString());
+            }
             first = false;
         }
         prevrow = ind.row();
@@ -685,8 +695,12 @@ QStandardItem* LogTableModelEntry::get(ColumnID ind) const {
             return new QStandardItem(utilqt::toQString(toString(lineNumber)));
         case ColumnID::Function:
             return new QStandardItem(utilqt::toQString(funcionName));
-        case ColumnID::Message:
-            return new QStandardItem(utilqt::toQString(message));
+        case ColumnID::Message: {
+            auto item = std::make_unique<QStandardItem>();
+            item->setData(utilqt::toQString(message), detail::Roles::Fulltext);
+            item->setData(utilqt::toQString(util::elideLines(message)), Qt::DisplayRole);
+            return item.release();
+        }
         default:
             return new QStandardItem();
     }

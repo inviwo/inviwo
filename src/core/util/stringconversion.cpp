@@ -34,6 +34,7 @@
 #include <random>
 #include <iomanip>
 #include <clocale>
+#include <algorithm>
 
 #if defined(__clang__) || defined(__GNUC__)
 #include <cstdlib>
@@ -128,6 +129,22 @@ bool iCaseEndsWith(std::string_view str, std::string_view suffix) {
     return str.size() >= suffix.size() &&
            // Compare last part of path with the extension
            iCaseCmp(str.substr(str.size() - suffix.size()), suffix);
+}
+
+std::string elideLines(std::string_view str, std::string_view abbrev, size_t maxLineLength) {
+    std::string result;
+    const auto maxSize = maxLineLength - abbrev.size();
+    util::forEachStringPart(str, "\n", [&](std::string_view line) {
+        if (line.size() > maxLineLength) {
+            result.append(line.substr(0, maxSize));
+            result.append(abbrev);
+        } else {
+            result.append(line);
+        }
+        result.push_back('\n');
+    });
+    result.pop_back();
+    return result;
 }
 
 }  // namespace util
