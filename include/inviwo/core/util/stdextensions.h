@@ -106,6 +106,14 @@ constexpr auto make_array(Functor&& func) noexcept
                                      std::make_integer_sequence<Index, N>());
 }
 
+/*
+ * Like std::ref but for multiple things, returns an array of reference_wrapper<Common>
+ */
+template <typename Common, typename... Ts>
+auto ref(Ts&... args) {
+    return std::array<std::reference_wrapper<Common>, sizeof...(Ts)>{args...};
+}
+
 // Default construct if possible otherwise return nullptr;
 template <typename T, typename std::enable_if<!std::is_abstract<T>::value &&
                                                   std::is_default_constructible<T>::value,
@@ -391,23 +399,52 @@ auto map_find_or_null(T& cont, const V& elem, Callable f) ->
     }
 }
 
-template <typename T, typename UnaryPredicate>
-bool all_of(const T& cont, UnaryPredicate pred) {
-    using std::begin;
-    using std::end;
-    return std::all_of(begin(cont), end(cont), pred);
+template <typename InputIter, typename UnaryPredicate>
+[[nodiscard]] constexpr bool all_of(InputIter begin, InputIter end, UnaryPredicate pred) {
+    for (; begin != end; ++begin) {
+        if (!std::invoke(pred, *begin)) {
+            return false;
+        }
+    }
+    return true;
 }
 template <typename T, typename UnaryPredicate>
-bool any_of(const T& cont, UnaryPredicate pred) {
+[[nodiscard]] constexpr bool all_of(const T& cont, UnaryPredicate pred) {
     using std::begin;
     using std::end;
-    return std::any_of(begin(cont), end(cont), pred);
+    return ::inviwo::util::all_of(begin(cont), end(cont), pred);
+}
+
+template <typename InputIter, typename UnaryPredicate>
+[[nodiscard]] constexpr bool any_of(InputIter begin, InputIter end, UnaryPredicate pred) {
+    for (; begin != end; ++begin) {
+        if (std::invoke(pred, *begin)) {
+            return true;
+        }
+    }
+    return false;
 }
 template <typename T, typename UnaryPredicate>
-bool none_of(const T& cont, UnaryPredicate pred) {
+[[nodiscard]] constexpr bool any_of(const T& cont, UnaryPredicate pred) {
     using std::begin;
     using std::end;
-    return std::none_of(begin(cont), end(cont), pred);
+    return ::inviwo::util::any_of(begin(cont), end(cont), pred);
+}
+
+template <typename InputIter, typename UnaryPredicate>
+[[nodiscard]] constexpr bool none_of(InputIter begin, InputIter end, UnaryPredicate pred) {
+    for (; begin != end; ++begin) {
+        if (std::invoke(pred, *begin)) {
+            return false;
+        }
+    }
+    return true;
+}
+template <typename T, typename UnaryPredicate>
+[[nodiscard]] constexpr bool none_of(const T& cont, UnaryPredicate pred) {
+    using std::begin;
+    using std::end;
+    return ::inviwo::util::none_of(begin(cont), end(cont), pred);
 }
 
 template <typename Iter, typename Proj = identity>

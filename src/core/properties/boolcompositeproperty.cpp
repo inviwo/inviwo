@@ -41,9 +41,7 @@ BoolCompositeProperty::BoolCompositeProperty(std::string_view identifier,
                                              InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , checked_("checked", "checked", checked, invalidationLevel, semantics) {
-    checked_.setVisible(false);
-    checked_.setCurrentStateAsDefault();
+    , checked_("checked", "", checked, invalidationLevel, semantics) {
     addProperty(checked_);
 }
 
@@ -64,11 +62,7 @@ std::string BoolCompositeProperty::getClassIdentifierForWidget() const {
 
 bool BoolCompositeProperty::isChecked() const { return checked_.get(); }
 
-void BoolCompositeProperty::setChecked(bool checked) {
-    if (checked_.get() != checked) {
-        checked_.set(checked);
-    }
-}
+void BoolCompositeProperty::setChecked(bool checked) { checked_.set(checked); }
 
 BoolCompositeProperty::operator bool() const { return checked_.get(); }
 

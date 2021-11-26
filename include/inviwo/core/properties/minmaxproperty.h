@@ -64,8 +64,8 @@ public:
     virtual ~MinMaxProperty() = default;
 
     const value_type& get() const;
-    void set(const value_type& value);
-    operator const value_type&() const;
+    MinMaxProperty<T>& set(const value_type& value);
+    operator const value_type &() const;
     const value_type& operator*() const;
     const value_type* operator->() const;
 
@@ -98,9 +98,10 @@ public:
      * This circumvents problems when updating both range and value, e.g. changing them
      * from 0 - 100 to 1000 - 2000.
      */
-    void set(const value_type& value, const value_type& range, const T& increment, const T& minSep);
-    void set(const T& start, const T& end, const T& rangeMin, const T& rangeMax, const T& increment,
-             const T& minSep);
+    MinMaxProperty<T>& set(const value_type& value, const value_type& range, const T& increment,
+                           const T& minSep);
+    MinMaxProperty<T>& set(const T& start, const T& end, const T& rangeMin, const T& rangeMax,
+                           const T& increment, const T& minSep);
 
     // set a new range, and maintains the same relative values as before.
     MinMaxProperty<T>& setRangeNormalized(const value_type& newRange);
@@ -109,6 +110,9 @@ public:
     void removeOnRangeChange(const BaseCallBack* callback);
 
     virtual MinMaxProperty<T>& setCurrentStateAsDefault() override;
+    MinMaxProperty<T>& setDefault(const value_type& value);
+    MinMaxProperty<T>& setDefault(const value_type& value, const value_type& range,
+                                  const T& increment, const T& minSep);
     virtual MinMaxProperty<T>& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
 
@@ -227,12 +231,13 @@ auto MinMaxProperty<T>::get() const -> const value_type& {
 }
 
 template <typename T>
-void MinMaxProperty<T>::set(const value_type& value) {
+MinMaxProperty<T>& MinMaxProperty<T>::set(const value_type& value) {
     if (value_.update(clamp(value))) this->propertyModified();
+    return *this;
 }
 
 template <typename T>
-MinMaxProperty<T>::operator const value_type&() const {
+MinMaxProperty<T>::operator const value_type &() const {
     return value_.value;
 }
 
@@ -314,8 +319,8 @@ MinMaxProperty<T>& MinMaxProperty<T>::setRange(const value_type& newRange) {
 }
 
 template <typename T>
-void MinMaxProperty<T>::set(const value_type& newValue, const value_type& newRange,
-                            const T& newIncrement, const T& newMinSep) {
+MinMaxProperty<T>& MinMaxProperty<T>::set(const value_type& newValue, const value_type& newRange,
+                                          const T& newIncrement, const T& newMinSep) {
 
     bool modified = false;
     modified |= range_.update({glm::min(newRange.x, newRange.y), glm::max(newRange.x, newRange.y)});
@@ -327,12 +332,15 @@ void MinMaxProperty<T>::set(const value_type& newValue, const value_type& newRan
 
     if (modified) this->propertyModified();
     if (rangeModified) onRangeChangeCallback_.invokeAll();
+
+    return *this;
 }
 
 template <typename T>
-void MinMaxProperty<T>::set(const T& start, const T& end, const T& rangeMin, const T& rangeMax,
-                            const T& increment, const T& minSep) {
+MinMaxProperty<T>& MinMaxProperty<T>::set(const T& start, const T& end, const T& rangeMin,
+                                          const T& rangeMax, const T& increment, const T& minSep) {
     set(value_type(start, end), value_type(rangeMin, rangeMax), increment, minSep);
+    return *this;
 }
 
 template <typename T>
@@ -388,6 +396,21 @@ MinMaxProperty<T>& MinMaxProperty<T>::setCurrentStateAsDefault() {
     range_.setAsDefault();
     increment_.setAsDefault();
     minSeparation_.setAsDefault();
+    return *this;
+}
+template <typename T>
+MinMaxProperty<T>& MinMaxProperty<T>::setDefault(const value_type& value) {
+    value_.defaultValue = value;
+    return *this;
+}
+
+template <typename T>
+MinMaxProperty<T>& MinMaxProperty<T>::setDefault(const value_type& value, const value_type& range,
+                                                 const T& increment, const T& minSep) {
+    value_.defaultValue = value;
+    range_.defaultValue = range;
+    increment_.defaultValue = increment;
+    minSeparation_.defaultValue = minSep;
     return *this;
 }
 

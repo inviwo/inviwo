@@ -357,7 +357,7 @@ QLineEdit, QAbstractSpinBox, QComboBox {
       */
     border: 0.0625em solid transparent;
 }
-QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
+QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled {
     color: #777;
     background: transparent;
 }
@@ -366,7 +366,7 @@ QComboBox:on, QComboBox:focus, QComboBox:hover {
     background: #47474b;
     border: 0.0625em solid #268bd2;
 }
-QPushButton:hover, QToolButton:hover, QCheckBox:indicator:hover {
+QPushButton:hover, QToolButton:hover {
     border: 0.0625em solid #268bd2;
 }
 
@@ -580,13 +580,20 @@ QProgressBar::chunk {
 /************************ 
 QRadioButton and QCheckBox
 ************************/
+
+QCheckBox {
+}
+QCheckBox:disabled {
+    color: #777;
+    background: transparent;
+}
+
 QCheckBox::indicator {
     width: 0.8em;
     height: 0.8em;
 }
 QCheckBox::indicator {
     border: 0.0625em solid #1b1b1d;
-    background: #47474b;
     background: #9d9995;
     border-radius: 0.0625em;
 }
@@ -603,7 +610,6 @@ QCheckBox::indicator:disabled {
 QCheckBox::indicator:checked:disabled {
     background-color: #65696d;
 }
-
 QCheckBox:indicator:hover {
     border: 0.0625em solid #268bd2;
 }

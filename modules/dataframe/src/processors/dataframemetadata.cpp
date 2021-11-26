@@ -54,12 +54,9 @@ DataFrameMetaData::DataFrameMetaData()
 }
 
 void DataFrameMetaData::process() {
-    auto dataframe = std::make_shared<DataFrame>(*inport_.getData().get());
-    for (auto&& [index, col] : util::enumerate(*dataframe)) {
-        col->setCustomRange(columns_.getRange(index));
-    }
-
-    outport_.setData(dataframe);
+    auto dataFrame = std::make_shared<DataFrame>(*inport_.getData().get());
+    columns_.updateDataFrame(*dataFrame);
+    outport_.setData(dataFrame);
 }
 
 }  // namespace inviwo

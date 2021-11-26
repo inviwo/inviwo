@@ -30,7 +30,7 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -46,7 +46,7 @@ namespace inviwo {
  * \ingroup properties
  * A CompositeProperty holding properties to show a information about a volume
  */
-class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API VolumeInformationProperty : public BoolCompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -58,7 +58,7 @@ public:
     virtual VolumeInformationProperty* clone() const override;
     virtual ~VolumeInformationProperty() = default;
 
-    void updateForNewVolume(const Volume& volume, bool deserialize = false);
+    void updateForNewVolume(const Volume& volume, util::OverwriteState overwrite);
     void updateVolume(Volume& volume);
     // Read only used to show information
 

@@ -46,8 +46,7 @@ LineEditQt::LineEditQt(QWidget* parent) : QLineEdit(parent) {
 
 void LineEditQt::paintEvent(QPaintEvent* e) {
     QPalette p = palette();
-    p.setColor(QPalette::PlaceholderText, Qt::red);
-    //p.setBrush(QPalette::PlaceholderText, QBrush{Qt::red});
+    p.setColor(QPalette::PlaceholderText, QColor(30, 112, 168));
     setPalette(p);
     QLineEdit::paintEvent(e);
 }

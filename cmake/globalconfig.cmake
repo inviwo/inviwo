@@ -157,6 +157,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/filegeneration.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/vcpkghelpers.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/benchmark.cmake)
 
 #Generate headers
 ivw_generate_module_paths_header()

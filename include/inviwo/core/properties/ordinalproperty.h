@@ -157,6 +157,9 @@ public:
     virtual void set(const Property* src) override;
 
     virtual OrdinalProperty<T>& setCurrentStateAsDefault() override;
+    OrdinalProperty<T>& setDefault(const T& value);
+    OrdinalProperty<T>& setDefault(const T& value, const T& minVal, const T& maxVal,
+                                   const T& increment);
     virtual OrdinalProperty<T>& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
 
@@ -503,6 +506,22 @@ OrdinalProperty<T>& OrdinalProperty<T>::setCurrentStateAsDefault() {
     minValue_.setAsDefault();
     maxValue_.setAsDefault();
     increment_.setAsDefault();
+    return *this;
+}
+
+template <typename T>
+OrdinalProperty<T>& OrdinalProperty<T>::setDefault(const T& value) {
+    value_.defaultValue = value;
+    return *this;
+}
+template <typename T>
+OrdinalProperty<T>& OrdinalProperty<T>::setDefault(const T& value, const T& minVal, const T& maxVal,
+                                                   const T& increment) {
+
+    value_.defaultValue = value;
+    minValue_.defaultValue = minVal;
+    maxValue_.defaultValue = maxVal;
+    increment_.defaultValue = increment;
     return *this;
 }
 

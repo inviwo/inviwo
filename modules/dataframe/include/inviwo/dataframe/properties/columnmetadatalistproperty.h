@@ -71,17 +71,14 @@ public:
      */
     void setPort(DataFrameInport& inport);
 
-    void updateColumnProperties(const DataFrame& dataframe);
+    void updateForNewDataFrame(const DataFrame& dataFrame, util::OverwriteState overwrite);
 
-    virtual ColumnMetaDataListProperty& resetToDefaultState() override;
-
-    /**
-     * Return the currently set column range corresponding to either min/max values of the column or
-     * a custom range.
-     */
-    dvec2 getRange(size_t columnIndex) const;
+    void updateDataFrame(DataFrame& dataFrame) const;
 
 private:
+    ColumnMetaDataProperty& meta(size_t i);
+    const ColumnMetaDataProperty& meta(size_t i) const;
+
     DataFrameInport* inport_ = nullptr;
     std::shared_ptr<std::function<void()>> onChangeCallback_;
 };

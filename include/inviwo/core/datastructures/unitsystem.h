@@ -211,6 +211,10 @@ IVW_CORE_API std::pair<double, std::vector<std::tuple<std::string_view, std::str
 findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enabledGroups,
                         UseUnitPrefixes usesPrefixes);
 
+IVW_CORE_API std::back_insert_iterator<fmt::memory_buffer> formatUnitTo(
+    std::back_insert_iterator<fmt::memory_buffer> it, Unit unit,
+    const unitgroups::EnabledGroups& enabledGroups, UseUnitPrefixes usesPrefixes);
+
 }  // namespace util
 
 }  // namespace inviwo
@@ -314,11 +318,6 @@ struct fmt::formatter<::inviwo::Unit> {
     auto format(const ::inviwo::Unit& unit, FormatContext& ctx) -> decltype(ctx.out()) {
         // ctx.out() is an output iterator to write to.
 
-        // All the unicode superscript digits from 0 to 9 but we let 0,1 ("\u2070", "\u00B9") be
-        // empty since they are not needed
-        constexpr std::array<std::string_view, 10> powers = {
-            "",         "",         u8"\u00B2", u8"\u00B3", u8"\u2074",
-            u8"\u2075", u8"\u2076", u8"\u2077", u8"\u2078", u8"\u2079"};
         constexpr std::array<std::string_view, 3> braceOpen = {"", "(", "["};
         constexpr std::array<std::string_view, 3> braceClose = {"", ")", "]"};
 
@@ -336,43 +335,19 @@ struct fmt::formatter<::inviwo::Unit> {
             }
         }();
 
-        const auto [mult, niceUnits] =
-            ::inviwo::util::findBestSetOfNamedUnits(unit, enabledGroups, usePrefix);
-
         fmt::memory_buffer buff;
         auto it = std::back_inserter(buff);
 
         if (leadingSpace) *it++ = ' ';
-
-        fmt::format_to(it, "{}", braceOpen[static_cast<int>(braces)]);
-
-        if (mult != 1.0) {
-            fmt::format_to(it, "{:4.2g} ", mult);
+        it = fmt::format_to(it, "{}", braceOpen[static_cast<int>(braces)]);
+        if (!units::is_valid(unit)) {
+            it = fmt::format_to(it, "Invalid");
+        } else if (units::is_error(unit)) {
+            it = fmt::format_to(it, "Error");
+        } else {
+            it = ::inviwo::util::formatUnitTo(it, unit, enabledGroups, usePrefix);
         }
-        int neg = 0;
-        int pos = 0;
-        for (auto&& [prefix, abbr, pow] : niceUnits) {
-            if (pow > 0) {
-                fmt::format_to(it, "{}{}{}", prefix, abbr, powers[pow]);
-                ++pos;
-            } else if (pow < 0) {
-                ++neg;
-            }
-        }
-
-        if (pos == 0) *it++ = '1';
-
-        if (neg != 0) {
-            *it++ = '/';
-            if (neg > 1) *it++ = '(';
-            for (auto&& [prefix, abbr, pow] : niceUnits) {
-                if (pow < 0) {
-                    fmt::format_to(it, "{}{}{}", prefix, abbr, powers[-pow]);
-                }
-            }
-            if (neg > 1) *it++ = ')';
-        }
-        fmt::format_to(it, "{}", braceClose[static_cast<int>(braces)]);
+        it = fmt::format_to(it, "{}", braceClose[static_cast<int>(braces)]);
 
         return formatter_.format(std::string_view{buff.data(), buff.size()}, ctx);
     }

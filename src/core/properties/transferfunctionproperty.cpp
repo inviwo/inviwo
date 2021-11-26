@@ -161,6 +161,11 @@ TransferFunctionProperty& TransferFunctionProperty::setCurrentStateAsDefault() {
     return *this;
 }
 
+TransferFunctionProperty& TransferFunctionProperty::setDefault(const TransferFunction& tf) {
+    tf_.defaultValue = tf;
+    return *this;
+}
+
 void TransferFunctionProperty::serialize(Serializer& s) const {
     Property::serialize(s);
 
@@ -242,10 +247,11 @@ TransferFunctionProperty& TransferFunctionProperty::setZoomV(double zoomVMin, do
     return *this;
 }
 
-void TransferFunctionProperty::set(const TransferFunction& value) {
+TransferFunctionProperty& TransferFunctionProperty::set(const TransferFunction& value) {
     tf_.value.removeObserver(this);
     if (tf_.update(value)) propertyModified();
     tf_.value.addObserver(this);
+    return *this;
 }
 
 const TransferFunction& TransferFunctionProperty::operator*() const { return tf_.value; }

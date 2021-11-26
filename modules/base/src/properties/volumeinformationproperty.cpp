@@ -56,7 +56,7 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
                                                      std::string_view displayName,
                                                      InvalidationLevel invalidationLevel,
                                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, semantics)
     , dimensions_("dimensions", "Dimensions", size3_t(0), size3_t(0),
                   size3_t(std::numeric_limits<size_t>::max()), size3_t(1), InvalidationLevel::Valid,
                   PropertySemantics("Text"))
@@ -74,25 +74,26 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
     , axesNames_{"axesNames", "Axes Names"}
     , axesUnits_{"axesUnits", "Axes Units"} {
 
+    getBoolProperty()
+        ->setDisplayName("Keep Changes")
+        .setInvalidationLevel(InvalidationLevel::Valid)
+        .visibilityDependsOn(*this, [](const auto& p) { return !p.getReadOnly(); })
+        .setCurrentStateAsDefault();
+
     util::for_each_in_tuple(
         [&](auto& e) {
             e.setReadOnly(true);
             e.setSerializationMode(PropertySerializationMode::None);
             e.setCurrentStateAsDefault();
-            this->addProperty(e);
+            addProperty(e);
         },
         props(*this));
 
-    util::for_each_in_tuple(
-        [&](auto& p) {
-            p.setSerializationMode(PropertySerializationMode::All);
-            this->addProperty(p);
-        },
-        meta(*this));
+    util::for_each_in_tuple([&](auto& p) { addProperty(p); }, meta(*this));
 }
 
 VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProperty& rhs)
-    : CompositeProperty(rhs)
+    : BoolCompositeProperty(rhs)
     , dimensions_(rhs.dimensions_)
     , format_(rhs.format_)
     , channels_(rhs.channels_)
@@ -112,43 +113,27 @@ VolumeInformationProperty* VolumeInformationProperty::clone() const {
     return new VolumeInformationProperty(*this);
 }
 
-void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool deserialize) {
+void VolumeInformationProperty::updateForNewVolume(const Volume& volume,
+                                                   util::OverwriteState overwrite) {
     const auto dim = volume.getDimensions();
-
     dimensions_.set(dim);
     format_.set(volume.getDataFormat()->getString());
     channels_.set(volume.getDataFormat()->getComponents());
     numVoxels_.set(dim.x * dim.y * dim.z);
-
     util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, props(*this));
 
-    if (deserialize) {
-        Property::setStateAsDefault(dataRange_, volume.dataMap_.dataRange);
-        Property::setStateAsDefault(valueRange_, volume.dataMap_.valueRange);
-        Property::setStateAsDefault(valueName_, volume.dataMap_.valueAxis.name);
-        Property::setStateAsDefault(valueUnit_, fmt::to_string(volume.dataMap_.valueAxis.unit));
+    overwrite = (overwrite == util::OverwriteState::No || isChecked()) ? util::OverwriteState::No
+                                                                       : util::OverwriteState::Yes;
 
-        for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
-            Property::setStateAsDefault(prop, axis.name);
-        }
-        for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
-            Property::setStateAsDefault(prop, fmt::to_string(axis.unit));
-        }
-
-    } else {
-        dataRange_.set(volume.dataMap_.dataRange);
-        valueRange_.set(volume.dataMap_.valueRange);
-        valueName_.set(volume.dataMap_.valueAxis.name);
-        valueUnit_.set(fmt::to_string(volume.dataMap_.valueAxis.unit));
-
-        for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
-            prop.set(axis.name);
-        }
-        for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
-            prop.set(fmt::to_string(axis.unit));
-        }
-
-        util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, meta(*this));
+    util::updateDefaultState(dataRange_, volume.dataMap_.dataRange, overwrite);
+    util::updateDefaultState(valueRange_, volume.dataMap_.valueRange, overwrite);
+    util::updateDefaultState(valueName_, volume.dataMap_.valueAxis.name, overwrite);
+    util::updateDefaultState(valueUnit_, fmt::to_string(volume.dataMap_.valueAxis.unit), overwrite);
+    for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
+        util::updateDefaultState(prop, axis.name, overwrite);
+    }
+    for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
+        util::updateDefaultState(prop, fmt::to_string(axis.unit), overwrite);
     }
 }
 

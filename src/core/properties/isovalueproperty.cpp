@@ -132,6 +132,11 @@ IsoValueProperty& IsoValueProperty::setCurrentStateAsDefault() {
     return *this;
 }
 
+IsoValueProperty& IsoValueProperty::setDefault(const IsoValueCollection& iso) {
+    iso_.defaultValue = iso;
+    return *this;
+}
+
 IsoValueProperty& IsoValueProperty::resetToDefaultState() {
     NetworkLock lock(this);
 
@@ -171,10 +176,11 @@ IsoValueCollection& IsoValueProperty::get() { return iso_.value; }
 
 const IsoValueCollection& IsoValueProperty::get() const { return iso_.value; }
 
-void IsoValueProperty::set(const IsoValueCollection& iso) {
+IsoValueProperty& IsoValueProperty::set(const IsoValueCollection& iso) {
     iso_.value.removeObserver(this);
     if (iso_.update(iso)) propertyModified();
     iso_.value.addObserver(this);
+    return *this;
 }
 
 const IsoValueCollection& IsoValueProperty::operator*() const { return iso_.value; }

@@ -88,7 +88,7 @@ public:
 
     TransferFunction& get();
     const TransferFunction& get() const;
-    void set(const TransferFunction& tf);
+    TransferFunctionProperty& set(const TransferFunction& tf);
 
     const TransferFunction& operator*() const;
     TransferFunction& operator*();
@@ -131,6 +131,7 @@ public:
     VolumeInport* getVolumeInport();
 
     virtual TransferFunctionProperty& setCurrentStateAsDefault() override;
+    TransferFunctionProperty& setDefault(const TransferFunction& tf);
     virtual TransferFunctionProperty& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;

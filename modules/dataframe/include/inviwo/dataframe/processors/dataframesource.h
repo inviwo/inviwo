@@ -51,8 +51,9 @@ class IVW_MODULE_DATAFRAME_API DataFrameSource : public DataSource<DataFrame, Da
 public:
     DataFrameSource(InviwoApplication* app, const std::string& file = "");
     virtual ~DataFrameSource() = default;
-
-    virtual void process() override;
+    
+    virtual void dataLoaded(std::shared_ptr<DataFrame> data) override;
+    virtual void dataDeserialized(std::shared_ptr<DataFrame> data) override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;

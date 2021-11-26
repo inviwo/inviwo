@@ -108,7 +108,9 @@ void ImageStackVolumeSource::process() {
         volume_ = load();
         if (volume_) {
             basis_.updateForNewEntity(*volume_, deserialized_);
-            information_.updateForNewVolume(*volume_, deserialized_);
+            const auto overwrite =
+                deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes;
+            information_.updateForNewVolume(*volume_, overwrite);
         }
         deserialized_ = false;
     }

@@ -64,6 +64,7 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void deserialize(Deserializer& d) override;
 private:
     DataOutport<DataFrame> data_;
     FileProperty inputFile_;
@@ -73,6 +74,9 @@ private:
     ButtonProperty reloadData_;
 
     ColumnMetaDataListProperty columns_;
+    std::shared_ptr<DataFrame> loadedData_;
+    bool loadingFailed_;
+    bool deserialized_;
 };
 
 }  // namespace inviwo

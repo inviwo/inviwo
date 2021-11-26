@@ -63,4 +63,32 @@ protected:
     void notifyObserversOnSetUsageMode(Property* property, UsageMode usageMode);
 };
 
+struct IVW_CORE_API PropertyObserverDelegate : public PropertyObserver {
+    std::function<void(Property*, const std::string&)> onIdentifierChange;
+    std::function<void(Property*, const std::string&)> onDisplayNameChange;
+    std::function<void(Property*, const PropertySemantics&)> onSemanticsChange;
+    std::function<void(Property*, bool)> onReadOnlyChange;
+    std::function<void(Property*, bool)> onVisibleChange;
+    std::function<void(Property*, UsageMode)> onUsageModeChange;
+
+    virtual void onSetIdentifier(Property* property, const std::string& identifier) override {
+        if (onIdentifierChange) onIdentifierChange(property, identifier);
+    }
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override {
+        if (onDisplayNameChange) onDisplayNameChange(property, displayName);
+    }
+    virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override {
+        if (onSemanticsChange) onSemanticsChange(property, semantics);
+    }
+    virtual void onSetReadOnly(Property* property, bool readonly) override {
+        if (onReadOnlyChange) onReadOnlyChange(property, readonly);
+    }
+    virtual void onSetVisible(Property* property, bool visible) override {
+        if (onVisibleChange) onVisibleChange(property, visible);
+    }
+    virtual void onSetUsageMode(Property* property, UsageMode usageMode) override {
+        if (onUsageModeChange) onUsageModeChange(property, usageMode);
+    }
+};
+
 }  // namespace inviwo

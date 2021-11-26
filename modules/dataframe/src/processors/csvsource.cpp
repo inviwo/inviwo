@@ -31,6 +31,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 
 #include <inviwo/dataframe/io/csvreader.h>
@@ -55,29 +56,57 @@ CSVSource::CSVSource(const std::string& file)
     , delimiters_("delimiters", "Delimiters", ",")
     , doublePrecision_("doublePrecision", "Double Precision", false)
     , reloadData_("reloadData", "Reload Data")
-    , columns_("columns", "Column MetaData") {
+    , columns_("columns", "Column MetaData")
+    , loadingFailed_{false}
+    , deserialized_{false} {
 
     addPort(data_);
 
     addProperties(inputFile_, firstRowIsHeaders_, delimiters_, doublePrecision_, reloadData_,
                   columns_);
 
-    isReady_.setUpdate([this]() { return filesystem::fileExists(inputFile_.get()); });
-    inputFile_.onChange([this]() { isReady_.update(); });
+    isReady_.setUpdate(
+        [this]() { return !loadingFailed_ && filesystem::fileExists(inputFile_.get()); });
+    inputFile_.onChange([this]() {
+        loadingFailed_ = false;
+        isReady_.update();
+    });
+
+    // make sure that we always process even if not connected
+    isSink_.setUpdate([]() { return true; });
 }
 
 void CSVSource::process() {
-    if (inputFile_.get().empty()) return;
-
-    CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
-    auto dataframe = reader.readData(inputFile_.get());
-
-    columns_.updateColumnProperties(*dataframe);
-    for (auto&& [index, col] : util::enumerate(*dataframe)) {
-        col->setCustomRange(columns_.getRange(index));
+    if (inputFile_.get().empty()) {
+        data_.clear();
+        return;
     }
 
-    data_.setData(dataframe);
+    try {
+        const auto overwrite = deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes;
+        deserialized_ = false;
+
+        if (util::any_of(util::ref<Property>(inputFile_, reloadData_, delimiters_,
+                                             firstRowIsHeaders_, doublePrecision_),
+                         &Property::isModified)) {
+            CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
+            loadedData_ = reader.readData(inputFile_.get());
+            columns_.updateForNewDataFrame(*loadedData_, overwrite);
+        }
+
+        auto dataFrame = std::make_shared<DataFrame>(*loadedData_);
+        columns_.updateDataFrame(*dataFrame);
+        data_.setData(dataFrame);
+    } catch (const Exception& e) {
+        LogProcessorError(e.getMessage());
+        data_.clear();
+        loadingFailed_ = true;
+    }
+}
+
+void CSVSource::deserialize(Deserializer& d) {
+    Processor::deserialize(d);
+    deserialized_ = true;
 }
 
 }  // namespace inviwo

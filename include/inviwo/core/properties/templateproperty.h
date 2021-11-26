@@ -65,6 +65,7 @@ public:
     virtual void set(const Property* srcProperty) override;
 
     virtual TemplateProperty& setCurrentStateAsDefault() override;
+    TemplateProperty& setDefault(const T& value);
     virtual TemplateProperty& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
 
@@ -114,6 +115,11 @@ template <typename T>
 TemplateProperty<T>& TemplateProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     value_.setAsDefault();
+    return *this;
+}
+template <typename T>
+TemplateProperty<T>& TemplateProperty<T>::setDefault(const T& value) {
+    value_.defaultValue = value;
     return *this;
 }
 

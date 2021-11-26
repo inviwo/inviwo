@@ -1,23 +1,3 @@
-project(BaseBenchmarks)
+project(CoreBenchmarks LANGUAGES CXX)
 
-set(SOURCE_FILES safecstr.cpp)
-ivw_group("Source Files" ${SOURCE_FILES})
-
-# Create application
-add_executable(bm-safecstr ${SOURCE_FILES})
-find_package(benchmark CONFIG REQUIRED)
-target_link_libraries(bm-safecstr 
-    PUBLIC 
-        benchmark::benchmark
-        inviwo::core
-)
-set_target_properties(bm-safecstr PROPERTIES FOLDER benchmarks)
-
-if(MSVC)
-    set_property(TARGET bm-safecstr APPEND_STRING PROPERTY LINK_FLAGS 
-        " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
-endif()
-
-# Define defintions and properties
-ivw_define_standard_properties(bm-safecstr)
-ivw_define_standard_definitions(bm-safecstr bm-safecstr)
+ivw_benchmark(NAME bm-safecstr LIBS inviwo::core FILES safecstr.cpp)

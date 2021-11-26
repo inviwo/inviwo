@@ -242,4 +242,51 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
     return {unit.multiplier() / closestMultiplier, winner};
 }
 
+std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
+    std::back_insert_iterator<fmt::memory_buffer> it, Unit unit,
+    const unitgroups::EnabledGroups& enabledGroups, UseUnitPrefixes usesPrefixes) {
+
+    // All the unicode superscript digits from 0 to 9 but we let 0,1 ("\u2070", "\u00B9") be
+    // empty since they are not needed
+    //"constexpr std::array<std::string_view, 10> powers = {
+    //    "",         "",         u8"\u00B2", u8"\u00B3", u8"\u2074",
+    //    u8"\u2075", u8"\u2076", u8"\u2077", u8"\u2078", u8"\u2079"};
+
+    // 4-9 not supported yet
+    constexpr std::array<std::string_view, 10> powers = {"",   "",   u8"\u00B2", u8"\u00B3", "^4",
+                                                         "^5", "^6", "^7",       "^8",       "^9"};
+
+    const auto [mult, niceUnits] =
+        ::inviwo::util::findBestSetOfNamedUnits(unit, enabledGroups, usesPrefixes);
+
+    if (mult != 1.0) {
+        fmt::format_to(it, "{:4.2g} ", mult);
+    }
+    int neg = 0;
+    int pos = 0;
+    for (auto&& [prefix, abbr, pow] : niceUnits) {
+        if (pow > 0) {
+            fmt::format_to(it, "{}{}{}", prefix, abbr, powers[pow]);
+            ++pos;
+        } else if (pow < 0) {
+            ++neg;
+        }
+    }
+
+    if (pos == 0) *it++ = '1';
+
+    if (neg != 0) {
+        *it++ = '/';
+        if (neg > 1) *it++ = '(';
+        for (auto&& [prefix, abbr, pow] : niceUnits) {
+            if (pow < 0) {
+                fmt::format_to(it, "{}{}{}", prefix, abbr, powers[-pow]);
+            }
+        }
+        if (neg > 1) *it++ = ')';
+    }
+
+    return it;
+}
+
 }  // namespace inviwo

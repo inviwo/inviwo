@@ -72,7 +72,7 @@ public:
 
     IsoValueCollection& get();
     const IsoValueCollection& get() const;
-    void set(const IsoValueCollection& iso);
+    IsoValueProperty& set(const IsoValueCollection& iso);
 
     const IsoValueCollection& operator*() const;
     IsoValueCollection& operator*();
@@ -111,6 +111,7 @@ public:
     VolumeInport* getVolumeInport();
 
     virtual IsoValueProperty& setCurrentStateAsDefault() override;
+    IsoValueProperty& setDefault(const IsoValueCollection& iso);
     virtual IsoValueProperty& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;

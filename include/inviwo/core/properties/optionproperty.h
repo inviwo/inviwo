@@ -142,7 +142,7 @@ public:
      * Implicit conversion operator. The OptionProperty will implicitly be converted to T when
      * possible.
      */
-    operator const T&() const;
+    operator const T &() const;
 
     template <typename U = T,
               class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
@@ -248,6 +248,8 @@ public:
      * @see Property::setCurrentStateAsDefault()
      */
     virtual TemplateOptionProperty& setCurrentStateAsDefault() override;
+    TemplateOptionProperty<T>& setDefault(const T& value);
+    TemplateOptionProperty<T>& setDefaultSelectedIndex(size_t index);
     virtual TemplateOptionProperty& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
 
@@ -528,7 +530,7 @@ const T& TemplateOptionProperty<T>::getSelectedValue() const {
 }
 
 template <typename T>
-TemplateOptionProperty<T>::operator const T&() const {
+TemplateOptionProperty<T>::operator const T &() const {
     IVW_ASSERT(selectedIndex_ < options_.size(),
                "Index out of range (number of options: " << options_.size()
                                                          << ", index: " << selectedIndex_ << ")");
@@ -804,6 +806,21 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::setCurrentStateAsDefault()
     Property::setCurrentStateAsDefault();
     defaultSelectedIndex_ = selectedIndex_;
     defaultOptions_ = options_;
+    return *this;
+}
+
+template <typename T>
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::setDefault(const T& value) {
+    auto it = util::find_if(options_, [&](auto& opt) { return opt.value_ == value; });
+    if (it != options_.end()) {
+        defaultSelectedIndex_ = std::distance(options_.begin(), it);
+    }
+    return *this;
+}
+
+template <typename T>
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::setDefaultSelectedIndex(size_t index) {
+    defaultSelectedIndex_ = index;
     return *this;
 }
 

@@ -78,6 +78,11 @@ public:
 
     bool isCheckable() const;
     void setCheckable(bool checkable);
+    
+    void setCheckBoxText(std::string_view text);
+    void setCheckBoxVisible(bool visible);
+    void setCheckBoxReadonly(bool readonly);
+    
 
     virtual bool isChildRemovable() const;
 
@@ -118,7 +123,7 @@ protected:
      */
     void setEmptyLabelString(const std::string& str);
 
-    std::unique_ptr<QWidget> createPropertyLayoutWidget();
+    static std::unique_ptr<QWidget> createPropertyLayoutWidget(QLabel* defaultLabel);
     void addButtonLayout(QGridLayout* layout, int row, Property* prop);
     void insertProperty(Property* prop, size_t index);
     void insertPropertyWidget(PropertyWidgetQt* propertyWidget, bool insertAtEnd);
@@ -127,23 +132,26 @@ protected:
 
     std::string displayName_;
     bool checked_;
-    EditableLabelQt* label_;
-    QToolButton* resetButton_;
 
     std::vector<Property*> properties_;
     std::vector<PropertyWidgetQt*> propertyWidgets_;
     std::vector<std::unique_ptr<PropertyWidgetQt>> oldWidgets_;
 
 private:
-    QToolButton* btnCollapse_;
-    QWidget* propertyWidgetGroup_;
-    QGridLayout* propertyWidgetGroupLayout_;
-    QLabel* defaultLabel_;
-    QCheckBox* checkBox_;
     PropertyOwner* propertyOwner_;
     bool showIfEmpty_;
     bool checkable_;
+    QLabel* defaultLabel_;
+    QWidget* propertyWidgetGroup_;
+    QGridLayout* propertyWidgetGroupLayout_;
+    QToolButton* btnCollapse_;
 
+protected:
+    EditableLabelQt* label_;
+    QToolButton* resetButton_;
+
+private:
+    QCheckBox* checkBox_;
     Processor::NameDispatcherHandle nameChange_;
 };
 

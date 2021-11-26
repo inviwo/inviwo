@@ -40,6 +40,17 @@
 
 namespace inviwo {
 
+namespace util {
+
+template <size_t N>
+util::span<const std::string_view, N> defaultValues() {
+    static constexpr std::string_view empty = "";
+    static constexpr std::array<std::string_view, N> values =
+        util::make_array<N>([&](auto) { return empty; });
+    return values;
+}
+}  // namespace util
+
 /**
  * \brief CompositeProperty for a fixed set of StringProperties
  */
@@ -47,8 +58,7 @@ template <size_t N>
 class StringsProperty : public CompositeProperty {
 public:
     StringsProperty(std::string_view identifier, std::string_view displayName,
-                    util::span<const std::string_view, N> values =
-                        util::make_array<N>([empty = empty](auto) { return empty; }),
+                    util::span<const std::string_view, N> values = util::defaultValues<N>(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
 
@@ -61,9 +71,6 @@ public:
     virtual std::string getClassIdentifierForWidget() const override;
 
     std::array<StringProperty, N> strings;
-
-private:
-    static constexpr std::string_view empty = "";
 };
 
 template <size_t N>

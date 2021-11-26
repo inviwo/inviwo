@@ -88,7 +88,6 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
         auto p = &(property_->strings[i]);
         return PropertyWidgetDelegate(p, [p, l = lineEdits_[i]]() {
             QSignalBlocker blocker(l);
-            LogWarnCustom("Del", "Widg del " << p->getPath() << " " << p->get());
             l->setText(utilqt::toQString(p->get()));
             l->setCursorPosition(0);
             l->clearFocus();
@@ -121,7 +120,7 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
         lineEdit->setSizePolicy(sp);
         lineEdit->setMinimumWidth(10);
         hWidgetLayout_->addWidget(lineEdit);
-        lineEdit->setPlaceholderText(utilqt::toQString(prop.getDisplayName()));
+        lineEdit->setPlaceholderText(utilqt::toQString(fmt::format("<{}>", prop.getDisplayName())));
 
         connect(lineEdit, &LineEditQt::editingFinished, this, [this, p = &prop, l = lineEdit]() {
             std::string valueStr = utilqt::fromQString(l->text());
@@ -139,6 +138,9 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
         });
     }
 
+    for (auto& delegate : delegates_) {
+        delegate.updateFromProperty();
+    }
     updateFromProperty();
 }
 
