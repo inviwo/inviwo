@@ -78,7 +78,7 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendRows(const DataFrame& 
 ///@{
 /**
  * \brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
- * That is only rows with matching keys are kept.
+ * That is only rows with matching keys are kept. The row indices of \p left will be reused.
  *
  * It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
  * @param left
@@ -97,7 +97,8 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
 ///@{
 /**
  * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
- * right. That is all rows of \p left are augmented with matching rows from \p right.
+ * right. That is all rows of \p left are augmented with matching rows from \p right.  The row
+ * indices of \p left will be reused.
  *
  * It is assumed that the entries in the key columns of \p right are unique. Otherwise results are
  * undefined.

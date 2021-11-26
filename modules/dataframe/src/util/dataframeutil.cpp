@@ -354,10 +354,11 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
     IVW_ASSERT(rowsLeft.size() == rowsRight.size(), "incorrect number of matching row indices");
 
     auto dataframe = std::make_shared<DataFrame>();
+    dataframe->dropColumn(0);
+    dataframe->addColumn(std::shared_ptr<Column>(left.getIndexColumn()->clone(rowsLeft)));
     detail::addColumns(dataframe, left, rowsLeft, {keyColumn}, false);
     detail::addColumns(dataframe, right, rowsRight, {keyColumn}, true);
 
-    dataframe->updateIndexBuffer();
     return dataframe;
 }
 
@@ -382,10 +383,11 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
     IVW_ASSERT(rowsLeft.size() == rowsRight.size(), "incorrect number of matching row indices");
 
     auto dataframe = std::make_shared<DataFrame>();
+    dataframe->dropColumn(0);
+    dataframe->addColumn(std::shared_ptr<Column>(left.getIndexColumn()->clone(rowsLeft)));
     detail::addColumns(dataframe, left, rowsLeft, keyColumns, false);
     detail::addColumns(dataframe, right, rowsRight, keyColumns, true);
 
-    dataframe->updateIndexBuffer();
     return dataframe;
 }
 
@@ -409,10 +411,11 @@ std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& righ
     IVW_ASSERT(indexCol1->getSize() == rows.size(), "incorrect number of matching row indices");
 
     auto dataframe = std::make_shared<DataFrame>();
+    dataframe->dropColumn(0);
+    dataframe->addColumn(std::shared_ptr<Column>(left.getIndexColumn()->clone()));
     detail::addColumns(dataframe, left, {keyColumn}, false);
     detail::addColumns(dataframe, right, rows, {keyColumn}, true);
 
-    dataframe->updateIndexBuffer();
     return dataframe;
 }
 
@@ -435,10 +438,11 @@ std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& righ
         });
 
     auto dataframe = std::make_shared<DataFrame>();
+    dataframe->dropColumn(0);
+    dataframe->addColumn(std::shared_ptr<Column>(left.getIndexColumn()->clone()));
     detail::addColumns(dataframe, left, keyColumns, false);
     detail::addColumns(dataframe, right, rows, keyColumns, true);
 
-    dataframe->updateIndexBuffer();
     return dataframe;
 }
 
