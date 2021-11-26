@@ -168,8 +168,8 @@ void PickingController::setPickingSource(const std::shared_ptr<const Image>& src
 
 size_t PickingController::pickId(const uvec2& coord) {
     if (auto src = src_.lock()) {
-        if (auto dim = src->getDimensions();
-            glm::any(glm::lessThan(uvec2{0}, coord) | glm::greaterThan(uvec2{dim} - uvec2{1}, coord))) {
+        if (auto dim = src->getDimensions(); glm::any(
+                glm::lessThan(uvec2{0}, coord) | glm::greaterThan(uvec2{dim} - uvec2{1}, coord))) {
             return PickingManager::VoidId;
         }
         const auto value = src->readPixel(coord, LayerType::Picking);
