@@ -5,5 +5,6 @@ set(dependencies
     InviwoBaseModule  
     InviwoEigenUtilsModule  
     InviwoBrushingAndLinkingModule  
+    InviwoDataFrameModule  
 )
 set(EnableByDefault ON)

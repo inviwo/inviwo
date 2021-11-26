@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021 Inviwo Foundation
+ * Copyright (c) 2015-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,56 +30,15 @@
 #pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
+namespace util {
 
-/** \docpage{org.inviwo.LineSourceASCII, Line Source ASCII}
- * ![](org.inviwo.LineSourceASCII.png?classIdentifier=org.inviwo.LineSourceASCII)
- * Loads GDP drifter data into an IntegralLineSet.
- * GDP drifter data is given in an ASCII table.
- */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API LineSourceASCII : public Processor {
-public:
-    LineSourceASCII();
-    virtual ~LineSourceASCII() = default;
+void addVelocity(IntegralLineSet& lineSet);
 
-    virtual void process() override;
+bool addAcceleration(IntegralLineSet& lineSet, bool fromVelocity = false,
+                     const std::string& name = "acceleration");
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    IntegralLineSetOutport linesOut_;
-
-    FileProperty inputFile_;
-    BoolProperty maxLines_;
-    IntSizeTProperty maxNumLines_;
-    BoolProperty overflowWrapping_;
-    BoolProperty addAcceleration_;
-    BoolProperty filterStartTime_;
-    IntProperty startTime_;
-    BoolProperty filterTimeJumps_;
-
-    class SeedFilter : public BoolCompositeProperty {
-    public:
-        enum FilterType { Circle, Rectangle };
-
-        TemplateOptionProperty<FilterType> filterType_;
-        DoubleVec3Property center_;
-        DoubleProperty radius_;
-        DoubleVec3Property min_, max_;
-
-        SeedFilter(const std::string& identifier, const std::string& displayName);
-
-        bool isInside(dvec2 pos);
-    } filterSeed_;
-    // DoubleVec2Property
-};
-
+}  // namespace util
 }  // namespace inviwo

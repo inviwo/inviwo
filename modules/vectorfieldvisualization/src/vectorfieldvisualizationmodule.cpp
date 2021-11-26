@@ -55,6 +55,7 @@
 #include <modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h>
 #include <modules/base/processors/volumetospatialsampler.h>
 #include <modules/vectorfieldvisualization/processors/flowfieldprocessor.h>
+#include <modules/vectorfieldvisualization/processors/linesfromdataframe.h>
 #include <modules/vectorfieldvisualization/processors/seedsfrommesh.h>
 
 namespace inviwo {
@@ -98,6 +99,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
 
     registerProcessor<SeedPointGenerator2D>();
     registerProcessor<LineSetSelector>();
+    registerProcessor<LinesFromDataFrame>();
     registerProcessor<SeedsFromMesh>();
     registerProcessor<SeedsToMesh2D>();
 

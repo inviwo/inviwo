@@ -407,7 +407,12 @@ void IntegralLineVectorToMesh::process() {
                 vec4 color = coloring(sample, line.getIndex(), lineIdx);
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                vertices.push_back({pos, glm::normalize(vel), pos, color});
+                vec3 propSample = util::glm_convert<vec3>(get<2>(sample));
+                vertices.push_back({pos, vel, propSample, color});
+                // if (vertices.size() < 10) {
+                //     std::cout << fmt::format("pos: {}, vel: {}, color: {}", pos, vel, propSample)
+                //               << std::endl;
+                // }
             }
         };
 
@@ -426,10 +431,11 @@ void IntegralLineVectorToMesh::process() {
                 auto off = glm::normalize(vor) * (ribbonWidth_.get() / 2.0f);
                 auto pos1 = pos - off;
                 auto pos2 = pos + off;
+                vec3 propSample = util::glm_convert<vec3>(get<2>(sample));
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                vertices.push_back({pos1, N, pos1, color});
+                vertices.push_back({pos1, vel, propSample, color});
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                vertices.push_back({pos2, N, pos2, color});
+                vertices.push_back({pos2, vel, propSample, color});
             }
         };
 

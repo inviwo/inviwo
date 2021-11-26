@@ -30,6 +30,7 @@
 #include <modules/vectorfieldvisualization/processors/linesourceascii.h>
 #include <inviwo/core/util/filesystem.h>
 #include <fmt/format.h>
+#include <modules/vectorfieldvisualization/util/linemetrics.h>
 
 #include <array>
 #include <ctime>
@@ -54,11 +55,17 @@ LineSourceASCII::LineSourceASCII()
     , maxNumLines_("maxNumLines", "Number of Lines", 100, {1, ConstraintBehavior::Immutable},
                    {1000, ConstraintBehavior::Ignore})
     , overflowWrapping_("discardWrapping", "Discard wrapped lines?", true)
-    , filterSeed_("filterSeed", "Filter by Starting Point") {
+    , addAcceleration_("addAcceleration", "Add Accelerations", false)
+    , filterStartTime_("filterStartTime", "Filter Start Time", false)
+    , startTime_("startTime", "Start Time")
+    , filterSeed_("filterSeed", "Filter by Starting Point")
+    , filterTimeJumps_("filterTimeJumps", "Filter Jumps", true) {
 
     addPort(linesOut_);
-    addProperties(inputFile_, maxLines_, maxNumLines_, overflowWrapping_, filterSeed_);
+    addProperties(inputFile_, maxLines_, maxNumLines_, overflowWrapping_, addAcceleration_,
+                  filterSeed_, filterStartTime_, startTime_, filterTimeJumps_);
     maxNumLines_.visibilityDependsOn(maxLines_, [](auto& prop) { return prop.get(); });
+    startTime_.visibilityDependsOn(filterStartTime_, [](auto& prop) { return prop.get(); });
 }
 
 void LineSourceASCII::process() {
@@ -82,31 +89,27 @@ void LineSourceASCII::process() {
         throw FileException(std::string("Unexpected file header, expected 12 variables"),
                             IVW_CONTEXT);
     }
-    std::cout << ") Header line: " << dataLine << std::endl;
+    // std::cout << ") Header line: " << dataLine << std::endl;
 
     // STRING VIEW TEST - would probably need to change compiler flag, and don't look forward to
     // recompiling right now...
     auto lines = std::make_shared<IntegralLineSet>(mat4(1.0));
     IntegralLine line;
-    std::vector<dvec3>*posVec, *veloVec;
-    std::vector<double>*tempVec, *speedVec;
+    std::vector<dvec3>* posVec;
 
     int lineID = 0;
-    // size_t lineLength = 0;
+    size_t numTraversedLines = 0;
     intmax_t startTime = 0;
-    struct tm timeStruct = {0};
-    std::array<double, 6> scalarValues;
+    struct tm timeStruct;
+    std::array<double, 2> position;
     double lonOffset = 0;
     bool skipCurrentLine = false;
 
     char delim = ' ';
     int year, month, day, hours, minutes, seconds;
-    size_t numTraversedLines = 0;
 
     while (std::getline(file, dataLine)) {
-        // // TMP DEBUG DEBUG
-        if (maxLines_.get() && numTraversedLines >= maxNumLines_.get()) break;  // DEBUG
-        // // DEBU DEBUG DEBUG
+        if (maxLines_.get() && numTraversedLines >= maxNumLines_.get()) break;
 
         size_t wordStart = dataLine.find_first_not_of(delim, 0);
         size_t wordEnd = 0;
@@ -120,20 +123,18 @@ void LineSourceASCII::process() {
             numTraversedLines++;
             if (!skipCurrentLine) {
                 // Add the last line to the LineSet.
-                if (lineID) {
-                    // std::cout << lineID << " - " << lineLength << std::endl;
+                if (line.getPositions().size() > 0) {
+                    if (lineID && line.getPositions().size() >= 4) {
+                        lines->push_back(std::move(line), lineID);
+                    }
 
-                    lines->push_back(std::move(line), lineID);
+                    // Start a new line.
+                    line = IntegralLine();
                 }
-
-                // Start a new line.
-                line = IntegralLine();
                 posVec = &line.getPositions();
-                veloVec = &line.getMetaData<dvec3>("velocity", true);
-                tempVec = &line.getMetaData<double>("temperature", true);
-                speedVec = &line.getMetaData<double>("speed", true);
-
-                // lineLength = 0;
+                // veloVec = &line.getMetaData<dvec3>("velocity", true);
+                // tempVec = &line.getMetaData<double>("temperature", true);
+                // speedVec = &line.getMetaData<double>("speed", true);
                 lineID = currentLineID;
                 lonOffset = 0;
             }
@@ -141,7 +142,6 @@ void LineSourceASCII::process() {
         } else if (skipCurrentLine) {
             continue;
         }
-        // lineLength++;
         wordStart = wordEnd + 1;
 
         // Get date from "2020-06-23 18:00:00".
@@ -158,56 +158,117 @@ void LineSourceASCII::process() {
         intmax_t timeInt = std::mktime(&timeStruct);
         if (!startTime) {
             startTime = timeInt / (60 * 60 * 6);  // Only measure in 6h steps.
-            timeInt = 0;
         }
         timeInt = timeInt / (60 * 60 * 6) - startTime;
-        double timeScalar = 0.25 * timeInt;
+
+        // Stop if seed starts after start time.
+        if (filterStartTime_.get() && newLine && timeInt > startTime_.get()) {
+            skipCurrentLine = true;
+            posVec->clear();
+            continue;
+        }
+        // Ignore point if we are before the start time.
+        if (filterStartTime_.get() && timeInt < startTime_.get()) {
+            lineID = 0;
+            numTraversedLines--;
+            continue;
+        }
+
+        if (filterStartTime_.get()) timeInt -= startTime_.get();
+
+        // Delete line if there is a time jump at any point.
+        if (filterTimeJumps_.get() && posVec->size() &&
+            (double(timeInt) - posVec->back().z) > 1.1) {
+            skipCurrentLine = true;
+            posVec->clear();
+            continue;
+        }
 
         // Get position, temperature, velocity and speed from
         // "  -23.406  -41.907   23.551  -3.342    8.669    9.291  ".
         // Read as 6 scalar values and assign accordingly.
 
         wordStart += 20;
-        for (size_t var = 0; var < 6; ++var) {
+        for (size_t var = 0; var < 2; ++var) {
             wordStart = dataLine.find_first_not_of(delim, wordStart);
             wordEnd = dataLine.find(delim, wordStart);
             dataLine[wordEnd] = '\0';
-            scalarValues[var] = std::atof(dataLine.c_str() + wordStart);
+            position[var] = std::atof(dataLine.c_str() + wordStart);
             wordStart = wordEnd + 1;
         }
 
         // Potentially filter by starting position.
         if (newLine && filterSeed_) {
-            dvec2 seed{scalarValues[1], scalarValues[0]};
-            double dist = glm::distance(seed, dvec2(filterSeed_.center_.get()));
-            if (dist > filterSeed_.radius_.get()) {
-                skipCurrentLine = true;
-                continue;
-            }
+            dvec2 seed{position[1], position[0]};
+            skipCurrentLine = !filterSeed_.isInside(seed);
+            if (skipCurrentLine) continue;
         }
 
         // Potentially offset points that would wrap around -180/180 lon to overflow instead.
-        scalarValues[1] += lonOffset;
+        position[1] += lonOffset;
         if (overflowWrapping_.get() && posVec->size()) {
-            double lonDist = scalarValues[1] - posVec->back()[0];
+            double lonDist = position[1] - posVec->back()[0];
             if (lonDist < -300) {
                 lonOffset += 360;
-                scalarValues[1] += 360;
+                position[1] += 360;
             }
             if (lonDist > 300) {
                 lonOffset -= 360;
-                scalarValues[1] -= 360;
+                position[1] -= 360;
             }
         }
 
-        posVec->emplace_back(scalarValues[1], scalarValues[0], timeScalar);
-        tempVec->push_back(scalarValues[2]);
-        veloVec->emplace_back(scalarValues[3], scalarValues[4], 0.25);
-        speedVec->push_back(scalarValues[5]);
+        posVec->emplace_back(position[1], position[0], timeInt);
     }
-    lines->push_back(std::move(line), lineID);
+    if (!skipCurrentLine && line.getPositions().size() > 0)
+        lines->push_back(std::move(line), lineID);
+
+    // Compute velocity manually, and potentially two types of acceleration.
+    util::addVelocity(*lines);
+    if (addAcceleration_.get()) {
+        util::addAcceleration(*lines, true, "accelerationVelo");
+        util::addAcceleration(*lines, false, "accelerationPos");
+    }
 
     linesOut_.setData(lines);
+}
+
+LineSourceASCII::SeedFilter::SeedFilter(const std::string& identifier,
+                                        const std::string& displayName)
+    : BoolCompositeProperty(identifier, displayName)
+    , filterType_("filterType", "Type",
+                  {{"Circle", "Circle", FilterType::Circle},
+                   {"Rectangle", "Rectangle", FilterType::Rectangle}},
+                  0, InvalidationLevel::InvalidResources)
+    , center_("center", "Center", dvec3{0, 0, 0}, dvec3{-180, -90, 0}, dvec3{180, 90, 0})
+    , radius_("radius", "Radius", 10, 0.001, 45)
+    , min_("min", "Min", {0, 0, 0}, {vec3(0, 0, 0), ConstraintBehavior::Ignore},
+           {vec3(1, 1, 0), ConstraintBehavior::Ignore})
+    , max_("max", "Max", {1, 1, 0}, {vec3(0, 0, 0), ConstraintBehavior::Ignore},
+           {vec3(1, 1, 0), ConstraintBehavior::Ignore}) {
+    addProperties(filterType_, center_, radius_, min_, max_);
+    center_.visibilityDependsOn(filterType_,
+                                [](auto& prop) { return prop.get() == FilterType::Circle; });
+    radius_.visibilityDependsOn(filterType_,
+                                [](auto& prop) { return prop.get() == FilterType::Circle; });
+
+    min_.visibilityDependsOn(filterType_,
+                             [](auto& prop) { return prop.get() == FilterType::Rectangle; });
+    max_.visibilityDependsOn(filterType_,
+                             [](auto& prop) { return prop.get() == FilterType::Rectangle; });
+}
+
+bool LineSourceASCII::SeedFilter::isInside(dvec2 pos) {
+    double dist;
+    switch (filterType_.get()) {
+        case FilterType::Circle:
+            dist = glm::distance(pos, dvec2(center_.get()));
+            return (dist <= radius_.get());
+        case FilterType::Rectangle:
+            return (pos.x > min_.get().x && pos.x < max_.get().x &&  // x
+                    pos.y > min_.get().y && pos.y < max_.get().y);   // y
+    }
+    return true;
 }
 
 }  // namespace inviwo
