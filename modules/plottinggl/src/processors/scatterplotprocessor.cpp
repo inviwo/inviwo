@@ -198,7 +198,7 @@ void ScatterPlotProcessor::process() {
 
     BitSet b(brushingPort_.getFilteredIndices());
     // invert the bitset to obtain the ids remaining after the filtering
-    b.flipRange(0, static_cast<uint32_t>(dataframe->getNumberOfRows()));
+    b.flipRange(0, static_cast<uint32_t>(dataframe->getIndexColumn()->getRange().y + 1));
     b = transformIdsToRows(b);
 
     IndexBuffer indicies;

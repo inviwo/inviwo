@@ -410,19 +410,9 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
         if (selectedIndicesGLDirty_) {
             nSelectedButNotFiltered_ = 0;
             std::vector<uint32_t> selectedIndices;
-            if (indexColumn_) {
-                auto& indexCol =
-                    indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-                for (auto [ind, selected, filtered] : util::enumerate(selected_, filtered_)) {
-                    if (selected && !filtered) {
-                        selectedIndices.push_back(indexCol[ind]);
-                    }
-                }
-            } else {
-                for (auto [ind, selected, filtered] : util::enumerate(selected_, filtered_)) {
-                    if (selected && !filtered) {
-                        selectedIndices.push_back(static_cast<uint32_t>(ind));
-                    }
+            for (auto [ind, selected, filtered] : util::enumerate(selected_, filtered_)) {
+                if (selected && !filtered) {
+                    selectedIndices.push_back(static_cast<uint32_t>(ind));
                 }
             }
 
@@ -615,32 +605,16 @@ void ScatterPlotGL::renderAxis(const size2_t& dims) {
 }
 
 void ScatterPlotGL::objectPicked(PickingEvent* p) {
-    auto idToDataFrameIndex = [this](uint32_t id) -> std::optional<uint32_t> {
-        if (!indexColumn_) {
-            return std::nullopt;
-        }
-        auto& indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-        auto it = util::find(indexCol, static_cast<uint32_t>(id));
-        if (it != indexCol.end()) {
-            return *it;
-        } else {
-            return std::nullopt;
-        }
-    };
-
     const uint32_t id = static_cast<uint32_t>(p->getPickedId());
-    auto rowIndex = idToDataFrameIndex(id);
 
     // Show tooltip for current item
-    if (rowIndex) {
-        if (p->getHoverState() == PickingHoverState::Move ||
-            p->getHoverState() == PickingHoverState::Enter) {
+    if (p->getHoverState() == PickingHoverState::Move ||
+        p->getHoverState() == PickingHoverState::Enter) {
 
-            tooltipCallback_.invoke(p, rowIndex.value());
+        tooltipCallback_.invoke(p, id);
 
-        } else if (p->getHoverState() == PickingHoverState::Exit) {
-            p->setToolTip("");
-        }
+    } else if (p->getHoverState() == PickingHoverState::Exit) {
+        p->setToolTip("");
     }
 
     if (properties_.hovering_.get()) {
