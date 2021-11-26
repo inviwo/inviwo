@@ -286,9 +286,9 @@ void VolumeAxis::adjustRanges() {
             break;
     }
 
-    util::updateDefaultState(xAxis_.captionSettings_.title_, xCaption);
-    util::updateDefaultState(yAxis_.captionSettings_.title_, yCaption);
-    util::updateDefaultState(zAxis_.captionSettings_.title_, zCaption);
+    util::updateDefaultState(xAxis_.captionSettings_.title_, xCaption, util::OverwriteState::No);
+    util::updateDefaultState(yAxis_.captionSettings_.title_, yCaption, util::OverwriteState::No);
+    util::updateDefaultState(zAxis_.captionSettings_.title_, zCaption, util::OverwriteState::No);
 
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
 }  // namespace plot
