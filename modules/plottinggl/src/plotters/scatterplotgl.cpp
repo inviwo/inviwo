@@ -308,6 +308,7 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
     shader_.setUniform("maxRadius", maxRadius);
     shader_.setUniform("margins", margins);
 
+    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     if (radius_) {
