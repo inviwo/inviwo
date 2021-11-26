@@ -120,6 +120,7 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.labelSettings_.font_.fontFace_.set(axis_.captionSettings_.font_.fontFace_.get());
     axis_.captionSettings_.offset_.set(20);
     axis_.captionSettings_.font_.anchorPos_.set(vec2{0.0f, 0.0f});
+    axis_.majorTicks_.style_.set(plot::TickStyle::Outside);
     axis_.setCurrentStateAsDefault();
 
     auto updateTitle = [this]() {
@@ -276,7 +277,6 @@ void ColorScaleLegend::process() {
 
     const ivec2 dimensions = outport_.getDimensions();
     const auto [bottomLeft, legendSize, axisStart, axisEnd] = getPositions(dimensions);
-    axisRenderer_.render(dimensions, axisStart, axisEnd);
 
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -295,9 +295,13 @@ void ColorScaleLegend::process() {
 
     const ivec4 view{bottomLeft - ivec2{borderWidth_}, legendSize + ivec2{borderWidth_ * 2}};
     shader_.setUniform("viewport", view);
-    utilgl::ViewportState viewport(view);
+    {
+        utilgl::ViewportState viewport(view);
+        utilgl::singleDrawImagePlaneRect();
+    }
 
-    utilgl::singleDrawImagePlaneRect();
+    axisRenderer_.render(dimensions, axisStart, axisEnd);
+
     utilgl::deactivateCurrentTarget();
 }
 
