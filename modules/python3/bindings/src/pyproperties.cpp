@@ -231,7 +231,7 @@ void exposeProperties(py::module& m) {
         .def_property_readonly("identifiers", &BaseOptionProperty::getIdentifiers)
         .def_property_readonly("displayNames", &BaseOptionProperty::getDisplayNames);
 
-    using OptionPropetyTypes = std::tuple<double, float, int, std::string>;
+    using OptionPropertyTypes = std::tuple<double, float, int, std::string>;
     using MinMaxPropertyTypes = std::tuple<float, double, size_t, glm::i64, int>;
     using OrdinalPropetyTypes = std::tuple<float, int, size_t, glm::i64, double, vec2, vec3, vec4,
                                            dvec2, dvec3, dvec4, ivec2, ivec3, ivec4, size2_t,
@@ -239,7 +239,7 @@ void exposeProperties(py::module& m) {
 
     util::for_each_type<OrdinalPropetyTypes>{}(OrdinalPropertyHelper{}, m);
     util::for_each_type<OrdinalPropetyTypes>{}(OrdinalRefPropertyHelper{}, m);
-    util::for_each_type<OptionPropetyTypes>{}(OptionPropertyHelper{}, m);
+    util::for_each_type<OptionPropertyTypes>{}(OptionPropertyHelper{}, m);
     util::for_each_type<MinMaxPropertyTypes>{}(MinMaxHelper{}, m);
 
     PyPropertyClass<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")

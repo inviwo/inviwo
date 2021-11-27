@@ -333,6 +333,10 @@ struct OptionPropertyHelper {
                 "value", [](P* p) { return p->get(); }, [](P* p, T& t) { p->set(t); })
             .def_property("selectedValue", &P::getSelectedValue,
                           [](P* p, const T& val) { p->setSelectedValue(val); })
+            .def_property("selectedIdentifier", &P::getSelectedIdentifier,
+                          &P::setSelectedIdentifier)
+            .def_property("selectedDisplayName", &P::getSelectedDisplayName,
+                          &P::setSelectedDisplayName)
 
             .def("replaceOptions",
                  [](P* p, const std::vector<std::string>& ids,
