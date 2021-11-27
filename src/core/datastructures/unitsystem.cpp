@@ -248,13 +248,9 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
 
     // All the unicode superscript digits from 0 to 9 but we let 0,1 ("\u2070", "\u00B9") be
     // empty since they are not needed
-    //"constexpr std::array<std::string_view, 10> powers = {
-    //    "",         "",         u8"\u00B2", u8"\u00B3", u8"\u2074",
-    //    u8"\u2075", u8"\u2076", u8"\u2077", u8"\u2078", u8"\u2079"};
-
-    // 4-9 not supported yet
-    constexpr std::array<std::string_view, 10> powers = {"",   "",   u8"\u00B2", u8"\u00B3", "^4",
-                                                         "^5", "^6", "^7",       "^8",       "^9"};
+    constexpr std::array<std::string_view, 10> powers = {
+        "",         "",         u8"\u00B2", u8"\u00B3", u8"\u2074",
+        u8"\u2075", u8"\u2076", u8"\u2077", u8"\u2078", u8"\u2079"};
 
     const auto [mult, niceUnits] =
         ::inviwo::util::findBestSetOfNamedUnits(unit, enabledGroups, usesPrefixes);

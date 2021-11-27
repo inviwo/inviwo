@@ -80,8 +80,7 @@ public:
      * Set a custom range for the column which can be used for normalization, plotting, color
      * mapping, etc.
      */
-    virtual void setCustomRange(dvec2 range) = 0;
-    virtual void clearCustomRange() = 0;
+    virtual void setCustomRange(std::optional<dvec2>) = 0;
 
     /**
      * Returns the custom column range. If no range has been set previously, the return
@@ -162,8 +161,7 @@ public:
     virtual Unit getUnit() const override;
     virtual void setUnit(Unit unit) override;
 
-    virtual void setCustomRange(dvec2 range) override;
-    virtual void clearCustomRange() override;
+    virtual void setCustomRange(std::optional<dvec2> range) override;
     virtual std::optional<dvec2> getCustomRange() const override;
     virtual dvec2 getDataRange() const override;
     virtual dvec2 getRange() const override;
@@ -439,13 +437,8 @@ void TemplateColumn<T>::setUnit(Unit unit) {
 }
 
 template <typename T>
-void TemplateColumn<T>::setCustomRange(dvec2 range) {
+void TemplateColumn<T>::setCustomRange(std::optional<dvec2> range) {
     range_ = range;
-}
-
-template <typename T>
-void TemplateColumn<T>::clearCustomRange() {
-    range_ = std::nullopt;
 }
 
 template <typename T>
@@ -456,7 +449,6 @@ std::optional<dvec2> TemplateColumn<T>::getCustomRange() const {
 template <typename T>
 dvec2 TemplateColumn<T>::getDataRange() const {
     const auto [min, max] = util::bufferMinMax(buffer_.get(), IgnoreSpecialValues::Yes);
-
     return {*std::min_element(glm::value_ptr(min), glm::value_ptr(min) + util::extent_v<T>),
             *std::max_element(glm::value_ptr(max), glm::value_ptr(max) + util::extent_v<T>)};
 }
