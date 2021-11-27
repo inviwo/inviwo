@@ -31,6 +31,7 @@
 
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
@@ -206,6 +207,7 @@ void ImagePlotProcessor::onStatusChange() {
     viewManager_.replace(0, viewport_);
 
     if (imgInport_.isConnected()) {
+        RenderContext::getPtr()->activateDefaultRenderContext();
         ResizeEvent e(size2_t(viewManager_[0].size));
         imgInport_.propagateEvent(&e, imgInport_.getConnectedOutport());
     }
