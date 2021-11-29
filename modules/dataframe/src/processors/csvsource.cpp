@@ -67,10 +67,13 @@ CSVSource::CSVSource(const std::string& file)
 
     isReady_.setUpdate(
         [this]() { return !loadingFailed_ && filesystem::fileExists(inputFile_.get()); });
-    inputFile_.onChange([this]() {
-        loadingFailed_ = false;
-        isReady_.update();
-    });
+    for (auto&& item : util::ref<Property>(inputFile_, reloadData_, delimiters_, firstRowIsHeaders_,
+                                           doublePrecision_)) {
+        std::invoke(&Property::onChange, item, [this]() {
+            loadingFailed_ = false;
+            isReady_.update();
+        });
+    }
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });

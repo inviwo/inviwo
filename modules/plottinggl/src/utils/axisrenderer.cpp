@@ -235,8 +235,9 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         const auto anchor = captionSettings.getFont().getAnchorPos();
 
         // The anchor position in the texture;
-        const auto anchorPos = vec2{captex.bbox.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
-                               vec2{captex.bbox.glyphsOrigin};
+        const auto anchorPos =
+            glm::round(vec2{captex.bbox.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
+                       vec2{captex.bbox.glyphsOrigin});
 
         const auto angle = glm::radians(captionSettings.getRotation()) +
                            (settings_.get().isVertical() ? glm::half_pi<float>() : 0.0f);
@@ -268,8 +269,8 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         std::transform(ri.boundingBoxes.begin(), ri.boundingBoxes.end(),
                        std::back_inserter(transforms), [&](const TextBoundingBox& bb) {
                            const auto anchorPos =
-                               vec2{bb.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
-                               vec2{bb.glyphsOrigin};
+                               glm::round(vec2{bb.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
+                                          vec2{bb.glyphsOrigin});
                            return glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) *
                                   glm::translate(vec3(-anchorPos, 0.f));
                        });
@@ -293,8 +294,9 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
         const auto anchor = captionSettings.getFont().getAnchorPos();
 
         // The anchor position in the texture;
-        const auto anchorPos = vec2{captex.bbox.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
-                               vec2{captex.bbox.glyphsOrigin};
+        const auto anchorPos =
+            glm::round(vec2{captex.bbox.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
+                       vec2{captex.bbox.glyphsOrigin});
 
         const auto angle = glm::radians(captionSettings.getRotation()) +
                            (settings_.get().isVertical() ? glm::half_pi<float>() : 0.0f);
@@ -332,8 +334,8 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
         for (auto&& item : util::zip(positions, ri.boundingBoxes)) {
             const auto& pos = item.first();
             const auto& bb = item.second();
-            const auto anchorPos =
-                vec2{bb.textExtent} * (anchor + vec2{1.0f}) * 0.5f - vec2{bb.glyphsOrigin};
+            const auto anchorPos = glm::round(vec2{bb.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
+                                              vec2{bb.glyphsOrigin});
             const auto transform =
                 glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) * glm::translate(vec3(-anchorPos, 0.f));
             const auto pos1 = vec2{pos} + vec2{transform * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
