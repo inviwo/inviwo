@@ -29,6 +29,4 @@
 
 #include <modules/qtwidgets/properties/stringspropertywidgetqt.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

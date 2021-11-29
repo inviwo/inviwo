@@ -29,7 +29,4 @@
 
 #include <inviwo/core/properties/stringsproperty.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -48,7 +48,6 @@ std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
     auto newVolumeRep = std::make_shared<VolumeRAMPrecision<float>>(volume.getDimensions());
     newVolume->addRepresentation(newVolumeRep);
 
-
     const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
     const auto a = m * vec4(0, 0, 0, 1);

@@ -130,7 +130,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
             }
         });
         button->setFocusPolicy(Qt::NoFocus);
-        
+
         button->setToolTip(tr("Reset the group of properties to its default state"));
         return button;
     }()}

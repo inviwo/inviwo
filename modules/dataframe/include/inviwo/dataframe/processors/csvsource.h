@@ -65,6 +65,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void deserialize(Deserializer& d) override;
+
 private:
     DataOutport<DataFrame> data_;
     FileProperty inputFile_;

@@ -78,11 +78,10 @@ public:
 
     bool isCheckable() const;
     void setCheckable(bool checkable);
-    
+
     void setCheckBoxText(std::string_view text);
     void setCheckBoxVisible(bool visible);
     void setCheckBoxReadonly(bool readonly);
-    
 
     virtual bool isChildRemovable() const;
 

@@ -96,7 +96,7 @@ public:
      */
     void setDataFormat(const DataFormatBase* format);
     const DataFormatBase* getDataFormat() const;
-    
+
     /**
      * \brief update the swizzle mask of the color channels when sampling the volume
      *
