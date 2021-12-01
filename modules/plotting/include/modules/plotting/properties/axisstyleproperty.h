@@ -81,21 +81,9 @@ private:
     }
 };
 
-namespace detail {
-
-inline void registerPropertyHelper(AxisStyleProperty&) {}
-
-template <typename... Ts>
-void registerPropertyHelper(AxisStyleProperty& owner, AxisProperty& p, Ts&... props) {
-    owner.registerProperty(p);
-    registerPropertyHelper(owner, props...);
-}
-
-}  // namespace detail
-
 template <typename... Ts>
 void AxisStyleProperty::registerProperties(Ts&... properties) {
-    detail::registerPropertyHelper(*this, properties...);
+    (registerProperty(properties), ...);
 }
 
 }  // namespace plot

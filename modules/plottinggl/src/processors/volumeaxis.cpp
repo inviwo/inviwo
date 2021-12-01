@@ -198,9 +198,7 @@ void VolumeAxis::process() {
     }
 
     const auto dims = outport_.getDimensions();
-
-    auto volume = inport_.getData();
-
+    const auto volume = inport_.getData();
     const auto offset = volume->getOffset();
     const auto basis = volume->getBasis();
 
@@ -291,7 +289,7 @@ void VolumeAxis::adjustRanges() {
     util::updateDefaultState(zAxis_.captionSettings_.title_, zCaption, util::OverwriteState::No);
 
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
-}  // namespace plot
+}
 
 }  // namespace plot
 

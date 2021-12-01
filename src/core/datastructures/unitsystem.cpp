@@ -256,13 +256,15 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
         ::inviwo::util::findBestSetOfNamedUnits(unit, enabledGroups, usesPrefixes);
 
     if (mult != 1.0) {
-        fmt::format_to(it, "{:4.2g} ", mult);
+        it = fmt::format_to(it, "{:4.2g} ", mult);
     }
     int neg = 0;
     int pos = 0;
     for (auto&& [prefix, abbr, pow] : niceUnits) {
         if (pow > 0) {
-            fmt::format_to(it, "{}{}{}", prefix, abbr, powers[pow]);
+            it = std::copy(prefix.begin(), prefix.end(), it);
+            it = std::copy(abbr.begin(), abbr.end(), it);
+            it = std::copy(powers[pow].begin(), powers[pow].end(), it);
             ++pos;
         } else if (pow < 0) {
             ++neg;
@@ -276,7 +278,9 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
         if (neg > 1) *it++ = '(';
         for (auto&& [prefix, abbr, pow] : niceUnits) {
             if (pow < 0) {
-                fmt::format_to(it, "{}{}{}", prefix, abbr, powers[-pow]);
+                it = std::copy(prefix.begin(), prefix.end(), it);
+                it = std::copy(abbr.begin(), abbr.end(), it);
+                it = std::copy(powers[-pow].begin(), powers[-pow].end(), it);
             }
         }
         if (neg > 1) *it++ = ')';

@@ -98,6 +98,7 @@ public:
 
 private:
     enum class BackgroundStyle { CheckerBoard, SolidColor, NoBackground };
+    enum class LabelType { String, Data, Custom };
     std::tuple<ivec2, ivec2, ivec2, ivec2> getPositions(ivec2 dim) const;
 
     ImageInport inport_;
@@ -118,6 +119,7 @@ private:
 
     // style customization properties
     AxisStyleProperty axisStyle_;
+    TemplateOptionProperty<LabelType> labelType_;
     StringProperty title_;
     TemplateOptionProperty<BackgroundStyle> backgroundStyle_;
     FloatProperty checkerBoardSize_;
