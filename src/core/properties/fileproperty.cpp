@@ -234,7 +234,8 @@ const std::string& FileProperty::getContentType() const { return contentType_; }
 void FileProperty::requestFile() {
     for (auto widget : getWidgets()) {
         if (auto filerequestable = dynamic_cast<FileRequestable*>(widget)) {
-            if (filerequestable->requestFile()) return;
+            filerequestable->requestFile();
+            return;
         }
     }
     // No FileRequestable widget found, use the factory.
