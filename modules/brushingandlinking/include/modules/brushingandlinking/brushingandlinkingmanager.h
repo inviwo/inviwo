@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/util/callback.h>
 
 #include <modules/brushingandlinking/datastructures/indexlist.h>
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
@@ -219,6 +220,19 @@ public:
     void setParent(BrushingAndLinkingManager* parent);
 
     /**
+     * Add a \p callback to the manager that gets called when a brushing action is triggered.
+     *
+     * Only one callback can be registered at the same time.
+     *
+     * @param callback   gets called with the same arguments as brush()
+     *
+     * \see brush(BrushingAction, BrushingTarget, const BitSet&, std::string_view)
+     */
+    void onBrush(
+        std::function<void(BrushingAction, BrushingTarget, const BitSet&, std::string_view)>
+            callback);
+
+    /**
      * propagates the modified state to all child managers and resets the state. Should only be
      * called by the brushing and linking ports _after_ the process() function has been called.
      */
@@ -249,6 +263,9 @@ private:
     InvalidationLevel invalidationLevel_;
 
     std::unordered_map<BrushingTarget, BrushingModifications> modifications_;
+
+    std::function<void(BrushingAction, BrushingTarget, const BitSet&, std::string_view)>
+        onBrushCallback_;
 };
 
 }  // namespace inviwo

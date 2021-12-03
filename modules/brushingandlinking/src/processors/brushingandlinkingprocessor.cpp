@@ -29,6 +29,12 @@
 
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
+#include <inviwo/core/datastructures/bitset.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
+
+#include <fmt/format.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -43,6 +49,7 @@ const ProcessorInfo BrushingAndLinkingProcessor::getProcessorInfo() const { retu
 
 BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()
+    , inport_("inport")
     , outport_("outport")
     , clearSelection_("clearSelection", "Clear Selection",
                       [&]() { outport_.getManager().clearSelected(); })
@@ -50,14 +57,51 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
                       [&]() { outport_.getManager().clearHighlighted(); })
     , clearCols_("clearCols", "Clear Columns",
                  [&]() { outport_.getManager().clearSelected(BrushingTarget::Column); })
-    , clearAll_("clearAll", "Clear Selections and Highlights", [&]() {
-        outport_.getManager().clearSelected();
-        outport_.getManager().clearHighlighted();
-        outport_.getManager().clearSelected(BrushingTarget::Column);
-    }) {
+    , clearAll_("clearAll", "Clear Selections and Highlights",
+                [&]() {
+                    outport_.getManager().clearSelected();
+                    outport_.getManager().clearHighlighted();
+                    outport_.getManager().clearSelected(BrushingTarget::Column);
+                })
+    , logging_("logging", "Logging", false, InvalidationLevel::Valid)
+    , logFilterActions_("filterActions", "Filter Actions", true, InvalidationLevel::Valid)
+    , logSelectActions_("selectActions", "Select Actions", true, InvalidationLevel::Valid)
+    , logHighlightActions_("highlightActions", "Highlight Actions", true, InvalidationLevel::Valid)
+    , maxVisibleIndices_("maxVisibleIndices", "Max Visible Indices", 50, 1, 1000, 1,
+                         InvalidationLevel::Valid, PropertySemantics::Text) {
 
-    addPort(outport_);
-    addProperties(clearSelection_, clearHighlight_, clearCols_, clearAll_);
+    inport_.setOptional(true);
+    addPorts(inport_, outport_);
+
+    addProperties(clearSelection_, clearHighlight_, clearCols_, clearAll_, logging_);
+    logging_.addProperties(logFilterActions_, logSelectActions_, logHighlightActions_,
+                           maxVisibleIndices_);
+
+    outport_.getManager().setParent(&inport_.getManager());
+    outport_.getManager().onBrush([this](BrushingAction action, BrushingTarget target,
+                                         const BitSet& indices, std::string_view source) {
+        if (!logging_.isChecked()) return;
+        if ((action == BrushingAction::Filter) && !logFilterActions_) return;
+        if ((action == BrushingAction::Select) && !logSelectActions_) return;
+        if ((action == BrushingAction::Highlight) && !logHighlightActions_) return;
+
+        std::string str;
+        auto it = indices.begin();
+        int i = maxVisibleIndices_;
+        while (it != indices.end() && i > 0) {
+            str += std::to_string(*it++) + ',';
+            --i;
+        }
+        if (it != indices.end()) {
+            str += "...";
+        } else if (!str.empty()) {
+            str.pop_back();
+        }
+
+        LogProcessorInfo(fmt::format(
+            "{:<20} action: {}, target: {}, source: {}, indices: [{}] ({})", getDisplayName(),
+            action, target.getString(), source, str, indices.cardinality()));
+    });
 }
 
 void BrushingAndLinkingProcessor::process() {}
