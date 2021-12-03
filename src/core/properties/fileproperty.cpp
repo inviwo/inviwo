@@ -262,6 +262,12 @@ void FileProperty::requestFile() {
     }
 }
 
+void FileProperty::updateWidgets() const {
+    for (auto widget : getWidgets()) {
+        widget->updateFromProperty();
+    }
+}
+
 const FileExtension& FileProperty::getSelectedExtension() const { return selectedExtension_; }
 void FileProperty::setSelectedExtension(const FileExtension& ext) {
     if (selectedExtension_ != ext) {

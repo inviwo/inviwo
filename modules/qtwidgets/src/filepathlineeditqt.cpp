@@ -97,6 +97,9 @@ void FilePathLineEditQt::setPath(const std::string& path) {
         cursorPos_ = -1;
         setModified(false);
         updateContents();
+    } else {
+        // update icon as file may now exist or was removed
+        updateIcon();
     }
 }
 

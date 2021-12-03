@@ -121,6 +121,12 @@ public:
      */
     virtual void requestFile();
 
+    /**
+     * Update all connected widgets to match potential changes as the file may now exist or was
+     * deleted.
+     */
+    void updateWidgets() const;
+
     virtual Document getDescription() const override;
 
 private:
