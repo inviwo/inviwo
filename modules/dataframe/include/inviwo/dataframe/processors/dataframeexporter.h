@@ -67,7 +67,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    void exportNow();
+    void exportData();
 
 private:
     void exportAsCSV(bool separateVectorTypesIntoColumns = true);
@@ -86,7 +86,7 @@ private:
     static FileExtension csvExtension_;
     static FileExtension xmlExtension_;
 
-    bool export_;
+    bool exportQueued_;
 };
 
 }  // namespace inviwo

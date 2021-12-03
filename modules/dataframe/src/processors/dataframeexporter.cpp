@@ -63,7 +63,7 @@ DataFrameExporter::DataFrameExporter()
                                       "Separate Vector Types Into Columns", true)
     , quoteStrings_("quoteStrings", "Quote Strings", true)
     , delimiter_("delimiter", "Delimiter", ",")
-    , export_(false) {
+    , exportQueued_(false) {
 
     exportFile_.clearNameFilters();
     exportFile_.addNameFilter(csvExtension_);
@@ -83,17 +83,26 @@ DataFrameExporter::DataFrameExporter()
         separateVectorTypesIntoColumns_.setReadOnly(exportFile_.getSelectedExtension().extension_ ==
                                                     xmlExtension_.extension_);
     });
-    exportButton_.onChange([&]() { export_ = true; });
+    exportButton_.onChange([&]() {
+        if (dataFrame_.hasData()) {
+            if (exportFile_.get().empty()) {
+                exportFile_.requestFile();
+                // file request got canceled, do nothing
+                if (exportFile_.get().empty()) return;
+            }
+            exportQueued_ = true;
+        }
+    });
 
     setAllPropertiesCurrentStateAsDefault();
 }
 
 void DataFrameExporter::process() {
-    if (export_) exportNow();
-    export_ = false;
+    if (exportQueued_) exportData();
+    exportQueued_ = false;
 }
 
-void DataFrameExporter::exportNow() {
+void DataFrameExporter::exportData() {
     if (filesystem::fileExists(exportFile_) && !overwrite_.get()) {
         LogWarn("File already exists: " << exportFile_);
         return;
@@ -109,6 +118,9 @@ void DataFrameExporter::exportNow() {
                 << "', exporting as comma-separated values (csv).");
         exportAsCSV(separateVectorTypesIntoColumns_);
     }
+
+    // update widgets as the file might now exist
+    exportFile_.updateWidgets();
 }
 
 void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
