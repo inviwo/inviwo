@@ -156,12 +156,10 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
 
     connect(slider_, &RangeSliderQt::valuesChanged, this,
             &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider);
-    connect(spinBoxMin_,
-            static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-            &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMin);
-    connect(spinBoxMax_,
-            static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-            &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMax);
+    connect(spinBoxMin_, static_cast<void (QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
+            this, [this]() { updateFromSpinBoxMin(spinBoxMin_->value()); });
+    connect(spinBoxMax_, static_cast<void (QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
+            this, [this]() { updateFromSpinBoxMax(spinBoxMax_->value()); });
 
     updateFromProperty();
 }
