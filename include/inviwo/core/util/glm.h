@@ -62,6 +62,7 @@
 
 #include <limits>
 #include <type_traits>
+#include <utility>
 
 namespace inviwo {
 
@@ -829,7 +830,36 @@ bool almostEqual(const T& x, const T& y, int ulp = 2) {
 
 }  // namespace inviwo
 
+namespace std {
+template <auto N, class T, auto Q>
+struct tuple_size<glm::vec<N, T, Q>> : std::integral_constant<std::size_t, N> {};
+
+template <std::size_t I, auto N, class T, auto Q>
+struct tuple_element<I, glm::vec<N, T, Q>> {
+    using type = typename glm::vec<N, T, Q>::value_type;
+};
+}  // namespace std
+
 namespace glm {
+template <std::size_t I, auto N, class T, auto Q>
+constexpr auto& get(glm::vec<N, T, Q>& v) noexcept {
+    return v[I];
+}
+
+template <std::size_t I, auto N, class T, auto Q>
+constexpr const auto& get(const glm::vec<N, T, Q>& v) noexcept {
+    return v[I];
+}
+
+template <std::size_t I, auto N, class T, auto Q>
+constexpr auto&& get(glm::vec<N, T, Q>&& v) noexcept {
+    return std::move(v[I]);
+}
+
+template <std::size_t I, auto N, class T, auto Q>
+constexpr const auto&& get(const glm::vec<N, T, Q>&& v) noexcept {
+    return std::move(v[I]);
+}
 
 namespace detail {
 
