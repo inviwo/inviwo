@@ -366,7 +366,7 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
 void InviwoApplicationQt::setUndoTrigger(std::function<void()> func) { undoTrigger_ = func; }
 
 std::locale InviwoApplicationQt::getCurrentStdLocale() {
-     static std::locale loc = []() -> std::locale {
+    static std::locale loc = []() -> std::locale {
 #ifdef WIN32
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
         // although std::locale should only accept locales with underscore, e.g. "sv_SE"
