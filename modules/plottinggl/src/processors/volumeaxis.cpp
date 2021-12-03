@@ -32,10 +32,78 @@
 #include <modules/plotting/utils/axisutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/zip.h>
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
+
+namespace util {
+
+struct AxisParams {
+    dvec3 start;
+    dvec3 stop;
+    dvec3 tickDir;
+};
+
+std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
+    constexpr dvec3 center = {0.5, 0.5, 0.5};
+    constexpr std::array<dvec3, 8> corners = {
+        {{0, 0, 0}, {0, 0, 1}, {0, 1, 0}, {0, 1, 1}, {1, 0, 0}, {1, 0, 1}, {1, 1, 0}, {1, 1, 1}}};
+    struct AI {
+        std::array<size_t, 2> idx;
+        std::array<dvec3, 2> faceNormals;
+    };
+    // clang-format off
+    constexpr std::array<std::array<AI, 4>, 3> meta =
+        {{{
+            AI{{0, 4}, {dvec3{0, -1, 0}, dvec3{0, 0, -1}}},
+            AI{{1, 5}, {dvec3{0, -1, 0}, dvec3{0, 0,  1}}},
+            AI{{2, 6}, {dvec3{0, 0, -1}, dvec3{0, 1,  0}}},
+            AI{{3, 7}, {dvec3{0, 1,  0}, dvec3{0, 0,  1}}}
+        },{
+            AI{{0, 2}, {dvec3{-1, 0, 0}, dvec3{0, 0, -1}}},
+            AI{{1, 3}, {dvec3{-1, 0, 0}, dvec3{0, 0,  1}}},
+            AI{{4, 6}, {dvec3{0, 0, -1}, dvec3{1, 0,  0}}},
+            AI{{5, 7}, {dvec3{1, 0,  0}, dvec3{0, 0,  1}}}
+        },{
+            AI{{0, 1}, {dvec3{-1, 0, 0}, dvec3{0, -1, 0}}},
+            AI{{2, 3}, {dvec3{-1, 0, 0}, dvec3{0,  1, 0}}},
+            AI{{4, 5}, {dvec3{0, -1, 0}, dvec3{1,  0, 0}}},
+            AI{{6, 7}, {dvec3{1,  0, 0}, dvec3{0,  1, 0}}}
+        }}};
+    // clang-format on
+
+    const auto onEdge = [&](const AI& edge) {
+        return glm::sign(glm::dot(edge.faceNormals[0], viewDirection)) !=
+               glm::sign(glm::dot(edge.faceNormals[1], viewDirection));
+    };
+
+    const auto dist = [&](const AI& edge) {
+        return 0.5 * (glm::dot(corners[edge.idx[0]] - center, viewDirection) +
+                      glm::dot(corners[edge.idx[1]] - center, viewDirection));
+    };
+
+    const auto tickDir = [&](const AI& edge) -> dvec3 {
+        const auto normal = glm::dot(edge.faceNormals[0], viewDirection) > 0 ? edge.faceNormals[0]
+                                                                             : edge.faceNormals[1];
+        const auto axis = corners[edge.idx[1]] - corners[edge.idx[0]];
+        auto tickDir = glm::cross(axis, normal);
+        return tickDir * glm::sign(glm::dot(center - corners[edge.idx[1]], tickDir));
+    };
+
+    const auto find = [&](const std::array<AI, 4>& axis) -> AxisParams {
+        const auto min = *std::max_element(axis.begin(), axis.end(), [&](const AI& a, const AI& b) {
+            return (dist(a) + (onEdge(a) ? 0 : -100.0)) < (dist(b) + (onEdge(b) ? 0 : -100.0));
+        });
+
+        return {corners[min.idx[0]], corners[min.idx[1]], tickDir(min)};
+    };
+
+    return {find(meta[0]), find(meta[1]), find(meta[2])};
+}
+
+}  // namespace util
 
 namespace plot {
 
@@ -55,7 +123,7 @@ VolumeAxis::VolumeAxis()
     , inport_{"volume"}
     , imageInport_{"imageInport"}
     , outport_{"outport"}
-    , axisOffset_{"axisOffset", "Axis Offset", 0.1f, 0.0f, 10.0f}
+    , axisOffset_{"axisOffset", "Axis Offset (%)", 0.1f, 0.0f, 10.0f}
     , rangeMode_{"rangeMode",
                  "Axis Range Mode",
                  {{"dims", "Volume Dimensions (voxel)", AxisRangeMode::VolumeDims},
@@ -67,7 +135,7 @@ VolumeAxis::VolumeAxis()
     , rangeYaxis_{"rangeY", "Y Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
     , rangeZaxis_{"rangeZ", "Z Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
 
-    , visibility_{"visibility", "Axis Visibility"}
+    , visibility_{"visibility", "Axis Visibility", true}
     , presets_{"visibilityPresets",
                "Presets",
                {{"default", "Default (origin)", "default"},
@@ -132,6 +200,7 @@ VolumeAxis::VolumeAxis()
         }
     });
 
+    visibility_.getBoolProperty()->setDisplayName("Automatic");
     visibility_.addProperty(presets_);
     for (auto& p : visibleAxes_) {
         visibility_.addProperty(p);
@@ -199,39 +268,47 @@ void VolumeAxis::process() {
 
     const auto dims = outport_.getDimensions();
     const auto volume = inport_.getData();
-    const auto offset = volume->getOffset();
-    const auto basis = volume->getBasis();
+    const dmat4 m = volume->getCoordinateTransformer().getDataToModelMatrix();
+    const dmat3 nm = glm::transpose(glm::inverse(m));
+    const double offset = axisOffset_.get() / 100;
 
-    struct AxisParams {
-        vec3 axisoffset;
-        vec3 tickdir;
+    const auto render = [&](const util::AxisParams& axis, size_t axisIdx) {
+        const dvec3 center{0.5, 0.5, 0.5};
+        const auto offsetDir = glm::normalize(axis.start - center + axis.stop - center);
+        const vec3 start{m * dvec4(axis.start + offset * offsetDir, 1)};
+        const vec3 stop{m * dvec4(axis.stop + offset * offsetDir, 1)};
+        const vec3 tickDir{nm * axis.tickDir};
+        axisRenderers_[axisIdx].render(&camera_.get(), dims, start, stop, tickDir);
     };
 
-    std::array<AxisParams, 12> lookup{{
-        // x axis
-        {{0.f, 0.f, 0.f}, {0.f, 1.f, 1.f}},
-        {{basis[1]}, {0.f, -1.f, 1.f}},
-        {{basis[1] + basis[2]}, {0.f, -1.f, -1.f}},
-        {{basis[2]}, {0.f, 1.f, -1.f}},
-        // y axis
-        {{0.f, 0.f, 0.f}, {1.f, 0.f, 1.f}},
-        {{basis[0]}, {-1.f, 0.f, 1.f}},
-        {{basis[0] + basis[2]}, {-1.f, 0.f, -1.f}},
-        {{basis[2]}, {1.f, 0.f, -1.f}},
-        // z axis
-        {{0.f, 0.f, 0.f}, {1.f, 1.f, 0.f}},
-        {{basis[0]}, {-1.f, 1.f, 0.f}},
-        {{basis[0] + basis[1]}, {-1.f, -1.f, 0.f}},
-        {{basis[1]}, {1.f, -1.f, 0.f}},
-    }};
-
-    for (size_t i = 0; i < visibleAxes_.size(); ++i) {
-        if (!visibleAxes_[i].get()) continue;
-        const size_t axis = i / 4;
-        vec3 origin =
-            offset + lookup[i].axisoffset - glm::normalize(lookup[i].tickdir) * axisOffset_.get();
-        axisRenderers_[axis].render(&camera_.get(), dims, origin, origin + basis[axis],
-                                    lookup[i].tickdir);
+    if (visibility_.isChecked()) {  // automatic selection
+        const auto axes =
+            util::findAxisPositions(glm::normalize(camera_.getLookFrom() - camera_.getLookTo()));
+        for (auto&& [i, axis] : util::enumerate(axes)) {
+            render(axis, i);
+        }
+    } else {
+        constexpr std::array<util::AxisParams, 12> axes{{
+            // x axis
+            {{0., 0., 0.}, {1., 0., 0.}, {0., 1., 1.}},
+            {{0., 1., 0.}, {1., 1., 0.}, {0., -1., 1.}},
+            {{0., 1., 1.}, {1., 1., 1.}, {0., -1., -1.}},
+            {{0., 0., 1.}, {1., 0., 1.}, {0., 1., -1.}},
+            // y axis
+            {{0., 0., 0.}, {0., 1., 0.}, {1., 0., 1.}},
+            {{1., 0., 0.}, {1., 1., 0.}, {-1., 0., 1.}},
+            {{1., 0., 1.}, {1., 1., 1.}, {-1., 0., -1.}},
+            {{0., 0., 1.}, {0., 1., 1.}, {1., 0., -1.}},
+            // z axis
+            {{0., 0., 0.}, {0., 0., 1.}, {1., 1., 0.}},
+            {{1., 0., 0.}, {1., 0., 1.}, {-1., 1., 0.}},
+            {{1., 1., 0.}, {1., 1., 1.}, {-1., -1., 0.}},
+            {{0., 1., 0.}, {0., 1., 1.}, {1., -1., 0.}},
+        }};
+        for (auto&& [i, axis] : util::enumerate(axes)) {
+            if (!visibleAxes_[i].get()) continue;
+            render(axis, i / 4);
+        }
     }
 
     utilgl::deactivateCurrentTarget();

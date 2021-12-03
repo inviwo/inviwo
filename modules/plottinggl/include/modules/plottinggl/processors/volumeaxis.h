@@ -101,7 +101,7 @@ private:
     DoubleMinMaxProperty rangeYaxis_;
     DoubleMinMaxProperty rangeZaxis_;
 
-    CompositeProperty visibility_;
+    BoolCompositeProperty visibility_;
     OptionPropertyString presets_;
     std::array<BoolProperty, 12> visibleAxes_;
 
