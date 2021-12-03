@@ -182,7 +182,6 @@ struct Fsm {
 
         const auto uids = uid<Started>();
         const auto uidu = uid<Updated>();
-        const auto uidf = uid<Finished>();
 
         using S = PickingState;
         using P = PickingPressState;
