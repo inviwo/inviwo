@@ -43,7 +43,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
  * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Central point for handling and linking brushing and linking events. 
+ * Central point for handling and linking brushing and linking events.
  *
  * ### Inports
  *   * __inport__   brushing and linking port for hierarchical interactions
