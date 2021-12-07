@@ -307,7 +307,7 @@ TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, bool clearTex
     utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::ActivateFBO fbo(fbo_);
-    
+
     if (texture != currTexture_) {
         // attach new texture as a render target, no depth texture
         fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);

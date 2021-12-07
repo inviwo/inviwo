@@ -71,6 +71,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void deserialize(Deserializer& d) override;
+
 private:
     VolumeOutport outport_;
     TemplateOptionProperty<Type> type_;

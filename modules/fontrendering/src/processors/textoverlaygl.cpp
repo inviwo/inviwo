@@ -191,5 +191,4 @@ void TextOverlayGL::updateCache() {
     }
 }
 
-
 }  // namespace inviwo
