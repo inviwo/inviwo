@@ -82,12 +82,11 @@ TextOverlayGL::TextOverlayGL()
     , inport_("inport")
     , outport_("outport")
     , enable_("enable", "Enabled", true)
-    , texts_{"texts", "Texts", std::make_unique<TextOverlayProperty>("text0", "Text 0"), 99,
+    , texts_{"texts", "Texts", std::make_unique<TextOverlayProperty>("text0", "Text 0"), 0,
              ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove}
     , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , font_("font", "Font Settings")
-
     , args_{"args", "Arguments",
             []() {
                 std::vector<std::unique_ptr<Property>> props;
@@ -96,7 +95,7 @@ TextOverlayGL::TextOverlayGL()
                 props.emplace_back(std::make_unique<DoubleProperty>("arg0", "Double Arg 0"));
                 return props;
             }(),
-            99, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove}
+            0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove}
     , textRenderer_{[]() {
         // ensure the default context is active when creating the TextRenderer
         RenderContext::getPtr()->activateDefaultRenderContext();
@@ -104,7 +103,7 @@ TextOverlayGL::TextOverlayGL()
     }()} {
 
     addPorts(inport_, outport_);
-    addProperties(enable_, texts_, font_, args_);
+    addProperties(enable_, font_, texts_, args_);
     font_.addProperties(color_);
     inport_.setOptional(true);
 
