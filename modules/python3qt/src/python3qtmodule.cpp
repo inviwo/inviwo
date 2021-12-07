@@ -85,7 +85,8 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
         m.def("prompt", &prompt, py::arg("title"), py::arg("message"),
               py::arg("defaultResponse") = "");
         m.def("update", [this]() {
-            QCoreApplication::instance()->processEvents();
+            QCoreApplication::processEvents();
+            QCoreApplication::sendPostedEvents();
             if (abortPythonEvaluation_) {
                 abortPythonEvaluation_ = false;
                 throw PythonAbortException("Evaluation aborted");

@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,100 +24,104 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
 
 from .. util import *
 
+
 class ReportTestSettings:
-	def __init__(self, imageDifferenceTolerance = 0.0):
-		self.imageDifferenceTolerance = imageDifferenceTolerance
+    def __init__(self, imageDifferenceTolerance=0.0):
+        self.imageDifferenceTolerance = imageDifferenceTolerance
+
 
 class ReportTest:
-	def __init__(self, key, testfun, message):
-		self.key = key
-		self.testfun = testfun
-		self.message = message
+    def __init__(self, key, testfun, message):
+        self.key = key
+        self.testfun = testfun
+        self.message = message
 
-	def test(self, report):
-		return self.testfun(report[self.key])
+    def test(self, report):
+        return self.testfun(report[self.key])
 
-	def failures(self):
-		return {self.key : [self.message]}
+    def failures(self):
+        return {self.key: [self.message]}
+
 
 class ReportImageTest(ReportTest):
-	def __init__(self, key, differenceTolerance = 0.0):
-		self.key = key
-		self.message = {}
-		self.differenceTolerance = differenceTolerance
+    def __init__(self, key, differenceTolerance=0.0):
+        self.key = key
+        self.message = {}
+        self.differenceTolerance = differenceTolerance
 
-	def test(self, report):
-		imgs = report[self.key]
-		for img in imgs:
-			tol = safeget(report, "config", "image_test", "differenceTolerance", img["image"], failure = self.differenceTolerance)
-			tol = max(tol, self.differenceTolerance)
+    def test(self, report):
+        imgs = report[self.key]
+        for img in imgs:
+            tol = safeget(report, "config", "image_test", "differenceTolerance",
+                          img["image"], failure=self.differenceTolerance)
+            tol = max(tol, self.differenceTolerance)
 
-			if img['test_mode'] != img['ref_mode']:
-				self.message[img['image']] = \
-					("Image {image} has different modes, " +
-					"Test: {test_mode} vs Reference:{ref_mode}").format(**img)
-			elif img['test_size'] != img['ref_size']:
-				self.message[img['image']] = \
-					("Image {image} has different sizes, " +
-					"Test: {test_size} vs Reference:{ref_size}").format(**img)
-			elif img["difference"] > tol:
-				self.message[img['image']] = \
-					("Image {image} has difference greater then the allowd tolerance ({difference}% &gt; {tol})  " +
-					"difference, {different_pixels} different pixels, " +
-					"largest difference {max_difference}").format(tol=tol, **img)
+            if img['test_mode'] != img['ref_mode']:
+                self.message[img['image']] = \
+                    ("Image {image} has different modes, " +
+                     "Test: {test_mode} vs Reference:{ref_mode}").format(**img)
+            elif img['test_size'] != img['ref_size']:
+                self.message[img['image']] = \
+                    ("Image {image} has different sizes, " +
+                     "Test: {test_size} vs Reference:{ref_size}").format(**img)
+            elif img["difference"] > tol:
+                self.message[img['image']] = \
+                    ("Image {image} has difference greater then the allowd tolerance ({difference}% &gt; {tol})  " +
+                     "difference, {different_pixels} different pixels, " +
+                     "largest difference {max_difference}").format(tol=tol, **img)
 
-		return len(self.message) == 0
+        return len(self.message) == 0
 
-	def failures(self):
-		return {self.key : self.message}
+    def failures(self):
+        return {self.key: self.message}
+
 
 class ReportLogTest(ReportTest):
-	def __init__(self):
-		self.key = 'log'
-		self.message = []
+    def __init__(self):
+        self.key = 'log'
+        self.message = []
 
-	def test(self, report):
-		try:
-			with open(toPath(report['outputdir'], report['log']), 'r') as f:
-				lines = f.readlines()
-				for line in lines:
-					if "<span class='level'>Error: </span>" in line:
-						self.message.append(line)
-		except FileNotFoundError:
-			self.message.append("Missing Log")
+    def test(self, report):
+        try:
+            with open(toPath(report['outputdir'], report['log']), 'r') as f:
+                lines = f.readlines()
+                for line in lines:
+                    if "<span class='level'>Error: </span>" in line:
+                        self.message.append(line)
+        except FileNotFoundError:
+            self.message.append("Missing Log")
 
-		return len(self.message) == 0
+        return len(self.message) == 0
 
-	def failures(self):
-		return {"log" : self.message}
+    def failures(self):
+        return {"log": self.message}
 
 
 class ReportTestSuite:
-	def __init__(self, settings = ReportTestSettings()):
-		self.settings = settings
-		self.tests = [
-			ReportTest('returncode', lambda x : x == 0, "Non zero retuncode"),
-			ReportTest('timeout', lambda x : x == False, "Inviwo ran out of time"),
-			ReportTest('missing_refs', lambda x : len(x) == 0, "Missing refecence image"),
-			ReportTest('missing_imgs', lambda x : len(x) == 0, "Missing test image"),
-			ReportImageTest('image_tests', settings.imageDifferenceTolerance),
-			ReportLogTest()
-		]
+    def __init__(self, settings=ReportTestSettings()):
+        self.settings = settings
+        self.tests = [
+            ReportTest('returncode', lambda x: x == 0, "Non zero retuncode"),
+            ReportTest('timeout', lambda x: x is False, "Inviwo ran out of time"),
+            ReportTest('missing_refs', lambda x: len(x) == 0, "Missing refecence image"),
+            ReportTest('missing_imgs', lambda x: len(x) == 0, "Missing test image"),
+            ReportImageTest('image_tests', settings.imageDifferenceTolerance),
+            ReportLogTest()
+        ]
 
-	def checkReport(self, report):
-		failures = {}
-		successes = []
-		for t in self.tests:
-			if not t.test(report):
-				failures.update(t.failures())
-			else:
-				successes.append(t.key)
-		report['failures'] = failures
-		report['successes'] = successes
-		return report
-
+    def checkReport(self, report):
+        failures = {}
+        successes = []
+        for t in self.tests:
+            if not t.test(report):
+                failures.update(t.failures())
+            else:
+                successes.append(t.key)
+        report['failures'] = failures
+        report['successes'] = successes
+        return report

@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,44 +24,46 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
 
 import io
 import logging
 
 from .. colorprint import *
 
+
 class LogPrinter:
-	def __init__(self, logger):
-		self.logger = logger
-		self.success = True
-		self.buffer = io.StringIO()
+    def __init__(self, logger):
+        self.logger = logger
+        self.success = True
+        self.buffer = io.StringIO()
 
-	def __enter__(self):
-		return self
+    def __enter__(self):
+        return self
 
-	def __exit__(self, exc_type, exc_value, traceback):
-		if self.success: self.logger.info(self.buffer.getvalue())
-		else: self.logger.warning(self.buffer.getvalue())
-		self.buffer.close()
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.success:
+            self.logger.info(self.buffer.getvalue())
+        else:
+            self.logger.warning(self.buffer.getvalue())
+        self.buffer.close()
 
-	def text(self, mess, **kwargs):
-		print(mess, file=self.buffer, **kwargs)
+    def text(self, mess, **kwargs):
+        print(mess, file=self.buffer, **kwargs)
 
-	def good(self, mess, **kwargs):
-		cprint(Color.green, mess, file=self.buffer, **kwargs)
+    def good(self, mess, **kwargs):
+        cprint(Color.green, mess, file=self.buffer, **kwargs)
 
-	def info(self, mess, **kwargs):
-		cprint(Color.cyan, mess, file=self.buffer, **kwargs)
+    def info(self, mess, **kwargs):
+        cprint(Color.cyan, mess, file=self.buffer, **kwargs)
 
-	def warn(self, mess, **kwargs):
-		cprint(Color.yellow, mess, file=self.buffer, **kwargs)
+    def warn(self, mess, **kwargs):
+        cprint(Color.yellow, mess, file=self.buffer, **kwargs)
 
-	def error(self, mess, **kwargs):
-		cprint(Color.red, mess, file=self.buffer, **kwargs)
+    def error(self, mess, **kwargs):
+        cprint(Color.red, mess, file=self.buffer, **kwargs)
 
-	def pair(self, a,b, width=15):
-		self.info("{:>{width}} : ".format(a, width=width), end="")
-		self.text("{:<}".format(b))
-
+    def pair(self, a, b, width=15):
+        self.info("{:>{width}} : ".format(a, width=width), end="")
+        self.text("{:<}".format(b))

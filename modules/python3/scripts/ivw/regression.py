@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,37 +24,39 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
 
 import time
 import json
 import inviwopy
 
-def saveCanvas(canvas : inviwopy.CanvasProcessor , name = None):
-	if name == None: name = canvas.identifier
-	canvas.snapshot(inviwopy.app.getOutputPath() + "/imgtest/"+name+".png")
+
+def saveCanvas(canvas: inviwopy.CanvasProcessor, name=None):
+    if name  None:
+        name = canvas.identifier
+    canvas.snapshot(inviwopy.app.getOutputPath() + "/imgtest/" + name + ".png")
+
 
 class Measurements:
-	def __init__(self):
-		self.m = []
+    def __init__(self):
+        self.m = []
 
-	def add(self, name, quantity, unit, value):
-		self.m.append({"name": name, 'quantity' : quantity, "unit": unit, 'value' : value})
+    def add(self, name, quantity, unit, value):
+        self.m.append({"name": name, 'quantity': quantity, "unit": unit, 'value': value})
 
-	def addCount(self, name, value):
-		self.add(name, "count", "", value)
+    def addCount(self, name, value):
+        self.add(name, "count", "", value)
 
-	def addTime(self, name, value):
-		self.add(name, "time", "s", value)
+    def addTime(self, name, value):
+        self.add(name, "time", "s", value)
 
-	def addFrequency(self, name, value):
-		self.add(name, "frequency", "Hz", value)
+    def addFrequency(self, name, value):
+        self.add(name, "frequency", "Hz", value)
 
-	def addFraction(self, name, value):
-		self.add(name, "fraction", "%", value)
+    def addFraction(self, name, value):
+        self.add(name, "fraction", "%", value)
 
-	def save(self):
-		with open(inviwopy.app.getOutputPath() + "/stats.json", 'w') as f:
- 			json.dump(self.m, f, indent=4, separators=(',', ': '))
-
+    def save(self):
+        with open(inviwopy.app.getOutputPath() + "/stats.json", 'w') as f:
+            json.dump(self.m, f, indent=4, separators=(',', ': '))

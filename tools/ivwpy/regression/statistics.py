@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,111 +24,113 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
 
 import json
 
 from .. util import *
 from . database import *
 
+
 def elapsed_time_stats(database):
-	'''
-	database should be a sql regression database
-	'''
-	total = {}
-	for module in database.getModules():
-		measurements = {}
+    '''
+    database should be a sql regression database
+    '''
+    total = {}
+    for module in database.getModules():
 
-		for test in module.tests:
-			series = database.getSeries(module.name, test.name, "elapsed_time")
-			if series == None: continue
+        for test in module.tests:
+            series = database.getSeries(module.name, test.name, "elapsed_time")
+            if series is None:
+                continue
 
-			data = {}
-			for m in series.measurements:
-				time = m.testrun.run.created.timestamp()
-				if time in data.keys():
-					data[time]["count"] += 1
-					data[time]["time"] += m.value
-				else:
-					data[time] = {"count" : 1, "time" : m.value}
-			
-			tot = 0
-			n = 0
-			for time, item in data.items():
-				norm = item["time"] / item["count"]
-				data[time] = norm
-				tot += norm
-				n += 1
+            data = {}
+            for m in series.measurements:
+                time = m.testrun.run.created.timestamp()
+                if time in data.keys():
+                    data[time]["count"] += 1
+                    data[time]["time"] += m.value
+                else:
+                    data[time] = {"count": 1, "time": m.value}
 
-			for time, val in data.items():
-				data[time] = val / (tot / n) 
+            tot = 0
+            n = 0
+            for time, item in data.items():
+                norm = item["time"] / item["count"]
+                data[time] = norm
+                tot += norm
+                n += 1
 
-			for time, val in data.items():
-				if time in total.keys():
-					total[time]["count"] += 1
-					total[time]["time"] += val
-				else:
-					total[time] = {"count" : 1, "time" : val}
+            for time, val in data.items():
+                data[time] = val / (tot / n)
 
-	totdata = {}
-	tot = 0
-	n = 0
-	for time, item in total.items():
-		norm = item["time"] / item["count"]
-		tot += norm
-		n += 1
-		totdata[time] = norm 
+            for time, val in data.items():
+                if time in total.keys():
+                    total[time]["count"] += 1
+                    total[time]["time"] += val
+                else:
+                    total[time] = {"count": 1, "time": val}
 
-	for time, val in totdata.items():
-		totdata[time] = val / (tot / n) 
+    totdata = {}
+    tot = 0
+    n = 0
+    for time, item in total.items():
+        norm = item["time"] / item["count"]
+        tot += norm
+        n += 1
+        totdata[time] = norm
 
-	#print(", ".join(["{:5.2f}".format(y) for k,y in sorted(totdata.items(), key = lambda a: a[0])]))
+    for time, val in totdata.items():
+        totdata[time] = val / (tot / n)
 
-	return [[datetime.datetime.fromtimestamp(k), y] for k,y in sorted(totdata.items(), key = lambda a: a[0])]
+    return [[datetime.datetime.fromtimestamp(k), y]
+            for k, y in sorted(totdata.items(), key=lambda a: a[0])]
 
 
 def result_time_stats(database):
-	'''
-	database should be a sql regression database
-	'''
-	result = []
-	for run in database.getRuns():
-		testfail = 0
-		testpass = 0
-		testskip = 0
-		for testrun in run.testruns:
-			config = json.loads(testrun.config)
-			enabled = safeget(config, "enabled", failure = True)
+    '''
+    database should be a sql regression database
+    '''
+    result = []
+    for run in database.getRuns():
+        testfail = 0
+        testpass = 0
+        testskip = 0
+        for testrun in run.testruns:
+            config = json.loads(testrun.config)
+            enabled = safeget(config, "enabled", failure=True)
 
-			if not enabled:
-				testskip += 1
-			elif len(testrun.failures) == 0:
-				testpass += 1
-			else:
-				testfail += 1
+            if not enabled:
+                testskip += 1
+            elif len(testrun.failures) == 0:
+                testpass += 1
+            else:
+                testfail += 1
 
-		testskip += len(run.skipruns)
+        testskip += len(run.skipruns)
 
-		result.append([datetime.datetime.fromtimestamp(run.created.timestamp()), [testpass, testfail, testskip]])
+        result.append([datetime.datetime.fromtimestamp(
+            run.created.timestamp()), [testpass, testfail, testskip]])
 
-	return result
+    return result
+
 
 def get_plot_data(database):
-	'''
-	database should be a sql regression database
-	'''
-	result = {}
-	for module in database.getModules():
-		for test in module.tests:
-			lines = {}
-			for series in test.serieses:
-				line = []
-				for m in series.measurements:
-					line.append([m.created.timestamp()*1000, m.value])
-				lines[series.name] = {
-						"data" : line,
-						"unit" : series.quantity.unit
-					}
-			result[module.name + "/" + test.name] = lines
-	return result
+    '''
+    database should be a sql regression database
+    '''
+    result = {}
+    for module in database.getModules():
+        for test in module.tests:
+            lines = {}
+            for series in test.serieses:
+                line = []
+                for m in series.measurements:
+                    line.append([m.created.timestamp() * 1000, m.value])
+                lines[series.name] = {
+                    "data": line,
+                    "unit": series.quantity.unit
+                }
+            result[module.name + "/" + test.name] = lines
+    return result
