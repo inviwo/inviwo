@@ -30,6 +30,8 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -68,12 +70,18 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void deserialize(Deserializer& d) override;
 private:
     VolumeOutport outport_;
     TemplateOptionProperty<Type> type_;
     TemplateOptionProperty<DataFormatId> format_;
     IntSize3Property dimensions_;
     IntProperty index_;
+
+    VolumeInformationProperty information_;
+    BasisProperty basis_;
+    std::shared_ptr<Volume> loadedData_;
+    bool deserialized_ = false;
 };
 
 }  // namespace inviwo

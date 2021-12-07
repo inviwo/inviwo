@@ -47,6 +47,8 @@ void RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) 
 }
 
 void RenderHandlerGL::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
+    if (!browser) return;
+
     if (!show) {
         // Clear the popup rectangle.
         ClearPopupRects(browser);

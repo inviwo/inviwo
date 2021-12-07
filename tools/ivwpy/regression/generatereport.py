@@ -57,7 +57,7 @@ from . statistics import *
 # Flot               http://www.flotcharts.org
 
 # Jenkins note: https://wiki.jenkins-ci.org/display/JENKINS/Configuring+Content+Security+Policy
-# System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", 
+# System.setProperty("hudson.model.DirectoryBrowserSupport.CSP",
 #                    "default-src 'self';script-src 'self';style-src 'self' 'unsafe-inline';")
 # added to /etc/default/jenkins
 
@@ -100,7 +100,7 @@ def abrhtml(html, length=85):
 
 def isValidString(*vars):
     for var in vars:
-        if var is None or var is "" or not isinstance(var, str):
+        if var is None or var == "" or not isinstance(var, str):
             return False
     return True
 
@@ -202,8 +202,8 @@ def imagesShort(report):
     doc, tag, text = yattag.Doc().tagtext()
     failedImgs = safeget(report, 'failures', 'image_tests', failure={})
     fail = len(failedImgs)
-    text("All OK" if fail ==
-         0 else "{:d}/{:d} Images failed".format(fail, len(report["image_tests"])))
+    text("All OK" if fail == 0
+         else "{:d}/{:d} Images failed".format(fail, len(report["image_tests"])))
     return doc.getvalue()
 
 
@@ -340,7 +340,9 @@ class TestRun:
     def testRunInfo(self, key, testrun):
         if testrun is not None:
             date = testrun.commit.date.strftime('%Y-%m-%d %H:%M:%S')
-            self.doc.asis(listItem(keyval(key, date + " " + html.escape(abr(testrun.commit.message, 50))),
+            self.doc.asis(listItem(keyval(key,
+                                          date + " " + html.escape(abr(testrun.commit.message, 50))
+                                          ),
                                    commitInfo(testrun.commit)))
         else:
             self.doc.asis(listItem(keyval(key, "None"), toggle=False))
@@ -348,7 +350,8 @@ class TestRun:
     def gitDiff(self, lastSuccess, firstFailure):
         if (lastSuccess is not None) and (firstFailure is not None):
             self.doc.asis(listItem(keyval("Diff",
-                                          getDiffLink(lastSuccess.commit, firstFailure.commit)), toggle=False))
+                                          getDiffLink(lastSuccess.commit,
+                                                      firstFailure.commit)), toggle=False))
 
     def sparkLine(self, series, klass, normalRange=True, valueRange=True):
         doc, tag, text = yattag.Doc().tagtext()
@@ -398,8 +401,8 @@ class TestRun:
                 text("Pixels: {:d}".format(img["different_pixels"]))
         with tag('div', klass="imagepercent"):
             if img["different_pixels"] is not None:
-                text("({:2.4f}%)".format(100.0 * img["different_pixels"] /
-                                         (img['test_size'][0] * img['test_size'][1])))
+                text("({:2.4f}%)".format(
+                    100.0 * img["different_pixels"] / (img['test_size'][0] * img['test_size'][1])))
         with tag('div', klass="imagedelta"):
             if img["max_difference"] is not None:
                 text("Largest delta: {:1.8f}".format(img["max_difference"]))
@@ -418,14 +421,18 @@ class TestRun:
         with tag('ol'):
             for img in imgs:
                 doc.asis(listItem(self.imageShort(img),
-                                  testImages(path("imgtest", img["image"]), path("imgref", img["image"]),
-                                             path("imgdiff", img["image"]), path("imgmask", img["image"])),
+                                  testImages(path("imgtest", img["image"]),
+                                             path("imgref", img["image"]),
+                                             path("imgdiff", img["image"]),
+                                             path("imgmask", img["image"])),
                                   status=imgstatus(img['image']), hide=False))
         return doc.getvalue()
 
     def screenshot(self):
         return listItem(keyval("Screenshot", "..."),
-                        image(os.path.relpath(toPath(self.report['outputdir'], self.report["screenshot"]), self.basedir),
+                        image(os.path.relpath(toPath(self.report['outputdir'],
+                                                     self.report["screenshot"]),
+                                              self.basedir),
                               alt="Screenshot", width="100%"))
 
     def timeSeries(self):
@@ -522,7 +529,7 @@ class HtmlReport:
                         text("")
 
             with tag('body'):
-                if header != None:
+                if header is not None:
                     self.doc.asis(header)
 
                 with tag('div', id='reportlist', klass='report'):
@@ -575,12 +582,12 @@ class HtmlReport:
                             tr = TestRun(self, report)
                             self.doc.asis(tr.getvalue())
 
-                if footer != None:
+                if footer is not None:
                     self.doc.asis(footer)
 
                 with tag('script', language="javascript",
                          src=self.scriptDirname + "/plotdata.js"):
-                        text("")
+                    text("")
                 for script in self.postScripts:
                     with tag('script', language="javascript",
                              src=self.scriptDirname + "/" + script):
@@ -596,8 +603,9 @@ class HtmlReport:
 
         with open(toPath(scriptdir, "plotdata.js"), 'w') as f:
             runtimedata = elapsed_time_stats(self.db)
-            print("var summarydata = " +
-                  dataToJsArray([[x.timestamp() * 1000, y] for x, y in runtimedata]), file=f)
+            print("var summarydata = " + dataToJsArray([[x.timestamp() * 1000, y]
+                                                        for x, y in runtimedata]),
+                  file=f)
 
             resulttimedata = result_time_stats(self.db)
 

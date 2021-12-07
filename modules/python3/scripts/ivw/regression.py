@@ -27,15 +27,19 @@
 #
 # ********************************************************************************
 
-import time
 import json
 import inviwopy
 
 
-def saveCanvas(canvas: inviwopy.CanvasProcessor, name=None):
-    if name  None:
+def saveCanvas(canvas, name=None):
+    """
+    Save canvas to a png
+    """
+    if name is None:
         name = canvas.identifier
-    canvas.snapshot(inviwopy.app.getOutputPath() + "/imgtest/" + name + ".png")
+
+    odir = inviwopy.app.getOutputPath()
+    canvas.snapshot(f"{odir}/imgtest/{name}.png")
 
 
 class Measurements:

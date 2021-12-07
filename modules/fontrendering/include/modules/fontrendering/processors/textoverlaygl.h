@@ -39,7 +39,8 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/listproperty.h>
 
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
@@ -49,12 +50,28 @@ namespace inviwo {
 class Image;
 class ImageGL;
 
+class IVW_MODULE_FONTRENDERING_API TextOverlayProperty : public CompositeProperty {
+public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    TextOverlayProperty(std::string_view identifier, std::string_view displayName,
+                        InvalidationLevel = InvalidationLevel::InvalidResources,
+                        PropertySemantics semantics = PropertySemantics::Default);
+    TextOverlayProperty(const TextOverlayProperty& rhs);
+    virtual TextOverlayProperty* clone() const override;
+
+    StringProperty text;
+    FloatVec2Property position;
+    IntVec2Property offset;
+};
+
 /** \docpage{org.inviwo.TextOverlayGL, Text Overlay}
  * ![](org.inviwo.TextOverlayGL.png?classIdentifier=org.inviwo.TextOverlayGL)
  *
- * Overlay text onto an image. The text can contain up to 99 place markers indicated by %1 to %99.
- * These markers will be replaced with the contents of the corresponding arg properties. A place
- * marker can occur multiple times and all occurences will be replaced with the same text.
+ * Overlay text onto an image. The text can contain up to 99 place markers indicated by %1 to
+ * %99. These markers will be replaced with the contents of the corresponding arg properties. A
+ * place marker can occur multiple times and all occurences will be replaced with the same text.
  *
  * ### Inports
  *   * __Inport__ Input image (optional)
@@ -65,12 +82,12 @@ class ImageGL;
  * ### Properties
  *   * __Text__ Text to overlay. This text can contain place markers %1 to %99, which will be
  *              replaced with the optional argument properties
- *   * __Argument Properties__ texts used instead of place markers (optional, created with the "Add
- * Argument String" button)
+ *   * __Argument Properties__ texts used instead of place markers (optional, created with the
+ * "Add Argument String" button)
  *   * __Font size__ Text size
  *   * __Position__ Where to put the text, relative position from 0 to 1
- *   * __Anchor__ What point of the text to put at "Position". relative from -1,1. 0 meas the image
- *     is centered on "Position".
+ *   * __Anchor__ What point of the text to put at "Position". relative from -1,1. 0 meas the
+ * image is centered on "Position".
  */
 
 class IVW_MODULE_FONTRENDERING_API TextOverlayGL : public Processor {
@@ -81,19 +98,8 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void deserialize(Deserializer& d) override;
-
 protected:
     virtual void process() override;
-
-    /**
-     * \brief returns the output string with place markers replaced by the corresponding strings of
-     * the optional properties
-     *
-     * @return std::string output string with replaced place markers
-     */
-    std::string getString() const;
-
     void updateCache();
 
 private:
@@ -101,22 +107,15 @@ private:
     ImageOutport outport_;
 
     BoolProperty enable_;
-    StringProperty text_;
+    ListProperty texts_;
+
     FloatVec4Property color_;
     FontProperty font_;
-    FloatVec2Property position_;
-    IntVec2Property offset_;
 
-    ButtonProperty
-        addArgButton_;  //!< this button will add string properties to be used with place markers
+    ListProperty args_;
 
     TextRenderer textRenderer_;
-    std::size_t numArgs_;  //!< number of optional place marker properties
-
-    const std::size_t maxNumArgs_ = 99;
-
-    TextTextureObject textObject_;
-
+    std::vector<TextTextureObject> textObjects_;
     TextureQuadRenderer textureRenderer_;
 };
 

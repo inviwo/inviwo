@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,8 +24,8 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
 
 import os
 import re
@@ -37,88 +37,89 @@ from . import util
 from . import colorprint as cp
 from . import ivwpaths
 
-def findGit(pyconfsearchpath = ""):
-	pyconfig = util.find_pyconfig(pyconfsearchpath)
-	config = configparser.ConfigParser()
-	config.read([
-		util.toPath(ivwpaths.find_inv_path(), "pyconfig.ini"),
-		pyconfig if pyconfig is not None else ""
-		])
-	if config.has_option("Git", "path"):
-		git = config.get("Git", "path")
-	elif os.name == 'posix': 
-		git='git'
-	else: 
-		git='git.exe'
 
-	return git
+def findGit(pyconfsearchpath=""):
+    pyconfig = util.find_pyconfig(pyconfsearchpath)
+    config = configparser.ConfigParser()
+    config.read([
+        util.toPath(ivwpaths.find_inv_path(), "pyconfig.ini"),
+        pyconfig if pyconfig is not None else ""
+    ])
+    if config.has_option("Git", "path"):
+        git = config.get("Git", "path")
+    elif os.name == 'posix':
+        git = 'git'
+    else:
+        git = 'git.exe'
+
+    return git
 
 
 class Git:
-	def __init__(self, pyconfsearchpath = ""):
-		self.gitexe = findGit(pyconfsearchpath)
+    def __init__(self, pyconfsearchpath=""):
+        self.gitexe = findGit(pyconfsearchpath)
 
-	def run(self, path, command):
-		try:
-			with subprocess.Popen(
-				[self.gitexe] + command, 
-		  		cwd=path,
-				stdout=subprocess.PIPE, 
-		  		stderr=subprocess.STDOUT,
-				universal_newlines=True) as proc:
-					out, err = proc.communicate(timeout=60)
-	
-		except FileNotFoundError as e:
-			cp.print_error("Could not find " + self.gitexe + " in the path")
-			raise e
-	
-		except subprocess.TimeoutExpired as e:
-			proc.kill()
-			cp.print_error("Git command timeout: " + " ".join(command))
-			raise e
-	
-		return out, err
+    def run(self, path, command):
+        try:
+            with subprocess.Popen(
+                [self.gitexe] + command,
+                cwd=path,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                    universal_newlines=True) as proc:
+                out, err = proc.communicate(timeout=60)
 
-	def foundGit(self):
-		try:
-			self.gitversion()
-		except:
-			return False
-		return True
+        except FileNotFoundError as e:
+            cp.print_error("Could not find " + self.gitexe + " in the path")
+            raise e
 
-	def gitversion(self):
-		out, err = self.run(".", ["--version"])
-		return out
+        except subprocess.TimeoutExpired as e:
+            proc.kill()
+            cp.print_error("Git command timeout: " + " ".join(command))
+            raise e
 
-	def hash(self, path):
-		out, err = self.run(path, ["log", "-n1", "--pretty=format:%H"])
-		return out
+        return out, err
 
-	def date(self, path):
-		out, err = self.run(path, ["log", "-n1", "--pretty=format:%cI"])
-		return datetime.datetime.strptime(out[:-6], "%Y-%m-%dT%H:%M:%S" )
+    def foundGit(self):
+        try:
+            self.gitversion()
+        except:
+            return False
+        return True
 
-	def author(self, path):
-		out, err = self.run(path, ["log", "-n1", "--pretty=format:%cn"])
-		return out
+    def gitversion(self):
+        out, err = self.run(".", ["--version"])
+        return out
 
-	def message(self, path):
-		out, err = self.run(path, ["log", "-n1", "--pretty=format:%B"])
-		return out
+    def hash(self, path):
+        out, err = self.run(path, ["log", "-n1", "--pretty=format:%H"])
+        return out
 
-	def server(self, path):
-		out, err = self.run(path, ["config", "--local", "remote.origin.url"])
-		m = re.match(r"(?P<proto>https?:\/\/)(\w+@)?(?P<url>[_\w.\d/-]+)\.git", out)
-		if m:
-			return m.group("proto") + m.group("url")
-		else:
-			return ""
+    def date(self, path):
+        out, err = self.run(path, ["log", "-n1", "--pretty=format:%cI"])
+        return datetime.datetime.strptime(out[:-6], "%Y-%m-%dT%H:%M:%S")
 
-	def info(self, path):
-		return {
-			'hash'   : self.hash(path),
-			'date'   : util.dateToString(self.date(path)),
-			'author' : self.author(path),
-			'message': self.message(path),
-			'server' : self.server(path)
-		}
+    def author(self, path):
+        out, err = self.run(path, ["log", "-n1", "--pretty=format:%cn"])
+        return out
+
+    def message(self, path):
+        out, err = self.run(path, ["log", "-n1", "--pretty=format:%B"])
+        return out
+
+    def server(self, path):
+        out, err = self.run(path, ["config", "--local", "remote.origin.url"])
+        m = re.match(r"(?P<proto>https?:\/\/)(\w+@)?(?P<url>[_\w.\d/-]+)\.git", out)
+        if m:
+            return m.group("proto") + m.group("url")
+        else:
+            return ""
+
+    def info(self, path):
+        return {
+            'hash': self.hash(path),
+            'date': util.dateToString(self.date(path)),
+            'author': self.author(path),
+            'message': self.message(path),
+            'server': self.server(path)
+        }
