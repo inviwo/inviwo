@@ -853,12 +853,12 @@ constexpr const auto& get(const glm::vec<N, T, Q>& v) noexcept {
 
 template <std::size_t I, auto N, class T, auto Q>
 constexpr auto&& get(glm::vec<N, T, Q>&& v) noexcept {
-    return std::move(v[I]);
+    return v[I];
 }
 
 template <std::size_t I, auto N, class T, auto Q>
 constexpr const auto&& get(const glm::vec<N, T, Q>&& v) noexcept {
-    return std::move(v[I]);
+    return v[I];
 }
 
 namespace detail {
