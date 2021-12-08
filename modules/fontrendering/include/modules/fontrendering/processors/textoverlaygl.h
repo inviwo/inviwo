@@ -91,7 +91,7 @@ public:
  *      * __Font Face__ Font face
  *      * __Font Size__ Size
  *      * __Line Spacing__ Line spacing ot the text
- *      * __Anchor__ What point of the text to put at "Position". relative from -1,1. 0 means the
+ *      * __Anchor__ What point of the text to put at "Position". Relative from -1,1. 0 means the
  *        text is centered on "Position".
  *      * __Color__ Foreground color of the text
  */

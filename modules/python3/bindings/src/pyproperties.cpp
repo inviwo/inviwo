@@ -31,6 +31,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 
 #include <inviwopy/inviwopy.h>
+#include <inviwopy/pyflags.h>
 #include <inviwo/core/properties/constraintbehavior.h>
 
 #include <inviwo/core/properties/buttonproperty.h>
@@ -45,6 +46,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/propertyeditorwidget.h>
+#include <inviwo/core/properties/listproperty.h>
 
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/colorconversion.h>
@@ -74,6 +76,12 @@ void exposeProperties(py::module& m) {
         .value("Valid", InvalidationLevel::Valid)
         .value("InvalidOutput", InvalidationLevel::InvalidOutput)
         .value("InvalidResources", InvalidationLevel::InvalidResources);
+
+    py::enum_<ListPropertyUIFlag>(m, "ListPropertyUIFlag")
+        .value("Static", ListPropertyUIFlag::Static)
+        .value("Add", ListPropertyUIFlag::Add)
+        .value("Remove", ListPropertyUIFlag::Remove);
+    exposeFlags<ListPropertyUIFlag>(m, "ListPropertyUIFlags");
 
     py::class_<PropertySemantics>(m, "PropertySemantics")
         .def(py::init())
@@ -166,8 +174,7 @@ void exposeProperties(py::module& m) {
             },
             py::return_value_policy::reference);
 
-    PyPropertyClass<BoolCompositeProperty, CompositeProperty, PropertyOwner>(
-        m, "BoolCompositeProperty")
+    PyPropertyClass<BoolCompositeProperty, CompositeProperty>(m, "BoolCompositeProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName, bool checked,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new BoolCompositeProperty(identifier, displayName, checked,
@@ -182,6 +189,31 @@ void exposeProperties(py::module& m) {
                       &BoolCompositeProperty::setChecked)
         .def("__bool__", &BoolCompositeProperty::isChecked);
 
+    PyPropertyClass<ListProperty, CompositeProperty>(m, "ListProperty")
+        .def(py::init([](std::string_view identifier, std::string_view displayName,
+                         size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new ListProperty(identifier, displayName, maxNumberOfElements, uiFlags,
+                                         invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("maxNumberOfElements") = 0,
+             py::arg("uiFlags") = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+             py::arg("semantics") = PropertySemantics::Default)
+
+        .def_property("maxNumberOfElements", &ListProperty::getMaxNumberOfElements,
+                      &ListProperty::setMaxNumberOfElements)
+        .def("constructProperty", &ListProperty::constructProperty)
+        .def_property_readonly("prefabCount", &ListProperty::getPrefabCount)
+        .def("addPrefab",
+             [](ListProperty& list, const Property& prefab) {
+                 list.addPrefab(std::unique_ptr<Property>(prefab.clone()));
+             })
+        .def("getPrefab",
+             [](ListProperty& list, size_t idx) -> Property* {
+                 return list.getPrefabs()[idx].get();
+             });
+             
     PyPropertyClass<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
         .def_property_readonly("size", &BaseOptionProperty::size)
