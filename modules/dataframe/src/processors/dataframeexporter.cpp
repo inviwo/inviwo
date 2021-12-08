@@ -120,6 +120,7 @@ void DataFrameExporter::exportData() {
     }
 
     // update widgets as the file might now exist
+    exportFile_.clearInitiatingWidget();
     exportFile_.updateWidgets();
 }
 

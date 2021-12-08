@@ -124,6 +124,7 @@ void DataExport<DataType, PortType>::exportData() {
                       LogAudience::User);
 
             // update widgets as the file might now exist
+            file_.clearInitiatingWidget();
             file_.updateWidgets();
         } catch (DataWriterException const& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);

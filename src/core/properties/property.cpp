@@ -163,7 +163,9 @@ void Property::deregisterWidget(PropertyWidget* propertyWidget) {
 void Property::setInitiatingWidget(PropertyWidget* propertyWidget) {
     initiatingWidget_ = propertyWidget;
 }
+
 void Property::clearInitiatingWidget() { initiatingWidget_ = nullptr; }
+
 void Property::updateWidgets() {
     for (auto& elem : propertyWidgets_) {
         if (elem != nullptr && elem != initiatingWidget_) {
