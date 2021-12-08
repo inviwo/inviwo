@@ -221,8 +221,7 @@ public:
 
     /**
      * Add a \p callback to the manager that gets called when a brushing action is triggered.
-     *
-     * Only one callback can be registered at the same time.
+     * \remark{Only one callback can be registered at the same time.}
      *
      * @param callback   gets called with the same arguments as brush()
      *

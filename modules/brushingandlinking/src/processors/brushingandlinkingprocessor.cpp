@@ -85,21 +85,15 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
         if ((action == BrushingAction::Select) && !logSelectActions_) return;
         if ((action == BrushingAction::Highlight) && !logHighlightActions_) return;
 
-        std::string str;
-        auto it = indices.begin();
-        int i = maxVisibleIndices_;
-        while (it != indices.end() && i > 0) {
-            str += std::to_string(*it++) + ',';
-            --i;
-        }
-        if (it != indices.end()) {
-            str += "...";
-        } else if (!str.empty()) {
-            str.pop_back();
-        }
+        const auto maxIndices = static_cast<size_t>(maxVisibleIndices_);
+        const auto str = fmt::format(
+            "{}{}",
+            fmt::join(indices.begin(),
+                      std::next(indices.begin(), std::min(indices.size(), maxIndices)), ", "),
+            indices.size() > maxIndices ? "..." : "");
 
         LogProcessorInfo(fmt::format(
-            "{:<20} action: {}, target: {}, source: {}, indices: [{}] ({})", getDisplayName(),
+            "{:<20} action: {:<13}, target: {}\nsource: {}\nindices: [{}] ({})", getDisplayName(),
             action, target.getString(), source, str, indices.cardinality()));
     });
 }
