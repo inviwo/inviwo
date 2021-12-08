@@ -87,7 +87,16 @@ DataExport<DataType, PortType>::DataExport()
     addPort(port_);
     addProperty(file_);
     file_.setAcceptMode(AcceptMode::Save);
-    export_.onChange([&]() { exportQueued_ = true; });
+    export_.onChange([&]() {
+        if (port_.hasData()) {
+            if (file_.get().empty()) {
+                file_.requestFile();
+                // file request got canceled, do nothing
+                if (file_.get().empty()) return;
+            }
+            exportQueued_ = true;
+        }
+    });
     addProperty(export_);
     addProperty(overwrite_);
 }
@@ -95,8 +104,6 @@ DataExport<DataType, PortType>::DataExport()
 template <typename DataType, typename PortType>
 void DataExport<DataType, PortType>::exportData() {
     auto data = getData();
-
-    if (file_.get().empty()) file_.requestFile();
 
     if (data && !file_.get().empty()) {
         auto factory = getNetwork()->getApplication()->getDataWriterFactory();
@@ -115,6 +122,10 @@ void DataExport<DataType, PortType>::exportData() {
             writer->writeData(data, file_.get());
             util::log(IVW_CONTEXT, "Data exported to disk: " + file_.get(), LogLevel::Info,
                       LogAudience::User);
+
+            // update widgets as the file might now exist
+            file_.clearInitiatingWidget();
+            file_.updateWidgets();
         } catch (DataWriterException const& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
         }

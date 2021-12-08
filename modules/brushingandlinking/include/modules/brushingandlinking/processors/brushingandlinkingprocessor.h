@@ -32,6 +32,9 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
@@ -40,12 +43,14 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
  * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Central point for handling brushing and linking events. Handles selection events, filter events,
- * and column selection.
+ * Central point for handling and linking brushing and linking events.
  *
+ * ### Inports
+ *   * __inport__   brushing and linking port for hierarchical interactions
  * ### Outports
  *   * __outport__  brushing and linking port for connecting "linked" processors
  *
+ * \see BrushingAndLinkingManager
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
 public:
@@ -58,12 +63,19 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    BrushingAndLinkingInport inport_;
     BrushingAndLinkingOutport outport_;
 
     ButtonProperty clearSelection_;
     ButtonProperty clearHighlight_;
     ButtonProperty clearCols_;
     ButtonProperty clearAll_;
+
+    BoolCompositeProperty logging_;
+    BoolProperty logFilterActions_;
+    BoolProperty logSelectActions_;
+    BoolProperty logHighlightActions_;
+    IntProperty maxVisibleIndices_;
 };
 
 }  // namespace inviwo

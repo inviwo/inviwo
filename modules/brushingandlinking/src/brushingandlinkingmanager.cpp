@@ -75,6 +75,10 @@ void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget targ
                                 }},
                selections_[actionIdx]);
 
+    if (onBrushCallback_) {
+        std::invoke(onBrushCallback_, action, target, indices, source);
+    }
+
     propagate(action, target);
 }
 
@@ -322,6 +326,11 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
                        map);
         }
     }
+}
+
+void BrushingAndLinkingManager::onBrush(
+    std::function<void(BrushingAction, BrushingTarget, const BitSet&, std::string_view)> callback) {
+    onBrushCallback_ = callback;
 }
 
 void BrushingAndLinkingManager::markAsValid() {

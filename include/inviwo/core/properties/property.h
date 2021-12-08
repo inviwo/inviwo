@@ -229,6 +229,11 @@ public:
      * @see setInitiatingWidget
      */
     void clearInitiatingWidget();
+    /**
+     * Update all widgets using the current property state except for the initiating widget.
+     * @see setInitiatingWidget, clearInitiatingWidget
+     */
+    void updateWidgets();
 
     /**
      * Does the property have any registered widgets.
@@ -403,7 +408,6 @@ protected:
      */
     Property& operator=(const Property& that) = delete;
 
-    void updateWidgets();
     void notifyAboutChange();
 
     CallBackList onChangeCallback_;
