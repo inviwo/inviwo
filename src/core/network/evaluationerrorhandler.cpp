@@ -29,6 +29,7 @@
 
 #include <inviwo/core/network/evaluationerrorhandler.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <fmt/format.h>
 
@@ -55,7 +56,7 @@ void StandardEvaluationErrorHandler::operator()(Processor* processor, Evaluation
     try {
         throw;
     } catch (Exception& e) {
-        util::log(e.getContext(), id + " Error in " + func + ": " + e.getMessage(),
+        util::log(e.getContext(), fmt::format("{} Error in {} : {}", id, func, e.getMessage()),
                   LogLevel::Error);
 
         if (!e.getStack().empty()) {
@@ -66,13 +67,14 @@ void StandardEvaluationErrorHandler::operator()(Processor* processor, Evaluation
         }
     } catch (fmt::format_error& e) {
         util::log(context,
-                  id + " Error in " + func + " using fmt::format: " + std::string(e.what()),
+                  fmt::format("{} Error in {} using fmt formatting: {}\n{}", id, func, e.what(),
+                              util::fmtHelp.view()),
                   LogLevel::Error);
     } catch (std::exception& e) {
-        util::log(context, id + " Error in " + func + ": " + std::string(e.what()),
-                  LogLevel::Error);
+        util::log(context, fmt::format("{} Error in {} : {}", id, func, e.what()), LogLevel::Error);
     } catch (...) {
-        util::log(context, id + " Error in " + func + ": " + "Unknown error", LogLevel::Error);
+        util::log(context, fmt::format("{} Error in {} : Unknown error", id, func),
+                  LogLevel::Error);
     }
 }
 

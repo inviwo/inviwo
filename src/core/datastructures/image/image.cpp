@@ -132,6 +132,13 @@ Image::Image(const Image& rhs) : DataGroup<Image, ImageRepresentation>(rhs), Met
         pickingLayer_ = std::shared_ptr<Layer>(picking->clone());
 }
 
+Image::Image(const Image& rhs, NoData)
+    : DataGroup<Image, ImageRepresentation>{}
+    , MetaDataOwner(rhs)
+    , colorLayers_{{createColorLayer(rhs.getDimensions(), rhs.getDataFormat())}}
+    , depthLayer_{createDepthLayer(rhs.getDimensions())}
+    , pickingLayer_{createPickingLayer(rhs.getDimensions())} {}
+
 Image& Image::operator=(const Image& that) {
     if (this != &that) {
         DataGroup<Image, ImageRepresentation>::operator=(that);

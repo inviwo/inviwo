@@ -36,6 +36,8 @@
 #include <numeric>
 #include <limits>
 
+#include <inviwo/core/datastructures/unitsystem.h>
+
 namespace inviwo {
 
 namespace hdf5 {
@@ -185,7 +187,7 @@ void HDF5ToVolume::process() {
             break;
     }
     volume_->dataMap_.valueRange = valueRange_.get();
-    volume_->dataMap_.valueUnit = valueUnit_.get();
+    volume_->dataMap_.valueAxis.unit = units::unit_from_string(valueUnit_.get());
 }
 
 mat4 HDF5ToVolume::getBasisFromMeta(MetaData meta) {

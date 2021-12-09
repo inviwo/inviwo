@@ -42,51 +42,39 @@ ColumnMetaDataProperty::ColumnMetaDataProperty(std::string_view identifier,
                                                std::string_view displayName, dvec2 range,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : CompositeProperty(std::string(identifier), std::string(displayName), invalidationLevel,
-                        semantics)
-    , columnRange_("columnRange", "Column Range", range.x, range.y, -DataFloat64::max(),
-                   DataFloat64::max(), 0.0, 0.0, InvalidationLevel::InvalidOutput,
-                   PropertySemantics("Text"))
-    , overrideRange_("overrideRange", "Override Range", false)
-    , customRange_("customRange", "Custom Range", 0.0, 1.0, -DataFloat64::max(), DataFloat64::max(),
-                   0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
-    , resetToData_("resetToData", "Reset to Data",
-                   [&]() {
-                       NetworkLock lock(this);
-                       overrideRange_.setChecked(true);
-                       customRange_.set(dataRange_);
-                   })
-    , dataRange_("dataRange", dvec2(0.0))
-    , columnIndex_("columnIndex", 0u) {
+    : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, semantics)
+    , header_{"header", "Header"}
+    , range_("range", "Range", range.x, range.y, -DataFloat64::max(), DataFloat64::max(), 0.0, 0.0,
+             InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , unit_{"unit", "Unit"}
+    , drop_{"drop", "Drop", false} {
 
-    addProperties(columnRange_, overrideRange_);
-    overrideRange_.addProperties(customRange_, resetToData_);
+    getBoolProperty()
+        ->setDisplayName("Keep Changes")
+        .setInvalidationLevel(InvalidationLevel::Valid)
+        .visibilityDependsOn(*this, [](const auto& p) { return !p.getReadOnly(); })
+        .setCurrentStateAsDefault();
 
-    setCollapsed(true);
-
-    columnRange_.setReadOnly(true);
+    addProperties(header_, range_, unit_, drop_);
+    setCollapsed(true).setCurrentStateAsDefault();
 }
 
 ColumnMetaDataProperty::ColumnMetaDataProperty(const ColumnMetaDataProperty& rhs)
-    : CompositeProperty(rhs)
-    , columnRange_(rhs.columnRange_)
-    , overrideRange_(rhs.overrideRange_)
-    , customRange_(rhs.customRange_)
-    , resetToData_(rhs.resetToData_)
-    , dataRange_(rhs.dataRange_)
-    , columnIndex_(rhs.columnIndex_) {
+    : BoolCompositeProperty(rhs)
+    , header_{rhs.header_}
+    , range_{rhs.range_}
+    , unit_{rhs.unit_}
+    , drop_{rhs.drop_} {
 
-    addProperties(columnRange_, overrideRange_);
-    overrideRange_.addProperties(customRange_, resetToData_);
+    addProperties(header_, range_, unit_, drop_);
 }
 
 ColumnMetaDataProperty& ColumnMetaDataProperty::operator=(const ColumnMetaDataProperty& rhs) {
     if (this != &rhs) {
-        columnRange_.set(rhs.columnRange_);
-        overrideRange_.set(&rhs.overrideRange_);
-        customRange_.set(rhs.customRange_);
-        dataRange_ = rhs.dataRange_;
-        columnIndex_ = rhs.columnIndex_;
+        header_.set(rhs.header_.get());
+        range_.set(rhs.range_.get());
+        unit_.set(rhs.unit_.get());
+        drop_.set(rhs.drop_.get());
     }
     return *this;
 }
@@ -95,33 +83,29 @@ ColumnMetaDataProperty* ColumnMetaDataProperty::clone() const {
     return new ColumnMetaDataProperty(*this);
 }
 
-void ColumnMetaDataProperty::setRange(dvec2 columnRange, dvec2 dataRange) {
-    columnRange_.set(columnRange);
-    dataRange_ = dataRange;
+const std::string& ColumnMetaDataProperty::getHeader() const { return header_.get(); }
+dvec2 ColumnMetaDataProperty::getRange() const { return range_.get(); }
+Unit ColumnMetaDataProperty::getUnit() const { return units::unit_from_string(unit_.get()); }
+bool ColumnMetaDataProperty::getDrop() const { return drop_.get(); }
+
+void ColumnMetaDataProperty::updateForNewColumn(const Column& col, util::OverwriteState overwrite) {
+    overwrite = (overwrite == util::OverwriteState::No || isChecked()) ? util::OverwriteState::No
+                                                                       : util::OverwriteState::Yes;
+    range_.setReadOnly(col.getColumnType() == ColumnType::Categorical ||
+                       col.getColumnType() == ColumnType::Index);
+    drop_.setReadOnly(col.getColumnType() == ColumnType::Index);
+
+    setDisplayName(col.getHeader());
+    util::updateDefaultState(header_, col.getHeader(), overwrite);
+    util::updateDefaultState(range_, col.getRange(), overwrite);
+    util::updateDefaultState(unit_, fmt::to_string(col.getUnit()), overwrite);
+    util::updateDefaultState(drop_, false, overwrite);
 }
 
-dvec2 ColumnMetaDataProperty::getRange() const {
-    if (overrideRange_.isChecked()) {
-        return customRange_;
-    } else {
-        return columnRange_;
-    }
-}
-
-void ColumnMetaDataProperty::setColumnIndex(size_t index) { columnIndex_ = index; }
-
-size_t ColumnMetaDataProperty::getColumnIndex() const { return columnIndex_; }
-
-void ColumnMetaDataProperty::serialize(Serializer& s) const {
-    CompositeProperty::serialize(s);
-    dataRange_.serialize(s, getSerializationMode());
-    columnIndex_.serialize(s, getSerializationMode());
-}
-
-void ColumnMetaDataProperty::deserialize(Deserializer& d) {
-    CompositeProperty::deserialize(d);
-    dataRange_.deserialize(d, getSerializationMode());
-    columnIndex_.deserialize(d, getSerializationMode());
+void ColumnMetaDataProperty::updateColumn(Column& col) const {
+    col.setHeader(getHeader());
+    col.setCustomRange(getRange());
+    col.setUnit(getUnit());
 }
 
 }  // namespace inviwo

@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/document.h>
@@ -72,6 +73,7 @@ public:
                     const Wrapping3D& wrapping = wrapping3d::clampAll);
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
+    Volume(const Volume&, NoData);
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();
@@ -87,15 +89,13 @@ public:
     virtual size3_t getDimensions() const override;
 
     /**
-     * Set the format of the data.
+     * Set the default data format. Existing representations will not be affected.
+     * @note Only useful before any representations have been created.
      * @see DataFormatBase
      * @param format The format of the data.
      */
-    // clang-format off
-    [[ deprecated("use VolumeRepresentation::setDataFormat() instead (deprecated since 2019-06-26)")]]
     void setDataFormat(const DataFormatBase* format);
     const DataFormatBase* getDataFormat() const;
-    // clang-format on
 
     /**
      * \brief update the swizzle mask of the color channels when sampling the volume
@@ -145,7 +145,9 @@ public:
      * @return Step size for gradient computation in world space.
      */
     vec3 getWorldSpaceGradientSpacing() const;
+
     DataMapper dataMap_;
+    std::array<Axis, 3> axes;
 
     static uvec3 colorCode;
     static const std::string classIdentifier;

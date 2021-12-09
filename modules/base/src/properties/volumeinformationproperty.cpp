@@ -30,6 +30,10 @@
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -37,15 +41,22 @@ const std::string VolumeInformationProperty::classIdentifier =
     "org.inviwo.VolumeInformationProperty";
 std::string VolumeInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
-auto VolumeInformationProperty::props() {
-    return std::tie(dimensions_, format_, channels_, numVoxels_);
+namespace {
+auto props(VolumeInformationProperty& prop) {
+    return std::tie(prop.dimensions_, prop.format_, prop.channels_, prop.numVoxels_);
 }
 
-VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
-                                                     std::string displayName,
+auto meta(VolumeInformationProperty& prop) {
+    return std::tie(prop.dataRange_, prop.valueRange_, prop.valueName_, prop.valueUnit_,
+                    prop.axesNames_, prop.axesUnits_);
+}
+
+}  // namespace
+VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier,
+                                                     std::string_view displayName,
                                                      InvalidationLevel invalidationLevel,
                                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, semantics)
     , dimensions_("dimensions", "Dimensions", size3_t(0), size3_t(0),
                   size3_t(std::numeric_limits<size_t>::max()), size3_t(1), InvalidationLevel::Valid,
                   PropertySemantics("Text"))
@@ -58,68 +69,71 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
                  0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
     , valueRange_("valueRange", "Value range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
                   0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
-    , valueUnit_("valueUnit", "Value unit", "arb. unit.") {
+    , valueName_("valueName", "Value name", "")
+    , valueUnit_("valueUnit", "Value unit", "")
+    , axesNames_{"axesNames", "Axes Names"}
+    , axesUnits_{"axesUnits", "Axes Units"} {
+
+    getBoolProperty()
+        ->setDisplayName("Keep Changes")
+        .setInvalidationLevel(InvalidationLevel::Valid)
+        .visibilityDependsOn(*this, [](const auto& p) { return !p.getReadOnly(); })
+        .setCurrentStateAsDefault();
 
     util::for_each_in_tuple(
         [&](auto& e) {
             e.setReadOnly(true);
             e.setSerializationMode(PropertySerializationMode::None);
             e.setCurrentStateAsDefault();
-            this->addProperty(e);
+            addProperty(e);
         },
-        props());
+        props(*this));
 
-    dataRange_.setSerializationMode(PropertySerializationMode::All);
-    valueRange_.setSerializationMode(PropertySerializationMode::All);
-    valueUnit_.setSerializationMode(PropertySerializationMode::All);
-
-    addProperty(dataRange_);
-    addProperty(valueRange_);
-    addProperty(valueUnit_);
+    util::for_each_in_tuple([&](auto& p) { addProperty(p); }, meta(*this));
 }
 
 VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProperty& rhs)
-    : CompositeProperty(rhs)
+    : BoolCompositeProperty(rhs)
     , dimensions_(rhs.dimensions_)
     , format_(rhs.format_)
     , channels_(rhs.channels_)
     , numVoxels_(rhs.numVoxels_)
     , dataRange_(rhs.dataRange_)
     , valueRange_(rhs.valueRange_)
-    , valueUnit_(rhs.valueUnit_) {
+    , valueName_(rhs.valueName_)
+    , valueUnit_(rhs.valueUnit_)
+    , axesNames_(rhs.axesNames_)
+    , axesUnits_(rhs.axesUnits_) {
 
-    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
-
-    addProperty(dataRange_);
-    addProperty(valueRange_);
-    addProperty(valueUnit_);
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props(*this));
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, meta(*this));
 }
 
 VolumeInformationProperty* VolumeInformationProperty::clone() const {
     return new VolumeInformationProperty(*this);
 }
 
-void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool deserialize) {
+void VolumeInformationProperty::updateForNewVolume(const Volume& volume,
+                                                   util::OverwriteState overwrite) {
     const auto dim = volume.getDimensions();
-
     dimensions_.set(dim);
     format_.set(volume.getDataFormat()->getString());
     channels_.set(volume.getDataFormat()->getComponents());
     numVoxels_.set(dim.x * dim.y * dim.z);
+    util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, props(*this));
 
-    util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, props());
+    overwrite = (overwrite == util::OverwriteState::No || isChecked()) ? util::OverwriteState::No
+                                                                       : util::OverwriteState::Yes;
 
-    if (deserialize) {
-        Property::setStateAsDefault(dataRange_, volume.dataMap_.dataRange);
-        Property::setStateAsDefault(valueRange_, volume.dataMap_.valueRange);
-        Property::setStateAsDefault(valueUnit_, volume.dataMap_.valueUnit);
-    } else {
-        dataRange_.set(volume.dataMap_.dataRange);
-        valueRange_.set(volume.dataMap_.valueRange);
-        valueUnit_.set(volume.dataMap_.valueUnit);
-        dataRange_.setCurrentStateAsDefault();
-        valueRange_.setCurrentStateAsDefault();
-        valueUnit_.setCurrentStateAsDefault();
+    util::updateDefaultState(dataRange_, volume.dataMap_.dataRange, overwrite);
+    util::updateDefaultState(valueRange_, volume.dataMap_.valueRange, overwrite);
+    util::updateDefaultState(valueName_, volume.dataMap_.valueAxis.name, overwrite);
+    util::updateDefaultState(valueUnit_, fmt::to_string(volume.dataMap_.valueAxis.unit), overwrite);
+    for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
+        util::updateDefaultState(prop, axis.name, overwrite);
+    }
+    for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
+        util::updateDefaultState(prop, fmt::to_string(axis.unit), overwrite);
     }
 }
 
@@ -132,7 +146,15 @@ void VolumeInformationProperty::updateVolume(Volume& volume) {
 
     volume.dataMap_.dataRange = dataRange_.get();
     volume.dataMap_.valueRange = valueRange_.get();
-    volume.dataMap_.valueUnit = valueUnit_.get();
+    volume.dataMap_.valueAxis.name = valueName_.get();
+    volume.dataMap_.valueAxis.unit = units::unit_from_string(valueUnit_.get());
+
+    for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
+        axis.name = prop.get();
+    }
+    for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
+        axis.unit = units::unit_from_string(prop.get());
+    }
 }
 
 }  // namespace inviwo

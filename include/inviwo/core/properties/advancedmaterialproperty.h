@@ -61,7 +61,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    AdvancedMaterialProperty(std::string identifier, std::string displayName,
+    AdvancedMaterialProperty(std::string_view identifier, std::string_view displayName,
                              InvalidationLevel = InvalidationLevel::InvalidResources,
                              PropertySemantics semantics = PropertySemantics::Default);
 

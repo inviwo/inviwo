@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,74 +24,83 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
 
 from enum import Enum, unique
 
+
 @unique
 class Color(Enum):
-	black = 0
-	blue = 1
-	cyan = 2
-	green = 3
-	magenta = 4
-	red = 5
-	white = 6
-	yellow = 7
-	light_black = 8
-	light_blue = 9
-	light_cyan = 10
-	light_green = 11
-	light_magenta = 12
-	light_red = 13
-	light_white = 14
-	light_yellow = 15
+    black = 0
+    blue = 1
+    cyan = 2
+    green = 3
+    magenta = 4
+    red = 5
+    white = 6
+    yellow = 7
+    light_black = 8
+    light_blue = 9
+    light_cyan = 10
+    light_green = 11
+    light_magenta = 12
+    light_red = 13
+    light_white = 14
+    light_yellow = 15
+
 
 try:
-	import colorama
-	colorama.init()	
+    import colorama
+    colorama.init()
 
-	def cprint(color, mess, **kwargs):
-		colors = {
-			Color.black : colorama.Fore.BLACK,
-			Color.blue : colorama.Fore.BLUE,
-			Color.cyan : colorama.Fore.CYAN,
-			Color.green : colorama.Fore.GREEN,
-			Color.magenta : colorama.Fore.MAGENTA,
-			Color.red : colorama.Fore.RED,
-			Color.white : colorama.Fore.WHITE,
-			Color.yellow : colorama.Fore.YELLOW,
-			Color.light_black : colorama.Fore.LIGHTBLACK_EX,
-			Color.light_blue : colorama.Fore.LIGHTBLUE_EX,
-			Color.light_cyan : colorama.Fore.LIGHTCYAN_EX,
-			Color.light_green : colorama.Fore.LIGHTGREEN_EX,
-			Color.light_magenta : colorama.Fore.LIGHTMAGENTA_EX,
-			Color.light_red : colorama.Fore.LIGHTRED_EX,
-			Color.light_white : colorama.Fore.LIGHTWHITE_EX,
-			Color.light_yellow : colorama.Fore.LIGHTYELLOW_EX
-		}
-		print(colors[color] + colorama.Style.BRIGHT + str(mess) + colorama.Style.RESET_ALL, **kwargs)
-	
+    def cprint(color, mess, **kwargs):
+        colors = {
+            Color.black: colorama.Fore.BLACK,
+            Color.blue: colorama.Fore.BLUE,
+            Color.cyan: colorama.Fore.CYAN,
+            Color.green: colorama.Fore.GREEN,
+            Color.magenta: colorama.Fore.MAGENTA,
+            Color.red: colorama.Fore.RED,
+            Color.white: colorama.Fore.WHITE,
+            Color.yellow: colorama.Fore.YELLOW,
+            Color.light_black: colorama.Fore.LIGHTBLACK_EX,
+            Color.light_blue: colorama.Fore.LIGHTBLUE_EX,
+            Color.light_cyan: colorama.Fore.LIGHTCYAN_EX,
+            Color.light_green: colorama.Fore.LIGHTGREEN_EX,
+            Color.light_magenta: colorama.Fore.LIGHTMAGENTA_EX,
+            Color.light_red: colorama.Fore.LIGHTRED_EX,
+            Color.light_white: colorama.Fore.LIGHTWHITE_EX,
+            Color.light_yellow: colorama.Fore.LIGHTYELLOW_EX
+        }
+        print(colors[color] + colorama.Style.BRIGHT +
+              str(mess) + colorama.Style.RESET_ALL, **kwargs)
+
 except ImportError:
-	def cprint(color, mess, **kwargs):
-		print(str(mess), **kwargs)
+    def cprint(color, mess, **kwargs):
+        print(str(mess), **kwargs)
+
 
 def print_text(mess, **kwargs):
-		print(mess, **kwargs)
+    print(mess, **kwargs)
+
 
 def print_error(mess, **kwargs):
-		cprint(Color.red, mess, **kwargs)
+    cprint(Color.red, mess, **kwargs)
+
 
 def print_warn(mess, **kwargs):
-		cprint(Color.yellow, mess, **kwargs)
+    cprint(Color.yellow, mess, **kwargs)
+
 
 def print_good(mess, **kwargs):
-		cprint(Color.green, mess, **kwargs)
+    cprint(Color.green, mess, **kwargs)
+
 
 def print_info(mess, **kwargs):
-		cprint(Color.cyan, mess, **kwargs)
+    cprint(Color.cyan, mess, **kwargs)
 
-def print_pair(a,b, width=15):
-	print_info("{:>{width}} : ".format(a, width=width), end="")
-	print("{:<}".format(b))
+
+def print_pair(a, b, width=15):
+    print_info("{:>{width}} : ".format(a, width=width), end="")
+    print("{:<}".format(b))

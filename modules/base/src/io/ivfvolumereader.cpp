@@ -30,10 +30,13 @@
 #include <modules/base/io/ivfvolumereader.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/rawvolumeramloader.h>
+
+#include <units/units.hpp>
 
 namespace inviwo {
 
@@ -86,7 +89,35 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
 
     d.deserialize("DataRange", volume->dataMap_.dataRange);
     d.deserialize("ValueRange", volume->dataMap_.valueRange);
-    d.deserialize("Unit", volume->dataMap_.valueUnit);
+    d.deserialize("ValueName", volume->dataMap_.valueAxis.name);
+
+    std::string tmp;
+    d.deserialize("ValueUnit", tmp);
+    if (!tmp.empty()) {
+        volume->dataMap_.valueAxis.unit = units::unit_from_string(tmp);
+    }
+
+    tmp.clear();
+    d.deserialize("Axis1Unit", tmp);
+    if (!tmp.empty()) {
+        volume->axes[0].unit = units::unit_from_string(tmp);
+    }
+
+    tmp.clear();
+    d.deserialize("Axis2Unit", tmp);
+    if (!tmp.empty()) {
+        volume->axes[1].unit = units::unit_from_string(tmp);
+    }
+
+    tmp.clear();
+    d.deserialize("Axis2Unit", tmp);
+    if (!tmp.empty()) {
+        volume->axes[2].unit = units::unit_from_string(tmp);
+    }
+
+    d.deserialize("Axis1Name", volume->axes[0].name);
+    d.deserialize("Axis2Name", volume->axes[1].name);
+    d.deserialize("Axis3Name", volume->axes[2].name);
 
     volume->getMetaDataMap()->deserialize(d);
     littleEndian = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian);

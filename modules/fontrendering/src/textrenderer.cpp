@@ -314,6 +314,7 @@ TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, bool clearTex
         currTexture_ = texture;
     }
     if (clearTexture) {
+        utilgl::ClearColor clearColor{vec4{0.0f}};
         glClear(GL_COLOR_BUFFER_BIT);
     }
 

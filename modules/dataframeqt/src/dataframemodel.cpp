@@ -207,7 +207,10 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
             const std::string selected =
                 manager_ ? (manager_->isSelected(section, BrushingTarget::Column) ? " [+]" : "")
                          : "";
-            return utilqt::toQString(data_->getHeader(section) + selected);
+            const auto& col = data_->getColumn(section);
+            const auto header =
+                fmt::format("{}{}{: [}", selected, col->getHeader(), col->getUnit());
+            return utilqt::toQString(header);
         }
     } else if ((role == Qt::ToolTipRole) && (orientation == Qt::Horizontal)) {
         const Column* col = data_->getColumn(section).get();
@@ -219,8 +222,8 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
                 return QString("Ordinal (%0)").arg(col->getBuffer()->getDataFormat()->getString());
             }
         }();
-        if (col->getRange()) {
-            const dvec2 range = col->getRange().value();
+        if (col->getCustomRange()) {
+            const dvec2 range = col->getCustomRange().value();
             tooltip.append(QString("\nColumn Range [%1, %2]").arg(range.x).arg(range.y));
         }
         return tooltip;

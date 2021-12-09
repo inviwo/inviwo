@@ -33,9 +33,11 @@
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/metadata/metadataowner.h>
 
+#include <modules/base/algorithm/dataminmax.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
 
 #include <optional>
@@ -64,11 +66,37 @@ public:
     virtual ~Column() = default;
 
     virtual Column* clone() const = 0;
+    virtual Column* clone(const std::vector<std::uint32_t>& rowSelection) const = 0;
 
     virtual ColumnType getColumnType() const = 0;
 
     virtual const std::string& getHeader() const = 0;
     virtual void setHeader(std::string_view header) = 0;
+
+    virtual Unit getUnit() const = 0;
+    virtual void setUnit(Unit unit) = 0;
+
+    /**
+     * Set a custom range for the column which can be used for normalization, plotting, color
+     * mapping, etc.
+     */
+    virtual void setCustomRange(std::optional<dvec2>) = 0;
+
+    /**
+     * Returns the custom column range. If no range has been set previously, the return
+     * value will be std::nullopt.
+     */
+    virtual std::optional<dvec2> getCustomRange() const = 0;
+
+    /**
+     * Returns the range (i.e. the min/max) of the data, ignoring any custom range
+     */
+    virtual dvec2 getDataRange() const = 0;
+
+    /**
+     * Returns the custom range if set or else the range (i.e. the min/max) of the data
+     */
+    virtual dvec2 getRange() const = 0;
 
     virtual void add(std::string_view value) = 0;
     /**
@@ -90,35 +118,9 @@ public:
     virtual std::string getAsString(size_t idx) const = 0;
     virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const = 0;
 
-    /**
-     * Set a custom range for the column which can be used for normalization, plotting, color
-     * mapping, etc.
-     */
-    virtual void setRange(dvec2 range);
-    virtual void unsetRange();
-    /**
-     * Return the currently set column range. If no range has been set previously, the return value
-     * will be std::nullopt.
-     */
-    std::optional<dvec2> getRange() const;
-
 protected:
     Column() = default;
-    std::optional<dvec2> columnRange_;
 };
-
-namespace columnutil {
-
-/**
- * Return the column range for \p col. If the column's range is empty, the min/max values of the
- * underlying buffer are returned. If the buffer holds vectors, the componentwise minimum and
- * maximum are used.
- *
- * @return Column::getRange() if set, min/max values of getBuffer() otherwise
- */
-IVW_MODULE_DATAFRAME_API dvec2 getRange(const Column& col);
-
-}  // namespace columnutil
 
 /**
  * @brief Data column used for plotting which represents a named buffer of type T. The name
@@ -129,18 +131,25 @@ class TemplateColumn : public Column {
 public:
     using type = T;
 
-    TemplateColumn(std::string_view header,
-                   std::shared_ptr<Buffer<T>> buffer = std::make_shared<Buffer<T>>());
+    explicit TemplateColumn(std::string_view header,
+                            std::shared_ptr<Buffer<T>> buffer = std::make_shared<Buffer<T>>(),
+                            Unit unit = Unit{}, std::optional<dvec2> range = std::nullopt);
 
-    TemplateColumn(std::string_view header, std::vector<T> data);
+    TemplateColumn(std::string_view header, std::vector<T> data, Unit unit = Unit{},
+                   std::optional<dvec2> range = std::nullopt);
+
+    TemplateColumn(std::string_view header, size_t size, Unit unit = Unit{},
+                   std::optional<dvec2> range = std::nullopt);
 
     TemplateColumn(const TemplateColumn<T>& rhs);
+    TemplateColumn(const TemplateColumn<T>& rhs, const std::vector<std::uint32_t>& rowSelection);
     TemplateColumn(TemplateColumn<T>&& rhs);
 
     TemplateColumn<T>& operator=(const TemplateColumn<T>& rhs);
     TemplateColumn<T>& operator=(TemplateColumn<T>&& rhs);
 
     virtual TemplateColumn* clone() const override;
+    virtual TemplateColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
 
     virtual ~TemplateColumn() = default;
 
@@ -148,6 +157,14 @@ public:
 
     virtual const std::string& getHeader() const override;
     void setHeader(std::string_view header) override;
+
+    virtual Unit getUnit() const override;
+    virtual void setUnit(Unit unit) override;
+
+    virtual void setCustomRange(std::optional<dvec2> range) override;
+    virtual std::optional<dvec2> getCustomRange() const override;
+    virtual dvec2 getDataRange() const override;
+    virtual dvec2 getRange() const override;
 
     virtual void add(const T& value);
     /**
@@ -206,6 +223,8 @@ public:
 
 protected:
     std::string header_;
+    Unit unit_;
+    std::optional<dvec2> range_;
     std::shared_ptr<Buffer<T>> buffer_;
 };
 
@@ -215,12 +234,13 @@ public:
                                              std::make_shared<Buffer<std::uint32_t>>());
     IndexColumn(std::string_view header, std::vector<std::uint32_t> data);
     IndexColumn(const IndexColumn& rhs) = default;
+    IndexColumn(const IndexColumn& rhs, const std::vector<std::uint32_t>& rowSelection);
     IndexColumn(IndexColumn&& rhs) = default;
-
     IndexColumn& operator=(const IndexColumn& rhs) = default;
     IndexColumn& operator=(IndexColumn&& rhs) = default;
 
     virtual IndexColumn* clone() const override;
+    virtual IndexColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
 
     virtual ~IndexColumn() = default;
 
@@ -243,12 +263,13 @@ class IVW_MODULE_DATAFRAME_API CategoricalColumn : public TemplateColumn<std::ui
 public:
     CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {});
     CategoricalColumn(const CategoricalColumn& rhs) = default;
+    CategoricalColumn(const CategoricalColumn& rhs, const std::vector<std::uint32_t>& rowSelection);
     CategoricalColumn(CategoricalColumn&& rhs) = default;
-
     CategoricalColumn& operator=(const CategoricalColumn& rhs) = default;
     CategoricalColumn& operator=(CategoricalColumn&& rhs) = default;
 
     virtual CategoricalColumn* clone() const override;
+    virtual CategoricalColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
 
     virtual ~CategoricalColumn() = default;
 
@@ -315,27 +336,56 @@ private:
 };
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(std::string_view header, std::shared_ptr<Buffer<T>> buffer)
-    : header_(header), buffer_(buffer) {}
+TemplateColumn<T>::TemplateColumn(std::string_view header, std::shared_ptr<Buffer<T>> buffer,
+                                  Unit unit, std::optional<dvec2> range)
+    : header_{header}, unit_{unit}, range_{range}, buffer_{buffer} {}
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(std::string_view header, std::vector<T> data)
-    : header_(header), buffer_(util::makeBuffer(std::move(data))) {}
+TemplateColumn<T>::TemplateColumn(std::string_view header, std::vector<T> data, Unit unit,
+                                  std::optional<dvec2> range)
+    : TemplateColumn(header, util::makeBuffer(std::move(data)), unit, range) {}
+
+template <typename T>
+TemplateColumn<T>::TemplateColumn(std::string_view header, size_t size, Unit unit,
+                                  std::optional<dvec2> range)
+    : TemplateColumn(header, std::make_shared<Buffer<T>>(size), unit, range) {}
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(const TemplateColumn& rhs)
     : header_(rhs.getHeader())
-    , buffer_(std::shared_ptr<Buffer<T>>(rhs.getTypedBuffer()->clone())) {}
+    , unit_(rhs.unit_)
+    , range_(rhs.range_)
+    , buffer_(std::shared_ptr<Buffer<T>>(rhs.buffer_->clone())) {}
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(TemplateColumn<T>&& rhs)
-    : header_(std::move(rhs.header_)), buffer_(std::move(rhs.buffer_)) {}
+    : header_(std::move(rhs.header_))
+    , unit_(rhs.unit_)
+    , range_(rhs.range_)
+    , buffer_(std::move(rhs.buffer_)) {}
+
+template <typename T>
+TemplateColumn<T>::TemplateColumn(const TemplateColumn& rhs,
+                                  const std::vector<std::uint32_t>& rowSelection)
+    : header_(rhs.getHeader())
+    , unit_(rhs.unit_)
+    , range_(rhs.range_)
+    , buffer_(std::make_shared<Buffer<T>>(rowSelection.size())) {
+
+    const auto& src = rhs.getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+    auto& dst = buffer_->getEditableRAMRepresentation()->getDataContainer();
+    for (size_t i = 0; i < rowSelection.size(); ++i) {
+        dst[i] = src[rowSelection[i]];
+    }
+}
 
 template <typename T>
 TemplateColumn<T>& TemplateColumn<T>::operator=(const TemplateColumn<T>& rhs) {
     if (this != &rhs) {
         header_ = rhs.getHeader();
-        buffer_ = std::shared_ptr<Buffer<T>>(rhs.getTypedBuffer()->clone());
+        unit_ = rhs.unit_;
+        range_ = rhs.range_;
+        buffer_ = std::shared_ptr<Buffer<T>>(rhs.buffer_->clone());
     }
     return *this;
 }
@@ -344,6 +394,8 @@ template <typename T>
 TemplateColumn<T>& TemplateColumn<T>::operator=(TemplateColumn<T>&& rhs) {
     if (this != &rhs) {
         header_ = std::move(rhs.header_);
+        unit_ = rhs.unit_;
+        range_ = rhs.range_;
         buffer_ = std::move(rhs.buffer_);
     }
     return *this;
@@ -352,6 +404,11 @@ TemplateColumn<T>& TemplateColumn<T>::operator=(TemplateColumn<T>&& rhs) {
 template <typename T>
 TemplateColumn<T>* TemplateColumn<T>::clone() const {
     return new TemplateColumn(*this);
+}
+
+template <typename T>
+TemplateColumn<T>* TemplateColumn<T>::clone(const std::vector<std::uint32_t>& rowSelection) const {
+    return new TemplateColumn(*this, rowSelection);
 }
 
 template <typename T>
@@ -367,6 +424,42 @@ const std::string& TemplateColumn<T>::getHeader() const {
 template <typename T>
 void TemplateColumn<T>::setHeader(std::string_view header) {
     header_ = header;
+}
+
+template <typename T>
+Unit TemplateColumn<T>::getUnit() const {
+    return unit_;
+}
+
+template <typename T>
+void TemplateColumn<T>::setUnit(Unit unit) {
+    unit_ = unit;
+}
+
+template <typename T>
+void TemplateColumn<T>::setCustomRange(std::optional<dvec2> range) {
+    range_ = range;
+}
+
+template <typename T>
+std::optional<dvec2> TemplateColumn<T>::getCustomRange() const {
+    return range_;
+}
+
+template <typename T>
+dvec2 TemplateColumn<T>::getDataRange() const {
+    const auto [min, max] = util::bufferMinMax(buffer_.get(), IgnoreSpecialValues::Yes);
+    return {*std::min_element(glm::value_ptr(min), glm::value_ptr(min) + util::extent_v<T>),
+            *std::max_element(glm::value_ptr(max), glm::value_ptr(max) + util::extent_v<T>)};
+}
+
+template <typename T>
+dvec2 TemplateColumn<T>::getRange() const {
+    if (range_) {
+        return *range_;
+    } else {
+        return getDataRange();
+    }
 }
 
 template <typename T>

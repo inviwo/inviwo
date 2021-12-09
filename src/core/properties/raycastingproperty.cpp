@@ -34,7 +34,7 @@ namespace inviwo {
 const std::string RaycastingProperty::classIdentifier = "org.inviwo.RaycastingProperty";
 std::string RaycastingProperty::getClassIdentifier() const { return classIdentifier; }
 
-RaycastingProperty::RaycastingProperty(std::string identifier, std::string displayName,
+RaycastingProperty::RaycastingProperty(std::string_view identifier, std::string_view displayName,
                                        InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)

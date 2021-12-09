@@ -69,6 +69,12 @@ ColorScaleLegend::ColorScaleLegend()
     , margin_("margin", "Margin (in pixels)", 25, 0, 100)
     , legendSize_("legendSize", "Legend Size", vec2(200, 25), vec2(10, 10), vec2(2000, 500))
     , axisStyle_("style", "Style")
+    , labelType_{"titleType",
+                 "Title Type",
+                 {{"string", "Title String", LabelType::String},
+                  {"data", "Title From Data", LabelType::Data},
+                  {"custom", "Custom Format (example '{n}{u: [}')", LabelType::Custom}},
+                 0}
     , title_("title", "Legend Title", "Legend")
     , backgroundStyle_("backgroundStyle", "Background",
                        {{"noBackground", "No background", BackgroundStyle::NoBackground},
@@ -86,11 +92,9 @@ ColorScaleLegend::ColorScaleLegend()
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    inport_.setOptional(true);
-    volumeInport_.setOptional(true);
-    addPort(inport_);
+    addPort(inport_).setOptional(true);
     addPort(outport_);
-    addPort(volumeInport_);
+    addPort(volumeInport_).setOptional(true);
 
     // legend position
     positioning_.addProperties(legendPlacement_, rotation_, position_, margin_, legendSize_);
@@ -99,7 +103,8 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.flipped_.visibilityDependsOn(legendPlacement_, [](auto l) { return l.get() == 4; });
 
     // legend style
-    axisStyle_.insertProperty(0, title_);
+    axisStyle_.insertProperty(0, labelType_);
+    axisStyle_.insertProperty(1, title_);
     axisStyle_.addProperties(backgroundStyle_, checkerBoardSize_, bgColor_, borderWidth_);
     checkerBoardSize_.setVisible(false);
     bgColor_.setVisible(false);
@@ -117,7 +122,37 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.captionSettings_.font_.anchorPos_.set(vec2{0.0f, 0.0f});
     axis_.setCurrentStateAsDefault();
 
-    title_.onChange([&]() { axis_.setCaption(title_.get()); });
+    auto updateTitle = [this]() {
+        switch (labelType_.get()) {
+            case LabelType::String:
+                axis_.setCaption(title_.get());
+                break;
+            case LabelType::Data:
+                if (auto volume = volumeInport_.getData()) {
+                    axis_.setCaption(fmt::format("{}{: [}", volume->dataMap_.valueAxis.name,
+                                                 volume->dataMap_.valueAxis.unit));
+                } else {
+                    axis_.setCaption("?");
+                }
+                break;
+            case LabelType::Custom:
+                if (auto volume = volumeInport_.getData()) {
+                    axis_.setCaption(fmt::format(title_.get(),
+                                                 fmt::arg("n", volume->dataMap_.valueAxis.name),
+                                                 fmt::arg("u", volume->dataMap_.valueAxis.unit)));
+                } else {
+                    axis_.setCaption("?");
+                }
+                break;
+            default:
+                axis_.setCaption(title_.get());
+                break;
+        }
+    };
+
+    volumeInport_.onChange(updateTitle);
+    labelType_.onChange(updateTitle);
+    title_.onChange(updateTitle);
 
     const auto getAxisOrientation = [](int i) {
         switch (i) {
@@ -169,7 +204,7 @@ ColorScaleLegend::ColorScaleLegend()
         backgroundStyle_, [&](auto p) { return p.get() == BackgroundStyle::CheckerBoard; });
     bgColor_.visibilityDependsOn(backgroundStyle_,
                                  [&](auto p) { return p.get() == BackgroundStyle::SolidColor; });
-}
+}  // namespace plot
 
 // this function handles the legend rotation and updates the axis thereafter
 std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dimensions) const {

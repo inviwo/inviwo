@@ -33,7 +33,8 @@ namespace inviwo {
 const std::string VolumeIndicatorProperty::classIdentifier = "org.inviwo.VolumeIndicatorProperty";
 std::string VolumeIndicatorProperty::getClassIdentifier() const { return classIdentifier; }
 
-VolumeIndicatorProperty::VolumeIndicatorProperty(std::string identifier, std::string displayName,
+VolumeIndicatorProperty::VolumeIndicatorProperty(std::string_view identifier,
+                                                 std::string_view displayName,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, semantics)

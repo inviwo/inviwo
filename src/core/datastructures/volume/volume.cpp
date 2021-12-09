@@ -31,6 +31,8 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/document.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
@@ -41,6 +43,7 @@ Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
     , MetaDataOwner{}
     , HistogramSupplier{}
     , dataMap_{defaultFormat}
+    , axes{util::defaultAxes<3>()}
     , defaultDimensions_{defaultDimensions}
     , defaultDataFormat_{defaultFormat}
     , defaultSwizzleMask_{defaultSwizzleMask}
@@ -53,6 +56,7 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     , MetaDataOwner{}
     , HistogramSupplier{}
     , dataMap_{in->getDataFormat()}
+    , axes{util::defaultAxes<3>()}
     , defaultDimensions_{in->getDimensions()}
     , defaultDataFormat_{in->getDataFormat()}
     , defaultSwizzleMask_{in->getSwizzleMask()}
@@ -61,6 +65,19 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
 
     addRepresentation(in);
 }
+
+Volume::Volume(const Volume& rhs, NoData)
+    : Data<Volume, VolumeRepresentation>{}
+    , StructuredGridEntity<3>{rhs}
+    , MetaDataOwner{rhs}
+    , HistogramSupplier{}
+    , dataMap_{rhs.dataMap_}
+    , axes{rhs.axes}
+    , defaultDimensions_{rhs.defaultDimensions_}
+    , defaultDataFormat_{rhs.defaultDataFormat_}
+    , defaultSwizzleMask_{rhs.defaultSwizzleMask_}
+    , defaultInterpolation_{rhs.defaultInterpolation_}
+    , defaultWrapping_{rhs.defaultWrapping_} {}
 
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;
@@ -150,7 +167,10 @@ Document Volume::getInfo() const {
     tb(H("Wrapping"), getWrapping());
     tb(H("Data Range"), dataMap_.dataRange);
     tb(H("Value Range"), dataMap_.valueRange);
-    tb(H("Unit"), dataMap_.valueUnit);
+    tb(H("Value"), fmt::format("{}{: [}", dataMap_.valueAxis.name, dataMap_.valueAxis.unit));
+    tb(H("Axis 1"), fmt::format("{}{: [}", axes[0].name, axes[0].unit));
+    tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
+    tb(H("Axis 3"), fmt::format("{}{: [}", axes[2].name, axes[2].unit));
 
     if (hasRepresentation<VolumeRAM>()) {
         if (hasHistograms()) {

@@ -56,7 +56,13 @@ void VolumeGradientMagnitude::preProcess(TextureUnitContainer&) {
     shader_.setUniform("channel", channel_.getSelectedValue());
 }
 
-void VolumeGradientMagnitude::postProcess() { volume_->dataMap_.dataRange = dvec2(0, 1); }
+void VolumeGradientMagnitude::postProcess() {
+    volume_->dataMap_.valueAxis.name = "gradient magnitude";
+    volume_->dataMap_.valueAxis.unit =
+        inport_.getData()->dataMap_.valueAxis.unit / inport_.getData()->axes[0].unit;
+    volume_->dataMap_.dataRange = dvec2(0.0, 1.0);
+    volume_->dataMap_.valueRange = dvec2(0.0, 1.0);
+}
 
 void VolumeGradientMagnitude::afterInportChanged() {
     if (inport_.hasData()) {

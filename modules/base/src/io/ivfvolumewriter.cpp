@@ -32,6 +32,8 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/io/datawriterexception.h>
 
+#include <units/units.hpp>
+
 namespace inviwo {
 
 IvfVolumeWriter::IvfVolumeWriter() : DataWriterType<Volume>() {
@@ -71,7 +73,17 @@ void writeIvfVolume(const Volume& data, const std::string filePath, bool overwri
     s.serialize("Dimension", data.getDimensions());
     s.serialize("DataRange", data.dataMap_.dataRange);
     s.serialize("ValueRange", data.dataMap_.valueRange);
-    s.serialize("Unit", data.dataMap_.valueUnit);
+    s.serialize("ValueName", data.dataMap_.valueAxis.name);
+    s.serialize("ValueUnit", units::to_string(data.dataMap_.valueAxis.unit));
+
+    s.serialize("Axis1Name", data.axes[0].name);
+    s.serialize("Axis1Unit", units::to_string(data.axes[0].unit));
+
+    s.serialize("Axis2Name", data.axes[1].name);
+    s.serialize("Axis2Unit", units::to_string(data.axes[1].unit));
+
+    s.serialize("Axis3Name", data.axes[2].name);
+    s.serialize("Axis3Unit", units::to_string(data.axes[2].unit));
 
     s.serialize("SwizzleMask", vr->getSwizzleMask());
     s.serialize("Interpolation", vr->getInterpolation());

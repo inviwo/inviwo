@@ -39,11 +39,34 @@
 #include <modules/opengl/image/imagegl.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 #include <cctype>
 #include <locale>
 
+#include <fmt/format.h>
+
 namespace inviwo {
+
+const std::string TextOverlayProperty::classIdentifier = "org.inviwo.TextOverlayProperty";
+std::string TextOverlayProperty::getClassIdentifier() const { return classIdentifier; }
+
+TextOverlayProperty::TextOverlayProperty(std::string_view identifier, std::string_view displayName,
+                                         InvalidationLevel invalidationLevel,
+                                         PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    , text("text", "Text", "Lorem ipsum etc.", InvalidationLevel::InvalidOutput,
+           PropertySemantics::TextEditor)
+    , position("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
+    , offset("offset", "Offset (Pixel)", ivec2(0), ivec2(-100), ivec2(100)) {
+    addProperties(text, position, offset);
+}
+TextOverlayProperty::TextOverlayProperty(const TextOverlayProperty& rhs)
+    : CompositeProperty(rhs), text{rhs.text}, position{rhs.position}, offset{rhs.offset} {
+    addProperties(text, position, offset);
+}
+TextOverlayProperty* TextOverlayProperty::clone() const { return new TextOverlayProperty(*this); }
 
 const ProcessorInfo TextOverlayGL::processorInfo_{
     "org.inviwo.TextOverlayGL",  // Class identifier
@@ -59,49 +82,36 @@ TextOverlayGL::TextOverlayGL()
     , inport_("inport")
     , outport_("outport")
     , enable_("enable", "Enabled", true)
-    , text_("text", "Text", "Lorem ipsum etc.", InvalidationLevel::InvalidOutput,
-            PropertySemantics::TextEditor)
+    , texts_{"texts", "Texts", std::make_unique<TextOverlayProperty>("text0", "Text 0"), 0,
+             ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove}
     , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , font_("font", "Font Settings")
-    , position_("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
-    , offset_("offset", "Offset (Pixel)", ivec2(0), ivec2(-100), ivec2(100))
-    , addArgButton_("addArgBtn", "Add String Argument")
+    , args_{"args", "Arguments",
+            []() {
+                std::vector<std::unique_ptr<Property>> props;
+                props.emplace_back(std::make_unique<StringProperty>("arg0", "String Arg 0"));
+                props.emplace_back(std::make_unique<IntProperty>("arg0", "Int Arg 0"));
+                props.emplace_back(std::make_unique<DoubleProperty>("arg0", "Double Arg 0"));
+                return props;
+            }(),
+            0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove}
     , textRenderer_{[]() {
         // ensure the default context is active when creating the TextRenderer
         RenderContext::getPtr()->activateDefaultRenderContext();
         return TextRenderer{};
-    }()}
-    , numArgs_(0u) {
+    }()} {
+
+    addPorts(inport_, outport_);
+    addProperties(enable_, font_, texts_, args_);
+    font_.addProperties(color_);
     inport_.setOptional(true);
 
-    addPort(inport_);
-    addPort(outport_);
-    addProperty(enable_);
-    addProperty(text_);
-    addProperty(color_);
-    addProperty(font_);
-    addProperty(position_);
-    addProperty(offset_);
-    addProperty(addArgButton_);
-
-    addArgButton_.onChange([this]() {
-        if (numArgs_ >= maxNumArgs_) {
-            addArgButton_.setReadOnly(numArgs_ >= maxNumArgs_);
-            return;
-        }
-        ++numArgs_;
-        std::string num = std::to_string(numArgs_);
-        auto property = new StringProperty(std::string("arg") + num, "Arg " + num);
-        property->setSerializationMode(PropertySerializationMode::All);
-        addProperty(property, true);
-    });
-
+    texts_.constructProperty(0);
     font_.fontFace_.setSelectedIdentifier("arial");
-    font_.fontFace_.setCurrentStateAsDefault();
-
     font_.fontSize_.set(14);
-    font_.fontSize_.setCurrentStateAsDefault();
+
+    setAllPropertiesCurrentStateAsDefault();
 }
 
 void TextOverlayGL::process() {
@@ -114,14 +124,9 @@ void TextOverlayGL::process() {
         textRenderer_.setFont(font_.fontFace_.get());
     }
 
-    auto argModified = [this]() {
-        auto args = this->getPropertiesByType<StringProperty>(false);
-        return util::any_of(args, [this](const auto& p) { return p != &text_ && p->isModified(); });
-    };
-
     // check whether a property was modified
-    if (!textObject_.texture || text_.isModified() || color_.isModified() || font_.isModified() ||
-        argModified()) {
+    if (textObjects_.size() != texts_.size() || texts_.isModified() || color_.isModified() ||
+        font_.isModified() || util::any_of(args_.getProperties(), &Property::isModified)) {
         updateCache();
     }
 
@@ -135,80 +140,55 @@ void TextOverlayGL::process() {
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    // use integer position for best results
-    vec2 size(textObject_.bbox.textExtent);
-    vec2 shift = 0.5f * size * (font_.anchorPos_.get() + vec2(1.0f, 1.0f));
+    for (auto&& [item, tex] : util::zip(texts_, textObjects_)) {
+        if (auto tp = dynamic_cast<const TextOverlayProperty*>(item)) {
+            // use integer position for best results
+            vec2 size(tex.bbox.textExtent);
+            vec2 shift = 0.5f * size * (font_.anchorPos_.get() + vec2(1.0f, 1.0f));
 
-    ivec2 pos(position_.get() * vec2(outport_.getDimensions()));
-    pos += offset_.get() - ivec2(shift);
+            ivec2 pos(tp->position.get() * vec2(outport_.getDimensions()));
+            pos += tp->offset.get() - ivec2(shift);
 
-    // render texture containing the text onto the current canvas
-    textureRenderer_.render(textObject_.texture, pos + textObject_.bbox.glyphsOrigin,
-                            outport_.getDimensions());
-
-    utilgl::deactivateCurrentTarget();
-}
-
-void TextOverlayGL::deserialize(Deserializer& d) {
-    Processor::deserialize(d);
-    // update the number of place markers properties using the total number of string properties in
-    // this processor. Note that this number is one element larger.
-    auto args = this->getPropertiesByType<StringProperty>(false);
-    numArgs_ = args.size() - 1;
-
-    // only maxNumArgs_ are supported, disable button if more exist
-    addArgButton_.setReadOnly(numArgs_ > maxNumArgs_);
-}
-
-std::string TextOverlayGL::getString() const {
-    std::string str = text_.get();
-    // replace all occurrences of place markers with the corresponding args
-    auto args = this->getPropertiesByType<StringProperty>(false);
-    // remove default text string property
-    util::erase_remove_if(args, [this](const auto& p) { return p == &text_; });
-    ivwAssert(numArgs_ == args.size(),
-              "TextOverlayGL: number arguments not matching internal count");
-
-    // parse string for all "%" and try to extract the number following the percent sign
-    bool printWarning = false;
-
-    std::string matchStr("%");
-    for (std::size_t offset = str.find(matchStr, 0u); offset != std::string::npos;
-         offset = str.find(matchStr, offset)) {
-        // extract number substring,
-        // read 3 characters to ensure that the number only has at most 2 digits
-        std::string numStr = str.substr(offset + 1, 3);
-        if (std::isdigit(numStr[0])) {
-            std::size_t numDigits = 0;
-            // extract number and reduce it by one since the %args start with 1
-            // std::stoul will not throw an invalid argument exception since we made sure, it is a
-            // number (std::isdigit above)
-            std::size_t argNum = std::stoul(numStr, &numDigits) - 1;
-            if (argNum < numArgs_) {
-                // make textual replacement ("%" and number of digits)
-                str.replace(offset, numDigits + 1, args[argNum]->get());
-                offset += args[argNum]->get().size();
-            } else {
-                printWarning = true;
-                offset += 1 + numDigits;
-            }
-        } else {
-            ++offset;
+            // render texture containing the text onto the current canvas
+            textureRenderer_.render(tex.texture, pos + tex.bbox.glyphsOrigin,
+                                    outport_.getDimensions());
         }
     }
 
-    if (printWarning) {
-        LogWarn("Input text contains more than the allowed " << maxNumArgs_ << " place markers.");
-    }
-    return str;
+    utilgl::deactivateCurrentTarget();
 }
 
 void TextOverlayGL::updateCache() {
     textRenderer_.setFontSize(font_.fontSize_.get());
     textRenderer_.setLineSpacing(font_.lineSpacing_.get());
-    std::string str(getString());
-    textObject_ =
-        util::createTextTextureObject(textRenderer_, str, color_.get(), textObject_.texture);
+
+    auto store = fmt::dynamic_format_arg_store<fmt::format_context>();
+    for (auto item : args_) {
+        if (auto sp = dynamic_cast<const StringProperty*>(item)) {
+            store.push_back(fmt::arg(sp->getIdentifier().c_str(), sp->get()));
+        } else if (auto ip = dynamic_cast<const IntProperty*>(item)) {
+            store.push_back(fmt::arg(ip->getIdentifier().c_str(), ip->get()));
+        } else if (auto dp = dynamic_cast<const DoubleProperty*>(item)) {
+            store.push_back(fmt::arg(dp->getIdentifier().c_str(), dp->get()));
+        }
+    }
+
+    textObjects_.resize(texts_.size());
+    for (auto&& [item, tex] : util::zip(texts_, textObjects_)) {
+        if (auto tp = dynamic_cast<const TextOverlayProperty*>(item)) {
+            std::string text;
+            try {
+                text = fmt::vformat(tp->text.get(), store);
+            } catch (const fmt::format_error& e) {
+                LogWarn(
+                    fmt::format("Invalid formatting string {}:'{}'\nFormat uses fmt syntax, args "
+                                "can be named by index {{0}} or by name {{arg0}}",
+                                tp->getPath(), tp->text.get()));
+                text = "<Invalid Format!>";
+            }
+            tex = util::createTextTextureObject(textRenderer_, text, color_.get(), tex.texture);
+        }
+    }
 }
 
 }  // namespace inviwo

@@ -44,11 +44,9 @@ std::unique_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
 }
 
 std::unique_ptr<Volume> curlVolume(const Volume& volume) {
+    auto newVolume = std::make_unique<Volume>(volume, noData);
     auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume.getDimensions());
-    auto newVolume = std::make_unique<Volume>(newVolumeRep);
-    newVolume->setModelMatrix(volume.getModelMatrix());
-    newVolume->setWorldMatrix(volume.getWorldMatrix());
-    newVolume->dataMap_ = volume.dataMap_;
+    newVolume->addRepresentation(newVolumeRep);
 
     const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 

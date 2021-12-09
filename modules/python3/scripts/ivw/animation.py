@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,10 +24,11 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
 
 from inviwopy.properties import Property
+
 
 class Animation:
     """
@@ -44,11 +45,12 @@ class Animation:
             print([i,v])
             qt.update()
     """
-    def __init__(self, prop : Property, start = None, stop = None, inc = None):
+
+    def __init__(self, prop: Property, start=None, stop=None, inc=None):
         self.prop = prop
-        self.startVal = start if start != None else prop.minValue
-        self.stopVal = stop if stop != None else prop.maxValue
-        self.inc = inc if inc != None else 1
+        self.startVal = start if start is not None else prop.minValue
+        self.stopVal = stop if stop is not None else prop.maxValue
+        self.inc = inc if inc is not None else 1
         self.initalVal = prop.value
         self.i = 0
 
@@ -66,7 +68,7 @@ class Animation:
         self.i = self.i + 1
         if self.startVal + self.i * self.inc < self.stopVal:
             self.prop.value = self.startVal + self.i * self.inc
-            return (self.i,self.prop.value)
+            return (self.i, self.prop.value)
         else:
             raise StopIteration
 
@@ -80,7 +82,3 @@ class Animation:
     def restore(self):
         self.i = 0
         self.prop.value = self.initalVal
-
-
-
-

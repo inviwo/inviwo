@@ -57,6 +57,10 @@ public:
     LineEditQt(QWidget* parent = nullptr);
     virtual ~LineEditQt() = default;
 
+    virtual QSize sizeHint() const override { return QLineEdit::minimumSizeHint(); }
+
+    virtual void paintEvent(QPaintEvent* e) override;
+
 signals:
     void editingCanceled();
 

@@ -78,7 +78,7 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendRows(const DataFrame& 
 ///@{
 /**
  * \brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
- * That is only rows with matching keys are kept.
+ * That is only rows with matching keys are kept. The row indices of \p left will be reused.
  *
  * It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
  * @param left
@@ -97,7 +97,8 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
 ///@{
 /**
  * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
- * right. That is all rows of \p left are augmented with matching rows from \p right.
+ * right. That is all rows of \p left are augmented with matching rows from \p right.  The row
+ * indices of \p left will be reused.
  *
  * It is assumed that the entries in the key columns of \p right are unique. Otherwise results are
  * undefined.
@@ -147,27 +148,29 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> combineDataFrames(
  * @return list of row indices where rows fulfill the predicate
  */
 template <typename Pred>
-std::vector<size_t> filteredRows(std::shared_ptr<const Column> col, Pred pred);
+std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred pred);
 
 IVW_MODULE_DATAFRAME_API std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId);
 
 #include <warn/push>
 #include <warn/ignore/conversion>
 template <typename Pred>
-std::vector<size_t> filteredRows(std::shared_ptr<const Column> col, Pred pred) {
+std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred pred) {
     if (auto catCol = dynamic_cast<const CategoricalColumn*>(col.get())) {
-        std::vector<size_t> rows;
-        for (auto&& [row, v] : util::enumerate(catCol->getValues())) {
+        std::vector<std::uint32_t> rows;
+        for (auto&& [row, v] : util::enumerate<std::uint32_t>(catCol->getValues())) {
             if (pred(v)) {
                 rows.push_back(row);
             }
         }
         return rows;
     } else {
-        return col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<std::vector<size_t>>(
-            [pred](auto typedBuf) {
-                std::vector<size_t> rows;
-                for (auto&& [row, value] : util::enumerate(typedBuf->getDataContainer())) {
+        return col->getBuffer()
+            ->getRepresentation<BufferRAM>()
+            ->dispatch<std::vector<std::uint32_t>>([pred](auto typedBuf) {
+                std::vector<std::uint32_t> rows;
+                for (auto&& [row, value] :
+                     util::enumerate<std::uint32_t>(typedBuf->getDataContainer())) {
                     // find all rows fulfilling the predicate
                     if (pred(value)) {
                         rows.push_back(row);

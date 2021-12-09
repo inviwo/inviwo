@@ -49,13 +49,13 @@ DataFrameSource::DataFrameSource(InviwoApplication* app, const std::string& file
     DataSource<DataFrame, DataFrameOutport>::file_.setDisplayName("Spreadsheet file");
 }
 
-void DataFrameSource::process() {
-    DataSource<DataFrame, DataFrameOutport>::process();
-
-    columns_.updateColumnProperties(*loadedData_);
-    for (auto&& [index, col] : util::enumerate(*loadedData_)) {
-        col->copyMetaDataFrom(columns_.getColumnMetaData(index));
-    }
+void DataFrameSource::dataLoaded(std::shared_ptr<DataFrame> data) {
+    columns_.updateForNewDataFrame(*loadedData_, util::OverwriteState::Yes);
+    columns_.updateDataFrame(*loadedData_);
+}
+void DataFrameSource::dataDeserialized(std::shared_ptr<DataFrame> data) {
+    columns_.updateForNewDataFrame(*loadedData_, util::OverwriteState::No);
+    columns_.updateDataFrame(*loadedData_);
 }
 
 }  // namespace inviwo

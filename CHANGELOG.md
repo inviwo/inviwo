@@ -1,6 +1,16 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2021-11-23 CompositeProperty collapse & expand
+## 2021-12-09 DataFrame Column Units
+The `DataFrame` `Column` now has a `unit` member and many processors (`PCP`, `ScatterPlot`, `DataFrameTable`), operating on DataFrames will now also display the column units if available. The `ColumnMetaDataProperty` used in the `CSVSource` processor got support for specifying units. 
+
+## 2021-12-09 Volume Units
+Volumes now have units and names for both axes and data. The data unit and name are stored in `volume.dataMapper_.valueAxis.name` and  `volume.dataMapper_.valueAxis.unit` and the axes unit and names are in `volume.axis[i].name` and `volume.axis[i].unit`. 
+Inviwo now uses the Units library from LLNL (https://github.com/LLNL/units). The library handles parsing units from string `v = units::unit_from_string("m/s")` it can also handle unit calculations, i.e. `v * v`. 
+For printing units we have added fmt support. See `inviwo/include/inviwo/core/datastructures/unitsystem.h` for details about the formatting. 
+Some of the processor now also handle showing units, like the `VolumeAxis`, and `ColorScaleLegend`. The transfer function editor will also show units if available. 
+The `dat` and `ivf` volume file readers also got support for setting axis/data names and units. 
+
+# 2021-11-23 CompositeProperty collapse & expand
 Composite properties can now be collapsed and expanded in different ways using `CompositeProperty::setCollapsed(CollapseAction action, CollapseTarget target)`. Action is either `Collapse` or `Expand` whereas the target defines the affected properties:
 
 + `CollapseTarget::Current` affects only the property 
@@ -10,6 +20,7 @@ Composite properties can now be collapsed and expanded in different ways using `
 
 This functionality is also accessible via the context menu of a composite property in the property list.
 ![CompositeProperty Collapse & Expand](resources/changelog/compositeproperty-collapse.jpg)
+
 
 ## 2021-11-15 Custom ranges for DataFrame columns
 Each DataFrame column has now an optional data range that can be used for normalization, plotting, and similar things. Use the convenience function `columnutil::getRange(const Column&)` to get the custom range, if set, or the buffer min/max values.

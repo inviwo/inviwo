@@ -74,14 +74,14 @@ public:
     using value_type = T;
     using component_type = typename util::value_type<T>::type;
 
-    OrdinalProperty(const std::string& identifier, const std::string& displayName, const T& value,
+    OrdinalProperty(std::string_view identifier, std::string_view displayName, const T& value,
                     const T& minValue, const T& maxValue = Defaultvalues<T>::getMax(),
                     const T& increment = Defaultvalues<T>::getInc(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
 
     OrdinalProperty(
-        const std::string& identifier, const std::string& displayName,
+        std::string_view identifier, std::string_view displayName,
         const T& value = Defaultvalues<T>::getVal(),
         const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
                                                                      ConstraintBehavior::Editable},
@@ -91,7 +91,7 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
 
-    OrdinalProperty(const std::string& identifier, const std::string& displayName,
+    OrdinalProperty(std::string_view identifier, std::string_view displayName,
                     OrdinalPropertyState<T> state);
 
     OrdinalProperty(const OrdinalProperty<T>& rhs);
@@ -157,6 +157,9 @@ public:
     virtual void set(const Property* src) override;
 
     virtual OrdinalProperty<T>& setCurrentStateAsDefault() override;
+    OrdinalProperty<T>& setDefault(const T& value);
+    OrdinalProperty<T>& setDefault(const T& value, const T& minVal, const T& maxVal,
+                                   const T& increment);
     virtual OrdinalProperty<T>& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
 
@@ -275,7 +278,7 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 }
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
+OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
                                     const T& value,
                                     const std::pair<T, ConstraintBehavior>& minValue,
                                     const std::pair<T, ConstraintBehavior>& maxValue,
@@ -299,7 +302,7 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
 }
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
+OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
                                     OrdinalPropertyState<T> state)
     : OrdinalProperty{identifier,
                       displayName,
@@ -311,7 +314,7 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
                       state.semantics} {}
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
+OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
                                     const T& value, const T& minValue, const T& maxValue,
                                     const T& increment, InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
@@ -503,6 +506,22 @@ OrdinalProperty<T>& OrdinalProperty<T>::setCurrentStateAsDefault() {
     minValue_.setAsDefault();
     maxValue_.setAsDefault();
     increment_.setAsDefault();
+    return *this;
+}
+
+template <typename T>
+OrdinalProperty<T>& OrdinalProperty<T>::setDefault(const T& value) {
+    value_.defaultValue = value;
+    return *this;
+}
+template <typename T>
+OrdinalProperty<T>& OrdinalProperty<T>::setDefault(const T& value, const T& minVal, const T& maxVal,
+                                                   const T& increment) {
+
+    value_.defaultValue = value;
+    minValue_.defaultValue = minVal;
+    maxValue_.defaultValue = maxVal;
+    increment_.defaultValue = increment;
     return *this;
 }
 

@@ -55,12 +55,12 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    IsoValueProperty(const std::string& identifier, const std::string& displayName,
+    IsoValueProperty(std::string_view identifier, std::string_view displayName,
                      const IsoValueCollection& value = {}, VolumeInport* volumeInport = nullptr,
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
 
-    IsoValueProperty(const std::string& identifier, const std::string& displayName,
+    IsoValueProperty(std::string_view identifier, std::string_view displayName,
                      VolumeInport* volumeInport,
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
@@ -72,7 +72,7 @@ public:
 
     IsoValueCollection& get();
     const IsoValueCollection& get() const;
-    void set(const IsoValueCollection& iso);
+    IsoValueProperty& set(const IsoValueCollection& iso);
 
     const IsoValueCollection& operator*() const;
     IsoValueCollection& operator*();
@@ -111,6 +111,7 @@ public:
     VolumeInport* getVolumeInport();
 
     virtual IsoValueProperty& setCurrentStateAsDefault() override;
+    IsoValueProperty& setDefault(const IsoValueCollection& iso);
     virtual IsoValueProperty& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;

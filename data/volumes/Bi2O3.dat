@@ -2,6 +2,10 @@ Rawfile: Bi2O3.raw
 Resolution: 80 80 80
 Format: Vec2FLOAT32
 DataRange: 0 1
+ValueUnit: Angstrom^-3
+ValueName: Position Density
 BasisVector1:     5.684000000000     0.000000000000     0.000000000000
 BasisVector2:     0.000000000000     5.684000000000     0.000000000000
 BasisVector3:     0.000000000000     0.000000000000     5.684000000000
+AxesNames: x y z
+AxesUnits: Angstrom Angstrom Angstrom

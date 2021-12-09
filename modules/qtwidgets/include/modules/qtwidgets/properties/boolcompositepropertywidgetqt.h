@@ -60,6 +60,7 @@ protected:
 private:
     virtual void setChecked(bool checked) override;
     BoolCompositeProperty* boolCompProperty_;
+    PropertyObserverDelegate boolObserverDelegate_;
 };
 
 }  // namespace inviwo

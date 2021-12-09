@@ -45,7 +45,7 @@ class TemplateProperty : public Property {
 public:
     using value_type = T;
 
-    TemplateProperty(const std::string& identifier, const std::string& displayName,
+    TemplateProperty(std::string_view identifier, std::string_view displayName,
                      const T& value = T(),
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
@@ -65,6 +65,7 @@ public:
     virtual void set(const Property* srcProperty) override;
 
     virtual TemplateProperty& setCurrentStateAsDefault() override;
+    TemplateProperty& setDefault(const T& value);
     virtual TemplateProperty& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
 
@@ -83,7 +84,7 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 }
 
 template <typename T>
-TemplateProperty<T>::TemplateProperty(const std::string& identifier, const std::string& displayName,
+TemplateProperty<T>::TemplateProperty(std::string_view identifier, std::string_view displayName,
                                       const T& value, InvalidationLevel invalidationLevel,
                                       PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics), value_("value", value) {}
@@ -114,6 +115,11 @@ template <typename T>
 TemplateProperty<T>& TemplateProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     value_.setAsDefault();
+    return *this;
+}
+template <typename T>
+TemplateProperty<T>& TemplateProperty<T>::setDefault(const T& value) {
+    value_.defaultValue = value;
     return *this;
 }
 

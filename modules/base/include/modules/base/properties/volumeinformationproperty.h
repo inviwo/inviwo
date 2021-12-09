@@ -30,11 +30,15 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+
+#include <string_view>
+#include <array>
 
 namespace inviwo {
 
@@ -42,19 +46,19 @@ namespace inviwo {
  * \ingroup properties
  * A CompositeProperty holding properties to show a information about a volume
  */
-class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API VolumeInformationProperty : public BoolCompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
     VolumeInformationProperty(
-        std::string identifier, std::string displayName,
+        std::string_view identifier, std::string_view displayName,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     VolumeInformationProperty(const VolumeInformationProperty& rhs);
     virtual VolumeInformationProperty* clone() const override;
     virtual ~VolumeInformationProperty() = default;
 
-    void updateForNewVolume(const Volume& volume, bool deserialize = false);
+    void updateForNewVolume(const Volume& volume, util::OverwriteState overwrite);
     void updateVolume(Volume& volume);
     // Read only used to show information
 
@@ -66,10 +70,11 @@ public:
     // read / write
     DoubleMinMaxProperty dataRange_;
     DoubleMinMaxProperty valueRange_;
+    StringProperty valueName_;
     StringProperty valueUnit_;
 
-private:
-    auto props();
+    StringsProperty<3> axesNames_;
+    StringsProperty<3> axesUnits_;
 };
 
 }  // namespace inviwo

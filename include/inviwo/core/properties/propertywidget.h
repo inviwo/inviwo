@@ -49,6 +49,10 @@ public:
      * The PropertyWidget will register it self with the property.
      */
     PropertyWidget(Property* property);
+    PropertyWidget(const PropertyWidget&);
+    PropertyWidget(PropertyWidget&&);
+    PropertyWidget& operator=(const PropertyWidget&);
+    PropertyWidget& operator=(PropertyWidget&&);
 
     /**
      * The PropertyWidget will deregister it self with the property.

@@ -65,7 +65,8 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    ImageEditorProperty(std::string identifier, std::string displayName, std::string value = "",
+    ImageEditorProperty(std::string_view identifier, std::string_view displayName,
+                        std::string_view value = "",
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
 

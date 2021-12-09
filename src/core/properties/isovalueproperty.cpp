@@ -36,7 +36,7 @@ namespace inviwo {
 const std::string IsoValueProperty::classIdentifier = "org.inviwo.IsoValueProperty";
 std::string IsoValueProperty::getClassIdentifier() const { return classIdentifier; }
 
-IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::string& displayName,
+IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    const IsoValueCollection& value, VolumeInport* volumeInport,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics)
@@ -50,7 +50,7 @@ IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::str
     iso_.value.addObserver(this);
 }
 
-IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::string& displayName,
+IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                                    PropertySemantics semantics)
     : IsoValueProperty(identifier, displayName, {}, volumeInport, invalidationLevel, semantics) {}
@@ -132,6 +132,11 @@ IsoValueProperty& IsoValueProperty::setCurrentStateAsDefault() {
     return *this;
 }
 
+IsoValueProperty& IsoValueProperty::setDefault(const IsoValueCollection& iso) {
+    iso_.defaultValue = iso;
+    return *this;
+}
+
 IsoValueProperty& IsoValueProperty::resetToDefaultState() {
     NetworkLock lock(this);
 
@@ -171,10 +176,11 @@ IsoValueCollection& IsoValueProperty::get() { return iso_.value; }
 
 const IsoValueCollection& IsoValueProperty::get() const { return iso_.value; }
 
-void IsoValueProperty::set(const IsoValueCollection& iso) {
+IsoValueProperty& IsoValueProperty::set(const IsoValueCollection& iso) {
     iso_.value.removeObserver(this);
     if (iso_.update(iso)) propertyModified();
     iso_.value.addObserver(this);
+    return *this;
 }
 
 const IsoValueCollection& IsoValueProperty::operator*() const { return iso_.value; }

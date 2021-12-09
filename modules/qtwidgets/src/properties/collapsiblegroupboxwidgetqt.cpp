@@ -30,6 +30,8 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/property.h>
@@ -42,7 +44,6 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/networklock.h>
-#include <modules/qtwidgets/editablelabelqt.h>
 #include <inviwo/core/properties/propertypresetmanager.h>
 
 #include <warn/push>
@@ -91,68 +92,75 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     , checked_(false)
     , propertyOwner_(owner)
     , showIfEmpty_(false)
-    , checkable_(isCheckable) {
+    , checkable_(isCheckable)
+    , defaultLabel_{new QLabel("No properties available")}
+    , propertyWidgetGroup_{createPropertyLayoutWidget(defaultLabel_).release()}
+    , propertyWidgetGroupLayout_{static_cast<QGridLayout*>(propertyWidgetGroup_->layout())}
+    , btnCollapse_{[this]() {
+        auto button = new QToolButton(this);
+        button->setCheckable(true);
+        button->setChecked(false);
+        button->setObjectName("collapseButton");
+        connect(button, &QToolButton::toggled, this, &CollapsibleGroupBoxWidgetQt::setCollapsed);
+        button->setFocusPolicy(Qt::NoFocus);
+        return button;
+    }()}
+    , label_{[this]() {
+        auto label = property_ ? new EditableLabelQt(this, property_, false)
+                               : new EditableLabelQt(this, displayName_, false);
+        label->setObjectName("compositeLabel");
+        auto pol = label->sizePolicy();
+        pol.setHorizontalStretch(3);
+        label->setSizePolicy(pol);
+        connect(label, &EditableLabelQt::textChanged, this,
+                [this, label]() { setDisplayName(label->getText()); });
+        return label;
+    }()}
+    , resetButton_{[this]() {
+        auto button = new QToolButton(this);
+        button->setIconSize(utilqt::emToPx(this, QSizeF(2, 2)));
+        button->setMinimumSize(utilqt::emToPx(this, QSizeF(2, 2)));
+        button->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+        button->setObjectName("resetButton");
+        connect(button, &QToolButton::clicked, this, [this]() {
+            if (property_) {
+                property_->resetToDefaultState();
+            } else if (propertyOwner_) {
+                propertyOwner_->resetAllPoperties();
+            }
+        });
+        button->setFocusPolicy(Qt::NoFocus);
+
+        button->setToolTip(tr("Reset the group of properties to its default state"));
+        return button;
+    }()}
+    , checkBox_{[this]() {
+        auto checkBox = new QCheckBox(this);
+        checkBox->setMinimumSize(utilqt::emToPx(this, QSizeF(2, 2)));
+        auto pol = checkBox->sizePolicy();
+        pol.setHorizontalStretch(0);
+        checkBox->setSizePolicy(pol);
+        checkBox->setChecked(checked_);
+        checkBox->setVisible(checkable_);
+        QObject::connect(checkBox, &QCheckBox::clicked, this,
+                         [this, checkBox]() { setChecked(checkBox->isChecked()); });
+        checkBox->setLayoutDirection(Qt::RightToLeft);
+        return checkBox;
+    }()} {
+
     setObjectName("CompositeWidget");
 
     // Add the widget as a property owner observer for dynamic property addition and removal
     owner->addObserver(this);
 
-    defaultLabel_ = new QLabel("No properties available");
-
-    propertyWidgetGroup_ = createPropertyLayoutWidget().release();
-    propertyWidgetGroupLayout_ = static_cast<QGridLayout*>(propertyWidgetGroup_->layout());
-
-    btnCollapse_ = new QToolButton(this);
-    btnCollapse_->setCheckable(true);
-    btnCollapse_->setChecked(false);
-    btnCollapse_->setObjectName("collapseButton");
-    connect(btnCollapse_, &QToolButton::toggled, this, &CollapsibleGroupBoxWidgetQt::setCollapsed);
-    btnCollapse_->setFocusPolicy(Qt::NoFocus);
-
-    if (property_) {
-        label_ = new EditableLabelQt(this, property_, false);
-    } else {
-        label_ = new EditableLabelQt(this, displayName_, false);
-    }
-    label_->setObjectName("compositeLabel");
-    QSizePolicy labelPol = label_->sizePolicy();
-    labelPol.setHorizontalStretch(10);
-    label_->setSizePolicy(labelPol);
-    connect(label_, &EditableLabelQt::textChanged, this,
-            [&]() { setDisplayName(label_->getText()); });
-
-    resetButton_ = new QToolButton(this);
-    resetButton_->setIconSize(QSize(20, 20));
-    resetButton_->setObjectName("resetButton");
-    connect(resetButton_, &QToolButton::clicked, this, [&]() {
-        if (property_) {
-            property_->resetToDefaultState();
-        } else if (propertyOwner_) {
-            propertyOwner_->resetAllPoperties();
-        }
-    });
-    resetButton_->setFocusPolicy(Qt::NoFocus);
-
-    resetButton_->setToolTip(tr("Reset the group of properties to its default state"));
-
-    checkBox_ = new QCheckBox(this);
-    checkBox_->setMinimumSize(5, 5);
-    checkBox_->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
-    checkBox_->setChecked(checked_);
-    checkBox_->setVisible(checkable_);
-
     updateFocusPolicy();
-
-    QObject::connect(checkBox_, &QCheckBox::clicked, this,
-                     [&]() { setChecked(checkBox_->isChecked()); });
 
     QHBoxLayout* heading = new QHBoxLayout();
     heading->setContentsMargins(0, 0, 0, 0);
-    heading->setSpacing(0);
+    heading->setSpacing(getSpacing());
     heading->addWidget(btnCollapse_);
     heading->addWidget(label_);
     heading->addSpacing(getSpacing());
-    heading->addStretch(1);
     heading->addWidget(checkBox_);
     heading->addWidget(resetButton_);
 
@@ -165,9 +173,8 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
 
     // Adjust the margins when using a border, i.e. margin >= border width.
     // Otherwise the border might be overdrawn by children.
-    this->setContentsMargins(margin, margin, margin, margin);
-
-    this->setLayout(layout);
+    setContentsMargins(margin, margin, margin, margin);
+    setLayout(layout);
 
     updateFromProperty();
 }
@@ -355,6 +362,22 @@ void CollapsibleGroupBoxWidgetQt::setCheckable(bool checkable) {
     updateFocusPolicy();
 }
 
+void CollapsibleGroupBoxWidgetQt::setCheckBoxText(std::string_view text) {
+    auto qText = utilqt::toQString(text);
+
+    auto fm = checkBox_->fontMetrics();
+    auto mw = fm.boundingRect(qText).width();
+    checkBox_->setMinimumWidth(mw + utilqt::emToPx(checkBox_, 3));
+    checkBox_->setText(qText);
+}
+
+void CollapsibleGroupBoxWidgetQt::setCheckBoxVisible(bool visible) {
+    checkBox_->setVisible(visible);
+}
+void CollapsibleGroupBoxWidgetQt::setCheckBoxReadonly(bool readonly) {
+    checkBox_->setDisabled(readonly);
+}
+
 bool CollapsibleGroupBoxWidgetQt::isChildRemovable() const { return false; }
 
 void CollapsibleGroupBoxWidgetQt::setVisible(bool visible) {
@@ -440,8 +463,8 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
             oldWidgets_.emplace_back(*wit);
             prop->deregisterWidget(*wit);
             (*wit)->setParent(nullptr);
-            // hide the underlying QWidget. Otherwise it will be shown as a floating window since it
-            // no longer has a parent widget.
+            // hide the underlying QWidget. Otherwise it will be shown as a floating window
+            // since it no longer has a parent widget.
             static_cast<QWidget*>(*wit)->setVisible(false);
             // Replace the item in propertyWidgets_;
             *wit = newWidget;
@@ -522,14 +545,15 @@ void CollapsibleGroupBoxWidgetQt::setEmptyLabelString(const std::string& str) {
     defaultLabel_->setText(utilqt::toQString(str));
 }
 
-std::unique_ptr<QWidget> CollapsibleGroupBoxWidgetQt::createPropertyLayoutWidget() {
-    auto widget = std::make_unique<QWidget>(this);
+std::unique_ptr<QWidget> CollapsibleGroupBoxWidgetQt::createPropertyLayoutWidget(
+    QLabel* defaultLabel) {
+    auto widget = std::make_unique<QWidget>();
     widget->setObjectName("CompositeContents");
 
     auto propertyLayout = std::make_unique<QGridLayout>();
     propertyLayout->setObjectName("PropertyWidgetLayout");
     propertyLayout->setAlignment(Qt::AlignTop);
-    const auto space = getSpacing();
+    const auto space = utilqt::emToPx(widget.get(), spacingEm);
     propertyLayout->setContentsMargins(space * 2, space, 0, space);
     propertyLayout->setHorizontalSpacing(0);
     propertyLayout->setVerticalSpacing(space);
@@ -538,7 +562,7 @@ std::unique_ptr<QWidget> CollapsibleGroupBoxWidgetQt::createPropertyLayoutWidget
     widget->setLayout(layout);
 
     // add default label to widget layout, this will also set the correct stretching and spacing
-    layout->addWidget(defaultLabel_, 0, 0);
+    layout->addWidget(defaultLabel, 0, 0);
     layout->addItem(new QSpacerItem(space, 1, QSizePolicy::Fixed), 0, 1);
     layout->setColumnStretch(0, 1);
     layout->setColumnStretch(1, 0);
@@ -668,7 +692,7 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
         //
         // Assigning another widget to an already occupied grid cell is possible, but the
         // widgets are put on top of each other.
-        auto layoutWidget = createPropertyLayoutWidget();
+        auto layoutWidget = createPropertyLayoutWidget(defaultLabel_);
         auto layout = static_cast<QGridLayout*>(layoutWidget->layout());
 
         util::OnScopeExit freeOldLayout([&]() {

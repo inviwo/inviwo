@@ -51,6 +51,7 @@
 
 // Utilizes
 #include <inviwo/core/util/settings/linksettings.h>
+#include <inviwo/core/util/settings/unitsettings.h>
 
 // Io
 #include <inviwo/core/io/rawvolumereader.h>
@@ -87,6 +88,7 @@
 #include <inviwo/core/properties/planeproperty.h>
 #include <inviwo/core/properties/positionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/advancedmaterialproperty.h>
 #include <inviwo/core/properties/raycastingproperty.h>
@@ -330,6 +332,11 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<CameraProperty>();
     registerProperty<StringProperty>();
 
+    registerProperty<StringsProperty<1>>();
+    registerProperty<StringsProperty<2>>();
+    registerProperty<StringsProperty<3>>();
+    registerProperty<StringsProperty<4>>();
+
     registerProperty<ImageEditorProperty>();
 
     registerProperty<FileProperty>();
@@ -416,6 +423,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     // Register Settings
     // Do this after the property registration since the settings use properties.
     registerSettings(std::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
+    registerSettings(std::make_unique<UnitSettings>());
 }
 
 std::string InviwoCore::getPath() const { return filesystem::findBasePath(); }

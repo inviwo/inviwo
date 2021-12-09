@@ -32,6 +32,7 @@
 
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -94,11 +95,15 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         std::optional<vec3> a = std::nullopt;
         std::optional<vec3> b = std::nullopt;
         std::optional<vec3> c = std::nullopt;
+
+        std::array<Axis, 3> axes = util::defaultAxes<3>();
+
         mat4 wtm{1.0f};
 
-        std::optional<dvec2> datarange = std::nullopt;
-        std::optional<dvec2> valuerange = std::nullopt;
-        std::optional<std::string> unit = std::nullopt;
+        std::optional<dvec2> dataRange = std::nullopt;
+        std::optional<dvec2> valueRange = std::nullopt;
+        Unit valueUnit = Unit{};
+        std::string valueName{};
         size_t sequences{1};
 
         SwizzleMask swizzleMask{swizzlemasks::rgba};
@@ -188,29 +193,69 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
              ss >> state.formatFlag;
              // Backward support for USHORT_12 key
              if (state.formatFlag == "USHORT_12") {
-                 state.format = DataUInt16::get();   
-                 if (!state.datarange) {  // Check so that data range has not been set before
-                     state.datarange = dvec2(0.0, 4095.0);
+                 state.format = DataUInt16::get();
+                 if (!state.dataRange) {  // Check so that data range has not been set before
+                     state.dataRange = dvec2(0.0, 4095.0);
                  }
              } else {
                  state.format = DataFormatBase::get(state.formatFlag);
              }
          }},
         {"datarange",
-         [](State& state, std::stringstream& ss) { 
-             state.datarange.emplace();
-             ss >> state.datarange->x >> state.datarange->y; }},
+         [](State& state, std::stringstream& ss) {
+             state.dataRange.emplace();
+             ss >> state.dataRange->x >> state.dataRange->y;
+         }},
         {"valuerange",
-         [](State& state,
-            std::stringstream& ss) { 
-             state.valuerange.emplace();
-             ss >> state.valuerange->x >> state.valuerange->y; }},
-        {"unit", [](State& state, std::stringstream& ss) { 
-                 state.unit.emplace();
-                 ss >> *state.unit; }},
+         [](State& state, std::stringstream& ss) {
+             state.valueRange.emplace();
+             ss >> state.valueRange->x >> state.valueRange->y;
+         }},
+        {"valueunit",
+         [](State& state, std::stringstream& ss) {
+             state.valueUnit = units::unit_from_string(ss.str());
+         }},
+        {"valuename", [](State& state, std::stringstream& ss) { state.valueName = ss.str(); }},
         {"swizzlemask", [](State& state, std::stringstream& ss) { ss >> state.swizzleMask; }},
         {"interpolation", [](State& state, std::stringstream& ss) { ss >> state.interpolation; }},
-        {"wrapping", [](State& state, std::stringstream& ss) { ss >> state.wrapping; }}};
+        {"wrapping", [](State& state, std::stringstream& ss) { ss >> state.wrapping; }},
+        {"axesnames",
+         [](State& state, std::stringstream& ss) {
+             ss >> state.axes[0].name >> state.axes[1].name >> state.axes[2].name;
+         }},
+        {"axis1name", [](State& state, std::stringstream& ss) { ss >> state.axes[0].name; }},
+        {"axis2name", [](State& state, std::stringstream& ss) { ss >> state.axes[1].name; }},
+        {"axis3name", [](State& state, std::stringstream& ss) { ss >> state.axes[2].name; }},
+        
+        {"axesunits",
+         [](State& state, std::stringstream& ss) {
+             std::string unit;
+             ss >> unit;
+             state.axes[0].unit = units::unit_from_string(unit);
+             ss >> unit;
+             state.axes[1].unit = units::unit_from_string(unit);
+             ss >> unit;
+             state.axes[2].unit = units::unit_from_string(unit);
+         }},
+        {"axis1unit",
+         [](State& state, std::stringstream& ss) {
+             std::string unit;
+             ss >> unit;
+             state.axes[0].unit = units::unit_from_string(unit);
+         }},
+
+        {"axis2unit",
+         [](State& state, std::stringstream& ss) {
+             std::string unit;
+             ss >> unit;
+             state.axes[1].unit = units::unit_from_string(unit);
+         }},
+
+        {"axis3unit", [](State& state, std::stringstream& ss) {
+            std::string unit;
+            ss >> unit;
+            state.axes[2].unit = units::unit_from_string(unit);
+         }}};
 
     State state{};
 
@@ -317,17 +362,18 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         volume->setOffset(*state.offset);
         volume->setWorldMatrix(state.wtm);
 
-        if (state.datarange) {
-            volume->dataMap_.dataRange = *state.datarange;
+        if (state.dataRange) {
+            volume->dataMap_.dataRange = *state.dataRange;
         }
-        if (state.valuerange) {
-            volume->dataMap_.valueRange = *state.valuerange;
+        if (state.valueRange) {
+            volume->dataMap_.valueRange = *state.valueRange;
         } else {
             volume->dataMap_.valueRange = volume->dataMap_.dataRange;
         }
-        if (state.unit) {
-            volume->dataMap_.valueUnit = *state.unit;
-        }
+
+        volume->dataMap_.valueAxis.unit = state.valueUnit;
+        volume->dataMap_.valueAxis.name = state.valueName;
+        volume->axes = state.axes;
 
         const auto bytes = glm::compMul(state.dimensions) * (state.format->getSize());
 
@@ -351,7 +397,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             diskRepr->setLoader(loader.release());
             volumes->back()->addRepresentation(diskRepr);
             // Compute data range if not specified
-            if (t == 0 && !state.datarange) {
+            if (t == 0 && !state.dataRange) {
                 // Use min/max value in data as data range if none is given
                 // Only consider first time step since it can be time consuming
                 // to compute for all time steps
@@ -366,7 +412,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
                 // Set value range
                 volumes->front()->dataMap_.dataRange = computedRange;
                 // Also set value range if not specified
-                if (!state.valuerange) {
+                if (!state.valueRange) {
                     volumes->front()->dataMap_.valueRange = computedRange;
                 }
                 // Performance warning for larger volumes (rougly > 2MB)

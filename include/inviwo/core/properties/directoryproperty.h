@@ -45,8 +45,8 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    DirectoryProperty(std::string identifier, std::string displayName, std::string value = "",
-                      std::string contentType = "default",
+    DirectoryProperty(std::string_view identifier, std::string_view displayName,
+                      std::string_view value = "", std::string_view contentType = "default",
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
 

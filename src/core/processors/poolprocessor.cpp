@@ -30,6 +30,9 @@
 #include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/stringconversion.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -122,12 +125,17 @@ void PoolProcessor::invalidate(InvalidationLevel invalidationLevel, Property* so
 }
 
 void PoolProcessor::handleError() {
-    LogError("An error occurred while processing background jobs");
+    LogError(
+        fmt::format("An error occurred while processing background jobs of {}", getIdentifier()));
     try {
         throw;
-    } catch (Exception& e) {
+    } catch (const Exception& e) {
         util::log(e.getContext(), e.getMessage(), LogLevel::Error);
-    } catch (std::exception& e) {
+    } catch (const fmt::format_error& e) {
+        util::log(IVW_CONTEXT,
+                  fmt::format("fmt format error: {}\n{}", e.what(), util::fmtHelp.view()),
+                  LogLevel::Error);
+    } catch (const std::exception& e) {
         util::log(IVW_CONTEXT, std::string(e.what()), LogLevel::Error);
     } catch (...) {
         util::log(IVW_CONTEXT, "Unknown error", LogLevel::Error);

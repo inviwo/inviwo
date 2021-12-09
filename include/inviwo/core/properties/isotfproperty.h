@@ -50,7 +50,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    IsoTFProperty(const std::string& identifier, const std::string& displayName,
+    IsoTFProperty(std::string_view identifier, std::string_view displayName,
                   const IsoValueCollection& isovalues = {},
                   const TransferFunction& tf = TransferFunction({{0.0f, vec4(0.0f)},
                                                                  {1.0f, vec4(1.0f)}}),
@@ -58,7 +58,7 @@ public:
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
-    IsoTFProperty(const std::string& identifier, const std::string& displayName,
+    IsoTFProperty(std::string_view identifier, std::string_view displayName,
                   VolumeInport* volumeInport,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);

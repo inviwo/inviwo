@@ -25,7 +25,7 @@ select {
 </div>
   <p><input type="button" value="Button" id="buttonProperty" onclick="inviwo.setProperty('Background.switchColors', {pressButton: true})"></p>
   <p>Checkbox (enable text)<input type="checkbox" value="Checkbox" id="boolProperty" onchange="inviwo.setProperty('TextOverlay.enable', {value: this.checked})"></p>
-  <p>Text <input type="text" id="stringProperty" value="not changed" oninput="inviwo.setProperty('TextOverlay.text', {value: this.value})" ></p>
+  <p>Text <input type="text" id="stringProperty" value="not changed" oninput="inviwo.setProperty('TextOverlay.texts.text0.text', {value: this.value})" ></p>
   <br></br>
   <p>Option property<select id="shadingMode">
   </select>
@@ -64,7 +64,7 @@ function syncString(prop) { inviwo.syncStringInput("stringProperty", prop); }
 // The supplied callbacks must be declared in global scope.
 inviwo.subscribe("LineRenderer.lineSettings.lineWidth", syncOrdinal); 
 inviwo.subscribe("TextOverlay.enable", syncCheckbox);
-inviwo.subscribe("TextOverlay.text", syncString);
+inviwo.subscribe("TextOverlay.texts.text0.text", syncString);
 
 // Example of assuming that the property will not change from the network editor.
 // Enough to get the shading mode once since the number of items will not change after startup.

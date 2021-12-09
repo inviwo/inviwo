@@ -32,6 +32,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/io/datawriterexception.h>
 
 #include <glm/gtx/range.hpp>
@@ -85,6 +86,7 @@ void writeDatVolume(const Volume& data, const std::string filePath, bool overwri
         [&](std::string_view key, const Wrapping3D& wrapping) {
             fmt::print(ss, "{}: {} {} {}\n", key, wrapping[0], wrapping[1], wrapping[2]);
         },
+        [&](std::string_view key, const Unit& unit) { fmt::print(ss, "{}: {}\n", key, unit); },
         [&](std::string_view key, const auto& vec) {
             fmt::print(ss, "{}: {}\n", key, fmt::join(begin(vec), end(vec), " "));
         }};
@@ -103,7 +105,16 @@ void writeDatVolume(const Volume& data, const std::string filePath, bool overwri
     print("WorldVector4", wtm[3]);
     print("DataRange", data.dataMap_.dataRange);
     print("ValueRange", data.dataMap_.valueRange);
-    print("Unit", data.dataMap_.valueUnit);
+    print("ValueUnit", data.dataMap_.valueAxis.unit);
+    print("ValueName", data.dataMap_.valueAxis.name);
+
+    print("Axis1Name", data.axes[0].name);
+    print("Axis2Name", data.axes[1].name);
+    print("Axis3Name", data.axes[2].name);
+
+    print("Axis1Unit", data.axes[0].unit);
+    print("Axis2Unit", data.axes[1].unit);
+    print("Axis3Unit", data.axes[2].unit);
 
     print("SwizzleMask", vr->getSwizzleMask());
     print("Interpolation", vr->getInterpolation());

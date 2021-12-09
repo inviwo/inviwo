@@ -55,11 +55,9 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
     : QTableView(parent)
     , model_(new DataFrameModel(this))
     , sortProxy_(new DataFrameSortFilterProxy(this)) {
-    horizontalHeader()->setStretchLastSection(true);
 
     sortProxy_->setSourceModel(model_);
     setModel(sortProxy_);
-    setSortingEnabled(true);
 
     // need mouse tracking for issuing highlight events when entering a cell
     setMouseTracking(true);
@@ -76,6 +74,10 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
             sortProxy_->sort(-1);
         });
     }
+    // change default sort order from descending to ascending
+    horizontalHeader()->setSortIndicator(-1, Qt::AscendingOrder);
+    setSortingEnabled(true);
+    horizontalHeader()->setStretchLastSection(true);
 
     QObject::connect(this, &QAbstractItemView::entered, this, [this](const QModelIndex& index) {
         if (ignoreEvents_) return;

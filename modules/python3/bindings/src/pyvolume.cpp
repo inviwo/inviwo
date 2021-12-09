@@ -49,6 +49,10 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/volumeport.h>
 
+#include <fmt/format.h>
+
+#include <units/units.hpp>
+
 PYBIND11_MAKE_OPAQUE(VolumeSequence)
 
 namespace inviwo {
@@ -72,6 +76,7 @@ void exposeVolume(pybind11::module& m) {
         .def_property("interpolation", &Volume::getInterpolation, &Volume::setInterpolation)
         .def_property("wrapping", &Volume::getWrapping, &Volume::setWrapping)
         .def_readwrite("dataMap", &Volume::dataMap_)
+        .def_readwrite("axes", &Volume::axes)
         .def_property(
             "data",
             [&](Volume* volume) -> py::array {
@@ -97,14 +102,14 @@ void exposeVolume(pybind11::module& m) {
                 memcpy(rep->getData(), data.data(0), data.nbytes());
             })
         .def("__repr__", [](const Volume& volume) {
-            std::ostringstream oss;
-            oss << "<Volume:\n  dimensions = " << volume.getDimensions()
-                << "\n  modelMatrix = " << volume.getModelMatrix()
-                << "\n  worldMatrix = " << volume.getWorldMatrix()
-                << "\n  <DataMapper:  dataRange = " << volume.dataMap_.dataRange
-                << ",  valueRange = " << volume.dataMap_.valueRange << ",  valueUnit = \""
-                << volume.dataMap_.valueUnit << "\"> >";
-            return oss.str();
+            return fmt::format(
+                "<Volume: {} {} dataRange: {} valueRange: {} value: {}{: [}\n"
+                "modelMatrix = {}\n"
+                "worldMatrix = {}>",
+                volume.getDataFormat()->getString(), volume.getDimensions(),
+                volume.dataMap_.dataRange, volume.dataMap_.valueRange,
+                volume.dataMap_.valueAxis.name, volume.dataMap_.valueAxis.unit,
+                volume.getModelMatrix(), volume.getWorldMatrix());
         });
 
     py::bind_vector<VolumeSequence>(m, "VolumeSequence", py::module_local(false));

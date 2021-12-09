@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,14 +24,13 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
 
 import inviwopy
-
-from inviwopy.glm import ivec2,vec3,mat3
-
 import math
+from inviwopy.glm import mat3
+
 
 def rotation_matrix(axis, angle):
     a = inviwopy.glm.normalize(axis)
@@ -39,17 +38,17 @@ def rotation_matrix(axis, angle):
     w = math.cos(0.5 * angle)
 
     m = mat3()
-    m[0][0] = 1 - (2) * (v[1] * v[1] + v[2] * v[2]);
-    m[1][0] = 2 * (v[0] * v[1] + v[2] * w);
-    m[2][0] = 2 * (v[2] * v[0] - v[1] * w);
+    m[0][0] = 1 - (2) * (v[1] * v[1] + v[2] * v[2])
+    m[1][0] = 2 * (v[0] * v[1] + v[2] * w)
+    m[2][0] = 2 * (v[2] * v[0] - v[1] * w)
 
-    m[0][1] = 2 * (v[0] * v[1] - v[2] * w);
-    m[1][1] = 1 - (2) * (v[2] * v[2] + v[0] * v[0]);
-    m[2][1] = 2 * (v[1] * v[2] + v[0] * w);
+    m[0][1] = 2 * (v[0] * v[1] - v[2] * w)
+    m[1][1] = 1 - (2) * (v[2] * v[2] + v[0] * v[0])
+    m[2][1] = 2 * (v[1] * v[2] + v[0] * w)
 
-    m[0][2] = 2 * (v[2] * v[0] + v[1] * w);
-    m[1][2] = 2 * (v[1] * v[2] - v[0] * w);
-    m[2][2] = 1 - (2) * (v[1] * v[1] + v[0] * v[0]);
+    m[0][2] = 2 * (v[2] * v[0] + v[1] * w)
+    m[1][2] = 2 * (v[1] * v[2] - v[0] * w)
+    m[2][2] = 1 - (2) * (v[1] * v[1] + v[0] * v[0])
 
     return m
 
@@ -58,19 +57,20 @@ class Camera:
     """
     Example:
     with ivw.camera.Camera(app.network.EntryExitPoints.camera) as c:
-        for step in c.rotate(2.0*math.pi/steps, steps, [0,0,1]): 
+        for step in c.rotate(2.0*math.pi/steps, steps, [0,0,1]):
             print(step)
             inviwoqt.update()
     """
-    def __init__(self, cameraProperty, lookfrom = None, lookto = None, lookup = None):
+
+    def __init__(self, cameraProperty, lookfrom=None, lookto=None, lookup=None):
         self.cam = cameraProperty
         self.oldlookfrom = cameraProperty.lookFrom
         self.oldlookto = cameraProperty.lookTo
         self.oldlookup = cameraProperty.lookUp
 
-        self.lookfrom = lookfrom if lookfrom != None else self.oldlookfrom
-        self.lookto = lookto if lookto != None else self.oldlookto
-        self.lookup = lookup if lookup != None else self.oldlookup
+        self.lookfrom = lookfrom if lookfrom is not None else self.oldlookfrom
+        self.lookto = lookto if lookto is not None else self.oldlookto
+        self.lookup = lookup if lookup is not None else self.oldlookup
 
     def __enter__(self):
         self.set()
@@ -80,25 +80,26 @@ class Camera:
         self.restore()
 
     def set(self):
-        self.cam.lookFrom = self.lookfrom;
-        self.cam.lookTo = self.lookto;
-        self.cam.lookUp = self.lookup;
+        self.cam.lookFrom = self.lookfrom
+        self.cam.lookTo = self.lookto
+        self.cam.lookUp = self.lookup
         self.cam.invalidate()
 
     def restore(self):
-        self.cam.lookFrom = self.oldlookfrom;
-        self.cam.lookTo = self.oldlookto;
-        self.cam.lookUp = self.oldlookup;
+        self.cam.lookFrom = self.oldlookfrom
+        self.cam.lookTo = self.oldlookto
+        self.cam.lookUp = self.oldlookup
         self.cam.invalidate()
 
-    def rotate(self, delta = math.pi/30, steps = 60, axis = None):
-        if axis == None: axis = self.lookup
-        
+    def rotate(self, delta=math.pi / 30, steps=60, axis=None):
+        if axis is None:
+            axis = self.lookup
+
         vec = self.lookfrom - self.lookto
 
         mat = rotation_matrix(axis, delta)
 
-        for i in range(1, steps+1):
+        for i in range(1, steps + 1):
             vec = mat * vec
             up = mat * self.lookup
             self.lookfrom = vec + self.lookto

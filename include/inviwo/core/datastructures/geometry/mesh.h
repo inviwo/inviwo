@@ -76,8 +76,7 @@ public:
     Mesh(Mesh::MeshInfo meshInfo);
     Mesh(const Mesh& rhs);
 
-    struct DontCopyBuffers {};
-    Mesh(DontCopyBuffers, const Mesh& rhs);
+    Mesh(const Mesh& rhs, NoData);
 
     Mesh& operator=(const Mesh& that);
     virtual Mesh* clone() const;

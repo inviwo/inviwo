@@ -31,6 +31,7 @@
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
@@ -97,9 +98,12 @@ public:
      * \brief add column based on the contents of the given buffer
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
+     * Note: this will copy the data of buffer.
      */
     std::shared_ptr<Column> addColumnFromBuffer(std::string_view identifier,
-                                                std::shared_ptr<const BufferBase> buffer);
+                                                std::shared_ptr<const BufferBase> buffer,
+                                                Unit unit = Unit{},
+                                                std::optional<dvec2> range = std::nullopt);
 
     /**
      * \brief add column of type T
@@ -107,7 +111,9 @@ public:
      * the DataFrame can be used
      */
     template <typename T>
-    std::shared_ptr<TemplateColumn<T>> addColumn(std::string_view header, size_t size = 0);
+    std::shared_ptr<TemplateColumn<T>> addColumn(std::string_view header, size_t size = 0,
+                                                 Unit unit = Unit{},
+                                                 std::optional<dvec2> range = std::nullopt);
 
     /**
      * \brief add column of type T from a std::vector<T>
@@ -115,7 +121,9 @@ public:
      * the DataFrame can be used
      */
     template <typename T>
-    auto addColumn(std::string_view header, std::vector<T> data);
+    std::shared_ptr<TemplateColumn<T>> addColumn(std::string_view header, std::vector<T> data,
+                                                 Unit unit = Unit{},
+                                                 std::optional<dvec2> range = std::nullopt);
 
     /**
      * \brief Drop a column from data frame
@@ -130,7 +138,7 @@ public:
     /**
      * \brief Drop a column from data frame
      *
-     * Drops the column at the specified psoition.
+     * Drops the column at the specified position.
      *
      * \param index Position of the column to be dropped
      */
@@ -219,17 +227,20 @@ createDataFrame(const std::vector<std::vector<std::string>>& exampleRows,
                 const std::vector<std::string>& colHeaders = {}, bool doublePrecision = false);
 
 template <typename T>
-std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(std::string_view header, size_t size) {
-    auto col = std::make_shared<TemplateColumn<T>>(header);
-    col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
+std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(std::string_view header, size_t size,
+                                                        Unit unit, std::optional<dvec2> range) {
+    auto col = std::make_shared<TemplateColumn<T>>(header, size, unit, range);
     columns_.push_back(col);
     return col;
 }
 
 template <typename T>
-auto DataFrame::addColumn(std::string_view header, std::vector<T> data) {
-    return columns_.emplace_back(
-        std::move(std::make_shared<TemplateColumn<T>>(header, std::move(data))));
+std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(std::string_view header,
+                                                        std::vector<T> data, Unit unit,
+                                                        std::optional<dvec2> range) {
+    auto col = std::make_shared<TemplateColumn<T>>(header, std::move(data), unit, range);
+    columns_.push_back(col);
+    return col;
 }
 
 template <>
@@ -255,13 +266,14 @@ struct DataTraits<DataFrame> {
         tb(H("Number of Rows: "), rowCount);
 
         utildoc::TableBuilder tb2(doc.handle(), P::end());
-        tb2(H("Col"), H("Format"), H("Rows"), H("Name"), H("Column Range"));
+        tb2(H("Col"), H("Format"), H("Rows"), H("Name"), H("Column Range"), H("Min"), H("Max"),
+            H("Unit"));
         // abbreviate list of columns if there are more than 20
         const size_t ncols = (data.getNumberOfColumns() > 20) ? 10 : data.getNumberOfColumns();
 
         auto range = [](const Column* col) {
-            if (col->getRange()) {
-                return toString(*col->getRange());
+            if (col->getCustomRange()) {
+                return toString(*col->getCustomRange());
             } else {
                 return std::string("-");
             }
@@ -288,64 +300,22 @@ struct DataTraits<DataFrame> {
                 }
                 categories += fmt::format(" [{}]", col_c->getCategories().size());
                 tb2("", categories, utildoc::TableBuilder::Span_t{},
-                    utildoc::TableBuilder::Span_t{}, utildoc::TableBuilder::Span_t{});
+                    utildoc::TableBuilder::Span_t{}, utildoc::TableBuilder::Span_t{},
+                    utildoc::TableBuilder::Span_t{}, utildoc::TableBuilder::Span_t{},
+                    utildoc::TableBuilder::Span_t{});
             } else {
                 auto col_q = data.getColumn(i);
 
-                auto [minString, maxString] =
-                    col_q->getBuffer()
-                        ->getRepresentation<BufferRAM>()
-                        ->dispatch<std::pair<std::string, std::string>, dispatching::filter::All>(
-                            [](auto brprecision) -> std::pair<std::string, std::string> {
-                                using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-                                using PrecisionType = typename util::value_type<ValueType>::type;
+                auto [minString, maxString] = [&]() -> std::pair<std::string, std::string> {
+                    if (col_q->getSize() == 0) return {"-", "-"};
 
-                                const auto& vec = brprecision->getDataContainer();
+                    const auto minmax = col_q->getDataRange();
+                    return {fmt::format("{:8.4g}", minmax.x), fmt::format("{:8.4g}", minmax.y)};
+                }();
 
-                                if (vec.empty()) {
-                                    return {"-", "-"};
-                                }
-
-                                auto createSS = [](const PrecisionType& min,
-                                                   const PrecisionType& max)
-                                    -> std::pair<std::string, std::string> {
-                                    if constexpr (std::is_floating_point_v<ValueType>) {
-                                        std::stringstream minSS;
-                                        std::stringstream maxSS;
-
-                                        minSS << std::defaultfloat << min;
-                                        maxSS << std::defaultfloat << max;
-
-                                        return {minSS.str(), maxSS.str()};
-                                    } else {
-                                        return {std::to_string(min), std::to_string(max)};
-                                    }
-                                };
-
-                                if constexpr (util::extent<ValueType>::value == 1) {
-                                    auto [min, max] =
-                                        std::minmax_element(std::begin(vec), std::end(vec));
-
-                                    // call lambda
-                                    return createSS(*min, *max);
-                                } else {
-                                    auto min{std::numeric_limits<PrecisionType>::max()};
-                                    auto max{std::numeric_limits<PrecisionType>::min()};
-
-                                    std::for_each(std::begin(vec), std::end(vec),
-                                                  [&min, &max](const ValueType& v) {
-                                                      min = std::min(min, glm::compMin(v));
-                                                      max = std::max(max, glm::compMax(v));
-                                                  });
-
-                                    return createSS(min, max);
-                                }
-                            });
-
-                tb2(std::to_string(i + 1),
-                    data.getColumn(i)->getBuffer()->getDataFormat()->getString(),
-                    data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i),
-                    range(col_q.get()), minString, maxString);
+                tb2(std::to_string(i + 1), col_q->getBuffer()->getDataFormat()->getString(),
+                    col_q->getBuffer()->getSize(), data.getHeader(i), range(col_q.get()), minString,
+                    maxString, fmt::to_string(col_q->getUnit()));
             }
         }
         if (ncols != data.getNumberOfColumns()) {

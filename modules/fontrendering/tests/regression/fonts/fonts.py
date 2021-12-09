@@ -29,21 +29,22 @@ processorSpacing = 50
 # vertical spacing of text
 vertTextSpacing = 1.0 / len(fontNames)
 
-## create one text overlay processor for each font face
+# create one text overlay processor for each font face
 for i, (name, id) in enumerate(zip(fontNames, fontIdentifiers)):
-    p = app.processorFactory.create("org.inviwo.TextOverlayGL", 
-                                    glm.ivec2(300, processorSpacing * i))    
+    p = app.processorFactory.create("org.inviwo.TextOverlayGL",
+                                    glm.ivec2(300, processorSpacing * i))
     p.displayName = name
-    p.text.value = name
-    p.color.value = glm.vec4(0, 0, 0, 1)
+    p.font.color.value = glm.vec4(0, 0, 0, 1)
     p.font.fontFace.selectedIdentifier = id
     p.font.fontSize.value = fontSize
     p.font.anchor.value = glm.vec2(-1, 1)
-    p.getPropertyByIdentifier("position").value = glm.vec2(0.01, 1.0 - i * vertTextSpacing)
+
+    p.texts.text0.text.value = name
+    p.texts.text0.position.value = glm.vec2(0.01, 1.0 - i * vertTextSpacing)
 
     network.addProcessor(p)
 
-    if i > 0:  
+    if i > 0:
         # link font size
         network.addLink(prev.font.fontSize, p.font.fontSize)
         network.addLink(p.font.fontSize, prev.font.fontSize)
@@ -53,7 +54,7 @@ for i, (name, id) in enumerate(zip(fontNames, fontIdentifiers)):
 
 canvas.position = glm.ivec2(0, processorSpacing * len(fontNames) + 25)
 
-## connect last processor to canvas
+# connect last processor to canvas
 network.addConnection(prev.outports[0], canvas.inports[0])
 
 app.network.unlock()

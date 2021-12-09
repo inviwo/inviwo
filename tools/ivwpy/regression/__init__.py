@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,5 +24,31 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
+
+import importlib.util
+
+from .. colorprint import *
+
+requirements = {
+    'yattag': ['yattag', "needed for html generation (http://www.yattag.org)"],
+    'PIL': ['Pillow', "needed for image comparison "
+                      "(Pillow is a fork of PIL https://python-pillow.github.io/)"],
+    'sqlalchemy': ['sqlalchemy', "needed for database connection"],
+    'bs4': ['beautifulsoup4', "needed for dom manipulation"],
+    'lesscpy': ['lesscpy', "needed for css generation"],
+}
+
+missing_modules = {}
+for m, [name, desc] in requirements.items():
+    if importlib.util.find_spec(m) is None:
+        missing_modules[name] = desc
+
+if len(missing_modules) > 0:
+    print_error("Error: Missing python modules:")
+    for k, v in missing_modules.items():
+        print_error("    {:20s} {}".format(k, v))
+    print_info("    To install run: 'python -m pip install {}'".format(
+        " ".join(missing_modules.keys())))
+    exit()

@@ -65,18 +65,18 @@ public:
      * @param invalidationLevel
      * @param semantics
      */
-    EventProperty(const std::string& identifier, const std::string& displayName, Action action,
+    EventProperty(std::string_view identifier, std::string_view displayName, Action action,
                   std::unique_ptr<EventMatcher> matcher,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                   PropertySemantics semantics = PropertySemantics::Default);
 
-    EventProperty(const std::string& identifier, const std::string& displayName, Action action,
+    EventProperty(std::string_view identifier, std::string_view displayName, Action action,
                   IvwKey key, KeyStates states = KeyState::Press,
                   KeyModifiers modifier = KeyModifiers(flags::none),
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                   PropertySemantics semantics = PropertySemantics::Default);
 
-    EventProperty(const std::string& identifier, const std::string& displayName, Action action,
+    EventProperty(std::string_view identifier, std::string_view displayName, Action action,
                   MouseButtons buttons, MouseStates states = MouseState::Press,
                   KeyModifiers modifiers = KeyModifiers(flags::none),
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,

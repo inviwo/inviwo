@@ -55,7 +55,7 @@ Mesh::Mesh(const Mesh& rhs)
     }
 }
 
-Mesh::Mesh(DontCopyBuffers, const Mesh& rhs)
+Mesh::Mesh(const Mesh& rhs, NoData)
     : DataGroup<Mesh, MeshRepresentation>(rhs)
     , SpatialEntity<3>(rhs)
     , MetaDataOwner(rhs)

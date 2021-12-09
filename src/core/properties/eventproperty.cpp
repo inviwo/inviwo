@@ -34,21 +34,21 @@ namespace inviwo {
 const std::string EventProperty::classIdentifier = "org.inviwo.EventProperty";
 std::string EventProperty::getClassIdentifier() const { return classIdentifier; }
 
-EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
+EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Action action, std::unique_ptr<EventMatcher> matcher,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics)
     , matcher_{std::move(matcher)}
     , action_{std::move(action)} {}
 
-EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
+EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Action action, IvwKey key, KeyStates states, KeyModifiers modifiers,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : EventProperty(identifier, displayName, std::move(action),
                     std::make_unique<KeyboardEventMatcher>(key, states, modifiers),
                     invalidationLevel, semantics) {}
 
-EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
+EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Action action, MouseButtons buttons, MouseStates states,
                              KeyModifiers modifiers, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)

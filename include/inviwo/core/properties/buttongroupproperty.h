@@ -58,11 +58,11 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    ButtonGroupProperty(std::string identifier, std::string displayName,
+    ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
 
-    ButtonGroupProperty(std::string identifier, std::string displayName,
+    ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
                         std::vector<Button> buttons,
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);

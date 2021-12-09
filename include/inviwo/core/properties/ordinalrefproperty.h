@@ -78,7 +78,7 @@ public:
     using component_type = typename util::value_type<T>::type;
 
     OrdinalRefProperty(
-        const std::string& identifier, const std::string& displayName, std::function<T()> get,
+        std::string_view identifier, std::string_view displayName, std::function<T()> get,
         std::function<void(const T&)> set,
         const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
                                                                      ConstraintBehavior::Editable},
@@ -88,7 +88,7 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = OrdinalRefPropertyState<T>::defaultSemantics());
 
-    OrdinalRefProperty(const std::string& identifier, const std::string& displayName,
+    OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
                        std::function<const T&()> get, std::function<void(const T&)> set,
                        OrdinalRefPropertyState<T> state);
 
@@ -154,6 +154,7 @@ public:
     virtual void set(const Property* src) override;
 
     virtual OrdinalRefProperty<T>& setCurrentStateAsDefault() override;
+    OrdinalRefProperty<T>& setDefault(const T& minVal, const T& maxVal, const T& increment);
     virtual OrdinalRefProperty<T>& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
 
@@ -261,9 +262,8 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 }
 
 template <typename T>
-OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
-                                          const std::string& displayName, std::function<T()> get,
-                                          std::function<void(const T&)> set,
+OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
+                                          std::function<T()> get, std::function<void(const T&)> set,
                                           const std::pair<T, ConstraintBehavior>& minValue,
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
@@ -290,8 +290,7 @@ OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
 }
 
 template <typename T>
-OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
-                                          const std::string& displayName,
+OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
                                           std::function<const T&()> get,
                                           std::function<void(const T&)> set,
                                           OrdinalRefPropertyState<T> state)
@@ -526,6 +525,15 @@ OrdinalRefProperty<T>& OrdinalRefProperty<T>::setCurrentStateAsDefault() {
     minValue_.setAsDefault();
     maxValue_.setAsDefault();
     increment_.setAsDefault();
+    return *this;
+}
+
+template <typename T>
+OrdinalRefProperty<T>& OrdinalRefProperty<T>::setDefault(const T& minVal, const T& maxVal,
+                                                         const T& increment) {
+    minValue_.defaultValue = minVal;
+    maxValue_.defaultValue = maxVal;
+    increment_.defaultValue = increment;
     return *this;
 }
 

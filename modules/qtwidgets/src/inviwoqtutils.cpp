@@ -39,6 +39,7 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/util/zip.h>
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
 #include <inviwo/core/util/logcentral.h>
@@ -62,24 +63,14 @@
 
 #include <ios>
 #include <exception>
+#include <fmt/format.h>
 
 namespace inviwo {
 
 namespace utilqt {
 
 std::locale getCurrentStdLocale() {
-    auto warnOnce = [](auto message) {
-        static bool hasWarned = false;
-        if (!hasWarned) {
-            LogWarnCustom("getStdLocale", message);
-            hasWarned = true;
-        }
-    };
-
-    std::locale loc;
-    try {
-        // use the system locale provided by Qt
-
+    static std::locale loc = []() -> std::locale {
 #ifdef WIN32
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
         // although std::locale should only accept locales with underscore, e.g. "sv_SE"
@@ -87,17 +78,27 @@ std::locale getCurrentStdLocale() {
 #else
         std::string localeName(QLocale::system().name().toStdString());
 #endif
-        loc = std::locale(localeName.c_str());
-    } catch (std::exception& e) {
-        warnOnce(std::string("Locale could not be set. ") + e.what());
-        try {
-            loc = std::locale("en_US.UTF8");
-        } catch (...) {
+
+        // try to use the system locale provided by Qt
+        std::vector<std::string> localeNames = {localeName, "en_US.UTF-8", "en_US.UTF8",
+                                                "en-US.UTF-8", "en-US.UTF8"};
+        for (auto&& [i, name] : util::enumerate(localeNames)) {
+            try {
+                if (i != 0) {
+                    LogWarnCustom("getStdLocale", fmt::format("Falling back to locale '{}'", name));
+                }
+                return std::locale(name);
+            } catch (std::exception& e) {
+                LogWarnCustom("getStdLocale",
+                              fmt::format("Locale could not be set to '{}', {}", name, e.what()));
+            }
         }
-    }
+        LogWarnCustom("getStdLocale", "Using the default locale");
+        return std::locale{};
+    }();
+
     return loc;
 }
-
 std::ios_base& localizeStream(std::ios_base& stream) {
     stream.imbue(getCurrentStdLocale());
     return stream;

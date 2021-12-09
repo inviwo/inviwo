@@ -68,7 +68,7 @@ IVW_MODULE_OPENGL_API void parseShaderSource(
  *
  * A fragment shader will by default have the following out declarations:
  *     out vec4 FragData0;   (location 0)
- *     out vev4 PickingData; (location 1)
+ *     out vec4 PickingData; (location 1)
  * and a vertex shader will by default have the following in declarations:
  *     in vec4 in_Vertex;   (location 0)
  *     in vec3 in_Normal;   (location 1)
@@ -215,7 +215,7 @@ public:
      * manually call this function to re-add them if needed.
      * The defaults are:
      *     out vec4 FragData0;   (location 0)
-     *     out vev4 PickingData; (location 1)
+     *     out vec4 PickingData; (location 1)
      */
     void addStandardFragmentOutDeclarations();
 

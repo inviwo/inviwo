@@ -89,7 +89,7 @@ BaseSliderWidgetQt::BaseSliderWidgetQt(bool intMode)
 
     setLayout(hLayout);
     connect(slider_, &QSlider::valueChanged, this, &BaseSliderWidgetQt::updateFromSlider);
-    connect(spinBox_, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+    connect(spinBox_, static_cast<void (QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
             this, &BaseSliderWidgetQt::updateFromSpinBox);
 
     QSizePolicy sp = sizePolicy();

@@ -44,7 +44,8 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    BoolCompositeProperty(std::string identifier, std::string displayName, bool checked = false,
+    BoolCompositeProperty(std::string_view identifier, std::string_view displayName,
+                          bool checked = false,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                           PropertySemantics semantics = PropertySemantics::Default);
 

@@ -127,31 +127,57 @@ struct ElementMatcher {
 template <typename Visitor>
 void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& selector,
                         Visitor visitor) {
-    std::function<void(TxElement * node, std::vector<ElementMatcher>::const_iterator begin,
-                       std::vector<ElementMatcher>::const_iterator end)>
-        visitNodes = [&](TxElement* node, std::vector<ElementMatcher>::const_iterator begin,
-                         std::vector<ElementMatcher>::const_iterator end) {
-            ticpp::Iterator<ticpp::Element> child;
-            for (child = child.begin(node); child != child.end(); child++) {
-                std::string childname;
-                child->GetValue(&childname);
-                if (childname == begin->name) {
-                    bool match = true;
-                    for (const auto& attribute : begin->attributes) {
-                        auto val = child->GetAttributeOrDefault(attribute.name, "");
-                        match = match && val == attribute.value;
-                    }
-                    if (match) {
-                        if (begin + 1 == end) {
-                            visitor(child.Get());
-                        } else {
-                            visitNodes(child.Get(), begin + 1, end);
-                        }
+    auto visitNodes = [&](auto& self, TxElement* node,
+                          std::vector<ElementMatcher>::const_iterator begin,
+                          std::vector<ElementMatcher>::const_iterator end) -> void {
+        ticpp::Iterator<ticpp::Element> child;
+        for (child = child.begin(node); child != child.end(); child++) {
+            std::string childname;
+            child->GetValue(&childname);
+            if (childname == begin->name) {
+                bool match = true;
+                for (const auto& attribute : begin->attributes) {
+                    auto val = child->GetAttributeOrDefault(attribute.name, "");
+                    match = match && val == attribute.value;
+                }
+                if (match) {
+                    if (begin + 1 == end) {
+                        visitor(child.Get());
+                    } else {
+                        self(self, child.Get(), begin + 1, end);
                     }
                 }
             }
-        };
-    visitNodes(root, selector.begin(), selector.end());
+        }
+    };
+    visitNodes(visitNodes, root, selector.begin(), selector.end());
+}
+
+/**
+ * This will traverse all the nodes of the root and apply the visitor to all nodes that match the
+ * selector.
+ */
+template <typename Visitor>
+void visitMatchingNodesRecursive(TxElement* root, const ElementMatcher& selector, Visitor visitor) {
+    auto visitNodes = [&](auto& self, TxElement* node) -> void {
+        ticpp::Iterator<ticpp::Element> child;
+        for (child = child.begin(node); child != child.end(); child++) {
+            std::string childname;
+            child->GetValue(&childname);
+            if (childname == selector.name) {
+                bool match = true;
+                for (const auto& attribute : selector.attributes) {
+                    auto val = child->GetAttributeOrDefault(attribute.name, "");
+                    match = match && val == attribute.value;
+                }
+                if (match) {
+                    visitor(child.Get());
+                }
+            }
+            self(self, child.Get());
+        }
+    };
+    visitNodes(visitNodes, root);
 }
 
 /**
@@ -242,6 +268,10 @@ struct IVW_CORE_API IdentifierReplacement {
 
 IVW_CORE_API bool changeIdentifiers(TxElement* root,
                                     const std::vector<IdentifierReplacement>& replacements);
+
+IVW_CORE_API TxElement* createNode(std::string_view desc, TxElement* parent = nullptr);
+
+IVW_CORE_API void logNode(TxElement* root);
 
 }  // namespace xml
 

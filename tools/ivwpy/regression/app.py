@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -25,7 +25,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-#*********************************************************************************
+# ********************************************************************************
 import os
 import itertools
 import glob
@@ -55,11 +55,12 @@ def findModuleTest(path):
         regressionDir = toPath(path, moduleDir, "tests", "regression")
         for testDir in subDirs(regressionDir):
             tests.append(test.Test(
-                name = testDir,
-                module = moduleDir,
-                path = toPath(regressionDir, testDir)
-                ))
+                name=testDir,
+                module=moduleDir,
+                path=toPath(regressionDir, testDir)
+            ))
     return tests
+
 
 class App:
     class Summary:
@@ -73,11 +74,11 @@ class App:
                  appPath,
                  moduleTestPaths,
                  outputDir,
-                 jsonFile = "report",
-                 htmlFile = "report",
-                 sqlFile = "report",
-                 runSettings = inviwoapp.RunSettings(),
-                 testSettings = ReportTestSettings()):
+                 jsonFile="report",
+                 htmlFile="report",
+                 sqlFile="report",
+                 runSettings=inviwoapp.RunSettings(),
+                 testSettings=ReportTestSettings()):
 
         self.app = inviwoapp.InviwoApp(appPath, runSettings)
         self.output = outputDir
@@ -90,14 +91,13 @@ class App:
         tests = [findModuleTest(p) for p in moduleTestPaths]
         self.tests = list(itertools.chain(*tests))
         self.reports = {}
-        self.git = Git(pyconfsearchpath = appPath)
+        self.git = Git(pyconfsearchpath=appPath)
         if not self.git.foundGit():
             print_error("Git not found")
             exit(1)
 
-        self.db = Database(self.output+ "/" + self.sqlFile + ".sqlite")
+        self.db = Database(self.output + "/" + self.sqlFile + ".sqlite")
         self.loadJson()
-
 
     def runTest(self, test, run):
         report = {}
@@ -116,8 +116,7 @@ class App:
         self.updateDatabase(report, run)
         return report
 
-
-    def filterTests(self, testrange, testfilter, onlyRunFailed = False):
+    def filterTests(self, testrange, testfilter, onlyRunFailed=False):
         selected1 = range(len(self.tests))
         selected2 = selected1[testrange]
         selected3 = list(filter(lambda i: testfilter(self.tests[i]), selected2))
@@ -129,23 +128,27 @@ class App:
         if onlyRunFailed:
             def testfailed(test):
                 last = self.db.getLastTestRun(test.module, test.name)
-                if last and len(last.failures) > 0: return True
+                if last and len(last.failures) > 0:
+                    return True
                 return False
 
             selected5 = list(filter(lambda i: testfailed(self.tests[i]), selected4))
         else:
             selected5 = selected4
 
-
-        reasons = list(map(lambda x : "", range(len(self.tests))))
-        for i in set(selected1).difference(set(selected2)): reasons[i] = "Test not in testrange"
-        for i in set(selected2).difference(set(selected3)): reasons[i] = "Filtered out"
-        for i in set(selected3).difference(set(selected4)): reasons[i] = "Needed module not available"
-        for i in set(selected4).difference(set(selected5)): reasons[i] = "Only running failed tests"
+        reasons = list(map(lambda x: "", range(len(self.tests))))
+        for i in set(selected1).difference(set(selected2)):
+            reasons[i] = "Test not in testrange"
+        for i in set(selected2).difference(set(selected3)):
+            reasons[i] = "Filtered out"
+        for i in set(selected3).difference(set(selected4)):
+            reasons[i] = "Needed module not available"
+        for i in set(selected4).difference(set(selected5)):
+            reasons[i] = "Only running failed tests"
 
         return selected5, reasons
 
-    def runTests(self, testrange = slice(0,None), testfilter = lambda x: True, onlyRunFailed = False):
+    def runTests(self, testrange=slice(0, None), testfilter=lambda x: True, onlyRunFailed=False):
         selected, reasons = self.filterTests(testrange, testfilter, onlyRunFailed)
         run = self.db.addRun()
         for i, test in enumerate(self.tests):
@@ -156,31 +159,33 @@ class App:
 
                     report = self.runTest(test, run)
                     self.reports[test.toString()] = report
-                    for k,v in report.items():
+                    for k, v in report.items():
                         l.pair(k, str(v), width=15)
-    
-                    if len(report["failures"])>0:
+
+                    if len(report["failures"]) > 0:
                         self.summary.failures += 1
-                        self.summary.errors.append(test.toString() + " Failures: " + ", ".join(report["failures"].keys()))
+                        self.summary.errors.append(
+                            test.toString() + " Failures: " + ", ".join(report["failures"].keys()))
                         l.success = False
-                        l.error("{:>15} : {}".format("Result", "Failed " + ", ".join(report["failures"].keys())))
+                        l.error("{:>15} : {}".format("Result", "Failed " +
+                                                     ", ".join(report["failures"].keys())))
                     else:
                         self.summary.successes += 1
                         l.good("{:>15} : {}".format("Result", "Success"))
                 else:
                     self.summary.skipped += 1
                     l.pair("Skipping test {:3d} (Enabled: {:d}, Total: {:d})"
-                                .format(i, len(selected), len(self.tests)),
+                           .format(i, len(selected), len(self.tests)),
                            test.toString())
                     dbtest = self.db.getOrAddTest(test.module, test.name)
-                    self.db.addSkipRun(run = run, test = dbtest, reason = reasons[i])
+                    self.db.addSkipRun(run=run, test=dbtest, reason=reasons[i])
 
     def compareImages(self, test, report):
         refimgs = test.getImages()
         refs = set(refimgs)
 
         outputdir = report['outputdir']
-        imgs = glob.glob(outputdir +"/imgtest/*.png")
+        imgs = glob.glob(outputdir + "/imgtest/*.png")
         imgs = set([os.path.relpath(x, toPath(outputdir, 'imgtest')) for x in imgs])
 
         report["refs"] = list(refimgs)
@@ -189,7 +194,7 @@ class App:
         report['missing_imgs'] = list(refs - imgs)
         report['image_tests'] = []
 
-        olddirs = list(reversed(sorted(glob.glob(outputdir+"/../*"))))
+        olddirs = list(reversed(sorted(glob.glob(outputdir + "/../*"))))
         if len(olddirs) > 1:
             lastoutdir = olddirs[1]
         else:
@@ -200,12 +205,13 @@ class App:
         diffpath = mkdir(toPath(outputdir, "imgdiff"))
         maskpath = mkdir(toPath(outputdir, "imgmask"))
 
-        allowDifferentImageMode = safeget(test.config, "image_test", "allowDifferentImageMode", failure = False)
+        allowDifferentImageMode = safeget(
+            test.config, "image_test", "allowDifferentImageMode", failure=False)
 
         for img in imgs & refs:
-            comp = ImageCompare(testImage = toPath(testpath, img),
-                                refImage = toPath(test.path, img),
-                                allowDifferentImageMode = allowDifferentImageMode)
+            comp = ImageCompare(testImage=toPath(testpath, img),
+                                refImage=toPath(test.path, img),
+                                allowDifferentImageMode=allowDifferentImageMode)
 
             comp.saveReferenceImage(toPath(refpath, img))
             comp.saveDifferenceImage(toPath(diffpath, img))
@@ -219,14 +225,14 @@ class App:
                 self.linkImages(toPath(lastoutdir, "imgmask", img), toPath(maskpath, img))
 
             imgtest = {
-                'image' : img,
-                'difference' : comp.getDifference(),
-                'max_difference' : comp.getMaxDifference(),
-                'different_pixels' : comp.getNumberOfDifferentPixels(),
-                'test_size' : comp.getTestSize(),
-                'ref_size' : comp.getRefSize(),
-                'test_mode' : comp.getTestMode(),
-                'ref_mode' : comp.getRefMode()
+                'image': img,
+                'difference': comp.getDifference(),
+                'max_difference': comp.getMaxDifference(),
+                'different_pixels': comp.getNumberOfDifferentPixels(),
+                'test_size': comp.getTestSize(),
+                'ref_size': comp.getRefSize(),
+                'test_mode': comp.getTestMode(),
+                'ref_mode': comp.getRefMode()
             }
             report['image_tests'].append(imgtest)
 
@@ -237,48 +243,51 @@ class App:
             os.remove(newimg)
             os.link(oldimg, newimg)
 
-    def printTestList(self, testrange = slice(0,None), testfilter = lambda x: True, printfun = print):
+    def printTestList(self, testrange=slice(0, None), testfilter=lambda x: True, printfun=print):
         printfun("List of regression tests")
-        printfun("-"*80)
+        printfun("-" * 80)
 
         selected, reasons = self.filterTests(testrange, testfilter)
         for i, test in enumerate(self.tests):
-            active = "Enabled" if i in selected and testfilter(test) else "Disabled (Reason: %s)" % reasons[i]
+            active = "Enabled" if i in selected and testfilter(
+                test) else "Disabled (Reason: %s)" % reasons[i]
             printfun("{:3d} {:8s} {}".format(i, active, test))
 
     def saveJson(self):
-        with open(self.output+ "/" + self.jsonFile + ".json", 'w') as f:
+        with open(self.output + "/" + self.jsonFile + ".json", 'w') as f:
             json.dump(self.reports, f, indent=4, separators=(',', ': '))
 
     def loadJson(self):
-        if os.path.exists(self.output+ "/" + self.jsonFile + ".json"):
-            with open(self.output+ "/" + self.jsonFile + ".json", 'r') as f:
+        if os.path.exists(self.output + "/" + self.jsonFile + ".json"):
+            with open(self.output + "/" + self.jsonFile + ".json", 'r') as f:
                 self.reports = json.load(f)
             for name, report in self.reports.items():
                 report['status'] = "old"
 
-    def saveHtml(self, header = None, footer = None):
-        html = HtmlReport(basedir = self.output,
-                          reports = self.reports,
-                          database = self.db,
-                          header = header,
-                          footer = footer)
+    def saveHtml(self, header=None, footer=None):
+        html = HtmlReport(basedir=self.output,
+                          reports=self.reports,
+                          database=self.db,
+                          header=header,
+                          footer=footer)
         filepath = html.saveHtml(self.htmlFile)
         shutil.copyfile(filepath, toPath(self.output,
-            self.htmlFile + "-" + datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S')+".html"))
+                                         self.htmlFile + "-" + datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S') + ".html"))
 
     def success(self):
         for name, report in self.reports.items():
             if len(report['failures']) != 0:
-                if safeget(report, "config", "enabled", failure = True):
+                if safeget(report, "config", "enabled", failure=True):
                     return False
         return True
 
-    def printSummary(self, out = sys.stdout):
+    def printSummary(self, out=sys.stdout):
         if(self.success()):
-            print_good("Success: {0.successes}, Failues: {0.failures}, Skipped: {0.skipped}".format(self.summary), file=out)
+            print_good("Success: {0.successes}, Failues: {0.failures}, Skipped: {0.skipped}".format(
+                self.summary), file=out)
         else:
-            print_error("Success: {0.successes}, Failues: {0.failures}, Skipped: {0.skipped}".format(self.summary), file=out)
+            print_error("Success: {0.successes}, Failues: {0.failures}, Skipped: {0.skipped}".format(
+                self.summary), file=out)
         for i in self.summary.errors:
             print_error(i, file=out)
 
@@ -292,33 +301,32 @@ class App:
         db_failures = self.db.getOrAddSeries(dbtest, dbcount, "number_of_failures")
 
         git = report["git"]
-        dbcommit = self.db.getOrAddCommit(hash    = git["hash"],
-                                           date    = stringToDate(git['date']),
-                                          author  = git['author'],
-                                           message = git['message'],
-                                          server  = git['server'])
+        dbcommit = self.db.getOrAddCommit(hash=git["hash"],
+                                          date=stringToDate(git['date']),
+                                          author=git['author'],
+                                          message=git['message'],
+                                          server=git['server'])
 
-        dbtestrun = self.db.addTestRun(run = run,
-                                       test = dbtest, commit = dbcommit,
-                                       config = json.dumps(safeget(report, "config", failure = "")))
+        dbtestrun = self.db.addTestRun(run=run,
+                                       test=dbtest, commit=dbcommit,
+                                       config=json.dumps(safeget(report, "config", failure="")))
 
-        self.db.addMeasurement(series  = db_elapsed_time,
-                               testrun = dbtestrun,
-                               value   = report["elapsed_time"])
-        self.db.addMeasurement(series = db_failures,
-                               testrun = dbtestrun,
-                               value = len(report["failures"]))
-
+        self.db.addMeasurement(series=db_elapsed_time,
+                               testrun=dbtestrun,
+                               value=report["elapsed_time"])
+        self.db.addMeasurement(series=db_failures,
+                               testrun=dbtestrun,
+                               value=len(report["failures"]))
 
         for key, messages in report['failures'].items():
             for message in messages:
-                self.db.addFailure(testrun = dbtestrun, key = key, message = message)
+                self.db.addFailure(testrun=dbtestrun, key=key, message=message)
 
         for img in report["image_tests"]:
             db_img_test = self.db.getOrAddSeries(dbtest, dbfrac, "image_test_diff." + img["image"])
-            self.db.addMeasurement(series = db_img_test,
-                                   testrun = dbtestrun,
-                                   value = img["difference"])
+            self.db.addMeasurement(series=db_img_test,
+                                   testrun=dbtestrun,
+                                   value=img["difference"])
 
         if os.path.exists(report['outputdir'] + "/stats.json"):
             stats = []
@@ -328,4 +336,4 @@ class App:
             for stat in stats:
                 unit = self.db.getOrAddQuantity(stat["quantity"], stat["unit"])
                 series = self.db.getOrAddSeries(dbtest, unit, stat["name"])
-                self.db.addMeasurement(series = series, testrun = dbtestrun, value = stat["value"])
+                self.db.addMeasurement(series=series, testrun=dbtestrun, value=stat["value"])

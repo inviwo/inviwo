@@ -261,7 +261,10 @@ void NumberLineEdit::timerEvent(QTimerEvent* event) { event->accept(); }
 
 void NumberLineEdit::focusInEvent(QFocusEvent* e) {
     abbreviated_ = false;
-    lineEdit()->setText(textFromValue(value()));
+    {
+        QSignalBlocker block(lineEdit());
+        lineEdit()->setText(textFromValue(value()));
+    }
     QDoubleSpinBox::focusInEvent(e);
 }
 

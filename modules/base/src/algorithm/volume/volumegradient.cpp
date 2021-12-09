@@ -33,15 +33,18 @@
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/volumesampler.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 namespace util {
 
 std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int channel) {
 
-    auto newVolume = std::make_shared<Volume>(volume->getDimensions(), DataVec3Float32::get());
-    newVolume->setModelMatrix(volume->getModelMatrix());
-    newVolume->setWorldMatrix(volume->getWorldMatrix());
+    auto newVolume = std::make_unique<Volume>(*volume, noData);
+    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume->getDimensions());
+    newVolume->addRepresentation(newVolumeRep);
+    newVolume->dataMap_.valueAxis.name = "gradient";
+    newVolume->dataMap_.valueAxis.unit = volume->dataMap_.valueAxis.unit / volume->axes[0].unit;
 
     auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
@@ -57,8 +60,9 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
     const auto worldSpace = VolumeDoubleSampler<3>::Space::World;
 
     util::IndexMapper3D index(volume->getDimensions());
-    auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
+    auto data = newVolumeRep->getDataTyped();
 
+    float max = std::numeric_limits<float>::lowest();
     auto func = [&](const size3_t& pos) {
         const vec3 world{m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)};
 
@@ -73,9 +77,14 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
                                   sampler.sample(world - oz, worldSpace))[channel] /
                                  (2.0 * spacing.z));
         data[index(pos)] = g;
+
+        max = glm::max(max, glm::compMax(glm::abs(g)));
     };
 
     util::forEachVoxelParallel(*volume->getRepresentation<VolumeRAM>(), func);
+
+    newVolume->dataMap_.dataRange = dvec2(-max, max);
+    newVolume->dataMap_.valueRange = dvec2(-max, max);
 
     return newVolume;
 }

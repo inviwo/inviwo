@@ -616,7 +616,7 @@ TIFFHeader getTIFFHeader(const std::string& filename) {
     }
     TIFFSetDirectory(tif, 0);
 
-    uint16 samplesPerPixel = 1, bitsPerSample = 8, sampleFormat = 1;
+    std::uint16_t samplesPerPixel = 1, bitsPerSample = 8, sampleFormat = 1;
     if (!TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample)) {
         bitsPerSample = 8;
     }
@@ -638,13 +638,13 @@ TIFFHeader getTIFFHeader(const std::string& filename) {
     }
     const dvec2 res{xres, yres};
 
-    uint16 resUnit = 2;
+    std::uint16_t resUnit = 2;
     if (!TIFFGetFieldDefaulted(tif, TIFFTAG_RESOLUTIONUNIT, &resUnit)) {
         resUnit = 2;
     }
     const TIFFResolutionUnit resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
 
-    uint32 x = 0, y = 0, z = 0;
+    std::uint32_t x = 0, y = 0, z = 0;
     TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGEWIDTH, &x);
     TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGELENGTH, &y);
     // count the images

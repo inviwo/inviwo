@@ -54,7 +54,7 @@ BaseOrdinalEditorWidget::BaseOrdinalEditorWidget(bool intMode)
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
     setLayout(hLayout);
-    connect(editor_, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+    connect(editor_, static_cast<void (QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
             this, &BaseOrdinalEditorWidget::updateFromEditor);
 }
 

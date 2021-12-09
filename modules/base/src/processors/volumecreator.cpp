@@ -30,6 +30,7 @@
 #include <modules/base/processors/volumecreator.h>
 #include <modules/base/algorithm/volume/volumegeneration.h>
 #include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -90,19 +91,34 @@ VolumeCreator::VolumeCreator()
               }(),
               1}
     , dimensions_("dimensions", "Dimensions", size3_t(10), size3_t(0), size3_t(512))
-    , index_("index", "Index", 5, 0, 255) {
+    , index_("index", "Index", 5, 0, 255)
+    , information_("Information", "Data information")
+    , basis_("Basis", "Basis and offset") {
 
     addPort(outport_);
-    addProperty(type_);
-    addProperty(format_);
-    addProperty(dimensions_);
-    addProperty(index_);
+    addProperties(type_, format_, dimensions_, index_, information_, basis_);
 }
 
 void VolumeCreator::process() {
-    auto volume = dispatching::dispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
-        format_.get(), Creator{}, type_.get(), dimensions_.get(), index_.get());
+    if (util::any_of(util::ref<Property>(format_, type_, dimensions_, index_),
+                     &Property::isModified)) {
+        loadedData_ = dispatching::dispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
+            format_.get(), Creator{}, type_.get(), dimensions_.get(), index_.get());
+
+        basis_.updateForNewEntity(*loadedData_, deserialized_);
+        information_.updateForNewVolume(
+            *loadedData_, deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes);
+    }
+
+    auto volume = std::make_shared<Volume>(*loadedData_);
+    basis_.updateEntity(*volume);
+    information_.updateVolume(*volume);
     outport_.setData(volume);
+}
+
+void VolumeCreator::deserialize(Deserializer& d) {
+    Processor::deserialize(d);
+    deserialized_ = true;
 }
 
 }  // namespace inviwo

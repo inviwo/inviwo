@@ -147,7 +147,9 @@ ParallelCoordinates::ParallelCoordinates()
 
     , linePicking_(this, 1, [&](PickingEvent* p) { linePicked(p); })
     , axisPicking_(this, 1,
-                   [&](PickingEvent* p) { axisPicked(p, p->getPickedId(), PickType::Axis); })
+                   [&](PickingEvent* p) {
+                       axisPicked(p, static_cast<std::uint32_t>(p->getPickedId()), PickType::Axis);
+                   })
     , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", Shader::Build::No)
     , lines_{}
     , marginsInternal_(0.0f, 0.0f)

@@ -182,6 +182,13 @@ protected:
     mutable std::shared_ptr<Repr> lastValidRepresentation_;
 };
 
+/*
+ * Tag type for constructors indicating that you want a copy of only "meta" data not the actual
+ * data.
+ */
+struct NoData {};
+constexpr NoData noData{};
+
 template <typename Self, typename Repr>
 Data<Self, Repr>::Data(const Data<Self, Repr>& rhs) : lastValidRepresentation_{nullptr} {
     rhs.copyRepresentationsTo(this);

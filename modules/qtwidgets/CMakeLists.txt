@@ -74,6 +74,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/properties/propertysettingswidgetqt.h
     include/modules/qtwidgets/properties/propertywidgetqt.h
     include/modules/qtwidgets/properties/stringpropertywidgetqt.h
+    include/modules/qtwidgets/properties/stringspropertywidgetqt.h
     include/modules/qtwidgets/properties/texteditorwidgetqt.h
     include/modules/qtwidgets/properties/tfprimitivesetwidgetqt.h
     include/modules/qtwidgets/properties/tfpropertywidgetqt.h
@@ -110,10 +111,10 @@ set(SOURCE_FILES
     src/inviwoqtutils.cpp
     src/inviwowidgetsqt.cpp
     src/keyboardutils.cpp
-    src/mousecursorutils.cpp
     src/labelgraphicsitem.cpp
     src/lightpositionwidgetqt.cpp
     src/lineeditqt.cpp
+    src/mousecursorutils.cpp
     src/numberlineedit.cpp
     src/ordinalbasewidget.cpp
     src/ordinaleditorwidget.cpp
@@ -148,6 +149,7 @@ set(SOURCE_FILES
     src/properties/propertywidgetqt.cpp
     src/properties/stringmultilinepropertywidgetqt.cpp
     src/properties/stringpropertywidgetqt.cpp
+    src/properties/stringspropertywidgetqt.cpp
     src/properties/texteditorwidgetqt.cpp
     src/properties/tfprimitivesetwidgetqt.cpp
     src/properties/tfpropertywidgetqt.cpp

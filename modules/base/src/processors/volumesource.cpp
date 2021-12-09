@@ -143,7 +143,8 @@ void VolumeSource::load(bool deserialize) {
         }
 
         basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
-        information_.updateForNewVolume(*(*volumes_)[0], deserialize);
+        information_.updateForNewVolume(
+            *(*volumes_)[0], deserialize ? util::OverwriteState::No : util::OverwriteState::Yes);
 
         volumeSequence_.updateMax(volumes_->size());
         volumeSequence_.setVisible(volumes_->size() > 1);

@@ -61,14 +61,14 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    CameraProperty(const std::string& identifier, const std::string& displayName,
+    CameraProperty(std::string_view identifier, std::string_view displayName,
                    std::function<std::optional<mat4>()> getBoundingBox,
                    vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
                    vec3 lookUp = vec3(0.0f, 1.0f, 0.0f),
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-    CameraProperty(const std::string& identifier, const std::string& displayName,
+    CameraProperty(std::string_view identifier, std::string_view displayName,
                    vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
                    vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), Inport* inport = nullptr,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

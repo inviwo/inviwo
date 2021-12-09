@@ -6,6 +6,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/linearmap.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/permutations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
@@ -85,6 +87,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitive.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitiveset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/transferfunction.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/unitsystem.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volume.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeborder.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumedisk.h
@@ -257,6 +260,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/raycastingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simplelightingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simpleraycastingproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/stringproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/stringsproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/templateproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
@@ -339,6 +344,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/linksettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/settings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/systemsettings.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/unitsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/sharedlibrary.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/shuntingyard.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singlefileobserver.h
@@ -377,6 +383,8 @@ set(SOURCE_FILES
     algorithm/boundingbox.cpp
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
+    algorithm/linearmap.cpp
+    algorithm/permutations.cpp
     common/inviwoapplication.cpp
     common/inviwoapplicationutil.cpp
     common/inviwocore.cpp
@@ -436,6 +444,7 @@ set(SOURCE_FILES
     datastructures/tfprimitive.cpp
     datastructures/tfprimitiveset.cpp
     datastructures/transferfunction.cpp
+    datastructures/unitsystem.cpp
     datastructures/volume/volume.cpp
     datastructures/volume/volumeborder.cpp
     datastructures/volume/volumedisk.cpp
@@ -583,6 +592,7 @@ set(SOURCE_FILES
     properties/simplelightingproperty.cpp
     properties/simpleraycastingproperty.cpp
     properties/stringproperty.cpp
+    properties/stringsproperty.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
     rendering/datavisualizer.cpp
@@ -644,6 +654,7 @@ set(SOURCE_FILES
     util/settings/linksettings.cpp
     util/settings/settings.cpp
     util/settings/systemsettings.cpp
+    util/settings/unitsettings.cpp
     util/sharedlibrary.cpp
     util/shuntingyard.cpp
     util/singlefileobserver.cpp
@@ -703,6 +714,7 @@ set(TEST_FILES
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp
     tests/unittests/ordinalproperty-test.cpp
+    tests/unittests/permutations-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/pickingcontroller-test.cpp
     tests/unittests/port-tests.cpp
@@ -714,6 +726,7 @@ set(TEST_FILES
     tests/unittests/stringconversion-test.cpp
     tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp
+    tests/unittests/unitsystem-test.cpp
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/zip-test.cpp
@@ -767,6 +780,7 @@ find_package(fmt REQUIRED)
 find_package(glm REQUIRED)
 find_package(tclap REQUIRED)
 find_package(roaring REQUIRED)
+find_package(units REQUIRED)
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
 endif()
@@ -797,6 +811,7 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         inviwo::tinydir
+        units::units
     PRIVATE
         roaring::roaring
 )

@@ -36,6 +36,8 @@
 #include <inviwo/core/io/rawvolumeramloader.h>
 #include <inviwo/core/metadata/metadataowner.h>
 
+#include <units/units.hpp>
+
 namespace inviwo {
 
 RawVolumeReader::RawVolumeReader()
@@ -123,8 +125,12 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
                 "rawReaderData.dataMapper.dataRange", datamap.dataRange);
             datamap.valueRange = metadata->getMetaData<DoubleVec2MetaData>(
                 "rawReaderData.dataMapper.valueRange", datamap.valueRange);
-            datamap.valueUnit = metadata->getMetaData<StringMetaData>(
-                "rawReaderData.dataMapper.valueUnit", datamap.valueUnit);
+
+            auto unit = units::to_string(datamap.valueAxis.unit);
+            unit = metadata->getMetaData<StringMetaData>("rawReaderData.dataMapper.valueAxis.unit",
+                                                         unit);
+            datamap.valueAxis.unit = units::unit_from_string(unit);
+
             readerDialog->setDataMapper(datamap);
 
             readerDialog->setByteOffset(metadata->getMetaData<SizeMetaData>(
@@ -148,8 +154,9 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
                                                           dataMapper_.dataRange);
                 metadata->setMetaData<DoubleVec2MetaData>("rawReaderData.dataMapper.valueRange",
                                                           dataMapper_.valueRange);
-                metadata->setMetaData<StringMetaData>("rawReaderData.dataMapper.valueUnit",
-                                                      dataMapper_.valueUnit);
+                metadata->setMetaData<StringMetaData>("rawReaderData.dataMapper.valueAxis.unit",
+                                                      units::to_string(dataMapper_.valueAxis.unit));
+
                 metadata->setMetaData<SizeMetaData>("rawReaderData.byteOffset", byteOffset_);
             }
 

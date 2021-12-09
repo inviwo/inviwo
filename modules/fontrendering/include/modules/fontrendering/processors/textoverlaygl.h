@@ -39,7 +39,8 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/listproperty.h>
 
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
@@ -49,12 +50,29 @@ namespace inviwo {
 class Image;
 class ImageGL;
 
+class IVW_MODULE_FONTRENDERING_API TextOverlayProperty : public CompositeProperty {
+public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    TextOverlayProperty(std::string_view identifier, std::string_view displayName,
+                        InvalidationLevel = InvalidationLevel::InvalidResources,
+                        PropertySemantics semantics = PropertySemantics::Default);
+    TextOverlayProperty(const TextOverlayProperty& rhs);
+    virtual TextOverlayProperty* clone() const override;
+
+    StringProperty text;
+    FloatVec2Property position;
+    IntVec2Property offset;
+};
+
 /** \docpage{org.inviwo.TextOverlayGL, Text Overlay}
  * ![](org.inviwo.TextOverlayGL.png?classIdentifier=org.inviwo.TextOverlayGL)
  *
- * Overlay text onto an image. The text can contain up to 99 place markers indicated by %1 to %99.
- * These markers will be replaced with the contents of the corresponding arg properties. A place
- * marker can occur multiple times and all occurences will be replaced with the same text.
+ * Overlay text onto an image. The text can contain place markers indicated by '{}'.
+ * These markers will be replaced with the contents of the corresponding \p Arguments properties.
+ * The placemarkers uses standard fmt syntax and can either be numbered {0}, {1}, or
+ * named {arg0} {arg1}.
  *
  * ### Inports
  *   * __Inport__ Input image (optional)
@@ -63,14 +81,19 @@ class ImageGL;
  *   * __Outport__ Output image with overlayed text
  *
  * ### Properties
- *   * __Text__ Text to overlay. This text can contain place markers %1 to %99, which will be
- *              replaced with the optional argument properties
- *   * __Argument Properties__ texts used instead of place markers (optional, created with the "Add
- * Argument String" button)
- *   * __Font size__ Text size
- *   * __Position__ Where to put the text, relative position from 0 to 1
- *   * __Anchor__ What point of the text to put at "Position". relative from -1,1. 0 meas the image
- *     is centered on "Position".
+ *   * __Texts__ List of text items to overlay.
+ *      * __Text__  The text with possible formatting
+ *      * __Position__ Where to put the text, relative position from 0 to 1
+ *      * __Offset__ Pixel offset for the text
+ *   * __Arguments__ List of String, Int and Double Properties to get inserter at the markers
+ *     indicated in the text strings
+ *   * __Font__ Text font options
+ *      * __Font Face__ Font face
+ *      * __Font Size__ Size
+ *      * __Line Spacing__ Line spacing ot the text
+ *      * __Anchor__ What point of the text to put at "Position". Relative from -1,1. 0 means the
+ *        text is centered on "Position".
+ *      * __Color__ Foreground color of the text
  */
 
 class IVW_MODULE_FONTRENDERING_API TextOverlayGL : public Processor {
@@ -81,19 +104,8 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void deserialize(Deserializer& d) override;
-
 protected:
     virtual void process() override;
-
-    /**
-     * \brief returns the output string with place markers replaced by the corresponding strings of
-     * the optional properties
-     *
-     * @return std::string output string with replaced place markers
-     */
-    std::string getString() const;
-
     void updateCache();
 
 private:
@@ -101,22 +113,15 @@ private:
     ImageOutport outport_;
 
     BoolProperty enable_;
-    StringProperty text_;
+    ListProperty texts_;
+
     FloatVec4Property color_;
     FontProperty font_;
-    FloatVec2Property position_;
-    IntVec2Property offset_;
 
-    ButtonProperty
-        addArgButton_;  //!< this button will add string properties to be used with place markers
+    ListProperty args_;
 
     TextRenderer textRenderer_;
-    std::size_t numArgs_;  //!< number of optional place marker properties
-
-    const std::size_t maxNumArgs_ = 99;
-
-    TextTextureObject textObject_;
-
+    std::vector<TextTextureObject> textObjects_;
     TextureQuadRenderer textureRenderer_;
 };
 

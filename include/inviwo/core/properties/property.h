@@ -133,7 +133,7 @@ class IVW_CORE_API Property : public PropertyObservable,
 public:
     virtual std::string getClassIdentifier() const = 0;
 
-    Property(const std::string& identifier = "", const std::string& displayName = "",
+    Property(std::string_view identifier = "", std::string_view displayName = "",
              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
              PropertySemantics semantics = PropertySemantics::Default);
 
@@ -433,6 +433,26 @@ private:
 
     std::vector<std::pair<std::string, std::string>> autoLinkTo_;
 };
+
+namespace util {
+
+enum class OverwriteState { Yes, No };
+
+/**
+ * Update the default state of \p property to \p state and set the current state to \p state if \p
+ * property is in the default state or \p overwrite is OverwriteState::Yes
+ */
+template <typename T, typename U>
+void updateDefaultState(T& property, const U& state, OverwriteState overwrite) {
+    if (property.isDefaultState() || overwrite == OverwriteState::Yes) {
+        property.setDefault(state);
+        property.set(state);
+    } else {
+        property.setDefault(state);
+    }
+}
+
+}  // namespace util
 
 template <typename T, typename U>
 void Property::setStateAsDefault(T& property, const U& state) {

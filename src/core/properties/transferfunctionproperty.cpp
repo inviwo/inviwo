@@ -68,7 +68,7 @@ void TFPropertyObservable::notifyHistogramSelectionChange(HistogramSelection sel
 }
 
 TransferFunctionProperty::TransferFunctionProperty(
-    const std::string& identifier, const std::string& displayName, const TransferFunction& value,
+    std::string_view identifier, std::string_view displayName, const TransferFunction& value,
     VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics)
     , tf_{"TransferFunction", value}
@@ -81,8 +81,8 @@ TransferFunctionProperty::TransferFunctionProperty(
     tf_.value.addObserver(this);
 }
 
-TransferFunctionProperty::TransferFunctionProperty(const std::string& identifier,
-                                                   const std::string& displayName,
+TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
+                                                   std::string_view displayName,
                                                    VolumeInport* volumeInport,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
@@ -158,6 +158,11 @@ TransferFunctionProperty& TransferFunctionProperty::setCurrentStateAsDefault() {
     zoomV_.setAsDefault();
     histogramMode_.setAsDefault();
     histogramSelection_.setAsDefault();
+    return *this;
+}
+
+TransferFunctionProperty& TransferFunctionProperty::setDefault(const TransferFunction& tf) {
+    tf_.defaultValue = tf;
     return *this;
 }
 
@@ -242,10 +247,11 @@ TransferFunctionProperty& TransferFunctionProperty::setZoomV(double zoomVMin, do
     return *this;
 }
 
-void TransferFunctionProperty::set(const TransferFunction& value) {
+TransferFunctionProperty& TransferFunctionProperty::set(const TransferFunction& value) {
     tf_.value.removeObserver(this);
     if (tf_.update(value)) propertyModified();
     tf_.value.addObserver(this);
+    return *this;
 }
 
 const TransferFunction& TransferFunctionProperty::operator*() const { return tf_.value; }
