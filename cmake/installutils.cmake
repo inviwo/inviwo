@@ -248,9 +248,14 @@ macro(ivw_qt_add_to_install ivw_comp)
                     # Plugins are not stored in QtYXXX_PLUGINS anymore.
                     # The QT_PLUGINS property could have been used, but it is
                     # only set for non-imported targets (static builds, see qt_internal_add_plugin).
-                    
-                    # This workaround instead finds the plugin types registered with the Qt module
-                    # and installs all plugins of those types.
+                    # See https://github.com/qt/qtbase/blob/9db7cc79a26ced4997277b5c206ca15949133240/cmake/QtProperties.cmake
+                    # Also tried to use QT_KNOWN_PLUGINS, but it was empty.
+                    # In case the plugins could have beem retrieved, it would have been
+                    # possible to use the QT_MODULE plugin target property 
+                    # to find out which Qt module it is associated with...
+
+                    # The workaround below instead finds the plugin types registered 
+                    # with the Qt module and installs all plugins of those types.
                     # The workaround may thus copy redundant plugins.
 
                     # Extract XXX from QtYXXX
@@ -259,6 +264,12 @@ macro(ivw_qt_add_to_install ivw_comp)
                     get_target_property(target_type Qt${QT_VERSION_MAJOR}::${qt_module} TYPE)
 
                     if(NOT target_type STREQUAL "INTERFACE_LIBRARY")
+                        # MODULE_PLUGIN_TYPES are for example "accessiblebridge;platforms;imageformats;"
+                        # The plugin types are often named according to the folder in which 
+                        # the libraries are stored. So, we install all files in those folders.
+                        #
+                        # It is set in qt_internal_add_module
+                        # https://github.com/qt/qtbase/blob/7e11ddc930f51dcfee031b92fb944bd1d4511d81/cmake/QtModuleHelpers.cmake
                         get_target_property(plugin_types
                                             Qt${QT_VERSION_MAJOR}::${qt_module} MODULE_PLUGIN_TYPES)
                         if(plugin_types)
