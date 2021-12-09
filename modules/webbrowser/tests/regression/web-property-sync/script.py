@@ -18,7 +18,7 @@ while isLoading.value:
                      f" time: {time.perf_counter() - start}")
 
 # Trigger an extra network evaluation to try and make sure the web suff is done
-VolumeCreator.invalidate(inviwopy.properties.InvalidationLevel.InvalidOutput)
+network.Webbrowser.invalidate(inviwopy.properties.InvalidationLevel.InvalidOutput)
 
 canvas = network.Canvas
 ivw.regression.saveCanvas(canvas, "Canvas")

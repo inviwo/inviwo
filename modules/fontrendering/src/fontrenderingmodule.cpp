@@ -45,7 +45,7 @@ FontRenderingModule::FontRenderingModule(InviwoApplication* app)
     registerProperty<FontProperty>();
 }
 
-int FontRenderingModule::getVersion() const { return 3; }
+int FontRenderingModule::getVersion() const { return 4; }
 
 std::unique_ptr<VersionConverter> FontRenderingModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -114,12 +114,47 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
                 {{xml::Kind::propertyLinkDestination("org.inviwo.OptionPropertyInt", "fontSize")}},
                 "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
 
+            [[fallthrough]];
+        }
+        case 3: {
+            // TextOverlayGL restructure
+            xml::visitMatchingNodesRecursive(
+                root, xml::ElementMatcher{"Processor", {{"type", "org.inviwo.TextOverlayGL"}}},
+                [&](TxElement* node) {
+                    // Move color into font properties
+                    if (auto color =
+                            xml::getElement(node, "Properties/Property&identifier=color")) {
+                        auto fontProps =
+                            xml::getElement(node, "Properties/Property&identifier=font/Properties");
+                        fontProps->InsertEndChild(*color);
+                    }
+
+                    // Move only text/pos/offset into new ListProperty
+                    auto props = xml::getElement(node, "Properties");
+                    auto texts = xml::createNode(
+                        "Property&type=org.inviwo.ListProperty&identifier=texts", props);
+                    xml::createNode("OwnedPropertyIdentifiers/PropertyIdentifier&content=text0",
+                                    texts);
+
+                    auto textsProps = xml::createNode("Properties", texts);
+                    auto overlayProps = xml::createNode(
+                        "Property&type=org.inviwo.TextOverlayProperty&identifier=text0/Properties",
+                        textsProps);
+                    for (auto&& i : {"text", "position", "offset"}) {
+                        if (auto p = xml::getElement(
+                                node, fmt::format("Properties/Property&identifier={}", i))) {
+                            overlayProps->InsertEndChild(*p);
+                        }
+                    }
+                    res |= true;
+                });
+
             return res;
         }
         default:
             return false;  // No changes
     }
     return true;
-}
+}  // namespace inviwo
 
 }  // namespace inviwo

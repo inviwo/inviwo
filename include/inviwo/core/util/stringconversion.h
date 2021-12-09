@@ -163,6 +163,7 @@ IVW_CORE_API std::string fromWstring(std::wstring_view str);
  */
 template <typename Func>
 constexpr void forEachStringPart(std::string_view str, std::string_view sep, Func&& func) {
+    if (str.empty()) return;
     for (size_t first = 0; first < str.size();) {
         const auto second = str.find(sep, first);
         std::invoke(func, str.substr(first, second - first));

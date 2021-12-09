@@ -389,4 +389,29 @@ xml::IdentifierReplacement& xml::IdentifierReplacement::operator=(IdentifierRepl
     return *this;
 }
 
+TxElement* xml::createNode(std::string_view desc, TxElement* parent) {
+    util::forEachStringPart(desc, "/", [&](std::string_view part) {
+        const auto [name, attrs] = util::splitByFirst(part, "&");
+        auto node = new TxElement(std::string(name));
+        util::forEachStringPart(attrs, "&", [node](std::string_view attr) {
+            const auto [key, value] = util::splitByFirst(attr, "=");
+            node->SetAttribute(std::string(key), std::string(value));
+        });
+        if (parent) {
+            parent->LinkEndChild(node);
+        }
+        parent = node;
+    });
+    return parent;
+}
+
+void xml::logNode(TxElement* node) {
+    std::stringstream ss;
+    TiXmlPrinter printer;
+    printer.SetIndent("    ");
+    node->Accept(&printer);
+    ss << printer.Str();
+    LogInfoCustom("xml", ss.str());
+}
+
 }  // namespace inviwo
