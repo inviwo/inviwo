@@ -15,7 +15,7 @@
     <Axis1Name content="x" />
     <Axis2Name content="y" />
     <Axis3Name content="z" />
-    <Axis1Unit content="Å" />
-    <Axis2Unit content="Å" />
-    <Axis3Unit content="Å" />
+    <Axis1Unit content="Angstrom" />
+    <Axis2Unit content="Angstrom" />
+    <Axis3Unit content="Angstrom" />
 </InviwoWorkspace>
