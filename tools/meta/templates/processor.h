@@ -53,7 +53,7 @@ namespace inviwo {
 class {{ module/api }} {{ file/name }} : public Processor {
 public:
     {{ file/name }}();
-    virtual ~{{ file/name }}() = default;
+    virtual ~{{ file/name }}() override = default;
 
     virtual void process() override;
 
