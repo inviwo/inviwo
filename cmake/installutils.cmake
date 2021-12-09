@@ -214,11 +214,11 @@ function(ivw_private_install_module_dirs)
     )
 endfunction()
 
-
 # Adds special qt dependency and includes package variables to the project
 macro(ivw_qt_add_to_install ivw_comp)
     foreach(qtarget ${ARGN})
         find_package(${qtarget} QUIET REQUIRED)
+        
         if(${qtarget}_FOUND)
             if(WIN32)
                 set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
@@ -230,23 +230,50 @@ macro(ivw_qt_add_to_install ivw_comp)
                         DESTINATION bin 
                         COMPONENT Application 
                         CONFIGURATIONS Release RelWithDebInfo)
-                foreach(plugin IN LISTS ${qtarget}_PLUGINS)
-                    get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} PATH)
-                    get_filename_component(_dirname ${_path} NAME)
-                    install(FILES ${_loc} 
-                            DESTINATION bin/${_dirname} 
-                            COMPONENT Application)
-                endforeach()
+                set(dest_dir "bin")
             elseif(APPLE)
-                foreach(plugin IN LISTS ${qtarget}_PLUGINS)
-                    get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} PATH)
-                    get_filename_component(_dirname ${_path} NAME)
-                    install(FILES ${_loc} 
-                            DESTINATION ${IVW_APP_INSTALL_NAME}.app/Contents/plugins/${_dirname} 
-                            COMPONENT Application)
-                endforeach()
+                set(dest_dir "${IVW_APP_INSTALL_NAME}.app/Contents/plugins")
+            endif()
+            if (dest_dir)
+                if (${QT_DEFAULT_MAJOR_VERSION} VERSION_LESS 6)
+                    foreach(plugin IN LISTS ${${qtarget}_PLUGINS})
+                        get_target_property(_loc ${plugin} LOCATION)
+                        get_filename_component(_path ${_loc} PATH)
+                        get_filename_component(_dirname ${_path} NAME)
+                        install(FILES ${_loc} 
+                                DESTINATION "${dest_dir}/${_dirname}"
+                                COMPONENT Application)
+                    endforeach()
+                else()
+                    # Plugins are not stored in QtYXXX_PLUGINS anymore.
+                    # The QT_PLUGINS property could have been used, but it is
+                    # only set for non-imported targets (static builds, see qt_internal_add_plugin).
+                    
+                    # This workaround instead finds the plugin types registered with the Qt module
+                    # and installs all plugins of those types.
+                    # The workaround may thus copy redundant plugins.
+
+                    # Extract XXX from QtYXXX
+                    string(REGEX REPLACE "Qt${QT_VERSION_MAJOR}(.+)" "\\1" 
+                                         qt_module "${qtarget}")
+                    get_target_property(target_type Qt${QT_VERSION_MAJOR}::${qt_module} TYPE)
+
+                    if(NOT target_type STREQUAL "INTERFACE_LIBRARY")
+                        get_target_property(plugin_types
+                                            Qt${QT_VERSION_MAJOR}::${qt_module} MODULE_PLUGIN_TYPES)
+                        if(plugin_types)
+                            foreach(plugin_type IN ITEMS ${plugin_types})
+                                set(plugins_dir "${QT_DIR}/../../../plugins/${plugin_type}")
+                                IF(IS_DIRECTORY ${plugins_dir})
+                                    install(DIRECTORY ${plugins_dir}
+                                        DESTINATION ${dest_dir}
+                                        COMPONENT Application)
+                                endif()
+                            endforeach()
+                            
+                        endif()
+                    endif()
+                endif()              
             endif()
         endif()
     endforeach()
