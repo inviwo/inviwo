@@ -10,4 +10,12 @@
     </BasisAndOffset>
     <Dimension x="150" y="150" z="150" />
     <DataRange x="0" y="65535" />
+    <ValueRange x="0.0" y="0.000098763573" />
+    <ValueName content="Charge Density" />
+    <Axis1Name content="x" />
+    <Axis2Name content="y" />
+    <Axis3Name content="z" />
+    <Axis1Unit content="Å" />
+    <Axis2Unit content="Å" />
+    <Axis3Unit content="Å" />
 </InviwoWorkspace>

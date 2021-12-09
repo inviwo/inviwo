@@ -128,7 +128,7 @@ Document StringsProperty<N>::getDescription() const {
     auto b = doc.get({P("html"), P("body")});
 
     utildoc::TableBuilder tb(b, P::end(), {{"String", "Value"}});
-    for (auto& prop : strings) {
+    for (const auto& prop : strings) {
         tb(prop.getIdentifier(), prop.get());
     }
 
