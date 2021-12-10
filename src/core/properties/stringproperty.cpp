@@ -59,6 +59,11 @@ StringProperty& StringProperty::set(std::string_view value) {
 
 StringProperty& StringProperty::set(const char* value) { return set(std::string_view{value}); }
 
+StringProperty& StringProperty::setDefault(std::string_view value) {
+    value_.defaultValue = value;
+    return *this;
+}
+
 StringProperty::operator std::string_view() const { return value_.value; }
 
 Document StringProperty::getDescription() const {

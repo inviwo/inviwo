@@ -267,16 +267,20 @@ std::string parseTypeIdName(std::string str) {
     return removeFromString(removeFromString(str, '*'), ' ');
 }
 
-std::string toUpper(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(),
+std::string toUpper(std::string_view str) {
+    std::string res;
+    res.reserve(str.size());
+    std::transform(str.begin(), str.end(), std::back_inserter(res),
                    [](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
-    return str;
+    return res;
 }
 
-std::string toLower(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(),
+std::string toLower(std::string_view str) {
+    std::string res;
+    res.reserve(str.size());
+    std::transform(str.begin(), str.end(), std::back_inserter(res),
                    [](unsigned char c) { return static_cast<unsigned char>(std::tolower(c)); });
-    return str;
+    return res;
 }
 
 size_t countLines(std::string_view str) { return std::count(str.begin(), str.end(), '\n') + 1; }
