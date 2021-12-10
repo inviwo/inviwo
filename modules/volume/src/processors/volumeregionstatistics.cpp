@@ -61,48 +61,59 @@ VolumeRegionStatistics::VolumeRegionStatistics()
     addPorts(volume_, atlas_, dataFrame_);
 }
 
-template <typename T>
 auto addColumns(DataFrame& df, std::string_view name, size_t size, Unit unit,
                 std::optional<dvec2> range) {
-    auto* data = &df.addColumn<T>(name, size, unit, range)
+    auto* data = &df.addColumn<double>(name, size, unit, range)
                       ->getTypedBuffer()
                       ->getEditableRAMRepresentation()
                       ->getDataContainer();
     return data;
 }
 
-template <typename T, size_t extent>
-auto addColumns(DataFrame& df, std::string_view name, size_t size,
-                util::span<const Unit, extent> units,
-                util::span<const std::optional<dvec2>, extent> ranges,
-                util::span<const std::string_view, extent> labels) {
-    return util::make_array<extent>([&](auto index) {
-        const auto fullName = fmt::format("{} {}", name, labels[index]);
-        auto* data = &df.addColumn<T>(fullName, size, units[index], ranges[index])
-                          ->getTypedBuffer()
-                          ->getEditableRAMRepresentation()
-                          ->getDataContainer();
-        return data;
-    });
-}
+auto addColumns(DataFrame& df, size_t extent, std::string_view name, size_t size,
+                util::span<const Unit> units, util::span<const std::optional<dvec2>> ranges,
+                util::span<const std::string_view> labels) {
+    IVW_ASSERT(units.size() >= extent, "Size missmatch");
+    IVW_ASSERT(ranges.size() >= extent, "Size missmatch");
+    IVW_ASSERT(labels.size() >= extent, "Size missmatch");
 
-template <typename T, size_t extent, size_t comps>
-auto addColumns(DataFrame& df, std::string_view name, size_t size,
-                util::span<const Unit, comps> units,
-                util::span<const std::optional<dvec2>, comps> ranges,
-                util::span<const std::string_view, extent> majorLabels,
-                util::span<const std::string_view, comps> minorLabels) {
-    return util::make_array<extent>([&](auto index) {
-        return util::make_array<comps>([&](auto comp) {
-            const auto fullName =
-                fmt::format("{} {} {}", name, majorLabels[index], minorLabels[comp]);
-            auto* data = &df.addColumn<T>(fullName, size, units[comp], ranges[comp])
+    return util::table(
+        [&](auto index) {
+            const auto fullName = fmt::format("{} {}", name, labels[index]);
+            auto* data = &df.addColumn<double>(fullName, size, units[index], ranges[index])
                               ->getTypedBuffer()
                               ->getEditableRAMRepresentation()
                               ->getDataContainer();
             return data;
-        });
-    });
+        },
+        0, extent);
+}
+
+auto addColumns(DataFrame& df, size_t extent, size_t comps, std::string_view name, size_t size,
+                util::span<const Unit> units, util::span<const std::optional<dvec2>> ranges,
+                util::span<const std::string_view> majorLabels,
+                util::span<const std::string_view> minorLabels) {
+
+    IVW_ASSERT(units.size() >= comps, "Size missmatch");
+    IVW_ASSERT(ranges.size() >= comps, "Size missmatch");
+    IVW_ASSERT(majorLabels.size() >= extent, "Size missmatch");
+    IVW_ASSERT(minorLabels.size() >= comps, "Size missmatch");
+
+    return util::table(
+        [&](auto index) {
+            return util::table(
+                [&](auto comp) {
+                    const auto fullName =
+                        fmt::format("{} {} {}", name, majorLabels[index], minorLabels[comp]);
+                    auto* data = &df.addColumn<double>(fullName, size, units[comp], ranges[comp])
+                                      ->getTypedBuffer()
+                                      ->getEditableRAMRepresentation()
+                                      ->getDataContainer();
+                    return data;
+                },
+                0, comps);
+        },
+        0, extent);
 }
 
 /**
@@ -229,121 +240,131 @@ double voxelVolume(const dmat4& transform) {
 }
 
 struct StatsFunctor {
+    const size_t nRegions;
+    const size_t channels;
+    std::shared_ptr<DataFrame> df;
+
+    const VolumeRAM* volumeRep;
+    const VolumeRAM* atlasRep;
+    const DataMapper map;
+
+    const dvec3 dim;
+    const mat4 data2world;
+    const mat4 index2world;
+    const mat4 index2data;
+    const double volumeScale;
+
+    std::vector<double>* regionVolumes;
+    std::vector<std::vector<double>*> regionSums;
+    std::vector<std::vector<double>*> regionMean;
+    std::vector<std::vector<double>*> regionMin;
+    std::vector<std::vector<double>*> regionMax;
+    std::vector<std::vector<double>*> regionCenter;
+    std::vector<std::vector<std::vector<double>*>> regionCoM;
+
+    StatsFunctor(const Volume& volume, const Volume& atlas)
+        : nRegions{static_cast<size_t>(atlas.dataMap_.dataRange.y)}
+        , channels{volume.getDataFormat()->getComponents()}
+        , df{std::make_shared<DataFrame>(nRegions)}
+        , volumeRep{volume.getRepresentation<VolumeRAM>()}
+        , atlasRep{atlas.getRepresentation<VolumeRAM>()}
+        , map{volume.dataMap_}
+        , dim{static_cast<dvec3>(volume.getDimensions())}
+        , data2world{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Data,
+                                                                 CoordinateSpace::World)}
+        , index2world{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Index,
+                                                                  CoordinateSpace::World)}
+        , index2data{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Index,
+                                                                 CoordinateSpace::Data)}
+        , volumeScale{voxelVolume(index2world)}
+
+    {
+
+        const auto& axes = volume.axes;
+        const std::array<std::string_view, 3> axesNames = {axes[0].name, axes[1].name,
+                                                           axes[2].name};
+        const std::array<Unit, 3> axesUnits = {axes[0].unit, axes[1].unit, axes[2].unit};
+        static constexpr std::array<const std::string_view, 4> indexLabels = {"0", "1", "2", "3"};
+        const auto channelLabels = util::span<const std::string_view>(indexLabels.data(), channels);
+
+        const auto valueUnits = util::make_array<4>([&](auto) { return map.valueAxis.unit; });
+
+        const auto defaultRanges =
+            util::make_array<4>([&](auto) -> std::optional<dvec2> { return {}; });
+
+        const auto volumeUnit = axes[0].unit * axes[1].unit * axes[2].unit;
+        const auto sumUnits =
+            util::make_array<4>([&](auto) { return volumeUnit * map.valueAxis.unit; });
+
+        const auto posMin = dvec3{data2world * dvec4{0.0, 0.0, 0.0, 1.0}};
+        const auto posMax = dvec3{data2world * dvec4{1.0, 1.0, 1.0, 1.0}};
+        std::array<std::optional<dvec2>, 3> sizeRange = {{dvec2{posMin[0], posMax[0]},
+                                                          dvec2{posMin[1], posMax[1]},
+                                                          dvec2{posMin[2], posMax[2]}}};
+
+        regionVolumes = addColumns(*df, "Volume", nRegions, volumeUnit, {});
+        regionSums =
+            addColumns(*df, channels, "Sum", nRegions, sumUnits, defaultRanges, channelLabels);
+        regionMean =
+            addColumns(*df, channels, "Mean", nRegions, valueUnits, defaultRanges, channelLabels);
+        regionMin =
+            addColumns(*df, channels, "Min", nRegions, valueUnits, defaultRanges, channelLabels);
+        regionMax =
+            addColumns(*df, channels, "Max", nRegions, valueUnits, defaultRanges, channelLabels);
+        regionCenter = addColumns(*df, 3, "Center", nRegions, axesUnits, sizeRange, axesNames);
+        regionCoM = addColumns(*df, channels, 3, "CoM", nRegions, axesUnits, sizeRange,
+                               channelLabels, util::make_span(axesNames));
+    }
+
+    size_t getRegion(size_t index) const {
+        return atlasRep->dispatch<size_t, dispatching::filter::UnsignedIntegerScalars>(
+            [&](auto rep) { return rep->getDataTyped()[index]; });
+    }
+    double getValue(size_t index, size_t channel) const {
+        return volumeRep->dispatch<double, dispatching::filter::All>(
+            [&](auto rep) { return util::glmcomp(rep->getDataTyped()[index], channel); });
+    }
+
     template <Wrapping wrapX, Wrapping wrapY, Wrapping wrapZ>
-    std::shared_ptr<DataFrame> operator()(const Volume& volume, const Volume& atlas) const {
-        const auto nRegions = static_cast<size_t>(atlas.dataMap_.dataRange.y);
+    std::shared_ptr<DataFrame> operator()() const {
+        using TStats = Stats<double, wrapX, wrapY, wrapZ>;
+        std::vector<TStats> stats(nRegions * channels, TStats{dvec3{1.0}});
 
-        auto df = std::make_shared<DataFrame>(nRegions);
+        const util::IndexMapper2D regionMapper(size2_t{nRegions, channels});
 
-        volume.getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::All>(
-            [&](auto vr) {
-                using PrecisionType = util::PrecisionValueType<decltype(vr)>;
-                using T = util::value_type_t<PrecisionType>;
-                constexpr auto channels = util::extent_v<PrecisionType>;
+        const util::IndexMapper3D indexMapper(dim);
+        util::forEachVoxel(*volumeRep, [&](const size3_t& pos) {
+            const auto p = indexMapper(pos);
+            for (size_t c = 0; c < channels; ++c) {
+                const auto region = regionMapper(getRegion(p) - 1, c);
+                const auto value = getValue(p, c);
+                const auto dpos = dvec3{index2data * dvec4{pos, 1.0}};
+                stats[region].add(dpos, value);
+            }
+        });
 
-                const auto src = vr->getDataTyped();
+        for (auto&& [i, stat] : util::enumerate(stats)) {
+            const auto [region, c] = regionMapper(i);
 
-                const util::IndexMapper2D regionMapper(size2_t{nRegions, channels});
+            (*regionVolumes)[region] = volumeScale * stat.getVolume();
+            (*regionSums[c])[region] = map.mapFromDataToValue(stat.getMass());
+            (*regionMean[c])[region] = map.mapFromDataToValue(stat.getMean());
+            (*regionMin[c])[region] = map.mapFromDataToValue(stat.getMin());
+            (*regionMax[c])[region] = map.mapFromDataToValue(stat.getMax());
 
-                const auto dim = static_cast<dvec3>(volume.getDimensions());
-                const auto index2world = volume.getCoordinateTransformer().getMatrix(
-                    CoordinateSpace::Index, CoordinateSpace::World);
-                const auto volumeScale = voxelVolume(index2world);
-                const auto& map = volume.dataMap_;
-                const auto& axes = volume.axes;
-                
-                const auto index2data = volume.getCoordinateTransformer().getMatrix(
-                    CoordinateSpace::Index, CoordinateSpace::Data);
-
-                using TStats = Stats<T, wrapX, wrapY, wrapZ>;
-                std::vector<TStats> stats(nRegions * channels, TStats{dvec3{1.0}});
-
-                atlas.getRepresentation<VolumeRAM>()
-                    ->dispatch<void, dispatching::filter::UnsignedIntegerScalars>(
-                        [&](auto atlasrep) {
-                            const auto regionData = atlasrep->getDataTyped();
-                            const util::IndexMapper3D indexMapper(dim);
-                            util::forEachVoxel(*vr, [&](const size3_t& pos) {
-                                const auto p = indexMapper(pos);
-                                for (size_t c = 0; c < channels; ++c) {
-                                    const auto region = regionMapper(regionData[p] - 1, c);
-                                    const auto value = util::glmcomp(src[p], c);
-                                    
-                                    const auto dpos = dvec3{index2data * dvec4{pos, 1.0}};
-                                    
-                                    stats[region].add(dpos, value);
-                                }
-                            });
-                        });
-
-                const std::array<std::string_view, 3> axesNames = {axes[0].name, axes[1].name,
-                                                                   axes[2].name};
-                const std::array<Unit, 3> axesUnits = {axes[0].unit, axes[1].unit, axes[2].unit};
-                static constexpr std::array<const std::string_view, 4> indexLabels = {"0", "1", "2",
-                                                                                      "3"};
-
-                const auto channelLabels =
-                    util::span<const std::string_view, channels>(indexLabels.data(), channels);
-
-                const auto valueUnits =
-                    util::make_array<channels>([&](auto) { return map.valueAxis.unit; });
-
-                const auto defaultRanges =
-                    util::make_array<channels>([&](auto) -> std::optional<dvec2> { return {}; });
-
-                const auto volumeUnit = axes[0].unit * axes[1].unit * axes[2].unit;
-                const auto sumUnits = util::make_array<channels>(
-                    [&](auto) { return volumeUnit * map.valueAxis.unit; });
-
-                const auto data2world = volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Data,
-                                                                             CoordinateSpace::World);
-
-                const auto posMin = dvec3{data2world * dvec4{0.0, 0.0, 0.0, 1.0}};
-                const auto posMax = dvec3{data2world * dvec4{1.0, 1.0, 1.0, 1.0}};
-
-                std::array<std::optional<dvec2>, 3> sizeRange = {{dvec2{posMin[0], posMax[0]},
-                                                                  dvec2{posMin[1], posMax[1]},
-                                                                  dvec2{posMin[2], posMax[2]}}};
-
-                auto regionVolumes = addColumns<double>(*df, "Volume", nRegions, volumeUnit, {});
-                auto regionSums = addColumns<double, channels>(*df, "Sum", nRegions, sumUnits,
-                                                               defaultRanges, channelLabels);
-                auto regionMean = addColumns<double, channels>(*df, "Mean", nRegions, valueUnits,
-                                                               defaultRanges, channelLabels);
-                auto regionMin = addColumns<double, channels>(*df, "Min", nRegions, valueUnits,
-                                                              defaultRanges, channelLabels);
-                auto regionMax = addColumns<double, channels>(*df, "Max", nRegions, valueUnits,
-                                                              defaultRanges, channelLabels);
-                auto regionCenter =
-                    addColumns<double, 3>(*df, "Center", nRegions, axesUnits, sizeRange, axesNames);
-                auto regionCoM = addColumns<double, channels, 3>(
-                    *df, "CoM", nRegions, axesUnits, sizeRange, channelLabels, axesNames);
-
-                for (auto&& [i, stat] : util::enumerate(stats)) {
-                    const auto [region, c] = regionMapper(i);
-
-                    (*regionVolumes)[region] = volumeScale * stat.getVolume();
-                    (*regionSums[c])[region] = map.mapFromDataToValue(stat.getMass());
-                    (*regionMean[c])[region] = map.mapFromDataToValue(stat.getMean());
-                    (*regionMin[c])[region] = map.mapFromDataToValue(stat.getMin());
-                    (*regionMax[c])[region] = map.mapFromDataToValue(stat.getMax());
-                    
-                    const auto center = dvec3{data2world * dvec4{stat.getCenter(), 1.0}};
-                    const auto com = dvec3{data2world * dvec4{stat.getCenterOfMass(), 1.0}};
-
-                    for (int k = 0; k < 3; ++k) {
-                        (*regionCenter[k])[region] = center[k];
-                        (*regionCoM[c][k])[region] = com[k];
-                    }
-                }
-            });
+            const auto center = dvec3{data2world * dvec4{stat.getCenter(), 1.0}};
+            const auto com = dvec3{data2world * dvec4{stat.getCenterOfMass(), 1.0}};
+            for (int k = 0; k < 3; ++k) {
+                (*regionCenter[k])[region] = center[k];
+                (*regionCoM[c][k])[region] = com[k];
+            }
+        }
 
         return df;
     }
 };
 
 void VolumeRegionStatistics::process() {
-
     auto calc = [volume = volume_.getData(), atlas = atlas_.getData()]() {
         if (volume->getDimensions() != atlas->getDimensions()) {
             throw Exception(fmt::format("Unexpected dimension missmatch. Volume: {}, Atlas: {}",
@@ -351,9 +372,8 @@ void VolumeRegionStatistics::process() {
                             IVW_CONTEXT);
         }
 
-        StatsFunctor sf{};
-        return wrappingDispatch<std::shared_ptr<DataFrame>>(sf, volume->getWrapping(), *volume,
-                                                            *atlas);
+        StatsFunctor sf{*volume, *atlas};
+        return wrappingDispatch<std::shared_ptr<DataFrame>>(sf, volume->getWrapping());
     };
 
     dataFrame_.setData(nullptr);
