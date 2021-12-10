@@ -113,8 +113,8 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
     return false;
 }
 
-auto PickingManager::getPickingActionFromIndex(size_t index) -> Result {
-    if (index == 0) return {index, nullptr};
+const PickingAction* PickingManager::getPickingActionFromIndex(size_t index) {
+    if (index == 0) return nullptr;
 
     // This will find the first picking object with an start greater then index.
     auto pIt = std::upper_bound(pickingActions_.begin(), pickingActions_.end(), index,
@@ -125,13 +125,13 @@ auto PickingManager::getPickingActionFromIndex(size_t index) -> Result {
     if (std::distance(pickingActions_.begin(), pIt) > 0) {
         auto po = (*(--pIt)).get();
         if (po->isIndex(index)) {
-            return {index, po};
+            return po;
         }
     }
-    return {index, nullptr};
+    return nullptr;
 }
 
-auto PickingManager::getPickingActionFromColor(const uvec3& c) -> Result {
+const PickingAction* PickingManager::getPickingActionFromColor(const uvec3& c) {
     return getPickingActionFromIndex(colorToIndex(c));
 }
 

@@ -46,16 +46,16 @@ namespace fsm {
 
 // State
 struct FsmState {
-    size_t active_globalId = 0;
+    size_t active_globalId = PickingManager::VoidId;
 };
 
 struct PreviousFsmState {
-    size_t globalId = 0;
+    size_t globalId = PickingManager::VoidId;
     dvec3 ndc{0};
 };
 
 struct PressFsmState {
-    size_t globalId = 0;
+    size_t globalId = PickingManager::VoidId;
     dvec3 ndc{0};
 };
 
@@ -116,8 +116,8 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
     return [state, pressState, hoverState, updatePrev, markAsUsed](
                const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
                PickingManager* pickingManager) {
-        auto res = pickingManager->getPickingActionFromIndex(fsmState.active_globalId);
-        if (res.index == 0 || !res.action) return;
+        auto action = pickingManager->getPickingActionFromIndex(fsmState.active_globalId);
+        if (fsmState.active_globalId == PickingManager::VoidId || !action) return;
 
         auto me = fsmEvent.event;
         const PickingPressItem pressItem =
@@ -126,7 +126,7 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
                  : PickingPressItem::None);
         const PickingPressItems pressedState = mouseButtonsToPressItems(me->buttonState());
 
-        PickingEvent pe(res.action, me, state, pressState, pressItem, hoverState, pressedState,
+        PickingEvent pe(action, me, state, pressState, pressItem, hoverState, pressedState,
                         fsmState.active_globalId, fsmEvent.globalId, press.globalId, prev.globalId,
                         press.ndc, prev.ndc);
         fsmEvent.propagator->propagateEvent(&pe, nullptr);
@@ -164,7 +164,7 @@ struct Fsm {
             pressState.ndc = e.event->ndc();
         };
         const auto rps = [](PressFsmState& pressState) {
-            pressState.globalId = 0;
+            pressState.globalId = PickingManager::VoidId;
             pressState.ndc = dvec3{0};
         };
 

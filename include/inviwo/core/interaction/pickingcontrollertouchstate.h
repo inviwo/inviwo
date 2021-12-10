@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,55 +26,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/interaction/pickingmanager.h>
-#include <inviwo/core/interaction/pickingcontrollermousestate.h>
-#include <inviwo/core/interaction/pickingcontrollertouchstate.h>
 
 #include <memory>
-#include <unordered_map>
 
 namespace inviwo {
 
-class Image;
-class EventPropagator;
-class Event;
-class PickingAction;
-class MouseInteractionEvent;
-class GestureEvent;
+struct PickingControllerTouchStateSM;
 class TouchEvent;
-class WheelEvent;
+class EventPropagator;
+class PickingManager;
 
-/**
- * \class PickingController
- * Handle mapping of interaction events into picking events and propagation of them
- * if the index of the color in the picking buffer of the src image if found by the PickingManager
+/*
+ * \brief Keeps track of when touch events enter/move/exit picking objects.
+ * @see PickingController
  */
-class IVW_CORE_API PickingController {
+class IVW_CORE_API PickingControllerTouchState {
 public:
-    PickingController();
-    ~PickingController();
+    PickingControllerTouchState(PickingManager* pickingManager = nullptr);
+    PickingControllerTouchState(PickingControllerTouchState&&);
+    PickingControllerTouchState(const PickingControllerTouchState&) = delete;
+    PickingControllerTouchState& operator=(const PickingControllerTouchState&) = delete;
+    PickingControllerTouchState& operator=(PickingControllerTouchState&&);
+    virtual ~PickingControllerTouchState();
 
-    void propagateEvent(Event*, EventPropagator*);
-    void setPickingSource(const std::shared_ptr<const Image>& src);
-    bool pickingEnabled() const;
+    void propagateEvent(TouchEvent* e, EventPropagator* propagator, size_t globalId);
 
-private:
-    void propagateEvent(TouchEvent*, EventPropagator*);
-    void propagateEvent(GestureEvent*, EventPropagator*);
-
-    size_t pickId(const uvec2& coord);
-    std::weak_ptr<const Image> src_;
-
-    PickingControllerMouseState mouseState_;
-
-    using TouchPointIdToPickingIdMap = std::unordered_map<int, size_t>;
-    using PickingIdToTochStateMap = std::unordered_map<size_t, PickingControllerTouchState>;
-    PickingIdToTochStateMap touchStates_;
-    TouchPointIdToPickingIdMap touchPointStartPickingId_;  ///< {TouchPointId, PickingId}
+    std::unique_ptr<PickingControllerTouchStateSM> tsm;
 };
 
 }  // namespace inviwo

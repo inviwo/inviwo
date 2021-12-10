@@ -43,12 +43,7 @@ class PickingEvent;
  */
 class IVW_CORE_API PickingManager : public Singleton<PickingManager> {
 public:
-    struct Result {
-        size_t index;
-        const PickingAction* action;
-
-        size_t getLocalPickingId() const { return action->getLocalPickingId(index); };
-    };
+    static const size_t VoidId = 0;  ///< Picking id when nothing is picked
 
     PickingManager();
     PickingManager(PickingManager const&) = delete;
@@ -70,9 +65,14 @@ public:
 
     static uvec3 indexToColor(size_t index);
     static size_t colorToIndex(uvec3 color);
-
-    Result getPickingActionFromColor(const uvec3& color);
-    Result getPickingActionFromIndex(size_t index);
+    /*
+     * Returns PickingAction for corresponding picking color if found, nullptr otherwise.
+     */
+    const PickingAction* getPickingActionFromColor(const uvec3& color);
+    /*
+     * Returns PickingAction for corresponding global picking index if found, nullptr otherwise.
+     */
+    const PickingAction* getPickingActionFromIndex(size_t index);
 
     bool isPickingActionRegistered(const PickingAction* action) const;
 
