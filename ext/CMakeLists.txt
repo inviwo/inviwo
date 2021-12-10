@@ -226,7 +226,12 @@ ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MO
 )
 
 # Sigar
-option(IVW_USE_SIGAR "Use sigar to detect system capabilities" ON)
+if(APPLE)
+    # Disable by default since SIGAR does not compile on newer versions of OSX 
+    option(IVW_USE_SIGAR "Use sigar to detect system capabilities" OFF)
+else()
+    option(IVW_USE_SIGAR "Use sigar to detect system capabilities" ON)
+endif()
 if(IVW_USE_SIGAR)
     add_subdirectory(sigar)
     ivw_register_license_file(NAME "Sigar" TARGET inviwo::sigar MODULE Core EXT
