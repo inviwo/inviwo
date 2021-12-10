@@ -34,6 +34,7 @@
 
 #include <inviwo/core/io/tempfilehandle.h>
 #include <inviwo/dataframe/io/jsonreader.h>
+#include <inviwo/core/util/unindent.h>
 
 #include <sstream>
 
@@ -49,11 +50,12 @@ TEST(JSONnoData, file) {
 
 TEST(JSONdata, numRows) {
     // test for correct row count
-    std::istringstream ss(
-        "[{\"sepalLength\" : 5.1, \"sepalWidth\" : 3.5, \"petalLength\" : 1.4, \"petalWidth\" : "
-        "0.2,\"species\" : \"setosa\"},"
-        "{\"sepalLength\" : 4.9, \"sepalWidth\" : 3.0, \"petalLength\" : 1.4, \"petalWidth\" : "
-        "0.2,\"species\" : \"setosa\"}]");
+    std::istringstream ss(IVW_UNINDENT(R"(
+        [ 
+            {"sepalLength" : 5.1, "sepalWidth" : 3.5, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"},
+            {"sepalLength" : 4.9, "sepalWidth" : 3.0, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"}
+        ]
+    )"));
 
     JSONDataFrameReader reader;
 
@@ -64,11 +66,33 @@ TEST(JSONdata, numRows) {
 
 TEST(JSONdata, nullItem) {
     // test for null values, must have at least one were value is not null
-    std::istringstream ss(
-        "[{\"sepalLength\" : null, \"sepalWidth\" : 3.5, \"petalLength\" : 1.4, \"petalWidth\" : "
-        "0.2,\"species\" : \"setosa\"},"
-        "{\"sepalLength\" : 4.9, \"sepalWidth\" : 3.0, \"petalLength\" : 1.4, \"petalWidth\" : "
-        "0.2,\"species\" : \"setosa\"}]");
+    std::istringstream ss(IVW_UNINDENT(R"(
+        [
+            {"sepalLength" : null, "sepalWidth" : 3.5, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"},
+            {"sepalLength" : 4.9, "sepalWidth" : 3.0, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"}
+        ]
+    )"));
+
+    JSONDataFrameReader reader;
+
+    auto dataframe = reader.readData(ss);
+    // Note that json reorders columns...
+    ASSERT_EQ("nan", dataframe->getDataItem(0).at(3)->toString()) << "first item is not nan";
+    ASSERT_EQ(NumericType::Float,
+              dataframe->getColumn(3)->getBuffer()->getDataFormat()->getNumericType())
+        << "incorrect guessing of data type";
+    ASSERT_EQ(6, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+}
+
+TEST(JSONdata, nullColumn) {
+    // test for column holding only null values, assumed column datatype should be float
+    std::istringstream ss(IVW_UNINDENT(R"(
+        [
+            {"sepalLength" : null, "sepalWidth" : 3.5, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"},
+            {"sepalLength" : null, "sepalWidth" : 3.0, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"}
+        ]
+    )"));
 
     JSONDataFrameReader reader;
 

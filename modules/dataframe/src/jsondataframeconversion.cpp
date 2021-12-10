@@ -28,8 +28,11 @@
  *********************************************************************************/
 #include <inviwo/dataframe/jsondataframeconversion.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/dataframe/datastructures/column.h>
 #include <iterator>
 #include <vector>
+#include <functional>
 
 namespace inviwo {
 
@@ -85,13 +88,62 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
 }  // namespace detail
 
 void to_json(json& j, const DataFrame& df) {
+    std::vector<std::function<void(json & j, size_t)>> printers;
+    for (const auto& col : df) {
+        if (col->getColumnType() == ColumnType::Index) continue;
+
+        auto format = col->getBuffer()->getDataFormat();
+        if (col->getColumnType() == ColumnType::Categorical) {
+            printers.push_back(
+                [cc = static_cast<const CategoricalColumn*>(col.get()), header = col->getHeader()](
+                    json& node, size_t index) { node[header] = cc->getAsString(index); });
+        } else if (format->getComponents() == 1) {
+            col->getBuffer()
+                ->getRepresentation<BufferRAM>()
+                ->dispatch<void, dispatching::filter::Scalars>(
+                    [&printers, header = col->getHeader()](auto br) {
+                        using ValueType = util::PrecisionValueType<decltype(br)>;
+                        if constexpr (std::is_floating_point_v<ValueType>) {
+                            // treat NaN in floating point values as "empty" (null)
+                            printers.push_back([br, header](json& node, size_t index) {
+                                const auto val = br->getDataContainer()[index];
+                                if (std::isnan(val)) {
+                                    node[header] = json();
+                                } else {
+                                    node[header] = val;
+                                }
+                            });
+                        } else if constexpr (std::is_same_v<ValueType, half_float::half>) {
+                            printers.push_back([br, header](json& node, size_t index) {
+                                const auto val = br->getDataContainer()[index];
+                                if (std::isnan(val)) {
+                                    node[header] = json();
+                                } else {
+                                    node[header] = static_cast<float>(val);
+                                }
+                            });
+                        } else {
+                            printers.push_back([br, header](json& node, size_t index) {
+                                node[header] = br->getDataContainer()[index];
+                            });
+                        }
+                    });
+        } else {
+            col->getBuffer()
+                ->getRepresentation<BufferRAM>()
+                ->dispatch<void, dispatching::filter::Vecs>(
+                    [&printers, header = col->getHeader()](auto br) {
+                        printers.push_back([br, header](json& node, size_t index) {
+                            node[header] = toString(br->getDataContainer()[index]);
+                        });
+                    });
+        }
+    }
+
     for (size_t row = 0; row < df.getNumberOfRows(); ++row) {
         json node = json::object();
-        auto items = df.getDataItem(row, true);
-        // Row 0 in the dataframe contains the row indices, which is not needed in the json object.
-        int i = 1;
-        for (auto col = ++items.begin(); col != items.end(); ++col) {
-            node[df.getHeader(i++)] = (*col)->toString();
+        for (auto& printer : printers) {
+            printer(node, row);
         }
         j.emplace_back(node);
     }
@@ -109,17 +161,23 @@ void from_json(const json& j, DataFrame& df) {
         switch (col.value().type()) {
             case json::value_t::null: {  ///< null value
                 // need to check more rows to know type
+                bool found = false;
                 for (const auto& row : j) {
                     auto item = row.find(col.key());
                     if (item->type() != json::value_t::null) {
                         try {
                             detail::addDataFrameColumnHelper(item.value().type(), col.key(), df);
+                            found = true;
                         } catch (JSONConversionException& e) {
                             throw e;
                         }
                         // Stop searching when we found a non-null item
                         break;
                     }
+                }
+                if (!found) {
+                    // entire column is empty, assume float
+                    detail::addDataFrameColumnHelper(json::value_t::number_float, col.key(), df);
                 }
                 break;
             }

@@ -52,10 +52,13 @@ public:
 };
 
 /**
- * Converts a DataFrame to a JSON object.
+ * Converts a DataFrame to a JSON object. This will not include the index column. NaN floating point
+ * values are converted to null.
  * Will write the DataFrame to an JSON object layout:
- * [ {"Col1": val11, "Col2": val12 },
+ * \code{.json}
+ * [ {"Col1": * val11, "Col2": val12 },
  *   {"Col1": val21, "Col2": val22 } ]
+ * \endcode
  * The example above contains two rows and two columns.
  *
  * Usage example:
@@ -67,10 +70,13 @@ public:
 IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
 
 /**
- * Converts a JSON object to a DataFrame.
+ * Converts a JSON object to a DataFrame. Column types will be derived from json types. In case a
+ * column only holds null values, the inferred data type will be float.
  * Expects object layout:
+ * \code{.json}
  * [ {"Col1": val11, "Col2": val12 },
  *   {"Col1": val21, "Col2": val22 } ]
+ * \endcode
  * The example above contains two rows and two columns.
  *
  * Usage example:
