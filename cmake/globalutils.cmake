@@ -970,8 +970,9 @@ endfunction()
 
 #-----------------------------------------------------------------------
 # Uses QT's windeployqt.exe to copy necessary QT-dependencies (dlls etc) 
-# for the given target to the build folder. 
+# for the given target to the build folder for development purposes. 
 # Does nothing on platforms other than Windows. 
+# Use ivw_qt_add_to_install (installutils.cmake) for deployment.  
 function(ivw_deploy_qt target)
     if(WIN32)
         get_target_property(target_type ${target} TYPE)
@@ -984,16 +985,16 @@ function(ivw_deploy_qt target)
 
             # in case of environment variable QTDIR not set
             if(NOT EXISTS ${WINDEPLOYQT_EXECUTABLE})
-                get_target_property(qmake_executable Qt5::qmake IMPORTED_LOCATION)
+                get_target_property(qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
                 get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
                 find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${qt_bin_dir} )
             endif()
-
+            # Copy to build folder
             add_custom_command(
                 TARGET ${target} POST_BUILD 
                 COMMAND ${WINDEPLOYQT_EXECUTABLE} 
                     --no-compiler-runtime --verbose 1 $<TARGET_FILE:${target}>
-            )
+            )    
         endif()
     endif()
 endfunction()
