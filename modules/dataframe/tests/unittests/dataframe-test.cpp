@@ -59,8 +59,7 @@ struct AddColumnScript {
         EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
             << "Dataformat mismatch";
         const std::string expectedHeader = fmt::format("{}Col", classname).c_str();
-        EXPECT_STREQ(expectedHeader.c_str(), col->getHeader().c_str())
-            << "Column header does not match";
+        EXPECT_EQ(expectedHeader, col->getHeader()) << "Column header does not match";
     }
 };
 
@@ -97,7 +96,7 @@ TEST(DataFrameTests, AddCategoricalColumn) {
     auto expectedFormat = DataFormat<uint32_t>::get();
     EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
         << "Dataformat mismatch";
-    EXPECT_STREQ(colname.c_str(), col->getHeader().c_str()) << "Column header does not match";
+    EXPECT_EQ(colname, col->getHeader()) << "Column header does not match";
 }
 
 TEST(DataFrameTests, AddCategoricalColumnData) {
@@ -114,7 +113,7 @@ TEST(DataFrameTests, AddCategoricalColumnData) {
     auto expectedFormat = DataFormat<uint32_t>::get();
     EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
         << "Dataformat mismatch";
-    EXPECT_STREQ(colname.c_str(), col->getHeader().c_str()) << "Column header does not match";
+    EXPECT_EQ(colname, col->getHeader()) << "Column header does not match";
 
     auto catcol = dynamic_cast<CategoricalColumn*>(col.get());
     ASSERT_TRUE(catcol) << "Column is not categorical";
@@ -137,9 +136,8 @@ TEST(DataFrameTests, AddColumnFromBuffer) {
     EXPECT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
     EXPECT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
 
-    auto columnHeader = dataframe.getHeader(1);
-    EXPECT_STREQ(colname.c_str(), columnHeader.c_str());
     auto col = dataframe.getColumn(1);
+    EXPECT_EQ(colname, col->getHeader());
     EXPECT_EQ(3, col->getSize()) << "Column row count incorrect";
 }
 

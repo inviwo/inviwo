@@ -181,16 +181,6 @@ std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::end() const {
     return columns_.end();
 }
 
-const std::vector<std::pair<std::string, const DataFormatBase*>> DataFrame::getHeaders() const {
-    std::vector<std::pair<std::string, const DataFormatBase*>> headers;
-    for (const auto& c : columns_) {
-        headers.emplace_back(c->getHeader(), c->getBuffer()->getDataFormat());
-    }
-    return headers;
-}
-
-std::string DataFrame::getHeader(size_t idx) const { return columns_[idx]->getHeader(); }
-
 std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const { return columns_[index]; }
 
 std::shared_ptr<Column> DataFrame::getColumn(std::string_view name) {
@@ -234,7 +224,7 @@ bool isIntegral(const std::string& str) {
         // check for integral type, if there are parts left over it is most likely a
         // floating point number
         std::size_t pos;
-        std::stoll(str, &pos);
+        [[maybe_unused]] auto v = std::stoll(str, &pos);
         if (pos == str.size()) {
             return true;
         }
@@ -247,7 +237,7 @@ bool isFloat(const std::string& str) {
     try {
         // check for floating point number
         std::size_t pos;
-        std::stod(str, &pos);
+        [[maybe_unused]] auto v = std::stod(str, &pos);
         if (pos == str.size()) {
             return true;
         }

@@ -92,7 +92,7 @@ std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame&
     auto dataframe = std::make_shared<DataFrame>(left);
 
     for (auto srcCol : right) {
-        if (srcCol == right.getIndexColumn()) continue;
+        if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (auto col = left.getColumn(srcCol->getHeader()); col && ignoreDuplicates) {
             continue;
         }
@@ -170,13 +170,14 @@ void columnCheck(const DataFrame& left, const DataFrame& right,
                 IVW_CONTEXT_CUSTOM(context));
         }
 
-        auto catcol1 = dynamic_cast<const CategoricalColumn*>(indexCol1.get());
-        auto catcol2 = dynamic_cast<const CategoricalColumn*>(indexCol2.get());
-        if (!catcol1 != !catcol2) {
+        const bool catcol1 = indexCol1->getColumnType() == ColumnType::Categorical;
+        const bool catcol2 = indexCol2->getColumnType() == ColumnType::Categorical;
+        // check only for categorical types and do not compare column types directly.
+        // This enables combining a regular column with an index column, e.g. for indexing.
+        if (catcol1 != catcol2) {
             throw Exception(
                 fmt::format("column type mismatch in key columns '{}': left = {}, right = {}", col,
-                            catcol1 ? "categorical" : "regular",
-                            catcol2 ? "categorical" : "regular"),
+                            indexCol1->getColumnType(), indexCol2->getColumnType()),
                 IVW_CONTEXT_CUSTOM(context));
         }
 
@@ -288,7 +289,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
 void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (auto srcCol : srcDataFrame) {
-        if (srcCol == srcDataFrame.getIndexColumn()) continue;
+        if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
         dst->addColumn(std::shared_ptr<Column>{srcCol->clone()});
@@ -299,7 +300,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::uint32_t>& rows, const std::vector<std::string>& keyColumns,
                 bool skipKeyCol) {
     for (auto srcCol : srcDataFrame) {
-        if (srcCol == srcDataFrame.getIndexColumn()) continue;
+        if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
         dst->addColumn(std::shared_ptr<Column>(srcCol->clone(rows)));
@@ -310,7 +311,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::optional<std::uint32_t>>& rows,
                 const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (auto srcCol : srcDataFrame) {
-        if (srcCol == srcDataFrame.getIndexColumn()) continue;
+        if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
         if (auto c = dynamic_cast<CategoricalColumn*>(srcCol.get())) {
@@ -519,7 +520,6 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                 ->getEditableRepresentation<BufferRAM>()
                 ->dispatch<void>([&](auto typedBuf) {
                     using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
-
                     auto typedBuffer =
                         static_cast<const Buffer<ValueType>*>(col->getBuffer().get());
                     auto& vec = typedBuffer->getRAMRepresentation()->getDataContainer();
@@ -538,7 +538,8 @@ std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId) {
     doc.append("b", fmt::format("Data Point {}", rowId), {{"style", "color:white;"}});
     utildoc::TableBuilder tb(doc.handle(), P::end());
     for (size_t i = 0; i < dataframe.getNumberOfColumns(); i++) {
-        tb(H(dataframe.getHeader(i)), dataframe.getColumn(i)->getAsString(rowId));
+        auto col = dataframe.getColumn(i);
+        tb(H(col->getHeader()), col->getAsString(rowId));
     }
 
     return doc;

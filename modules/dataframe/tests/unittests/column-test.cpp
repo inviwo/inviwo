@@ -57,8 +57,7 @@ struct CreateColumn {
             << "Dataformat mismatch";
 
         const std::string expectedHeader = fmt::format("{}Col", classname).c_str();
-        EXPECT_STREQ(expectedHeader.c_str(), col.getHeader().c_str())
-            << "Column header does not match";
+        EXPECT_EQ(expectedHeader, col.getHeader()) << "Column header does not match";
     }
 };
 
@@ -68,6 +67,13 @@ TEST(ColumnTests, Create) {
     using Scalars = std::tuple<float, double, int, glm::i64, size_t, std::uint32_t>;
 
     util::for_each_type<Scalars>{}(CreateColumn{});
+}
+
+TEST(ColumnTests, IndexColumn) {
+    IndexColumn col("index", {0, 1, 2, 3});
+
+    EXPECT_EQ(ColumnType::Index, col.getColumnType()) << "Incorrect column type";
+    EXPECT_EQ(4, col.getSize()) << "Row count differs";
 }
 
 TEST(ColumnTests, CategoricalColumn) {
@@ -82,6 +88,7 @@ TEST(ColumnTests, CategoricalColumn) {
 
     const auto rows = col.getSize();
 
+    EXPECT_EQ(ColumnType::Categorical, col.getColumnType()) << "Incorrect column type";
     EXPECT_EQ(4, rows) << "Row count differs";
     EXPECT_EQ(expected, result) << "Categories in column are not correct";
 }
@@ -92,6 +99,7 @@ TEST(ColumnTests, FloatColumn) {
     auto buffer = col.getBuffer();
     const auto rows = col.getSize();
 
+    EXPECT_EQ(ColumnType::Ordinal, col.getColumnType()) << "Incorrect column type";
     ASSERT_EQ(DataFormat<float>::id(), buffer->getDataFormat()->getId())
         << "column buffer has incorrect data format";
     EXPECT_EQ(6, rows) << "Row count differs";

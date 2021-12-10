@@ -58,6 +58,25 @@ public:
 
 enum class ColumnType { Index, Ordinal, Categorical };
 
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             ColumnType type) {
+    switch (type) {
+        case ColumnType::Index:
+            ss << "Index";
+            break;
+        case ColumnType::Ordinal:
+            ss << "Ordinal";
+            break;
+        case ColumnType::Categorical:
+            ss << "Categorical";
+            break;
+        default:
+            ss << "Invalid";
+    }
+    return ss;
+}
+
 /**
  * @brief pure interface for representing a data column, i.e. a Buffer with a name
  */
