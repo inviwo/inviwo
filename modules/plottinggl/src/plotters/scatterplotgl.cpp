@@ -437,6 +437,10 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
         shader_.setUniform("default_color", properties_.hoverColor_.get());
 
         if (highlightDirty_) {
+            if (highlightIndexGL_.getSizeInBytes() <
+                static_cast<GLsizeiptr>(highlighted_.size() * sizeof(uint32_t))) {
+                highlightIndexGL_.setSizeInBytes(highlighted_.size() * sizeof(uint32_t));
+            }
             // Will both bind and upload
             highlightIndexGL_.upload(static_cast<const void*>(highlighted_.toVector().data()),
                                      sizeof(uint32_t) * highlighted_.size());
