@@ -45,14 +45,14 @@ namespace indent {
  * R"(
  *     0123456789
  *     abcdefghij
- *     asdfasdfas
+ *         asdfasdfas
  *     )";
  * ```
  * becomes
  * ```
  * R"(0123456789
  * abcdefghij
- * asdfasdfas
+ *     asdfasdfas
  * )"
  * ```
  * The first indented line determines the amount of indentation to remove. If any of the following
@@ -117,7 +117,7 @@ constexpr size_t length(const char (&str)[N]) {
 }
 
 /**
- * Copy the chard of the string (being, end) to `out` skipping the leading indentation of each line
+ * Copy the chars of the string (being, end) to `out` skipping the leading indentation of each line
  */
 template <typename It, typename Out>
 constexpr size_t copy(It begin, It end, Out out) {
@@ -151,14 +151,14 @@ constexpr auto unindent(std::string_view str) {
  * auto str = R"(
  *     0123456789
  *     abcdefghij
- *     asdfasdfas
+ *         asdfasdfas
  *     )"_unindent;
  * ```
  * becomes
  * ```
  * 0123456789
  * abcdefghij
- * asdfasdfas
+ *     asdfasdfas
  * ```
  * str will become an std::string
  */

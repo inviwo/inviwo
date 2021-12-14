@@ -320,8 +320,8 @@ IVW_CORE_API void replaceInString(std::string& str, std::string_view oldStr,
                                   std::string_view newStr);
 IVW_CORE_API std::string parseTypeIdName(std::string str);
 
-IVW_CORE_API std::string toUpper(std::string str);
-IVW_CORE_API std::string toLower(std::string str);
+IVW_CORE_API std::string toUpper(std::string_view str);
+IVW_CORE_API std::string toLower(std::string_view str);
 
 IVW_CORE_API size_t countLines(std::string_view str);
 

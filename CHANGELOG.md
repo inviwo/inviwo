@@ -10,7 +10,7 @@ For printing units we have added fmt support. See `inviwo/include/inviwo/core/da
 Some of the processor now also handle showing units, like the `VolumeAxis`, and `ColorScaleLegend`. The transfer function editor will also show units if available. 
 The `dat` and `ivf` volume file readers also got support for setting axis/data names and units. 
 
-# 2021-11-23 CompositeProperty collapse & expand
+## 2021-11-23 CompositeProperty collapse & expand
 Composite properties can now be collapsed and expanded in different ways using `CompositeProperty::setCollapsed(CollapseAction action, CollapseTarget target)`. Action is either `Collapse` or `Expand` whereas the target defines the affected properties:
 
 + `CollapseTarget::Current` affects only the property 

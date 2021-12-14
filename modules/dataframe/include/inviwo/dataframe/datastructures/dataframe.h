@@ -167,9 +167,6 @@ public:
 
     DataItem getDataItem(size_t index, bool getStringsAsStrings = false) const;
 
-    const std::vector<std::pair<std::string, const DataFormatBase*>> getHeaders() const;
-    std::string getHeader(size_t idx) const;
-
     /**
      * \brief access individual columns
      * updateIndexBuffer() needs to be called if the size of the column, i.e. the row count, was
@@ -285,7 +282,7 @@ struct DataTraits<DataFrame> {
             if (auto col_c =
                     std::dynamic_pointer_cast<const CategoricalColumn>(data.getColumn(i))) {
                 tb2(std::to_string(i + 1), "categorical", col_c->getBuffer()->getSize(),
-                    data.getHeader(i), range(col_c.get()));
+                    col_c->getHeader(), range(col_c.get()));
                 std::string categories;
                 for (const auto& str : col_c->getCategories()) {
                     if (!categories.empty()) {
@@ -314,8 +311,8 @@ struct DataTraits<DataFrame> {
                 }();
 
                 tb2(std::to_string(i + 1), col_q->getBuffer()->getDataFormat()->getString(),
-                    col_q->getBuffer()->getSize(), data.getHeader(i), range(col_q.get()), minString,
-                    maxString, fmt::to_string(col_q->getUnit()));
+                    col_q->getBuffer()->getSize(), col_q->getHeader(), range(col_q.get()),
+                    minString, maxString, fmt::to_string(col_q->getUnit()));
             }
         }
         if (ncols != data.getNumberOfColumns()) {

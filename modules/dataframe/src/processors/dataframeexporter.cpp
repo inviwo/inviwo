@@ -148,7 +148,7 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
         const auto components = col->getBuffer()->getDataFormat()->getComponents();
         if (components > 1 && separateVectorTypesIntoColumns) {
             for (size_t k = 0; k < components; k++) {
-                oj = citation + col->getHeader() + ' ' + componentNames[k] + citation;
+                oj = fmt::format("{0}{} {}{0}", citation, col->getHeader(), componentNames[k]);
             }
         } else {
             oj = col->getHeader();

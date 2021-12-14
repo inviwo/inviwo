@@ -179,7 +179,7 @@ void TextOverlayGL::updateCache() {
             std::string text;
             try {
                 text = fmt::vformat(tp->text.get(), store);
-            } catch (const fmt::format_error& e) {
+            } catch (const fmt::format_error&) {
                 LogWarn(
                     fmt::format("Invalid formatting string {}:'{}'\nFormat uses fmt syntax, args "
                                 "can be named by index {{0}} or by name {{arg0}}",

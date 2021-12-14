@@ -90,6 +90,9 @@ template <>
 struct is_floating_point<half_float::half> : std::true_type {};
 
 template <typename T>
+constexpr bool is_floating_point_v = is_floating_point<T>::value;
+
+template <typename T>
 bool isfinite(const T& v) {
     return std::isfinite(v);
 }

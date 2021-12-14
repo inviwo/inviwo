@@ -110,6 +110,7 @@ void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> process
 
     if (widget) {
         widget->setManager(brushLinkPort_.getManager());
+        widget->setIndexColumnVisible(showIndexColumn_);
         widget->setFilteredRowsVisible(showFilteredRowCols_);
     }
 
