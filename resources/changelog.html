@@ -27,13 +27,13 @@
 </head>
 <body>
 <h2>2021-12-09 DataFrame Column Units</h2>
-<p>The <code>DataFrame</code> <code>Column</code> now has a <code>unit</code> member and many processors (<code>PCP</code>, <code>ScatterPlot</code>, <code>DataFrameTable</code>), operating on DataFrames will now also display the column units if available. The <code>ColumnMetaDataProperty</code> used in the <code>CSVSourc</code> processor got support for specifying units.</p>
+<p>The <code>DataFrame</code> <code>Column</code> now has a <code>unit</code> member and many processors (<code>PCP</code>, <code>ScatterPlot</code>, <code>DataFrameTable</code>), operating on DataFrames will now also display the column units if available. The <code>ColumnMetaDataProperty</code> used in the <code>CSVSource</code> processor got support for specifying units.</p>
 <h2>2021-12-09 Volume Units</h2>
-<p>Volumes now have units and names for both axes and data. The data unit and name is in <code>volume.dataMapper_.valueAxis.name</code> and  <code>volume.dataMapper_.valueAxis.unit</code> and the axes unit and names are in <code>volume.axis[i].name</code> and <code>volume.axis[i].unit</code>.<br>
+<p>Volumes now have units and names for both axes and data. The data unit and name are stored in <code>volume.dataMapper_.valueAxis.name</code> and  <code>volume.dataMapper_.valueAxis.unit</code> and the axes unit and names are in <code>volume.axis[i].name</code> and <code>volume.axis[i].unit</code>.<br>
 Inviwo now uses the Units library from LLNL (<a href="https://github.com/LLNL/units">https://github.com/LLNL/units</a>). The library handles parsing units from string <code>v = units::unit_from_string("m/s")</code> it can also handle unit calculations, i.e. <code>v * v</code>.<br>
-For printing units we have added fmt support. see <code>inviwo/include/inviwo/core/datastructures/unitsystem.h</code> for details about the formatting.<br>
+For printing units we have added fmt support. See <code>inviwo/include/inviwo/core/datastructures/unitsystem.h</code> for details about the formatting.<br>
 Some of the processor now also handle showing units, like the <code>VolumeAxis</code>, and <code>ColorScaleLegend</code>. The transfer function editor will also show units if available.<br>
-The Dat and Ivf volume file readers also got support for setting axis/data names and units.</p>
+The <code>dat</code> and <code>ivf</code> volume file readers also got support for setting axis/data names and units.</p>
 <h2>2021-11-23 CompositeProperty collapse &amp; expand</h2>
 <p>Composite properties can now be collapsed and expanded in different ways using <code>CompositeProperty::setCollapsed(CollapseAction action, CollapseTarget target)</code>. Action is either <code>Collapse</code> or <code>Expand</code> whereas the target defines the affected properties:</p>
 <ul>
