@@ -121,7 +121,6 @@ public:
 
     /**
      * Set the size of the buffer in bytes.
-     * Convenience function for calling initialize(nullptr, sizeInBytes)
      * @param sizeInBytes
      */
     void setSizeInBytes(GLsizeiptr sizeInBytes);
@@ -130,6 +129,14 @@ public:
      */
     GLsizeiptr getSizeInBytes() const;
 
+    /**
+     * Upload \p data into the buffer. This also binds the buffer. If \p sizeInBytes exceeds the
+     * current size of the buffer, the buffer gets re-initialized with \p sizeInBytes.
+     * @param data          data to be uploaded. The underlying data must match the current GL
+     *                      format of the buffer.
+     * @param sizeInBytes   size of the uploaded data
+     * @see getGLFormat,getSizeInBytes
+     */
     void upload(const void* data, GLsizeiptr sizeInBytes);
 
     void download(void* data) const;
