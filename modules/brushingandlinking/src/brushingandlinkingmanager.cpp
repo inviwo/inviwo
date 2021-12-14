@@ -118,7 +118,7 @@ bool BrushingAndLinkingManager::isTargetModified(BrushingTarget target,
                                                  BrushingModifications modifications) const {
     auto it = modifications_.find(target);
     if (it != modifications_.end()) {
-        return !(it->second | modifications).empty();
+        return !(it->second & modifications).empty();
     }
 
     return false;

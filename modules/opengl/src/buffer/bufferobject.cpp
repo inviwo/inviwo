@@ -234,8 +234,12 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
 }
 
 void BufferObject::upload(const void* data, GLsizeiptr sizeInBytes) {
-    bind();
-    glBufferSubData(target_, 0, sizeInBytes, data);
+    if (sizeInBytes <= getSizeInBytes()) {
+        bind();
+        glBufferSubData(target_, 0, sizeInBytes, data);
+    } else {
+        initialize(data, sizeInBytes);
+    }
 }
 
 void BufferObject::download(void* data) const {
