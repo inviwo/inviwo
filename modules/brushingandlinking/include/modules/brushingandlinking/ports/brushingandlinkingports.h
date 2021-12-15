@@ -40,7 +40,13 @@
 namespace inviwo {
 
 class BrushingAndLinkingOutport;
-
+/**
+ * \ingroup ports
+ * Enables selection/filtering/highlighting between processors.
+ * The port has a BrushingManager independent on if it is connected or not, e.g. it does not need to be
+ * connected to a BrushingAndLinkingOutport to be valid.
+ * @see BrushingAndLinkingManager
+ */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingInport : public Inport {
 public:
     using type = void;
@@ -149,7 +155,13 @@ private:
 
     BrushingAndLinkingManager manager_;
 };
-
+/**
+ * \ingroup ports
+ * Enables selection/filtering/highlighting between processors.
+ * The BrushingAndLinkingOutport can be connected to several BrushingAndLinkingInports in order to
+ * share information. 
+ * @see BrushingAndLinkingManager
+ */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport : public Outport {
 public:
     using type = void;

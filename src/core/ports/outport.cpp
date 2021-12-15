@@ -29,19 +29,24 @@
 
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
 Outport::Outport(std::string identifier)
     : Port(identifier)
+    , invalidationLevel_(InvalidationLevel::Valid)
     , isReady_{false,
                [this](const bool&) {
                    for (auto inport : connectedInports_) {
                        inport->readyUpdate();
                    }
                },
-               []() { return false; }}
-    , invalidationLevel_(InvalidationLevel::Valid) {}
+               // The 'isReady' function that updates the state
+               []() {
+                   IVW_ASSERT(false, "Must be set by derived class, see for example DataOutPort");
+                   return false;
+               }} {}
 
 Outport::~Outport() = default;
 
