@@ -49,8 +49,6 @@ class Processor;
  * \brief Abstract base class for all outports
  * The Outport can be connected to an arbitrary number of Inports.
  *
- * @note The internal isReady_ lambda function must be set by derived class, e.g.,
- * perform isReady_.setUpdate(...) in the constructor of your derived class as in DataOutport.
  */
 class IVW_CORE_API Outport : public Port {
     friend class Inport;
@@ -63,14 +61,12 @@ public:
     /**
      * An outport is ready if it has data and is valid. The port is set valid after its
      * processor successfully finishes processing.
-     * @pre isReady_ must be set by derived the class.
      * @see invalidate @see setValid
      */
     virtual bool isReady() const override;
 
     /**
      * Called by Processor::invalidate, will invalidate its connected inports.
-     * @pre isReady_ must be set by the derived class.
      * @note Port is set to valid after its processor successfully finishes processing.
      * @see setValid
      */
@@ -112,6 +108,10 @@ public:
     virtual void clear() = 0;
 
 protected:
+     /** 
+      * @note The internal isReady_ lambda function must be set by derived class, e.g.,
+      * perform isReady_.setUpdate(...) in the constructor of your derived class as in DataOutport.
+      */
     Outport(std::string identifier = "");
 
     // These function are only called by the corresponding inport.
