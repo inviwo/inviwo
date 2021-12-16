@@ -84,7 +84,6 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
         model_->highlightRow(sortProxy_->mapToSource(index));
     });
 
-    
     QObject::connect(
         selectionModel(), &QItemSelectionModel::selectionChanged, this,
         [this](const QItemSelection&, const QItemSelection&) {
@@ -94,8 +93,7 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
             model_->selectRows(
                 sortProxy_->mapSelectionToSource(selectionModel()->selection()).indexes());
         });
-      
-        
+
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setSelectionBehavior(QAbstractItemView::SelectRows);
 }

@@ -66,7 +66,7 @@ public:
     void setFilteredRowsVisible(bool visible);
     bool getFilteredRowsVisible() const;
 
-    void leaveEvent(QEvent *event) override;
+    void leaveEvent(QEvent* event) override;
 
 private:
     DataFrameModel* model_;
