@@ -49,7 +49,13 @@ namespace inviwo {
 /** \docpage{org.inviwo.AtlasVolumeRaycaster, Atlas Volume Raycaster}
  * ![](org.inviwo.AtlasVolumeRaycaster.png?classIdentifier=org.inviwo.AtlasVolumeRaycaster)
  *
- * Description of the processor
+ * Processor for visualizing volumetric data by means of volume raycasting. Only one channel of the
+ * volume will be used. Besides the volume data, entry and exit point locations of the bounding box
+ * are required. These can be created with the EntryExitPoints processor. The camera properties
+ * between these two processors needs to be linked. In addition an Atlas volume has be provided with
+ * segmentation indices of the volume. Each segment will then be rendered using individual colors to
+ * make it possible to separate the different regions. An optional brushing and linking port can
+ * also be connected to handled selection and filtering of segments.
  *
  * ### Inports
  *   * __volume__   input volume (Only one channel will be rendered)

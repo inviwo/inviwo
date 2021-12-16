@@ -67,8 +67,8 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
         }
     });
 
-    registerComponents(time_, volume_, entryExit_, isoTF_, atlas_, background_, sampleTransform_,
-                       raycasting_, camera_, light_, positionIndicator_);
+    registerComponents(volume_, entryExit_, isoTF_, atlas_, background_, sampleTransform_,
+                       raycasting_, camera_, light_, positionIndicator_, time_);
 }
 
 }  // namespace inviwo

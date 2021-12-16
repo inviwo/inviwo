@@ -239,6 +239,10 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
         } while (inds.next());
     }
 
+    // Order units alphabetically to make it deterministic (sort by abbr)
+    std::sort(winner.begin(), winner.end(),
+              [](const auto& a, const auto& b) { return std::get<1>(a) < std::get<1>(b); });
+
     return {unit.multiplier() / closestMultiplier, winner};
 }
 

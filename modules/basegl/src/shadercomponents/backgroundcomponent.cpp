@@ -53,6 +53,8 @@ void BackgroundComponent::process(Shader& shader, TextureUnitContainer& cont) {
 }
 
 std::vector<std::tuple<Inport*, std::string>> BackgroundComponent::getInports() {
+    // Should be in the same PortGroup ('images') as the ImageOutport of the processor using this
+    // component (@see ShaderComponentProcessorBase)
     return {{&background_, std::string{"images"}}};
 }
 
@@ -70,7 +72,7 @@ vec4 {bg}ColorVal = texture({bg}Color, texCoords);
 vec4 {bg}PickingVal = texture({bg}Picking, texCoords);
 depth = texture({bg}Depth, texCoords).x;
 // convert to raycasting depth
-float {bg}RayDepth = 
+float {bg}RayDepth =
     rayLength * calculateTValueFromDepthValue(camera, depth, entryPointDepth, exitPointDepth);
 if ({bg}RayDepth <= 0) {comp}
 )");

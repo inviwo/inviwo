@@ -39,13 +39,40 @@ namespace inviwo {
 TimeComponent::TimeComponent(std::string_view name,
                              std::function<void(InvalidationLevel)> invalidate)
     : ShaderComponent{}
-    , timer{std::chrono::milliseconds{33},
-            [invalidate = std::move(invalidate)]() {
-                invalidate(InvalidationLevel::InvalidOutput);
-            }}
-    , name_{name} {
+    , name_{name}
+    , enabled_{"enabled", "Enabled", true, InvalidationLevel::Valid}
+    , running_{"running", "Running", false, InvalidationLevel::Valid}
+    , intervalMs_{"interval",
+                  "Interval (ms)",
+                  33,
+                  {0, ConstraintBehavior::Immutable},
+                  {1000, ConstraintBehavior::Mutable},
+                  1,
+                  InvalidationLevel::Valid,
+                  PropertySemantics::Text}
+    , timer_{std::chrono::milliseconds{intervalMs_.get()}, [invalidate = std::move(invalidate)]() {
+                 invalidate(InvalidationLevel::InvalidOutput);
+             }} {
 
-    timer.start();
+    running_.readonlyDependsOn(*enabled_.getBoolProperty(), [](const auto& p) { return !p.get(); });
+    running_.onChange([this]() {
+        if (running_ && enabled_.isChecked()) {
+            if (!timer_.isRunning()) {
+                timer_.start();
+            }
+        } else {
+            timer_.stop();
+        }
+    });
+    enabled_.getBoolProperty()->onChange([this]() {
+        if (!enabled_.isChecked()) timer_.stop();
+    });
+    intervalMs_.onChange(
+        [this]() { timer_.setInterval(std::chrono::milliseconds{intervalMs_.get()}); });
+
+    enabled_.addProperties(running_, intervalMs_);
+    enabled_.setCollapsed(true);
+    enabled_.setCurrentStateAsDefault();
 }
 
 std::string_view TimeComponent::getName() const { return name_; }
@@ -60,5 +87,15 @@ auto TimeComponent::getSegments() -> std::vector<Segment> {
     return {
         Segment{fmt::format(FMT_STRING("uniform float {};"), name_), placeholder::uniform, 600}};
 }
+
+std::vector<Property*> TimeComponent::getProperties() { return {&enabled_}; }
+
+void TimeComponent::start() { running_.set(true); }
+
+void TimeComponent::stop() { running_.set(false); }
+
+void TimeComponent::setRunning(bool run) { running_.set(run); }
+
+bool TimeComponent::getRunning() const { return timer_.isRunning(); }
 
 }  // namespace inviwo

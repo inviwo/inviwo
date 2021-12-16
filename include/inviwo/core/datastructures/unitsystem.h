@@ -42,6 +42,8 @@
 #include <unordered_map>
 #include <optional>
 #include <iterator>
+#include <vector>
+#include <utility>
 
 namespace inviwo {
 

@@ -33,6 +33,9 @@
 #include <modules/basegl/shadercomponents/shadercomponent.h>
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 #include <string>
 
@@ -51,11 +54,19 @@ public:
     virtual void process(Shader& shader, TextureUnitContainer&) override;
 
     virtual std::vector<Segment> getSegments() override;
+    virtual std::vector<Property*> getProperties() override;
 
-    Timer timer;
+    void start();
+    void stop();
+    void setRunning(bool run);
+    bool getRunning() const;
 
 private:
     std::string name_;
+    BoolCompositeProperty enabled_;
+    BoolProperty running_;
+    IntProperty intervalMs_;
+    Timer timer_;
 };
 
 }  // namespace inviwo

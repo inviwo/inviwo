@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -145,11 +146,11 @@ std::string_view AtlasComponent::getName() const { return atlas_.getIdentifier()
 void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, atlas_);
 
-    auto nsegments = static_cast<size_t>(atlas_.getData()->dataMap_.dataRange.y);
-    picking_.resize(nsegments + 1);
+    auto nSegments = static_cast<size_t>(atlas_.getData()->dataMap_.dataRange.y);
+    picking_.resize(nSegments + 1);
     shader.setUniform(fmt::format("{0}PickingStart", getName()),
                       static_cast<uint32_t>(picking_.getPickingId(0)));
-    shader.setUniform(fmt::format("{0}Size", getName()), static_cast<uint32_t>(nsegments));
+    shader.setUniform(fmt::format("{0}Size", getName()), static_cast<uint32_t>(nSegments));
 
     if (coloringAction_ != ColoringAction::None) {
         const auto foreachInGroup = [&]() -> std::function<void(std::function<void(size_t)>)> {
@@ -157,7 +158,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                 default:
                 case ColoringGroup::All:
                     return [&](std::function<void(size_t)> fun) {
-                        for (size_t i = 1; i <= nsegments; ++i) {
+                        for (size_t i = 1; i <= nSegments; ++i) {
                             fun(i);
                         }
                     };
@@ -169,7 +170,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                     };
                 case ColoringGroup::Unselected:
                     return [&](std::function<void(size_t)> fun) {
-                        for (size_t i = 1; i <= nsegments; ++i) {
+                        for (size_t i = 1; i <= nSegments; ++i) {
                             if (!brushing_.isSelected(i - 1)) fun(i);
                         }
                     };
@@ -181,7 +182,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                     };
                 case ColoringGroup::Unfiltered:
                     return [&](std::function<void(size_t)> fun) {
-                        for (size_t i = 1; i <= nsegments; ++i) {
+                        for (size_t i = 1; i <= nSegments; ++i) {
                             if (!brushing_.isFiltered(i - 1)) fun(i);
                         }
                     };
@@ -191,7 +192,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
         }();
 
         auto& tf = tf_.get();
-        orderTf(tf, nsegments);
+        orderTf(tf, nSegments);
 
         switch (coloringAction_) {
             case ColoringAction::SetColor: {
@@ -237,12 +238,13 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
         coloringAction_ = ColoringAction::None;
     }
 
-    if (tf_.isModified() || brushing_.isChanged() || selectionColor_.isModified() ||
-        selectionAlpha_.isModified() || selectionMix_.isModified() || filteredColor_.isModified() ||
-        filteredAlpha_.isModified() || filteredMix_.isModified()) {
+    const auto colorProps =
+        util::ref<Property>(tf_, selectionColor_, selectionAlpha_, selectionMix_, filteredColor_,
+                            filteredAlpha_, filteredMix_);
+    if (brushing_.isChanged() || util::any_of(colorProps, &Property::isModified)) {
 
-        if (colors_.getDimensions().x < nsegments + 1) {
-            colors_.setDimensions(size2_t{nsegments + 1, 2});
+        if (colors_.getDimensions().x < nSegments + 1) {
+            colors_.setDimensions(size2_t{nSegments + 1, 2});
         }
 
         util::IndexMapper2D im(colors_.getDimensions());
@@ -251,8 +253,8 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
             static_cast<LayerRAMPrecision<vec4>*>(colors_.getEditableRepresentation<LayerRAM>())
                 ->getDataTyped();
 
-        for (size_t i = 0; i <= nsegments; ++i) {
-            auto color = tf_->sample(static_cast<double>(i) / nsegments);
+        for (size_t i = 0; i <= nSegments; ++i) {
+            auto color = tf_->sample(static_cast<double>(i) / nSegments);
             lrp[im(i, 0)] = color;
             lrp[im(i, 1)] = color;
         }
@@ -265,6 +267,17 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                 vec4{glm::mix(vec3{1.0, 1.0, 1.0}, vec3{lrp[im(i + 1, 0)]}, selectionMix_.get()),
                      selectionAlpha_.get()};
         }
+
+        for (auto i : brushing_.getHighlightedIndices()) {
+            lrp[im(i + 1, 0)] =
+                vec4{glm::mix(selectionColor_.get(), vec3{lrp[im(i + 1, 0)]}, selectionMix_.get()),
+                     selectionAlpha_.get()};
+
+            lrp[im(i + 1, 1)] =
+                vec4{glm::mix(vec3{1.0, 1.0, 1.0}, vec3{lrp[im(i + 1, 0)]}, selectionMix_.get()),
+                     selectionAlpha_.get()};
+        }
+
         for (auto i : brushing_.getFilteredIndices()) {
             lrp[im(i + 1, 0)] =
                 vec4{glm::mix(filteredColor_.get(), vec3{lrp[im(i + 1, 0)]}, filteredMix_.get()),
@@ -275,11 +288,8 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, *colors_.getRepresentation<LayerGL>()->getTexture(),
                                fmt::format("{0}Colors", getName()));
 
-    if (brushing_.getSelectedIndices().empty()) {
-        time_->timer.stop();
-    } else {
-        time_->timer.start();
-    }
+    time_->setRunning(!brushing_.getSelectedIndices().empty() ||
+                      !brushing_.getHighlightedIndices().empty());
 }
 
 void AtlasComponent::onPickingEvent(PickingEvent* e) {
@@ -287,8 +297,10 @@ void AtlasComponent::onPickingEvent(PickingEvent* e) {
 
     if (e->getHoverState() == PickingHoverState::Enter) {
         e->setToolTip(fmt::format("Segment {}", id));
+        brushing_.highlight(BitSet(id - 1));
     } else if (e->getHoverState() == PickingHoverState::Exit) {
         e->setToolTip("");
+        brushing_.highlight(BitSet());
     }
 
     if (e->getPressState() == PickingPressState::Release &&

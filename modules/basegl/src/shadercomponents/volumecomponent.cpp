@@ -35,7 +35,7 @@
 namespace inviwo {
 
 VolumeComponent::VolumeComponent(std::string_view name, Gradients graidents)
-    : ShaderComponent(), volumePort(std::string(name)), graidents{graidents} {}
+    : ShaderComponent(), volumePort(std::string(name)), gradients{graidents} {}
 
 std::string_view VolumeComponent::getName() const { return volumePort.getIdentifier(); }
 
@@ -115,18 +115,18 @@ auto VolumeComponent::getSegments() -> std::vector<Segment> {
         {fmt::format(FMT_STRING(voxelFirst), getName()), placeholder::first, 400},
         {fmt::format(FMT_STRING(voxel), getName()), placeholder::loop, 400}};
 
-    if (graidents != Gradients::None) {
+    if (gradients != Gradients::None) {
         segments.push_back(
             Segment{std::string{R"(#include "utils/gradients.glsl")"}, placeholder::include, 400});
     }
-    if (graidents == Gradients::Single) {
+    if (gradients == Gradients::Single) {
         segments.push_back(
             Segment{fmt::format(FMT_STRING(gradientFirst), getName()), placeholder::first, 410});
         segments.push_back(
             Segment{fmt::format(FMT_STRING(gradient), getName()), placeholder::loop, 410});
     }
 
-    if (graidents == Gradients::All) {
+    if (gradients == Gradients::All) {
         segments.push_back(Segment{fmt::format(FMT_STRING(allGradientsFirst), getName()),
                                    placeholder::first, 410});
         segments.push_back(

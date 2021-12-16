@@ -38,7 +38,16 @@ namespace inviwo {
 
 /**
  * @brief Base class for volume raycasters.
- * Derived classes should register a set of RaycasterComponents to customize behavior
+ * Derived classes should register a set of ShaderComponents to customize behavior
+ * This base class uses the "raycasting/raycaster-template.frag" shader template.
+ *
+ * The following set of placeholders are used by the template:
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_INCLUDE
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_UNIFORM
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_FIRST
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_POST
  */
 class IVW_MODULE_BASEGL_API VolumeRaycasterBase : public ShaderComponentProcessorBase {
 protected:

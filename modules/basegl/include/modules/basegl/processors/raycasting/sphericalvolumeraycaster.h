@@ -48,7 +48,11 @@ namespace inviwo {
 /** \docpage{org.inviwo.SphericalVolumeRaycaster, Spherical Volume Raycaster}
  * ![](org.inviwo.SphericalVolumeRaycaster.png?classIdentifier=org.inviwo.SphericalVolumeRaycaster)
  *
- * Description of the processor
+ * Processor for visualizing volumetric data by means of volume raycasting. Only one channel of the
+ * volume will be used. The texture positions will be transformed using spherical coordinates.
+ * Besides the volume data, entry and exit point locations of the bounding box are required. These
+ * can be created with the EntryExitPoints processor. The camera properties between these two
+ * processors needs to be linked.
  *
  *
  * ### Inports
