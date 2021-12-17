@@ -48,9 +48,9 @@ namespace inviwo {
  * ![](org.inviwo.MultichannelVolumeRaycaster.png?classIdentifier=org.inviwo.MultichannelVolumeRaycaster)
  *
  * Processor for visualizing volumetric data by means of volume raycasting. Each channel of the
- * volume uses a different transfer function. Besides the volume data, entry and exit point locations
- * of the bounding box are required. These can be created with the EntryExitPoints processor. The
- * camera properties between these two processors need to be linked.
+ * volume uses a different transfer function. Besides the volume data, entry and exit point
+ * locations of the bounding box are required. These can be created with the EntryExitPoints
+ * processor. The camera properties between these two processors need to be linked.
  *
  * ### Inports
  *   * __volume__ input volume, each channel rendered with it's own TF
