@@ -48,7 +48,6 @@ class Processor;
  * \class Outport
  * \brief Abstract base class for all outports
  * The Outport can be connected to an arbitrary number of Inports.
- *
  */
 class IVW_CORE_API Outport : public Port {
     friend class Inport;
@@ -67,7 +66,7 @@ public:
 
     /**
      * Called by Processor::invalidate, will invalidate its connected inports.
-     * @note Port is set to valid after its processor successfully finishes processing.
+     * @note Port is set to valid after its processor successfully finish processing.
      * @see setValid
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
@@ -93,7 +92,6 @@ public:
     void removeOnDisconnect(const BaseCallBack* callback);
     /**
      * Called by Processor::setValid, will call setValid its connected inports.
-     * @pre isReady_ must be set by the derived class.
      */
     virtual void setValid();
 
