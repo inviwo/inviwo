@@ -1,8 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo Base OpenGL Module
 ivw_module(BaseGL)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/modules/basegl/algorithm/entryexitpoints.h
@@ -63,7 +61,13 @@ set(HEADER_FILES
     include/modules/basegl/processors/meshrenderprocessorgl.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
+    include/modules/basegl/processors/raycasting/atlasvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/multichannelvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/sphericalvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/standardvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/volumeraycasterbase.h
     include/modules/basegl/processors/redgreenprocessor.h
+    include/modules/basegl/processors/shadercomponentprocessorbase.h
     include/modules/basegl/processors/sphererenderer.h
     include/modules/basegl/processors/splitimage.h
     include/modules/basegl/processors/tuberendering.h
@@ -87,11 +91,23 @@ set(HEADER_FILES
     include/modules/basegl/properties/stipplingproperty.h
     include/modules/basegl/rendering/linerenderer.h
     include/modules/basegl/rendering/splitterrenderer.h
+    include/modules/basegl/shadercomponents/atlascomponent.h
+    include/modules/basegl/shadercomponents/backgroundcomponent.h
+    include/modules/basegl/shadercomponents/cameracomponent.h
+    include/modules/basegl/shadercomponents/entryexitcomponent.h
+    include/modules/basegl/shadercomponents/isotfcomponent.h
+    include/modules/basegl/shadercomponents/lightcomponent.h
+    include/modules/basegl/shadercomponents/positionindicatorcomponent.h
+    include/modules/basegl/shadercomponents/raycastingcomponent.h
+    include/modules/basegl/shadercomponents/sampletransformcomponent.h
+    include/modules/basegl/shadercomponents/shadercomponent.h
+    include/modules/basegl/shadercomponents/sphericalcomponent.h
+    include/modules/basegl/shadercomponents/timecomponent.h
+    include/modules/basegl/shadercomponents/volumecomponent.h
     include/modules/basegl/viewmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/algorithm/entryexitpoints.cpp
@@ -151,7 +167,13 @@ set(SOURCE_FILES
     src/processors/meshrenderprocessorgl.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
+    src/processors/raycasting/atlasvolumeraycaster.cpp
+    src/processors/raycasting/multichannelvolumeraycaster.cpp
+    src/processors/raycasting/sphericalvolumeraycaster.cpp
+    src/processors/raycasting/standardvolumeraycaster.cpp
+    src/processors/raycasting/volumeraycasterbase.cpp
     src/processors/redgreenprocessor.cpp
+    src/processors/shadercomponentprocessorbase.cpp
     src/processors/sphererenderer.cpp
     src/processors/splitimage.cpp
     src/processors/tuberendering.cpp
@@ -175,11 +197,23 @@ set(SOURCE_FILES
     src/properties/stipplingproperty.cpp
     src/rendering/linerenderer.cpp
     src/rendering/splitterrenderer.cpp
+    src/shadercomponents/atlascomponent.cpp
+    src/shadercomponents/backgroundcomponent.cpp
+    src/shadercomponents/cameracomponent.cpp
+    src/shadercomponents/entryexitcomponent.cpp
+    src/shadercomponents/isotfcomponent.cpp
+    src/shadercomponents/lightcomponent.cpp
+    src/shadercomponents/positionindicatorcomponent.cpp
+    src/shadercomponents/raycastingcomponent.cpp
+    src/shadercomponents/sampletransformcomponent.cpp
+    src/shadercomponents/shadercomponent.cpp
+    src/shadercomponents/sphericalcomponent.cpp
+    src/shadercomponents/timecomponent.cpp
+    src/shadercomponents/volumecomponent.cpp
     src/viewmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
     glsl/embeddedvolumeslice.frag
@@ -225,6 +259,8 @@ set(SHADER_FILES
     glsl/multichannelraycaster.frag
     glsl/pointrenderer.frag
     glsl/pointrenderer.vert
+    glsl/raycasting/raycaster-template.frag
+    glsl/raycasting/iso.glsl
     glsl/sphereglyph.frag
     glsl/sphereglyph.geom
     glsl/sphereglyph.vert
@@ -250,11 +286,8 @@ set(SHADER_FILES
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
-#--------------------------------------------------------------------
 # Package or build shaders into resources
 ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
-

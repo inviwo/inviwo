@@ -234,6 +234,11 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
 void DataFrameModel::highlightRow(const QModelIndex& index) {
     if (!data_ || !manager_) return;
 
+    if (!index.isValid()) {
+        manager_->brush(BrushingAction::Highlight, BrushingTarget::Row, BitSet());
+        return;
+    }
+
     // translate model indices to row IDs
     const auto& indexCol =
         data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();

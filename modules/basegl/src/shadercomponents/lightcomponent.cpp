@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,33 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
-
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/shadercomponents/lightcomponent.h>
 #include <modules/opengl/shader/shaderutils.h>
+
+#include <string_view>
 
 namespace inviwo {
 
-TEST(ShaderTests, initTest) {
-    Shader shader{"img_texturequad.vert", "img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
+LightComponent::LightComponent(CameraProperty* camera)
+    : ShaderComponent(), lighting_("lighting", "Lighting", camera) {}
 
-    Shader copy{shader};
-    ASSERT_TRUE(copy.isReady());
+std::string_view LightComponent::getName() const { return lighting_.getIdentifier(); }
 
-    Shader shader2{"img_identity.vert", "img_copy.frag"};
-    ASSERT_TRUE(shader2.isReady());
-
-    copy = shader2;
-    ASSERT_TRUE(copy.isReady());
-
-    Shader shader3{std::move(shader2)};
-    ASSERT_TRUE(shader3.isReady());
-
-    copy = std::move(shader3);
-    ASSERT_TRUE(copy.isReady());
+void LightComponent::initializeResources(Shader& shader) {
+    utilgl::addShaderDefines(shader, lighting_);
 }
 
-TEST(ShaderTests, implicitVertShader) {
-    Shader shader{"img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
+void LightComponent::process(Shader& shader, TextureUnitContainer&) {
+    if (lighting_.shadingMode_ != ShadingMode::None) {
+        utilgl::setUniforms(shader, lighting_);
+    }
 }
 
-TEST(ShaderTests, missingVertShader) {
-    auto res = utilgl::findShaderResource("img_texturequad.frag");
-    ASSERT_TRUE(res);
-    Shader shader{{{ShaderType::Fragment, res}}};
-    ASSERT_TRUE(!shader.isReady());
+std::vector<Property*> LightComponent::getProperties() { return {&lighting_}; }
+
+auto LightComponent::getSegments() -> std::vector<Segment> {
+    return {{"uniform LightParameters lighting;", placeholder::uniform, 500},
+            {R"(#include "utils/shading.glsl")", placeholder::include, 500}};
 }
 
 }  // namespace inviwo

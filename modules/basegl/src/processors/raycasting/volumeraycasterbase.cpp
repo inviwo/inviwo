@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,28 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
 
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/util/rendercontext.h>
+
+#include <modules/opengl/volume/volumegl.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/shader/standardshaders.h>
+
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 
 namespace inviwo {
 
-TEST(ShaderTests, initTest) {
-    Shader shader{"img_texturequad.vert", "img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
+VolumeRaycasterBase::VolumeRaycasterBase(std::string_view identifier, std::string_view displayName)
+    : ShaderComponentProcessorBase(
+          {utilgl::imgIdentityVert(),
+           {ShaderType::Fragment,
+            utilgl::findShaderResource("raycasting/raycaster-template.frag")}},
+          identifier, displayName) {}
 
-    Shader copy{shader};
-    ASSERT_TRUE(copy.isReady());
-
-    Shader shader2{"img_identity.vert", "img_copy.frag"};
-    ASSERT_TRUE(shader2.isReady());
-
-    copy = shader2;
-    ASSERT_TRUE(copy.isReady());
-
-    Shader shader3{std::move(shader2)};
-    ASSERT_TRUE(shader3.isReady());
-
-    copy = std::move(shader3);
-    ASSERT_TRUE(copy.isReady());
-}
-
-TEST(ShaderTests, implicitVertShader) {
-    Shader shader{"img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
-}
-
-TEST(ShaderTests, missingVertShader) {
-    auto res = utilgl::findShaderResource("img_texturequad.frag");
-    ASSERT_TRUE(res);
-    Shader shader{{{ShaderType::Fragment, res}}};
-    ASSERT_TRUE(!shader.isReady());
-}
+VolumeRaycasterBase::~VolumeRaycasterBase() = default;
 
 }  // namespace inviwo

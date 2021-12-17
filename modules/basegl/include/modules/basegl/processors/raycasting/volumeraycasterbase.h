@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,32 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#pragma once
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
+#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/processors/shadercomponentprocessorbase.h>
+
+#include <string_view>
 
 namespace inviwo {
 
-TEST(ShaderTests, initTest) {
-    Shader shader{"img_texturequad.vert", "img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
-
-    Shader copy{shader};
-    ASSERT_TRUE(copy.isReady());
-
-    Shader shader2{"img_identity.vert", "img_copy.frag"};
-    ASSERT_TRUE(shader2.isReady());
-
-    copy = shader2;
-    ASSERT_TRUE(copy.isReady());
-
-    Shader shader3{std::move(shader2)};
-    ASSERT_TRUE(shader3.isReady());
-
-    copy = std::move(shader3);
-    ASSERT_TRUE(copy.isReady());
-}
-
-TEST(ShaderTests, implicitVertShader) {
-    Shader shader{"img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
-}
-
-TEST(ShaderTests, missingVertShader) {
-    auto res = utilgl::findShaderResource("img_texturequad.frag");
-    ASSERT_TRUE(res);
-    Shader shader{{{ShaderType::Fragment, res}}};
-    ASSERT_TRUE(!shader.isReady());
-}
+/**
+ * @brief Base class for volume raycasters.
+ * Derived classes should register a set of ShaderComponents to customize behavior
+ * This base class uses the "raycasting/raycaster-template.frag" shader template.
+ *
+ * The following set of placeholders are used by the template:
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_INCLUDE
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_UNIFORM
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_FIRST
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
+ * * IVW_SHADER_SEGMENT_PLACEHOLDER_POST
+ */
+class IVW_MODULE_BASEGL_API VolumeRaycasterBase : public ShaderComponentProcessorBase {
+protected:
+    VolumeRaycasterBase(std::string_view identifier = "", std::string_view displayName = "");
+    virtual ~VolumeRaycasterBase();
+};
 
 }  // namespace inviwo

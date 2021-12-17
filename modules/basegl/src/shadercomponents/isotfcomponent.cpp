@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,6 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#include <modules/basegl/shadercomponents/isotfcomponent.h>
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
-
-namespace inviwo {
-
-TEST(ShaderTests, initTest) {
-    Shader shader{"img_texturequad.vert", "img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
-
-    Shader copy{shader};
-    ASSERT_TRUE(copy.isReady());
-
-    Shader shader2{"img_identity.vert", "img_copy.frag"};
-    ASSERT_TRUE(shader2.isReady());
-
-    copy = shader2;
-    ASSERT_TRUE(copy.isReady());
-
-    Shader shader3{std::move(shader2)};
-    ASSERT_TRUE(shader3.isReady());
-
-    copy = std::move(shader3);
-    ASSERT_TRUE(copy.isReady());
-}
-
-TEST(ShaderTests, implicitVertShader) {
-    Shader shader{"img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
-}
-
-TEST(ShaderTests, missingVertShader) {
-    auto res = utilgl::findShaderResource("img_texturequad.frag");
-    ASSERT_TRUE(res);
-    Shader shader{{{ShaderType::Fragment, res}}};
-    ASSERT_TRUE(!shader.isReady());
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

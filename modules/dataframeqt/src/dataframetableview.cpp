@@ -93,6 +93,14 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
             model_->selectRows(
                 sortProxy_->mapSelectionToSource(selectionModel()->selection()).indexes());
         });
+
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+}
+
+void DataFrameTableView::leaveEvent(QEvent* event) {
+    if (ignoreEvents_) return;
+    model_->highlightRow(QModelIndex{});
 }
 
 void DataFrameTableView::setManager(BrushingAndLinkingManager& manager) {

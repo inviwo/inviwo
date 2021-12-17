@@ -35,6 +35,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/shader/standardshaders.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/transformiterator.h>
 #include <inviwo/core/util/safecstr.h>
 
 #include <fmt/format.h>
@@ -411,11 +412,10 @@ std::shared_ptr<std::function<void()>> Shader::onReloadScoped(std::function<void
 void Shader::removeOnReload(const BaseCallBack* callback) { onReloadCallback_.remove(callback); }
 
 std::string Shader::shaderNames() const {
-    std::vector<std::string> names;
-    for (const auto& elem : shaderObjects_) {
-        names.push_back(elem.getFileName());
-    }
-    return joinString(names, "/");
+    const auto name = [](const ShaderObject& o) { return o.getFileName(); };
+    return fmt::format("[{}]",
+                       fmt::join(util::makeTransformIterator(name, shaderObjects_.begin()),
+                                 util::makeTransformIterator(name, shaderObjects_.end()), ", "));
 }
 
 GLint Shader::findUniformLocation(std::string_view name) const {

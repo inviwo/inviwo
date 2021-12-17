@@ -1,8 +1,9 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +27,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/ports/volumeport.h>
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
+#include <string_view>
 
 namespace inviwo {
 
-TEST(ShaderTests, initTest) {
-    Shader shader{"img_texturequad.vert", "img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
+/**
+ * Adds a Volume inport, binds that volume and assigns it the a sampler with <name> and
+ * sets the <name>Parameters uniforms
+ * It will sample the volume into <name>Voxel and keep the previous value in <name>VoxelPrev`
+ * If Gradients::Single is set the gradient for `channel` will be computed into `<name>Gradient`,
+ * the previous gradient will be store in ´<name>GradientPrev`.
+ * If Gradients::All is set the gradients for all channels will be computed into
+ * `<name>AllGradients`, the previous gradient will be store in ´<name>AllGradientsPrev`
+ */
+class IVW_MODULE_BASEGL_API VolumeComponent : public ShaderComponent {
+public:
+    enum class Gradients { None, Single, All };
+    VolumeComponent(std::string_view name, Gradients graidents = Gradients::Single);
 
-    Shader copy{shader};
-    ASSERT_TRUE(copy.isReady());
+    virtual std::string_view getName() const override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+    virtual std::vector<Segment> getSegments() override;
 
-    Shader shader2{"img_identity.vert", "img_copy.frag"};
-    ASSERT_TRUE(shader2.isReady());
-
-    copy = shader2;
-    ASSERT_TRUE(copy.isReady());
-
-    Shader shader3{std::move(shader2)};
-    ASSERT_TRUE(shader3.isReady());
-
-    copy = std::move(shader3);
-    ASSERT_TRUE(copy.isReady());
-}
-
-TEST(ShaderTests, implicitVertShader) {
-    Shader shader{"img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
-}
-
-TEST(ShaderTests, missingVertShader) {
-    auto res = utilgl::findShaderResource("img_texturequad.frag");
-    ASSERT_TRUE(res);
-    Shader shader{{{ShaderType::Fragment, res}}};
-    ASSERT_TRUE(!shader.isReady());
-}
+    VolumeInport volumePort;
+    Gradients gradients;
+};
 
 }  // namespace inviwo

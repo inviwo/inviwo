@@ -71,7 +71,12 @@
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
 #include <modules/basegl/processors/multichannelraycaster.h>
 #include <modules/basegl/processors/pointrenderer.h>
+#include <modules/basegl/processors/raycasting/atlasvolumeraycaster.h>
+#include <modules/basegl/processors/raycasting/multichannelvolumeraycaster.h>
+#include <modules/basegl/processors/raycasting/sphericalvolumeraycaster.h>
+#include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>
 #include <modules/basegl/processors/redgreenprocessor.h>
+#include <modules/basegl/processors/shadercomponentprocessorbase.h>
 #include <modules/basegl/processors/sphererenderer.h>
 #include <modules/basegl/processors/splitimage.h>
 #include <modules/basegl/processors/tuberendering.h>
@@ -113,6 +118,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProperty<SplitterProperty>();
     registerProperty<StipplingProperty>();
 
+    registerProcessor<AtlasVolumeRaycaster>();
     registerProcessor<AxisAlignedCutPlane>();
     registerProcessor<Background>();
     registerProcessor<CubeRenderer>();
@@ -130,11 +136,14 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<Mesh2DRenderProcessorGL>();
     registerProcessor<MeshPicking>();
     registerProcessor<MeshRenderProcessorGL>();
+    registerProcessor<MultiChannelVolumeRaycaster>();
     registerProcessor<MultichannelRaycaster>();
     registerProcessor<PointRenderer>();
     registerProcessor<RedGreenProcessor>();
     registerProcessor<SphereRenderer>();
+    registerProcessor<SphericalVolumeRaycaster>();
     registerProcessor<SplitImage>();
+    registerProcessor<StandardVolumeRaycaster>();
     registerProcessor<TubeRendering>();
     registerProcessor<VolumeRaycaster>();
     registerProcessor<VolumeSliceGL>();

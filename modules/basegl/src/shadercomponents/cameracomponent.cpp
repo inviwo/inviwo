@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,36 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
-
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/shadercomponents/cameracomponent.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
-TEST(ShaderTests, initTest) {
-    Shader shader{"img_texturequad.vert", "img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
+CameraComponent::CameraComponent(std::string_view name,
+                                 std::function<std::optional<mat4>()> boundingBox)
+    : ShaderComponent(), camera(std::string(name), "Camera", boundingBox) {}
 
-    Shader copy{shader};
-    ASSERT_TRUE(copy.isReady());
+std::string_view CameraComponent::getName() const { return camera.getIdentifier(); }
 
-    Shader shader2{"img_identity.vert", "img_copy.frag"};
-    ASSERT_TRUE(shader2.isReady());
+void CameraComponent::initializeResources(Shader& shader) { utilgl::addDefines(shader, camera); }
 
-    copy = shader2;
-    ASSERT_TRUE(copy.isReady());
-
-    Shader shader3{std::move(shader2)};
-    ASSERT_TRUE(shader3.isReady());
-
-    copy = std::move(shader3);
-    ASSERT_TRUE(copy.isReady());
+void CameraComponent::process(Shader& shader, TextureUnitContainer&) {
+    utilgl::setUniforms(shader, camera);
 }
 
-TEST(ShaderTests, implicitVertShader) {
-    Shader shader{"img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
+std::vector<Property*> CameraComponent::getProperties() { return {&camera}; }
+
+namespace {
+
+constexpr std::string_view uniforms = util::trim(R"(
+uniform CameraParameters {0};
+)");
+
 }
 
-TEST(ShaderTests, missingVertShader) {
-    auto res = utilgl::findShaderResource("img_texturequad.frag");
-    ASSERT_TRUE(res);
-    Shader shader{{{ShaderType::Fragment, res}}};
-    ASSERT_TRUE(!shader.isReady());
+auto CameraComponent::getSegments() -> std::vector<Segment> {
+    return {Segment{fmt::format(uniforms, getName()), placeholder::uniform, 500}};
 }
 
 }  // namespace inviwo

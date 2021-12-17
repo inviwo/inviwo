@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/util/timer.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+
+#include <string>
 
 namespace inviwo {
 
-TEST(ShaderTests, initTest) {
-    Shader shader{"img_texturequad.vert", "img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
+/**
+ * Adds a ´<name>´ float uniform to the shader with the current "time" in milliseconds, it gets
+ * updated using a timer every 33ms.
+ */
+class IVW_MODULE_BASEGL_API TimeComponent : public ShaderComponent {
+public:
+    TimeComponent(std::string_view name, std::function<void(InvalidationLevel)> invalidate);
 
-    Shader copy{shader};
-    ASSERT_TRUE(copy.isReady());
+    virtual std::string_view getName() const override;
 
-    Shader shader2{"img_identity.vert", "img_copy.frag"};
-    ASSERT_TRUE(shader2.isReady());
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
 
-    copy = shader2;
-    ASSERT_TRUE(copy.isReady());
+    virtual std::vector<Segment> getSegments() override;
+    virtual std::vector<Property*> getProperties() override;
 
-    Shader shader3{std::move(shader2)};
-    ASSERT_TRUE(shader3.isReady());
+    void start();
+    void stop();
+    void setRunning(bool run);
+    bool getRunning() const;
 
-    copy = std::move(shader3);
-    ASSERT_TRUE(copy.isReady());
-}
-
-TEST(ShaderTests, implicitVertShader) {
-    Shader shader{"img_texturequad.frag"};
-    ASSERT_TRUE(shader.isReady());
-}
-
-TEST(ShaderTests, missingVertShader) {
-    auto res = utilgl::findShaderResource("img_texturequad.frag");
-    ASSERT_TRUE(res);
-    Shader shader{{{ShaderType::Fragment, res}}};
-    ASSERT_TRUE(!shader.isReady());
-}
+private:
+    std::string name_;
+    BoolCompositeProperty enabled_;
+    BoolProperty running_;
+    IntProperty intervalMs_;
+    Timer timer_;
+};
 
 }  // namespace inviwo
