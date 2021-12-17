@@ -35,7 +35,6 @@ namespace inviwo {
 
 Outport::Outport(std::string identifier)
     : Port(identifier)
-    , invalidationLevel_(InvalidationLevel::Valid)
     , isReady_{false,
                [this](const bool&) {
                    for (auto inport : connectedInports_) {
@@ -46,7 +45,8 @@ Outport::Outport(std::string identifier)
                []() {
                    IVW_ASSERT(false, "Must be set by derived class, see for example DataOutPort");
                    return false;
-               }} {}
+               }}
+    , invalidationLevel_(InvalidationLevel::Valid) {}
 
 Outport::~Outport() = default;
 
