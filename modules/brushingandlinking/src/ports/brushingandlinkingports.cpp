@@ -177,7 +177,9 @@ void BrushingAndLinkingInport::setChanged(bool changed, const Outport* source) {
 }
 
 BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string identifier)
-    : Outport(identifier), manager_(this) {}
+    : Outport(identifier), manager_(this) {
+    isReady_.setUpdate([this]() { return invalidationLevel_ == InvalidationLevel::Valid; });
+}
 
 BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() { return manager_; }
 

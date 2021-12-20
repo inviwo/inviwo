@@ -66,6 +66,8 @@ public:
 
     /**
      * Called by Processor::invalidate, will invalidate its connected inports.
+     * @note Port is set to valid after its processor successfully finish processing.
+     * @see setValid
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
     virtual InvalidationLevel getInvalidationLevel() const;
@@ -104,6 +106,10 @@ public:
     virtual void clear() = 0;
 
 protected:
+    /**
+     * @note The internal isReady_ lambda function must be set by derived class, e.g.,
+     * perform isReady_.setUpdate(...) in the constructor of your derived class as in DataOutport.
+     */
     Outport(std::string identifier = "");
 
     // These function are only called by the corresponding inport.
