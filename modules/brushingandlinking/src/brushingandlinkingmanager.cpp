@@ -335,8 +335,7 @@ void BrushingAndLinkingManager::onBrush(
     onBrushCallback_ = callback;
 }
 
-BrushingModifications BrushingAndLinkingManager::getInvalidateOn() const {
-    return invalidateOn_; }
+BrushingModifications BrushingAndLinkingManager::getInvalidateOn() const { return invalidateOn_; }
 
 void BrushingAndLinkingManager::setInvalidateOn(BrushingModifications invalidateOn) {
     invalidateOn_ = invalidateOn;
@@ -404,7 +403,7 @@ void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget 
     modifications_[target] |= fromAction(action);
 
     // Only invalidate the top level in the connected brushing manager network
-    if (!parent_){// && (getModifiedActions() & invalidateOn_)) {
+    if (!parent_) {  // && (getModifiedActions() & invalidateOn_)) {
         if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
             auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
             // Processor need to be invalidated for the network evaluation to be notified.

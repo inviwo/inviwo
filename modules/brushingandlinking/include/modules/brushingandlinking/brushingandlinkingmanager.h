@@ -53,15 +53,16 @@ class Deserializer;
 /**
  * Manages brushing and linking events for filtering, selecting, and highlighting. When initialized
  * with a BrushingAndLinking inport, changes are propagated using this port if connected.
- * A Processor can choose to only handle a certain type of 
+ * A Processor can choose to only handle a certain type of
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager : public Serializable {
 public:
     /**
      * @param inport owner of the manager.
      * @param invalidateOn for the modifications that should invalidate the processor
-     * (Processor::process will not be called). 
-     * @param invalidationLevel that will be propagated to the port and thereby upwards in the network.
+     * (Processor::process will not be called).
+     * @param invalidationLevel that will be propagated to the port and thereby upwards in the
+     * network.
      */
     BrushingAndLinkingManager(
         BrushingAndLinkingInport* inport,
@@ -70,8 +71,9 @@ public:
     /**
      * @param outport owner of the manager.
      * @param invalidateOn for the modifications that should invalidate the processor
-     * (Processor::process will not be called). 
-     * @param invalidationLevel that will be propagated to the port and thereby upwards in the network.
+     * (Processor::process will not be called).
+     * @param invalidationLevel that will be propagated to the port and thereby upwards in the
+     * network.
      */
     BrushingAndLinkingManager(
         BrushingAndLinkingOutport* outport,
@@ -289,7 +291,7 @@ private:
     std::unordered_set<BrushingAndLinkingManager*> children_;
     InvalidationLevel invalidationLevel_;
     BrushingModifications
-        invalidateOn_;  ///< Will cause owners to only invalidate processor for these modifications. 
+        invalidateOn_;  ///< Will cause owners to only invalidate processor for these modifications.
 
     std::unordered_map<BrushingTarget, BrushingModifications> modifications_;
 
