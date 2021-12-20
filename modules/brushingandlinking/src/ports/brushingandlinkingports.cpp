@@ -33,8 +33,9 @@
 
 namespace inviwo {
 
-BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
-    : Inport(identifier), manager_(this) {
+BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier,
+                                                   BrushingModifications invalidateOn)
+    : Inport(identifier), manager_(this, invalidateOn) {
     setOptional(true);
 }
 
@@ -123,6 +124,14 @@ const BitSet& BrushingAndLinkingInport::getSelectedColumns() const {
     return manager_.getIndices(BrushingAction::Select, BrushingTarget::Column);
 }
 
+BrushingModifications BrushingAndLinkingInport::getInvalidateOn() const {
+    return manager_.getInvalidateOn();
+}
+
+void BrushingAndLinkingInport::setInvalidateOn(BrushingModifications invalidateOn) {
+    manager_.setInvalidateOn(invalidateOn);
+}
+
 BrushingAndLinkingManager& BrushingAndLinkingInport::getManager() { return manager_; }
 
 const BrushingAndLinkingManager& BrushingAndLinkingInport::getManager() const { return manager_; }
@@ -174,6 +183,13 @@ void BrushingAndLinkingInport::setChanged(bool changed, const Outport* source) {
         manager_.markAsValid();
     }
     Inport::setChanged(changed, source);
+}
+
+void BrushingAndLinkingInport::invalidate(InvalidationLevel invalidationLevel) {
+    if (invalidationLevel == InvalidationLevel::Valid ||
+        (manager_.getInvalidateOn() & manager_.getModifiedActions())) {
+        Inport::invalidate(invalidationLevel);
+    }
 }
 
 BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string identifier)

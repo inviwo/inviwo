@@ -40,18 +40,29 @@
 namespace inviwo {
 
 class BrushingAndLinkingOutport;
+
 /**
  * \ingroup ports
  * Enables selection/filtering/highlighting between processors.
- * The port has a BrushingManager independent on if it is connected or not, e.g. it does not need to
- * be connected to a BrushingAndLinkingOutport to be valid.
+ * The port has a BrushingManager independent on if it is connected or not, e.g., it does not need
+ * to be connected to a BrushingAndLinkingOutport to be valid.
+ *
+ * Use setInvalidateOn flags if you only want Processor::process to be called for a subset of
+ * brushing actions. Use getModifiedActions if you want to know which actions caused a
+ * Processor::process call.
  * @see BrushingAndLinkingManager
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingInport : public Inport {
 public:
     using type = void;
-
-    BrushingAndLinkingInport(std::string identifier);
+    /**
+     * Inport constructor for BrushingAndLinkingManager.
+     * @param identifier of port.
+     * @param invalidateOn flags for the modifications that should invalidate the processor
+     * (Processor::process will not be called).
+     */
+    BrushingAndLinkingInport(std::string identifier, BrushingModifications invalidateOn =
+                                                         BrushingModifications(flags::any));
     virtual ~BrushingAndLinkingInport() = default;
 
     /**
@@ -65,6 +76,9 @@ public:
 
     /**
      * return which actions were performed since the last network evaluation
+     * @see isFilteringModified
+     * @see isSelectionModified
+     * @see isHighlightModified
      */
     BrushingModifications getModifiedActions() const;
     /**
@@ -137,6 +151,17 @@ public:
     [[deprecated("use getIndices() or getSelectedIndices() with a column target instead")]] const BitSet& getSelectedColumns() const;
     // clang-format on
 
+    /**
+     * Returns the types of actions causing the owning processor to invalidate.
+     */
+    BrushingModifications getInvalidateOn() const;
+
+    /**
+     * Set the types of brushing actions that should invalidate the owning processor.
+     * Enables processors to only handle certain types of filter/selection/highlight.
+     */
+    void setInvalidateOn(BrushingModifications invalidateOn);
+
     BrushingAndLinkingManager& getManager();
     const BrushingAndLinkingManager& getManager() const;
 
@@ -152,6 +177,7 @@ public:
 
 private:
     virtual void setChanged(bool changed = true, const Outport* source = nullptr) override;
+    virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
     BrushingAndLinkingManager manager_;
 };

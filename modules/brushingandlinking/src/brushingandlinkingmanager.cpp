@@ -43,8 +43,9 @@
 namespace inviwo {
 
 BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingInport* inport,
+                                                     BrushingModifications invalidateOn,
                                                      InvalidationLevel validationLevel)
-    : owner_(inport), invalidationLevel_(validationLevel) {
+    : owner_(inport), invalidationLevel_(validationLevel), invalidateOn_(invalidateOn) {
 
     inport->onConnect([&]() {
         setParent(&static_cast<BrushingAndLinkingOutport*>(
@@ -55,8 +56,9 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingInport* i
 }
 
 BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingOutport* outport,
+                                                     BrushingModifications invalidateOn,
                                                      InvalidationLevel validationLevel)
-    : owner_(outport), invalidationLevel_(validationLevel) {}
+    : owner_(outport), invalidationLevel_(validationLevel), invalidateOn_(invalidateOn) {}
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() = default;
 
@@ -333,6 +335,13 @@ void BrushingAndLinkingManager::onBrush(
     onBrushCallback_ = callback;
 }
 
+BrushingModifications BrushingAndLinkingManager::getInvalidateOn() const {
+    return invalidateOn_; }
+
+void BrushingAndLinkingManager::setInvalidateOn(BrushingModifications invalidateOn) {
+    invalidateOn_ = invalidateOn;
+}
+
 void BrushingAndLinkingManager::markAsValid() {
     for (auto c : children_) {
         for (const auto& [target, modification] : modifications_) {
@@ -394,12 +403,18 @@ int BrushingAndLinkingManager::getActionIndex(BrushingAction action) {
 void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget target) {
     modifications_[target] |= fromAction(action);
 
-    if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
-        auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
-        outport->getProcessor()->invalidate(invalidationLevel_);
-    } else if (!parent_) {
-        auto inport = std::get<BrushingAndLinkingInport*>(owner_);
-        inport->getProcessor()->invalidate(invalidationLevel_);
+    // Only invalidate the top level in the connected brushing manager network
+    if (!parent_){// && (getModifiedActions() & invalidateOn_)) {
+        if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
+            auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
+            // Processor need to be invalidated for the network evaluation to be notified.
+            outport->getProcessor()->invalidate(invalidationLevel_);
+        } else if (std::holds_alternative<BrushingAndLinkingInport*>(owner_)) {
+            // Nothing is connected, invalidate the processor itself
+            auto inport = std::get<BrushingAndLinkingInport*>(owner_);
+
+            inport->getProcessor()->invalidate(invalidationLevel_);
+        }
     }
 
     if (parent_) {

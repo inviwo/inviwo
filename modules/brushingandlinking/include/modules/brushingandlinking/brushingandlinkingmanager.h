@@ -53,13 +53,30 @@ class Deserializer;
 /**
  * Manages brushing and linking events for filtering, selecting, and highlighting. When initialized
  * with a BrushingAndLinking inport, changes are propagated using this port if connected.
+ * A Processor can choose to only handle a certain type of 
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager : public Serializable {
 public:
-    BrushingAndLinkingManager(BrushingAndLinkingInport* inport,
-                              InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
-    BrushingAndLinkingManager(BrushingAndLinkingOutport* outport,
-                              InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
+    /**
+     * @param inport owner of the manager.
+     * @param invalidateOn for the modifications that should invalidate the processor
+     * (Processor::process will not be called). 
+     * @param invalidationLevel that will be propagated to the port and thereby upwards in the network.
+     */
+    BrushingAndLinkingManager(
+        BrushingAndLinkingInport* inport,
+        BrushingModifications invalidateOn = BrushingModifications(flags::any),
+        InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
+    /**
+     * @param outport owner of the manager.
+     * @param invalidateOn for the modifications that should invalidate the processor
+     * (Processor::process will not be called). 
+     * @param invalidationLevel that will be propagated to the port and thereby upwards in the network.
+     */
+    BrushingAndLinkingManager(
+        BrushingAndLinkingOutport* outport,
+        BrushingModifications invalidateOn = BrushingModifications(flags::any),
+        InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
     virtual ~BrushingAndLinkingManager();
 
     /**
@@ -232,6 +249,17 @@ public:
             callback);
 
     /**
+     * Returns the types of actions causing the owner (BrusingAndLinkingInport) to invalidate.
+     */
+    BrushingModifications getInvalidateOn() const;
+
+    /**
+     * Set the types of brushing actions that should invalidate the owner (BrusingAndLinkingInport).
+     * Enables processors to only handle certain types of filter/selection/highlight.
+     */
+    void setInvalidateOn(BrushingModifications invalidateOn);
+
+    /**
      * propagates the modified state to all child managers and resets the state. Should only be
      * called by the brushing and linking ports _after_ the process() function has been called.
      */
@@ -260,6 +288,8 @@ private:
     BrushingAndLinkingManager* parent_ = nullptr;
     std::unordered_set<BrushingAndLinkingManager*> children_;
     InvalidationLevel invalidationLevel_;
+    BrushingModifications
+        invalidateOn_;  ///< Will cause owners to only invalidate processor for these modifications. 
 
     std::unordered_map<BrushingTarget, BrushingModifications> modifications_;
 
