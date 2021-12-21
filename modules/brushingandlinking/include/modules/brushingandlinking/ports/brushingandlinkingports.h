@@ -44,11 +44,11 @@ class BrushingAndLinkingOutport;
 /**
  * \ingroup ports
  * Enables selection/filtering/highlighting between processors.
- * The port has a BrushingManager independent on if it is connected or not, e.g., it does not need
- * to be connected to a BrushingAndLinkingOutport to be valid.
+ * The port has a BrushingManager independent on whether it is connected or not. Therefore, it does
+ * not need to be connected to a BrushingAndLinkingOutport to be valid.
  *
  * Use setInvalidateOn flags if you only want Processor::process to be called for a subset of
- * brushing actions. Use getModifiedActions if you want to know which actions caused a
+ * brushing actions. Use getModifiedActions if you want to know which BrushingModifications caused a
  * Processor::process call.
  * @see BrushingAndLinkingManager
  */
@@ -59,7 +59,7 @@ public:
      * Inport constructor for BrushingAndLinkingManager.
      * @param identifier of port.
      * @param invalidateOn flags for the modifications that should invalidate the processor
-     * (Processor::process will not be called).
+     * (Processor::process will be called for those).
      */
     BrushingAndLinkingInport(std::string identifier, BrushingModifications invalidateOn =
                                                          BrushingModifications(flags::any));
@@ -158,7 +158,7 @@ public:
 
     /**
      * Set the types of brushing actions that should invalidate the owning processor.
-     * Enables processors to only handle certain types of filter/selection/highlight.
+     * Enables processors to only handle certain types of filter/selection/highlight actions.
      */
     void setInvalidateOn(BrushingModifications invalidateOn);
 
@@ -197,6 +197,25 @@ public:
 
     BrushingAndLinkingManager& getManager();
     const BrushingAndLinkingManager& getManager() const;
+
+    /**
+     * Will invalidate its connected inports if any of the BrushingModifications overlap with
+     * brushing actions provided by getInvalidateOn
+     *
+     * @note Port is set to valid after its processor successfully finish processing.
+     */
+    virtual void invalidate(InvalidationLevel invalidationLevel) override;
+
+    /**
+     * Returns the types of actions causing the owning processor to invalidate.
+     */
+    BrushingModifications getInvalidateOn() const;
+
+    /**
+     * Set the types of brushing actions that should invalidate the owning processor.
+     * Enables processors to only handle certain types of filter/selection/highlight actions.
+     */
+    void setInvalidateOn(BrushingModifications invalidateOn);
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

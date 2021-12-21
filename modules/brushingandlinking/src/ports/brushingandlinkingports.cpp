@@ -201,6 +201,21 @@ BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() { return mana
 
 const BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() const { return manager_; }
 
+void BrushingAndLinkingOutport::invalidate(InvalidationLevel invalidationLevel) {
+    if (invalidationLevel == InvalidationLevel::Valid ||
+        (manager_.getInvalidateOn() & manager_.getModifiedActions())) {
+        Outport::invalidate(invalidationLevel);
+    }
+}
+
+BrushingModifications BrushingAndLinkingOutport::getInvalidateOn() const {
+    return manager_.getInvalidateOn();
+}
+
+void BrushingAndLinkingOutport::setInvalidateOn(BrushingModifications invalidateOn) {
+    manager_.setInvalidateOn(invalidateOn);
+}  
+
 void BrushingAndLinkingOutport::serialize(Serializer& s) const {
     Outport::serialize(s);
     manager_.serialize(s);
