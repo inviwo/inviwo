@@ -214,7 +214,7 @@ BrushingModifications BrushingAndLinkingOutport::getInvalidateOn() const {
 
 void BrushingAndLinkingOutport::setInvalidateOn(BrushingModifications invalidateOn) {
     manager_.setInvalidateOn(invalidateOn);
-}  
+}
 
 void BrushingAndLinkingOutport::serialize(Serializer& s) const {
     Outport::serialize(s);

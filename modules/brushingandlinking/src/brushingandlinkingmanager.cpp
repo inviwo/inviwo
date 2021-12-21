@@ -335,8 +335,7 @@ void BrushingAndLinkingManager::onBrush(
     onBrushCallback_ = callback;
 }
 
-BrushingModifications BrushingAndLinkingManager::getInvalidateOn() const {
-    return invalidateOn_; }
+BrushingModifications BrushingAndLinkingManager::getInvalidateOn() const { return invalidateOn_; }
 
 void BrushingAndLinkingManager::setInvalidateOn(BrushingModifications invalidateOn) {
     invalidateOn_ = invalidateOn;
