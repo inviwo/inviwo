@@ -165,6 +165,16 @@ void DataFrame::updateIndexBuffer() {
     std::iota(indexVector.begin(), indexVector.end(), 0);
 }
 
+std::vector<std::string> DataFrame::getHeaders() const {
+    std::vector<std::string> headers {};
+
+    for (const auto& column:columns_) {
+        headers.push_back(column->getHeader());
+    }
+
+    return headers;
+}
+
 size_t DataFrame::getNumberOfColumns() const { return columns_.size(); }
 
 size_t DataFrame::getNumberOfRows() const {

@@ -203,6 +203,14 @@ public:
      */
     void updateIndexBuffer();
 
+    /**
+     * Retrieves the headers of all columns of the data frame in the same order as they are stored
+     * in the data frame.
+     *
+     * @returns A vector of strings containing the headers of all columns.
+     */
+    [[nodiscard]] std::vector<std::string> getHeaders() const;
+
 private:
     std::vector<std::shared_ptr<Column>> columns_;
 };
