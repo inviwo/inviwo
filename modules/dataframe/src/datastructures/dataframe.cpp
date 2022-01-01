@@ -166,9 +166,9 @@ void DataFrame::updateIndexBuffer() {
 }
 
 std::vector<std::string> DataFrame::getHeaders() const {
-    std::vector<std::string> headers {};
+    std::vector<std::string> headers{};
 
-    for (const auto& column:columns_) {
+    for (const auto& column : columns_) {
         headers.push_back(column->getHeader());
     }
 
