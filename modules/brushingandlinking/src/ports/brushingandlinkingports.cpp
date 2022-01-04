@@ -33,8 +33,8 @@
 
 namespace inviwo {
 
-BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier,
-                                                   std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
+BrushingAndLinkingInport::BrushingAndLinkingInport(
+    std::string identifier, std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
     : Inport(identifier), manager_(this, invalidationLevels) {
     setOptional(true);
 }
@@ -124,11 +124,13 @@ const BitSet& BrushingAndLinkingInport::getSelectedColumns() const {
     return manager_.getIndices(BrushingAction::Select, BrushingTarget::Column);
 }
 
-const std::vector<BrushingTargetsInvalidationLevel>& BrushingAndLinkingInport::getInvalidationLevels() const {
+const std::vector<BrushingTargetsInvalidationLevel>&
+BrushingAndLinkingInport::getInvalidationLevels() const {
     return manager_.getInvalidationLevels();
 }
 
-void BrushingAndLinkingInport::setInvalidationLevels(std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
+void BrushingAndLinkingInport::setInvalidationLevels(
+    std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
     manager_.setInvalidationLevels(invalidationLevels);
 }
 
@@ -208,11 +210,13 @@ void BrushingAndLinkingOutport::invalidate(InvalidationLevel invalidationLevel) 
     Outport::invalidate(manager_.getInvalidationLevel());
 }
 
-const std::vector<BrushingTargetsInvalidationLevel>& BrushingAndLinkingOutport::getInvalidationLevels() const {
+const std::vector<BrushingTargetsInvalidationLevel>&
+BrushingAndLinkingOutport::getInvalidationLevels() const {
     return manager_.getInvalidationLevels();
 }
 
-void BrushingAndLinkingOutport::setInvalidationLevels(std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
+void BrushingAndLinkingOutport::setInvalidationLevels(
+    std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
     manager_.setInvalidationLevels(invalidationLevels);
 }
 

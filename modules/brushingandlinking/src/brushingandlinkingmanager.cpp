@@ -42,8 +42,9 @@
 
 namespace inviwo {
 
-BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingInport* inport,
-                                                     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
+BrushingAndLinkingManager::BrushingAndLinkingManager(
+    BrushingAndLinkingInport* inport,
+    std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
     : owner_(inport), invalidationLevels_(invalidationLevels) {
 
     inport->onConnect([&]() {
@@ -54,8 +55,9 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingInport* i
     inport->onDisconnect([&]() { setParent(nullptr); });
 }
 
-BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingOutport* outport,
-                                                     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
+BrushingAndLinkingManager::BrushingAndLinkingManager(
+    BrushingAndLinkingOutport* outport,
+    std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
     : owner_(outport), invalidationLevels_(invalidationLevels) {}
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() = default;
@@ -333,15 +335,17 @@ void BrushingAndLinkingManager::onBrush(
     onBrushCallback_ = callback;
 }
 
-const std::vector<BrushingTargetsInvalidationLevel>& BrushingAndLinkingManager::getInvalidationLevels() const { return invalidationLevels_; }
-
+const std::vector<BrushingTargetsInvalidationLevel>&
+BrushingAndLinkingManager::getInvalidationLevels() const {
+    return invalidationLevels_;
+}
 
 InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel() const {
     return getInvalidationLevel(modifications_);
 }
 
-
-void BrushingAndLinkingManager::setInvalidationLevels(std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
+void BrushingAndLinkingManager::setInvalidationLevels(
+    std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
     invalidationLevels_ = invalidationLevels;
 }
 
@@ -411,7 +415,8 @@ void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget 
         if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
             auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
             // Processor need to be invalidated for the network evaluation to be notified.
-            outport->getProcessor()->invalidate(getInvalidationLevel(target, modifications_[target]));
+            outport->getProcessor()->invalidate(
+                getInvalidationLevel(target, modifications_[target]));
         } else if (std::holds_alternative<BrushingAndLinkingInport*>(owner_)) {
             // Nothing is connected, invalidate the processor itself
             auto inport = std::get<BrushingAndLinkingInport*>(owner_);
@@ -442,7 +447,8 @@ void BrushingAndLinkingManager::propagate(BrushingAction action,
         auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
         InvalidationLevel invalidationLevel(InvalidationLevel::Valid);
         for (auto& t : targets) {
-            invalidationLevel = std::max(getInvalidationLevel(t, modifications_[t]), invalidationLevel);
+            invalidationLevel =
+                std::max(getInvalidationLevel(t, modifications_[t]), invalidationLevel);
         }
         outport->getProcessor()->invalidate(invalidationLevel);
     }
@@ -504,8 +510,8 @@ const BitSet* BrushingAndLinkingManager::getBitSet(BrushingAction action,
                       selections_[getActionIndex(action)]);
 }
 
-
-InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel(const BrushingTarget& target, BrushingModifications mods) const {
+InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel(
+    const BrushingTarget& target, BrushingModifications mods) const {
     InvalidationLevel invalidationLevel(InvalidationLevel::Valid);
     for (const auto& l : invalidationLevels_) {
         if (l.contains(target, mods)) {
@@ -515,7 +521,8 @@ InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel(const Brushing
     return invalidationLevel;
 }
 
-InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel(const std::unordered_map<BrushingTarget, BrushingModifications>& mods) const {
+InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel(
+    const std::unordered_map<BrushingTarget, BrushingModifications>& mods) const {
     InvalidationLevel invalidationLevel(InvalidationLevel::Valid);
     for (auto& m : mods) {
         invalidationLevel = std::max(getInvalidationLevel(m.first, m.second), invalidationLevel);
@@ -523,6 +530,4 @@ InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel(const std::uno
     return invalidationLevel;
 }
 
-
 }  // namespace inviwo
- 
