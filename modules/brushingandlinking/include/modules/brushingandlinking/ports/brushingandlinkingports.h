@@ -72,8 +72,8 @@ public:
      *  // Invalidate processor on filtering or selection for any target.
      *  BrushingAndLinkingInport("brushing",
      *  {
-     *    {BrushingAndLinkingManager::AnyBrushingTarget, BrushingModification::Filtered | BrushingModification::Selected,
-     * InvalidationLevel::InvalidOutput}
+     *    {BrushingAndLinkingManager::AnyBrushingTarget, BrushingModification::Filtered |
+     * BrushingModification::Selected, InvalidationLevel::InvalidOutput}
      *  }
      *  );
      * @param identifier of port.
@@ -83,7 +83,8 @@ public:
      */
     BrushingAndLinkingInport(std::string identifier,
                              std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
-                                 {BrushingAndLinkingManager::AnyBrushingTarget, BrushingModifications(flags::any),
+                                 {BrushingAndLinkingManager::AnyBrushingTarget,
+                                  BrushingModifications(flags::any),
                                   InvalidationLevel::InvalidOutput}});
     virtual ~BrushingAndLinkingInport() = default;
 
@@ -194,8 +195,8 @@ public:
      *  // Invalidate processor on filtering or selection for any target.
      *  setInvalidationLevels(
      *  {
-     *    {BrushingAndLinkingManager::AnyBrushingTarget, BrushingModification::Filtered | BrushingModification::Selected,
-     * InvalidationLevel::InvalidOutput}
+     *    {BrushingAndLinkingManager::AnyBrushingTarget, BrushingModification::Filtered |
+     * BrushingModification::Selected, InvalidationLevel::InvalidOutput}
      *  }
      *  );
      * @endcode

@@ -92,7 +92,8 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTargetsInvalidationLevel {
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager : public Serializable {
 public:
-    static inline const std::vector<BrushingTarget> AnyBrushingTarget = {}; ///< Helper for invalidation level initialization
+    static inline const std::vector<BrushingTarget> AnyBrushingTarget =
+        {};  ///< Helper for invalidation level initialization
     /**
      * @code
      *  // Only invalidate processor on row filtering and column selection.
