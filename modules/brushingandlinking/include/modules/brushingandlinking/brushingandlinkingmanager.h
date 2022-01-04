@@ -41,6 +41,7 @@
 #include <variant>
 #include <array>
 #include <unordered_set>
+#include <map>
 
 namespace inviwo {
 
@@ -50,38 +51,85 @@ class Processor;
 class Serializer;
 class Deserializer;
 
+/*
+ * @brief Combination of brushing targets (row, column), actions (selection/filtering/highlight), and InvalidationLevel.
+ *
+ * Used by BrushingAndLinkingManager, BrushingAndLinkingInport, and BrushingAndLinkingOutport to determine the InvalidationLevel to invalidate the processor depending on the provided brushing target and actions.
+ * Empty list of targets means that the BrushingModifications apply to all targets.
+ * @see BrushingAndLinkingManager
+ */
+struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTargetsInvalidationLevel {
+    BrushingTargetsInvalidationLevel(BrushingModifications mods, InvalidationLevel invalidationLevel): modifications(mods), invalidationLevel(invalidationLevel) {}
+    BrushingTargetsInvalidationLevel(std::vector<BrushingTarget> targets, BrushingModifications mods, InvalidationLevel invalidationLevel): targets(targets), modifications(mods), invalidationLevel(invalidationLevel) {}
+    
+    bool contains(const BrushingTarget& target) const {
+        if (targets.empty()) return true;
+        return std::find(targets.begin(), targets.end(), target) != targets.end();
+    }
+    bool contains(const BrushingTarget& target, BrushingModifications mods) const {
+        return contains(target) && (mods & modifications);
+    }
+    std::vector<BrushingTarget> targets; ///< Empty == any
+    BrushingModifications modifications;
+    InvalidationLevel invalidationLevel;
+};
+
 /**
  * Manages brushing and linking events for filtering, selecting, and highlighting. When initialized
  * with a BrushingAndLinking inport, changes are propagated using this port if connected.
  *
- * Use setInvalidateOn flags if you only want Processor::process to be called for a subset of
- * brushing actions. Use getModifiedActions if you want to know which BrushingModifications caused a
+ * Use setInvalidationLevels if you only want Processor::process to be called for a subset of
+ * brushing targets or actions. Use getModifiedActions if you want to know which BrushingModifications caused a
  * Processor::process call.
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager : public Serializable {
 public:
     /**
+     * @code
+     *  // Only invalidate processor on row filtering and column selection.
+     *  BrushingAndLinkingManager(port,
+     *  {
+     *    {{BrushingTarget::Row}, BrushingModification::Filtered, InvalidationLevel::InvalidOutput},
+     *    {{BrushingTarget::Column}, BrushingModification::Selected, InvalidationLevel::InvalidOutput}
+     *  }
+     *  );
+     *  // Invalidate processor on any type of action for filtering or column selection.
+     *  BrushingAndLinkingManager(port,
+     *  {
+     *    {BrushingModification::Filtered | BrushingModification::Selected, InvalidationLevel::InvalidOutput}
+     *  }
+     *  );
+     * @endcode
      * @param inport owner of the manager.
-     * @param invalidateOn for the modifications that should invalidate the processor
-     * (Processor::process will be called for those).
-     * @param invalidationLevel that will be propagated to the port and thereby upwards in the
-     * network.
+     * @param invalidationLevels for brushing targets and actions that should invalidate the port
+     * (Processor::process will be called for those). Defaults to InvalidOutput for all targets (row, column) and all actions (filtering/selection/highlight).
      */
     BrushingAndLinkingManager(
         BrushingAndLinkingInport* inport,
-        BrushingModifications invalidateOn = BrushingModifications(flags::any),
-        InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
+                              std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {{BrushingModifications(flags::any), InvalidationLevel::InvalidOutput}});
     /**
+     * @code
+     *  // Only invalidate processor on row filtering and column selection.
+     *  BrushingAndLinkingManager(port,
+     *  {
+     *    {{BrushingTarget::Row}, BrushingModification::Filtered, InvalidationLevel::InvalidOutput},
+     *    {{BrushingTarget::Column}, BrushingModification::Selected, InvalidationLevel::InvalidOutput}
+     *  }
+     *  );
+     *  // Invalidate processor on any type of action for filtering or column selection.
+     *  BrushingAndLinkingManager(port,
+     *  {
+     *    {BrushingModification::Filtered | BrushingModification::Selected, InvalidationLevel::InvalidOutput}
+     *  }
+     *  );
+     * @endcode
      * @param outport owner of the manager.
-     * @param invalidateOn for the modifications that should invalidate the processor
-     * (Processor::process will be called for those).
-     * @param invalidationLevel that will be propagated to the port and thereby upwards in the
-     * network.
+     * @param invalidationLevels for brushing targets and actions that should invalidate the port
+     * (Processor::process will be called for those). Defaults to InvalidOutput for all targets (row, column) and all actions (filtering/selection/highlight).
      */
     BrushingAndLinkingManager(
         BrushingAndLinkingOutport* outport,
-        BrushingModifications invalidateOn = BrushingModifications(flags::any),
-        InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
+                              std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {{BrushingModifications(flags::any), InvalidationLevel::InvalidOutput}});
     virtual ~BrushingAndLinkingManager();
 
     /**
@@ -254,15 +302,36 @@ public:
             callback);
 
     /**
-     * Returns the types of actions causing the owner (BrusingAndLinking port) to invalidate.
+     * Returns the highest InvalidationLevel for the currently modified targets and actions, or Valid if no matching target/action was found.
+     * @see setInvalidationLevels, getInvalidationLevels
      */
-    BrushingModifications getInvalidateOn() const;
+    InvalidationLevel getInvalidationLevel() const;
+    
+    /**
+     * Returns the targets and their actions causing the owner (BrusingAndLinking port) to invalidate.
+     */
+    const std::vector<BrushingTargetsInvalidationLevel>& getInvalidationLevels() const;
 
     /**
-     * Set the types of brushing actions that should invalidate the owner (BrusingAndLinking port).
-     * Enables processors to only handle certain types of filter/selection/highlight actions.
+     * Set the types of brushing targets and actions that should invalidate the owner (BrushingAndLinking port).
+     * Enables processors to only handle certain types of row/column targets and filter/selection/highlight actions.
+     * @code
+     *  // Only invalidate processor on row filtering and column selection.
+     *  setInvalidationLevels(
+     *  {
+     *    {{BrushingTarget::Row}, BrushingModification::Filtered, InvalidationLevel::InvalidOutput},
+     *    {{BrushingTarget::Column}, BrushingModification::Selected, InvalidationLevel::InvalidOutput}
+     *  }
+     *  );
+     *  // Invalidate processor on any type of action for filtering or column selection.
+     *  setInvalidationLevels(
+     *  {
+     *    {BrushingModification::Filtered | BrushingModification::Selected, InvalidationLevel::InvalidOutput}
+     *  }
+     *  );
+     * @endcode
      */
-    void setInvalidateOn(BrushingModifications invalidateOn);
+    void setInvalidationLevels(std::vector<BrushingTargetsInvalidationLevel> invalidationLevels);
 
     /**
      * propagates the modified state to all child managers and resets the state. Should only be
@@ -280,6 +349,9 @@ private:
     void addChild(BrushingAndLinkingManager* child);
     void removeChild(BrushingAndLinkingManager* child);
     const BitSet* getBitSet(BrushingAction action, BrushingTarget target) const;
+    
+    InvalidationLevel getInvalidationLevel(const BrushingTarget& target, BrushingModifications mods) const;
+    InvalidationLevel getInvalidationLevel(const std::unordered_map<BrushingTarget, BrushingModifications>& mods) const;
 
     using BitSetTargets = std::unordered_map<BrushingTarget, BitSet>;
     using IndexListTargets = std::unordered_map<BrushingTarget, IndexList>;
@@ -292,10 +364,7 @@ private:
     std::variant<BrushingAndLinkingInport*, BrushingAndLinkingOutport*> owner_;
     BrushingAndLinkingManager* parent_ = nullptr;
     std::unordered_set<BrushingAndLinkingManager*> children_;
-    InvalidationLevel invalidationLevel_;
-    BrushingModifications
-        invalidateOn_;  ///< Will cause owners to only invalidate processor for these modifications.
-
+    std::vector<BrushingTargetsInvalidationLevel> invalidationLevels_; ///< Invalidation levels for combinations of {target, action}
     std::unordered_map<BrushingTarget, BrushingModifications> modifications_;
 
     std::function<void(BrushingAction, BrushingTarget, const BitSet&, std::string_view)>
@@ -303,3 +372,4 @@ private:
 };
 
 }  // namespace inviwo
+

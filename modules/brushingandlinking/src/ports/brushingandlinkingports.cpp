@@ -34,8 +34,8 @@
 namespace inviwo {
 
 BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier,
-                                                   BrushingModifications invalidateOn)
-    : Inport(identifier), manager_(this, invalidateOn) {
+                                                   std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
+    : Inport(identifier), manager_(this, invalidationLevels) {
     setOptional(true);
 }
 
@@ -124,12 +124,12 @@ const BitSet& BrushingAndLinkingInport::getSelectedColumns() const {
     return manager_.getIndices(BrushingAction::Select, BrushingTarget::Column);
 }
 
-BrushingModifications BrushingAndLinkingInport::getInvalidateOn() const {
-    return manager_.getInvalidateOn();
+const std::vector<BrushingTargetsInvalidationLevel>& BrushingAndLinkingInport::getInvalidationLevels() const {
+    return manager_.getInvalidationLevels();
 }
 
-void BrushingAndLinkingInport::setInvalidateOn(BrushingModifications invalidateOn) {
-    manager_.setInvalidateOn(invalidateOn);
+void BrushingAndLinkingInport::setInvalidationLevels(std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
+    manager_.setInvalidationLevels(invalidationLevels);
 }
 
 BrushingAndLinkingManager& BrushingAndLinkingInport::getManager() { return manager_; }
@@ -186,10 +186,10 @@ void BrushingAndLinkingInport::setChanged(bool changed, const Outport* source) {
 }
 
 void BrushingAndLinkingInport::invalidate(InvalidationLevel invalidationLevel) {
-    if (invalidationLevel == InvalidationLevel::Valid ||
-        (manager_.getInvalidateOn() & manager_.getModifiedActions())) {
-        Inport::invalidate(invalidationLevel);
-    }
+    // Override with the modification-based (brushing target and action) invalidation level.
+    // This enables more selective invalidations that are dependent on this manager's settings
+    // instead of the one of the top-most brushing manager that initiated the invalidation.
+    Inport::invalidate(manager_.getInvalidationLevel());
 }
 
 BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string identifier)
@@ -202,18 +202,18 @@ BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() { return mana
 const BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() const { return manager_; }
 
 void BrushingAndLinkingOutport::invalidate(InvalidationLevel invalidationLevel) {
-    if (invalidationLevel == InvalidationLevel::Valid ||
-        (manager_.getInvalidateOn() & manager_.getModifiedActions())) {
-        Outport::invalidate(invalidationLevel);
-    }
+    // Override with the modification-based (brushing target and action) invalidation level.
+    // This enables more selective invalidations that are dependent on this manager's settings
+    // instead of the one of the top-most brushing manager that initiated the invalidation.
+    Outport::invalidate(manager_.getInvalidationLevel());
 }
 
-BrushingModifications BrushingAndLinkingOutport::getInvalidateOn() const {
-    return manager_.getInvalidateOn();
+const std::vector<BrushingTargetsInvalidationLevel>& BrushingAndLinkingOutport::getInvalidationLevels() const {
+    return manager_.getInvalidationLevels();
 }
 
-void BrushingAndLinkingOutport::setInvalidateOn(BrushingModifications invalidateOn) {
-    manager_.setInvalidateOn(invalidateOn);
+void BrushingAndLinkingOutport::setInvalidationLevels(std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
+    manager_.setInvalidationLevels(invalidationLevels);
 }
 
 void BrushingAndLinkingOutport::serialize(Serializer& s) const {
