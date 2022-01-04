@@ -92,6 +92,7 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTargetsInvalidationLevel {
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager : public Serializable {
 public:
+    static inline const std::vector<BrushingTarget> AnyBrushingTarget = {}; ///< Helper for invalidation level initialization
     /**
      * @code
      *  // Only invalidate processor on row filtering and column selection.
@@ -102,10 +103,10 @@ public:
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );
-     *  // Invalidate processor on any type of action for filtering or column selection.
+     *  // Invalidate processor on filtering or selection for any target.
      *  BrushingAndLinkingManager(port,
      *  {
-     *    {BrushingModification::Filtered | BrushingModification::Selected,
+     *    {AnyBrushingTarget, BrushingModification::Filtered | BrushingModification::Selected,
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );
@@ -117,7 +118,7 @@ public:
      */
     BrushingAndLinkingManager(BrushingAndLinkingInport* inport,
                               std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
-                                  {BrushingModifications(flags::any),
+                                  {AnyBrushingTarget, BrushingModifications(flags::any),
                                    InvalidationLevel::InvalidOutput}});
     /**
      * @code
@@ -129,10 +130,10 @@ public:
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );
-     *  // Invalidate processor on any type of action for filtering or column selection.
+     *  // Invalidate processor on filtering or selection for any target.
      *  BrushingAndLinkingManager(port,
      *  {
-     *    {BrushingModification::Filtered | BrushingModification::Selected,
+     *    {AnyBrushingTarget, BrushingModification::Filtered | BrushingModification::Selected,
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );
@@ -144,7 +145,7 @@ public:
      */
     BrushingAndLinkingManager(BrushingAndLinkingOutport* outport,
                               std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
-                                  {BrushingModifications(flags::any),
+                                  {AnyBrushingTarget, BrushingModifications(flags::any),
                                    InvalidationLevel::InvalidOutput}});
     virtual ~BrushingAndLinkingManager();
 
@@ -343,10 +344,10 @@ public:
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );
-     *  // Invalidate processor on any type of action for filtering or column selection.
+     *  // Invalidate processor on filtering or selection for any target.
      *  setInvalidationLevels(
      *  {
-     *    {BrushingModification::Filtered | BrushingModification::Selected,
+     *    {AnyBrushingTarget, BrushingModification::Filtered | BrushingModification::Selected,
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );

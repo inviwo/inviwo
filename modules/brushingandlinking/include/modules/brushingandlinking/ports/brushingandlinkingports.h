@@ -69,10 +69,10 @@ public:
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );
-     *  // Invalidate processor on any type of action for filtering or column selection.
+     *  // Invalidate processor on filtering or selection for any target.
      *  BrushingAndLinkingInport("brushing",
      *  {
-     *    {BrushingModification::Filtered | BrushingModification::Selected,
+     *    {BrushingAndLinkingManager::AnyBrushingTarget, BrushingModification::Filtered | BrushingModification::Selected,
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );
@@ -83,7 +83,7 @@ public:
      */
     BrushingAndLinkingInport(std::string identifier,
                              std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
-                                 {BrushingModifications(flags::any),
+                                 {BrushingAndLinkingManager::AnyBrushingTarget, BrushingModifications(flags::any),
                                   InvalidationLevel::InvalidOutput}});
     virtual ~BrushingAndLinkingInport() = default;
 
@@ -191,10 +191,10 @@ public:
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );
-     *  // Invalidate processor on any type of action for filtering or column selection.
+     *  // Invalidate processor on filtering or selection for any target.
      *  setInvalidationLevels(
      *  {
-     *    {BrushingModification::Filtered | BrushingModification::Selected,
+     *    {BrushingAndLinkingManager::AnyBrushingTarget, BrushingModification::Filtered | BrushingModification::Selected,
      * InvalidationLevel::InvalidOutput}
      *  }
      *  );
