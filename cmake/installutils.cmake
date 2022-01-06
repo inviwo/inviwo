@@ -274,9 +274,15 @@ macro(ivw_qt_add_to_install ivw_comp)
                                             Qt${QT_VERSION_MAJOR}::${qt_module} MODULE_PLUGIN_TYPES)
                         if(plugin_types)
                             foreach(plugin_type IN ITEMS ${plugin_types})
-                                set(plugins_dir "${QT_DIR}/../../../plugins/${plugin_type}")
+                                if(APPLE)
+                                    # Tested with qt installed via brew
+                                    set(plugins_dir "${QT_DIR}/../../../share/qt/plugins/${plugin_type}")
+                                else()
+                                    set(plugins_dir "${QT_DIR}/../../../plugins/${plugin_type}")
+                                endif()
+                                
                                 IF(IS_DIRECTORY ${plugins_dir})
-                                    install(DIRECTORY ${plugins_dir}
+                                    install(DIRECTORY "${plugins_dir}"
                                         DESTINATION ${dest_dir}
                                         COMPONENT Application)
                                 endif()

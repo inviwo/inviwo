@@ -187,7 +187,12 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     CefMainArgs args(app->getCommandLineParser().getARGC(), app->getCommandLineParser().getARGV());
     CefSettings settings;
-    // CefString(&settings.framework_dir_path).FromASCII((frameworkDirectory).c_str());
+    // Setting locales_dir_path does not seem to work (tested debug mode with Xcode)
+    // See documentation about settings in cef_types.h:
+    // "This value [locales_dir_path] is ignored on MacOS where pack files are always
+    // loaded from the app bundle Resources directory".
+    // The locales files are thus now copied to the bundle Resource directory through CMake.
+    // We still set the variable to potentially avoid other problems such as the one below.
     // Crashes if not set and non-default locale is used
     CefString(&settings.locales_dir_path)
         .FromASCII((frameworkDirectory + std::string("/Resources")).c_str());
