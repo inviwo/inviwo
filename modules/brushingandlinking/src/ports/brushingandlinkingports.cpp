@@ -187,7 +187,7 @@ void BrushingAndLinkingInport::setChanged(bool changed, const Outport* source) {
     Inport::setChanged(changed, source);
 }
 
-void BrushingAndLinkingInport::invalidate(InvalidationLevel invalidationLevel) {
+void BrushingAndLinkingInport::invalidate(InvalidationLevel) {
     manager_.propagateModifications();
     // Override with the modification-based (brushing target and action) invalidation level.
     // This enables more selective invalidations that are dependent on this manager's settings
@@ -204,7 +204,7 @@ BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() { return mana
 
 const BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() const { return manager_; }
 
-void BrushingAndLinkingOutport::invalidate(InvalidationLevel invalidationLevel) {
+void BrushingAndLinkingOutport::invalidate(InvalidationLevel) {
     manager_.propagateModifications();
     // Override with the modification-based (brushing target and action) invalidation level.
     // This enables more selective invalidations that are dependent on this manager's settings

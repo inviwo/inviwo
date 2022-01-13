@@ -209,7 +209,8 @@ public:
             });
     }
 
-    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override {
+    virtual int columnCount(
+        [[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override {
         return chunkSize_;
     }
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override {

@@ -362,7 +362,7 @@ std::vector<CSVReader::TypeCounts> CSVReader::findCellTypes(
 
     for (auto [i, row] : util::enumerate(rows)) {
         util::parse(row.first, delimiters_, nCol, row.second,
-                    [&](std::string_view cell, size_t index, size_t part) {
+                    [&](std::string_view cell, size_t index, [[maybe_unused]] size_t part) {
                         if (cell.empty()) {
                             // Ignore empty cells.
                         } else if (util::isNumber<int>(cell, cLocale)) {
@@ -501,7 +501,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
 
     std::vector<std::pair<std::string_view, size_t>> rows;
     util::parse(content, "\n", std::nullopt, std::nullopt,
-                [&](std::string_view line, size_t index, size_t lineNumber) {
+                [&](std::string_view line, [[maybe_unused]] size_t index, size_t lineNumber) {
                     rows.emplace_back(line, lineNumber);
                 });
 
@@ -517,7 +517,8 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     // extract first row
     std::vector<std::string> headers;
     util::parse(rows.front().first, delimiters_, std::nullopt, rows.front().second,
-                [&](std::string_view cell, size_t index, size_t partNumber) {
+                [&](std::string_view cell, [[maybe_unused]] size_t index,
+                    [[maybe_unused]] size_t partNumber) {
                     headers.emplace_back(stripQuotes_ ? util::stripQuotes(cell) : cell);
                     return true;
                 });
@@ -536,10 +537,11 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     const auto appenders = addColumns(*df, types, headers);
 
     for (const auto& [row, lineNumber] : rows) {
-        util::parse(row, delimiters_, headers.size(), lineNumber,
-                    [&, l = lineNumber](std::string_view cell, size_t index, size_t part) {
-                        appenders[index](cell, l, index + 1);
-                    });
+        util::parse(
+            row, delimiters_, headers.size(), lineNumber,
+            [&, l = lineNumber](std::string_view cell, size_t index, [[maybe_unused]] size_t part) {
+                appenders[index](cell, l, index + 1);
+            });
     }
 
     df->updateIndexBuffer();
