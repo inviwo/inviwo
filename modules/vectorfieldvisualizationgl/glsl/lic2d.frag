@@ -35,11 +35,14 @@ uniform float stepLength;
 uniform bool normalizeVectors;
 uniform bool intensityMapping;
 uniform bool useRK4;
+uniform vec2 fieldDimensions;
 
 in vec3 texCoord_;
 
 vec2 euler(vec2 posF) {
     vec2 V0 = texture(vectorFieldColor, posF).rg;
+    V0.x /= fieldDimensions.x;
+    V0.y /= fieldDimensions.y;
     if (normalizeVectors) {
         V0 = normalize(V0);
     }

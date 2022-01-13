@@ -58,6 +58,10 @@ protected:
     BoolProperty intensityMapping_;
     BoolProperty useRK4_;
 
+    enum Scale { None, ImageAspect, Custom };
+    TemplateOptionProperty<Scale> modelScale_;
+    FloatVec2Property fieldDimensions_;
+
     Shader shader_;
 
 private:

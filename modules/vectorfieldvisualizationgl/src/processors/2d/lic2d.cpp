@@ -55,17 +55,24 @@ LIC2D::LIC2D()
     , normalizeVectors_("normalizeVectors", "Normalize vectors", true)
     , intensityMapping_("intensityMapping", "Enable intensity remapping", false)
     , useRK4_("useRK4", "Use Runge-Kutta4", true)
+    , modelScale_("modelScale", "Scale",
+                  {{"none", "None", Scale::None},
+                   {"imageAspect", "Image Aspect Ratio", Scale::ImageAspect},
+                   {"custom", "Custom", Scale::Custom}},
+                  0, InvalidationLevel::InvalidResources)
+    , fieldDimensions_(
+          "fieldDimensions", "Field dimensions", vec2(1.0),
+          std::pair<vec2, ConstraintBehavior>{vec2(0.0001), ConstraintBehavior::Ignore},
+          std::pair<vec2, ConstraintBehavior>{vec2(100), ConstraintBehavior::Ignore})
     , shader_("lic2d.frag") {
     addPort(vectorField_);
     addPort(noiseTexture_);
     addPort(LIC2D_);
 
-    addProperty(samples_);
-    addProperty(stepLength_);
-    addProperty(normalizeVectors_);
-    addProperty(intensityMapping_);
-    addProperty(useRK4_);
-
+    addProperties(samples_, stepLength_, normalizeVectors_, intensityMapping_, useRK4_, modelScale_,
+                  fieldDimensions_);
+    fieldDimensions_.visibilityDependsOn(modelScale_,
+                                         [](auto& prop) { return (prop.get() == Scale::Custom); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
@@ -76,6 +83,15 @@ void LIC2D::process() {
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, vectorField_, ImageType::ColorOnly);
     utilgl::bindAndSetUniforms(shader_, units, noiseTexture_, ImageType::ColorOnly);
+
+    if (modelScale_.get() == Scale::ImageAspect) {
+        size2_t dims = vectorField_.getData()->getDimensions();
+        fieldDimensions_.set(vec2(dims.x, dims.y));
+    }
+    if (modelScale_.get() == Scale::None) {
+        fieldDimensions_.set(vec2(1.0, 1.0));
+    }
+    shader_.setUniform("fieldDimensions", fieldDimensions_.get());
 
     utilgl::setUniforms(shader_, LIC2D_, samples_, stepLength_, normalizeVectors_,
                         intensityMapping_, useRK4_);
