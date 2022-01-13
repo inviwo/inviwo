@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,4 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEMAPPING_H
-#define IVW_IMAGEMAPPING_H
-
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-
-namespace inviwo {
-
-/** \docpage{org.inviwo.ImageMapping, Image Mapping}
- * Maps the input image to an output image with the help of a transfer function.
- * ![](org.inviwo.ImageMapping.png?classIdentifier=org.inviwo.ImageMapping)
- *
- * ### Inports
- *   * __ImageInport__ The input image.
- *
- * ### Outports
- *   * __ImageOutport__ The output image.
- *
- * ### Properties
- *   * __Transfer Function__ The transfer function used for mapping input to output values
- *                           including the alpha channel.
- */
-
-/*! \class ImageMapping
- *
- * \brief Maps the input image to an output with the help of a transfer function.
- */
-class IVW_MODULE_BASEGL_API ImageMapping : public ImageGLProcessor {
-public:
-    ImageMapping();
-    ~ImageMapping();
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
-    virtual void afterInportChanged() override;
-
-private:
-    TransferFunctionProperty transferFunction_;
-    FloatVec2Property valueRange_;
-};
-
-}  // namespace inviwo
-
-#endif  // IVW_IMAGEMAPPING_H
+#include <modules/vectorfieldvisualization/processors/arrowglyphs.h>

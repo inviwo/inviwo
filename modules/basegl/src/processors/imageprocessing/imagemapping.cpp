@@ -46,8 +46,11 @@ const ProcessorInfo ImageMapping::getProcessorInfo() const { return processorInf
 
 ImageMapping::ImageMapping()
     : ImageGLProcessor("img_mapping.frag")
-    , transferFunction_("transferFunction", "Transfer Function") {
-    addProperty(transferFunction_);
+    , transferFunction_("transferFunction", "Transfer Function")
+    , valueRange_("valueRange", "Value Range", dvec2(0.0, 1.0),
+                  std::pair<dvec2, ConstraintBehavior>{dvec2(-10.0), ConstraintBehavior::Ignore},
+                  std::pair<dvec2, ConstraintBehavior>{dvec2(10.0), ConstraintBehavior::Ignore}) {
+    addProperties(transferFunction_, valueRange_);
 }
 
 ImageMapping::~ImageMapping() {}
@@ -59,6 +62,7 @@ void ImageMapping::preProcess(TextureUnitContainer&) {
 
     transferFunctionGL->bindTexture(transFuncUnit.getEnum());
     shader_.setUniform("transferFunc_", transFuncUnit.getUnitNumber());
+    shader_.setUniform("valueRange_", valueRange_.get());
 }
 
 void ImageMapping::afterInportChanged() {

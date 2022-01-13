@@ -31,6 +31,7 @@
 #include "utils/classification.glsl"
 
 uniform ImageParameters outportParameters_;
+uniform vec2 valueRange_;
 
 uniform sampler2D transferFunc_;
 uniform sampler2D inport_;
@@ -38,6 +39,7 @@ uniform sampler2D inport_;
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
     vec4 value = texture(inport_, texCoords);
+    value = (value  - valueRange_.x) / (valueRange_.y - valueRange_.x);
     vec4 color = applyTF(transferFunc_, value);
     FragData0 = color;
 }

@@ -54,6 +54,7 @@
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
 #include <modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h>
 #include <modules/base/processors/volumetospatialsampler.h>
+#include <modules/vectorfieldvisualization/processors/arrowglyphs.h>
 #include <modules/vectorfieldvisualization/processors/flowfieldprocessor.h>
 #include <modules/vectorfieldvisualization/processors/linesfromdataframe.h>
 #include <modules/vectorfieldvisualization/processors/seedsfrommesh.h>
@@ -76,6 +77,8 @@ struct ProcessorTraits<LineSetSelector> {
 
 VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
     : InviwoModule(app, "VectorFieldVisualization") {
+    registerProcessor<ArrowGlyphs2D>();
+    registerProcessor<ArrowGlyphs3D>();
     registerProcessor<FlowField2DProcessor>();
     registerProcessor<LineSourceASCII>();
     registerProcessor<RBFVectorFieldGenerator2D>();

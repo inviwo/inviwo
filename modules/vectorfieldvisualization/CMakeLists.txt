@@ -16,6 +16,7 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/processors/3d/pathlines.h
     include/modules/vectorfieldvisualization/processors/3d/streamlines.h
     include/modules/vectorfieldvisualization/processors/3d/streamribbons.h
+    include/modules/vectorfieldvisualization/processors/arrowglyphs.h
     include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h
     include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h
     include/modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h
@@ -52,6 +53,7 @@ set(SOURCE_FILES
     src/processors/3d/pathlines.cpp
     src/processors/3d/streamlines.cpp
     src/processors/3d/streamribbons.cpp
+    src/processors/arrowglyphs.cpp
     src/processors/datageneration/rbfvectorfieldgenerator2d.cpp
     src/processors/datageneration/rbfvectorfieldgenerator3d.cpp
     src/processors/datageneration/seedpointgenerator.cpp
