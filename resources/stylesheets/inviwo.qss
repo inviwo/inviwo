@@ -1026,7 +1026,7 @@ QLabel#WelcomeHeader {
 }
 
 QLabel#ChangeLog {
-    font-size: 30pt;
+    font-size: 26pt;
     color: #268bd2;
 }
 

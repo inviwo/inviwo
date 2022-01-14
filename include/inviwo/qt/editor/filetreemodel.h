@@ -29,6 +29,7 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,6 +46,7 @@
 namespace inviwo {
 
 class TreeItem;
+class InviwoApplication;
 
 class IVW_QTEDITOR_API FileTreeModel : public QAbstractItemModel {
 #include <warn/push>
@@ -61,7 +63,7 @@ public:
     friend bool operator!=(const QVariant&, ListElemType);
     friend bool operator!=(ListElemType, const QVariant&);
 
-    explicit FileTreeModel(QObject* parent = nullptr);
+    explicit FileTreeModel(InviwoApplication* app, QObject* parent = nullptr);
     virtual ~FileTreeModel() = default;
 
     virtual QModelIndex index(int row, int column,
@@ -85,10 +87,27 @@ public:
     bool removeEntry(TreeItem* node);
     bool removeChildren(TreeItem* root);
     QModelIndex getIndex(TreeItem* item, int column = 0) const;
+    
+    void updateRecentWorkspaces(const QStringList& recentFiles);
+    void updateExampleEntries();
+    void updateRegressionTestEntries();
+
+    TreeItem* getRecentWorkspaceItem() const { return recentWorkspaceItem_; }
+    TreeItem* getExampleWorkspaceItem() const { return examplesItem_; }
+    TreeItem* getRegressionTestWorkspaceItem() const { return regressionTestsItem_; }
+signals:
+    void recentWorkspacesUpdated(TreeItem* recentWorkspaceItem);
+    void exampleWorkspacesUpdated(TreeItem* exampleWorkspaceItem);
+    void regressionTestWorkspacesUpdated(TreeItem* regressionTestWorkspaceItem);
 
 private:
     TreeItem* getItem(const QModelIndex& index) const;
-
+    QIcon defaultIcon = QIcon(":/inviwo/inviwo_light.png");
+    InviwoApplication* app_;
+    TreeItem* recentWorkspaceItem_ = nullptr;
+    TreeItem* examplesItem_ = nullptr;
+    TreeItem* regressionTestsItem_ = nullptr;
+    
     std::unique_ptr<TreeItem> root_;
 };
 

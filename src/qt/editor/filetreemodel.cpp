@@ -29,8 +29,10 @@
 
 #include <inviwo/qt/editor/filetreemodel.h>
 
+#include <inviwo/core/network/workspaceannotations.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/common/inviwomodule.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 namespace inviwo {
@@ -47,8 +49,8 @@ bool operator!=(const QVariant& v, FileTreeModel::ListElemType t) {
 
 bool operator!=(FileTreeModel::ListElemType t, const QVariant& v) { return operator!=(v, t); }
 
-FileTreeModel::FileTreeModel(QObject* parent)
-    : QAbstractItemModel(parent), root_{std::make_unique<TreeItem>(nullptr)} {}
+FileTreeModel::FileTreeModel(InviwoApplication* app, QObject* parent)
+    : QAbstractItemModel(parent), app_(app), root_{std::make_unique<TreeItem>(nullptr)} {}
 
 QModelIndex FileTreeModel::index(int row, int column, const QModelIndex& parent) const {
     if (parent.isValid() && parent.column() != 0) return QModelIndex();
@@ -286,11 +288,10 @@ QVariant TreeItem::data(int column, int role) const {
                     .arg(hierarchy);
             }
             case Qt::DecorationRole:
-                if (column == 0) {
-                    return {};
-                } else {
-                    return icon_;
-                }
+                return icon_;
+            case Qt::SizeHintRole:
+                // Icon + text
+                return QSize(128, 128);
             case FileTreeModel::ItemRoles::Type:
                 return static_cast<int>(type_);
             case FileTreeModel::ItemRoles::FileName:
@@ -318,6 +319,107 @@ QVariant TreeItem::data(int column, int role) const {
 
 FileTreeModel::ListElemType TreeItem::type() const { return type_; }
 
+
+void FileTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
+    if (!recentWorkspaceItem_) {
+        auto item =
+            std::make_unique<TreeItem>("Recent Workspaces", FileTreeModel::ListElemType::Section);
+        recentWorkspaceItem_ = item.get();
+
+        addEntry(nullptr, std::move(item));
+    }
+    std::vector<std::unique_ptr<TreeItem>> items;
+    for (auto& elem : recentFiles) {
+        const std::string filename = utilqt::fromQString(elem);
+        if (filesystem::fileExists(filename)) {
+            WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filename, app_);
+            QIcon icon;
+            if (!annotations.getCanvasImages().empty()) {
+                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg, "jpeg");
+            } else {
+                icon = defaultIcon;
+            }
+            items.push_back(std::make_unique<TreeItem>(icon, filename));
+        }
+    }
+    updateCategory(recentWorkspaceItem_, std::move(items));
+    emit recentWorkspacesUpdated(recentWorkspaceItem_);
+}
+
+void FileTreeModel::updateExampleEntries() {
+    std::vector<std::unique_ptr<TreeItem>> examples;
+    for (const auto& module : app_->getModules()) {
+        auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
+        if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
+
+        auto category = std::make_unique<TreeItem>(utilqt::toQString(module->getIdentifier()),
+                                                   FileTreeModel::ListElemType::SubSection);
+        for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+            // only accept inviwo workspace files
+            if (filesystem::getFileExtension(item) != "inv") continue;
+            auto filePath = moduleWorkspacePath + "/" + item;
+            WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filePath, app_);
+            QIcon icon;
+            if (!annotations.getCanvasImages().empty()) {
+                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg, "jpeg");
+            } else {
+                icon = defaultIcon;
+            }
+            category->addChild(
+                std::make_unique<TreeItem>(icon, filePath, true));
+        }
+        if (category->childCount() > 0) {
+            examples.push_back(std::move(category));
+        }
+    }
+
+    if (!examplesItem_) {
+        auto item = std::make_unique<TreeItem>("Examples", FileTreeModel::ListElemType::Section);
+        examplesItem_ = item.get();
+        addEntry(nullptr, std::move(item));
+    }
+
+    updateCategory(examplesItem_, std::move(examples));
+    emit exampleWorkspacesUpdated(examplesItem_);
+}
+
+void FileTreeModel::updateRegressionTestEntries() {
+    std::vector<std::unique_ptr<TreeItem>> tests;
+    for (const auto& module : app_->getModules()) {
+        auto moduleRegressionTestsPath = module->getPath(ModulePath::RegressionTests);
+        if (!filesystem::directoryExists(moduleRegressionTestsPath)) continue;
+
+        auto category = std::make_unique<TreeItem>(utilqt::toQString(module->getIdentifier()),
+                                                   FileTreeModel::ListElemType::SubSection);
+
+        std::vector<TreeItem*> moduleTests;
+        for (auto item : filesystem::getDirectoryContentsRecursively(moduleRegressionTestsPath)) {
+            // only accept inviwo workspace files
+            if (filesystem::getFileExtension(item) != "inv") continue;
+            auto filePath = item;
+            WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filePath, app_);
+            QIcon icon;
+            if (!annotations.getCanvasImages().empty()) {
+                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg, "jpeg");
+            } else {
+                icon = defaultIcon;
+            }
+            category->addChild(std::make_unique<TreeItem>(icon, filePath, true));
+        }
+        if (category->childCount() > 0) {
+            tests.push_back(std::move(category));
+        }
+    }
+    if (!regressionTestsItem_) {
+        auto item =
+            std::make_unique<TreeItem>("Regression Tests", FileTreeModel::ListElemType::Section);
+        regressionTestsItem_ = item.get();
+        addEntry(nullptr, std::move(item));
+    }
+    updateCategory(regressionTestsItem_, std::move(tests));
+    emit regressionTestWorkspacesUpdated(regressionTestsItem_);
+}
+
 void TreeItem::setData(const QString& caption, FileTreeModel::ListElemType type) {
     type_ = type;
     caption_ = caption;
@@ -327,7 +429,7 @@ void TreeItem::setData(const QIcon& icon, const std::string& filename, bool isEx
     type_ = FileTreeModel::ListElemType::File;
 
     icon_ = icon;
-    caption_ = utilqt::toQString(filename);
+    caption_ = utilqt::toQString(filesystem::getFileNameWithoutExtension(filename));
     file_ = utilqt::toQString(filesystem::getFileNameWithExtension(filename));
     path_ = utilqt::toQString(filesystem::getFileDirectory(filename));
     isExample_ = isExample;

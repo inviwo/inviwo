@@ -40,6 +40,8 @@
         <file>svgicons/listitem-add-disabled.svg</file>
         <file>svgicons/listitem-remove-enabled.svg</file>
         <file>svgicons/listitem-remove-disabled.svg</file>
+        <file>svgicons/gridlist.svg</file>
+        <file>svgicons/treelist.svg</file>
 
         <file>svgicons/arrow-down-enabled.svg</file>
         <file>svgicons/arrow-down-disabled.svg</file>

@@ -32,6 +32,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QModelIndex>
 #include <QSplitter>
 #include <QStringList>
 #include <QTextEdit>
@@ -41,12 +42,17 @@ class QTabWidget;
 class QToolButton;
 class QLineEdit;
 class QTextEdit;
+class QScrollArea;
+class QSortFilterProxyModel;
+class QItemSelectionModel;
 
 namespace inviwo {
 
+class FileTreeModel;
 class FileTreeWidget;
 class InviwoApplication;
 class ChangeLog;
+class WorkspaceGridView;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
 #include <warn/push>
@@ -73,10 +79,17 @@ protected:
 
 private:
     void updateDetails(const QString& filename);
+    QModelIndex findFirstLeaf(QModelIndex parent = QModelIndex()) const;
 
     InviwoApplication* app_;
 
+    FileTreeModel* workspaceModel_;
+    QSortFilterProxyModel* workspaceProxyModel_;
+    QItemSelectionModel* workspaceSelectionModel_;
     FileTreeWidget* filetree_;
+    
+    WorkspaceGridView* workspaceView_;
+    QScrollArea* workspaceGridViewArea_;
     QLineEdit* filterLineEdit_;
     QTextEdit* details_;
     ChangeLog* changelog_;

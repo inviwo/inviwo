@@ -13,6 +13,7 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacegridview.h
 )
 
 # Add header files
@@ -101,6 +102,7 @@ set(SOURCE_FILES
     undomanager.cpp
     welcomewidget.cpp
     workspaceannotationsqt.cpp
+    workspacegridview.cpp
 )
 if(TARGET inviwo::meta)
     list(APPEND SOURCE_FILES toolsmetamenu.cpp)

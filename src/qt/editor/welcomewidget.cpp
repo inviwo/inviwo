@@ -41,6 +41,7 @@
 #include <inviwo/core/network/workspacemanager.h>
 
 #include <inviwo/qt/editor/filetreewidget.h>
+#include <inviwo/qt/editor/workspacegridview.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <inviwo/qt/editor/lineediteventfilter.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -50,6 +51,7 @@
 
 #include <QScreen>
 #include <QTabWidget>
+#include <QToolbar>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -69,6 +71,7 @@
 #include <QAction>
 #include <QFile>
 #include <QImage>
+#include <QScrollArea>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QWindow>
@@ -119,7 +122,7 @@ public:
         setContentsMargins(0, 0, 0, 0);
     }
 
-    void resizeEvent(QResizeEvent* event) {
+    void resizeEvent(QResizeEvent* event) override {
         loadLog();
         QTextEdit::resizeEvent(event);
     }
@@ -134,7 +137,7 @@ public:
     }
 
 protected:
-    QVariant loadResource(int type, const QUrl& name) {
+    QVariant loadResource(int type, const QUrl& name) override {
         if (type == QTextDocument::ImageResource) {
             const auto path = ":/" + name.path();
             if (QFile{path}.exists()) {
@@ -148,8 +151,14 @@ protected:
 };
 
 WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
-    : QSplitter(parent), app_(app) {
+    : QSplitter(parent), app_(app), workspaceModel_(new FileTreeModel(app, this))
+    , workspaceProxyModel_{new QSortFilterProxyModel{this}}
+    , workspaceSelectionModel_(new QItemSelectionModel(workspaceProxyModel_, this)) {
     setObjectName("WelcomeWidget");
+        
+    workspaceProxyModel_->setSourceModel(workspaceModel_);
+    workspaceProxyModel_->setRecursiveFilteringEnabled(true);
+    workspaceProxyModel_->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
     const auto space = utilqt::refSpacePx(this);
     setOrientation(Qt::Horizontal);
@@ -194,7 +203,37 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         leftSplitter->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         {  // left column: workspace filter, list of recently used workspaces, and examples
-            filetree_ = new FileTreeWidget(app_, leftWidget);
+            workspaceView_ = new WorkspaceGridView(workspaceModel_, workspaceProxyModel_, workspaceSelectionModel_, leftWidget);
+            workspaceView_->setObjectName("WorkspaceView");
+            // QScrollArea requires a minimum size
+            workspaceView_->setMinimumWidth(utilqt::emToPx(this, 2));
+            workspaceView_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+            workspaceGridViewArea_ = new QScrollArea();
+            workspaceGridViewArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+            workspaceGridViewArea_->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+            workspaceGridViewArea_->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+            workspaceGridViewArea_->setWidgetResizable( true );
+            workspaceGridViewArea_->setWidget(workspaceView_);
+            QSettings settings;
+            settings.beginGroup("InviwoMainWindow");
+            workspaceGridViewArea_->setVisible(settings.value("showWorkSpaceGridView", true).toBool());
+            
+            QObject::connect(workspaceView_, &WorkspaceGridView::selectedFileChanged, this,
+                             [this](const QString& filename, bool isExample) {
+                                 updateDetails(filename);
+
+                                 loadWorkspaceBtn_->disconnect();
+                                 QObject::connect(loadWorkspaceBtn_, &QToolButton::clicked, this,
+                                                  [this, filename, isExample]() {
+                                                      emit loadWorkspace(filename, isExample);
+                                                  });
+                             });
+            QObject::connect(workspaceView_, &WorkspaceGridView::loadFile, this,
+                             &WelcomeWidget::loadWorkspace);
+
+            
+            filetree_ = new FileTreeWidget(workspaceModel_, workspaceProxyModel_, workspaceSelectionModel_, leftWidget);
+            filetree_->setVisible(!settings.value("showWorkSpaceGridView", true).toBool());
             filetree_->setObjectName("FileTreeWidget");
             filetree_->setMinimumWidth(utilqt::emToPx(this, 25));
             filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -210,12 +249,39 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                              });
             QObject::connect(filetree_, &FileTreeWidget::loadFile, this,
                              &WelcomeWidget::loadWorkspace);
-
-            filterLineEdit_ = new QLineEdit(leftWidget);
+            
+            auto workspaceViewToolbarWidget = new QLineEdit(leftWidget);
+            auto toolbarLayout = new QHBoxLayout(workspaceViewToolbarWidget);
+            filterLineEdit_ = new QLineEdit();
             filterLineEdit_->setPlaceholderText("Search for Workspace...");
             filterLineEdit_->installEventFilter(
                 new LineEditEventFilter(filetree_, filterLineEdit_));
-
+            toolbarLayout->addWidget(filterLineEdit_);
+            
+            auto horizontalSpacer =
+                new QSpacerItem(utilqt::emToPx(this, 1.0), 0,
+                                QSizePolicy::Expanding, QSizePolicy::Minimum);
+            toolbarLayout->addItem(horizontalSpacer);
+            
+            auto workspaceViewsToolbar = new QToolBar(leftWidget);
+            workspaceViewsToolbar->addWidget(filterLineEdit_);
+            workspaceViewsToolbar->addAction(QIcon(":/svgicons/gridlist.svg"), "Workspace Grid List", [this](){
+                QSettings settings;
+                settings.beginGroup("InviwoMainWindow");
+                settings.setValue("showWorkSpaceGridView", true);
+                settings.endGroup();
+                workspaceGridViewArea_->setVisible(true);
+                filetree_->setVisible(false);
+            });
+            workspaceViewsToolbar->addAction(QIcon(":/svgicons/treelist.svg"), "Workspace Tree List", [this](){
+                QSettings settings;
+                settings.beginGroup("InviwoMainWindow");
+                settings.setValue("showWorkSpaceGridView", false);
+                settings.endGroup();
+                workspaceGridViewArea_->setVisible(false);
+                filetree_->setVisible(true);
+            });
+            
             QIcon clearIcon;
             clearIcon.addFile(":/svgicons/lineedit-clear.svg",
                               utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Normal);
@@ -228,12 +294,21 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             connect(clearAction, &QAction::triggered, filterLineEdit_, &QLineEdit::clear);
             connect(filterLineEdit_, &QLineEdit::textChanged, this,
                     [this, clearAction](const QString& str) {
-                        filetree_->setFilter(str);
+                        workspaceProxyModel_->setFilterRegularExpression(str);
+                        filetree_->expandItems();
+
+                        // select first leaf node
+                        auto index = findFirstLeaf(QModelIndex());
+                        if (index.isValid()) {
+                            workspaceSelectionModel_->setCurrentIndex(
+                                index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+                        }
                         clearAction->setVisible(!str.isEmpty());
                     });
 
             auto fileTreeLayout = new QVBoxLayout();
-            fileTreeLayout->addWidget(filterLineEdit_);
+            fileTreeLayout->addWidget(workspaceViewsToolbar);
+            fileTreeLayout->addWidget(workspaceGridViewArea_);
             fileTreeLayout->addWidget(filetree_);
             auto filetreeWidget = new QWidget();
             filetreeWidget->setLayout(fileTreeLayout);
@@ -250,6 +325,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             details_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
             details_->setContentsMargins(0, 0, 0, 0);
             details_->document()->setDocumentMargin(0.0);
+            
             centerLayout->addWidget(details_);
 
             auto buttonLayout = new QHBoxLayout();
@@ -259,7 +335,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 auto button = new QToolButton(leftWidget);
                 button->setText(str);
                 button->setIcon(QIcon(iconpath));
-                button->setIconSize(utilqt::emToPx(this, QSize(7, 7)));
+                button->setIconSize(utilqt::emToPx(this, QSize(5, 5)));
                 button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
                 button->setToolTip(toolTip);
                 button->setObjectName(objName);
@@ -305,8 +381,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                         QSizePolicy::MinimumExpanding);
             leftSplitter->addWidget(centerWidget);
         }
-        leftSplitter->setStretchFactor(0, 1);
-        leftSplitter->setStretchFactor(1, 3);
+        leftSplitter->setStretchFactor(0, 4);
+        leftSplitter->setStretchFactor(1, 1);
         leftSplitter->handle(1)->setAttribute(Qt::WA_Hover);
     }
     {  // right splitter pane: changelog / options
@@ -339,7 +415,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             settings.beginGroup("InviwoMainWindow");
 
             auto autoloadWorkspace =
-                new QCheckBox("&Automatically load most recently used workspace", rightColumn);
+                new QCheckBox("&Auto-load last workspace", rightColumn);
             autoloadWorkspace->setChecked(settings.value("autoloadLastWorkspace", true).toBool());
             QObject::connect(autoloadWorkspace, &QCheckBox::toggled, this, [](bool checked) {
                 QSettings settings;
@@ -382,7 +458,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         this->setSizes(QList<int>({1, 0}));
     }
 
-    setTabOrder(filterLineEdit_, filetree_);
+    setTabOrder(filterLineEdit_, workspaceGridViewArea_);
+    setTabOrder(workspaceGridViewArea_, filetree_);
     setTabOrder(filetree_, loadWorkspaceBtn_);
     setTabOrder(details_, changelog_);
 
@@ -390,7 +467,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 }
 
 void WelcomeWidget::updateRecentWorkspaces(const QStringList& list) {
-    filetree_->updateRecentWorkspaces(list);
+    workspaceModel_->updateRecentWorkspaces(list);
 }
 
 void WelcomeWidget::enableRestoreButton(bool hasRestoreWorkspace) {
@@ -401,15 +478,14 @@ void WelcomeWidget::setFilterFocus() { filterLineEdit_->setFocus(Qt::OtherFocusR
 
 void WelcomeWidget::showEvent(QShowEvent* event) {
     if (!event->spontaneous()) {
-        QModelIndex index = filetree_->selectionModel()->currentIndex();
-
-        filetree_->updateExampleEntries();
-        filetree_->updateRegressionTestEntries();
+        QModelIndex index = workspaceSelectionModel_->currentIndex();
+        workspaceModel_->updateExampleEntries();
+        workspaceModel_->updateRegressionTestEntries();
 
         filetree_->expandItems();
 
         if (index.isValid()) {
-            filetree_->selectionModel()->setCurrentIndex(
+            workspaceSelectionModel_->setCurrentIndex(
                 index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
         } else {
             filetree_->selectRecentWorkspace(0);
@@ -486,7 +562,7 @@ void WelcomeWidget::updateDetails(const QString& filename) {
 
     Document doc;
     auto body = doc.append("html").append("body");
-    body.append("div", titleStr,
+    body.append("h2", titleStr,
                 {{"style", "font-size:45pt; color:#268bd2; margin-top:0em; padding-top:0em;"}});
 
     auto table = body.append("table", "", {{"style", "margin-bottom:1em;"}});
@@ -511,13 +587,13 @@ void WelcomeWidget::updateDetails(const QString& filename) {
     }
     auto content = body.append("span");
     auto addImage = [&content](auto item) {
-        const int fixedImgHeight = 256;
+        const int maxImgWidth = 128;
         if (!item.isValid()) return;
         auto img = content.append("table", "", {{"style", "float: left;"}});
         img.append("tr").append("td").append("h3", item.name, {{"style", "font-weight:600;"}});
         img.append("tr").append("td").append(
             "img", "",
-            {{"height", std::to_string(std::min(fixedImgHeight, item.size.y))},
+            {{"width", std::to_string(std::min(maxImgWidth, item.size.x))},
              {"src", "data:image/jpeg;base64," + item.base64jpeg}});
     };
 
@@ -527,6 +603,11 @@ void WelcomeWidget::updateDetails(const QString& filename) {
     addImage(annotations.getNetworkImage());
 
     details_->setHtml(utilqt::toQString(doc));
+}
+
+QModelIndex WelcomeWidget::findFirstLeaf(QModelIndex parent) const {
+    if (!workspaceProxyModel_->hasChildren(parent)) return parent;
+    return findFirstLeaf(workspaceProxyModel_->index(0, 0, parent));
 }
 
 }  // namespace inviwo

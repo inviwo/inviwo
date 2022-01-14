@@ -54,16 +54,11 @@ class IVW_QTEDITOR_API FileTreeWidget : public QTreeView {
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit FileTreeWidget(InviwoApplication* app, QWidget* parent = nullptr);
+    explicit FileTreeWidget(FileTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
+                            QItemSelectionModel* selectionModel, QWidget* parent = nullptr);
     virtual ~FileTreeWidget() = default;
 
-    void updateRecentWorkspaces(const QStringList& recentFiles);
-    void updateExampleEntries();
-    void updateRegressionTestEntries();
-
     bool selectRecentWorkspace(int index);
-
-    void setFilter(const QString& str);
     /**
      * \brief expand recent workspaces and examples, but not test workspaces
      */
@@ -86,11 +81,8 @@ protected:
     // see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
     void expandRecursively(const QModelIndex& index);
 #endif
-
-    QModelIndex findFirstLeaf(QModelIndex parent = QModelIndex()) const;
-
 private:
-    InviwoApplication* inviwoApp_;
+    void updateWorkspaces(TreeItem* currentWorkspaceItem, TreeItem* newWorkspaceItem);
 
     FileTreeModel* model_;
     QSortFilterProxyModel* proxyModel_;
@@ -98,8 +90,6 @@ private:
     TreeItem* recentWorkspaceItem_ = nullptr;
     TreeItem* examplesItem_ = nullptr;
     TreeItem* regressionTestsItem_ = nullptr;
-
-    QIcon fileIcon_;
 };
 
 }  // namespace inviwo
