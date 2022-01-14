@@ -112,7 +112,7 @@ void FixedSizeListView::setRootIndex(const QModelIndex& rootIndex) {
 }
 
 
-WorkspaceGridView::WorkspaceGridView(FileTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
+WorkspaceGridView::WorkspaceGridView(WorkspaceTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
                                      QItemSelectionModel* selectionModel, QWidget* parent)
     : QWidget{parent}
     , model_(model)
@@ -149,7 +149,7 @@ WorkspaceGridView::WorkspaceGridView(FileTreeModel* model, QSortFilterProxyModel
     QObject::connect(workspaceProxyModel, &QSortFilterProxyModel::rowsInserted, this,
                      &WorkspaceGridView::updateWorkspaceViewVisibility);
         
-    QObject::connect(model_, &FileTreeModel::recentWorkspacesUpdated, this,
+    QObject::connect(model_, &WorkspaceTreeModel::recentWorkspacesUpdated, this,
                      [this](TreeItem* recentWorkspaceItem) {
         auto index = proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem));
         recentWorkspaces_->setRootIndex(index);
@@ -157,24 +157,24 @@ WorkspaceGridView::WorkspaceGridView(FileTreeModel* model, QSortFilterProxyModel
         recentWorkspaces_->setVisible(!isEmpty);
         recentWorkspacesLabel_->setVisible(!isEmpty);
     });
-    QObject::connect(model_, &FileTreeModel::exampleWorkspacesUpdated, this,
+    QObject::connect(model_, &WorkspaceTreeModel::exampleWorkspacesUpdated, this,
                      [this](TreeItem* exampleWorkspaceItem) {
         examplesLabel_->setVisible(updateModulesWorkspaces(exampleWorkspaceItem, examples_, examplesViewList_));
      });
-    QObject::connect(model_, &FileTreeModel::regressionTestWorkspacesUpdated, this,
+    QObject::connect(model_, &WorkspaceTreeModel::regressionTestWorkspacesUpdated, this,
                      [this](TreeItem* regressionTestWorkspaceItem) {
         regressionTestsLabel_->setVisible(updateModulesWorkspaces(regressionTestWorkspaceItem, regressionTests_, regressionTestViewList_));
      });
     
     QObject::connect(selectionModel_, &QItemSelectionModel::currentRowChanged, this,
                      [this](const QModelIndex& current, const QModelIndex&) {
-                         if (current.isValid() && (current.data(FileTreeModel::ItemRoles::Type) ==
-                                                   FileTreeModel::ListElemType::File)) {
+                         if (current.isValid() && (current.data(WorkspaceTreeModel::ItemRoles::Type) ==
+                                                   WorkspaceTreeModel::ListElemType::File)) {
                              const auto filename =
-                                 current.data(FileTreeModel::ItemRoles::Path).toString() + "/" +
-                                 current.data(FileTreeModel::ItemRoles::FileName).toString();
+                                 current.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
+                                 current.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
                              const auto isExample =
-                                 current.data(FileTreeModel::ItemRoles::ExampleWorkspace).toBool();
+                                 current.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
                              emit selectedFileChanged(filename, isExample);
                          } else {
                              emit selectedFileChanged("", false);
@@ -231,10 +231,10 @@ void WorkspaceGridView::updateWorkspaceViewVisibility() {
 
 void WorkspaceGridView::listViewDoubleClicked(const QModelIndex& index) {
     if (index.isValid() &&
-        (index.data(FileTreeModel::ItemRoles::Type) == FileTreeModel::ListElemType::File)) {
-        const auto filename = index.data(FileTreeModel::ItemRoles::Path).toString() + "/" +
-                              index.data(FileTreeModel::ItemRoles::FileName).toString();
-        const auto isExample = index.data(FileTreeModel::ItemRoles::ExampleWorkspace).toBool();
+        (index.data(WorkspaceTreeModel::ItemRoles::Type) == WorkspaceTreeModel::ListElemType::File)) {
+        const auto filename = index.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
+                              index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
+        const auto isExample = index.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
         emit loadFile(filename, isExample);
     }
 }

@@ -48,8 +48,8 @@ class QItemSelectionModel;
 
 namespace inviwo {
 
-class FileTreeModel;
-class FileTreeWidget;
+class WorkspaceTreeModel;
+class WorkspaceTreeView;
 class InviwoApplication;
 class ChangeLog;
 class WorkspaceGridView;
@@ -83,12 +83,12 @@ private:
 
     InviwoApplication* app_;
 
-    FileTreeModel* workspaceModel_;
+    WorkspaceTreeModel* workspaceModel_;
     QSortFilterProxyModel* workspaceProxyModel_;
     QItemSelectionModel* workspaceSelectionModel_;
-    FileTreeWidget* filetree_;
+    WorkspaceTreeView* workspaceTreeView_;
     
-    WorkspaceGridView* workspaceView_;
+    WorkspaceGridView* workspaceGridView_;
     QScrollArea* workspaceGridViewArea_;
     QLineEdit* filterLineEdit_;
     QTextEdit* details_;

@@ -40,7 +40,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/workspacemanager.h>
 
-#include <inviwo/qt/editor/filetreewidget.h>
+#include <inviwo/qt/editor/workspacetreeview.h>
 #include <inviwo/qt/editor/workspacegridview.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <inviwo/qt/editor/lineediteventfilter.h>
@@ -151,7 +151,7 @@ protected:
 };
 
 WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
-    : QSplitter(parent), app_(app), workspaceModel_(new FileTreeModel(app, this))
+    : QSplitter(parent), app_(app), workspaceModel_(new WorkspaceTreeModel(app, this))
     , workspaceProxyModel_{new QSortFilterProxyModel{this}}
     , workspaceSelectionModel_(new QItemSelectionModel(workspaceProxyModel_, this)) {
     setObjectName("WelcomeWidget");
@@ -203,22 +203,22 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         leftSplitter->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         {  // left column: workspace filter, list of recently used workspaces, and examples
-            workspaceView_ = new WorkspaceGridView(workspaceModel_, workspaceProxyModel_, workspaceSelectionModel_, leftWidget);
-            workspaceView_->setObjectName("WorkspaceView");
+            workspaceGridView_ = new WorkspaceGridView(workspaceModel_, workspaceProxyModel_, workspaceSelectionModel_, leftWidget);
+            workspaceGridView_->setObjectName("WorkspaceView");
             // QScrollArea requires a minimum size
-            workspaceView_->setMinimumWidth(utilqt::emToPx(this, 2));
-            workspaceView_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+            workspaceGridView_->setMinimumWidth(utilqt::emToPx(this, 2));
+            workspaceGridView_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
             workspaceGridViewArea_ = new QScrollArea();
             workspaceGridViewArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
             workspaceGridViewArea_->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
             workspaceGridViewArea_->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
             workspaceGridViewArea_->setWidgetResizable( true );
-            workspaceGridViewArea_->setWidget(workspaceView_);
+            workspaceGridViewArea_->setWidget(workspaceGridView_);
             QSettings settings;
             settings.beginGroup("InviwoMainWindow");
             workspaceGridViewArea_->setVisible(settings.value("showWorkSpaceGridView", true).toBool());
             
-            QObject::connect(workspaceView_, &WorkspaceGridView::selectedFileChanged, this,
+            QObject::connect(workspaceGridView_, &WorkspaceGridView::selectedFileChanged, this,
                              [this](const QString& filename, bool isExample) {
                                  updateDetails(filename);
 
@@ -228,16 +228,16 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                                       emit loadWorkspace(filename, isExample);
                                                   });
                              });
-            QObject::connect(workspaceView_, &WorkspaceGridView::loadFile, this,
+            QObject::connect(workspaceGridView_, &WorkspaceGridView::loadFile, this,
                              &WelcomeWidget::loadWorkspace);
 
             
-            filetree_ = new FileTreeWidget(workspaceModel_, workspaceProxyModel_, workspaceSelectionModel_, leftWidget);
-            filetree_->setVisible(!settings.value("showWorkSpaceGridView", true).toBool());
-            filetree_->setObjectName("FileTreeWidget");
-            filetree_->setMinimumWidth(utilqt::emToPx(this, 25));
-            filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-            QObject::connect(filetree_, &FileTreeWidget::selectedFileChanged, this,
+            workspaceTreeView_ = new WorkspaceTreeView(workspaceModel_, workspaceProxyModel_, workspaceSelectionModel_, leftWidget);
+            workspaceTreeView_->setVisible(!settings.value("showWorkSpaceGridView", true).toBool());
+            workspaceTreeView_->setObjectName("WorkspaceTreeView");
+            workspaceTreeView_->setMinimumWidth(utilqt::emToPx(this, 25));
+            workspaceTreeView_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::selectedFileChanged, this,
                              [this](const QString& filename, bool isExample) {
                                  updateDetails(filename);
 
@@ -247,7 +247,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                                       emit loadWorkspace(filename, isExample);
                                                   });
                              });
-            QObject::connect(filetree_, &FileTreeWidget::loadFile, this,
+            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::loadFile, this,
                              &WelcomeWidget::loadWorkspace);
             
             auto workspaceViewToolbarWidget = new QLineEdit(leftWidget);
@@ -255,7 +255,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             filterLineEdit_ = new QLineEdit();
             filterLineEdit_->setPlaceholderText("Search for Workspace...");
             filterLineEdit_->installEventFilter(
-                new LineEditEventFilter(filetree_, filterLineEdit_));
+                new LineEditEventFilter(workspaceTreeView_, filterLineEdit_));
             toolbarLayout->addWidget(filterLineEdit_);
             
             auto horizontalSpacer =
@@ -271,7 +271,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 settings.setValue("showWorkSpaceGridView", true);
                 settings.endGroup();
                 workspaceGridViewArea_->setVisible(true);
-                filetree_->setVisible(false);
+                workspaceTreeView_->setVisible(false);
             });
             workspaceViewsToolbar->addAction(QIcon(":/svgicons/treelist.svg"), "Workspace Tree List", [this](){
                 QSettings settings;
@@ -279,7 +279,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 settings.setValue("showWorkSpaceGridView", false);
                 settings.endGroup();
                 workspaceGridViewArea_->setVisible(false);
-                filetree_->setVisible(true);
+                workspaceTreeView_->setVisible(true);
             });
             
             QIcon clearIcon;
@@ -295,7 +295,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             connect(filterLineEdit_, &QLineEdit::textChanged, this,
                     [this, clearAction](const QString& str) {
                         workspaceProxyModel_->setFilterRegularExpression(str);
-                        filetree_->expandItems();
+                        workspaceTreeView_->expandItems();
 
                         // select first leaf node
                         auto index = findFirstLeaf(QModelIndex());
@@ -309,7 +309,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             auto fileTreeLayout = new QVBoxLayout();
             fileTreeLayout->addWidget(workspaceViewsToolbar);
             fileTreeLayout->addWidget(workspaceGridViewArea_);
-            fileTreeLayout->addWidget(filetree_);
+            fileTreeLayout->addWidget(workspaceTreeView_);
             auto filetreeWidget = new QWidget();
             filetreeWidget->setLayout(fileTreeLayout);
             fileTreeLayout->setContentsMargins(2 * space, 0, space, 2 * space);
@@ -459,8 +459,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     }
 
     setTabOrder(filterLineEdit_, workspaceGridViewArea_);
-    setTabOrder(workspaceGridViewArea_, filetree_);
-    setTabOrder(filetree_, loadWorkspaceBtn_);
+    setTabOrder(workspaceGridViewArea_, workspaceTreeView_);
+    setTabOrder(workspaceTreeView_, loadWorkspaceBtn_);
     setTabOrder(details_, changelog_);
 
     changelog_->loadLog();
@@ -482,13 +482,13 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
         workspaceModel_->updateExampleEntries();
         workspaceModel_->updateRegressionTestEntries();
 
-        filetree_->expandItems();
+        workspaceTreeView_->expandItems();
 
         if (index.isValid()) {
             workspaceSelectionModel_->setCurrentIndex(
                 index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
         } else {
-            filetree_->selectRecentWorkspace(0);
+            workspaceTreeView_->selectRecentWorkspace(0);
         }
     }
     QWidget::showEvent(event);
@@ -500,7 +500,7 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
             if (key == Qt::Key_0) return 9;
             return key - Qt::Key_1;
         }();
-        if (filetree_->selectRecentWorkspace(number)) {
+        if (workspaceTreeView_->selectRecentWorkspace(number)) {
             if ((event->modifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
                 loadWorkspaceBtn_->animateClick();
             }

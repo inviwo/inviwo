@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/editor/filetreewidget.h>
+#include <inviwo/qt/editor/workspacetreeview.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -75,7 +75,7 @@ SectionDelegate::SectionDelegate(QWidget* parent) : QStyledItemDelegate(parent) 
 void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
                             const QModelIndex& index) const {
 
-    if (index.data(FileTreeModel::ItemRoles::Type).toInt() == FileTreeModel::ListElemType::File) {
+    if (index.data(WorkspaceTreeModel::ItemRoles::Type).toInt() == WorkspaceTreeModel::ListElemType::File) {
         auto option = o;
         initStyleOption(&option, index);
 
@@ -84,8 +84,8 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         style->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
 
         if (index.column() > 0) {
-            const auto filename = index.data(FileTreeModel::ItemRoles::FileName).toString();
-            const auto path = index.data(FileTreeModel::ItemRoles::Path).toString();
+            const auto filename = index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
+            const auto path = index.data(WorkspaceTreeModel::ItemRoles::Path).toString();
             auto boundingRects = getTextBoundingBox(option, index);
 
             // draw text
@@ -118,7 +118,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 QSize SectionDelegate::sizeHint(const QStyleOptionViewItem& o, const QModelIndex& index) const {
     if (!index.isValid()) return QSize();
 
-    if (index.data(FileTreeModel::ItemRoles::Type).toInt() == FileTreeModel::ListElemType::File) {
+    if (index.data(WorkspaceTreeModel::ItemRoles::Type).toInt() == WorkspaceTreeModel::ListElemType::File) {
         auto option = o;
         initStyleOption(&option, index);
 
@@ -139,8 +139,8 @@ std::tuple<QRect, QRect, QRect> SectionDelegate::getTextBoundingBox(
     const QStyleOptionViewItem& option, const QModelIndex& index) const {
     if (!index.isValid()) return {};
 
-    const auto filename = index.data(FileTreeModel::ItemRoles::FileName).toString();
-    const auto path = index.data(FileTreeModel::ItemRoles::Path).toString();
+    const auto filename = index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
+    const auto path = index.data(WorkspaceTreeModel::ItemRoles::Path).toString();
 
     auto fontFilename = option.font;
     fontFilename.setBold(true);
@@ -214,7 +214,7 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
 
 }  // namespace
 
-FileTreeWidget::FileTreeWidget(FileTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
+WorkspaceTreeView::WorkspaceTreeView(WorkspaceTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
                                QItemSelectionModel* workspaceSelectionModel, QWidget* parent)
     : QTreeView{parent}
     , model_{model}
@@ -234,7 +234,7 @@ FileTreeWidget::FileTreeWidget(FileTreeModel* model, QSortFilterProxyModel* work
     // file entries and icons start in column 2, sections headers span all columns
     header()->setMinimumSectionSize(0);
     header()->resizeSection(0, utilqt::emToPx(this, 2.0));
-    QObject::connect(model_, &FileTreeModel::recentWorkspacesUpdated, this,
+    QObject::connect(model_, &WorkspaceTreeModel::recentWorkspacesUpdated, this,
                      [this](TreeItem* recentWorkspaceItem) {
         if (!recentWorkspaceItem_) {
             recentWorkspaceItem_= recentWorkspaceItem;
@@ -243,24 +243,24 @@ FileTreeWidget::FileTreeWidget(FileTreeModel* model, QSortFilterProxyModel* work
             setFirstColumnSpanned(index.row(), index.parent(), true);
         }
     });
-    QObject::connect(model_, &FileTreeModel::exampleWorkspacesUpdated, this,
+    QObject::connect(model_, &WorkspaceTreeModel::exampleWorkspacesUpdated, this,
                      [this](TreeItem* exampleWorkspaceItem) {
         updateWorkspaces(examplesItem_, exampleWorkspaceItem);
      });
-    QObject::connect(model_, &FileTreeModel::regressionTestWorkspacesUpdated, this,
+    QObject::connect(model_, &WorkspaceTreeModel::regressionTestWorkspacesUpdated, this,
                      [this](TreeItem* regressionTestWorkspaceItem) {
         updateWorkspaces(regressionTestsItem_, regressionTestWorkspaceItem);
      });
 
     QObject::connect(selectionModel(), &QItemSelectionModel::currentRowChanged, this,
                      [this](const QModelIndex& current, const QModelIndex&) {
-                         if (current.isValid() && (current.data(FileTreeModel::ItemRoles::Type) ==
-                                                   FileTreeModel::ListElemType::File)) {
+                         if (current.isValid() && (current.data(WorkspaceTreeModel::ItemRoles::Type) ==
+                                                   WorkspaceTreeModel::ListElemType::File)) {
                              const auto filename =
-                                 current.data(FileTreeModel::ItemRoles::Path).toString() + "/" +
-                                 current.data(FileTreeModel::ItemRoles::FileName).toString();
+                                 current.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
+                                 current.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
                              const auto isExample =
-                                 current.data(FileTreeModel::ItemRoles::ExampleWorkspace).toBool();
+                                 current.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
                              emit selectedFileChanged(filename, isExample);
                          } else {
                              emit selectedFileChanged("", false);
@@ -269,15 +269,15 @@ FileTreeWidget::FileTreeWidget(FileTreeModel* model, QSortFilterProxyModel* work
 
     QObject::connect(this, &QTreeView::doubleClicked, this, [this](const QModelIndex& index) {
         if (index.isValid() &&
-            (index.data(FileTreeModel::ItemRoles::Type) == FileTreeModel::ListElemType::File)) {
-            const auto filename = index.data(FileTreeModel::ItemRoles::Path).toString() + "/" +
-                                  index.data(FileTreeModel::ItemRoles::FileName).toString();
-            const auto isExample = index.data(FileTreeModel::ItemRoles::ExampleWorkspace).toBool();
+            (index.data(WorkspaceTreeModel::ItemRoles::Type) == WorkspaceTreeModel::ListElemType::File)) {
+            const auto filename = index.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
+                                  index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
+            const auto isExample = index.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
             emit loadFile(filename, isExample);
         }
     });
 }
-bool FileTreeWidget::selectRecentWorkspace(int index) {
+bool WorkspaceTreeView::selectRecentWorkspace(int index) {
     if (!recentWorkspaceItem_) return false;
     if (recentWorkspaceItem_->childCount() < index) return false;
 
@@ -288,7 +288,7 @@ bool FileTreeWidget::selectRecentWorkspace(int index) {
     return true;
 }
 
-void FileTreeWidget::expandItems() {
+void WorkspaceTreeView::expandItems() {
     // fold/unfold all tree items based on filtering
     if (proxyModel_->filterRegularExpression().pattern().isEmpty()) {
         defaultExpand();
@@ -302,7 +302,7 @@ void FileTreeWidget::expandItems() {
 // QTreeView::expandRecursively() was introduced in Qt 5.13
 // see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
 //
-void FileTreeWidget::expandRecursively(const QModelIndex& index) {
+void WorkspaceTreeView::expandRecursively(const QModelIndex& index) {
     if (index.isValid()) {
         for (int i = 0; i < index.model()->rowCount(index); ++i) {
             expandRecursively(index.child(i, 0));
@@ -314,7 +314,7 @@ void FileTreeWidget::expandRecursively(const QModelIndex& index) {
 }
 #endif
 
-void FileTreeWidget::defaultExpand() {
+void WorkspaceTreeView::defaultExpand() {
     setUpdatesEnabled(false);
 
     expandRecursively(proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem_)));
@@ -327,7 +327,7 @@ void FileTreeWidget::defaultExpand() {
     setUpdatesEnabled(true);
 }
 
-void FileTreeWidget::updateWorkspaces(TreeItem* currentWorkspaceItem, TreeItem* newWorkspaceItem) {
+void WorkspaceTreeView::updateWorkspaces(TreeItem* currentWorkspaceItem, TreeItem* newWorkspaceItem) {
     
     if (!currentWorkspaceItem) {
         currentWorkspaceItem = newWorkspaceItem;

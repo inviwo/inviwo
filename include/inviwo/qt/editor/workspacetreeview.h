@@ -29,7 +29,7 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/filetreemodel.h>
+#include <inviwo/qt/editor/workspacetreemodel.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,17 +46,17 @@ namespace inviwo {
 
 class InviwoApplication;
 class TreeItem;
-class FileTreeModel;
+class WorkspaceTreeModel;
 
-class IVW_QTEDITOR_API FileTreeWidget : public QTreeView {
+class IVW_QTEDITOR_API WorkspaceTreeView : public QTreeView {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit FileTreeWidget(FileTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
+    explicit WorkspaceTreeView(WorkspaceTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
                             QItemSelectionModel* selectionModel, QWidget* parent = nullptr);
-    virtual ~FileTreeWidget() = default;
+    virtual ~WorkspaceTreeView() = default;
 
     bool selectRecentWorkspace(int index);
     /**
@@ -84,7 +84,7 @@ protected:
 private:
     void updateWorkspaces(TreeItem* currentWorkspaceItem, TreeItem* newWorkspaceItem);
 
-    FileTreeModel* model_;
+    WorkspaceTreeModel* model_;
     QSortFilterProxyModel* proxyModel_;
 
     TreeItem* recentWorkspaceItem_ = nullptr;

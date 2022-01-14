@@ -48,7 +48,7 @@ namespace inviwo {
 class TreeItem;
 class InviwoApplication;
 
-class IVW_QTEDITOR_API FileTreeModel : public QAbstractItemModel {
+class IVW_QTEDITOR_API WorkspaceTreeModel : public QAbstractItemModel {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -63,8 +63,8 @@ public:
     friend bool operator!=(const QVariant&, ListElemType);
     friend bool operator!=(ListElemType, const QVariant&);
 
-    explicit FileTreeModel(InviwoApplication* app, QObject* parent = nullptr);
-    virtual ~FileTreeModel() = default;
+    explicit WorkspaceTreeModel(InviwoApplication* app, QObject* parent = nullptr);
+    virtual ~WorkspaceTreeModel() = default;
 
     virtual QModelIndex index(int row, int column,
                               const QModelIndex& parent = QModelIndex()) const override;
@@ -114,7 +114,7 @@ private:
 class IVW_QTEDITOR_API TreeItem {
 public:
     explicit TreeItem(TreeItem* parent = nullptr);
-    TreeItem(const QString& caption, FileTreeModel::ListElemType type, TreeItem* parent = nullptr);
+    TreeItem(const QString& caption, WorkspaceTreeModel::ListElemType type, TreeItem* parent = nullptr);
     TreeItem(const QIcon& icon, const std::string& filename, bool isExample = false,
              TreeItem* parent = nullptr);
     TreeItem(const TreeItem&) = delete;
@@ -135,9 +135,9 @@ public:
     TreeItem* parent() const;
 
     QVariant data(int column, int role) const;
-    FileTreeModel::ListElemType type() const;
+    WorkspaceTreeModel::ListElemType type() const;
 
-    void setData(const QString& caption, FileTreeModel::ListElemType type);
+    void setData(const QString& caption, WorkspaceTreeModel::ListElemType type);
     void setData(const QIcon& icon, const std::string& filename, bool isExample);
 
     bool operator==(const TreeItem& tree) const;
@@ -147,7 +147,7 @@ private:
     TreeItem* parent_;
     std::vector<std::unique_ptr<TreeItem>> childItems_;
 
-    FileTreeModel::ListElemType type_ = FileTreeModel::ListElemType::None;
+    WorkspaceTreeModel::ListElemType type_ = WorkspaceTreeModel::ListElemType::None;
 
     QIcon icon_;
     QString caption_;

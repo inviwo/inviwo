@@ -29,7 +29,7 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/filetreemodel.h>
+#include <inviwo/qt/editor/workspacetreemodel.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -52,7 +52,7 @@ namespace inviwo {
 
 class InviwoApplication;
 class TreeItem;
-class FileTreeModel;
+class WorkspaceTreeModel;
 /**
  * \brief ListView that assumes icon grid layout and ensures a proper sizeHint for the widget.
  * The custom listview can also handle filtering when setRootIndex is used.
@@ -100,7 +100,7 @@ class IVW_QTEDITOR_API WorkspaceGridView  : public QWidget {
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit WorkspaceGridView(FileTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
+    explicit WorkspaceGridView(WorkspaceTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
                                QItemSelectionModel* selectionModel, QWidget* parent = nullptr);
     virtual ~WorkspaceGridView() = default;
 
@@ -125,7 +125,7 @@ private:
     std::vector<std::pair<QLabel*, FixedSizeListView*>> examplesViewList_;
     std::vector<std::pair<QLabel*, FixedSizeListView*>> regressionTestViewList_;
 
-    FileTreeModel* model_;
+    WorkspaceTreeModel* model_;
     QSortFilterProxyModel* proxyModel_;
     QItemSelectionModel* selectionModel_;
 
