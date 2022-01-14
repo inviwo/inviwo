@@ -550,6 +550,19 @@ std::string toBase64(const QImage& image, const std::string& format, int quality
     return std::string{byteArray.toBase64().data()};
 }
 
+QImage fromBase64(std::string_view base64) {
+    QByteArray barray = QByteArray::fromBase64(base64.data());
+    QImage image;
+    image.loadFromData(barray);
+    return image;
+}
+
+QIcon fromBase64ToIcon(std::string_view base64, std::string_view format) {
+    QPixmap pm;
+    pm.loadFromData(QByteArray::fromBase64(base64.data()), format.data());
+    return QIcon(pm);
+}
+
 std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* network, bool alpha) {
     std::vector<std::pair<std::string, QImage>> images;
     for (auto* p : network->getProcessorsByType<CanvasProcessor>()) {

@@ -199,6 +199,26 @@ IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer& layer);
  */
 IVW_MODULE_QTWIDGETS_API std::string toBase64(const QImage& image,
                                               const std::string& format = "PNG", int quality = -1);
+/*
+ * \brief Convert base64-encoded string to QImage.
+ *
+ * @param base64 byte array to be converted
+ * @return QImage representation of the string
+ *
+ * \see toBase64
+ */
+IVW_MODULE_QTWIDGETS_API QImage fromBase64(std::string_view base64);
+
+/*
+ * \brief Convert base64-encoded string to QIcon.
+ *
+ * @param base64 byte array to be converted
+ * @param format of data (e.g. "jpeg"), auto-detected if nullptr.
+ * @return QIcon representation of the string
+ *
+ * \see QPixmap::loadFromData
+ */
+IVW_MODULE_QTWIDGETS_API QIcon fromBase64ToIcon(std::string_view base64, std::string_view format = nullptr);
 
 /*
  * \brief retrieve the contents of all visible canvases as QImage. A canvas must be ready and
