@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/network/workspaceannotations.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
@@ -101,6 +102,24 @@ void WorkspaceAnnotations::deserialize(Deserializer& d) {
 }
 
 InviwoApplication* WorkspaceAnnotations::getInviwoApplication() { return app_; }
+
+WorkspaceAnnotations WorkspaceAnnotations::load(std::string_view path, InviwoApplication* app) {
+    // extract annotations including network screenshot and canvas images from workspace
+    WorkspaceAnnotations annotations;
+    try {
+        auto istream = filesystem::ifstream(std::string(path));
+        if (istream.is_open()) {
+            LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
+            auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(
+                istream, path, &logger);
+            d.setExceptionHandler([](const ExceptionContext) {});
+            d.deserialize("WorkspaceAnnotations", annotations);
+        }
+    } catch (Exception& e) {
+        util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
+    }
+    return annotations;
+}
 
 void WorkspaceAnnotations::setTitle(const std::string& title) { title_ = title; }
 
