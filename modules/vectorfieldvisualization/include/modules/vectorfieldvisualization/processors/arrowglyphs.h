@@ -106,25 +106,24 @@ void ArrowGlyphs<SpatialDims>::process() {
     auto sampler = samplerIn_.getData();
     static const std::array<vec3, 10> basicArrowVertices = {vec3(0, 0, 0),
 
-                                                            vec3(0.72f, -0.072f, 0.072f),
-                                                            vec3(0.72f, 0.072f, 0.072f),
-                                                            vec3(0.72f, 0.072f, -0.072f),
-                                                            vec3(0.72f, -0.072f, -0.072f),
+                                                            vec3(0.072f, -0.072f, 0.72f),
+                                                            vec3(0.072f, 0.072f, 0.72f),
+                                                            vec3(-0.072f, 0.072f, 0.72f),
+                                                            vec3(-0.072f, -0.072f, 0.72f),
+                                                            vec3(0.185f, -0.185f, 0.72f),
+                                                            vec3(0.185f, 0.185f, 0.72f),
+                                                            vec3(-0.185f, 0.185f, 0.72f),
+                                                            vec3(-0.185f, -0.185f, 0.72f),
 
-                                                            vec3(0.72f, -0.185f, 0.185f),
-                                                            vec3(0.72f, 0.185f, 0.185f),
-                                                            vec3(0.72f, 0.185f, -0.185f),
-                                                            vec3(0.72f, -0.185f, -0.185f),
-
-                                                            vec3(1, 0, 0)};
+                                                            vec3(0, 0, 1)};
     static const std::array<std::uint32_t, 3 * 10> basicArrowIndices = {
         0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 1, 5, 6, 7, 7, 8, 5, 9, 6, 5, 9, 7, 6, 9, 8, 7, 9, 5, 8};
 
     static const std::array<vec3, 10> basicArrowNormals = {
-        vec3(0.10, 0.00, -0.99),   vec3(0.10, -0.99, 0.00),  vec3(0.10, 0.00, 0.99),
-        vec3(0.10, 0.99, -0.00),   vec3(1.00, 0.00, 0.00),   vec3(1.00, 0.00, 0.00),
-        vec3(-0.55, -0.00, -0.83), vec3(-0.55, -0.83, 0.00), vec3(-0.55, 0.00, 0.83),
-        vec3(-0.55, 0.83, 0.00)};
+        vec3(-0.99, 0.00, 0.10),   vec3(0.00, -0.99, 0.10),  vec3(0.99, 0.00, 0.10),
+        vec3(-0.00, 0.99, 0.10),   vec3(0.00, 0.00, 1.00),   vec3(0.00, 0.00, 1.00),
+        vec3(-0.83, -0.00, -0.55), vec3(0.00, -0.83, -0.55), vec3(0.83, 0.00, -0.55),
+        vec3(0.00, 0.83, -0.55)};
 
     // Seed grid sizes.
     size3_t seedDims{seedGridSize_.get().x, seedGridSize_.get().y, 1};
@@ -151,10 +150,12 @@ void ArrowGlyphs<SpatialDims>::process() {
                 vec3 origin(originND.x, originND.y, 0);
                 if constexpr (SpatialDims >= 3) origin.z = originND.z;
 
-                // glm::mat3 transform{scale};
-                auto velocity = sampler->sample(originND);
-                double velocityLength = normalizeLength_.get() ? 1.0 : glm::length(velocity);
+                if (!sampler->withinBounds(originND)) continue;
+                auto velocity = sampler->sample(originND, CoordinateSpace::World);
+
+                double velocityLength = glm::length(velocity);
                 vec4 color = transferFunction_.get().sample(velocityLength / colorScale_.get());
+                if (normalizeLength_.get()) velocityLength = 1.0;
                 mat4 transform =
                     glm::lookAtLH(vec3(0), util::glm_convert<vec3>(velocity), vec3(0, 0, 1));
                 mat4 normalTransform = glm::inverseTranspose(transform);
