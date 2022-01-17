@@ -198,7 +198,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // Crashes if not set and non-default locale is used
     CefString(&settings.locales_dir_path)
         .FromASCII((frameworkDirectory + std::string("/Resources")).c_str());
-    
+
     // resources_dir_path specified location of:
     // cef.pak
     // cef_100_percent.pak
