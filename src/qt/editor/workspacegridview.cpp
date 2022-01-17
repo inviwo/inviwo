@@ -56,22 +56,24 @@
 namespace inviwo {
 
 void FixedSizeListView::setModel(QAbstractItemModel* model) {
-    
+
     if (model_ != nullptr) {
         model_->disconnect(this);
     }
     if (auto sfModel = dynamic_cast<QSortFilterProxyModel*>(model)) {
-        QObject::connect(sfModel, &QAbstractItemModel::layoutChanged, this, &FixedSizeListView::checkRootIndex);
-        QObject::connect(sfModel, &QAbstractItemModel::rowsRemoved, this, &FixedSizeListView::checkRootIndex);
-        QObject::connect(sfModel, &QAbstractItemModel::rowsInserted, this, &FixedSizeListView::checkRootIndex);
+        QObject::connect(sfModel, &QAbstractItemModel::layoutChanged, this,
+                         &FixedSizeListView::checkRootIndex);
+        QObject::connect(sfModel, &QAbstractItemModel::rowsRemoved, this,
+                         &FixedSizeListView::checkRootIndex);
+        QObject::connect(sfModel, &QAbstractItemModel::rowsInserted, this,
+                         &FixedSizeListView::checkRootIndex);
         model_ = sfModel;
     } else {
         model_ = nullptr;
     }
     QListView::setModel(model);
 }
-QSize FixedSizeListView::sizeHint() const
-{
+QSize FixedSizeListView::sizeHint() const {
     QSize hint = QListView::sizeHint();
     if (model()->rowCount() > 0) {
         auto width = contentsRect().width();
@@ -86,18 +88,17 @@ QSize FixedSizeListView::sizeHint() const
     return hint;
 }
 void FixedSizeListView::checkRootIndex() {
-    if (rootIndex().isValid() ||
-        !model_) { return; }
+    if (rootIndex().isValid() || !model_) {
+        return;
+    }
 
     auto rootIndex = model_->mapFromSource(this->sourceRootIndex_);
     if (rootIndex != this->rootIndex()) {
         // Prevent segmentation faults
         // See
         // https://stackoverflow.com/questions/70112321/qt-rootindex-gets-reset-each-time-qsortfilterproxymodelinvalidatefilter-is-c
-        rootIndex = rootIndex.model()->index(
-                       rootIndex.row(),
-                       rootIndex.column(),
-                                            rootIndex.parent());
+        rootIndex =
+            rootIndex.model()->index(rootIndex.row(), rootIndex.column(), rootIndex.parent());
         QListView::setRootIndex(rootIndex);
     }
 }
@@ -108,31 +109,30 @@ void FixedSizeListView::setRootIndex(const QModelIndex& rootIndex) {
         auto mappedRootIndex = model_->mapToSource(rootIndex);
         this->sourceRootIndex_ = QPersistentModelIndex(mappedRootIndex);
     }
-
 }
 
-
-WorkspaceGridView::WorkspaceGridView(WorkspaceTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
+WorkspaceGridView::WorkspaceGridView(WorkspaceTreeModel* model,
+                                     QSortFilterProxyModel* workspaceProxyModel,
                                      QItemSelectionModel* selectionModel, QWidget* parent)
     : QWidget{parent}
     , model_(model)
     , proxyModel_(workspaceProxyModel)
     , selectionModel_(selectionModel) {
-    
+
     noWorkspacesLabel_ = createRichTextLabel("<h2>Could not find any workspaces..</h2>");
     noWorkspacesLabel_->setVisible(false);
-        
+
     recentWorkspaces_ = new FixedSizeListView();
     setupView(recentWorkspaces_);
-    
+
     recentWorkspacesLabel_ = createRichTextLabel("<h2>Recent workspaces</h2>");
     examples_ = new QVBoxLayout();
-    //examples_->setSizeConstraint(QLayout::SetFixedSize);
+    // examples_->setSizeConstraint(QLayout::SetFixedSize);
     examplesLabel_ = createRichTextLabel("<h2>Example workspaces</h2>");
     regressionTests_ = new QVBoxLayout();
-    //regressionTests_->setSizeConstraint(QLayout::SetFixedSize);
+    // regressionTests_->setSizeConstraint(QLayout::SetFixedSize);
     regressionTestsLabel_ = createRichTextLabel("<h2>Regression test workspaces</h2>");
-        
+
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(utilqt::emToPx(this, 1));
     layout->addWidget(noWorkspacesLabel_);
@@ -142,54 +142,60 @@ WorkspaceGridView::WorkspaceGridView(WorkspaceTreeModel* model, QSortFilterProxy
     layout->addLayout(examples_);
     layout->addWidget(regressionTestsLabel_);
     layout->addLayout(regressionTests_);
-        
+
     // React to filtering changes
     QObject::connect(workspaceProxyModel, &QSortFilterProxyModel::rowsRemoved, this,
                      &WorkspaceGridView::updateWorkspaceViewVisibility);
     QObject::connect(workspaceProxyModel, &QSortFilterProxyModel::rowsInserted, this,
                      &WorkspaceGridView::updateWorkspaceViewVisibility);
-        
+
     QObject::connect(model_, &WorkspaceTreeModel::recentWorkspacesUpdated, this,
                      [this](TreeItem* recentWorkspaceItem) {
-        auto index = proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem));
-        recentWorkspaces_->setRootIndex(index);
-        bool isEmpty = !proxyModel_->hasChildren(index);
-        recentWorkspaces_->setVisible(!isEmpty);
-        recentWorkspacesLabel_->setVisible(!isEmpty);
-    });
+                         auto index =
+                             proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem));
+                         recentWorkspaces_->setRootIndex(index);
+                         bool isEmpty = !proxyModel_->hasChildren(index);
+                         recentWorkspaces_->setVisible(!isEmpty);
+                         recentWorkspacesLabel_->setVisible(!isEmpty);
+                     });
     QObject::connect(model_, &WorkspaceTreeModel::exampleWorkspacesUpdated, this,
                      [this](TreeItem* exampleWorkspaceItem) {
-        examplesLabel_->setVisible(updateModulesWorkspaces(exampleWorkspaceItem, examples_, examplesViewList_));
-     });
-    QObject::connect(model_, &WorkspaceTreeModel::regressionTestWorkspacesUpdated, this,
-                     [this](TreeItem* regressionTestWorkspaceItem) {
-        regressionTestsLabel_->setVisible(updateModulesWorkspaces(regressionTestWorkspaceItem, regressionTests_, regressionTestViewList_));
-     });
-    
-    QObject::connect(selectionModel_, &QItemSelectionModel::currentRowChanged, this,
-                     [this](const QModelIndex& current, const QModelIndex&) {
-                         if (current.isValid() && (current.data(WorkspaceTreeModel::ItemRoles::Type) ==
-                                                   WorkspaceTreeModel::ListElemType::File)) {
-                             const auto filename =
-                                 current.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
-                                 current.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
-                             const auto isExample =
-                                 current.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
-                             emit selectedFileChanged(filename, isExample);
-                         } else {
-                             emit selectedFileChanged("", false);
-                         }
+                         examplesLabel_->setVisible(updateModulesWorkspaces(
+                             exampleWorkspaceItem, examples_, examplesViewList_));
                      });
-        
+    QObject::connect(
+        model_, &WorkspaceTreeModel::regressionTestWorkspacesUpdated, this,
+        [this](TreeItem* regressionTestWorkspaceItem) {
+            regressionTestsLabel_->setVisible(updateModulesWorkspaces(
+                regressionTestWorkspaceItem, regressionTests_, regressionTestViewList_));
+        });
+
+    QObject::connect(
+        selectionModel_, &QItemSelectionModel::currentRowChanged, this,
+        [this](const QModelIndex& current, const QModelIndex&) {
+            if (current.isValid() && (current.data(WorkspaceTreeModel::ItemRoles::Type) ==
+                                      WorkspaceTreeModel::ListElemType::File)) {
+                const auto filename =
+                    current.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
+                    current.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
+                const auto isExample =
+                    current.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
+                emit selectedFileChanged(filename, isExample);
+            } else {
+                emit selectedFileChanged("", false);
+            }
+        });
 }
 
-bool WorkspaceGridView::updateModulesWorkspaces(TreeItem* titleItem, QLayout* container, std::vector<std::pair<QLabel*, FixedSizeListView*>>& workspaceViewsList) {
+bool WorkspaceGridView::updateModulesWorkspaces(
+    TreeItem* titleItem, QLayout* container,
+    std::vector<std::pair<QLabel*, FixedSizeListView*>>& workspaceViewsList) {
     while (QLayoutItem* child = container->takeAt(0)) {
-        delete child->widget(); // delete the widget
-        delete child;   // delete the layout item
+        delete child->widget();  // delete the widget
+        delete child;            // delete the layout item
     }
     workspaceViewsList.clear();
-    
+
     for (int i = 0; i < titleItem->childCount(); ++i) {
         TreeItem* item = titleItem->child(i);
         auto index = proxyModel_->mapFromSource(model_->getIndex(item));
@@ -201,7 +207,6 @@ bool WorkspaceGridView::updateModulesWorkspaces(TreeItem* titleItem, QLayout* co
         view->setRootIndex(index);
         workspaceViewsList.push_back(std::make_pair(titleLabel, view));
         container->addWidget(view);
-        
     }
     return titleItem->childCount() != 0;
 }
@@ -211,27 +216,28 @@ void WorkspaceGridView::updateWorkspaceViewVisibility() {
     recentWorkspacesLabel_->setVisible(recenWorkSpacesVisible);
 
     bool anyExampleVisible = false;
-    for (auto& labelView: examplesViewList_) {
-       bool visible = labelView.second->rootIndex().isValid();
-       labelView.first->setVisible(visible);
-       labelView.second->setVisible(visible);
-       anyExampleVisible |= visible;
+    for (auto& labelView : examplesViewList_) {
+        bool visible = labelView.second->rootIndex().isValid();
+        labelView.first->setVisible(visible);
+        labelView.second->setVisible(visible);
+        anyExampleVisible |= visible;
     }
     examplesLabel_->setVisible(anyExampleVisible);
     bool anyRegressionTestVisible = false;
-    for (auto& labelView: regressionTestViewList_) {
-       bool visible = labelView.second->rootIndex().isValid();
-       labelView.first->setVisible(visible);
-       labelView.second->setVisible(visible);
-       anyRegressionTestVisible |= visible;
+    for (auto& labelView : regressionTestViewList_) {
+        bool visible = labelView.second->rootIndex().isValid();
+        labelView.first->setVisible(visible);
+        labelView.second->setVisible(visible);
+        anyRegressionTestVisible |= visible;
     }
     regressionTestsLabel_->setVisible(anyRegressionTestVisible);
-    noWorkspacesLabel_->setVisible(!(recenWorkSpacesVisible | anyExampleVisible | anyRegressionTestVisible));
+    noWorkspacesLabel_->setVisible(
+        !(recenWorkSpacesVisible | anyExampleVisible | anyRegressionTestVisible));
 }
 
 void WorkspaceGridView::listViewDoubleClicked(const QModelIndex& index) {
-    if (index.isValid() &&
-        (index.data(WorkspaceTreeModel::ItemRoles::Type) == WorkspaceTreeModel::ListElemType::File)) {
+    if (index.isValid() && (index.data(WorkspaceTreeModel::ItemRoles::Type) ==
+                            WorkspaceTreeModel::ListElemType::File)) {
         const auto filename = index.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
                               index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
         const auto isExample = index.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
@@ -241,7 +247,7 @@ void WorkspaceGridView::listViewDoubleClicked(const QModelIndex& index) {
 
 void WorkspaceGridView::setupView(QListView* view) {
     view->setViewMode(QListView::ViewMode::IconMode);
-    //view->setMinimumHeight(128);
+    // view->setMinimumHeight(128);
     view->setIconSize(utilqt::emToPx(this, QSizeF(8, 8)));
     view->setResizeMode(QListView::ResizeMode::Adjust);
     view->setUniformItemSizes(true);
@@ -250,12 +256,13 @@ void WorkspaceGridView::setupView(QListView* view) {
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setMovement(QListView::Movement::Static);
-    //view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    // view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setTextElideMode(Qt::TextElideMode::ElideMiddle);
     view->setVerticalScrollMode(QAbstractItemView::ScrollMode::ScrollPerPixel);
     view->setModel(proxyModel_);
     view->setSelectionModel(selectionModel_);
-    QObject::connect(view, &QListView::doubleClicked, this, &WorkspaceGridView::listViewDoubleClicked);
+    QObject::connect(view, &QListView::doubleClicked, this,
+                     &WorkspaceGridView::listViewDoubleClicked);
 }
 
 QLabel* WorkspaceGridView::createRichTextLabel(std::string_view text) const {
@@ -263,6 +270,5 @@ QLabel* WorkspaceGridView::createRichTextLabel(std::string_view text) const {
     l->setTextFormat(Qt::RichText);
     return l;
 };
-
 
 }  // namespace inviwo

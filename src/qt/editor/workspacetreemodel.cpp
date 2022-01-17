@@ -124,7 +124,7 @@ bool WorkspaceTreeModel::removeRows(int position, int rows, const QModelIndex& p
 }
 
 void WorkspaceTreeModel::updateCategory(TreeItem* item,
-                                   std::vector<std::unique_ptr<TreeItem>> children) {
+                                        std::vector<std::unique_ptr<TreeItem>> children) {
     if (!item) return;
 
     // if children are identical, skip update
@@ -319,11 +319,10 @@ QVariant TreeItem::data(int column, int role) const {
 
 WorkspaceTreeModel::ListElemType TreeItem::type() const { return type_; }
 
-
 void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
     if (!recentWorkspaceItem_) {
-        auto item =
-            std::make_unique<TreeItem>("Recent Workspaces", WorkspaceTreeModel::ListElemType::Section);
+        auto item = std::make_unique<TreeItem>("Recent Workspaces",
+                                               WorkspaceTreeModel::ListElemType::Section);
         recentWorkspaceItem_ = item.get();
 
         addEntry(nullptr, std::move(item));
@@ -335,7 +334,8 @@ void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) 
             WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filename, app_);
             QIcon icon;
             if (!annotations.getCanvasImages().empty()) {
-                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg, "jpeg");
+                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg,
+                                                "jpeg");
             } else {
                 icon = defaultIcon;
             }
@@ -361,12 +361,12 @@ void WorkspaceTreeModel::updateExampleEntries() {
             WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filePath, app_);
             QIcon icon;
             if (!annotations.getCanvasImages().empty()) {
-                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg, "jpeg");
+                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg,
+                                                "jpeg");
             } else {
                 icon = defaultIcon;
             }
-            category->addChild(
-                std::make_unique<TreeItem>(icon, filePath, true));
+            category->addChild(std::make_unique<TreeItem>(icon, filePath, true));
         }
         if (category->childCount() > 0) {
             examples.push_back(std::move(category));
@@ -374,7 +374,8 @@ void WorkspaceTreeModel::updateExampleEntries() {
     }
 
     if (!examplesItem_) {
-        auto item = std::make_unique<TreeItem>("Examples", WorkspaceTreeModel::ListElemType::Section);
+        auto item =
+            std::make_unique<TreeItem>("Examples", WorkspaceTreeModel::ListElemType::Section);
         examplesItem_ = item.get();
         addEntry(nullptr, std::move(item));
     }
@@ -400,7 +401,8 @@ void WorkspaceTreeModel::updateRegressionTestEntries() {
             WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filePath, app_);
             QIcon icon;
             if (!annotations.getCanvasImages().empty()) {
-                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg, "jpeg");
+                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg,
+                                                "jpeg");
             } else {
                 icon = defaultIcon;
             }
@@ -411,8 +413,8 @@ void WorkspaceTreeModel::updateRegressionTestEntries() {
         }
     }
     if (!regressionTestsItem_) {
-        auto item =
-            std::make_unique<TreeItem>("Regression Tests", WorkspaceTreeModel::ListElemType::Section);
+        auto item = std::make_unique<TreeItem>("Regression Tests",
+                                               WorkspaceTreeModel::ListElemType::Section);
         regressionTestsItem_ = item.get();
         addEntry(nullptr, std::move(item));
     }

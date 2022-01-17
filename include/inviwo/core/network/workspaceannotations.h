@@ -90,6 +90,7 @@ public:
      * @return WorkspaceAnnotations if successfully loaded, empty WorkspaceAnnotations otherwise.
      */
     static WorkspaceAnnotations load(std::string_view path, InviwoApplication* app);
+
 protected:
     StringProperty title_;
     StringProperty author_;

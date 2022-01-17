@@ -218,7 +218,8 @@ IVW_MODULE_QTWIDGETS_API QImage fromBase64(std::string_view base64);
  *
  * \see QPixmap::loadFromData
  */
-IVW_MODULE_QTWIDGETS_API QIcon fromBase64ToIcon(std::string_view base64, std::string_view format = nullptr);
+IVW_MODULE_QTWIDGETS_API QIcon fromBase64ToIcon(std::string_view base64,
+                                                std::string_view format = nullptr);
 
 /*
  * \brief retrieve the contents of all visible canvases as QImage. A canvas must be ready and

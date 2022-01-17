@@ -54,8 +54,9 @@ class IVW_QTEDITOR_API WorkspaceTreeView : public QTreeView {
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit WorkspaceTreeView(WorkspaceTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
-                            QItemSelectionModel* selectionModel, QWidget* parent = nullptr);
+    explicit WorkspaceTreeView(WorkspaceTreeModel* model,
+                               QSortFilterProxyModel* workspaceProxyModel,
+                               QItemSelectionModel* selectionModel, QWidget* parent = nullptr);
     virtual ~WorkspaceTreeView() = default;
 
     bool selectRecentWorkspace(int index);

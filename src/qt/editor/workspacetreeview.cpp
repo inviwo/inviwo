@@ -75,7 +75,8 @@ SectionDelegate::SectionDelegate(QWidget* parent) : QStyledItemDelegate(parent) 
 void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
                             const QModelIndex& index) const {
 
-    if (index.data(WorkspaceTreeModel::ItemRoles::Type).toInt() == WorkspaceTreeModel::ListElemType::File) {
+    if (index.data(WorkspaceTreeModel::ItemRoles::Type).toInt() ==
+        WorkspaceTreeModel::ListElemType::File) {
         auto option = o;
         initStyleOption(&option, index);
 
@@ -118,7 +119,8 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 QSize SectionDelegate::sizeHint(const QStyleOptionViewItem& o, const QModelIndex& index) const {
     if (!index.isValid()) return QSize();
 
-    if (index.data(WorkspaceTreeModel::ItemRoles::Type).toInt() == WorkspaceTreeModel::ListElemType::File) {
+    if (index.data(WorkspaceTreeModel::ItemRoles::Type).toInt() ==
+        WorkspaceTreeModel::ListElemType::File) {
         auto option = o;
         initStyleOption(&option, index);
 
@@ -214,11 +216,10 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
 
 }  // namespace
 
-WorkspaceTreeView::WorkspaceTreeView(WorkspaceTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
-                               QItemSelectionModel* workspaceSelectionModel, QWidget* parent)
-    : QTreeView{parent}
-    , model_{model}
-    , proxyModel_{workspaceProxyModel} {
+WorkspaceTreeView::WorkspaceTreeView(WorkspaceTreeModel* model,
+                                     QSortFilterProxyModel* workspaceProxyModel,
+                                     QItemSelectionModel* workspaceSelectionModel, QWidget* parent)
+    : QTreeView{parent}, model_{model}, proxyModel_{workspaceProxyModel} {
 
     setModel(proxyModel_);
     setSelectionModel(workspaceSelectionModel);
@@ -228,7 +229,6 @@ WorkspaceTreeView::WorkspaceTreeView(WorkspaceTreeModel* model, QSortFilterProxy
     setIconSize(utilqt::emToPx(this, QSizeF(2.5, 2.5)));
     setIndentation(utilqt::emToPx(this, 1.0));
     setItemDelegate(new SectionDelegate(this));
-    
 
     // adjust width of first column
     // file entries and icons start in column 2, sections headers span all columns
@@ -236,43 +236,46 @@ WorkspaceTreeView::WorkspaceTreeView(WorkspaceTreeModel* model, QSortFilterProxy
     header()->resizeSection(0, utilqt::emToPx(this, 2.0));
     QObject::connect(model_, &WorkspaceTreeModel::recentWorkspacesUpdated, this,
                      [this](TreeItem* recentWorkspaceItem) {
-        if (!recentWorkspaceItem_) {
-            recentWorkspaceItem_= recentWorkspaceItem;
-            auto index = proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem));
-            expand(index);
-            setFirstColumnSpanned(index.row(), index.parent(), true);
-        }
-    });
-    QObject::connect(model_, &WorkspaceTreeModel::exampleWorkspacesUpdated, this,
-                     [this](TreeItem* exampleWorkspaceItem) {
-        updateWorkspaces(examplesItem_, exampleWorkspaceItem);
-     });
-    QObject::connect(model_, &WorkspaceTreeModel::regressionTestWorkspacesUpdated, this,
-                     [this](TreeItem* regressionTestWorkspaceItem) {
-        updateWorkspaces(regressionTestsItem_, regressionTestWorkspaceItem);
-     });
-
-    QObject::connect(selectionModel(), &QItemSelectionModel::currentRowChanged, this,
-                     [this](const QModelIndex& current, const QModelIndex&) {
-                         if (current.isValid() && (current.data(WorkspaceTreeModel::ItemRoles::Type) ==
-                                                   WorkspaceTreeModel::ListElemType::File)) {
-                             const auto filename =
-                                 current.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
-                                 current.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
-                             const auto isExample =
-                                 current.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
-                             emit selectedFileChanged(filename, isExample);
-                         } else {
-                             emit selectedFileChanged("", false);
+                         if (!recentWorkspaceItem_) {
+                             recentWorkspaceItem_ = recentWorkspaceItem;
+                             auto index =
+                                 proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem));
+                             expand(index);
+                             setFirstColumnSpanned(index.row(), index.parent(), true);
                          }
                      });
+    QObject::connect(model_, &WorkspaceTreeModel::exampleWorkspacesUpdated, this,
+                     [this](TreeItem* exampleWorkspaceItem) {
+                         updateWorkspaces(examplesItem_, exampleWorkspaceItem);
+                     });
+    QObject::connect(model_, &WorkspaceTreeModel::regressionTestWorkspacesUpdated, this,
+                     [this](TreeItem* regressionTestWorkspaceItem) {
+                         updateWorkspaces(regressionTestsItem_, regressionTestWorkspaceItem);
+                     });
+
+    QObject::connect(
+        selectionModel(), &QItemSelectionModel::currentRowChanged, this,
+        [this](const QModelIndex& current, const QModelIndex&) {
+            if (current.isValid() && (current.data(WorkspaceTreeModel::ItemRoles::Type) ==
+                                      WorkspaceTreeModel::ListElemType::File)) {
+                const auto filename =
+                    current.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
+                    current.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
+                const auto isExample =
+                    current.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
+                emit selectedFileChanged(filename, isExample);
+            } else {
+                emit selectedFileChanged("", false);
+            }
+        });
 
     QObject::connect(this, &QTreeView::doubleClicked, this, [this](const QModelIndex& index) {
-        if (index.isValid() &&
-            (index.data(WorkspaceTreeModel::ItemRoles::Type) == WorkspaceTreeModel::ListElemType::File)) {
+        if (index.isValid() && (index.data(WorkspaceTreeModel::ItemRoles::Type) ==
+                                WorkspaceTreeModel::ListElemType::File)) {
             const auto filename = index.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
                                   index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
-            const auto isExample = index.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
+            const auto isExample =
+                index.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
             emit loadFile(filename, isExample);
         }
     });
@@ -327,8 +330,9 @@ void WorkspaceTreeView::defaultExpand() {
     setUpdatesEnabled(true);
 }
 
-void WorkspaceTreeView::updateWorkspaces(TreeItem* currentWorkspaceItem, TreeItem* newWorkspaceItem) {
-    
+void WorkspaceTreeView::updateWorkspaces(TreeItem* currentWorkspaceItem,
+                                         TreeItem* newWorkspaceItem) {
+
     if (!currentWorkspaceItem) {
         currentWorkspaceItem = newWorkspaceItem;
         auto index = proxyModel_->mapFromSource(model_->getIndex(newWorkspaceItem));

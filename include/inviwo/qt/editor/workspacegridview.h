@@ -57,64 +57,63 @@ class WorkspaceTreeModel;
  * \brief ListView that assumes icon grid layout and ensures a proper sizeHint for the widget.
  * The custom listview can also handle filtering when setRootIndex is used.
  * setRootIndex can be used to start the list from a (hiearchical) item in the model.
- * However, QListView resets the root index when the index becomes invalid through filtering using QSortFilterProxyModel.
- * The filtering workaround is based on the answers here: https://stackoverflow.com/questions/70112321/qt-rootindex-gets-reset-each-time-qsortfilterproxymodelinvalidatefilter-is-c
+ * However, QListView resets the root index when the index becomes invalid through filtering using
+ * QSortFilterProxyModel. The filtering workaround is based on the answers here:
+ * https://stackoverflow.com/questions/70112321/qt-rootindex-gets-reset-each-time-qsortfilterproxymodelinvalidatefilter-is-c
  */
-class FixedSizeListView : public QListView
-{
+class FixedSizeListView : public QListView {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit FixedSizeListView(QWidget *parent = nullptr)
-        : QListView(parent) {}
-    
-    void setModel(QAbstractItemModel *model) override;
+    explicit FixedSizeListView(QWidget* parent = nullptr) : QListView(parent) {}
+
+    void setModel(QAbstractItemModel* model) override;
     /*
      * @return the content width and a height that depends on how many items that fit in a row.
      */
     QSize sizeHint() const override;
-    
-    QSize minimumSizeHint() const override {
-        return sizeHint();
-    }
-     
+
+    QSize minimumSizeHint() const override { return sizeHint(); }
+
 public slots:
     virtual void setRootIndex(const QModelIndex& rootIndex) override;
     void checkRootIndex();
+
 private:
     QSortFilterProxyModel* model_ = nullptr;
     QPersistentModelIndex sourceRootIndex_;
-     
 };
 
-
 /**
- * \brief Displays recently used workspaces, example workspaces and regression test workspaces in a grid list.
- * Each workspace is represented by the first avaialble canvas image and its filename.
+ * \brief Displays recently used workspaces, example workspaces and regression test workspaces in a
+ * grid list. Each workspace is represented by the first avaialble canvas image and its filename.
  */
-class IVW_QTEDITOR_API WorkspaceGridView  : public QWidget {
+class IVW_QTEDITOR_API WorkspaceGridView : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit WorkspaceGridView(WorkspaceTreeModel* model, QSortFilterProxyModel* workspaceProxyModel,
+    explicit WorkspaceGridView(WorkspaceTreeModel* model,
+                               QSortFilterProxyModel* workspaceProxyModel,
                                QItemSelectionModel* selectionModel, QWidget* parent = nullptr);
     virtual ~WorkspaceGridView() = default;
 
 signals:
     void selectedFileChanged(const QString& filename, bool isExample);
     void loadFile(const QString& filename, bool isExample);
-    
+
 private:
-    bool updateModulesWorkspaces(TreeItem* titleItem, QLayout* container, std::vector<std::pair<QLabel*, FixedSizeListView*>>& workspaceViewsList);
+    bool updateModulesWorkspaces(
+        TreeItem* titleItem, QLayout* container,
+        std::vector<std::pair<QLabel*, FixedSizeListView*>>& workspaceViewsList);
     void updateWorkspaceViewVisibility();
     void listViewDoubleClicked(const QModelIndex& index);
     void setupView(QListView* view);
     QLabel* createRichTextLabel(std::string_view text) const;
-    
+
     QLabel* noWorkspacesLabel_;
     QLabel* recentWorkspacesLabel_;
     QVBoxLayout* examples_;
@@ -128,7 +127,6 @@ private:
     WorkspaceTreeModel* model_;
     QSortFilterProxyModel* proxyModel_;
     QItemSelectionModel* selectionModel_;
-
 };
 
 }  // namespace inviwo

@@ -87,7 +87,7 @@ private:
     QSortFilterProxyModel* workspaceProxyModel_;
     QItemSelectionModel* workspaceSelectionModel_;
     WorkspaceTreeView* workspaceTreeView_;
-    
+
     WorkspaceGridView* workspaceGridView_;
     QScrollArea* workspaceGridViewArea_;
     QLineEdit* filterLineEdit_;

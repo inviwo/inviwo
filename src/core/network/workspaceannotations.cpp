@@ -110,8 +110,8 @@ WorkspaceAnnotations WorkspaceAnnotations::load(std::string_view path, InviwoApp
         auto istream = filesystem::ifstream(std::string(path));
         if (istream.is_open()) {
             LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
-            auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(
-                istream, path, &logger);
+            auto d =
+                app->getWorkspaceManager()->createWorkspaceDeserializer(istream, path, &logger);
             d.setExceptionHandler([](const ExceptionContext) {});
             d.deserialize("WorkspaceAnnotations", annotations);
         }

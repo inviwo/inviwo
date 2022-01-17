@@ -87,7 +87,7 @@ public:
     bool removeEntry(TreeItem* node);
     bool removeChildren(TreeItem* root);
     QModelIndex getIndex(TreeItem* item, int column = 0) const;
-    
+
     void updateRecentWorkspaces(const QStringList& recentFiles);
     void updateExampleEntries();
     void updateRegressionTestEntries();
@@ -107,14 +107,15 @@ private:
     TreeItem* recentWorkspaceItem_ = nullptr;
     TreeItem* examplesItem_ = nullptr;
     TreeItem* regressionTestsItem_ = nullptr;
-    
+
     std::unique_ptr<TreeItem> root_;
 };
 
 class IVW_QTEDITOR_API TreeItem {
 public:
     explicit TreeItem(TreeItem* parent = nullptr);
-    TreeItem(const QString& caption, WorkspaceTreeModel::ListElemType type, TreeItem* parent = nullptr);
+    TreeItem(const QString& caption, WorkspaceTreeModel::ListElemType type,
+             TreeItem* parent = nullptr);
     TreeItem(const QIcon& icon, const std::string& filename, bool isExample = false,
              TreeItem* parent = nullptr);
     TreeItem(const TreeItem&) = delete;
