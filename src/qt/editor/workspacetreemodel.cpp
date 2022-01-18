@@ -35,6 +35,13 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+
+#include <QFontMetrics>
+
+#include <warn/pop>
+
 namespace inviwo {
 
 bool operator==(const QVariant& v, WorkspaceTreeModel::ListElemType t) {
@@ -289,10 +296,11 @@ QVariant TreeItem::data(int column, int role) const {
             }
             case Qt::DecorationRole:
                 return icon_;
-            case Qt::SizeHintRole:
+            case Qt::SizeHintRole: {
                 // Icon + text
-                return QSize(128, 128);
-            case WorkspaceTreeModel::ItemRoles::Type:
+                int size = utilqt::emToPx(QFontMetrics(QFont()), IconSize);
+                return QSize(size, size);
+            } case WorkspaceTreeModel::ItemRoles::Type:
                 return static_cast<int>(type_);
             case WorkspaceTreeModel::ItemRoles::FileName:
                 return file_;

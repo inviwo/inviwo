@@ -212,6 +212,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             workspaceGridView_->setMinimumWidth(utilqt::emToPx(this, 2));
             workspaceGridView_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
             workspaceGridViewArea_ = new QScrollArea();
+            workspaceGridViewArea_->setFrameShape(QFrame::Shape::NoFrame);
             workspaceGridViewArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
             workspaceGridViewArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
             workspaceGridViewArea_->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
@@ -258,6 +259,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             auto toolbarLayout = new QHBoxLayout(workspaceViewToolbarWidget);
             filterLineEdit_ = new QLineEdit();
             filterLineEdit_->setPlaceholderText("Search for Workspace...");
+            filterLineEdit_->setMaximumWidth(utilqt::emToPx(this, 32.0));
             filterLineEdit_->installEventFilter(
                 new LineEditEventFilter(workspaceTreeView_, filterLineEdit_));
             toolbarLayout->addWidget(filterLineEdit_);
@@ -593,8 +595,8 @@ void WelcomeWidget::updateDetails(const QString& filename) {
                     {{"style", "color:firebrick;font-weight:600;"}});
     }
     auto content = body.append("span");
-    auto addImage = [&content](auto item) {
-        const int maxImgWidth = 128;
+    const int maxImgWidth = utilqt::emToPx(this, 16);
+    auto addImage = [&content, maxImgWidth](auto item) {
         if (!item.isValid()) return;
         auto img = content.append("table", "", {{"style", "float: left;"}});
         img.append("tr").append("td").append("h3", item.name, {{"style", "font-weight:600;"}});

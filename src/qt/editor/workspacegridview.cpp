@@ -247,8 +247,9 @@ void WorkspaceGridView::listViewDoubleClicked(const QModelIndex& index) {
 
 void WorkspaceGridView::setupView(QListView* view) {
     view->setViewMode(QListView::ViewMode::IconMode);
-    // view->setMinimumHeight(128);
-    view->setIconSize(utilqt::emToPx(this, QSizeF(8, 8)));
+    auto textMargin = utilqt::emToPx(this, 1); // Margin between icon and text
+    auto textHeight = view->fontMetrics().height() + textMargin;
+    view->setIconSize(utilqt::emToPx(this, QSize(TreeItem::IconSize, TreeItem::IconSize)) - QSize(textHeight, textHeight));
     view->setResizeMode(QListView::ResizeMode::Adjust);
     view->setUniformItemSizes(true);
     view->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
@@ -256,9 +257,9 @@ void WorkspaceGridView::setupView(QListView* view) {
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setMovement(QListView::Movement::Static);
-    // view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setTextElideMode(Qt::TextElideMode::ElideMiddle);
     view->setVerticalScrollMode(QAbstractItemView::ScrollMode::ScrollPerPixel);
+    view->setFrameShape(QFrame::Shape::NoFrame);
     view->setModel(proxyModel_);
     view->setSelectionModel(selectionModel_);
     QObject::connect(view, &QListView::doubleClicked, this,
