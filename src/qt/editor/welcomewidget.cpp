@@ -255,7 +255,6 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             QObject::connect(workspaceTreeView_, &WorkspaceTreeView::loadFile, this,
                              &WelcomeWidget::loadWorkspace);
 
-
             auto toolbarLayout = new QHBoxLayout();
             filterLineEdit_ = new QLineEdit();
             filterLineEdit_->setPlaceholderText("Search for Workspace...");
@@ -505,9 +504,12 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
 
 void inviwo::WelcomeWidget::hideEvent(QHideEvent* event) {
     if (!event->spontaneous()) {
-        // Keeping all of these workspaces can be quite expensive, so remove them if hidden as they are updated when shown anyway.
-        workspaceModel_->updateCategory(workspaceModel_->getExampleWorkspaceItem(), std::vector<std::unique_ptr<TreeItem>>());
-        workspaceModel_->updateCategory(workspaceModel_->getRegressionTestWorkspaceItem(), std::vector<std::unique_ptr<TreeItem>>());
+        // Keeping all of these workspaces can be quite expensive, so remove them if hidden as they
+        // are updated when shown anyway.
+        workspaceModel_->updateCategory(workspaceModel_->getExampleWorkspaceItem(),
+                                        std::vector<std::unique_ptr<TreeItem>>());
+        workspaceModel_->updateCategory(workspaceModel_->getRegressionTestWorkspaceItem(),
+                                        std::vector<std::unique_ptr<TreeItem>>());
     }
     QWidget::hideEvent(event);
 }
