@@ -164,6 +164,11 @@ private:
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
 
     void visibilityModeChangedInSettings();
+    /*
+     * Access the WelcomeWidget using this function as it does delayed initialization, i.e., creates
+     * it if non-existing.
+     */
+    WelcomeWidget* getWelcomeWidget();
 
     /**
      * loads the workspace \p workspaceFileName. In case there are unsaved changes, the user will
@@ -217,7 +222,8 @@ private:
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
-    WelcomeWidget* welcomeWidget_;
+    WelcomeWidget* welcomeWidget_ =
+        nullptr;  ///< Use delayed initialization as it can be expensive.
     std::vector<QDockWidget*> welcomeHidden_;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;

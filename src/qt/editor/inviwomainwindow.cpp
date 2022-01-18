@@ -271,45 +271,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     resourceManagerDockWidget_->setVisible(false);
     resourceManagerDockWidget_->loadState();
 
-    welcomeWidget_ = new WelcomeWidget(getInviwoApplication(), this);
-    welcomeWidget_->updateRecentWorkspaces(getRecentWorkspaceList());
-
-    connect(welcomeWidget_, &WelcomeWidget::loadWorkspace, this,
-            [this](const QString& filename, bool isExample) {
-                if (askToSaveWorkspaceChanges()) {
-                    hideWelcomeScreen();
-                    saveWindowState();
-                    bool controlPressed = app_->keyboardModifiers() == Qt::ControlModifier;
-                    if (isExample && !controlPressed) {
-                        openExample(filename);
-                    } else {
-                        openWorkspace(filename);
-                    }
-                }
-            });
-    connect(welcomeWidget_, &WelcomeWidget::openWorkspace, this, [this]() {
-        if (auto path = askForWorkspaceToOpen()) {
-            hideWelcomeScreen();
-            openWorkspace(*path);
-            saveWindowState();
-        }
-    });
-    connect(welcomeWidget_, &WelcomeWidget::newWorkspace, this, [this]() {
-        hideWelcomeScreen();
-        saveWindowState();
-    });
-    connect(welcomeWidget_, &WelcomeWidget::restoreWorkspace, this, [this]() {
-        hideWelcomeScreen();
-        restoreWorkspace();
-        saveWindowState();
-    });
-
     centralWidget_ = new QStackedWidget(this);
     centralWidget_->setObjectName("CentralTabWidget");
 
     centralWidget_->addWidget(networkEditorView_);
-    centralWidget_->addWidget(welcomeWidget_);
-    centralWidget_->removeWidget(welcomeWidget_);
     setCentralWidget(centralWidget_);
 
     // register workspace annotation serialization and deserialization as well as clear callback
@@ -1274,19 +1239,23 @@ void InviwoMainWindow::showWelcomeScreen() {
             welcomeHidden_.push_back(dw);
         }
     }
-    centralWidget_->addWidget(welcomeWidget_);
-    centralWidget_->setCurrentWidget(welcomeWidget_);
-    welcomeWidget_->enableRestoreButton(hasRestoreWorkspace());
-    welcomeWidget_->setFilterFocus();
+    auto welcomeWidget = getWelcomeWidget();
+    centralWidget_->addWidget(welcomeWidget);
+    centralWidget_->setCurrentWidget(welcomeWidget);
+    welcomeWidget->enableRestoreButton(hasRestoreWorkspace());
+    welcomeWidget->setFilterFocus();
     app_->processEvents(QEventLoop::ExcludeUserInputEvents);
     setUpdatesEnabled(true);
     app_->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {
+    if (!welcomeWidget_) {
+        return;
+    }
     setUpdatesEnabled(false);
     centralWidget_->setCurrentWidget(networkEditorView_);
-    centralWidget_->removeWidget(welcomeWidget_);
+    centralWidget_->removeWidget(getWelcomeWidget());
     for (auto dw : welcomeHidden_) {
         dw->show();
     }
@@ -1339,6 +1308,47 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
     }
 
     updateWindowTitle();
+}
+
+WelcomeWidget* inviwo::InviwoMainWindow::getWelcomeWidget() {
+    // The welcome widget is rather expensive to keep around, so do not create it unnecessarily.
+    // Tested on Windows, where 50 MB was released upon deletion.
+    if (!welcomeWidget_) {
+        welcomeWidget_ = new WelcomeWidget(getInviwoApplication(), centralWidget_);
+        welcomeWidget_->updateRecentWorkspaces(getRecentWorkspaceList());
+
+        connect(welcomeWidget_, &WelcomeWidget::loadWorkspace, this,
+                [this](const QString& filename, bool isExample) {
+                    if (askToSaveWorkspaceChanges()) {
+                        hideWelcomeScreen();
+                        saveWindowState();
+                        bool controlPressed = app_->keyboardModifiers() == Qt::ControlModifier;
+                        if (isExample && !controlPressed) {
+                            openExample(filename);
+                        } else {
+                            openWorkspace(filename);
+                        }
+                    }
+                });
+        connect(welcomeWidget_, &WelcomeWidget::openWorkspace, this, [this]() {
+            if (auto path = askForWorkspaceToOpen()) {
+                hideWelcomeScreen();
+                openWorkspace(*path);
+                saveWindowState();
+            }
+        });
+        connect(welcomeWidget_, &WelcomeWidget::newWorkspace, this, [this]() {
+            hideWelcomeScreen();
+            saveWindowState();
+        });
+        connect(welcomeWidget_, &WelcomeWidget::restoreWorkspace, this, [this]() {
+            hideWelcomeScreen();
+            restoreWorkspace();
+            saveWindowState();
+        });
+    }
+
+    return welcomeWidget_;
 }
 
 NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor_.get(); }
