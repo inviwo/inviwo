@@ -225,7 +225,8 @@ WorkspaceTreeView::WorkspaceTreeView(WorkspaceTreeModel* model,
     setSelectionModel(workspaceSelectionModel);
 
     setHeaderHidden(true);
-    setSelectionBehavior(QAbstractItemView::SelectRows);
+    setSelectionBehavior(QAbstractItemView::SelectItems);
+    setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
     setIconSize(utilqt::emToPx(this, QSizeF(2.5, 2.5)));
     setIndentation(utilqt::emToPx(this, 1.0));
     setItemDelegate(new SectionDelegate(this));

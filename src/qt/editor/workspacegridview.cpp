@@ -127,10 +127,8 @@ WorkspaceGridView::WorkspaceGridView(WorkspaceTreeModel* model,
 
     recentWorkspacesLabel_ = createRichTextLabel("<h2>Recent workspaces</h2>");
     examples_ = new QVBoxLayout();
-    // examples_->setSizeConstraint(QLayout::SetFixedSize);
     examplesLabel_ = createRichTextLabel("<h2>Example workspaces</h2>");
     regressionTests_ = new QVBoxLayout();
-    // regressionTests_->setSizeConstraint(QLayout::SetFixedSize);
     regressionTestsLabel_ = createRichTextLabel("<h2>Regression test workspaces</h2>");
 
     QVBoxLayout* layout = new QVBoxLayout(this);
@@ -263,6 +261,9 @@ void WorkspaceGridView::setupView(QListView* view) {
     view->setFrameShape(QFrame::Shape::NoFrame);
     view->setModel(proxyModel_);
     view->setSelectionModel(selectionModel_);
+    view->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectItems);
+    view->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+    view->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
     QObject::connect(view, &QListView::doubleClicked, this,
                      &WorkspaceGridView::listViewDoubleClicked);
 }
