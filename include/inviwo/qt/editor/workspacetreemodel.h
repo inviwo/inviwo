@@ -113,7 +113,7 @@ private:
 
 class IVW_QTEDITOR_API TreeItem {
 public:
-    static const int IconSize = 12; // Icon size in em.
+    static const int IconSize = 12;  // Icon size in em.
     explicit TreeItem(TreeItem* parent = nullptr);
     TreeItem(const QString& caption, WorkspaceTreeModel::ListElemType type,
              TreeItem* parent = nullptr);

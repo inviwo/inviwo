@@ -247,9 +247,10 @@ void WorkspaceGridView::listViewDoubleClicked(const QModelIndex& index) {
 
 void WorkspaceGridView::setupView(QListView* view) {
     view->setViewMode(QListView::ViewMode::IconMode);
-    auto textMargin = utilqt::emToPx(this, 1); // Margin between icon and text
+    auto textMargin = utilqt::emToPx(this, 1);  // Margin between icon and text
     auto textHeight = view->fontMetrics().height() + textMargin;
-    view->setIconSize(utilqt::emToPx(this, QSize(TreeItem::IconSize, TreeItem::IconSize)) - QSize(textHeight, textHeight));
+    view->setIconSize(utilqt::emToPx(this, QSize(TreeItem::IconSize, TreeItem::IconSize)) -
+                      QSize(textHeight, textHeight));
     view->setResizeMode(QListView::ResizeMode::Adjust);
     view->setUniformItemSizes(true);
     view->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);

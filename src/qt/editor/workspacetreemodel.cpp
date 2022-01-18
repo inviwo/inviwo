@@ -300,7 +300,8 @@ QVariant TreeItem::data(int column, int role) const {
                 // Icon + text
                 int size = utilqt::emToPx(QFontMetrics(QFont()), IconSize);
                 return QSize(size, size);
-            } case WorkspaceTreeModel::ItemRoles::Type:
+            }
+            case WorkspaceTreeModel::ItemRoles::Type:
                 return static_cast<int>(type_);
             case WorkspaceTreeModel::ItemRoles::FileName:
                 return file_;
