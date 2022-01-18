@@ -194,8 +194,32 @@ if (OS_MAC)
         "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
         VERBATIM
     )
+    
+    # Application does not seem to find the framework resource files, so
+    # find and create links to all framework resources from the bundle
+    # Contents/Resource directory.
+    # See documentation about settings in cef_types.h:
+    # "This value [locales_dir_path] is ignored on MacOS where pack files are always
+    # loaded from the app bundle Resources directory"
+    # The files are the same for debug/release, simply use release
+    # (file does not support generator expressions).
+    file(GLOB resource_files LIST_DIRECTORIES TRUE "${_CEF_ROOT}/Release/Chromium Embedded Framework.framework/Resources/*")
+    foreach(cur_file ${resource_files})
+        get_filename_component(name ${cur_file} NAME)
+        add_custom_command(
+            TARGET inviwo-module-webbrowser
+            POST_BUILD
+            WORKING_DIRECTORY "${CEF_APP}/Contents/Resources"
+            # Copy the CEF framework into the Frameworks directory.
+            COMMAND ${CMAKE_COMMAND} -E create_symlink
+            "../Frameworks/Chromium Embedded Framework.framework/Resources/${name}"
+            "${name}"
+            VERBATIM
+        )
+    endforeach()
 
     # Copy the CEF framework into the Frameworks directory (used by installer)
+    # TODO: Investigate if the .proj workaround above is required for packaging as well.
     install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
             COMPONENT Application) 

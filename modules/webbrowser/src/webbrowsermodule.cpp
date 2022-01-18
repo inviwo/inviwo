@@ -187,10 +187,34 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     CefMainArgs args(app->getCommandLineParser().getARGC(), app->getCommandLineParser().getARGV());
     CefSettings settings;
-    // CefString(&settings.framework_dir_path).FromASCII((frameworkDirectory).c_str());
+    // Setting locales_dir_path does not seem to work (tested debug mode with Xcode).
+    // We have therefore created symbolic links from the bundle Resources directory to the
+    // framework resource files using CMake.
+    // See documentation about settings in cef_types.h:
+    // "This value [locales_dir_path] is ignored on MacOS where pack files are always
+    // loaded from the app bundle Resources directory".
+    //
+    // We still set the variable to potentially avoid other problems such as the one below.
     // Crashes if not set and non-default locale is used
     CefString(&settings.locales_dir_path)
         .FromASCII((frameworkDirectory + std::string("/Resources")).c_str());
+
+    // resources_dir_path specified location of:
+    // cef.pak
+    // cef_100_percent.pak
+    // cef_200_percent.pak
+    //      These files contain non-localized resources used by CEF, Chromium and Blink.
+    //      Without these files arbitrary Web components may display incorrectly.
+    //
+    // cef_extensions.pak
+    //      This file contains non-localized resources required for extension loading.
+    //      Pass the `--disable-extensions` command-line flag to disable use of this
+    //      file. Without this file components that depend on the extension system,
+    //      such as the PDF viewer, will not function.
+    //
+    // devtools_resources.pak
+    //      This file contains non-localized resources required for Chrome Developer
+    //      Tools. Without this file Chrome Developer Tools will not function.
     CefString(&settings.resources_dir_path)
         .FromASCII((frameworkDirectory + std::string("/Resources")).c_str());
     // Locale returns "en_US.UFT8" but "en.UTF8" is needed by CEF

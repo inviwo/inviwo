@@ -74,6 +74,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # https://cmake.org/cmake/help/v3.15/prop_tgt/MACOSX_BUNDLE_INFO_PLIST.html
     string(TIMESTAMP YEAR "%Y")
     set_target_properties(inviwo PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST "${IVW_RESOURCES_DIR}/MacOSXBundleInfo.plist.in"
         MACOSX_BUNDLE_INFO_STRING "Inviwo ${IVW_VERSION}, Copyright (c) 2012-${YEAR} Inviwo Foundation"
         MACOSX_BUNDLE_ICON_FILE "inviwo_light.icns"
         MACOSX_BUNDLE_GUI_IDENTIFIER "org.inviwo.Inviwo"
