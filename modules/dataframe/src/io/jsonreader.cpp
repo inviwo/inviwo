@@ -41,14 +41,9 @@ JSONDataFrameReader::JSONDataFrameReader() {
 
 JSONDataFrameReader* JSONDataFrameReader::clone() const { return new JSONDataFrameReader(*this); }
 
-std::shared_ptr<DataFrame> JSONDataFrameReader::readData(const std::string& fileName) {
-    auto file = filesystem::ifstream(fileName);
+std::shared_ptr<DataFrame> JSONDataFrameReader::readData(std::string_view fileName) {
+    auto file = open(fileName);
 
-    if (!file.is_open()) {
-        throw FileException(
-            std::string("JSONDataFrameReader: Could not open file \"" + fileName + "\"."),
-            IVW_CONTEXT);
-    }
     file.seekg(0, std::ios::end);
     std::streampos len = file.tellg();
     file.seekg(0, std::ios::beg);

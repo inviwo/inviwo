@@ -41,24 +41,35 @@
 #include <algorithm>
 
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <tcb/span.hpp>
+#include <fmt/ostream.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeRegionStatistics::processorInfo_{
-    "org.inviwo.VolumeRegionStatistics",  // Class identifier
-    "Volume Region Statistics",           // Display name
-    "Undefined",                          // Category
-    CodeState::Experimental,              // Code state
-    Tags::None,                           // Tags
+    "org.inviwo.VolumeRegionStatistics",                         // Class identifier
+    "Volume Region Statistics",                                  // Display name
+    "Volume Operation",                                          // Category
+    CodeState::Stable,                                           // Code state
+    Tag::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"},  // Tags
 };
 const ProcessorInfo VolumeRegionStatistics::getProcessorInfo() const { return processorInfo_; }
 
 VolumeRegionStatistics::VolumeRegionStatistics()
-    : PoolProcessor(), volume_("volume"), atlas_{"atlas"}, dataFrame_{"statistics"} {
+    : PoolProcessor()
+    , volume_("volume")
+    , atlas_{"atlas"}
+    , dataFrame_{"statistics"}
+    , space_{"space",
+             "Result Space",
+             {CoordinateSpace::Data, CoordinateSpace::Model, CoordinateSpace::World,
+              CoordinateSpace::Index},
+             2} {
 
     addPorts(volume_, atlas_, dataFrame_);
+    addProperties(space_);
 }
 
 auto addColumns(DataFrame& df, std::string_view name, size_t size, Unit unit,
@@ -249,8 +260,8 @@ struct StatsFunctor {
     const DataMapper map;
 
     const dvec3 dim;
-    const mat4 data2world;
-    const mat4 index2world;
+    const mat4 data2dest;
+    const mat4 index2dest;
     const mat4 index2data;
     const double volumeScale;
 
@@ -262,7 +273,7 @@ struct StatsFunctor {
     std::vector<std::vector<double>*> regionCenter;
     std::vector<std::vector<std::vector<double>*>> regionCoM;
 
-    StatsFunctor(const Volume& volume, const Volume& atlas)
+    StatsFunctor(const Volume& volume, const Volume& atlas, CoordinateSpace destSpace)
         : nRegions{static_cast<size_t>(atlas.dataMap_.dataRange.y)}
         , channels{volume.getDataFormat()->getComponents()}
         , df{std::make_shared<DataFrame>(nRegions)}
@@ -270,15 +281,11 @@ struct StatsFunctor {
         , atlasRep{atlas.getRepresentation<VolumeRAM>()}
         , map{volume.dataMap_}
         , dim{static_cast<dvec3>(volume.getDimensions())}
-        , data2world{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Data,
-                                                                 CoordinateSpace::World)}
-        , index2world{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Index,
-                                                                  CoordinateSpace::World)}
+        , data2dest{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Data, destSpace)}
+        , index2dest{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Index, destSpace)}
         , index2data{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Index,
                                                                  CoordinateSpace::Data)}
-        , volumeScale{voxelVolume(index2world)}
-
-    {
+        , volumeScale{voxelVolume(index2dest)} {
 
         const auto& axes = volume.axes;
         const std::array<std::string_view, 3> axesNames = {axes[0].name, axes[1].name,
@@ -296,8 +303,8 @@ struct StatsFunctor {
         const auto sumUnits =
             util::make_array<4>([&](auto) { return volumeUnit * map.valueAxis.unit; });
 
-        const auto posMin = dvec3{data2world * dvec4{0.0, 0.0, 0.0, 1.0}};
-        const auto posMax = dvec3{data2world * dvec4{1.0, 1.0, 1.0, 1.0}};
+        const auto posMin = dvec3{data2dest * dvec4{0.0, 0.0, 0.0, 1.0}};
+        const auto posMax = dvec3{data2dest * dvec4{1.0, 1.0, 1.0, 1.0}};
         std::array<std::optional<dvec2>, 3> sizeRange = {{dvec2{posMin[0], posMax[0]},
                                                           dvec2{posMin[1], posMax[1]},
                                                           dvec2{posMin[2], posMax[2]}}};
@@ -346,14 +353,17 @@ struct StatsFunctor {
         for (auto&& [i, stat] : util::enumerate(stats)) {
             const auto [region, c] = regionMapper(i);
 
+            if (stat.getVolume() == 0.0) {
+                throw Exception("Empty volume!");
+            }
             (*regionVolumes)[region] = volumeScale * stat.getVolume();
             (*regionSums[c])[region] = map.mapFromDataToValue(stat.getMass());
             (*regionMean[c])[region] = map.mapFromDataToValue(stat.getMean());
             (*regionMin[c])[region] = map.mapFromDataToValue(stat.getMin());
             (*regionMax[c])[region] = map.mapFromDataToValue(stat.getMax());
 
-            const auto center = dvec3{data2world * dvec4{stat.getCenter(), 1.0}};
-            const auto com = dvec3{data2world * dvec4{stat.getCenterOfMass(), 1.0}};
+            const auto center = dvec3{data2dest * dvec4{stat.getCenter(), 1.0}};
+            const auto com = dvec3{data2dest * dvec4{stat.getCenterOfMass(), 1.0}};
             for (int k = 0; k < 3; ++k) {
                 (*regionCenter[k])[region] = center[k];
                 (*regionCoM[c][k])[region] = com[k];
@@ -365,14 +375,21 @@ struct StatsFunctor {
 };
 
 void VolumeRegionStatistics::process() {
-    auto calc = [volume = volume_.getData(), atlas = atlas_.getData()]() {
+    auto calc = [volume = volume_.getData(), atlas = atlas_.getData(),
+                 space = space_.getSelectedValue()]() {
         if (volume->getDimensions() != atlas->getDimensions()) {
-            throw Exception(fmt::format("Unexpected dimension missmatch. Volume: {}, Atlas: {}",
-                                        volume->getDimensions(), atlas->getDimensions()),
-                            IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT, "Unexpected dimension missmatch. Volume: {}, Atlas: {}",
+                            volume->getDimensions(), atlas->getDimensions());
+        }
+        if (atlas->getDataFormat()->getComponents() != 1 ||
+            atlas->getDataFormat()->getNumericType() != NumericType::UnsignedInteger) {
+            throw Exception(
+                IVW_CONTEXT,
+                "Unexpected atlas format found, expected an unsigned integer type. Got: {}",
+                atlas->getDataFormat()->getString());
         }
 
-        StatsFunctor sf{*volume, *atlas};
+        StatsFunctor sf{*volume, *atlas, space};
         return wrappingDispatch<std::shared_ptr<DataFrame>>(sf, volume->getWrapping());
     };
 

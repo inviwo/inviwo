@@ -47,7 +47,7 @@ public:
                const SwizzleMask& swizzleMask = swizzlemasks::rgba,
                InterpolationType interpolation = InterpolationType::Linear,
                const Wrapping3D& wrapping = wrapping3d::clampAll);
-    VolumeDisk(std::string url, size3_t dimensions = size3_t(128, 128, 128),
+    VolumeDisk(std::string_view url, size3_t dimensions = size3_t(128, 128, 128),
                const DataFormatBase* format = DataUInt8::get(),
                const SwizzleMask& swizzleMask = swizzlemasks::rgba,
                InterpolationType interpolation = InterpolationType::Linear,

@@ -31,6 +31,7 @@
 
 #include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
+#include <inviwo/core/io/datawriterutil.h>
 
 #include <modules/openglqt/canvasqopenglwidget.h>
 
@@ -197,6 +198,19 @@ void CanvasWithPropertiesProcessor::setProcessorWidget(
 void CanvasWithPropertiesProcessor::propagateEvent(Event* event, Outport*) {
     event->markAsVisited(this);
     inport_.propagateEvent(event);
+}
+
+std::optional<std::string> CanvasWithPropertiesProcessor::exportFile(
+    std::string_view path, std::string_view name,
+    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
+
+    if (auto data = inport_.getData()) {
+        if (auto layer = data->getLayer(layerType_, layerIndex_)) {
+            return util::saveData(*layer, path, name, candidateExtensions, overwrite);
+        }
+    }
+
+    throw Exception("Could not find visible layer", IVW_CONTEXT);
 }
 
 }  // namespace inviwo

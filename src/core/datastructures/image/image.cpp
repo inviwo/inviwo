@@ -78,8 +78,7 @@ Image::Image(std::vector<std::shared_ptr<Layer>> layers)
             std::find_if(layers.begin(), layers.end(),
                          [](auto& layer) { return layer->getLayerType() != LayerType::Color; });
         it != layers.end()) {
-        throw Exception(fmt::format("Multiple layers of type {} found", (*it)->getLayerType()),
-                        IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Multiple layers of type {} found", (*it)->getLayerType());
     }
 
     if (layers.empty()) {

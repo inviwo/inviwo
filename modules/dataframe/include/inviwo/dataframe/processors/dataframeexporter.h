@@ -70,7 +70,7 @@ protected:
     void exportData();
 
 private:
-    void exportAsCSV(bool separateVectorTypesIntoColumns = true);
+    void exportAsCSV();
     void exportAsXML();
 
     DataInport<DataFrame> dataFrame_;

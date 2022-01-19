@@ -93,35 +93,35 @@ std::string_view removeTrailingSlash(std::string_view path) {
 
 namespace filesystem {
 
-FILE* fopen(const std::string& filename, const char* mode) {
+FILE* fopen(std::string_view filename, const char* mode) {
 #if defined(_WIN32)
     return _wfopen(util::toWstring(filename).c_str(), util::toWstring(mode).c_str());
 #else
-    return ::fopen(filename.c_str(), mode);
+    return ::fopen(SafeCStr{filename}.c_str(), mode);
 #endif
 }
 
-std::fstream fstream(const std::string& filename, std::ios_base::openmode mode) {
+std::fstream fstream(std::string_view filename, std::ios_base::openmode mode) {
 #if defined(_WIN32)
     return std::fstream(util::toWstring(filename), mode);
 #else
-    return std::fstream(filename, mode);
+    return std::fstream(SafeCStr{filename}.c_str(), mode);
 #endif
 }
 
-std::ifstream ifstream(const std::string& filename, std::ios_base::openmode mode) {
+std::ifstream ifstream(std::string_view filename, std::ios_base::openmode mode) {
 #if defined(_WIN32)
     return std::ifstream(util::toWstring(filename), mode);
 #else
-    return std::ifstream(filename, mode);
+    return std::ifstream(SafeCStr{filename}.c_str(), mode);
 #endif
 }
 
-std::ofstream ofstream(const std::string& filename, std::ios_base::openmode mode) {
+std::ofstream ofstream(std::string_view filename, std::ios_base::openmode mode) {
 #if defined(_WIN32)
     return std::ofstream(util::toWstring(filename), mode);
 #else
-    return std::ofstream(filename, mode);
+    return std::ofstream(SafeCStr{filename}.c_str(), mode);
 #endif
 }
 
@@ -729,10 +729,9 @@ std::string getFileExtension(std::string_view url) {
     return fileExtension;
 }
 
-std::string replaceFileExtension(const std::string& url, const std::string& newFileExtension) {
+std::string replaceFileExtension(std::string_view url, std::string_view newFileExtension) {
     size_t pos = url.rfind('.');
-    std::string newUrl = url.substr(0, pos) + "." + newFileExtension;
-    return newUrl;
+    return fmt::format("{}.{}", url.substr(0, pos), newFileExtension);
 }
 
 std::string getRelativePath(std::string_view basePath, std::string_view absolutePath) {

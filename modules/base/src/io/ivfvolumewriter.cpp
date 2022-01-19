@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/io/datawriterexception.h>
 
+#include <fmt/format.h>
 #include <units/units.hpp>
 
 namespace inviwo {
@@ -46,21 +47,16 @@ IvfVolumeWriter& IvfVolumeWriter::operator=(const IvfVolumeWriter& that) = defau
 
 IvfVolumeWriter* IvfVolumeWriter::clone() const { return new IvfVolumeWriter(*this); }
 
-void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath) const {
+void IvfVolumeWriter::writeData(const Volume* volume, std::string_view filePath) const {
     util::writeIvfVolume(*volume, filePath, getOverwrite());
 }
 
 namespace util {
-void writeIvfVolume(const Volume& data, const std::string filePath, bool overwrite) {
-    std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
+void writeIvfVolume(const Volume& data, std::string_view filePath, Overwrite overwrite) {
+    const auto rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
-    if (filesystem::fileExists(filePath) && !overwrite)
-        throw DataWriterException("Output file: " + filePath + " already exists",
-                                  IVW_CONTEXT_CUSTOM("util::writeIvfVolume"));
-
-    if (filesystem::fileExists(rawPath) && !overwrite)
-        throw DataWriterException("Output file: " + rawPath + " already exists",
-                                  IVW_CONTEXT_CUSTOM("util::writeIvfVolume"));
+    DataWriter::checkOverwrite(filePath, overwrite);
+    DataWriter::checkOverwrite(filePath, overwrite);
 
     const std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();

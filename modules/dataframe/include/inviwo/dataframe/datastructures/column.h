@@ -312,6 +312,8 @@ public:
     virtual void set(size_t idx, const std::string& str);
 
     virtual void add(std::string_view value) override;
+    
+    std::function<void(std::string_view)> addMany();
 
     /**
      * \brief \copybrief Column::append(const Column&) and builds a union of all
@@ -349,9 +351,10 @@ public:
     std::uint32_t addCategory(std::string_view cat);
 
 private:
-    virtual glm::uint32_t addOrGetID(std::string_view str);
+    virtual std::uint32_t addOrGetID(std::string_view str);
 
     std::vector<std::string> lookUpTable_;
+    std::map<std::string, std::uint32_t, std::less<>> lookupMap_;
 };
 
 template <typename T>

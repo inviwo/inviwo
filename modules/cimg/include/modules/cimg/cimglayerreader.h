@@ -50,7 +50,7 @@ public:
     virtual CImgLayerReader* clone() const override;
     virtual ~CImgLayerReader() = default;
 
-    virtual std::shared_ptr<Layer> readData(const std::string& filePath) override;
+    virtual std::shared_ptr<Layer> readData(std::string_view filePath) override;
 };
 
 }  // namespace inviwo

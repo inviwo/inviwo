@@ -31,9 +31,9 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datawriterexception.h>
 
-namespace inviwo {
+#include <fmt/format.h>
 
-IvfSequenceVolumeWriter::IvfSequenceVolumeWriter() : overwrite_(false) {}
+namespace inviwo {
 
 void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data,
                                         const std::string filePath) const {
@@ -42,49 +42,52 @@ void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data,
     return writeData(data, name, path);
 }
 
-void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data, std::string name,
-                                        std::string path,
-                                        std::string reltivePathToTimesteps) const {
+void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data, std::string_view name,
+                                        std::string_view path,
+                                        std::string_view relativePathToTimeSteps) const {
 
-    util::writeIvfVolumeSequence(*data, name, path, reltivePathToTimesteps, overwrite_);
+    util::writeIvfVolumeSequence(*data, name, path, relativePathToTimeSteps, overwrite_);
+}
+
+void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data,
+                                        std::string_view filePath) const {
+    const auto name = filesystem::getFileNameWithExtension(filePath);
+    const auto path = filesystem::getFileDirectory(filePath);
+
+    util::writeIvfVolumeSequence(*data, name, path, "", overwrite_);
 }
 
 namespace util {
-std::string writeIvfVolumeSequence(const VolumeSequence& volumes, std::string name,
-                                   std::string path, std::string reltivePathToTimesteps,
-                                   bool overwrite) {
+std::string writeIvfVolumeSequence(const VolumeSequence& volumes, std::string_view name,
+                                   std::string_view path, std::string_view relativePathToTimeSteps,
+                                   Overwrite overwrite) {
 
-    auto ivfwFile = path + "/" + name + ".ivfs";
+    auto ivfsFile = fmt::format("{}/{}.ivfs", path, name);
 
-    if (filesystem::fileExists(ivfwFile) && !overwrite)
-        throw DataWriterException("Output file: " + ivfwFile + " already exists",
-                                  IVW_CONTEXT_CUSTOM("writeIvfVolumeSequence"));
+    DataWriter::checkOverwrite(ivfsFile, overwrite);
 
-    Serializer serializer(ivfwFile);
+    Serializer serializer(ivfsFile);
 
     auto fillLength = static_cast<int>(log10(volumes.size())) + 1;
 
-    filesystem::createDirectoryRecursively(path + "/" + reltivePathToTimesteps);
+    filesystem::createDirectoryRecursively(fmt::format("{}/{}", path, relativePathToTimeSteps));
     IvfVolumeWriter writer;
     writer.setOverwrite(overwrite);
     std::vector<std::string> filenames;
     size_t i = 0;
     for (const auto& vol : volumes) {
-        std::stringstream filepath;
-        filepath << reltivePathToTimesteps << "/" << name << std::setw(fillLength) << std::right
-                 << std::setfill('0') << i++ << ".ivf";
+        const auto absFilePath = filesystem::cleanupPath(
+            fmt::format("{}/{}/{}{:0{}}.ivf", path, relativePathToTimeSteps, name, i, fillLength));
+        const auto relFilePath =
+            fmt::format("./{}/{}{:0{}}.ivf", relativePathToTimeSteps, name, i, fillLength);
 
-        auto absFilepath = path + "/" + filepath.str();
-        auto relFilepath = "./" + filepath.str();
-
-        absFilepath = filesystem::cleanupPath(absFilepath);
-        writer.writeData(vol.get(), absFilepath);
-        filenames.push_back(relFilepath);
+        writer.writeData(vol.get(), absFilePath);
+        filenames.push_back(relFilePath);
     }
 
     serializer.serialize("volumes", filenames, "volume");
     serializer.writeFile();
-    return ivfwFile;
+    return ivfsFile;
 }
 }  // namespace util
 

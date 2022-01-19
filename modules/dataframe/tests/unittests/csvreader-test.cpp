@@ -43,14 +43,14 @@ TEST(CSVnoData, stream) {
     std::istringstream ss("");
 
     CSVReader reader;
-    EXPECT_THROW(reader.readData(ss), inviwo::CSVDataReaderException);
+    EXPECT_THROW(reader.readData(ss), DataReaderException);
 }
 
 TEST(CSVnoData, file) {
     util::TempFileHandle tmpFile("", ".csv");
 
     CSVReader reader;
-    EXPECT_THROW(reader.readData(tmpFile.getFileName()), inviwo::CSVDataReaderException);
+    EXPECT_THROW(reader.readData(tmpFile.getFileName()), DataReaderException);
 }
 
 TEST(CSVdata, numRows) {
@@ -143,7 +143,7 @@ TEST(CSVdata, columnCountMismatch) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
 
-    EXPECT_THROW(reader.readData(ss), CSVDataReaderException);
+    EXPECT_THROW(reader.readData(ss), DataReaderException);
 }
 
 TEST(CSVdata, columnCountMismatchWithHeader) {
@@ -153,7 +153,7 @@ TEST(CSVdata, columnCountMismatchWithHeader) {
     CSVReader reader;
     reader.setFirstRowHeader(true);
 
-    EXPECT_THROW(reader.readData(ss), CSVDataReaderException);
+    EXPECT_THROW(reader.readData(ss), DataReaderException);
 }
 
 TEST(CSVdata, delimiterBeforeLineBreak) {
@@ -190,8 +190,8 @@ TEST(CSVdata, delimiterBeforeLineBreakWithHeader) {
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match (empty line)";
 }
 
-TEST(CSVdata, ignoreEmptyLine) {
-    // test whether rows with only delimiters, i.e. ",,,,," are ignored
+TEST(CSVdata, allEmptyElementLine) {
+    // test whether rows with only delimiters, i.e. ",,,,," are keept
     std::istringstream ss("1,a,apple,fruit\n,,,\n,,,\n2,b,banana,fruit\n");
 
     CSVReader reader;
@@ -199,7 +199,7 @@ TEST(CSVdata, ignoreEmptyLine) {
 
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(5, dataframe->getNumberOfColumns()) << "column count does not match";
-    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+    ASSERT_EQ(4, dataframe->getNumberOfRows()) << "row count does not match";
 }
 
 TEST(CSVdata, byteOrderMark) {
@@ -335,6 +335,7 @@ TEST(CSVquotes, singlequotes) {
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
+    reader.setStripQuotes(false);
 
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
@@ -347,11 +348,29 @@ TEST(CSVquotes, singlequotes) {
     EXPECT_EQ("\"b\"", col3);
 }
 
-TEST(CVSquotes, headerquotes) {
+TEST(CSVquotes, StripSingleQuotes) {
+    std::istringstream ss("\"first quote\",not quoted,\"b\"");
+
+    CSVReader reader;
+    reader.setFirstRowHeader(false);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
+    auto col1 = dataframe->getColumn(1)->get(0, true)->toString();
+    EXPECT_EQ("first quote", col1);
+    auto col2 = dataframe->getColumn(2)->get(0, true)->toString();
+    EXPECT_EQ("not quoted", col2);
+    auto col3 = dataframe->getColumn(3)->get(0, true)->toString();
+    EXPECT_EQ("b", col3);
+}
+
+TEST(CVSquotes, headerQuotes) {
     std::istringstream ss("\"first col\",second,\"third\"\n1,2,3");
 
     CSVReader reader;
     reader.setFirstRowHeader(true);
+    reader.setStripQuotes(false);
 
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
@@ -360,13 +379,27 @@ TEST(CVSquotes, headerquotes) {
     EXPECT_EQ("\"third\"", dataframe->getColumn(3)->getHeader()) << "Column Header 3";
 }
 
+TEST(CVSquotes, stripHeaderQuotes) {
+    std::istringstream ss("\"first col\",second,\"third\"\n1,2,3");
+
+    CSVReader reader;
+    reader.setFirstRowHeader(true);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    EXPECT_EQ("first col", dataframe->getColumn(1)->getHeader()) << "Column Header 1";
+    EXPECT_EQ("second", dataframe->getColumn(2)->getHeader()) << "Column Header 2";
+    EXPECT_EQ("third", dataframe->getColumn(3)->getHeader()) << "Column Header 3";
+}
+
+
 TEST(CSVquotes, trailingquote) {
     std::istringstream ss("\"trailing \"quote\",second,\"third\"\n1,2,3");
 
     CSVReader reader;
     reader.setFirstRowHeader(true);
 
-    EXPECT_THROW(reader.readData(ss), inviwo::CSVDataReaderException) << "unmatched quote";
+    EXPECT_THROW(reader.readData(ss), DataReaderException) << "unmatched quote";
 }
 
 TEST(CSVquotes, trailingquoteAtEnd) {
@@ -375,7 +408,7 @@ TEST(CSVquotes, trailingquoteAtEnd) {
     CSVReader reader;
     reader.setFirstRowHeader(true);
 
-    EXPECT_THROW(reader.readData(ss), inviwo::CSVDataReaderException) << "unmatched quote";
+    EXPECT_THROW(reader.readData(ss), DataReaderException) << "unmatched quote";
 }
 
 TEST(CSVquotes, nestedquotes) {
@@ -383,6 +416,7 @@ TEST(CSVquotes, nestedquotes) {
 
     CSVReader reader;
     reader.setFirstRowHeader(true);
+    reader.setStripQuotes(false);
 
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
@@ -398,6 +432,7 @@ TEST(CSVquotes, multiline) {
 
     CSVReader reader;
     reader.setFirstRowHeader(true);
+    reader.setStripQuotes(false);
 
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
@@ -410,16 +445,25 @@ TEST(CSVquotes, multiline) {
     EXPECT_EQ("3", value) << "Column 3";
 }
 
-TEST(CSVlinebreaks, CRonly) {
-    std::istringstream ss("1,2,3\r4,5,6\r7,8,9");
+TEST(CSVquotes, stripMultiline) {
+    std::istringstream ss(
+        "Col 1,Col 2, Col3\n"
+        "\"multiline \n quote\",2,3");
 
     CSVReader reader;
-    reader.setFirstRowHeader(false);
-    auto dataframe = reader.readData(ss);
+    reader.setFirstRowHeader(true);
 
+    auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
-    ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
+    ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
+    auto value = dataframe->getColumn(1)->get(0, true)->toString();
+    EXPECT_EQ("multiline \n quote", value) << "Column 1";
+    value = dataframe->getColumn(2)->get(0, true)->toString();
+    EXPECT_EQ("2", value) << "Column 2";
+    value = dataframe->getColumn(3)->get(0, true)->toString();
+    EXPECT_EQ("3", value) << "Column 3";
 }
+
 
 TEST(CSVlinebreaks, LFonly) {
     std::istringstream ss("1,2,3\n4,5,6\n7,8,9");
@@ -455,7 +499,7 @@ TEST(CSVlinebreaks, LFCR) {
 }
 
 TEST(CSVlinebreaks, mixed) {
-    std::istringstream ss("1,2,3\r4,5,6\n\r7,8,9\n10,11,12");
+    std::istringstream ss("1,2,3\r\n4,5,6\n\r7,8,9\n10,11,12");
 
     CSVReader reader;
     reader.setFirstRowHeader(false);

@@ -27,7 +27,6 @@
 #
 # ********************************************************************************
 
-import sys
 import os
 import io
 import pkgutil
@@ -36,8 +35,8 @@ import datetime
 import contextlib
 import lesscpy
 import json
-import itertools
 import html
+import difflib
 
 # Beautiful Soup 4 for dom manipulation
 import bs4
@@ -106,7 +105,9 @@ def isValidString(*vars):
 
 
 def formatKey(key):
-    return key.capitalize().replace("_", " ")
+    if not isinstance(key, list):
+        key = [key]
+    return " ".join(k.capitalize().replace("_", " ") for k in key)
 
 
 def keyval(key, val):
@@ -177,9 +178,9 @@ def formatLog(file):
     try:
         with open(file, 'r') as f:
             loghtml = f.read()
-            err = loghtml.count("Error:")
-            warn = loghtml.count("Warn:")
-            info = loghtml.count("Info:")
+            err = loghtml.count("<span class='level'>Error: </span>")
+            warn = loghtml.count("<span class='level'>Warn: </span>")
+            info = loghtml.count("<span class='level'>Info: </span>")
             short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
 
             def log(doc, tag, text):
@@ -200,10 +201,19 @@ def image(path, **opts):
 
 def imagesShort(report):
     doc, tag, text = yattag.Doc().tagtext()
-    failedImgs = safeget(report, 'failures', 'image_tests', failure={})
-    fail = len(failedImgs)
-    text("All OK" if fail == 0
-         else "{:d}/{:d} Images failed".format(fail, len(report["image_tests"])))
+    failures = safeget(report, 'failures', failure={})
+    fail = next((v for k, v in failures if k == "images"), None)
+    text("All OK" if fail is None else
+         "{:d}/{:d} Images failed".format(len(fail), len(report["images"]["tests"])))
+    return doc.getvalue()
+
+
+def txtsShort(report):
+    doc, tag, text = yattag.Doc().tagtext()
+    failures = safeget(report, 'failures', failure={})
+    fail = next((v for k, v in failures if k == "txts"), None)
+    text("All OK" if fail is None else
+         "{:d}/{:d} Txts failed".format(len(fail), len(report["txts"]["tests"])))
     return doc.getvalue()
 
 
@@ -239,6 +249,22 @@ def dataToJsArray(data):
     return "[\n" + ",\n".join(["[" + str(x) + ", " + str(y) + "]" for x, y in data]) + "\n]"
 
 
+difflibLegend = """
+<table border=0>
+      <tr>
+         <th>Colors:</th>
+          <td class="diff_add">Added</td>
+          <td class="diff_chg">Changed</td>
+          <td class="diff_sub">Deleted</td>
+          <th>Links:</th>
+          <td>(f)irst change</td>
+          <td>(n)ext change</td>
+          <td>(t)op</td>
+      </tr>
+</table>
+"""
+
+
 class TestRun:
     """Generate a html report for one Test Run"""
 
@@ -259,10 +285,23 @@ class TestRun:
 
         with self.item(self.head(), status=self.totalstatus()):
             with self.tag('ul'):
-
                 self.doc.asis(listItem(keyval("Images", imagesShort(self.report)),
-                                       self.images(report["image_tests"], report["outputdir"]),
-                                       status=self.status('image_tests')))
+                                       self.images(self.report["images"]["tests"],
+                                                   self.report["outputdir"]),
+                                       status=self.status('images')))
+                for key in [["images", "missing_imgs"], ["images", "missing_refs"]]:
+                    self.simple(key)
+
+                self.doc.asis(listItem(keyval("Txts", txtsShort(self.report)),
+                                       self.txtsItem(self.report["txts"]["tests"],
+                                                     self.report["path"],
+                                                     self.report["outputdir"]),
+                                       status=self.status('txts')))
+                for key in [["txts", "missing_txts"], ["txts", "missing_refs"]]:
+                    self.simple(key)
+
+                self.simple(["returncode"])
+                self.doc.asis(formatLog(toPath(report['outputdir'], report['log'])))
 
                 self.testRunInfo("Current Version", testrun)
                 if self.totalstatus() != "ok":
@@ -270,16 +309,11 @@ class TestRun:
                     self.testRunInfo("First Failure", firstFailure)
                     self.gitDiff(lastSuccess, firstFailure)
 
-                self.doc.asis(formatLog(toPath(report['outputdir'], report['log'])))
-                self.doc.asis(self.screenshot())
                 self.doc.asis(self.paths())
-
-                for key in ["command", "returncode", "missing_imgs",
-                            "missing_refs", "output", "errors"]:
+                for key in [["command"], ["output"], ["errors"]]:
                     self.simple(key)
 
                 self.doc.asis(self.plots())
-
                 self.doc.asis(self.failures())
 
     def getvalue(self):
@@ -305,12 +339,12 @@ class TestRun:
         status = ""
         if key in self.report['successes']:
             status = "ok"
-        if key in self.report['failures'].keys():
+        if key in (f for f, _ in self.report['failures']):
             status = "fail"
         return status
 
     def simple(self, key):
-        value = toString(self.report[key])
+        value = toString(safeget(self.report, *key))
         short = abr(value)
         self.doc.asis(listItem(keyval(formatKey(key), html.escape(short)), html.escape(value),
                                status=self.status(key),
@@ -415,8 +449,9 @@ class TestRun:
             return os.path.relpath(toPath(testdir, type, img), self.basedir)
 
         def imgstatus(key):
-            failedImgs = safeget(self.report, 'failures', 'image_tests', failure={})
-            return "fail" if key in failedImgs.keys() else "ok"
+            failures = safeget(self.report, 'failures', failure={})
+            fail = next((x for x in failures if x[0] == "images"), None)
+            return "ok" if fail is None else "fail"
 
         with tag('ol'):
             for img in imgs:
@@ -428,12 +463,33 @@ class TestRun:
                                   status=imgstatus(img['image']), hide=False))
         return doc.getvalue()
 
-    def screenshot(self):
-        return listItem(keyval("Screenshot", "..."),
-                        image(os.path.relpath(toPath(self.report['outputdir'],
-                                                     self.report["screenshot"]),
-                                              self.basedir),
-                              alt="Screenshot", width="100%"))
+    def txtsItem(self, tests, regdir, testdir):
+        doc, tag, text = yattag.Doc().tagtext()
+        hd = difflib.HtmlDiff(tabsize=3)
+
+        def status(key):
+            failures = safeget(self.report, 'failures', failure={})
+            fail = next((x for x in failures if x[0] == "txts"), None)
+            return "ok" if fail is None else "fail"
+
+        def diff(file):
+            with open(toPath(testdir, "imgtest", file), 'r') as txtFile, \
+                    open(toPath(regdir, file), 'r') as refFile:
+                txtLines = txtFile.readlines()
+                refLines = refFile.readlines()
+            return hd.make_table(refLines, txtLines,
+                                 fromdesc='reference', todesc='test',
+                                 context=True, numlines=2)
+
+        with tag('ol'):
+            for test in tests:
+                doc.asis(listItem(keyval(test["txt"], f"Differences {test['diff']}"),
+                                  diff(test["txt"]),
+                                  toggle=(test["diff"] > 0),
+                                  status=("ok" if test["diff"] == 0 else "fail")))
+
+        doc.asis(difflibLegend)
+        return doc.getvalue()
 
     def timeSeries(self):
         doc, tag, text = yattag.Doc().tagtext()
@@ -469,11 +525,16 @@ class TestRun:
     def failureList(self):
         doc, tag, text = yattag.Doc().tagtext()
         with tag('ol'):
-            for key, errors in self.report["failures"].items():
+            for key, errors in self.report["failures"]:
                 if isinstance(errors, dict):
                     items = errors.values()
-                else:
+                elif isinstance(errors, list):
                     items = errors
+                elif isinstance(errors, str):
+                    items = [errors]
+                else:
+                    raise RuntimeError("Invalid error type")
+
                 for error in items:
                     toToggle, short = abrhtml(error)
                     doc.asis(listItem(keyval(formatKey(key), short),
@@ -640,9 +701,6 @@ class HtmlReport:
         cssdata = pkgutil.get_data('ivwpy', 'regression/resources/report.css')
         with open(toPath(self.basedir, "report.css"), 'w') as f:
             f.write(lesscpy.compile(io.StringIO(cssdata.decode("utf-8"))))
-
-        with open(self.basedir + "/" + filename + ".raw..html", 'w') as f:
-            f.write(self.doc.getvalue())
 
         with open(file, 'w') as f:
             f.write(yattag.indent(self.doc.getvalue()))

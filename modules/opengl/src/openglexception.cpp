@@ -31,9 +31,6 @@
 
 namespace inviwo {
 
-OpenGLException::OpenGLException(const std::string& message, ExceptionContext context)
-    : Exception(message, std::move(context)) {}
-
 OpenGLInitException::OpenGLInitException(const std::string& message, ExceptionContext context)
     : ModuleInitException(message, std::move(context), {"opengl"}) {}
 

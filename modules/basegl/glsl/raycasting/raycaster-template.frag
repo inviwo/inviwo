@@ -31,9 +31,9 @@
 
 //? #version 460
 
-#include "utils/structs.glsl"   //! #include "../../../opengl/glsl/utils/structs.glsl"
-#include "utils/sampler3d.glsl" //! #include "../../../opengl/glsl/utils/sampler3d.glsl"
-#include "utils/depth.glsl"     //! #include "../../../opengl/glsl/utils/depth.glsl"
+#include "utils/structs.glsl"    //! #include "../../../opengl/glsl/utils/structs.glsl"
+#include "utils/sampler3d.glsl"  //! #include "../../../opengl/glsl/utils/sampler3d.glsl"
+#include "utils/depth.glsl"      //! #include "../../../opengl/glsl/utils/depth.glsl"
 
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_INCLUDE
 
@@ -48,7 +48,6 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
         (textureToWorld * vec4(entryPoint, 1.0) - textureToWorld * vec4(exitPoint, 1.0)).xyz);
 }
 
-
 layout(location = 0) out vec4 FragData0;
 layout(location = 1) out vec4 PickingData;
 
@@ -60,19 +59,27 @@ uniform float samplingRate = 2.0;
 
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_UNIFORM
 
-
 void main() {
-    vec4 result = vec4(0.0);  // The accumulated color along the ray;
-    vec4 picking = vec4(0.0); // The picking color of the ray
-    float rayDepth = -1.0;    // The ray depth value (0 to ray length, -1 mean "no" depth
-    float depth = 1.0;        // The image depth
+    vec4 result = vec4(0.0);   // The accumulated color along the ray;
+    vec4 picking = vec4(0.0);  // The picking color of the ray
+    float rayDepth = -1.0;     // The ray depth value (0 to ray length, -1 mean "no" depth.
+                               // The same space as the rayPosition. Usually used to track
+                               // the depth of the "first" hit in DVR
+    float depth = 1.0;         // The image depth, form far (0.0) to near (1.0).
+                               // Will be overridden by rayDepth if != -1 and
+                               // written to gl_FragDepth
 
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
- 
-    // The setup is expected to define
-    // entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayLength, rayDirection
 
-    #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
+    // The setup placeholder is expected to define:
+    //  * entryPoint the ray start point in the volume in texture coordinates
+    //  * exitPoint the ray exit point in the volume in texture coordinates
+    //  * entryPointDepth the image depth of the entry point
+    //  * exitPointDepth the image depth of the exit point
+    //  * rayLength the distance from the start to the exit point in texture space
+    //  * rayDirection the direction of the ray in texture space, normalized.
+
+#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
 
     if (entryPoint == exitPoint) {
         FragData0 = result;
@@ -82,35 +89,30 @@ void main() {
     }
 
     // The step size in texture space
-    float rayStep = calcStep(rayLength, rayDirection, samplingRate,
-                             volumeParameters.dimensions);
+    float rayStep = calcStep(rayLength, rayDirection, samplingRate, volumeParameters.dimensions);
 
-    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, 
-                                   volumeParameters.textureToWorld);
+    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
 
     // Current position along the ray
     float rayPosition = 0.5 * rayStep;
     // Current sample position in texture spcase
     vec3 samplePosition = entryPoint + rayPosition * rayDirection;
 
-    #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_FIRST
+#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_FIRST
 
     for (rayPosition += rayStep; rayPosition < rayLength; rayPosition += rayStep) {
         samplePosition = entryPoint + rayPosition * rayDirection;
 
-        #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
+#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
 
-        if (result.a > 0.99) break; // early ray termination
+        if (result.a > 0.99) break;  // early ray termination
     }
 
+#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_POST
 
-    #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_POST
+    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryPointDepth, exitPointDepth),
+                depth, rayDepth == -1.0);
 
-    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, 
-                                    entryPointDepth, exitPointDepth), 
-                depth, 
-                rayDepth == -1.0);
-    
     FragData0 = result;
     PickingData = picking;
     gl_FragDepth = depth;

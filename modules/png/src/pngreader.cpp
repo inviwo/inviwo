@@ -42,46 +42,43 @@
 
 namespace inviwo {
 
-PNGLayerReaderException::PNGLayerReaderException(const std::string& message,
-                                                 ExceptionContext context)
-    : DataReaderException(message, context) {}
-
 PNGLayerReader::PNGLayerReader() : DataReaderType<Layer>() {
     addExtension(FileExtension("png", "Portable Network Graphics"));
 }
 
 PNGLayerReader* PNGLayerReader::clone() const { return new PNGLayerReader(*this); }
 
-std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(const std::string& filePath) {
-    if (!filesystem::fileExists(filePath)) throw PNGLayerReaderException(filePath);
+std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(std::string_view filePath) {
+    if (!filesystem::fileExists(filePath)) throw DataReaderException(IVW_CONTEXT, filePath);
 
     auto* fp = filesystem::fopen(filePath, "rb");
-    if (!fp) throw PNGLayerReaderException("Failed to open file for reading, " + filePath);
+    if (!fp)
+        throw DataReaderException(IVW_CONTEXT, "Failed to open file for reading, {}", filePath);
     util::OnScopeExit closeFile([fp]() { fclose(fp); });
 
     unsigned char header[8];
     const auto read = fread(header, 1, 8, fp);
     if (read != 8 || png_sig_cmp(header, 0, 8)) {
-        throw PNGLayerReaderException("File is not a PNG, " + filePath);
+        throw DataReaderException(IVW_CONTEXT, "File is not a PNG, {}", filePath);
     }
 
     auto png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png_ptr) {
-        throw PNGLayerReaderException("Internal PNG Error: Failed to create read struct");
+        throw DataReaderException(IVW_CONTEXT, "Internal PNG Error: Failed to create read struct");
     }
-    util::OnScopeExit cleanup([&]() { png_destroy_read_struct(&png_ptr, NULL, NULL); });
+    util::OnScopeExit cleanup1([&]() { png_destroy_read_struct(&png_ptr, NULL, NULL); });
     png_set_error_fn(
         png_ptr, NULL,
         [](png_structp, png_const_charp message) {
-            throw PNGLayerReaderException(std::string("Error reading PNG: ") + message);
+            throw DataReaderException(IVW_CONTEXT, "Error reading PNG: {}", message);
         },
         [](png_structp, png_const_charp message) { LogWarnCustom("PNGReader", message); });
 
     auto info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        throw PNGLayerReaderException("Internal PNG Error: Failed to create info struct");
+        throw DataReaderException(IVW_CONTEXT, "Internal PNG Error: Failed to create info struct");
     }
-    cleanup.setAction([&]() { png_destroy_read_struct(&png_ptr, &info_ptr, NULL); });
+    util::OnScopeExit cleanup2([&]() { png_destroy_read_struct(NULL, &info_ptr, NULL); });
 
     png_init_io(png_ptr, fp);
     png_set_sig_bytes(png_ptr, 8);
@@ -114,7 +111,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(const std::string& fileP
             channels = 4;
             break;
         default:
-            throw PNGLayerReaderException("Unsupported color type");
+            throw DataReaderException(IVW_CONTEXT, "Unsupported color type");
             break;
     }
 

@@ -29,10 +29,8 @@
 
 #include <inviwo/dataframe/processors/dataframeexporter.h>
 
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/ostreamjoiner.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/dataframe/io/csvwriter.h>
+#include <inviwo/dataframe/io/xmlwriter.h>
 
 #include <fmt/format.h>
 
@@ -103,20 +101,15 @@ void DataFrameExporter::process() {
 }
 
 void DataFrameExporter::exportData() {
-    if (filesystem::fileExists(exportFile_) && !overwrite_.get()) {
-        LogWarn("File already exists: " << exportFile_);
-        return;
-    }
     if (exportFile_.getSelectedExtension() == xmlExtension_) {
         exportAsXML();
     } else if (exportFile_.getSelectedExtension() == csvExtension_) {
-        exportAsCSV(separateVectorTypesIntoColumns_);
+        exportAsCSV();
     } else {
         // use CSV format as fallback
-        LogWarn("Could not determine export format from extension '"
-                << filesystem::getFileExtension(exportFile_)
-                << "', exporting as comma-separated values (csv).");
-        exportAsCSV(separateVectorTypesIntoColumns_);
+        LogWarn("Could not determine export format from file '"
+                << exportFile_ << "', exporting as comma-separated values (csv).");
+        exportAsCSV();
     }
 
     // update widgets as the file might now exist
@@ -124,116 +117,25 @@ void DataFrameExporter::exportData() {
     exportFile_.updateWidgets();
 }
 
-void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
-    auto file = filesystem::ofstream(exportFile_);
-    if (!file.is_open()) {
-        throw FileException(fmt::format("could not open file '{}'", exportFile_.get()),
-                            IVW_CONTEXT);
-    }
+void DataFrameExporter::exportAsCSV() {
+    CSVWriter writer{};
+    writer.setOverwrite(overwrite_ ? Overwrite::Yes : Overwrite::No);
+    writer.delimiter = delimiter_.get();
+    writer.quoteStrings = quoteStrings_.get();
+    writer.exportIndexCol = exportIndexCol_.get();
+    writer.separateVectorTypesIntoColumns = separateVectorTypesIntoColumns_.get();
 
-    auto dataFrame = dataFrame_.getData();
-
-    const std::string delimiter = delimiter_.get();
-    std::string citation = "\"";
-    if (!quoteStrings_.get()) citation = "";
-    const char lineterminator = '\n';
-    const std::array<char, 4> componentNames = {'X', 'Y', 'Z', 'W'};
-
-    // headers
-    auto oj = util::make_ostream_joiner(file, delimiter);
-    for (const auto& col : *dataFrame) {
-        if ((col == dataFrame->getIndexColumn()) && !exportIndexCol_) {
-            continue;
-        }
-        const auto components = col->getBuffer()->getDataFormat()->getComponents();
-        if (components > 1 && separateVectorTypesIntoColumns) {
-            for (size_t k = 0; k < components; k++) {
-                oj = fmt::format("{0}{} {}{0}", citation, col->getHeader(), componentNames[k]);
-            }
-        } else {
-            oj = col->getHeader();
-        }
-    }
-    file << lineterminator;
-
-    std::vector<std::function<void(std::ostream&, size_t)>> printers;
-    for (const auto& col : *dataFrame) {
-        if ((col == dataFrame->getIndexColumn()) && !exportIndexCol_) {
-            continue;
-        }
-        auto df = col->getBuffer()->getDataFormat();
-        if (auto cc = dynamic_cast<const CategoricalColumn*>(col.get())) {
-            printers.push_back([cc, citation](std::ostream& os, size_t index) {
-                os << citation << cc->getAsString(index) << citation;
-            });
-        } else if (df->getComponents() == 1) {
-            col->getBuffer()
-                ->getRepresentation<BufferRAM>()
-                ->dispatch<void, dispatching::filter::Scalars>([&printers](auto br) {
-                    printers.push_back([br](std::ostream& os, size_t index) {
-                        os << br->getDataContainer()[index];
-                    });
-                });
-        } else if (df->getComponents() > 1 && separateVectorTypesIntoColumns) {
-            col->getBuffer()
-                ->getRepresentation<BufferRAM>()
-                ->dispatch<void, dispatching::filter::Vecs>([&printers, delimiter](auto br) {
-                    using ValueType = util::PrecisionValueType<decltype(br)>;
-                    printers.push_back([br, delimiter](std::ostream& os, size_t index) {
-                        auto oj = util::make_ostream_joiner(os, delimiter);
-                        for (size_t i = 0; i < util::flat_extent<ValueType>::value; ++i) {
-                            oj = br->getDataContainer()[index][i];
-                        }
-                    });
-                });
-        } else {
-            col->getBuffer()
-                ->getRepresentation<BufferRAM>()
-                ->dispatch<void, dispatching::filter::Vecs>([&printers, citation](auto br) {
-                    printers.push_back([br, citation](std::ostream& os, size_t index) {
-                        os << citation << br->getDataContainer()[index] << citation;
-                    });
-                });
-        }
-    }
-
-    for (size_t j = 0; j < dataFrame->getNumberOfRows(); j++) {
-        if (j != 0) {
-            file << lineterminator;
-        }
-        bool firstCol = true;
-        for (auto& printer : printers) {
-            if (!firstCol) {
-                file << delimiter;
-            }
-            firstCol = false;
-            printer(file, j);
-        }
-    }
+    writer.writeData(dataFrame_.getData().get(), exportFile_.get());
 
     LogInfo("CSV file exported to " << exportFile_);
 }
 
 void DataFrameExporter::exportAsXML() {
-    auto dataFrame = dataFrame_.getData();
+    XMLWriter writer{};
+    writer.setOverwrite(overwrite_ ? Overwrite::Yes : Overwrite::No);
+    writer.exportIndexCol = exportIndexCol_.get();
 
-    auto file = filesystem::ofstream(exportFile_);
-    if (!file.is_open()) {
-        throw FileException(fmt::format("could not open file '{}'", exportFile_.get()),
-                            IVW_CONTEXT);
-    }
-    Serializer serializer("");
-
-    for (const auto& col : *dataFrame) {
-        if ((col == dataFrame->getIndexColumn()) && !exportIndexCol_) {
-            continue;
-        }
-        col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>([&](auto br) {
-            serializer.serialize(col->getHeader(), br->getDataContainer(), "Item");
-        });
-    }
-
-    serializer.writeFile(file);
+    writer.writeData(dataFrame_.getData().get(), exportFile_.get());
     LogInfo("XML file exported to " << exportFile_);
 }
 

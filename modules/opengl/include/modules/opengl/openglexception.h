@@ -36,15 +36,13 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API OpenGLException : public Exception {
 public:
-    OpenGLException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~OpenGLException() noexcept = default;
+    using Exception::Exception;
 };
 
 class IVW_MODULE_OPENGL_API OpenGLInitException : public ModuleInitException {
 public:
     OpenGLInitException(const std::string& message = "",
                         ExceptionContext context = ExceptionContext());
-    virtual ~OpenGLInitException() noexcept = default;
 };
 
 }  // namespace inviwo

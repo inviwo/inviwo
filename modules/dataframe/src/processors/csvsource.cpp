@@ -34,8 +34,6 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 
-#include <inviwo/dataframe/io/csvreader.h>
-
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -52,23 +50,40 @@ CSVSource::CSVSource(const std::string& file)
     : Processor()
     , data_("data")
     , inputFile_("inputFile_", "CSV File", file, "dataframe")
-    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
-    , delimiters_("delimiters", "Delimiters", ",")
-    , doublePrecision_("doublePrecision", "Double Precision", false)
+    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers",
+                         CSVReader::defaultFirstRowHeader)
+    , unitsInHeaders_("unitsInHeaders", "Look for units in headers",
+                      CSVReader::defaultUnitInHeaders)
+    , unitRegexp_("unitRegexp", "Unit regexp", CSVReader::defaultUnitRegexp)
+    , delimiters_("delimiters", "Delimiters", CSVReader::defaultDelimiters)
+    , stripQuotes_("stripQuotes", "Strip surrounding quotes", CSVReader::defaultStripQuotes)
+    , doublePrecision_("doublePrecision", "Double Precision", CSVReader::defaultDoublePrecision)
+    , exampleRows_("exampleRows", "Example Rows", CSVReader::defaultNumberOfExampleRows, 0, 10000)
+    , locale_("locale", "Locale", CSVReader::defaultLocale)
+    , emptyField_(
+          "emptyField", "Missing Data Mode",
+          {{"Throw", "Throw Exception", CSVReader::EmptyField::Throw},
+           {"DefaultConstruct", "Default Construct", CSVReader::EmptyField::DefaultConstruct},
+           {"NanOrZero", "Nan Or Zero", CSVReader::EmptyField::NanOrZero}})
     , reloadData_("reloadData", "Reload Data")
     , columns_("columns", "Column MetaData")
     , loadingFailed_{false}
     , deserialized_{false} {
 
+    emptyField_.setSelectedValue(CSVReader::defaultEmptyField);
+    emptyField_.setCurrentStateAsDefault();
+
     addPort(data_);
 
-    addProperties(inputFile_, firstRowIsHeaders_, delimiters_, doublePrecision_, reloadData_,
-                  columns_);
+    unitsInHeaders_.addProperty(unitRegexp_);
+    addProperties(inputFile_, firstRowIsHeaders_, unitsInHeaders_, delimiters_, stripQuotes_,
+                  doublePrecision_, exampleRows_, locale_, emptyField_, reloadData_, columns_);
 
     isReady_.setUpdate(
         [this]() { return !loadingFailed_ && filesystem::fileExists(inputFile_.get()); });
-    for (auto&& item : util::ref<Property>(inputFile_, reloadData_, delimiters_, firstRowIsHeaders_,
-                                           doublePrecision_)) {
+    for (auto&& item : util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_,
+                                           firstRowIsHeaders_, unitsInHeaders_, unitRegexp_,
+                                           doublePrecision_, exampleRows_, locale_, emptyField_)) {
         std::invoke(&Property::onChange, item, [this]() {
             loadingFailed_ = false;
             isReady_.update();
@@ -89,10 +104,17 @@ void CSVSource::process() {
         const auto overwrite = deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes;
         deserialized_ = false;
 
-        if (util::any_of(util::ref<Property>(inputFile_, reloadData_, delimiters_,
-                                             firstRowIsHeaders_, doublePrecision_),
+        if (util::any_of(util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_,
+                                             firstRowIsHeaders_, unitsInHeaders_, unitRegexp_,
+                                             doublePrecision_, exampleRows_, locale_, emptyField_),
                          &Property::isModified)) {
             CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
+            reader.setLocale(locale_)
+                .setStripQuotes(stripQuotes_)
+                .setNumberOfExampleRows(exampleRows_)
+                .setHandleEmptyFields(emptyField_)
+                .setUnitsInHeaders(unitsInHeaders_)
+                .setUnitRegexp(unitRegexp_);
             loadedData_ = reader.readData(inputFile_.get());
             columns_.updateForNewDataFrame(*loadedData_, overwrite);
         }

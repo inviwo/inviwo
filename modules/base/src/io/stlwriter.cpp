@@ -33,6 +33,7 @@
 #include <inviwo/core/io/datawriterexception.h>
 #include <modules/base/algorithm/meshutils.h>
 
+#include <fmt/format.h>
 #include <fstream>
 #include <sstream>
 
@@ -44,19 +45,16 @@ StlWriter::StlWriter() : DataWriterType<Mesh>() {
 
 StlWriter* StlWriter::clone() const { return new StlWriter(*this); }
 
-void StlWriter::writeData(const Mesh* data, const std::string filePath) const {
-    if (filesystem::fileExists(filePath) && !getOverwrite()) {
-        throw DataWriterException("File already exists: " + filePath, IVW_CONTEXT);
-    }
-    auto f = filesystem::ofstream(filePath);
+void StlWriter::writeData(const Mesh* data, std::string_view filePath) const {
+    auto f = open(filePath);
     writeData(data, f);
 }
 
 std::unique_ptr<std::vector<unsigned char>> StlWriter::writeDataToBuffer(
-    const Mesh* data, const std::string& /*fileExtension*/) const {
+    const Mesh* data, std::string_view /*fileExtension*/) const {
     std::stringstream ss;
     writeData(data, ss);
-    auto stringdata = ss.str();
+    auto stringdata = std::move(ss).str();
     return std::make_unique<std::vector<unsigned char>>(stringdata.begin(), stringdata.end());
 }
 

@@ -34,6 +34,7 @@
 #include <inviwo/core/util/exception.h>
 
 #include <string>
+#include <string_view>
 #include <memory>
 
 namespace inviwo {
@@ -49,8 +50,7 @@ template <typename Repr, typename Self>
 class DiskRepresentation {
 public:
     DiskRepresentation() = default;
-    DiskRepresentation(const std::string& srcFile,
-                       DiskRepresentationLoader<Repr>* loader = nullptr);
+    DiskRepresentation(std::string_view srcFile, DiskRepresentationLoader<Repr>* loader = nullptr);
     DiskRepresentation(const DiskRepresentation& rhs) = default;
     DiskRepresentation& operator=(const DiskRepresentation& that) = default;
     virtual ~DiskRepresentation() = default;
@@ -72,7 +72,7 @@ private:
 };
 
 template <typename Repr, typename Self>
-DiskRepresentation<Repr, Self>::DiskRepresentation(const std::string& srcFile,
+DiskRepresentation<Repr, Self>::DiskRepresentation(std::string_view srcFile,
                                                    DiskRepresentationLoader<Repr>* loader)
     : sourceFile_(srcFile), loader_(loader) {}
 

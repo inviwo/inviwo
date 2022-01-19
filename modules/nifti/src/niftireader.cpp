@@ -35,6 +35,7 @@
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/io/datareaderexception.h>
 
 #include <modules/base/algorithm/dataminmax.h>
@@ -101,43 +102,43 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
     switch (niftiImage->datatype){
         case DT_UNKNOWN:    return nullptr;
         case DT_BINARY:     return nullptr;
-        case DT_INT8:       
+        case DT_INT8:
             type = NumericType::SignedInteger;
             precision = 8;
             break;
-        case DT_UINT8:      
+        case DT_UINT8:
             type = NumericType::UnsignedInteger;
             precision = 8;
             break;
-        case DT_INT16:      
+        case DT_INT16:
             type = NumericType::SignedInteger;
             precision = 16;
             break;
-        case DT_UINT16:     
+        case DT_UINT16:
             type = NumericType::UnsignedInteger;
             precision = 16;
             break;
-        case DT_INT32:      
+        case DT_INT32:
             type = NumericType::SignedInteger;
             precision = 32;
             break;
-        case DT_UINT32:     
+        case DT_UINT32:
             type = NumericType::UnsignedInteger;
             precision = 32;
             break;
-        case DT_INT64:      
+        case DT_INT64:
             type = NumericType::SignedInteger;
             precision = 64;
             break;
-        case DT_UINT64:     
+        case DT_UINT64:
             type = NumericType::UnsignedInteger;
             precision = 64;
             break;
-        case DT_FLOAT32:    
+        case DT_FLOAT32:
             type = NumericType::Float;
             precision = 32;
             break;
-        case DT_FLOAT64:    
+        case DT_FLOAT64:
             type = NumericType::Float;
             precision = 64;
             break;
@@ -162,14 +163,15 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
 
     return DataFormatBase::get(type, components, precision);
 }
-std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::string& filePath) {
+std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(std::string_view filePath) {
+    checkExists(filePath);
 
     /* read input dataset, but not data */
-    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.c_str(), 0),
+    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(SafeCStr{filePath}.c_str(), 0),
                                             nifti_image_free);
     if (!niftiImage) {
-        throw DataReaderException("Error: failed to read NIfTI image in file: " + filePath,
-                                  IVW_CONTEXT_CUSTOM("NiftiReader"));
+        throw DataReaderException(IVW_CONTEXT_CUSTOM("NiftiReader"),
+                                  "Error: failed to read NIfTI image in file: {}", filePath);
     }
 
     const DataFormatBase* format = nullptr;
@@ -179,9 +181,8 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     // 5, 6, 7 for anything else needed.
     size3_t dim(niftiImage->dim[1], niftiImage->dim[2], niftiImage->dim[3]);
     if (glm::any(glm::equal(dim, size3_t(0)))) {
-        throw DataReaderException(
-            fmt::format("Unsupported dimension '{}' in nifti file: {}", dim, filePath),
-            IVW_CONTEXT_CUSTOM("NiftiReader"));
+        throw DataReaderException(IVW_CONTEXT_CUSTOM("NiftiReader"),
+                                  "Unsupported dimension '{}' in nifti file: {}", dim, filePath);
     }
     glm::mat4 basisAndOffset(2.0f);
     const glm::vec3 spacing(niftiImage->pixdim[1], niftiImage->pixdim[2], niftiImage->pixdim[3]);
@@ -189,9 +190,8 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     format = niftiDataTypeToInviwoDataFormat(niftiImage.get());
     if (format == nullptr) {
         std::string datatype(nifti_datatype_string(niftiImage->datatype));
-        throw DataReaderException(
-            fmt::format("Unsupported format '{}' in nifti file: {}", datatype, filePath),
-            IVW_CONTEXT_CUSTOM("NiftiReader"));
+        throw DataReaderException(IVW_CONTEXT_CUSTOM("NiftiReader"),
+                                  "Unsupported format '{}' in nifti file: {}", datatype, filePath);
     }
 
     auto volume = std::make_shared<Volume>(dim, format);
@@ -435,8 +435,8 @@ std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation
     flip(data.get(), voxelSize, dim, flipAxis);
 
     if (readBytes < 0) {
-        throw DataReaderException(
-            "Error: Could not read data from file: " + std::string(nim->fname), IVW_CONTEXT);
+        throw DataReaderException(IVW_CONTEXT, "Error: Could not read data from file: {}",
+                                  nim->fname);
     }
 
     auto volumeRAM =
@@ -452,7 +452,7 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     if (size3_t{region_size[0], region_size[1], region_size[2]} != volumeDst->getDimensions()) {
-        throw Exception("Mismatching volume dimensions, can't update", IVW_CONTEXT);
+        throw DataReaderException("Mismatching volume dimensions, can't update", IVW_CONTEXT);
     }
     auto data = volumeDst->getData();
 
@@ -460,8 +460,8 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
     auto region = region_size;
     auto readBytes = nifti_read_subregion_image(nim.get(), start.data(), region.data(), &data);
     if (readBytes < 0) {
-        throw DataReaderException(
-            "Error: Could not read data from file: " + std::string(nim->fname), IVW_CONTEXT);
+        throw DataReaderException(IVW_CONTEXT, "Error: Could not read data from file: {}",
+                                  nim->fname);
     }
 
     const auto voxelSize = src.getDataFormat()->getSize();

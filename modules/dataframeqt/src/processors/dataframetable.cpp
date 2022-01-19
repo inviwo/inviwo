@@ -32,16 +32,17 @@
 #include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/io/datawriterutil.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameTable::processorInfo_{
-    "org.inviwo.DataFrameTable",  // Class identifier
-    "DataFrame Table",            // Display name
-    "Data Output",                // Category
-    CodeState::Stable,            // Code state
-    "CPU, DataFrame",             // Tags
+    "org.inviwo.DataFrameTable",   // Class identifier
+    "DataFrame Table",             // Display name
+    "Data Output",                 // Category
+    CodeState::Stable,             // Code state
+    Tags::CPU | Tag{"DataFrame"},  // Tags
 };
 const ProcessorInfo DataFrameTable::getProcessorInfo() const { return processorInfo_; }
 
@@ -153,5 +154,16 @@ void DataFrameTable::setWidgetSize(size2_t dim) {
 }
 
 size2_t DataFrameTable::getWidgetSize() const { return dimensions_; }
+
+std::optional<std::string> DataFrameTable::exportFile(
+    std::string_view path, std::string_view name,
+    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
+
+    if (auto data = inport_.getData()) {
+        return util::saveData(*data, path, name, candidateExtensions, overwrite);
+    }
+
+    throw Exception("Could not find data frame", IVW_CONTEXT);
+}
 
 }  // namespace inviwo

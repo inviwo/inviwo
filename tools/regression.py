@@ -79,8 +79,8 @@ def makeCmdParser():
                         help='A optional report footer', default=None)
     parser.add_argument("-v", "--view", action="store_true",
                         dest="view", help="Open the report when done")
-    parser.add_argument("--log", type=str, dest="log",
-                        help="Select log level: DEBUG, INFO, WARN, ERROR, CRITICAL (default: WARN)")
+    parser.add_argument("--log", type=str, dest="log", default="WARN",
+                        help="Select log level: DEBUG, INFO, WARN, ERROR, CRITICAL")
     parser.add_argument("--summary", action="store_true",
                         dest="summary", help="Print summary information")
 
@@ -126,7 +126,11 @@ if __name__ == '__main__':
     args = makeCmdParser()
     config = configparser.ConfigParser()
 
-    logging.getLogger().setLevel(getattr(logging, str(args.log).upper(), logging.WARN))
+    numeric_level = getattr(logging, args.log.upper(), None)
+    if not isinstance(numeric_level, int):
+        print_error(f"Invalid log level: {args.log}")
+        sys.exit(1)
+    logging.basicConfig(level=numeric_level, encoding='utf-8', format='%(message)s')
 
     if args.inviwo:
         if not os.path.exists(args.inviwo):

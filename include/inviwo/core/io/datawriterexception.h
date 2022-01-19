@@ -37,9 +37,7 @@ namespace inviwo {
 
 class IVW_CORE_API DataWriterException : public Exception {
 public:
-    DataWriterException(const std::string& message = "",
-                        ExceptionContext context = ExceptionContext());
-    virtual ~DataWriterException() noexcept = default;
+    using Exception::Exception;
 };
 
 }  // namespace inviwo

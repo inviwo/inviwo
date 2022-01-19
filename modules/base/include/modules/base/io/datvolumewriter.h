@@ -42,15 +42,15 @@ public:
     DatVolumeWriter();
     DatVolumeWriter(const DatVolumeWriter& rhs);
     DatVolumeWriter& operator=(const DatVolumeWriter& that);
-    virtual DatVolumeWriter* clone() const;
+    virtual DatVolumeWriter* clone() const override;
     virtual ~DatVolumeWriter() = default;
 
-    virtual void writeData(const Volume* data, const std::string filePath) const;
+    virtual void writeData(const Volume* data, std::string_view filePath) const override;
 };
 
 namespace util {
-IVW_MODULE_BASE_API void writeDatVolume(const Volume& data, const std::string filePath,
-                                        bool overwrite = false);
+IVW_MODULE_BASE_API void writeDatVolume(const Volume& data, std::string_view filePath,
+                                        Overwrite overwrite = Overwrite::No);
 }
 
 }  // namespace inviwo

@@ -52,25 +52,13 @@ CImgLayerWriter::CImgLayerWriter() : DataWriterType<Layer>() {
 
 CImgLayerWriter* CImgLayerWriter::clone() const { return new CImgLayerWriter(*this); }
 
-void CImgLayerWriter::writeData(const Layer* data, const std::string filePath) const {
+void CImgLayerWriter::writeData(const Layer* data, std::string_view filePath) const {
     cimgutil::saveLayer(filePath, data);
 }
 
 std::unique_ptr<std::vector<unsigned char>> CImgLayerWriter::writeDataToBuffer(
-    const Layer* data, const std::string& fileExtension) const {
+    const Layer* data, const std::string_view fileExtension) const {
     return cimgutil::saveLayerToBuffer(fileExtension, data);
-}
-
-bool CImgLayerWriter::writeDataToRepresentation(const repr* src, repr* dst) const {
-    const LayerRAM* source = dynamic_cast<const LayerRAM*>(src);
-    LayerRAM* target = dynamic_cast<LayerRAM*>(dst);
-
-    if (!source || !target) {
-        LogError("Target representation missing.");
-        return false;
-    }
-
-    return cimgutil::rescaleLayerRamToLayerRam(source, target);
 }
 
 }  // namespace inviwo

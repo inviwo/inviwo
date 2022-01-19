@@ -38,6 +38,8 @@
 #include <inviwo/core/util/safecstr.h>
 #include <sstream>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 namespace {
@@ -65,6 +67,11 @@ bool breakOnException() {
 
 Exception::Exception(std::string_view message, ExceptionContext context)
     : std::runtime_error(SafeCStr{message}), context_(std::move(context)), stack_{stackTrace()} {
+    if (breakOnException()) util::debugBreak();
+}
+
+Exception::Exception(std::string_view format, fmt::format_args&& args, ExceptionContext context)
+    : std::runtime_error{fmt::vformat(format, std::move(args))}, context_{std::move(context)} {
     if (breakOnException()) util::debugBreak();
 }
 
@@ -100,24 +107,6 @@ void Exception::getStack(std::ostream& os, int maxFrames) const {
 const ExceptionContext& Exception::getContext() const { return context_; }
 
 const std::vector<std::string>& Exception::getStack() const { return stack_; }
-
-RangeException::RangeException(std::string_view message, ExceptionContext context)
-    : Exception(message, context) {}
-
-NullPointerException::NullPointerException(std::string_view message, ExceptionContext context)
-    : Exception(message, context) {}
-
-IgnoreException::IgnoreException(std::string_view message, ExceptionContext context)
-    : Exception(message, context) {}
-
-AbortException::AbortException(std::string_view message, ExceptionContext context)
-    : Exception(message, context) {}
-
-FileException::FileException(std::string_view message, ExceptionContext context)
-    : Exception(message, context) {}
-
-ResourceException::ResourceException(std::string_view message, ExceptionContext context)
-    : Exception(message, context) {}
 
 ModuleInitException::ModuleInitException(std::string_view message, ExceptionContext context,
                                          std::vector<std::string> modulesToDeregister)

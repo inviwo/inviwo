@@ -34,10 +34,13 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/glm.h>
+
 #include <algorithm>
 #include <limits>
 
-#include <inviwo/core/util/glm.h>
+#include <fmt/format.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -241,14 +244,14 @@ struct CImgNormalizedLayerDispatcher {
 struct CImgLoadLayerDispatcher {
     using type = void*;
     template <typename Result, typename DF>
-    void* operator()(void* dst, const std::string& filePath, uvec2& dimensions,
+    void* operator()(void* dst, std::string_view filePath, uvec2& dimensions,
                      DataFormatId& formatId, bool rescaleToDim) {
         using P = typename DF::primitive;
 
         const DataFormatBase* dataFormat = DF::get();
 
         try {
-            cimg_library::CImg<P> img(filePath.c_str());
+            cimg_library::CImg<P> img(SafeCStr{filePath}.c_str());
             size_t components = static_cast<size_t>(img.spectrum());
 
             if (rescaleToDim) {
@@ -279,7 +282,7 @@ struct CImgLoadLayerDispatcher {
 struct CImgSaveLayerDispatcher {
     using type = void;
     template <typename Result, typename T>
-    void operator()(const std::string& filePath, const LayerRAM* inputLayer) {
+    void operator()(std::string_view filePath, const LayerRAM* inputLayer) {
         const std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
         const bool isJpeg = (fileExtension == "jpg") || (fileExtension == "jpeg");
         const bool skipAlpha = isJpeg && ((T::comp == 2) || (T::comp == 4));
@@ -331,10 +334,10 @@ struct CImgSaveLayerDispatcher {
             }
         }
         try {
-            img->save(filePath.c_str());
+            img->save(SafeCStr{filePath}.c_str());
         } catch (cimg_library::CImgIOException& e) {
             throw DataWriterException(
-                "Failed to save image to: " + filePath + " Reason: " + std::string(e.what()),
+                fmt::format("Failed to save image to: {} Reason: {}", filePath, e.what()),
                 IVW_CONTEXT);
         }
     }
@@ -343,7 +346,7 @@ struct CImgSaveLayerDispatcher {
 struct CImgSaveLayerToBufferDispatcher {
     using type = std::unique_ptr<std::vector<unsigned char>>;
     template <typename Result, typename T>
-    type operator()(const LayerRAM* inputLayer, const std::string& extension) {
+    type operator()(const LayerRAM* inputLayer, std::string_view extension) {
         const std::string fileExtension = toLower(extension);
         const bool isJpeg = (fileExtension == "jpg") || (fileExtension == "jpeg");
         const bool skipAlpha = isJpeg && ((T::comp == 2) || (T::comp == 4));
@@ -412,11 +415,11 @@ struct CImgRescaleLayerDispatcher {
 struct CImgLoadVolumeDispatcher {
     using type = void*;
     template <typename Result, typename DF>
-    void* operator()(void* dst, const std::string& filePath, size3_t& dimensions,
+    void* operator()(void* dst, std::string_view filePath, size3_t& dimensions,
                      DataFormatId& formatId) {
         const DataFormatBase* dataFormat = DF::get();
 
-        cimg_library::CImg<typename DF::primitive> img(filePath.c_str());
+        cimg_library::CImg<typename DF::primitive> img(SafeCStr{filePath}.c_str());
 
         size_t components = static_cast<size_t>(img.spectrum());
         dimensions = size3_t(img.width(), img.height(), img.depth());
@@ -438,8 +441,8 @@ struct CImgLoadVolumeDispatcher {
 
 ////////////////////// CImgUtils ///////////////////////////////////////////////////
 
-void* loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
-                    DataFormatId& formatId, bool rescaleToDim) {
+void* loadLayerData(void* dst, std::string_view filePath, uvec2& dimensions, DataFormatId& formatId,
+                    bool rescaleToDim) {
     std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
@@ -452,7 +455,7 @@ void* loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
         formatId, disp, dst, filePath, dimensions, formatId, rescaleToDim);
 }
 
-void* loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions,
+void* loadVolumeData(void* dst, std::string_view filePath, size3_t& dimensions,
                      DataFormatId& formatId) {
     std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
@@ -466,7 +469,7 @@ void* loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions
                                                                   dimensions, formatId);
 }
 
-void* loadTIFFLayerData(void* dst, const std::string& filePath, TIFFHeader header,
+void* loadTIFFLayerData(void* dst, std::string_view filePath, TIFFHeader header,
                         bool rescaleToDim) {
     CImgLoadLayerDispatcher disp;
     DataFormatId formatId = header.format->getId();
@@ -475,7 +478,7 @@ void* loadTIFFLayerData(void* dst, const std::string& filePath, TIFFHeader heade
                                                                   dims, formatId, rescaleToDim);
 }
 
-void* loadTIFFVolumeData(void* dst, const std::string& filePath, TIFFHeader header) {
+void* loadTIFFVolumeData(void* dst, std::string_view filePath, TIFFHeader header) {
     CImgLoadVolumeDispatcher disp;
     DataFormatId formatId = header.format->getId();
     size3_t dims{header.dimensions};
@@ -483,7 +486,7 @@ void* loadTIFFVolumeData(void* dst, const std::string& filePath, TIFFHeader head
                                                                   dims, formatId);
 }
 
-void saveLayer(const std::string& filePath, const Layer* inputLayer) {
+void saveLayer(std::string_view filePath, const Layer* inputLayer) {
     CImgSaveLayerDispatcher disp;
     const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();
 
@@ -491,7 +494,7 @@ void saveLayer(const std::string& filePath, const Layer* inputLayer) {
         inputLayerRam->getDataFormat()->getId(), disp, filePath, inputLayerRam);
 }
 
-std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(const std::string& extension,
+std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(std::string_view extension,
                                                               const Layer* inputLayer) {
     CImgSaveLayerToBufferDispatcher disp;
     const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();
@@ -603,16 +606,16 @@ std::string getOpenEXRVersion() {
 #endif
 }
 
-TIFFHeader getTIFFHeader(const std::string& filename) {
+TIFFHeader getTIFFHeader(std::string_view filename) {
 #ifdef cimg_use_tiff
-    TIFF* tif = TIFFOpen(filename.c_str(), "r");
+    TIFF* tif = TIFFOpen(SafeCStr{filename}.c_str(), "r");
     util::OnScopeExit closeFile([tif]() {
         if (tif) TIFFClose(tif);
     });
 
     if (!tif) {
-        throw DataReaderException("Error could not open input file: " + filename,
-                                  IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"));
+        throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"),
+                                  "Error could not open input file: {}", filename);
     }
     TIFFSetDirectory(tif, 0);
 

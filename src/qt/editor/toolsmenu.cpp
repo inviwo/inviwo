@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/processors/exporter.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/workspaceutils.h>
 
@@ -151,13 +152,25 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                                 "Dir: \"" << testdir << "\" already exits. use a different name");
                             return;
                         }
-                        filesystem::createDirectoryRecursively(testdir);
+                        try {
+                            filesystem::createDirectoryRecursively(testdir);
 
-                        const auto workspacename = testdir + "/" + lname + ".inv";
-                        LogInfoCustom("ToolMenu",
-                                      "Saving regression workspace to: " << workspacename);
-                        util::saveNetwork(app->getProcessorNetwork(), workspacename);
-                        util::saveAllCanvases(app->getProcessorNetwork(), testdir);
+                            const auto workspaceName = testdir + "/" + lname + ".inv";
+                            LogInfoCustom("ToolMenu",
+                                          "Saving regression workspace to: " << workspaceName);
+                            util::saveNetwork(app->getProcessorNetwork(), workspaceName);
+                            util::exportAllFiles(
+                                *app->getProcessorNetwork(), testdir, "UPN",
+                                {FileExtension{"png", ""}, FileExtension{"csv", ""},
+                                 FileExtension{"txt", ""}},
+                                Overwrite::Yes);
+
+                        } catch (const Exception& error) {
+                            LogErrorCustom("TooMenu",
+                                           fmt::format("Failed to create regression test: {}",
+                                                       error.getMessage()));
+                            // TODO delete testdir here
+                        }
                     }
                 }
             });

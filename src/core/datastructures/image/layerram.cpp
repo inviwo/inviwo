@@ -29,8 +29,6 @@
 
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/io/datawriterfactory.h>
-#include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
@@ -39,15 +37,13 @@ LayerRAM::LayerRAM(LayerType type, const DataFormatBase* format)
     : LayerRepresentation(type, format) {}
 
 bool LayerRAM::copyRepresentationsTo(LayerRepresentation* targetLayerRam) const {
-    // We use a LayerDataWriter to copy/resize one representation into another. By asking for the
-    // bmp file-extension we will get the LayerWriter defined in the CImg module which implements
-    // the writeDataToRepresentation method
-    static DataWriterType<Layer>* layerWriter_ = InviwoApplication::getPtr()
-                                                     ->getDataWriterFactory()
-                                                     ->getWriterForTypeAndExtension<Layer>("bmp")
-                                                     .release();
+    // We use a LayerRamResizer to copy/resize one representation into another.
+    // The CImg module implements a LayerRamResizer and registers it with the app
 
-    return layerWriter_->writeDataToRepresentation(this, targetLayerRam);
+    if (auto resizer = InviwoApplication::getPtr()->getLayerRamResizer()) {
+       return resizer->resize(*this, *static_cast<LayerRAM*>(targetLayerRam));
+    }
+    return false;
 }
 
 std::type_index LayerRAM::getTypeIndex() const { return std::type_index(typeid(LayerRAM)); }

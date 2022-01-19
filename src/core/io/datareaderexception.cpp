@@ -31,7 +31,4 @@
 
 namespace inviwo {
 
-DataReaderException::DataReaderException(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
-
 }  // namespace inviwo

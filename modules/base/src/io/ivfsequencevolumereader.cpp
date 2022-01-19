@@ -37,25 +37,15 @@ IvfSequenceVolumeReader::IvfSequenceVolumeReader() {
     addExtension({"ivfs", "Sequence of Inviwo ivf volumes"});
 }
 
-std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(const std::string& filePath) {
-    std::string fileName = filePath;
-    if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
+std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(std::string_view filePath) {
+    checkExists(filePath);
 
-        if (filesystem::fileExists(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
-        }
-    }
-
-    auto volumes = std::make_shared<VolumeSequence>();
-
-    auto dir = filesystem::getFileDirectory(fileName);
+    auto dir = filesystem::getFileDirectory(filePath);
 
     std::vector<std::string> filenames;
-    Deserializer d(fileName);
+    Deserializer d(filePath);
     d.deserialize("volumes", filenames, "volume");
+    auto volumes = std::make_shared<VolumeSequence>();
     for (auto filename : filenames) {
         auto abs = filesystem::cleanupPath(dir + "/" + filename);
         volumes->push_back(reader_.readData(abs));

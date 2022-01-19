@@ -376,9 +376,9 @@ void ImageGL::reAttachAllLayers() {
     }
 
     if (auto status = frameBufferObject_.status(); status != GL_FRAMEBUFFER_COMPLETE) {
-        throw OpenGLException(fmt::format("Framebuffer ({}) incomplete: {}",
-                                          frameBufferObject_.getID(),
-                                          utilgl::framebufferStatusToString(status)));
+        throw OpenGLException(IVW_CONTEXT, "Framebuffer ({}) incomplete: {}",
+                              frameBufferObject_.getID(),
+                              utilgl::framebufferStatusToString(status));
     }
 }
 

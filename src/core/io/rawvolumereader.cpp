@@ -37,6 +37,7 @@
 #include <inviwo/core/metadata/metadataowner.h>
 
 #include <units/units.hpp>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -89,16 +90,14 @@ void RawVolumeReader::setParameters(const DataFormatBase* format, ivec3 dimensio
     byteOffset_ = byteOffset;
 }
 
-std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
+std::shared_ptr<Volume> RawVolumeReader::readData(std::string_view filePath) {
     return readData(filePath, nullptr);
 }
 
-std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
+std::shared_ptr<Volume> RawVolumeReader::readData(std::string_view filePath,
                                                   MetaDataOwner* metadata) {
-    if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IVW_CONTEXT);
-    }
-
+    checkExists(filePath);
+                                                    
     rawFile_ = filePath;
 
     if (!parametersSet_) {

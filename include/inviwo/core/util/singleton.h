@@ -41,11 +41,8 @@ namespace inviwo {
 
 class SingletonException : public Exception {
 public:
-    SingletonException(const std::string& message = "",
-                       ExceptionContext context = ExceptionContext())
-        : Exception(message, context) {}
+    using Exception::Exception;
 };
-
 /**
  * T must have a static T* instance_ member variable.
  */
@@ -58,23 +55,23 @@ public:
 
     static void init() {
         if (T::instance_) {
-            throw SingletonException(name() + " Singleton already initialized",
-                                     IVW_CONTEXT_CUSTOM("Singleton"));
+            throw SingletonException(IVW_CONTEXT_CUSTOM("Singleton"),
+                                     "{} singleton already initialized", name());
         }
         T::instance_ = util::defaultConstructType<T>();
         if (!T::instance_) {
-            throw SingletonException("Was not able to initialize " + name() + "singleton",
-                                     IVW_CONTEXT_CUSTOM("Singleton"));
+            throw SingletonException(IVW_CONTEXT_CUSTOM("Singleton"),
+                                     "Was not able to initialize {} singleton", name());
         }
     };
 
     static void init(T* instance) {
         if (T::instance_) {
-            throw SingletonException(name() + " Singleton already initialized",
-                                     IVW_CONTEXT_CUSTOM("Singleton"));
+            throw SingletonException(IVW_CONTEXT_CUSTOM("Singleton"),
+                                     "{} singleton already initialized", name());
         }
         if (!instance) {
-            throw SingletonException("Null pointer passed", IVW_CONTEXT_CUSTOM("Singleton"));
+            throw SingletonException(IVW_CONTEXT_CUSTOM("Singleton"), "Null pointer passed");
         }
         T::instance_ = instance;
     };
@@ -82,10 +79,10 @@ public:
     static T* getPtr() {
         if (!T::instance_) {
             throw SingletonException(
-                name() +
-                    " Singleton not initialized. Ensure that init() is called in a thread-safe "
-                    "environment. ",
-                IVW_CONTEXT_CUSTOM("Singleton"));
+                IVW_CONTEXT_CUSTOM("Singleton"),
+                "{} Singleton not initialized. Ensure that init() is called in a thread-safe "
+                "environment.",
+                name());
         }
         return T::instance_;
     };

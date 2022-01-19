@@ -1,0 +1,1096 @@
+<?xml version="1.0" ?>
+<InviwoWorkspace version="2">
+    <ProcessorNetworkVersion content="19" />
+    <Processors>
+        <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                    <Properties>
+                        <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
+                            <readonly content="1" />
+                            <value x="800" y="400" />
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.IntVec2Property" identifier="position">
+                    <value x="1021" y="878" />
+                </Property>
+                <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                    <displayName content="Color Layer ID" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="0" />
+                    <readonly content="0" />
+                    <minConstraint content="0" />
+                    <maxConstraint content="0" />
+                    <minvalue content="0" />
+                    <maxvalue content="0" />
+                    <increment content="1" />
+                    <value content="0" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="175" y="400" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+                <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                    <position x="1021" y="878" />
+                    <dimensions x="1200" y="300" />
+                    <visibility content="1" />
+                    <fullScreen content="0" />
+                    <onTop content="1" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.Background" identifier="Background" displayName="Background">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle">
+                    <selectedIdentifier content="uniformColor" />
+                </Property>
+                <Property type="org.inviwo.FloatVec4Property" identifier="bgColor1">
+                    <semantics semantics="Color" />
+                    <value x="1" y="1" z="1" w="1" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="175" y="325" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.ParallelCoordinates" identifier="ParallelCoordinates" displayName="Parallel Coordinates">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.CompositeProperty" identifier="axisProps_">
+                    <OwnedPropertyIdentifiers>
+                        <PropertyIdentifier content="index" />
+                        <PropertyIdentifier content="Volume" />
+                        <PropertyIdentifier content="Sum0" />
+                        <PropertyIdentifier content="Mean0" />
+                        <PropertyIdentifier content="Min0" />
+                        <PropertyIdentifier content="Max0" />
+                        <PropertyIdentifier content="Centerx" />
+                        <PropertyIdentifier content="Centery" />
+                        <PropertyIdentifier content="Centerz" />
+                        <PropertyIdentifier content="CoM0x" />
+                        <PropertyIdentifier content="CoM0y" />
+                        <PropertyIdentifier content="CoM0z" />
+                    </OwnedPropertyIdentifiers>
+                    <Properties>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="index">
+                            <displayName content="index" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="0" y="27" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="0" y="27" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="Volume">
+                            <displayName content="Volume" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="6.956150935285466" y="7.5580790245618763" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="6.956150935285466" y="7.5580790245618763" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="Sum0">
+                            <displayName content="Sum 0" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="2.9426576223654566" y="3.0645957622184543" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="2.9426576223654566" y="3.0645957622184543" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="Mean0">
+                            <displayName content="Mean 0" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="2.3168085342758765e-05" y="2.5866369808896629e-05" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="2.3168085342758765e-05" y="2.5866369808896629e-05" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="Min0">
+                            <displayName content="Min 0" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="0" y="1.8280340894026094e-06" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="0" y="1.8280340894026094e-06" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="Max0">
+                            <displayName content="Max 0" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="-0.99990123642700002" y="1.0000987635730001" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="-0.99990123642700002" y="1.0000987635729999" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="Centerx">
+                            <displayName content="Center x" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="-2.5298500061035156" y="2.5298500061035156" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="-2.5298500061035156" y="2.5298500061035156" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="Centery">
+                            <displayName content="Center y" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="-2.8152000904083252" y="2.8152000904083252" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="-2.8152000904083252" y="2.8152000904083252" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="Centerz">
+                            <displayName content="Center z" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="-3.4942500591278076" y="3.4942500591278076" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="-3.4942500591278076" y="3.4942500591278076" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="CoM0x">
+                            <displayName content="CoM 0 x" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="-2.5298500061035156" y="2.5298500061035156" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="-2.5298500061035156" y="2.5298500061035156" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="CoM0y">
+                            <displayName content="CoM 0 y" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="-2.8152000904083252" y="2.8152000904083252" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="-2.8152000904083252" y="2.8152000904083252" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="CoM0z">
+                            <displayName content="CoM 0 z" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <displayName content="Axis Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <range x="-3.4942500591278076" y="3.4942500591278076" />
+                                    <increment content="0.01" />
+                                    <minSeparation content="0" />
+                                    <value x="-3.4942500591278076" y="3.4942500591278076" />
+                                </Property>
+                                <Property type="org.inviwo.BoolProperty" identifier="invertRange">
+                                    <displayName content="Invert Range" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <value content="0" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="1" />
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.DataFrameColormapProperty" identifier="colormap">
+                    <OwnedPropertyIdentifiers>
+                        <PropertyIdentifier content="index" />
+                        <PropertyIdentifier content="Volume" />
+                        <PropertyIdentifier content="Sum0" />
+                        <PropertyIdentifier content="Mean0" />
+                        <PropertyIdentifier content="Min0" />
+                        <PropertyIdentifier content="Max0" />
+                        <PropertyIdentifier content="Centerx" />
+                        <PropertyIdentifier content="Centery" />
+                        <PropertyIdentifier content="Centerz" />
+                        <PropertyIdentifier content="CoM0x" />
+                        <PropertyIdentifier content="CoM0y" />
+                        <PropertyIdentifier content="CoM0z" />
+                    </OwnedPropertyIdentifiers>
+                    <Properties>
+                        <Property type="org.inviwo.DataFrameColumnProperty" identifier="selectedColorAxis">
+                            <displayName content="Column" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <options>
+                                <option>
+                                    <id content="index" />
+                                    <name content="index" />
+                                    <value content="0" />
+                                </option>
+                                <option>
+                                    <id content="Volume" />
+                                    <name content="Volume" />
+                                    <value content="1" />
+                                </option>
+                                <option>
+                                    <id content="Sum0" />
+                                    <name content="Sum 0" />
+                                    <value content="2" />
+                                </option>
+                                <option>
+                                    <id content="Mean0" />
+                                    <name content="Mean 0" />
+                                    <value content="3" />
+                                </option>
+                                <option>
+                                    <id content="Min0" />
+                                    <name content="Min 0" />
+                                    <value content="4" />
+                                </option>
+                                <option>
+                                    <id content="Max0" />
+                                    <name content="Max 0" />
+                                    <value content="5" />
+                                </option>
+                                <option>
+                                    <id content="Centerx" />
+                                    <name content="Center x" />
+                                    <value content="6" />
+                                </option>
+                                <option>
+                                    <id content="Centery" />
+                                    <name content="Center y" />
+                                    <value content="7" />
+                                </option>
+                                <option>
+                                    <id content="Centerz" />
+                                    <name content="Center z" />
+                                    <value content="8" />
+                                </option>
+                                <option>
+                                    <id content="CoM0x" />
+                                    <name content="CoM 0 x" />
+                                    <value content="9" />
+                                </option>
+                                <option>
+                                    <id content="CoM0y" />
+                                    <name content="CoM 0 y" />
+                                    <value content="10" />
+                                </option>
+                                <option>
+                                    <id content="CoM0z" />
+                                    <name content="CoM 0 z" />
+                                    <value content="11" />
+                                </option>
+                            </options>
+                            <selectedIdentifier content="Mean0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="CoM0z">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="CoM0y">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="CoM0x">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="Centerz">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="Centery">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="Centerx">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="Max0">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="Min0">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="Mean0">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.OptionPropertyEnumInt" identifier="colormap">
+                                    <selectedIdentifier content="YlOrRd" />
+                                </Property>
+                                <Property type="org.inviwo.Size_tProperty" identifier="nColors">
+                                    <maxvalue content="8" />
+                                    <value content="8" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="Sum0">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="Volume">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColormapProperty" identifier="index">
+                            <displayName content="Settings" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.BoolProperty" identifier="overrideColormap">
+                            <value content="1" />
+                        </Property>
+                        <Property type="org.inviwo.TransferFunctionProperty" identifier="tf">
+                            <MetaDataMap>
+                                <MetaDataItem type="org.inviwo.IntMetaData" key="PropertyEditorWidgetDockStatus">
+                                    <MetaData content="0" />
+                                </MetaDataItem>
+                                <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetFloating">
+                                    <MetaData content="1" />
+                                </MetaDataItem>
+                                <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
+                                    <MetaData x="1310" y="527" />
+                                </MetaDataItem>
+                                <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetSize">
+                                    <MetaData x="471" y="316" />
+                                </MetaDataItem>
+                                <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetSticky">
+                                    <MetaData content="1" />
+                                </MetaDataItem>
+                                <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetVisible">
+                                    <MetaData content="0" />
+                                </MetaDataItem>
+                                <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState" />
+                            </MetaDataMap>
+                            <TransferFunction>
+                                <maskMin content="0" />
+                                <maskMax content="1" />
+                                <type content="0" />
+                                <Points>
+                                    <Point>
+                                        <pos content="0" />
+                                        <rgba x="0.10588235" y="0.61960787" z="0.46666667" w="1" />
+                                    </Point>
+                                    <Point>
+                                        <pos content="0.5" />
+                                        <rgba x="0.8509804" y="0.37254903" z="0.0078431377" w="1" />
+                                    </Point>
+                                    <Point>
+                                        <pos content="1" />
+                                        <rgba x="0.45882353" y="0.43921569" z="0.7019608" w="1" />
+                                    </Point>
+                                </Points>
+                            </TransferFunction>
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.FontProperty" identifier="captions">
+                    <Properties>
+                        <Property type="org.inviwo.IntProperty" identifier="fontSize">
+                            <value content="14" />
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.FontProperty" identifier="labels">
+                    <Properties>
+                        <Property type="org.inviwo.IntProperty" identifier="fontSize">
+                            <value content="14" />
+                        </Property>
+                    </Properties>
+                    <collapsed content="0" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="175" y="250" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+            <enabledAxes>
+                <axis content="0" />
+                <axis content="1" />
+                <axis content="2" />
+                <axis content="4" />
+                <axis content="3" />
+                <axis content="5" />
+                <axis content="6" />
+                <axis content="9" />
+                <axis content="7" />
+                <axis content="10" />
+                <axis content="8" />
+                <axis content="11" />
+            </enabledAxes>
+        </Processor>
+        <Processor type="org.inviwo.VolumeRegionStatistics" identifier="VolumeRegionStatistics" displayName="Volume Region Statistics">
+            <PortGroups />
+            <Properties />
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="175" y="175" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.VolumeSource" identifier="VolumeSource" displayName="Volume Source">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.FileProperty" identifier="filename">
+                    <absolutePath content="/Users/peter/Documents/Inviwo/inviwo/data/volumes/boron.dat" />
+                    <workspaceRelativePath content="../../../../../data/volumes/boron.dat" />
+                    <ivwdataRelativePath content="volumes/boron.dat" />
+                    <selectedExtension>
+                        <extension content="dat" />
+                        <description content="Inviwo dat file format" />
+                    </selectedExtension>
+                    <acceptMode content="0" />
+                    <fileMode content="0" />
+                </Property>
+                <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
+                    <selectedIdentifier content="Inviwo dat file format (*.dat)" />
+                </Property>
+                <Property type="org.inviwo.SequenceTimerProperty" identifier="Sequence">
+                    <visible content="0" />
+                    <Properties>
+                        <Property type="org.inviwo.Size_tProperty" identifier="selectedSequenceIndex">
+                            <displayName content="Sequence Index" />
+                            <semantics semantics="Default" />
+                            <usageMode content="0" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <minConstraint content="0" />
+                            <maxConstraint content="0" />
+                            <minvalue content="1" />
+                            <maxvalue content="1" />
+                            <increment content="1" />
+                            <value content="1" />
+                        </Property>
+                    </Properties>
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="150" y="0" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.VolumeVoronoiSegmentation" identifier="VolumeVoronoiSegmentation" displayName="Volume Voronoi Segmentation">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="iCol">
+                    <displayName content="Segment Index Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="atomid" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="xCol">
+                    <displayName content="X Coordinate Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="x" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="yCol">
+                    <displayName content="Y Coordinate Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="y" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="zCol">
+                    <displayName content="Z Coordinate Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="z" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="wCol">
+                    <displayName content="Weight Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="none" />
+                            <name content="None" />
+                            <value content="-1" />
+                        </option>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="none" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="200" y="100" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.CSVSource" identifier="CSVSource" displayName="CSV Source">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.FileProperty" identifier="inputFile_">
+                    <absolutePath content="/Users/peter/Documents/Inviwo/inviwo/modules/volume/data/boron.csv" />
+                    <workspaceRelativePath content="../../../data/boron.csv" />
+                    <ivwdataRelativePath content="../modules/volume/data/boron.csv" />
+                    <selectedExtension>
+                        <extension content="*" />
+                        <description content="All Files" />
+                    </selectedExtension>
+                    <acceptMode content="0" />
+                    <fileMode content="0" />
+                </Property>
+                <Property type="org.inviwo.ColumnMetaDataListProperty" identifier="columns">
+                    <maxNumberOfElements content="0" />
+                    <displayName content="Column MetaData" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <OwnedPropertyIdentifiers>
+                        <PropertyIdentifier content="column1" />
+                        <PropertyIdentifier content="column2" />
+                        <PropertyIdentifier content="column3" />
+                        <PropertyIdentifier content="column4" />
+                        <PropertyIdentifier content="column5" />
+                    </OwnedPropertyIdentifiers>
+                    <Properties>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column1">
+                            <displayName content="index" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column2">
+                            <displayName content="atomid" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column3">
+                            <displayName content="x" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                    <value content="1" />
+                                </Property>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <value x="-2.5299999999999998" y="2.5299999999999998" />
+                                </Property>
+                                <Property type="org.inviwo.StringProperty" identifier="unit">
+                                    <value content="Å" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column4">
+                            <displayName content="y" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                    <value content="1" />
+                                </Property>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <value x="-2.8125" y="2.8125" />
+                                </Property>
+                                <Property type="org.inviwo.StringProperty" identifier="unit">
+                                    <value content="Å" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column5">
+                            <displayName content="z" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                    <value content="1" />
+                                </Property>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <value x="-3.4942500600000002" y="3.4942500000000001" />
+                                </Property>
+                                <Property type="org.inviwo.StringProperty" identifier="unit">
+                                    <value content="Å" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                    </Properties>
+                    <collapsed content="0" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="325" y="0" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+    </Processors>
+    <Connections>
+        <Connection src="CSVSource.data" dst="VolumeVoronoiSegmentation.seedPoints" />
+        <Connection src="VolumeSource.data" dst="VolumeVoronoiSegmentation.inputVolume" />
+        <Connection src="VolumeVoronoiSegmentation.outport" dst="VolumeRegionStatistics.atlas" />
+        <Connection src="VolumeSource.data" dst="VolumeRegionStatistics.volume" />
+        <Connection src="ParallelCoordinates.outport" dst="Background.inport" />
+        <Connection src="Background.outport" dst="Canvas.inport" />
+        <Connection src="VolumeRegionStatistics.statistics" dst="ParallelCoordinates.dataFrame" />
+    </Connections>
+</InviwoWorkspace>

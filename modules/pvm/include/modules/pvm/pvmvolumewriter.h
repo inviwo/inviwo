@@ -44,10 +44,10 @@ public:
     PVMVolumeWriter();
     PVMVolumeWriter(const PVMVolumeWriter& rhs);
     PVMVolumeWriter& operator=(const PVMVolumeWriter& that);
-    virtual PVMVolumeWriter* clone() const;
-    virtual ~PVMVolumeWriter(){};
+    virtual PVMVolumeWriter* clone() const override;
+    virtual ~PVMVolumeWriter() override = default;
 
-    virtual void writeData(const Volume* data, const std::string filePath) const;
+    virtual void writeData(const Volume* data, std::string_view filePath) const override;
 };
 
 }  // namespace inviwo

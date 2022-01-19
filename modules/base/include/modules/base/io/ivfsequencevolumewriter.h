@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
+#include <inviwo/core/io/datawriter.h>
 #include <modules/base/io/ivfvolumewriter.h>
 
 namespace inviwo {
@@ -56,12 +57,14 @@ namespace inviwo {
  * @see inviwo::IvfSequenceVolumeReader
  *
  */
-class IVW_MODULE_BASE_API IvfSequenceVolumeWriter {
+class IVW_MODULE_BASE_API IvfSequenceVolumeWriter : public DataWriterType<VolumeSequence> {
 public:
-    IvfSequenceVolumeWriter();
+    IvfSequenceVolumeWriter() = default;
     IvfSequenceVolumeWriter(const IvfSequenceVolumeWriter& rhs) = default;
     IvfSequenceVolumeWriter& operator=(const IvfSequenceVolumeWriter& that) = default;
-    virtual IvfSequenceVolumeWriter* clone() const { return new IvfSequenceVolumeWriter(*this); }
+    virtual IvfSequenceVolumeWriter* clone() const override {
+        return new IvfSequenceVolumeWriter(*this);
+    }
     virtual ~IvfSequenceVolumeWriter() = default;
 
     /**
@@ -85,18 +88,16 @@ public:
      * @param name the name of the dataset, will be used for to name the output files [name].ivfs
      * and [name]xx.ivf
      * @param path path to the folder to put the main file
-     * @param reltivePathToTimesteps relative path (from the path to the main file) to where the
+     * @param relativePathToTimeSteps relative path (from the path to the main file) to where the
      * sequence elements will be written.
      */
-    void writeData(const VolumeSequence* volumes, std::string name, std::string path,
-                   std::string reltivePathToTimesteps = "") const;
+    void writeData(const VolumeSequence* volumes, std::string_view name, std::string_view path,
+                   std::string_view relativePathToTimeSteps = "") const;
 
-    void setOverwrite(bool overwrite) { overwrite_ = overwrite; }
-    bool getOverwrite() const { return overwrite_; }
+    virtual void writeData(const VolumeSequence* data, std::string_view filePath) const override;
 
 private:
     IvfVolumeWriter writer_;
-    bool overwrite_;
 };
 
 namespace util {
@@ -117,11 +118,10 @@ namespace util {
  * @see inviwo::IvfSequenceVolumeWriter
  * @see inviwo::IvfSequenceVolumeReader
  */
-
 IVW_MODULE_BASE_API std::string writeIvfVolumeSequence(const VolumeSequence& volumes,
-                                                       std::string name, std::string path,
-                                                       std::string reltivePathToElements = "",
-                                                       bool overwrite = true);
+                                                       std::string_view name, std::string_view path,
+                                                       std::string_view reltivePathToElements = "",
+                                                       Overwrite overwrite = Overwrite::Yes);
 }  // namespace util
 
 }  // namespace inviwo

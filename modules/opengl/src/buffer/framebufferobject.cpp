@@ -141,8 +141,7 @@ void FrameBufferObject::registerAttachment(GLenum attachmentID, GLuint texId) {
     } else {
         const auto num = enumToNumber(attachmentID);
         if (num >= maxColorAttachments()) {
-            throw OpenGLException(fmt::format("Invalid attachment id: {}", attachmentID),
-                                  IVW_CONTEXT);
+            throw OpenGLException(IVW_CONTEXT, "Invalid attachment id: {}", attachmentID);
         }
         attachedColorIds_[num] = texId;
     }

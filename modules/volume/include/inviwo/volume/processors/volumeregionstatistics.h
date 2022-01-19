@@ -31,25 +31,39 @@
 
 #include <inviwo/volume/volumemoduledefine.h>
 #include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeRegionStatistics, Volume Region Statistics}
  * ![](org.inviwo.VolumeRegionStatistics.png?classIdentifier=org.inviwo.VolumeRegionStatistics)
- * Explanation of how to use the processor.
+ *
+ * Calculate statistics for each volume region/segment in a volume.
+ * The following statistics are calculated for each region:
+ *   * Volume, given in World space
+ *   * Sum for each channel, given in "Value" range
+ *   * Mean for each channel, given in "Value" range
+ *   * Min for each channel, given in "Value" range
+ *   * Max for each channel, given in "Value" range
+ *   * Center (x,y,z) mean position in each region, given in `Result Space` coordinates
+ *   * Center of Mass for each channel (x, y, z), given in `Result Space` coordinates
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __volume__ Segmented input volume
+ *   * __atlas__  Index volume, of unsigned integer type, assigning a region index to each voxel.
+ *                Has to have the same dimensions as volume. The index range is assumed to
+ *                be [0, dataMap.dataRange.y] and without gaps.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __statistics__ Data Frame with the statistics for each region.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Result Space__ The spacial domain of the resulting statistics. Data, Model, World, or
+ *                      Index, defaults to World.
+ *
  */
 class IVW_MODULE_VOLUME_API VolumeRegionStatistics : public PoolProcessor {
 public:
@@ -65,6 +79,8 @@ private:
     VolumeInport volume_;
     VolumeInport atlas_;
     DataFrameOutport dataFrame_;
+
+    TemplateOptionProperty<CoordinateSpace> space_;
 };
 
 }  // namespace inviwo

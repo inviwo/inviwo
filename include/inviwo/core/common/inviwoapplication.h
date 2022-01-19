@@ -102,6 +102,8 @@ class ConsoleLogger;
 class TimerThread;
 class FileSystemObserver;
 
+class LayerRamResizer;
+
 /**
  * \class InviwoApplication
  *
@@ -428,6 +430,9 @@ public:
      * Convenience method to set the current ApplicationUsageMode in the system settings
      */
     void setApplicationUsageMode(UsageMode mode);
+    
+    LayerRamResizer* getLayerRamResizer() const;
+    void setLayerRamResizer(LayerRamResizer* obj);
 
 protected:
     struct Queue {
@@ -490,6 +495,7 @@ protected:
     WorkspaceManager::SerializationHandle presetsSerializationHandle_;
     WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
     std::unique_ptr<TimerThread> timerThread_;
+    LayerRamResizer* layerRamResizer_;
 
 private:
     friend Singleton<InviwoApplication>;

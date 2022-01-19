@@ -43,9 +43,9 @@ CImgVolumeReader::CImgVolumeReader() : DataReaderType<Volume>() {
 
 CImgVolumeReader* CImgVolumeReader::clone() const { return new CImgVolumeReader(*this); }
 
-std::shared_ptr<Volume> CImgVolumeReader::readData(const std::string& filePath) {
+std::shared_ptr<Volume> CImgVolumeReader::readData(std::string_view filePath) {
     if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IVW_CONTEXT);
+        throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", filePath);
     }
 
     auto volumeDisk = std::make_shared<VolumeDisk>(filePath);
@@ -53,16 +53,15 @@ std::shared_ptr<Volume> CImgVolumeReader::readData(const std::string& filePath) 
     return std::make_shared<Volume>(volumeDisk);
 }
 
-void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string key) const {
+void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string_view key) const {
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        key[0] = static_cast<char>(toupper(key[0]));
         LogInfo(key << ": " << metaStr);
     }
 }
 
-CImgVolumeRAMLoader::CImgVolumeRAMLoader(const std::string& sourceFile) : sourceFile_{sourceFile} {}
+CImgVolumeRAMLoader::CImgVolumeRAMLoader(std::string_view sourceFile) : sourceFile_{sourceFile} {}
 
 CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const { return new CImgVolumeRAMLoader(*this); }
 

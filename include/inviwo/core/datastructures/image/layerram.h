@@ -184,4 +184,10 @@ auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
                                                     std::forward<Args>(args)...);
 }
 
+class IVW_CORE_API LayerRamResizer {
+public:
+    virtual ~LayerRamResizer() = default;
+    virtual bool resize(const LayerRAM& src, LayerRAM& dst) const = 0;
+};
+
 }  // namespace inviwo

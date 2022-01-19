@@ -31,7 +31,4 @@
 
 namespace inviwo {
 
-DataWriterException::DataWriterException(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
-
 }  // namespace inviwo

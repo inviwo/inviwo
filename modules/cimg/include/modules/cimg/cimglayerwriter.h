@@ -32,6 +32,7 @@
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 
 namespace inviwo {
 
@@ -47,10 +48,9 @@ public:
     virtual CImgLayerWriter* clone() const override;
     virtual ~CImgLayerWriter() = default;
 
-    virtual void writeData(const Layer* data, const std::string filePath) const override;
+    virtual void writeData(const Layer* data, std::string_view filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
-        const Layer* data, const std::string& fileExtension) const override;
-    virtual bool writeDataToRepresentation(const repr* src, repr* dst) const override;
+        const Layer* data, std::string_view fileExtension) const override;
 };
 
 }  // namespace inviwo

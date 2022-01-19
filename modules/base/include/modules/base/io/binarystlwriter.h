@@ -49,9 +49,9 @@ public:
     virtual BinarySTLWriter* clone() const override;
     virtual ~BinarySTLWriter() = default;
 
-    virtual void writeData(const Mesh* data, const std::string filePath) const override;
+    virtual void writeData(const Mesh* data, std::string_view filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
-        const Mesh* data, const std::string& fileExtension) const override;
+        const Mesh* data, std::string_view fileExtension) const override;
 
 private:
     void writeData(const Mesh* data, std::ostream& os) const;

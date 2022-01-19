@@ -44,6 +44,7 @@ ColumnMetaDataProperty::ColumnMetaDataProperty(std::string_view identifier,
                                                PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, semantics)
     , header_{"header", "Header"}
+    , type_{"type", "Type"}
     , range_("range", "Range", range.x, range.y, -DataFloat64::max(), DataFloat64::max(), 0.0, 0.0,
              InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , unit_{"unit", "Unit"}
@@ -55,23 +56,27 @@ ColumnMetaDataProperty::ColumnMetaDataProperty(std::string_view identifier,
         .visibilityDependsOn(*this, [](const auto& p) { return !p.getReadOnly(); })
         .setCurrentStateAsDefault();
 
-    addProperties(header_, range_, unit_, drop_);
+    type_.setReadOnly(true);
+
+    addProperties(header_, type_, range_, unit_, drop_);
     setCollapsed(true).setCurrentStateAsDefault();
 }
 
 ColumnMetaDataProperty::ColumnMetaDataProperty(const ColumnMetaDataProperty& rhs)
     : BoolCompositeProperty(rhs)
     , header_{rhs.header_}
+    , type_{rhs.type_}
     , range_{rhs.range_}
     , unit_{rhs.unit_}
     , drop_{rhs.drop_} {
 
-    addProperties(header_, range_, unit_, drop_);
+    addProperties(header_, type_, range_, unit_, drop_);
 }
 
 ColumnMetaDataProperty& ColumnMetaDataProperty::operator=(const ColumnMetaDataProperty& rhs) {
     if (this != &rhs) {
         header_.set(rhs.header_.get());
+        type_.set(rhs.type_.get());
         range_.set(rhs.range_.get());
         unit_.set(rhs.unit_.get());
         drop_.set(rhs.drop_.get());
@@ -87,8 +92,21 @@ const std::string& ColumnMetaDataProperty::getHeader() const { return header_.ge
 dvec2 ColumnMetaDataProperty::getRange() const { return range_.get(); }
 Unit ColumnMetaDataProperty::getUnit() const { return units::unit_from_string(unit_.get()); }
 bool ColumnMetaDataProperty::getDrop() const { return drop_.get(); }
+std::string ColumnMetaDataProperty::getType() const { return type_.get(); }
 
 void ColumnMetaDataProperty::updateForNewColumn(const Column& col, util::OverwriteState overwrite) {
+    auto type = [](const Column& col) -> std::string {
+        switch (col.getColumnType()) {
+            case ColumnType::Categorical:
+                return "Categorical";
+            case ColumnType::Index:
+                return "Index";
+            case ColumnType::Ordinal:
+            default:
+                return col.getBuffer()->getDataFormat()->getString();
+        }
+    };
+
     overwrite = (overwrite == util::OverwriteState::No || isChecked()) ? util::OverwriteState::No
                                                                        : util::OverwriteState::Yes;
     range_.setReadOnly(col.getColumnType() == ColumnType::Categorical ||
@@ -97,6 +115,7 @@ void ColumnMetaDataProperty::updateForNewColumn(const Column& col, util::Overwri
 
     setDisplayName(col.getHeader());
     util::updateDefaultState(header_, col.getHeader(), overwrite);
+    util::updateDefaultState(type_, type(col), overwrite);
     util::updateDefaultState(range_, col.getRange(), overwrite);
     util::updateDefaultState(unit_, fmt::to_string(col.getUnit()), overwrite);
     util::updateDefaultState(drop_, false, overwrite);

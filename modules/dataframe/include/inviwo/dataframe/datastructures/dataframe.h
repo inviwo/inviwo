@@ -153,18 +153,7 @@ public:
                                                             size_t size = 0);
     std::shared_ptr<CategoricalColumn> addCategoricalColumn(std::string_view header,
                                                             const std::vector<std::string>& values);
-    /**
-     * \brief add a new row given a vector of strings.
-     * updateIndexBuffer() needs to be called after the last row has been added.
-     *
-     * @param data  data for each column
-     * @throws NoColumns        if the data frame has no columns defined
-     * @throws InvalidColCount  if column count of DataFrame does not match the number of columns in
-     * data
-     * @throws DataTypeMismatch  if the data type of a column doesn't match with the input data
-     */
-    void addRow(const std::vector<std::string>& data);
-
+                                                            
     DataItem getDataItem(size_t index, bool getStringsAsStrings = false) const;
 
     /**
@@ -210,18 +199,6 @@ private:
 using DataFrameOutport = DataOutport<DataFrame>;
 using DataFrameInport = DataInport<DataFrame>;
 using DataFrameMultiInport = DataInport<DataFrame, 0>;
-
-/**
- * \brief Create a new DataFrame by guessing the column types from a number of rows.
- *
- * @param exampleRows  Rows for guessing data type of each column.
- * @param colHeaders   Name of each column. If none are given, "Column 1", "Column 2", ... is used
- * @param doublePrecision  if true, columns with floating point values will use double for storage
- * @throws InvalidColCount  if column count between exampleRows and colHeaders does not match
- */
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
-createDataFrame(const std::vector<std::vector<std::string>>& exampleRows,
-                const std::vector<std::string>& colHeaders = {}, bool doublePrecision = false);
 
 template <typename T>
 std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(std::string_view header, size_t size,

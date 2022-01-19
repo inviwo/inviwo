@@ -35,9 +35,19 @@
 #include <modules/cimg/tifflayerreader.h>
 #include <modules/cimg/tiffstackvolumereader.h>
 
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <modules/cimg/cimgutils.h>
+
 namespace inviwo {
 
-CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
+class CIMGLayerRamResizer : public LayerRamResizer {
+    virtual bool resize(const LayerRAM& src, LayerRAM& dst) const override {
+        return cimgutil::rescaleLayerRamToLayerRam(&src, &dst);
+    }
+};
+
+CImgModule::CImgModule(InviwoApplication* app)
+    : InviwoModule(app, "CImg"), app_{app}, resizer_{std::make_unique<CIMGLayerRamResizer>()} {
     // Register Data Readers
     registerDataReader(std::make_unique<CImgLayerReader>());
     registerDataReader(std::make_unique<TIFFLayerReader>());
@@ -46,8 +56,18 @@ CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
     // Register Data Writers
     registerDataWriter(std::make_unique<CImgLayerWriter>());
 
+    if (!app_->getLayerRamResizer()) {
+        app_->setLayerRamResizer(resizer_.get());
+    }
+
     LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVersion());
     LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVersion());
+}
+
+CImgModule::~CImgModule() {
+    if (app_->getLayerRamResizer() == resizer_.get()) {
+        app_->setLayerRamResizer(nullptr);
+    }
 }
 
 }  // namespace inviwo

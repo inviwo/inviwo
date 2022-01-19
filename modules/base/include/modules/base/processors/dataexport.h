@@ -118,7 +118,7 @@ void DataExport<DataType, PortType>::exportData() {
         }
 
         try {
-            writer->setOverwrite(overwrite_.get());
+            writer->setOverwrite(overwrite_ ? Overwrite::Yes : Overwrite::No);
             writer->writeData(data, file_.get());
             util::log(IVW_CONTEXT, "Data exported to disk: " + file_.get(), LogLevel::Info,
                       LogAudience::User);

@@ -28,8 +28,6 @@
 # ********************************************************************************
 
 import io
-import logging
-
 from .. colorprint import *
 
 
@@ -64,6 +62,19 @@ class LogPrinter:
     def error(self, mess, **kwargs):
         cprint(Color.red, mess, file=self.buffer, **kwargs)
 
-    def pair(self, a, b, width=15):
-        self.info("{:>{width}} : ".format(a, width=width), end="")
-        self.text("{:<}".format(b))
+    def pair(self, a, b, width=15, offset=1):
+        if isinstance(b, dict):
+            self.info("{padd:{offset}}{key:<{width}} : ".format(
+                padd="", offset=offset, key=a, width=width - offset))
+            for k, v in b.items():
+                self.pair(k, v, width=width, offset=offset + 2)
+        else:
+            self.info("{padd:{offset}}{key:<{width}} : ".format(
+                padd="", offset=offset, key=a, width=width - offset), end="")
+            lines = str(b).strip().split('\n')
+            if len(lines) > 0:
+                self.text("{}".format(lines.pop(0)))
+                for line in lines:
+                    self.info("{padd:{offset}}{key:<{width}} : ".format(
+                        padd="", offset=offset, key="", width=width - offset), end="")
+                    self.text("{}".format(line))

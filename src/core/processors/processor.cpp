@@ -192,8 +192,7 @@ void Processor::setIdentifier(std::string_view identifier) {
     if (identifier != identifier_) {
         util::validateIdentifier(identifier, "Processor", IVW_CONTEXT);
         if (network_ && network_->getProcessorByIdentifier(identifier) != nullptr) {
-            throw Exception(fmt::format("Processor identifier \"{}\" already in use.", identifier),
-                            IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT, "Processor identifier \"{}\" already in use.", identifier);
         }
         auto old = identifier_;
         identifier_ = identifier;
@@ -260,8 +259,7 @@ const std::string& Processor::getPortGroup(Port* port) const {
     if (it != portGroups_.end()) {
         return it->second;
     } else {
-        throw Exception("Can't find group for port: \"" + port->getIdentifier() + "\".",
-                        IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Can't find group for port: \"{}\".", port->getIdentifier());
     }
 }
 
@@ -278,7 +276,7 @@ const std::vector<Port*>& Processor::getPortsInGroup(std::string_view portGroup)
     if (it != groupPorts_.end()) {
         return it->second;
     } else {
-        throw Exception(fmt::format("Can't find port group: \"{}\".", portGroup), IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Can't find port group: \"{}\".", portGroup);
     }
 }
 

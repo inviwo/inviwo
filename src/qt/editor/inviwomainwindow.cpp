@@ -68,6 +68,7 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositeprocessorutils.h>
+#include <inviwo/core/processors/exporter.h>
 
 #include <inviwo/qt/editor/fileassociations.h>
 #include <inviwo/qt/editor/dataopener.h>
@@ -203,7 +204,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     app->getCommandLineParser().add(
         &snapshotArg_,
         [this]() {
-            saveCanvases(app_->getCommandLineParser().getOutputPath(), snapshotArg_.getValue());
+            saveSnapshots(app_->getCommandLineParser().getOutputPath(), snapshotArg_.getValue());
         },
         1000);
 
@@ -373,7 +374,7 @@ void InviwoMainWindow::showWindow() {
     }
 }
 
-void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
+void InviwoMainWindow::saveSnapshots(std::string path, std::string fileName) {
     if (path.empty()) path = app_->getPath(PathType::Images);
 
     repaint();
@@ -385,7 +386,10 @@ void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
         app_->processFront();
     }
 
-    util::saveAllCanvases(app_->getProcessorNetwork(), path, fileName);
+    util::exportAllFiles(
+        *app_->getProcessorNetwork(), path, fileName,
+        {FileExtension{"png", ""}, FileExtension{"csv", ""}, FileExtension{"txt", ""}},
+        Overwrite::Yes);
 }
 
 void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {

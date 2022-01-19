@@ -36,13 +36,6 @@
 
 namespace inviwo {
 
-class IVW_MODULE_PNG_API PNGLayerReaderException : public DataReaderException {
-public:
-    PNGLayerReaderException(const std::string& message = "",
-                            ExceptionContext context = ExceptionContext());
-    virtual ~PNGLayerReaderException() noexcept = default;
-};
-
 class IVW_MODULE_PNG_API PNGLayerReader : public DataReaderType<Layer> {
 public:
     PNGLayerReader();
@@ -51,7 +44,7 @@ public:
     virtual PNGLayerReader* clone() const override;
     virtual ~PNGLayerReader() = default;
 
-    virtual std::shared_ptr<Layer> readData(const std::string& filePath) override;
+    virtual std::shared_ptr<Layer> readData(std::string_view filePath) override;
 };
 
 }  // namespace inviwo

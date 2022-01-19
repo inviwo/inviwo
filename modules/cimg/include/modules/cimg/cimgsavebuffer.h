@@ -33,6 +33,7 @@
 
 #include <inviwo/core/util/memoryfilehandle.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/safecstr.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -63,15 +64,15 @@ namespace cimgutil {
 
 template <typename T>
 std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
-                                            const std::string& ext);
+                                            std::string_view ext);
 
 template <typename T>
 const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img,
-                                                  const std::string& ext);
+                                                  std::string_view ext);
 
 template <typename T>
 std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
-                                            const std::string& ext) {
+                                            std::string_view ext) {
     // estimate upper bound for size of the image with an additional header
     const size_t header = 1024;  // assume 1kB is enough for a header
     const size_t upperBound = img.width() * img.height() * img.spectrum() * sizeof(T) + header;
@@ -98,14 +99,17 @@ std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
 
 template <typename T>
 const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img,
-                                                  const std::string& extension) {
+                                                  std::string_view extension) {
     // the following code was taken from CImg::save() and slightly adapted
     if (extension.empty()) {
         throw cimg_library::CImgIOException("specified extension is empty");
     }
-    const char* ext = extension.c_str();
+    
+    auto safeExt = SafeCStr(extension);
+    const char* ext = safeExt.c_str();
     if (!cimg_library::cimg::strcasecmp(ext, "cpp") ||
-        !cimg_library::cimg::strcasecmp(ext, "hpp") || !cimg_library::cimg::strcasecmp(ext, "h") ||
+        !cimg_library::cimg::strcasecmp(ext, "hpp") ||
+        !cimg_library::cimg::strcasecmp(ext, "h") ||
         !cimg_library::cimg::strcasecmp(ext, "c"))
         return img.save_cpp(handle);
 

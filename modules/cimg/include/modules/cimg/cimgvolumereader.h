@@ -48,16 +48,16 @@ public:
     virtual CImgVolumeReader* clone() const override;
     virtual ~CImgVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
+    virtual std::shared_ptr<Volume> readData(std::string_view filePath) override;
 
 protected:
-    void printMetaInfo(const MetaDataOwner&, std::string) const;
+    void printMetaInfo(const MetaDataOwner&, std::string_view) const;
 };
 
 class IVW_MODULE_CIMG_API CImgVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    CImgVolumeRAMLoader(const std::string& sourceFile);
+    CImgVolumeRAMLoader(std::string_view sourceFile);
     virtual CImgVolumeRAMLoader* clone() const override;
     virtual ~CImgVolumeRAMLoader() = default;
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation(

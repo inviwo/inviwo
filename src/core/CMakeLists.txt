@@ -134,6 +134,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterfactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
@@ -202,6 +203,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessorutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesink.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesource.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/exporter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/poolprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactory.h
@@ -485,6 +487,7 @@ set(SOURCE_FILES
     io/datawriter.cpp
     io/datawriterexception.cpp
     io/datawriterfactory.cpp
+    io/datawriterutil.cpp
     io/imagewriterutil.cpp
     io/rawvolumeramloader.cpp
     io/rawvolumereader.cpp
@@ -541,6 +544,7 @@ set(SOURCE_FILES
     processors/compositeprocessorutils.cpp
     processors/compositesink.cpp
     processors/compositesource.cpp
+    processors/exporter.cpp
     processors/poolprocessor.cpp
     processors/processor.cpp
     processors/processorfactory.cpp

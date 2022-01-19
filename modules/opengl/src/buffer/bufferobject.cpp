@@ -225,9 +225,8 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     glBufferData(target_, sizeInBytes <= 0 ? 1 : sizeInBytes, data, usageGL_);
 
     if (auto err = glGetError(); err != GL_NO_ERROR) {
-        throw OpenGLException(fmt::format("Unable to create buffer of type: {}. Error: {}",
-                                          targetName(target_), getGLErrorString(err)),
-                              IVW_CONTEXT);
+        throw OpenGLException(IVW_CONTEXT, "Unable to create buffer of type: {}. Error: {}",
+                              targetName(target_), getGLErrorString(err));
     }
 
     forEachObserver([](BufferObjectObserver* o) { o->onAfterBufferInitialization(); });

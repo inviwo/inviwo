@@ -38,11 +38,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeVoronoiSegmentation::processorInfo_{
-    "org.inviwo.VolumeVoronoiSegmentation",  // Class identifier
-    "Volume Voronoi Segmentation",           // Display name
-    "Volume Operation",                      // Category
-    CodeState::Stable,                       // Code state
-    Tags::CPU,                               // Tags
+    "org.inviwo.VolumeVoronoiSegmentation",                      // Class identifier
+    "Volume Voronoi Segmentation",                               // Display name
+    "Volume Operation",                                          // Category
+    CodeState::Stable,                                           // Code state
+    Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"}  // Tags
 };
 const ProcessorInfo VolumeVoronoiSegmentation::getProcessorInfo() const { return processorInfo_; }
 
