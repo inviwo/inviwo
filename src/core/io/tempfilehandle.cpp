@@ -42,12 +42,13 @@
 
 #include <fstream>
 #include <array>
+#include <cstdlib>
 
 namespace inviwo {
 
 namespace util {
 
-TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suffix) {
+TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suffix, const char* mode) {
 #ifdef WIN32
     // get temp directory
     std::array<wchar_t, MAX_PATH> tempPath;
@@ -69,16 +70,24 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
     filename_ = util::fromWstring(std::wstring(tempFile.data()));
     filename_ += suffix;
 
-    handle_ = filesystem::fopen(filename_, "w");
+    handle_ = filesystem::fopen(filename_, mode);
     if (!handle_) {
         throw Exception("could not open temporary file", IVW_CONTEXT);
     }
 #else
-    static const std::string unqiue = "XXXXXX";
+    static constexpr std::string_view unqiue = "XXXXXX";
+
+    std::string tempPath{"/tmp/"};
+    for (auto envVar : {"TMPDIR", "TMP", "TEMP", "TEMPDIR"}) {
+        if (const char* path = std::getenv(envVar)) {
+            tempPath = std::string(path);
+        }
+    }
 
     const int suffixlen = suffix.size();
 
     std::vector<char> fileTemplate;
+    fileTemplate.insert(fileTemplate.end(), tempPath.begin(), tempPath.end());
     fileTemplate.insert(fileTemplate.end(), prefix.begin(), prefix.end());
     fileTemplate.insert(fileTemplate.end(), unqiue.begin(), unqiue.end());
     fileTemplate.insert(fileTemplate.end(), suffix.begin(), suffix.end());
@@ -88,7 +97,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
     if (fd == -1) {
         throw Exception("could not create temporary file", IVW_CONTEXT);
     }
-    handle_ = fdopen(fd, "w");
+    handle_ = fdopen(fd, mode);
     if (!handle_) {
         throw Exception("could not open temporary file", IVW_CONTEXT);
     }
