@@ -102,7 +102,6 @@ signals:
 
 private:
     TreeItem* getItem(const QModelIndex& index) const;
-    QIcon defaultIcon = QIcon(":/inviwo/inviwo_light.png");
     InviwoApplication* app_;
     TreeItem* recentWorkspaceItem_ = nullptr;
     TreeItem* examplesItem_ = nullptr;
@@ -117,7 +116,7 @@ public:
     explicit TreeItem(TreeItem* parent = nullptr);
     TreeItem(const QString& caption, WorkspaceTreeModel::ListElemType type,
              TreeItem* parent = nullptr);
-    TreeItem(const QIcon& icon, const std::string& filename, bool isExample = false,
+    TreeItem(const std::string& filename, InviwoApplication* app, bool isExample = false,
              TreeItem* parent = nullptr);
     TreeItem(const TreeItem&) = delete;
     TreeItem& operator=(const TreeItem&) = delete;
@@ -151,7 +150,8 @@ private:
 
     WorkspaceTreeModel::ListElemType type_ = WorkspaceTreeModel::ListElemType::None;
 
-    QIcon icon_;
+    mutable std::future<QIcon> iconFuture_;
+    mutable QIcon icon_;
     QString caption_;
     QString file_;
     QString path_;

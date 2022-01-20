@@ -395,7 +395,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     {  // right splitter pane: changelog / options
         auto rightColumn = new QFrame(this);
         addWidget(rightColumn);
-        setStretchFactor(0, 4);  // left + center widget (workspace view + details)
+        setStretchFactor(0, 3);  // left + center widget (workspace view + details)
         setStretchFactor(1, 1);  // rightColumn (changelog)
         rightColumn->setObjectName("WelcomeRightColumn");
         auto rightColumnLayout = new QVBoxLayout(rightColumn);

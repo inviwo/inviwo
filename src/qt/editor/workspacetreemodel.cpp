@@ -198,14 +198,112 @@ TreeItem* WorkspaceTreeModel::getItem(const QModelIndex& index) const {
     return root_.get();
 }
 
+
+void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
+    if (!recentWorkspaceItem_) {
+        auto item = std::make_unique<TreeItem>("Recent Workspaces",
+                                               WorkspaceTreeModel::ListElemType::Section);
+        recentWorkspaceItem_ = item.get();
+
+        addEntry(nullptr, std::move(item));
+    }
+    std::vector<std::unique_ptr<TreeItem>> items;
+    for (auto& elem : recentFiles) {
+
+        const std::string filename = utilqt::fromQString(elem);
+        if (filesystem::fileExists(filename)) {
+            items.push_back(std::make_unique<TreeItem>(filename, app_));
+        }
+    }
+    updateCategory(recentWorkspaceItem_, std::move(items));
+    emit recentWorkspacesUpdated(recentWorkspaceItem_);
+}
+
+void WorkspaceTreeModel::updateExampleEntries() {
+    std::vector<std::unique_ptr<TreeItem>> examples;
+    for (const auto& module : app_->getModules()) {
+        auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
+        if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
+
+        auto category = std::make_unique<TreeItem>(utilqt::toQString(module->getIdentifier()),
+                                                   WorkspaceTreeModel::ListElemType::SubSection);
+        for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+            // only accept inviwo workspace files
+            if (filesystem::getFileExtension(item) != "inv") continue;
+
+            auto filePath = moduleWorkspacePath + "/" + item;
+            category->addChild(std::make_unique<TreeItem>(filePath, app_, true));
+        }
+        if (category->childCount() > 0) {
+            examples.push_back(std::move(category));
+        }
+    }
+
+    if (!examplesItem_) {
+        auto item =
+            std::make_unique<TreeItem>("Examples", WorkspaceTreeModel::ListElemType::Section);
+        examplesItem_ = item.get();
+        addEntry(nullptr, std::move(item));
+    }
+
+    updateCategory(examplesItem_, std::move(examples));
+    emit exampleWorkspacesUpdated(examplesItem_);
+}
+
+void WorkspaceTreeModel::updateRegressionTestEntries() {
+    std::vector<std::unique_ptr<TreeItem>> tests;
+    for (const auto& module : app_->getModules()) {
+        auto moduleRegressionTestsPath = module->getPath(ModulePath::RegressionTests);
+        if (!filesystem::directoryExists(moduleRegressionTestsPath)) continue;
+
+        auto category = std::make_unique<TreeItem>(utilqt::toQString(module->getIdentifier()),
+                                                   WorkspaceTreeModel::ListElemType::SubSection);
+
+        for (auto item : filesystem::getDirectoryContentsRecursively(moduleRegressionTestsPath)) {
+            // only accept inviwo workspace files
+            if (filesystem::getFileExtension(item) != "inv") continue;
+            auto filePath = item;
+            category->addChild(std::make_unique<TreeItem>(filePath, app_, true));
+        }
+        if (category->childCount() > 0) {
+            tests.push_back(std::move(category));
+        }
+    }
+    if (!regressionTestsItem_) {
+        auto item = std::make_unique<TreeItem>("Regression Tests",
+                                               WorkspaceTreeModel::ListElemType::Section);
+        regressionTestsItem_ = item.get();
+        addEntry(nullptr, std::move(item));
+    }
+    updateCategory(regressionTestsItem_, std::move(tests));
+    emit regressionTestWorkspacesUpdated(regressionTestsItem_);
+}
+
 TreeItem::TreeItem(TreeItem* parent) : parent_{parent} {}
 
 TreeItem::TreeItem(const QString& caption, WorkspaceTreeModel::ListElemType type, TreeItem* parent)
     : parent_{parent}, type_{type}, caption_{caption} {}
 
-TreeItem::TreeItem(const QIcon& icon, const std::string& filename, bool isExample, TreeItem* parent)
+TreeItem::TreeItem(const std::string& filename, InviwoApplication* app, bool isExample,
+                   TreeItem* parent)
     : parent_{parent} {
-    setData(icon, filename, isExample);
+    // Parsing the workspace is time-consuming, so do it in a thread. Opted for a quick solution
+    // that does not notify when done due to lower implementation time.
+    auto iconLoader = [](auto filename, InviwoApplication* app) {
+        WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filename, app);
+        QIcon icon;
+        if (!annotations.getCanvasImages().empty()) {
+            icon =
+                utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg, "jpeg");
+        } else {
+            icon = QIcon(":/inviwo/inviwo_light.png");
+        }
+
+        return icon;
+    };
+    iconFuture_ = app->dispatchPool(iconLoader, filename, app);
+    static QIcon defaultIcon = QIcon(":/inviwo/inviwo_light.png");
+    setData(defaultIcon, filename, isExample);
 }
 
 void TreeItem::addChild(std::unique_ptr<TreeItem> child) {
@@ -294,8 +392,14 @@ QVariant TreeItem::data(int column, int role) const {
                     .arg(path_)
                     .arg(hierarchy);
             }
-            case Qt::DecorationRole:
+            case Qt::DecorationRole: {
+                if (iconFuture_.valid() &&
+                    iconFuture_.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                    icon_ = iconFuture_.get();
+                }
                 return icon_;
+            }
+
             case Qt::SizeHintRole: {
                 // Icon + text
                 int size = utilqt::emToPx(QFontMetrics(QFont()), IconSize);
@@ -328,108 +432,6 @@ QVariant TreeItem::data(int column, int role) const {
 
 WorkspaceTreeModel::ListElemType TreeItem::type() const { return type_; }
 
-void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
-    if (!recentWorkspaceItem_) {
-        auto item = std::make_unique<TreeItem>("Recent Workspaces",
-                                               WorkspaceTreeModel::ListElemType::Section);
-        recentWorkspaceItem_ = item.get();
-
-        addEntry(nullptr, std::move(item));
-    }
-    std::vector<std::unique_ptr<TreeItem>> items;
-    for (auto& elem : recentFiles) {
-        const std::string filename = utilqt::fromQString(elem);
-        if (filesystem::fileExists(filename)) {
-            WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filename, app_);
-            QIcon icon;
-            if (!annotations.getCanvasImages().empty()) {
-                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg,
-                                                "jpeg");
-            } else {
-                icon = defaultIcon;
-            }
-            items.push_back(std::make_unique<TreeItem>(icon, filename));
-        }
-    }
-    updateCategory(recentWorkspaceItem_, std::move(items));
-    emit recentWorkspacesUpdated(recentWorkspaceItem_);
-}
-
-void WorkspaceTreeModel::updateExampleEntries() {
-    std::vector<std::unique_ptr<TreeItem>> examples;
-    for (const auto& module : app_->getModules()) {
-        auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
-        if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
-
-        auto category = std::make_unique<TreeItem>(utilqt::toQString(module->getIdentifier()),
-                                                   WorkspaceTreeModel::ListElemType::SubSection);
-        for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
-            // only accept inviwo workspace files
-            if (filesystem::getFileExtension(item) != "inv") continue;
-            auto filePath = moduleWorkspacePath + "/" + item;
-            WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filePath, app_);
-            QIcon icon;
-            if (!annotations.getCanvasImages().empty()) {
-                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg,
-                                                "jpeg");
-            } else {
-                icon = defaultIcon;
-            }
-            category->addChild(std::make_unique<TreeItem>(icon, filePath, true));
-        }
-        if (category->childCount() > 0) {
-            examples.push_back(std::move(category));
-        }
-    }
-
-    if (!examplesItem_) {
-        auto item =
-            std::make_unique<TreeItem>("Examples", WorkspaceTreeModel::ListElemType::Section);
-        examplesItem_ = item.get();
-        addEntry(nullptr, std::move(item));
-    }
-
-    updateCategory(examplesItem_, std::move(examples));
-    emit exampleWorkspacesUpdated(examplesItem_);
-}
-
-void WorkspaceTreeModel::updateRegressionTestEntries() {
-    std::vector<std::unique_ptr<TreeItem>> tests;
-    for (const auto& module : app_->getModules()) {
-        auto moduleRegressionTestsPath = module->getPath(ModulePath::RegressionTests);
-        if (!filesystem::directoryExists(moduleRegressionTestsPath)) continue;
-
-        auto category = std::make_unique<TreeItem>(utilqt::toQString(module->getIdentifier()),
-                                                   WorkspaceTreeModel::ListElemType::SubSection);
-
-        std::vector<TreeItem*> moduleTests;
-        for (auto item : filesystem::getDirectoryContentsRecursively(moduleRegressionTestsPath)) {
-            // only accept inviwo workspace files
-            if (filesystem::getFileExtension(item) != "inv") continue;
-            auto filePath = item;
-            WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filePath, app_);
-            QIcon icon;
-            if (!annotations.getCanvasImages().empty()) {
-                icon = utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg,
-                                                "jpeg");
-            } else {
-                icon = defaultIcon;
-            }
-            category->addChild(std::make_unique<TreeItem>(icon, filePath, true));
-        }
-        if (category->childCount() > 0) {
-            tests.push_back(std::move(category));
-        }
-    }
-    if (!regressionTestsItem_) {
-        auto item = std::make_unique<TreeItem>("Regression Tests",
-                                               WorkspaceTreeModel::ListElemType::Section);
-        regressionTestsItem_ = item.get();
-        addEntry(nullptr, std::move(item));
-    }
-    updateCategory(regressionTestsItem_, std::move(tests));
-    emit regressionTestWorkspacesUpdated(regressionTestsItem_);
-}
 
 void TreeItem::setData(const QString& caption, WorkspaceTreeModel::ListElemType type) {
     type_ = type;
