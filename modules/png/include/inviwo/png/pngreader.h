@@ -34,6 +34,8 @@
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/datastructures/image/layer.h>
 
+#include <string_view>
+
 namespace inviwo {
 
 class IVW_MODULE_PNG_API PNGLayerReader : public DataReaderType<Layer> {
@@ -45,6 +47,8 @@ public:
     virtual ~PNGLayerReader() = default;
 
     virtual std::shared_ptr<Layer> readData(std::string_view filePath) override;
+    using DataReaderType<Layer>::readData;
+    std::shared_ptr<inviwo::Layer> readData(FILE* fp, std::string_view name = "<FileHandle>");
 };
 
 }  // namespace inviwo

@@ -187,16 +187,19 @@ PNGLayerWriter::PNGLayerWriter() : DataWriterType<Layer>() {
 
 PNGLayerWriter* PNGLayerWriter::clone() const { return new PNGLayerWriter(*this); }
 
+void PNGLayerWriter::writeData(const Layer* data, FILE* fp) const {
+    data->getRepresentation<LayerRAM>()->dispatch<void>(
+        [&](auto ram) { detail::write(ram, static_cast<png_voidp>(fp)); });
+}
+
 void PNGLayerWriter::writeData(const Layer* data, std::string_view filePath) const {
     checkOverwrite(filePath);
-    data->getRepresentation<LayerRAM>()->dispatch<void>([&](auto ram) {
-        FILE* fp = filesystem::fopen(filePath, "wb");
-        if (!fp)
-            throw DataWriterException(IVW_CONTEXT, "Failed to open file for writing, {}", filePath);
-        util::OnScopeExit closeFile([&fp]() { fclose(fp); });
-
-        detail::write(ram, static_cast<png_voidp>(fp));
-    });
+    FILE* fp = filesystem::fopen(filePath, "wb");
+    if (!fp)
+        throw DataWriterException(IVW_CONTEXT, "Failed to open file for writing, {}", filePath);
+    util::OnScopeExit closeFile([&fp]() { fclose(fp); });
+    
+    writeData(data, fp);
 }
 
 std::unique_ptr<std::vector<unsigned char>> PNGLayerWriter::writeDataToBuffer(

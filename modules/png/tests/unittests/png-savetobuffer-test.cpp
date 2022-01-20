@@ -63,10 +63,11 @@ TEST(CImgUtils, cimgToBuffer) {
     const std::string testExtension = "png";
 
     // write layer to a temporary bmp file
-    util::TempFileHandle tmpFile("cimg", std::string(".") + testExtension);
+    util::TempFileHandle tmpFile("cimg", std::string(".") + testExtension, "wb");
 
     PNGLayerWriter writer;
-    writer.writeData(layer.get(), tmpFile.getFileName());
+    writer.writeData(layer.get(), tmpFile.getHandle());
+    std::fflush(tmpFile.getHandle());
 
     // read file contents
     std::vector<unsigned char> fileContents;
@@ -88,7 +89,7 @@ TEST(CImgUtils, cimgToBuffer) {
 
     // compare buffer and file contents
 
-    ASSERT_TRUE(fileContents.size() == imgBuffer->size()) << "buffer and file size does not match";
+    ASSERT_EQ(fileContents.size(), imgBuffer->size()) << "buffer and file size does not match";
     EXPECT_EQ(*imgBuffer.get(), fileContents) << "buffer and file contents do not match";
 }
 

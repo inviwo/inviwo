@@ -56,15 +56,21 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(std::string_view filePat
         throw DataReaderException(IVW_CONTEXT, "Failed to open file for reading, {}", filePath);
     util::OnScopeExit closeFile([fp]() { fclose(fp); });
 
+    return readData(fp, filePath);
+}
+
+std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_view name) {
+
     unsigned char header[8];
     const auto read = fread(header, 1, 8, fp);
     if (read != 8 || png_sig_cmp(header, 0, 8)) {
-        throw DataReaderException(IVW_CONTEXT, "File is not a PNG, {}", filePath);
+        throw DataReaderException(IVW_CONTEXT, "File is not a PNG, {}", name);
     }
 
     auto png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png_ptr) {
-        throw DataReaderException(IVW_CONTEXT, "Internal PNG Error: Failed to create read struct");
+        throw DataReaderException(IVW_CONTEXT,
+                                  "Internal PNG Error: Failed to create read struct: {}", name);
     }
     util::OnScopeExit cleanup1([&]() { png_destroy_read_struct(&png_ptr, NULL, NULL); });
     png_set_error_fn(
@@ -76,7 +82,8 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(std::string_view filePat
 
     auto info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        throw DataReaderException(IVW_CONTEXT, "Internal PNG Error: Failed to create info struct");
+        throw DataReaderException(IVW_CONTEXT,
+                                  "Internal PNG Error: Failed to create info struct {}", name);
     }
     util::OnScopeExit cleanup2([&]() { png_destroy_read_struct(NULL, &info_ptr, NULL); });
 
@@ -111,7 +118,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(std::string_view filePat
             channels = 4;
             break;
         default:
-            throw DataReaderException(IVW_CONTEXT, "Unsupported color type");
+            throw DataReaderException(IVW_CONTEXT, "PNG has unsupported color type {}", name);
             break;
     }
 
