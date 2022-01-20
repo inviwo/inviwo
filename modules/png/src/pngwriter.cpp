@@ -198,7 +198,7 @@ void PNGLayerWriter::writeData(const Layer* data, std::string_view filePath) con
     if (!fp)
         throw DataWriterException(IVW_CONTEXT, "Failed to open file for writing, {}", filePath);
     util::OnScopeExit closeFile([&fp]() { fclose(fp); });
-    
+
     writeData(data, fp);
 }
 

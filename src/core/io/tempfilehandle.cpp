@@ -48,7 +48,8 @@ namespace inviwo {
 
 namespace util {
 
-TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suffix, const char* mode) {
+TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suffix,
+                               const char* mode) {
 #ifdef WIN32
     // get temp directory
     std::array<wchar_t, MAX_PATH> tempPath;

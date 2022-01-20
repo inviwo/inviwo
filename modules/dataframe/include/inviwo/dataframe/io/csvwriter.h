@@ -37,7 +37,7 @@ namespace inviwo {
 /**
  * \brief DataFrame CSV Writer
  */
-class IVW_MODULE_DATAFRAME_API CSVWriter : public DataWriterType<DataFrame>{
+class IVW_MODULE_DATAFRAME_API CSVWriter : public DataWriterType<DataFrame> {
 public:
 public:
     CSVWriter();

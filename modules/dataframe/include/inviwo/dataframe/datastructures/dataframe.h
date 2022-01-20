@@ -153,7 +153,7 @@ public:
                                                             size_t size = 0);
     std::shared_ptr<CategoricalColumn> addCategoricalColumn(std::string_view header,
                                                             const std::vector<std::string>& values);
-                                                            
+
     DataItem getDataItem(size_t index, bool getStringsAsStrings = false) const;
 
     /**

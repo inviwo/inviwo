@@ -58,7 +58,7 @@ public:
 
     CSVReader& setDelimiters(const std::string& delim);
     const std::string& getDelimiters() const;
-    
+
     CSVReader& setStripQuotes(bool stripQuotes);
     bool getStripQuotes() const;
 

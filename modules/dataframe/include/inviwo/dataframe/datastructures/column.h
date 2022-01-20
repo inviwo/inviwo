@@ -312,7 +312,7 @@ public:
     virtual void set(size_t idx, const std::string& str);
 
     virtual void add(std::string_view value) override;
-    
+
     std::function<void(std::string_view)> addMany();
 
     /**

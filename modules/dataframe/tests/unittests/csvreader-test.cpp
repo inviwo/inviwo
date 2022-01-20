@@ -392,7 +392,6 @@ TEST(CVSquotes, stripHeaderQuotes) {
     EXPECT_EQ("third", dataframe->getColumn(3)->getHeader()) << "Column Header 3";
 }
 
-
 TEST(CSVquotes, trailingquote) {
     std::istringstream ss("\"trailing \"quote\",second,\"third\"\n1,2,3");
 
@@ -463,7 +462,6 @@ TEST(CSVquotes, stripMultiline) {
     value = dataframe->getColumn(3)->get(0, true)->toString();
     EXPECT_EQ("3", value) << "Column 3";
 }
-
 
 TEST(CSVlinebreaks, LFonly) {
     std::istringstream ss("1,2,3\n4,5,6\n7,8,9");

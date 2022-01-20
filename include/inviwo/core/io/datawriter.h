@@ -60,6 +60,7 @@ public:
 
     static void checkOverwrite(std::string_view path, Overwrite overwrite);
     void checkOverwrite(std::string_view path) const;
+
 protected:
     std::ofstream open(std::string_view path,
                        std::ios_base::openmode mode = std::ios_base::out) const;

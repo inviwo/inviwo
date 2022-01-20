@@ -465,9 +465,8 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& setti
     std::vector<std::pair<double, vec2>> labelPositions(tickmarks.size());
 
     if (axisLength > 1.0E10) {
-        LogInfoCustom("labelpos","WTF" << axisLength << " " << settings.getCaption());
+        LogInfoCustom("labelpos", "WTF" << axisLength << " " << settings.getCaption());
     }
-
 
     if (axisLength != 0.0) {
         const vec2 scaling(axisDir * static_cast<float>(screenLength / axisLength));

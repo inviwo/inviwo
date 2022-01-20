@@ -63,8 +63,7 @@ namespace inviwo {
 namespace cimgutil {
 
 template <typename T>
-std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
-                                            std::string_view ext);
+std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img, std::string_view ext);
 
 template <typename T>
 const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img,
@@ -104,12 +103,11 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
     if (extension.empty()) {
         throw cimg_library::CImgIOException("specified extension is empty");
     }
-    
+
     auto safeExt = SafeCStr(extension);
     const char* ext = safeExt.c_str();
     if (!cimg_library::cimg::strcasecmp(ext, "cpp") ||
-        !cimg_library::cimg::strcasecmp(ext, "hpp") ||
-        !cimg_library::cimg::strcasecmp(ext, "h") ||
+        !cimg_library::cimg::strcasecmp(ext, "hpp") || !cimg_library::cimg::strcasecmp(ext, "h") ||
         !cimg_library::cimg::strcasecmp(ext, "c"))
         return img.save_cpp(handle);
 

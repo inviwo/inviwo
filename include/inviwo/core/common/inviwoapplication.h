@@ -430,7 +430,7 @@ public:
      * Convenience method to set the current ApplicationUsageMode in the system settings
      */
     void setApplicationUsageMode(UsageMode mode);
-    
+
     LayerRamResizer* getLayerRamResizer() const;
     void setLayerRamResizer(LayerRamResizer* obj);
 

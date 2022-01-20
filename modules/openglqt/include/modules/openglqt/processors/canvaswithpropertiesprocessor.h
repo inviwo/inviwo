@@ -76,7 +76,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void propagateEvent(Event* event, Outport* source) override;
-    
+
     /**
      * @see Exporter::exportFile
      */

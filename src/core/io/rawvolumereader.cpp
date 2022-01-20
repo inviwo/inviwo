@@ -97,7 +97,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(std::string_view filePath) {
 std::shared_ptr<Volume> RawVolumeReader::readData(std::string_view filePath,
                                                   MetaDataOwner* metadata) {
     checkExists(filePath);
-                                                    
+
     rawFile_ = filePath;
 
     if (!parametersSet_) {

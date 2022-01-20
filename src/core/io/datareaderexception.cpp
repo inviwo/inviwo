@@ -29,6 +29,4 @@
 
 #include <inviwo/core/io/datareaderexception.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

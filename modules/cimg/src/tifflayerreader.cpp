@@ -55,7 +55,7 @@ TIFFLayerReader* TIFFLayerReader::clone() const { return new TIFFLayerReader(*th
 
 std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(std::string_view fileName) {
     checkExists(fileName);
-    
+
     auto header = cimgutil::getTIFFHeader(fileName);
     auto data = cimgutil::loadTIFFLayerData(nullptr, fileName, header, false);
 

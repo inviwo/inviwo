@@ -140,7 +140,7 @@ constexpr Version::Version(std::string_view version) {
         for (auto c : num) {
             if (c < '0' || c > '9') {
                 throw Exception(IVW_CONTEXT, "Invalid character found: '{}' in version string '{}'",
-                                            c, version);
+                                c, version);
             }
             *e = *e * 10 + (c - '0');
         }

@@ -53,7 +53,8 @@ std::shared_ptr<Volume> CImgVolumeReader::readData(std::string_view filePath) {
     return std::make_shared<Volume>(volumeDisk);
 }
 
-void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string_view key) const {
+void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
+                                     std::string_view key) const {
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");

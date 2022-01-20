@@ -61,8 +61,10 @@ public:
 
 namespace util {
 
-std::vector<std::string> exportAllFiles(ProcessorNetwork& network, std::string_view dir, std::string_view nameTemplate,
-                    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite);
+std::vector<std::string> exportAllFiles(ProcessorNetwork& network, std::string_view dir,
+                                        std::string_view nameTemplate,
+                                        const std::vector<FileExtension>& candidateExtensions,
+                                        Overwrite overwrite);
 
 }
 

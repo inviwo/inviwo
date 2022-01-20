@@ -29,7 +29,4 @@
 
 #include <inviwo/core/io/datawriterutil.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
