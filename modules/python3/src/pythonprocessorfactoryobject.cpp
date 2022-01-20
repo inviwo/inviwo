@@ -124,16 +124,27 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
 
     try {
         py::exec(script);
+    } catch (const py::error_already_set& e) {
+        if (e.matches(PyExc_ModuleNotFoundError)) {
+            const auto missingModule = e.value().attr("name").cast<std::string>();
+            throw Exception(
+                IVW_CONTEXT_CUSTOM("Python"),
+                "Failed to load python processor: '{}' due to missing module: '{}'. File: '{}'",
+                name, missingModule, file);
+        } else {
+            throw Exception(IVW_CONTEXT_CUSTOM("Python"),
+                            "Failed to load python processor: '{}'. File: '{}'\n{}", name, file,
+                            e.what());
+        }
     } catch (const std::exception& e) {
-        throw Exception(
-            "Failed to load processor " + name + " from script: " + file + ".\n" + e.what(),
-            IVW_CONTEXT_CUSTOM("Python"));
+        throw Exception(IVW_CONTEXT_CUSTOM("Python"),
+                        "Failed to load python processor: '{}'. File: '{}'\n{}", name, file,
+                        e.what());
     }
 
     if (!py::globals().contains(name.c_str())) {
-        throw Exception(
-            "Failed to find python processor \"" + name + "\" in pythons object register",
-            IVW_CONTEXT_CUSTOM("Python"));
+        throw Exception(IVW_CONTEXT_CUSTOM("Python"),
+                        "Failed to find python processor: '{}' in pythons object register", name);
     }
 
     try {
@@ -142,9 +153,9 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
         proc.release();
         return {p, name, file};
     } catch (const std::exception& e) {
-        throw Exception("Failed to get processor info for processor " + name +
-                            " from script: " + file + ".\n" + e.what(),
-                        IVW_CONTEXT_CUSTOM("Python"));
+        throw Exception(IVW_CONTEXT_CUSTOM("Python"),
+                        "Failed to get ProcessorInfo for python processor: '{}'. File: '{}'\n{}",
+                        name, file, e.what());
     }
 }
 

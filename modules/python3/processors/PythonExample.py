@@ -1,6 +1,7 @@
-# Name: PythonExample 
+# Name: PythonExample
 
 import inviwopy as ivw
+
 
 class PythonExample(ivw.Processor):
     def __init__(self, id, name):
@@ -16,12 +17,12 @@ class PythonExample(ivw.Processor):
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
-            classIdentifier = "org.inviwo.PythonExample",
-            displayName = "Python Example", 
-            category = "Python",
-            codeState = ivw.CodeState.Stable,
-            tags = ivw.Tags.PY
-   		)
+            classIdentifier="org.inviwo.PythonExample",
+            displayName="Python Example",
+            category="Python",
+            codeState=ivw.CodeState.Stable,
+            tags=ivw.Tags.PY
+        )
 
     def getProcessorInfo(self):
         return PythonExample.processorInfo()
