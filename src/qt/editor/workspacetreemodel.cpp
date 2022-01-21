@@ -198,7 +198,6 @@ TreeItem* WorkspaceTreeModel::getItem(const QModelIndex& index) const {
     return root_.get();
 }
 
-
 void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
     if (!recentWorkspaceItem_) {
         auto item = std::make_unique<TreeItem>("Recent Workspaces",
@@ -431,7 +430,6 @@ QVariant TreeItem::data(int column, int role) const {
 }
 
 WorkspaceTreeModel::ListElemType TreeItem::type() const { return type_; }
-
 
 void TreeItem::setData(const QString& caption, WorkspaceTreeModel::ListElemType type) {
     type_ = type;
