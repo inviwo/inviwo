@@ -135,6 +135,12 @@ bool BitSet::isStrictSubsetOf(const BitSet& b) const {
     return roaring_->isStrictSubset(*(b.roaring_));
 }
 
+bool BitSet::set(const BitSet& b) {
+    if (operator==(b)) return false;
+    *this = b;
+    return true;
+}
+
 void BitSet::add(util::span<const uint32_t> span) { addMany(span.size(), span.data()); }
 
 bool BitSet::addChecked(uint32_t v) { return roaring_->addChecked(v); }

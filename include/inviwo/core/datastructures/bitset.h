@@ -143,6 +143,13 @@ public:
      */
     bool isStrictSubsetOf(const BitSet& b) const;
 
+    /**
+     * update the bitset with the contents of \p b, if \p b is different
+     * 
+     * @return true if the bitset was modified that is \p this and \p b were different
+     */
+    bool set(const BitSet& b);
+
     void add(util::span<const uint32_t> span);
 
     template <typename InputIt, class = typename std::enable_if_t<is_iterator<InputIt>::value>>
