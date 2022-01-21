@@ -43,10 +43,17 @@ public:
     IndexList() = default;
     virtual ~IndexList() = default;
 
+    bool empty() const;
     size_t size() const;
     void clear();
 
-    void set(std::string_view src, const BitSet& indices);
+    /**
+     * update the indexlist with source \p src and \p indices, if \p indices are different
+     *
+     * @return true if the indexlist was modified that is \p this and \p indices were different
+     */
+
+    bool set(std::string_view src, const BitSet& indices);
     bool contains(uint32_t idx) const;
 
     const BitSet& getIndices() const;
@@ -59,8 +66,7 @@ public:
 private:
     void update() const;
 
-    using SourceIndexMap = std::unordered_map<std::string, BitSet>;
-    mutable SourceIndexMap indicesBySource_;
+    mutable std::unordered_map<std::string, BitSet> indicesBySource_;
     mutable BitSet indices_;
 
     mutable bool indicesDirty_ = false;
