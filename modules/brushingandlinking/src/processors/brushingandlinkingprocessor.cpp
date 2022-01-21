@@ -51,18 +51,24 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , clearSelection_("clearSelection", "Clear Selection",
-                      [&]() { outport_.getManager().clearSelected(); })
-    , clearHighlight_("clearHighlight", "Clear Highlighting",
-                      [&]() { outport_.getManager().clearHighlighted(); })
-    , clearCols_("clearCols", "Clear Columns",
-                 [&]() { outport_.getManager().clearSelected(BrushingTarget::Column); })
-    , clearAll_("clearAll", "Clear Selections and Highlights",
-                [&]() {
-                    outport_.getManager().clearSelected();
-                    outport_.getManager().clearHighlighted();
-                    outport_.getManager().clearSelected(BrushingTarget::Column);
-                })
+    , clearSelection_(
+          "clearSelection", "Clear Selection", [&]() { outport_.getManager().clearSelected(); },
+          InvalidationLevel::Valid)
+    , clearHighlight_(
+          "clearHighlight", "Clear Highlighting",
+          [&]() { outport_.getManager().clearHighlighted(); }, InvalidationLevel::Valid)
+    , clearCols_(
+          "clearCols", "Clear Columns",
+          [&]() { outport_.getManager().clearSelected(BrushingTarget::Column); },
+          InvalidationLevel::Valid)
+    , clearAll_(
+          "clearAll", "Clear Selections and Highlights",
+          [&]() {
+              outport_.getManager().clearSelected();
+              outport_.getManager().clearHighlighted();
+              outport_.getManager().clearSelected(BrushingTarget::Column);
+          },
+          InvalidationLevel::Valid)
     , logging_("logging", "Logging", false, InvalidationLevel::Valid)
     , logFilterActions_("filterActions", "Filter Actions", true, InvalidationLevel::Valid)
     , logSelectActions_("selectActions", "Select Actions", true, InvalidationLevel::Valid)
@@ -93,7 +99,7 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
             indices.size() > maxIndices ? "..." : "");
 
         LogProcessorInfo(fmt::format(
-            "{:<20} action: {:<13}, target: {}\nsource: {}\nindices: [{}] ({})", getDisplayName(),
+            "{:<20} action: {:<13} target: {}\n  source: {}\n  indices: [{}] ({})", getDisplayName(),
             action, target.getString(), source, str, indices.cardinality()));
     });
 }
