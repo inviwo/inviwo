@@ -246,7 +246,7 @@ public:
      * Will invalidate its connected inports if any of the BrushingModifications overlap with
      * the modified brushing targets and actions provided by getInvalidationLevels
      * @param invalidationLevel unused!
-     * @note Port is set to valid after its processor successfully finish processing.
+     * @note Port is set to valid after its processor successfully finished processing.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 

@@ -182,12 +182,13 @@ Document BrushingAndLinkingInport::getInfo() const {
 
 void BrushingAndLinkingInport::setChanged(bool changed, const Outport* source) {
     if (!changed) {
-        manager_.markAsValid();
+        manager_.clearModifications();
     }
     Inport::setChanged(changed, source);
 }
 
 void BrushingAndLinkingInport::invalidate(InvalidationLevel invalidationLevel) {
+    manager_.propagateModifications();
     // Override with the modification-based (brushing target and action) invalidation level.
     // This enables more selective invalidations that are dependent on this manager's settings
     // instead of the one of the top-most brushing manager that initiated the invalidation.
@@ -204,6 +205,7 @@ BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() { return mana
 const BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() const { return manager_; }
 
 void BrushingAndLinkingOutport::invalidate(InvalidationLevel invalidationLevel) {
+    manager_.propagateModifications();
     // Override with the modification-based (brushing target and action) invalidation level.
     // This enables more selective invalidations that are dependent on this manager's settings
     // instead of the one of the top-most brushing manager that initiated the invalidation.
@@ -231,7 +233,7 @@ void BrushingAndLinkingOutport::deserialize(Deserializer& d) {
 }
 
 void BrushingAndLinkingOutport::setValid() {
-    manager_.markAsValid();
+    manager_.clearModifications();
     Outport::setValid();
 }
 

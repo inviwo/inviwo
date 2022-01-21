@@ -357,10 +357,16 @@ public:
     void setInvalidationLevels(std::vector<BrushingTargetsInvalidationLevel> invalidationLevels);
 
     /**
-     * propagates the modified state to all child managers and resets the state. Should only be
-     * called by the brushing and linking ports _after_ the process() function has been called.
+     * propagates the modified state to all child managers. Needs to be called by the brushing and
+     * linking ports _before_ the invalidation level is queried.
+     * @see getInvalidationLevel
      */
-    void markAsValid();
+    void propagateModifications();
+    /**
+     * resets the modification state. Should only be called by the brushing and linking ports
+     * _after_ the process() function has been called.
+     */
+    void clearModifications();
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

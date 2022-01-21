@@ -38,6 +38,8 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/assertion.h>
 
+#include <stack>
+
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -70,18 +72,21 @@ void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget targ
 
     const int actionIdx = getActionIndex(action);
 
-    std::visit(util::overloaded{[&](BitSetTargets& map) { map[target] = indices; },
-                                [&](IndexListTargets& map) {
-                                    auto it = map.try_emplace(target, IndexList());
-                                    it.first->second.set(source, indices);
-                                }},
-               selections_[actionIdx]);
+    const bool changed =
+        std::visit(util::overloaded{[&](BitSetTargets& map) { return map[target].set(indices); },
+                                    [&](IndexListTargets& map) {
+                                        auto it = map.try_emplace(target, IndexList());
+                                        return it.first->second.set(source, indices);
+                                    }},
+                   selections_[actionIdx]);
 
     if (onBrushCallback_) {
         std::invoke(onBrushCallback_, action, target, indices, source);
     }
 
-    propagate(action, target);
+    if (changed) {
+        propagate(action, target);
+    }
 }
 
 bool BrushingAndLinkingManager::isModified() const { return !modifications_.empty(); }
@@ -158,17 +163,45 @@ void BrushingAndLinkingManager::clearIndices(BrushingAction action, BrushingTarg
         throw Exception(IVW_CONTEXT, "Clearing indices for action '{}' is not supported", action);
     }
 
-    std::visit(
-        [&](auto& map) {
-            auto it = map.find(target);
-            if (it == map.end()) {
-                return;
-            }
-            it->second.clear();
-        },
-        selections_[getActionIndex(action)]);
+    auto clearMap = [target, index = getActionIndex(action)](auto& selections) {
+        return std::visit(
+            [target](auto& map) {
+                auto it = map.find(target);
+                if (it == map.end()) {
+                    return false;
+                }
+                if (it->second.empty()) return false;
+                it->second.clear();
+                return true;
+            },
+            selections[index]);
+    };
 
-    propagate(action, target);
+    bool changed = false;
+
+    // clear all children, set modification state if necessary, but avoid any propagation
+    std::stack<BrushingAndLinkingManager*> stack;
+    stack.push(this);
+    while (!stack.empty()) {
+        auto node = stack.top();
+        stack.pop();
+        if (clearMap(node->selections_)) {
+            node->modifications_[target] |= fromAction(action);
+            changed = true;
+        }
+        for (auto c : node->children_) {
+            stack.push(c);
+        }
+    }
+
+    if (changed && onBrushCallback_) {
+        const std::string source = std::visit([](auto* p) { return p->getPath(); }, owner_);
+        std::invoke(onBrushCallback_, action, target, BitSet(), source);
+    }
+
+    if (changed) {
+        propagate(action, target);
+    }
 }
 
 bool BrushingAndLinkingManager::contains(uint32_t idx, BrushingAction action,
@@ -348,14 +381,15 @@ void BrushingAndLinkingManager::setInvalidationLevels(
     invalidationLevels_ = invalidationLevels;
 }
 
-void BrushingAndLinkingManager::markAsValid() {
+void BrushingAndLinkingManager::propagateModifications() {
     for (auto c : children_) {
         for (const auto& [target, modification] : modifications_) {
             c->modifications_[target] |= modification;
         }
     }
-    modifications_.clear();
 }
+
+void BrushingAndLinkingManager::clearModifications() { modifications_.clear(); }
 
 void BrushingAndLinkingManager::serialize(Serializer& s) const {
     for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
