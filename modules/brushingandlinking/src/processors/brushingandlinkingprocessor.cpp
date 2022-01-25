@@ -99,8 +99,8 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
             indices.size() > maxIndices ? "..." : "");
 
         LogProcessorInfo(fmt::format(
-            "{:<20} action: {:<13} target: {}\n  source: {}\n  indices: [{}] ({})", getDisplayName(),
-            action, target.getString(), source, str, indices.cardinality()));
+            "{:<20} action: {:<13} target: {}\n  source: {}\n  indices: [{}] ({})",
+            getDisplayName(), action, target.getString(), source, str, indices.cardinality()));
     });
 }
 
