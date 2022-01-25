@@ -144,7 +144,7 @@ public:
     bool isStrictSubsetOf(const BitSet& b) const;
 
     /**
-     * update the bitset with the contents of \p b, if \p b is different
+     * replace the bitset with the contents of \p b, returns true if modified
      *
      * @return true if the bitset was modified that is \p this and \p b were different
      */
