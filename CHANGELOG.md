@@ -1,8 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2022-02-01 Icon Grid View
-The welcome widget now has a icon grid view with previews of the first canvas in each network. 
-The workspace seach and processor search also options gained new features. One can for example seach for all network with a `Volume Raycaster` processor that was create by `Martin` like this: `processors:\"Volume Raycaster\" author:Martin"`. The tooltip for each seach field has more details. 
+The welcome widget now has an icon grid view with previews of the first canvas in each network. 
+The workspace and processor search fields gained new features. One can for example search for all networks with a `Volume Raycaster` processor that was create by `Martin` like this: `processors:\"Volume Raycaster\" author:Martin"`. The tooltip for each search field has more details. 
 
 ## 2021-12-09 DataFrame Column Units
 The `DataFrame` `Column` now has a `unit` member and many processors (`PCP`, `ScatterPlot`, `DataFrameTable`), operating on DataFrames will now also display the column units if available. The `ColumnMetaDataProperty` used in the `CSVSource` processor got support for specifying units. 
