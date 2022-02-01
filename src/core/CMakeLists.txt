@@ -8,6 +8,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/linearmap.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/permutations.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/seachdsl.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
@@ -388,6 +389,7 @@ set(SOURCE_FILES
     algorithm/cubeplaneintersection.cpp
     algorithm/linearmap.cpp
     algorithm/permutations.cpp
+    algorithm/seachdsl.cpp
     common/inviwoapplication.cpp
     common/inviwoapplicationutil.cpp
     common/inviwocore.cpp

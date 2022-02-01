@@ -32,32 +32,259 @@
 #include <inviwo/core/network/workspaceannotations.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/common/inviwoapplication.h>
+
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-
 #include <QFontMetrics>
-
 #include <warn/pop>
 
 namespace inviwo {
 
-bool operator==(const QVariant& v, WorkspaceTreeModel::ListElemType t) {
-    return v.toInt() == static_cast<int>(t);
+class TreeItem : public QObject {
+public:
+    static const int IconSize = 12;  // Icon size in em.
+
+    explicit TreeItem(TreeItem* parent);
+    TreeItem(std::string_view filename, WorkspaceTreeModel::Type type);
+    TreeItem(std::string_view filename, InviwoApplication* app,
+             std::function<void(TreeItem*)> onChange, bool isExample);
+
+    TreeItem(const TreeItem&) = delete;
+    TreeItem& operator=(const TreeItem&) = delete;
+
+    void addChild(std::unique_ptr<TreeItem> child);
+    void addChildren(std::vector<std::unique_ptr<TreeItem>> children);
+    void removeChildren();
+
+    TreeItem* child(int row) const;
+    int row() const;
+
+    int childCount() const;
+    int columnCount() const;
+    TreeItem* parent() const;
+
+    QVariant data(int column, int role) const;
+    Qt::ItemFlags flags() const;
+    WorkspaceTreeModel::Type type() const;
+
+    bool operator==(const TreeItem& tree) const;
+    bool operator!=(const TreeItem& tree) const;
+
+    TreeItem* findChild(std::string_view caption) const;
+
+private:
+    void initIconLoad() const;
+    WorkspaceTreeModel::Type type_;
+    TreeItem* parent_;
+    int row_;
+    std::vector<std::unique_ptr<TreeItem>> children_;
+
+    QString caption_;
+    QString file_;
+    QString path_;
+    bool isExample_ = false;
+
+    std::shared_ptr<WorkspaceInfoLoader> infoLoader_;
+    WorkspaceInfo info_;
+};
+
+void WorkspaceInfoLoader::operator()() {
+    try {
+        WorkspaceAnnotationsQt annotations{filename_, app_};
+        emit workspaceInfoLoaded(WorkspaceInfo{
+            utilqt::toQString(annotations.getTitle()), utilqt::toQString(annotations.getAuthor()),
+            utilqt::toQString(annotations.getTags()),
+            utilqt::toQString(annotations.getCategories()),
+            utilqt::toQString(annotations.getDescription()),
+            annotations.numberOfCanvases() > 0 ? annotations.getCanvasQImage(0) : QImage{},
+            WorkspaceAnnotationsQt::workspaceProcessors(filename_, app_)});
+    } catch (const Exception&) {
+    }
 }
 
-bool operator==(WorkspaceTreeModel::ListElemType t, const QVariant& v) { return operator==(v, t); }
-
-bool operator!=(const QVariant& v, WorkspaceTreeModel::ListElemType t) {
-    return v.toInt() != static_cast<int>(t);
+void WorkspaceInfoLoader::submit() {
+    std::call_once(flag_, [&]() { app_->dispatchPool([l = shared_from_this()]() { (*l)(); }); });
 }
 
-bool operator!=(WorkspaceTreeModel::ListElemType t, const QVariant& v) { return operator!=(v, t); }
+TreeItem::TreeItem(TreeItem* parent)
+    : type_{WorkspaceTreeModel::Type::None}, parent_{parent}, row_{0} {}
+
+TreeItem::TreeItem(std::string_view caption, WorkspaceTreeModel::Type type)
+    : type_{type}, parent_{nullptr}, row_{0}, caption_{utilqt::toQString(caption)} {}
+
+TreeItem::TreeItem(std::string_view filename, InviwoApplication* app,
+                   std::function<void(TreeItem*)> onChange, bool isExample)
+    : type_{WorkspaceTreeModel::Type::File}
+    , parent_{nullptr}
+    , row_{0}
+    , caption_{utilqt::toQString(filesystem::getFileNameWithoutExtension(filename))}
+    , file_{utilqt::toQString(filesystem::getFileNameWithExtension(filename))}
+    , path_{utilqt::toQString(filesystem::getFileDirectory(filename))}
+    , isExample_{isExample}
+    , infoLoader_{std::make_shared<WorkspaceInfoLoader>(filename, app)}
+    , info_{} {
+
+    connect(
+        infoLoader_.get(), &WorkspaceInfoLoader::workspaceInfoLoaded, this,
+        [this, onChange](WorkspaceInfo info) {
+            info_ = info;
+            onChange(this);
+        },
+        Qt::QueuedConnection);
+
+    if (path_.isEmpty()) path_ = ".";
+}
+
+void TreeItem::addChild(std::unique_ptr<TreeItem> child) {
+    child->parent_ = this;
+    child->row_ = static_cast<int>(children_.size());
+    children_.push_back(std::move(child));
+}
+
+void TreeItem::addChildren(std::vector<std::unique_ptr<TreeItem>> children) {
+    for (auto&& [i, child] : util::enumerate(children)) {
+        child->parent_ = this;
+        child->row_ = static_cast<int>(i + children_.size());
+    }
+    std::move(children.begin(), children.end(), std::back_inserter(children_));
+}
+
+void TreeItem::removeChildren() { children_.clear(); }
+
+TreeItem* TreeItem::child(int row) const {
+    if ((row < 0) || (row >= static_cast<int>(children_.size()))) return nullptr;
+    return children_[row].get();
+}
+
+TreeItem* TreeItem::findChild(std::string_view caption) const {
+    auto qCaption = utilqt::toQString(caption);
+    auto it = std::find_if(children_.begin(), children_.end(),
+                           [&](auto& child) { return child->caption_ == qCaption; });
+    if (it != children_.end()) {
+        return it->get();
+    } else {
+        return nullptr;
+    }
+}
+
+int TreeItem::row() const { return row_; }
+
+int TreeItem::childCount() const { return static_cast<int>(children_.size()); }
+
+int TreeItem::columnCount() const { return 1; }
+
+TreeItem* TreeItem::parent() const { return parent_; }
+
+QVariant TreeItem::data(int column, int role) const {
+    if ((column < 0) || (column >= columnCount())) {
+        return {};
+    }
+    using Role = WorkspaceTreeModel::Role;
+
+    if (type_ == WorkspaceTreeModel::Type::File) {
+        switch (role) {
+            case Qt::DisplayRole:
+                return caption_;
+            case Qt::ToolTipRole: {
+                // prevent line breaks in the tooltip
+                // see https://doc.qt.io/qt-5/qtooltip.html#details
+                return QString("<p style='white-space:pre'><strong>%1</strong><br>%2</p>")
+                    .arg(file_)
+                    .arg(path_);
+            }
+            case static_cast<int>(Role::Type):
+                return static_cast<int>(type_);
+            case static_cast<int>(Role::Name):
+                return file_;
+            case static_cast<int>(Role::Path):
+                return path_;
+            case static_cast<int>(Role::FilePath):
+                return path_ + "/" + file_;
+            case static_cast<int>(Role::isExample):
+                return isExample_;
+
+            case static_cast<int>(Role::Title):
+                infoLoader_->submit();
+                return info_.title;
+            case static_cast<int>(Role::Author):
+                infoLoader_->submit();
+                return info_.author;
+            case static_cast<int>(Role::Tags):
+                infoLoader_->submit();
+                return info_.tags;
+            case static_cast<int>(Role::Categories):
+                infoLoader_->submit();
+                return info_.categories;
+            case static_cast<int>(Role::Description):
+                infoLoader_->submit();
+                return info_.description;
+            case static_cast<int>(Role::Processors):
+                infoLoader_->submit();
+                return info_.processors;
+            case static_cast<int>(Role::Image): {
+                infoLoader_->submit();
+                if (info_.image.isNull()) {
+                    return QImage{":/inviwo/inviwo_light.png"};
+                } else {
+                    return info_.image;
+                }
+            }
+
+            default:
+                return {};
+        }
+    } else {
+        switch (role) {
+            case Qt::DisplayRole:
+            case Qt::ToolTipRole:
+                return caption_;
+            case static_cast<int>(WorkspaceTreeModel::Role::Type):
+                return static_cast<int>(type_);
+            default:
+                return {};
+        }
+    }
+}  // namespace inviwo
+
+Qt::ItemFlags TreeItem::flags() const {
+    if (type_ == WorkspaceTreeModel::Type::File) {
+        return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemNeverHasChildren;
+    } else {
+        return Qt::NoItemFlags;
+    }
+}
+
+WorkspaceTreeModel::Type TreeItem::type() const { return type_; }
+
+bool TreeItem::operator==(const TreeItem& tree) const {
+    bool match = (type_ == tree.type_) && (caption_ == tree.caption_) &&
+                 (isExample_ == tree.isExample_) && (childCount() == tree.childCount());
+    // check children
+    if (match) {
+        for (int i = 0; i < childCount() && match; ++i) {
+            match &= children_[i].get()->operator==(*tree.child(i));
+        }
+    }
+
+    return match;
+}
+bool TreeItem::operator!=(const TreeItem& tree) const { return !operator==(tree); }
+
 
 WorkspaceTreeModel::WorkspaceTreeModel(InviwoApplication* app, QObject* parent)
-    : QAbstractItemModel(parent), app_(app), root_{std::make_unique<TreeItem>(nullptr)} {}
+    : QAbstractItemModel(parent), app_(app), root_{std::make_unique<TreeItem>(nullptr)} {
+
+    addEntry(root_.get(), std::make_unique<TreeItem>(recent, Type::SubSection));
+    addEntry(root_.get(), std::make_unique<TreeItem>(examples, Type::Section));
+    addEntry(root_.get(), std::make_unique<TreeItem>(tests, Type::Section));
+}
+
+WorkspaceTreeModel::~WorkspaceTreeModel() = default;
 
 QModelIndex WorkspaceTreeModel::index(int row, int column, const QModelIndex& parent) const {
     if (parent.isValid() && parent.column() != 0) return QModelIndex();
@@ -72,12 +299,13 @@ QModelIndex WorkspaceTreeModel::index(int row, int column, const QModelIndex& pa
 Qt::ItemFlags WorkspaceTreeModel::flags(const QModelIndex& index) const {
     if (!index.isValid()) return Qt::NoItemFlags;
 
-    return QAbstractItemModel::flags(index);
+    auto item = static_cast<TreeItem*>(index.internalPointer());
+    return item->flags();
 }
 
 QVariant WorkspaceTreeModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) return QVariant();
-    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    auto item = static_cast<TreeItem*>(index.internalPointer());
 
     return item->data(index.column(), role);
 }
@@ -89,14 +317,16 @@ QVariant WorkspaceTreeModel::headerData(int, Qt::Orientation orientation, int ro
 }
 
 QModelIndex WorkspaceTreeModel::parent(const QModelIndex& index) const {
-    if (!index.isValid()) return QModelIndex();
+    if (!index.isValid()) return {};
 
-    TreeItem* childItem = getItem(index);
-    TreeItem* parentItem = childItem ? childItem->parent() : nullptr;
-
-    if (parentItem == root_.get() || !parentItem) return QModelIndex();
-
-    return createIndex(parentItem->row(), 0, parentItem);
+    if (auto item = getItem(index)) {
+        if (auto parent = item->parent()) {
+            if (parent != root_.get()) {
+                return createIndex(parent->row(), 0, parent);
+            }
+        }
+    }
+    return {};
 }
 
 int WorkspaceTreeModel::rowCount(const QModelIndex& parent) const {
@@ -104,30 +334,8 @@ int WorkspaceTreeModel::rowCount(const QModelIndex& parent) const {
     return parentItem ? parentItem->childCount() : 0;
 }
 
-int WorkspaceTreeModel::columnCount(const QModelIndex&) const { return root_->columnCount(); }
-
-bool WorkspaceTreeModel::insertRows(int position, int rows, const QModelIndex& parent) {
-    TreeItem* parentItem = getItem(parent);
-    if (!parentItem) return false;
-    if ((position < 0) || (position >= parentItem->childCount())) return false;
-
-    beginInsertRows(parent, position, position + rows - 1);
-    const bool success = parentItem->insertChildren(position, rows);
-    endInsertRows();
-
-    return success;
-}
-
-bool WorkspaceTreeModel::removeRows(int position, int rows, const QModelIndex& parent) {
-    TreeItem* parentItem = getItem(parent);
-    if (!parentItem) return false;
-    if ((position < 0) || (position + rows > parentItem->childCount())) return false;
-
-    beginRemoveRows(parent, position, position + rows - 1);
-    const bool success = parentItem->removeChildren(position, rows);
-    endRemoveRows();
-
-    return success;
+int WorkspaceTreeModel::columnCount(const QModelIndex& parent) const {
+    return root_->columnCount();
 }
 
 void WorkspaceTreeModel::updateCategory(TreeItem* item,
@@ -138,7 +346,7 @@ void WorkspaceTreeModel::updateCategory(TreeItem* item,
     if (children.size() == static_cast<size_t>(item->childCount())) {
         bool match = true;
         for (int i = 0; i < item->childCount() && match; ++i) {
-            match &= children[i].get()->operator==(*item->child(i));
+            match &= (*children[i].get() == *item->child(i));
         }
         if (match) return;
     }
@@ -157,31 +365,12 @@ void WorkspaceTreeModel::updateCategory(TreeItem* item,
     }
 }
 
-void WorkspaceTreeModel::addEntry(TreeItem* node, std::unique_ptr<TreeItem> child) {
-    QModelIndex index = getIndex(node);
-    int pos = node ? node->childCount() : rowCount();
+void WorkspaceTreeModel::addEntry(TreeItem* parent, std::unique_ptr<TreeItem> child) {
+    QModelIndex index = getIndex(parent);
+    int pos = parent->childCount();
     beginInsertRows(index, pos, pos);
-    if (node) {
-        node->addChild(std::move(child));
-    } else {
-        root_->addChild(std::move(child));
-    }
+    parent->addChild(std::move(child));
     endInsertRows();
-}
-
-bool WorkspaceTreeModel::removeEntry(TreeItem* node) {
-    return removeRows(node->row(), 1, getIndex(node->parent()));
-}
-
-bool WorkspaceTreeModel::removeChildren(TreeItem* root) {
-    if (!root || root == root_.get()) {
-        beginResetModel();
-        root_->removeChildren();
-        endResetModel();
-        return true;
-    } else {
-        return removeRows(0, root->childCount(), getIndex(root));
-    }
 }
 
 QModelIndex WorkspaceTreeModel::getIndex(TreeItem* item, int column) const {
@@ -192,277 +381,84 @@ QModelIndex WorkspaceTreeModel::getIndex(TreeItem* item, int column) const {
 
 TreeItem* WorkspaceTreeModel::getItem(const QModelIndex& index) const {
     if (index.isValid()) {
-        TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-        if (item) return item;
+        if (auto item = static_cast<TreeItem*>(index.internalPointer())) {
+            return item;
+        }
     }
     return root_.get();
 }
 
-void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
-    if (!recentWorkspaceItem_) {
-        auto item = std::make_unique<TreeItem>("Recent Workspaces",
-                                               WorkspaceTreeModel::ListElemType::Section);
-        recentWorkspaceItem_ = item.get();
+TreeItem* WorkspaceTreeModel::getCategory(std::string_view caption) const {
+    return root_->findChild(caption);
+}
 
-        addEntry(nullptr, std::move(item));
+QModelIndex WorkspaceTreeModel::getCategoryIndex(std::string_view category) {
+    if (auto item = getCategory(category)) {
+        return getIndex(item);
+    } else {
+        return QModelIndex{};
     }
+}
+
+void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
     std::vector<std::unique_ptr<TreeItem>> items;
     for (auto& elem : recentFiles) {
-
         const std::string filename = utilqt::fromQString(elem);
         if (filesystem::fileExists(filename)) {
-            items.push_back(std::make_unique<TreeItem>(filename, app_));
+            items.push_back(std::make_unique<TreeItem>(
+                filename, app_,
+                [this](TreeItem* item) {
+                    auto id = getIndex(item);
+                    dataChanged(id, id);
+                },
+                false));
         }
     }
-    updateCategory(recentWorkspaceItem_, std::move(items));
-    emit recentWorkspacesUpdated(recentWorkspaceItem_);
+    updateCategory(getCategory(recent), std::move(items));
+}
+
+void WorkspaceTreeModel::updateModules(std::string_view category, ModulePath pathType,
+                                       bool recursive) {
+
+    auto addFile = [this](const std::string& filePath, TreeItem& section) {
+        if (filesystem::getFileExtension(filePath) != "inv") return;
+        section.addChild(std::make_unique<TreeItem>(
+            filePath, app_,
+            [this](TreeItem* item) {
+                auto id = getIndex(item);
+                dataChanged(id, id);
+            },
+            true));
+    };
+
+    std::vector<std::unique_ptr<TreeItem>> items;
+    for (const auto& module : app_->getModules()) {
+        auto path = module->getPath(pathType);
+        if (!filesystem::directoryExists(path)) continue;
+
+        auto section = std::make_unique<TreeItem>(module->getIdentifier(), Type::SubSection);
+        if (recursive) {
+            for (auto filePath : filesystem::getDirectoryContentsRecursively(path)) {
+                addFile(filePath, *section);
+            }
+        } else {
+            for (auto filePath : filesystem::getDirectoryContents(path)) {
+                addFile(fmt::format("{}/{}", path, filePath), *section);
+            }
+        }
+        if (section->childCount() > 0) {
+            items.push_back(std::move(section));
+        }
+    }
+    updateCategory(getCategory(category), std::move(items));
 }
 
 void WorkspaceTreeModel::updateExampleEntries() {
-    std::vector<std::unique_ptr<TreeItem>> examples;
-    for (const auto& module : app_->getModules()) {
-        auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
-        if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
-
-        auto category = std::make_unique<TreeItem>(utilqt::toQString(module->getIdentifier()),
-                                                   WorkspaceTreeModel::ListElemType::SubSection);
-        for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
-            // only accept inviwo workspace files
-            if (filesystem::getFileExtension(item) != "inv") continue;
-
-            auto filePath = moduleWorkspacePath + "/" + item;
-            category->addChild(std::make_unique<TreeItem>(filePath, app_, true));
-        }
-        if (category->childCount() > 0) {
-            examples.push_back(std::move(category));
-        }
-    }
-
-    if (!examplesItem_) {
-        auto item =
-            std::make_unique<TreeItem>("Examples", WorkspaceTreeModel::ListElemType::Section);
-        examplesItem_ = item.get();
-        addEntry(nullptr, std::move(item));
-    }
-
-    updateCategory(examplesItem_, std::move(examples));
-    emit exampleWorkspacesUpdated(examplesItem_);
+    updateModules(examples, ModulePath::Workspaces, false);
 }
 
 void WorkspaceTreeModel::updateRegressionTestEntries() {
-    std::vector<std::unique_ptr<TreeItem>> tests;
-    for (const auto& module : app_->getModules()) {
-        auto moduleRegressionTestsPath = module->getPath(ModulePath::RegressionTests);
-        if (!filesystem::directoryExists(moduleRegressionTestsPath)) continue;
-
-        auto category = std::make_unique<TreeItem>(utilqt::toQString(module->getIdentifier()),
-                                                   WorkspaceTreeModel::ListElemType::SubSection);
-
-        for (auto item : filesystem::getDirectoryContentsRecursively(moduleRegressionTestsPath)) {
-            // only accept inviwo workspace files
-            if (filesystem::getFileExtension(item) != "inv") continue;
-            auto filePath = item;
-            category->addChild(std::make_unique<TreeItem>(filePath, app_, true));
-        }
-        if (category->childCount() > 0) {
-            tests.push_back(std::move(category));
-        }
-    }
-    if (!regressionTestsItem_) {
-        auto item = std::make_unique<TreeItem>("Regression Tests",
-                                               WorkspaceTreeModel::ListElemType::Section);
-        regressionTestsItem_ = item.get();
-        addEntry(nullptr, std::move(item));
-    }
-    updateCategory(regressionTestsItem_, std::move(tests));
-    emit regressionTestWorkspacesUpdated(regressionTestsItem_);
+    updateModules(tests, ModulePath::RegressionTests, true);
 }
-
-TreeItem::TreeItem(TreeItem* parent) : parent_{parent} {}
-
-TreeItem::TreeItem(const QString& caption, WorkspaceTreeModel::ListElemType type, TreeItem* parent)
-    : parent_{parent}, type_{type}, caption_{caption} {}
-
-TreeItem::TreeItem(const std::string& filename, InviwoApplication* app, bool isExample,
-                   TreeItem* parent)
-    : parent_{parent} {
-    // Parsing the workspace is time-consuming, so do it in a thread. Opted for a quick solution
-    // that does not notify when done due to lower implementation time.
-    auto iconLoader = [](auto filename, InviwoApplication* app) {
-        WorkspaceAnnotations annotations = WorkspaceAnnotations::load(filename, app);
-        QIcon icon;
-        if (!annotations.getCanvasImages().empty()) {
-            icon =
-                utilqt::fromBase64ToIcon(annotations.getCanvasImages().front().base64jpeg, "jpeg");
-        } else {
-            icon = QIcon(":/inviwo/inviwo_light.png");
-        }
-
-        return icon;
-    };
-    iconFuture_ = app->dispatchPool(iconLoader, filename, app);
-    static QIcon defaultIcon = QIcon(":/inviwo/inviwo_light.png");
-    setData(defaultIcon, filename, isExample);
-}
-
-void TreeItem::addChild(std::unique_ptr<TreeItem> child) {
-    child->parent_ = this;
-    childItems_.push_back(std::move(child));
-}
-
-void TreeItem::addChildren(std::vector<std::unique_ptr<TreeItem>> children) {
-    for (auto& child : children) {
-        child->parent_ = this;
-    }
-    std::move(children.begin(), children.end(), std::back_inserter(childItems_));
-}
-
-bool TreeItem::insertChildren(int position, int count) {
-    if (position < 0 || position > static_cast<int>(childItems_.size())) return false;
-
-    for (int row = 0; row < count; ++row) {
-        auto item = std::make_unique<TreeItem>(this);
-        childItems_.insert(childItems_.begin() + position, std::move(item));
-    }
-
-    return true;
-}
-
-bool TreeItem::removeChildren(int position, int count) {
-    if (position < 0 || position + count > static_cast<int>(childItems_.size())) return false;
-
-    childItems_.erase(childItems_.begin() + position);
-
-    return true;
-}
-
-void TreeItem::removeChildren() { childItems_.clear(); }
-
-TreeItem* TreeItem::child(int row) const {
-    if ((row < 0) || (row >= static_cast<int>(childItems_.size()))) return nullptr;
-    return childItems_[row].get();
-}
-
-int TreeItem::row() const {
-    if (parent_) {
-        auto it = util::find_if(
-            parent_->childItems_,
-            [node = const_cast<TreeItem*>(this)](auto& child) { return child.get() == node; });
-        if (it != parent_->childItems_.end()) {
-            return static_cast<int>(std::distance(parent_->childItems_.begin(), it));
-        }
-    }
-    return 0;
-}
-
-int TreeItem::childCount() const { return static_cast<int>(childItems_.size()); }
-
-int TreeItem::columnCount() const { return 2; }
-
-TreeItem* TreeItem::parent() const { return parent_; }
-
-QVariant TreeItem::data(int column, int role) const {
-    if ((column < 0) || (column >= columnCount())) {
-        return {};
-    }
-
-    if (type_ == WorkspaceTreeModel::ListElemType::File) {
-        switch (role) {
-            case Qt::DisplayRole:
-                return caption_;
-            case Qt::EditRole:
-                return caption_;
-            case Qt::ToolTipRole: {
-                QStringList list;
-                auto p = parent();
-                while (p) {
-                    list.append(p->caption_);
-                    p = p->parent();
-                }
-                std::reverse(list.begin(), list.end());
-
-                const QString hierarchy =
-                    (list.size() > 0) ? QString("(%1)").arg(list.join("/").remove(0, 1)) : "";
-
-                // prevent line breaks in the tooltip
-                // see https://doc.qt.io/qt-5/qtooltip.html#details
-                return QString("<p style='white-space:pre'><strong>%1</strong> %3<br>%2</p>")
-                    .arg(file_)
-                    .arg(path_)
-                    .arg(hierarchy);
-            }
-            case Qt::DecorationRole: {
-                if (iconFuture_.valid() &&
-                    iconFuture_.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-                    icon_ = iconFuture_.get();
-                }
-                return icon_;
-            }
-
-            case Qt::SizeHintRole: {
-                // Icon + text
-                int size = utilqt::emToPx(QFontMetrics(QFont()), IconSize);
-                return QSize(size, size);
-            }
-            case WorkspaceTreeModel::ItemRoles::Type:
-                return static_cast<int>(type_);
-            case WorkspaceTreeModel::ItemRoles::FileName:
-                return file_;
-            case WorkspaceTreeModel::ItemRoles::Path:
-                return path_;
-            case WorkspaceTreeModel::ItemRoles::ExampleWorkspace:
-                return isExample_;
-            default:
-                return {};
-        }
-    } else {
-        switch (role) {
-            case Qt::DisplayRole:
-            case Qt::EditRole:
-            case Qt::ToolTipRole:
-                return caption_;
-            case WorkspaceTreeModel::ItemRoles::Type:
-                return static_cast<int>(type_);
-            default:
-                return {};
-        }
-    }
-}
-
-WorkspaceTreeModel::ListElemType TreeItem::type() const { return type_; }
-
-void TreeItem::setData(const QString& caption, WorkspaceTreeModel::ListElemType type) {
-    type_ = type;
-    caption_ = caption;
-}
-
-void TreeItem::setData(const QIcon& icon, const std::string& filename, bool isExample) {
-    type_ = WorkspaceTreeModel::ListElemType::File;
-
-    icon_ = icon;
-    caption_ = utilqt::toQString(filesystem::getFileNameWithoutExtension(filename));
-    file_ = utilqt::toQString(filesystem::getFileNameWithExtension(filename));
-    path_ = utilqt::toQString(filesystem::getFileDirectory(filename));
-    isExample_ = isExample;
-
-    if (path_.isEmpty()) {
-        path_ = ".";
-    }
-}
-
-bool TreeItem::operator==(const TreeItem& tree) const {
-    bool match = (type_ == tree.type_) && (caption_ == tree.caption_) &&
-                 (isExample_ == tree.isExample_) && (childCount() == tree.childCount());
-    // check children
-    if (match) {
-        for (int i = 0; i < childCount() && match; ++i) {
-            match &= childItems_[i].get()->operator==(*tree.child(i));
-        }
-    }
-
-    return match;
-}
-
-bool TreeItem::operator!=(const TreeItem& tree) const { return !operator==(tree); }
 
 }  // namespace inviwo

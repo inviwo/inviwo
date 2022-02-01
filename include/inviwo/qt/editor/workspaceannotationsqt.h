@@ -35,6 +35,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QImage>
+#include <QStringList>
 #include <warn/pop>
 
 #include <vector>
@@ -43,20 +44,28 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API WorkspaceAnnotationsQt : public WorkspaceAnnotations {
 public:
-    using QImageVector = std::vector<std::pair<std::string, QImage>>;
+    WorkspaceAnnotationsQt(InviwoApplication* app = InviwoApplication::getPtr());
+    WorkspaceAnnotationsQt(const QImage& network,
+                           const std::vector<std::pair<std::string, QImage>>& canvasImages,
+                           InviwoApplication* app = InviwoApplication::getPtr());
+    WorkspaceAnnotationsQt(std::string_view path,
+                           InviwoApplication* app = InviwoApplication::getPtr());
 
-    WorkspaceAnnotationsQt() = default;
-    WorkspaceAnnotationsQt(const QImage& network, const QImageVector& canvasImages);
     virtual ~WorkspaceAnnotationsQt() = default;
 
     void setNetworkImage(const QImage& network);
     const Base64Image& getNetworkImage() const;
+    QImage getNetworkQImage() const;
+    QImage getCanvasQImage(size_t i) const;
 
     using WorkspaceAnnotations::setCanvasImages;
-    void setCanvasImages(const QImageVector& canvasImages);
+    void setCanvasImages(const std::vector<std::pair<std::string, QImage>>& canvasImages);
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
+
+    static QStringList workspaceProcessors(std::string_view path,
+                                           InviwoApplication* app = InviwoApplication::getPtr());
 
 private:
     Base64Image network_;

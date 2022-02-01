@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/safecstr.h>
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
 #include <inviwo/core/util/logcentral.h>
@@ -103,52 +104,6 @@ std::ios_base& localizeStream(std::ios_base& stream) {
     stream.imbue(getCurrentStdLocale());
     return stream;
 }
-
-QString toLocalQString(std::string_view input) { return QString::fromLocal8Bit(input.data()); }
-QString toLocalQString(std::string str) { return toLocalQString(std::string_view(str)); }
-std::string fromLocalQString(const QString& input) {
-    return std::string(input.toLocal8Bit().constData());
-}
-
-QString toQString(std::string_view input) { return QString::fromUtf8(input.data()); }
-QString toQString(const std::string str) { return toQString(std::string_view(str)); }
-std::string fromQString(const QString& input) { return std::string(input.toUtf8().constData()); }
-
-QPointF toQPoint(dvec2 v) { return QPointF(v.x, v.y); }
-
-QPoint toQPoint(ivec2 v) { return QPoint(v.x, v.y); }
-
-dvec2 toGLM(QPointF v) { return dvec2(v.x(), v.y()); }
-
-ivec2 toGLM(QPoint v) { return ivec2(v.x(), v.y()); }
-
-dvec2 toGLM(QSizeF v) { return dvec2(v.width(), v.height()); }
-
-ivec2 toGLM(QSize v) { return ivec2(v.width(), v.height()); }
-
-QSizeF toQSize(dvec2 v) { return QSizeF(v.x, v.y); }
-
-QSize toQSize(ivec2 v) { return QSize(v.x, v.y); }
-
-vec3 tovec3(const QColor& c) { return vec3(c.redF(), c.greenF(), c.blueF()); }
-
-ivec3 toivec3(const QColor& c) { return ivec3(c.red(), c.green(), c.blue()); }
-
-vec4 tovec4(const QColor& c) { return vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()); }
-
-ivec4 toivec4(const QColor& c) { return ivec4(c.red(), c.green(), c.blue(), c.alpha()); }
-
-QColor toQColor(const vec3& v) { return toQColor(ivec3(v * 255.0f)); }
-
-QColor toQColor(const ivec3& v) { return QColor(v.r, v.g, v.b); }
-
-QColor toQColor(const uvec3& v) { return QColor(v.r, v.g, v.b); }
-
-QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
-
-QColor toQColor(const ivec4& v) { return QColor(v.r, v.g, v.b, v.a); }
-
-QColor toQColor(const uvec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 
 QMainWindow* getApplicationMainWindow() {
     auto widgets = QApplication::allWidgets();
@@ -542,24 +497,27 @@ void addViewActions(QMenu& menu, EventPropagator* ep) {
                  &QAction::triggered, prop(ViewEvent::FlipUp{}));
 }
 
-std::string toBase64(const QImage& image, const std::string& format, int quality) {
+std::string toBase64(const QImage& image, std::string_view format, int quality) {
     QByteArray byteArray;
     QBuffer buffer{&byteArray};
     buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer, format.empty() ? nullptr : format.c_str(), quality);
+    image.save(&buffer, format.empty() ? nullptr : SafeCStr{format}.c_str(), quality);
     return std::string{byteArray.toBase64().data()};
 }
 
-QImage fromBase64(std::string_view base64) {
-    QByteArray barray = QByteArray::fromBase64(base64.data());
+QImage fromBase64(std::string_view base64, std::string_view format) {
+    QByteArray barray =
+        QByteArray::fromBase64(QByteArray{base64.data(), static_cast<int>(base64.size())});
     QImage image;
-    image.loadFromData(barray);
+    image.loadFromData(barray, format.empty() ? nullptr : SafeCStr{format}.c_str());
     return image;
 }
 
 QIcon fromBase64ToIcon(std::string_view base64, std::string_view format) {
     QPixmap pm;
-    pm.loadFromData(QByteArray::fromBase64(base64.data()), format.data());
+    pm.loadFromData(
+        QByteArray::fromBase64(QByteArray{base64.data(), static_cast<int>(base64.size())}),
+        format.empty() ? nullptr : SafeCStr{format}.c_str());
     return QIcon(pm);
 }
 

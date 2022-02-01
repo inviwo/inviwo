@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/algorithm/seachdsl.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -102,7 +103,6 @@ public:
     Grouping getGrouping() const;
 
 protected:
-    bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
     const QIcon* getCodeStateIcon(CodeState) const;
 
 private:
@@ -120,6 +120,8 @@ private:
     ProcessorTree* processorTree_;
     QComboBox* listView_;
     QLineEdit* lineEdit_;
+    SearchDSL<ProcessorFactoryObject> dsl_;
+    
 
     QPoint dragStartPosition_;
 

@@ -56,9 +56,10 @@ void WorkspaceAnnotations::Base64Image::deserialize(Deserializer& d) {
 }
 
 WorkspaceAnnotations::WorkspaceAnnotations(InviwoApplication* app)
-    : WorkspaceAnnotations(ImageVector{}, app) {}
+    : WorkspaceAnnotations(std::vector<Base64Image>{}, app) {}
 
-WorkspaceAnnotations::WorkspaceAnnotations(const ImageVector& canvasImages, InviwoApplication* app)
+WorkspaceAnnotations::WorkspaceAnnotations(const std::vector<Base64Image>& canvasImages,
+                                           InviwoApplication* app)
     : title_{"title", "Title", ""}
     , author_{"author", "Author", ""}
     , tags_{"tags", "Tags", ""}
@@ -73,6 +74,17 @@ WorkspaceAnnotations::WorkspaceAnnotations(const ImageVector& canvasImages, Invi
     addProperty(tags_);
     addProperty(categories_);
     addProperty(description_);
+}
+
+WorkspaceAnnotations::WorkspaceAnnotations(std::string_view path, InviwoApplication* app)
+    : WorkspaceAnnotations{std::vector<Base64Image>{}, app} {
+    if (auto f = filesystem::ifstream(path)) {
+        LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
+        auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
+        d.deserialize("WorkspaceAnnotations", *this);
+    } else {
+        throw Exception(IVW_CONTEXT, "Unable to open file {}", path);
+    }
 }
 
 void WorkspaceAnnotations::serialize(Serializer& s) const {
@@ -103,24 +115,6 @@ void WorkspaceAnnotations::deserialize(Deserializer& d) {
 
 InviwoApplication* WorkspaceAnnotations::getInviwoApplication() { return app_; }
 
-WorkspaceAnnotations WorkspaceAnnotations::load(std::string_view path, InviwoApplication* app) {
-    // extract annotations including network screenshot and canvas images from workspace
-    WorkspaceAnnotations annotations;
-    try {
-        auto istream = filesystem::ifstream(std::string(path));
-        if (istream.is_open()) {
-            LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
-            auto d =
-                app->getWorkspaceManager()->createWorkspaceDeserializer(istream, path, &logger);
-            d.setExceptionHandler([](const ExceptionContext) {});
-            d.deserialize("WorkspaceAnnotations", annotations);
-        }
-    } catch (Exception& e) {
-        util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
-    }
-    return annotations;
-}
-
 void WorkspaceAnnotations::setTitle(const std::string& title) { title_ = title; }
 
 std::string WorkspaceAnnotations::getTitle() const { return title_; }
@@ -141,9 +135,17 @@ void WorkspaceAnnotations::setDescription(const std::string& desc) { description
 
 std::string WorkspaceAnnotations::getDescription() const { return description_; }
 
-void WorkspaceAnnotations::setCanvasImages(const ImageVector& canvases) { canvases_ = canvases; }
+void WorkspaceAnnotations::setCanvasImages(const std::vector<Base64Image>& canvases) {
+    canvases_ = canvases;
+}
 
-const WorkspaceAnnotations::ImageVector WorkspaceAnnotations::getCanvasImages() const {
+size_t WorkspaceAnnotations::numberOfCanvases() const { return canvases_.size(); }
+const WorkspaceAnnotations::Base64Image& WorkspaceAnnotations::getCanvasImage(size_t i) const {
+    return canvases_[i];
+}
+
+const std::vector<WorkspaceAnnotations::Base64Image>& WorkspaceAnnotations::getCanvasImages()
+    const {
     return canvases_;
 }
 

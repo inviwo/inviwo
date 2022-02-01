@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -29,104 +30,52 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/workspacetreemodel.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 
-#include <QFileSystemModel>
 #include <QtGlobal>
-#include <QListView>
-#include <QIcon>
-#include <QAbstractListModel>
-#include <QSortFilterProxyModel>
-#include <QPersistentModelIndex>
+#include <QTreeView>
+#include <QAbstractProxyModel>
 
 #include <warn/pop>
 
-class QVBoxLayout;
-class QLabel;
 class QItemSelectionModel;
+class QAbstractItemModel;
+class QResizeEvent;
 
 namespace inviwo {
 
 class InviwoApplication;
 class TreeItem;
 class WorkspaceTreeModel;
-/**
- * \brief ListView that assumes icon grid layout and ensures a proper sizeHint for the widget.
- * The custom listview can also handle filtering when setRootIndex is used.
- * setRootIndex can be used to start the list from a (hiearchical) item in the model.
- * However, QListView resets the root index when the index becomes invalid through filtering using
- * QSortFilterProxyModel. The filtering workaround is based on the answers here:
- * https://stackoverflow.com/questions/70112321/qt-rootindex-gets-reset-each-time-qsortfilterproxymodelinvalidatefilter-is-c
- */
-class FixedSizeListView : public QListView {
+class ChunkProxyModel;
+
+class IVW_QTEDITOR_API WorkspaceGridView : public QTreeView {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit FixedSizeListView(QWidget* parent = nullptr) : QListView(parent) {}
-
-    void setModel(QAbstractItemModel* model) override;
-    /*
-     * @return the content width and a height that depends on how many items that fit in a row.
-     */
-    QSize sizeHint() const override;
-
-    QSize minimumSizeHint() const override { return sizeHint(); }
-
-public slots:
-    virtual void setRootIndex(const QModelIndex& rootIndex) override;
-    void checkRootIndex();
-
-private:
-    QSortFilterProxyModel* model_ = nullptr;
-    QPersistentModelIndex sourceRootIndex_;
-};
-
-/**
- * \brief Displays recently used workspaces, example workspaces and regression test workspaces in a
- * grid list. Each workspace is represented by the first avaialble canvas image and its filename.
- */
-class IVW_QTEDITOR_API WorkspaceGridView : public QWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    explicit WorkspaceGridView(WorkspaceTreeModel* model,
-                               QSortFilterProxyModel* workspaceProxyModel,
-                               QItemSelectionModel* selectionModel, QWidget* parent = nullptr);
+    explicit WorkspaceGridView(QAbstractItemModel* model, QWidget* parent = nullptr);
     virtual ~WorkspaceGridView() = default;
+    const QAbstractProxyModel& proxy() const;
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
+    // QTreeView::expandRecursively() was introduced in Qt 5.13
+    // see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
+    void expandRecursively(const QModelIndex& index);
+#endif
+    void collapseRecursively(const QModelIndex& index);
 
 signals:
-    void selectedFileChanged(const QString& filename, bool isExample);
-    void loadFile(const QString& filename, bool isExample);
+    void loadFile(QString filename, bool isExample);
+    void selectFile(QString filename, bool isExample);
 
-private:
-    bool updateModulesWorkspaces(
-        TreeItem* titleItem, QLayout* container,
-        std::vector<std::pair<QLabel*, FixedSizeListView*>>& workspaceViewsList);
-    void updateWorkspaceViewVisibility();
-    void listViewDoubleClicked(const QModelIndex& index);
-    void setupView(QListView* view);
-    QLabel* createRichTextLabel(std::string_view text) const;
+protected:
+    virtual void resizeEvent(QResizeEvent* event) override;
 
-    QLabel* noWorkspacesLabel_;
-    QLabel* recentWorkspacesLabel_;
-    QVBoxLayout* examples_;
-    QLabel* examplesLabel_;
-    QVBoxLayout* regressionTests_;
-    QLabel* regressionTestsLabel_;
-    FixedSizeListView* recentWorkspaces_;
-    std::vector<std::pair<QLabel*, FixedSizeListView*>> examplesViewList_;
-    std::vector<std::pair<QLabel*, FixedSizeListView*>> regressionTestViewList_;
-
-    WorkspaceTreeModel* model_;
-    QSortFilterProxyModel* proxyModel_;
-    QItemSelectionModel* selectionModel_;
+    int itemSize_;
+    ChunkProxyModel* proxy_;
 };
-
 }  // namespace inviwo

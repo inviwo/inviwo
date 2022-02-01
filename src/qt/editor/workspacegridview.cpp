@@ -34,244 +34,372 @@
 #include <inviwo/core/network/workspaceannotations.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <tuple>
+#include <inviwo/qt/editor/workspacemodelroles.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-
 #include <QStyledItemDelegate>
 #include <QPainter>
 #include <QStyle>
 #include <QApplication>
 #include <QSortFilterProxyModel>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QScrollArea>
-
+#include <QHeaderView>
+#include <QPainterPath>
+#include <QIdentityProxyModel>
+#include <QHash>
+#include <QResizeEvent>
+#include <QPersistentModelIndex>
 #include <warn/pop>
 
 namespace inviwo {
 
-void FixedSizeListView::setModel(QAbstractItemModel* model) {
+using Role = WorkspaceModelRole;
+using Type = WorkspaceModelType;
 
-    if (model_ != nullptr) {
-        model_->disconnect(this);
-    }
-    if (auto sfModel = dynamic_cast<QSortFilterProxyModel*>(model)) {
-        QObject::connect(sfModel, &QAbstractItemModel::layoutChanged, this,
-                         &FixedSizeListView::checkRootIndex);
-        QObject::connect(sfModel, &QAbstractItemModel::rowsRemoved, this,
-                         &FixedSizeListView::checkRootIndex);
-        QObject::connect(sfModel, &QAbstractItemModel::rowsInserted, this,
-                         &FixedSizeListView::checkRootIndex);
-        model_ = sfModel;
-    } else {
-        model_ = nullptr;
-    }
-    QListView::setModel(model);
-}
-QSize FixedSizeListView::sizeHint() const {
-    QSize hint = QListView::sizeHint();
-    if (model()->rowCount() > 0) {
-        auto width = contentsRect().width();
-        auto nItems = model()->rowCount(rootIndex());
-        auto itemHeight = sizeHintForRow(0);
-        auto nItemsPerRow = floor(width / std::max(1, itemHeight));
-        auto nRows = std::max(1, static_cast<int>(std::ceil(nItems / nItemsPerRow)));
-        hint.setWidth(width);
-        hint.setHeight(nRows * itemHeight);
-        return hint;
-    }
-    return hint;
-}
-void FixedSizeListView::checkRootIndex() {
-    if (rootIndex().isValid() || !model_) {
-        return;
-    }
+namespace {
 
-    auto rootIndex = model_->mapFromSource(this->sourceRootIndex_);
-    if (rootIndex != this->rootIndex()) {
-        // Prevent segmentation faults
-        // See
-        // https://stackoverflow.com/questions/70112321/qt-rootindex-gets-reset-each-time-qsortfilterproxymodelinvalidatefilter-is-c
-        rootIndex =
-            rootIndex.model()->index(rootIndex.row(), rootIndex.column(), rootIndex.parent());
-        QListView::setRootIndex(rootIndex);
-    }
-}
+class SectionDelegate : public QStyledItemDelegate {
+public:
+    SectionDelegate(int itemSize, QWidget* parent = nullptr);
+    virtual ~SectionDelegate() override = default;
 
-void FixedSizeListView::setRootIndex(const QModelIndex& rootIndex) {
-    QListView::setRootIndex(rootIndex);
-    if (model_) {
-        auto mappedRootIndex = model_->mapToSource(rootIndex);
-        this->sourceRootIndex_ = QPersistentModelIndex(mappedRootIndex);
-    }
-}
+    virtual void paint(QPainter* painter, const QStyleOptionViewItem& option,
+                       const QModelIndex& index) const override;
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-WorkspaceGridView::WorkspaceGridView(WorkspaceTreeModel* model,
-                                     QSortFilterProxyModel* workspaceProxyModel,
-                                     QItemSelectionModel* selectionModel, QWidget* parent)
-    : QWidget{parent}
-    , model_(model)
-    , proxyModel_(workspaceProxyModel)
-    , selectionModel_(selectionModel) {
-
-    noWorkspacesLabel_ = createRichTextLabel("<h2>Could not find any workspaces..</h2>");
-    noWorkspacesLabel_->setVisible(false);
-
-    recentWorkspaces_ = new FixedSizeListView();
-    setupView(recentWorkspaces_);
-
-    recentWorkspacesLabel_ = createRichTextLabel("<h2>Recent workspaces</h2>");
-    examples_ = new QVBoxLayout();
-    examplesLabel_ = createRichTextLabel("<h2>Example workspaces</h2>");
-    regressionTests_ = new QVBoxLayout();
-    regressionTestsLabel_ = createRichTextLabel("<h2>Regression test workspaces</h2>");
-
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->setSpacing(utilqt::emToPx(this, 1));
-    layout->addWidget(noWorkspacesLabel_);
-    layout->addWidget(recentWorkspacesLabel_);
-    layout->addWidget(recentWorkspaces_);
-    layout->addWidget(examplesLabel_);
-    layout->addLayout(examples_);
-    layout->addWidget(regressionTestsLabel_);
-    layout->addLayout(regressionTests_);
-
-    // React to filtering changes
-    QObject::connect(workspaceProxyModel, &QSortFilterProxyModel::rowsRemoved, this,
-                     &WorkspaceGridView::updateWorkspaceViewVisibility);
-    QObject::connect(workspaceProxyModel, &QSortFilterProxyModel::rowsInserted, this,
-                     &WorkspaceGridView::updateWorkspaceViewVisibility);
-
-    QObject::connect(model_, &WorkspaceTreeModel::recentWorkspacesUpdated, this,
-                     [this](TreeItem* recentWorkspaceItem) {
-                         auto index =
-                             proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem));
-                         recentWorkspaces_->setRootIndex(index);
-                         bool isEmpty = !proxyModel_->hasChildren(index);
-                         recentWorkspaces_->setVisible(!isEmpty);
-                         recentWorkspacesLabel_->setVisible(!isEmpty);
-                     });
-    QObject::connect(model_, &WorkspaceTreeModel::exampleWorkspacesUpdated, this,
-                     [this](TreeItem* exampleWorkspaceItem) {
-                         examplesLabel_->setVisible(updateModulesWorkspaces(
-                             exampleWorkspaceItem, examples_, examplesViewList_));
-                     });
-    QObject::connect(
-        model_, &WorkspaceTreeModel::regressionTestWorkspacesUpdated, this,
-        [this](TreeItem* regressionTestWorkspaceItem) {
-            regressionTestsLabel_->setVisible(updateModulesWorkspaces(
-                regressionTestWorkspaceItem, regressionTests_, regressionTestViewList_));
-        });
-
-    QObject::connect(
-        selectionModel_, &QItemSelectionModel::currentRowChanged, this,
-        [this](const QModelIndex& current, const QModelIndex&) {
-            if (current.isValid() && (current.data(WorkspaceTreeModel::ItemRoles::Type) ==
-                                      WorkspaceTreeModel::ListElemType::File)) {
-                const auto filename =
-                    current.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
-                    current.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
-                const auto isExample =
-                    current.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
-                emit selectedFileChanged(filename, isExample);
-            } else {
-                emit selectedFileChanged("", false);
-            }
-        });
-}
-
-bool WorkspaceGridView::updateModulesWorkspaces(
-    TreeItem* titleItem, QLayout* container,
-    std::vector<std::pair<QLabel*, FixedSizeListView*>>& workspaceViewsList) {
-    while (QLayoutItem* child = container->takeAt(0)) {
-        delete child->widget();  // delete the widget
-        delete child;            // delete the layout item
-    }
-    workspaceViewsList.clear();
-
-    for (int i = 0; i < titleItem->childCount(); ++i) {
-        TreeItem* item = titleItem->child(i);
-        auto index = proxyModel_->mapFromSource(model_->getIndex(item));
-        auto title = utilqt::fromLocalQString(item->data(0, Qt::DisplayRole).toString());
-        QLabel* titleLabel = createRichTextLabel(fmt::format("<h3>{}</h3>", title));
-        container->addWidget(titleLabel);
-        auto view = new FixedSizeListView();
-        setupView(view);
-        view->setRootIndex(index);
-        workspaceViewsList.push_back(std::make_pair(titleLabel, view));
-        container->addWidget(view);
-    }
-    return titleItem->childCount() != 0;
-}
-void WorkspaceGridView::updateWorkspaceViewVisibility() {
-    bool recenWorkSpacesVisible = recentWorkspaces_->rootIndex().isValid();
-    recentWorkspaces_->setVisible(recenWorkSpacesVisible);
-    recentWorkspacesLabel_->setVisible(recenWorkSpacesVisible);
-
-    bool anyExampleVisible = false;
-    for (auto& labelView : examplesViewList_) {
-        bool visible = labelView.second->rootIndex().isValid();
-        labelView.first->setVisible(visible);
-        labelView.second->setVisible(visible);
-        anyExampleVisible |= visible;
-    }
-    examplesLabel_->setVisible(anyExampleVisible);
-    bool anyRegressionTestVisible = false;
-    for (auto& labelView : regressionTestViewList_) {
-        bool visible = labelView.second->rootIndex().isValid();
-        labelView.first->setVisible(visible);
-        labelView.second->setVisible(visible);
-        anyRegressionTestVisible |= visible;
-    }
-    regressionTestsLabel_->setVisible(anyRegressionTestVisible);
-    noWorkspacesLabel_->setVisible(
-        !(recenWorkSpacesVisible | anyExampleVisible | anyRegressionTestVisible));
-}
-
-void WorkspaceGridView::listViewDoubleClicked(const QModelIndex& index) {
-    if (index.isValid() && (index.data(WorkspaceTreeModel::ItemRoles::Type) ==
-                            WorkspaceTreeModel::ListElemType::File)) {
-        const auto filename = index.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
-                              index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
-        const auto isExample = index.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
-        emit loadFile(filename, isExample);
-    }
-}
-
-void WorkspaceGridView::setupView(QListView* view) {
-    view->setViewMode(QListView::ViewMode::IconMode);
-    auto textMargin = utilqt::emToPx(this, 1);  // Margin between icon and text
-    auto textHeight = view->fontMetrics().height() + textMargin;
-    view->setIconSize(utilqt::emToPx(this, QSize(TreeItem::IconSize, TreeItem::IconSize)) -
-                      QSize(textHeight, textHeight));
-    view->setResizeMode(QListView::ResizeMode::Adjust);
-    view->setUniformItemSizes(true);
-    view->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-    view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setMovement(QListView::Movement::Static);
-    view->setTextElideMode(Qt::TextElideMode::ElideMiddle);
-    view->setVerticalScrollMode(QAbstractItemView::ScrollMode::ScrollPerPixel);
-    view->setFrameShape(QFrame::Shape::NoFrame);
-    view->setModel(proxyModel_);
-    view->setSelectionModel(selectionModel_);
-    view->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectItems);
-    view->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
-    view->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
-    QObject::connect(view, &QListView::doubleClicked, this,
-                     &WorkspaceGridView::listViewDoubleClicked);
-}
-
-QLabel* WorkspaceGridView::createRichTextLabel(std::string_view text) const {
-    auto l = new QLabel(QString::fromStdString(std::string(text.data())));
-    l->setTextFormat(Qt::RichText);
-    return l;
+private:
+    QImage rightArrow;
+    QImage downArrow;
+    int itemSize_;
 };
+
+SectionDelegate::SectionDelegate(int itemSize, QWidget* parent)
+    : QStyledItemDelegate(parent)
+    , rightArrow{":/svgicons/arrow-right-enabled.svg"}
+    , downArrow{":/svgicons/arrow-down-enabled.svg"}
+    , itemSize_(itemSize) {}
+
+void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
+                            const QModelIndex& index) const {
+
+    auto option = o;
+    initStyleOption(&option, index);
+
+    painter->save();
+    if (utilqt::getData(index, Role::Type) == Type::File) {
+
+        option.text = "";
+        QStyle* style = option.widget ? option.widget->style() : QApplication::style();
+        style->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
+
+        const auto name = utilqt::getData(index, Qt::DisplayRole).toString();
+        const auto path = utilqt::getData(index, Role::Path).toString();
+        const auto image = utilqt::getData(index, Role::Image).value<QImage>();
+
+        const auto margin = utilqt::emToPx(option.fontMetrics, 0.5);
+
+        const auto baseRect = option.rect.adjusted(margin, margin, -margin, -margin);
+
+        const auto txtHeight = baseRect.height() / 4;
+        const auto imgCenter = baseRect.adjusted(0, 0, 0, -txtHeight - margin).center();
+        const auto w = std::min(baseRect.width(), baseRect.height() - txtHeight - margin) / 2;
+        const auto imgRect = QRect{imgCenter, QSize{0, 0}}.adjusted(-w, -w, w, w);
+
+        QPainterPath border;
+        border.addRoundedRect(imgRect, 35, 35, Qt::RelativeSize);
+
+        const auto is = std::min(image.rect().width(), image.rect().height()) / 2;
+        const auto sourceRect =
+            QRect{image.rect().center(), QSize{0, 0}}.adjusted(-is, -is, is, is);
+        painter->setClipPath(border, Qt::ReplaceClip);
+        painter->drawImage(imgRect, image, sourceRect);
+        painter->setClipPath(border, Qt::NoClip);
+
+        painter->setPen(QPen{option.palette.text().color(), 1.5});
+        painter->drawPath(border);
+
+        const auto nameRect = baseRect.adjusted(0, baseRect.height() - txtHeight, 0, 0);
+        painter->setPen(option.palette.text().color().lighter());
+        painter->drawText(nameRect, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWrapAnywhere, name);
+
+    } else if (index.column() == 0) {
+        // enlarge and emphasize font of section headers
+        option.font.setBold(true);
+        option.font.setPointSizeF(option.font.pointSizeF() * 1.2);
+
+        option.text = "";
+        QStyle* style = option.widget ? option.widget->style() : QApplication::style();
+        style->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
+
+        painter->setClipping(false);
+
+        const auto name = utilqt::getData(index, Qt::DisplayRole).toString();
+
+        const auto& img = option.state & QStyle::State_Open ? downArrow : rightArrow;
+
+        const auto indent = style->pixelMetric(QStyle::PM_TreeViewIndentation, 0, option.widget);
+
+        const auto level = [&]() {
+            auto i = index.parent();
+            int l = 0;
+            while (i.isValid()) {
+                i = i.parent();
+                ++l;
+            }
+            return l;
+        }();
+
+        auto rect = option.rect;
+        const auto imgRect = QRect{
+            QPoint{level * indent, rect.center().y() - img.rect().center().y()}, img.rect().size()};
+        painter->drawImage(imgRect, img, img.rect());
+
+        auto nameRect = option.rect;
+        nameRect.adjust(level * indent + rect.height(), 0, 0, 0);
+
+        painter->setFont(option.font);
+        painter->drawText(nameRect,
+                          Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip | Qt::TextSingleLine,
+                          name);
+    }
+    painter->restore();
+}
+
+QSize SectionDelegate::sizeHint(const QStyleOptionViewItem& o, const QModelIndex& index) const {
+    if (!index.isValid()) return QSize();
+
+    auto size = QStyledItemDelegate::sizeHint(o, index);
+    if (utilqt::getData(index, Role::Type) == Type::File) {
+        size.setHeight(itemSize_);
+    }
+    return size;
+}
+
+}  // namespace
+
+class ChunkProxyModel : public QAbstractProxyModel {
+public:
+    ChunkProxyModel(QAbstractItemModel* model, int chunkSize, QObject* parent)
+        : QAbstractProxyModel(parent), chunkSize_{chunkSize} {
+
+        setSourceModel(model);
+        auto reset = [this]() {
+            beginResetModel();
+            sourceIndexMapping_.clear();
+            endResetModel();
+        };
+        connect(model, &QAbstractItemModel::rowsAboutToBeInserted, this, reset);
+        connect(model, &QAbstractItemModel::rowsAboutToBeRemoved, this, reset);
+        connect(model, &QAbstractItemModel::rowsAboutToBeMoved, this, reset);
+        connect(model, &QAbstractItemModel::columnsAboutToBeInserted, this, reset);
+        connect(model, &QAbstractItemModel::columnsAboutToBeRemoved, this, reset);
+        connect(model, &QAbstractItemModel::columnsAboutToBeMoved, this, reset);
+        connect(model, &QAbstractItemModel::modelAboutToBeReset, this, reset);
+        connect(model, &QAbstractItemModel::layoutAboutToBeChanged, this, reset);
+
+        connect(model, &QAbstractItemModel::dataChanged, this,
+                [this](const QModelIndex& topLeft, const QModelIndex& bottomRight,
+                       const QList<int>& roles) {
+                    for (int i = topLeft.row(); i <= bottomRight.row(); ++i) {
+                        auto changed = mapFromSource(sourceModel()->index(i, 0, topLeft.parent()));
+                        dataChanged(changed, changed, roles);
+                    }
+                });
+    }
+
+    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override {
+        return chunkSize_;
+    }
+    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override {
+        auto sourceParent = mapToSource(parent);
+        auto sourceRows = sourceModel()->rowCount(sourceParent);
+
+        if (utilqt::getData(sourceParent, Role::Type) == Type::SubSection) {
+            auto chunkedRows = (sourceRows + chunkSize_ - 1) / chunkSize_;
+            return chunkedRows;
+        } else {
+            return sourceRows;
+        }
+    }
+
+    QModelIndex mapFromSource(const QModelIndex& sourceIndex) const override {
+        if (!sourceIndex.isValid()) return {};
+
+        auto map = mapping(sourceIndex);
+        if (utilqt::getData(sourceIndex, Role::Type) == Type::File) {
+            const auto row = sourceIndex.row() / chunkSize_;
+            const auto col = sourceIndex.row() % chunkSize_;
+            return createIndex(row, col, map);
+        } else {
+            return createIndex(sourceIndex.row(), sourceIndex.column(), map);
+        }
+    }
+
+    QModelIndex mapToSource(const QModelIndex& proxyIndex) const override {
+        if (!proxyIndex.isValid()) return {};
+
+        auto m = static_cast<const Mapping*>(proxyIndex.constInternalPointer());
+        return sourceModel()->index(m->sourceRow, m->sourceCol, m->sourceParent);
+    }
+
+    QModelIndex parent(const QModelIndex& child) const override {
+        const QModelIndex sourceIndex = mapToSource(child);
+        const QModelIndex sourceParent = sourceIndex.parent();
+        return mapFromSource(sourceParent);
+    }
+
+    QModelIndex index(int row, int column, const QModelIndex& parent) const override {
+        const QModelIndex sourceParent = mapToSource(parent);
+
+        if (utilqt::getData(sourceParent, Role::Type) == Type::SubSection) {
+            const int sourceRow = row * chunkSize_ + column;
+            return mapFromSource(sourceModel()->index(sourceRow, 0, sourceParent));
+        } else {
+            return mapFromSource(sourceModel()->index(row, column, sourceParent));
+        }
+    }
+
+    QModelIndex sibling(int row, int column, const QModelIndex& idx) const override {
+        if (!idx.isValid()) return {};
+        return index(row, column, idx.parent());
+    }
+
+    void setChunkSize(int chunkSize) {
+        if (chunkSize_ == chunkSize) return;
+
+        beginResetModel();
+        chunkSize_ = chunkSize;
+        sourceIndexMapping_.clear();
+        endResetModel();
+    }
+
+    int chunkSize() const { return chunkSize_; }
+
+private:
+    struct Hash {
+        size_t operator()(const QModelIndex& idx, size_t seed = std::hash<int>{}(0)) const {
+            return qHash(idx, seed);
+        }
+    };
+    struct Mapping {
+        int sourceRow;
+        int sourceCol;
+        QPersistentModelIndex sourceParent;
+    };
+    using IndexMap = std::unordered_map<QModelIndex, Mapping, Hash>;
+
+    Mapping* mapping(const QModelIndex& sourceIndex) const {
+        auto [it, inserted] = sourceIndexMapping_.try_emplace(sourceIndex);
+        if (inserted) {
+            it->second.sourceRow = sourceIndex.row();
+            it->second.sourceCol = sourceIndex.column();
+            it->second.sourceParent = sourceIndex.parent();
+        }
+        return &(it->second);
+    }
+    mutable IndexMap sourceIndexMapping_;
+    int chunkSize_;
+};
+
+WorkspaceGridView::WorkspaceGridView(QAbstractItemModel* theModel, QWidget* parent)
+    : QTreeView{parent}
+    , itemSize_{utilqt::emToPx(this, 14)}
+    , proxy_{new ChunkProxyModel{theModel, 3, this}} {
+
+    setModel(proxy_);
+
+    setHeaderHidden(true);
+    setSelectionBehavior(QAbstractItemView::SelectItems);
+    setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+    setItemDelegate(new SectionDelegate(itemSize_, this));
+    setIndentation(0);
+
+    connect(this, &QTreeView::doubleClicked, this, [this](const QModelIndex& index) {
+        if (index.isValid() && (utilqt::getData(index, Role::Type) == Type::File)) {
+            const auto filename = utilqt::getData(index, Role::FilePath).toString();
+            const auto isExample = utilqt::getData(index, Role::isExample).toBool();
+            emit loadFile(filename, isExample);
+        }
+    });
+
+    connect(this, &QTreeView::clicked, this, [this](const QModelIndex& index) {
+        if (index.isValid() && (utilqt::getData(index, Role::Type) != Type::File)) {
+
+            if (QGuiApplication::keyboardModifiers() & Qt::ControlModifier) {
+                isExpanded(index) ? collapseRecursively(index) : expandRecursively(index);
+            } else {
+                setExpanded(index, !isExpanded(index));
+            }
+        }
+    });
+
+    connect(selectionModel(), &QItemSelectionModel::currentChanged, this,
+            [this](const QModelIndex& current, const QModelIndex&) {
+                if (current.isValid() && (utilqt::getData(current, Role::Type) == Type::File)) {
+                    const auto filename = utilqt::getData(current, Role::FilePath).toString();
+                    const auto isExample = utilqt::getData(current, Role::isExample).toBool();
+                    emit selectFile(filename, isExample);
+                } else {
+                    emit selectFile("", false);
+                }
+            });
+
+    header()->setSectionResizeMode(QHeaderView::Stretch);
+}
+
+const QAbstractProxyModel& WorkspaceGridView::proxy() const { return *proxy_; }
+
+void WorkspaceGridView::resizeEvent(QResizeEvent* event) {
+    QTreeView::resizeEvent(event);
+
+    const int newChunkSize = event->size().width() / itemSize_;
+
+    if (newChunkSize != proxy_->chunkSize()) {
+        std::vector<QModelIndex> expanded;
+        auto findExpaned = [&](auto& self, const QModelIndex& parent) -> void {
+            auto rows = proxy_->rowCount(parent);
+            for (int i = 0; i < rows; ++i) {
+                auto index = proxy_->index(i, 0, parent);
+                if (isExpanded(index)) {
+                    expanded.push_back(proxy_->mapToSource(index));
+                    self(self, index);
+                }
+            }
+        };
+        findExpaned(findExpaned, QModelIndex{});
+        proxy_->setChunkSize(event->size().width() / itemSize_);
+        for (const auto& idx : expanded) {
+            expand(proxy_->mapFromSource(idx));
+        }
+    }
+}
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
+// QTreeView::expandRecursively() was introduced in Qt 5.13
+// see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
+void WorkspaceGridView::expandRecursively(const QModelIndex& index) {
+    if (index.isValid()) {
+        for (int i = 0; i < index.model()->rowCount(index); ++i) {
+            expandRecursively(index.child(i, 0));
+        }
+        if (!isExpanded(index)) {
+            expand(index);
+        }
+    }
+}
+#endif
+
+void WorkspaceGridView::collapseRecursively(const QModelIndex& index) {
+    if (index.isValid()) {
+        for (int i = 0; i < model()->rowCount(index); ++i) {
+            collapseRecursively(model()->index(i, 0, index));
+        }
+        if (isExpanded(index)) {
+            collapse(index);
+        }
+    }
+}
 
 }  // namespace inviwo

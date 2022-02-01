@@ -1034,10 +1034,6 @@ QFrame#WelcomeRightColumn {
     background-color: #434345;
 }
 
-QTreeWidget#FileTreeWidget {
-    border: 0.0625em solid transparent;
-}
-
 QSplitter#WelcomeWidget::handle {
     background: #434345;
     border: none;

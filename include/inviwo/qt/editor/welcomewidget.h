@@ -44,15 +44,15 @@ class QLineEdit;
 class QTextEdit;
 class QScrollArea;
 class QSortFilterProxyModel;
-class QItemSelectionModel;
 
 namespace inviwo {
 
 class WorkspaceTreeModel;
 class WorkspaceTreeView;
+class WorkspaceGridView;
 class InviwoApplication;
 class ChangeLog;
-class WorkspaceGridView;
+class WorkspaceFilter;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
 #include <warn/push>
@@ -75,22 +75,26 @@ signals:
 
 protected:
     virtual void showEvent(QShowEvent* event) override;
-    virtual void hideEvent(QHideEvent* event) override;
     virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
+    WelcomeWidget& setSetting(const QString& key, const QVariant& value);
+    QVariant getSetting(const QString& key, const QVariant& defaultValue = QVariant()) const;
+
     void updateDetails(const QString& filename);
-    QModelIndex findFirstLeaf(QModelIndex parent = QModelIndex()) const;
+    static QModelIndex findFirstLeaf(QAbstractItemModel* model, QModelIndex parent = QModelIndex());
+
+    void selectFirstLeaf() const;
+
+    void expandTreeView() const;
 
     InviwoApplication* app_;
 
-    WorkspaceTreeModel* workspaceModel_;
-    QSortFilterProxyModel* workspaceProxyModel_;
-    QItemSelectionModel* workspaceSelectionModel_;
+    WorkspaceTreeModel* model_;
+    WorkspaceFilter* filterModel_;
     WorkspaceTreeView* workspaceTreeView_;
-
     WorkspaceGridView* workspaceGridView_;
-    QScrollArea* workspaceGridViewArea_;
+
     QLineEdit* filterLineEdit_;
     QTextEdit* details_;
     ChangeLog* changelog_;

@@ -39,7 +39,9 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/algorithm/seachdsl.h>
 
+#include <inviwo/qt/editor/workspacetreemodel.h>
 #include <inviwo/qt/editor/workspacetreeview.h>
 #include <inviwo/qt/editor/workspacegridview.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
@@ -72,6 +74,8 @@
 #include <QFile>
 #include <QImage>
 #include <QScrollArea>
+#include <QSortFilterProxyModel>
+#include <QItemSelectionModel>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QWindow>
@@ -150,22 +154,85 @@ protected:
     }
 };
 
+using Role = WorkspaceTreeModel::Role;
+
+namespace {
+
+auto matcher = [](Role role) {
+    return [role](const QModelIndex& i, std::string_view str) -> bool {
+        return utilqt::getData(i, role).toString().contains(utilqt::toQString(str),
+                                                            Qt::CaseInsensitive);
+    };
+};
+
+}
+
+class WorkspaceFilter : public QSortFilterProxyModel {
+public:
+    WorkspaceFilter(QObject* parent = nullptr)
+        : QSortFilterProxyModel(parent)
+        , dsl_{{{"file", "f", "file name", true, matcher(Role::Name)},
+                {"path", "/", "file path", true, matcher(Role::Path)},
+                {"title", "t", "workspace title", true, matcher(Role::Title)},
+                {"author", "a", "workspace author", true, matcher(Role::Author)},
+                {"tags", "#", "workspace tags", true, matcher(Role::Tags)},
+                {"category", "c", "workspace category", true, matcher(Role::Categories)},
+                {"processors", "p",
+                 "search processor identifiers, display names, and class identifiers", false,
+                 [](const QModelIndex& i, std::string_view str) -> bool {
+                     const auto list = utilqt::getData(i, Role::Processors).toStringList();
+                     const auto qstr = utilqt::toQString(str);
+                     for (const auto& item : list) {
+                         if (item.contains(qstr, Qt::CaseInsensitive)) {
+                             return true;
+                         }
+                     }
+                     return false;
+                 }}}} {}
+
+    bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override {
+        auto index = sourceModel()->index(source_row, 0, source_parent);
+        return dsl_.match(index);
+    };
+
+    void setCustomFilter(const QString filter) {
+        if (dsl_.setSearchString(utilqt::fromQString(filter))) {
+            invalidateFilter();
+        }
+    }
+
+    Document description() const {
+        using P = Document::PathComponent;
+        auto doc = dsl_.description();
+        auto b = doc.get({P{"html"}, P{"body"}});
+        auto desc = b.insert(P::first(), "div");
+        desc.append("b", "Search Workspaces", {{"style", "color:white;"}});
+        desc.append("p", "Example: processors:\"Volume Raycaster\" author:Martin");
+        return doc;
+    }
+
+private:
+    SearchDSL<QModelIndex> dsl_;
+};
+
 WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     : QSplitter(parent)
     , app_(app)
-    , workspaceModel_(new WorkspaceTreeModel(app, this))
-    , workspaceProxyModel_{new QSortFilterProxyModel{this}}
-    , workspaceSelectionModel_(new QItemSelectionModel(workspaceProxyModel_, this)) {
+    , model_(new WorkspaceTreeModel(app, this))
+    , filterModel_{new WorkspaceFilter{this}} {
+
     setObjectName("WelcomeWidget");
 
-    workspaceProxyModel_->setSourceModel(workspaceModel_);
-    workspaceProxyModel_->setRecursiveFilteringEnabled(true);
-    workspaceProxyModel_->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    filterModel_->setSourceModel(model_);
+    filterModel_->setRecursiveFilteringEnabled(true);
+    filterModel_->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
     const auto space = utilqt::refSpacePx(this);
     setOrientation(Qt::Horizontal);
     setHandleWidth(space);
     setContentsMargins(0, 0, 0, 0);
+
+    QSplitter* leftSplitter = nullptr;
 
     {  // Left splitter pane ( caption | splitter ( filetree | details ) )
         auto leftWidget = new QWidget();
@@ -196,7 +263,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             leftLayout->addWidget(captionWidget);
         }
 
-        auto leftSplitter = new QSplitter(leftWidget);
+        leftSplitter = new QSplitter(leftWidget);
         leftSplitter->setObjectName("WelcomeWidget");
         leftSplitter->setOrientation(Qt::Horizontal);
         leftSplitter->setHandleWidth(space / 2);
@@ -205,89 +272,37 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         leftSplitter->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         {  // left column: workspace filter, list of recently used workspaces, and examples
-            workspaceGridView_ = new WorkspaceGridView(workspaceModel_, workspaceProxyModel_,
-                                                       workspaceSelectionModel_);
-            workspaceGridView_->setObjectName("WorkspaceView");
-            // QScrollArea requires a minimum size
-            workspaceGridView_->setMinimumWidth(utilqt::emToPx(this, 2));
-            workspaceGridView_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-            workspaceGridViewArea_ = new QScrollArea();
-            workspaceGridViewArea_->setFrameShape(QFrame::Shape::NoFrame);
-            workspaceGridViewArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-            workspaceGridViewArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-            workspaceGridViewArea_->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-            workspaceGridViewArea_->setWidgetResizable(true);
-            workspaceGridViewArea_->setWidget(workspaceGridView_);
-            QSettings settings;
-            settings.beginGroup("InviwoMainWindow");
-            workspaceGridViewArea_->setVisible(
-                settings.value("showWorkSpaceGridView", true).toBool());
+            auto load = [this](const QString& filename, bool isExample) {
+                updateDetails(filename);
+                loadWorkspaceBtn_->disconnect();
+                QObject::connect(
+                    loadWorkspaceBtn_, &QToolButton::clicked, this,
+                    [this, filename, isExample]() { emit loadWorkspace(filename, isExample); });
+            };
 
-            QObject::connect(workspaceGridView_, &WorkspaceGridView::selectedFileChanged, this,
-                             [this](const QString& filename, bool isExample) {
-                                 updateDetails(filename);
-
-                                 loadWorkspaceBtn_->disconnect();
-                                 QObject::connect(loadWorkspaceBtn_, &QToolButton::clicked, this,
-                                                  [this, filename, isExample]() {
-                                                      emit loadWorkspace(filename, isExample);
-                                                  });
-                             });
-            QObject::connect(workspaceGridView_, &WorkspaceGridView::loadFile, this,
-                             &WelcomeWidget::loadWorkspace);
-
-            workspaceTreeView_ = new WorkspaceTreeView(workspaceModel_, workspaceProxyModel_,
-                                                       workspaceSelectionModel_);
-            workspaceTreeView_->setVisible(!settings.value("showWorkSpaceGridView", true).toBool());
-            workspaceTreeView_->setObjectName("WorkspaceTreeView");
+            workspaceTreeView_ = new WorkspaceTreeView(filterModel_, this);
             workspaceTreeView_->setMinimumWidth(utilqt::emToPx(this, 25));
             workspaceTreeView_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::selectedFileChanged, this,
-                             [this](const QString& filename, bool isExample) {
-                                 updateDetails(filename);
+            workspaceTreeView_->setVisible(!getSetting("showWorkSpaceGridView", true).toBool());
 
-                                 loadWorkspaceBtn_->disconnect();
-                                 QObject::connect(loadWorkspaceBtn_, &QToolButton::clicked, this,
-                                                  [this, filename, isExample]() {
-                                                      emit loadWorkspace(filename, isExample);
-                                                  });
-                             });
             QObject::connect(workspaceTreeView_, &WorkspaceTreeView::loadFile, this,
                              &WelcomeWidget::loadWorkspace);
+            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::selectFile, this, load);
+
+            workspaceGridView_ = new WorkspaceGridView(filterModel_, this);
+            workspaceGridView_->setMinimumWidth(utilqt::emToPx(this, 25));
+            workspaceGridView_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            workspaceGridView_->setVisible(getSetting("showWorkSpaceGridView", true).toBool());
+
+            QObject::connect(workspaceGridView_, &WorkspaceGridView::loadFile, this,
+                             &WelcomeWidget::loadWorkspace);
+            QObject::connect(workspaceGridView_, &WorkspaceGridView::selectFile, this, load);
 
             auto toolbarLayout = new QHBoxLayout();
             filterLineEdit_ = new QLineEdit();
             filterLineEdit_->setPlaceholderText("Search for Workspace...");
-            filterLineEdit_->setMaximumWidth(utilqt::emToPx(this, 32.0));
             filterLineEdit_->installEventFilter(
                 new LineEditEventFilter(workspaceTreeView_, filterLineEdit_));
-            toolbarLayout->addWidget(filterLineEdit_);
-
-            auto horizontalSpacer = new QSpacerItem(utilqt::emToPx(this, 1.0), 0,
-                                                    QSizePolicy::Minimum, QSizePolicy::Minimum);
-            toolbarLayout->addItem(horizontalSpacer);
-
-            auto viewsSelectionButtons = new QToolBar();
-            toolbarLayout->addWidget(viewsSelectionButtons);
-            viewsSelectionButtons->addAction(QIcon(":/svgicons/gridlist.svg"),
-                                             "Workspace Grid List", [this]() {
-                                                 QSettings settings;
-                                                 settings.beginGroup("InviwoMainWindow");
-                                                 settings.setValue("showWorkSpaceGridView", true);
-                                                 settings.endGroup();
-                                                 workspaceGridViewArea_->setVisible(true);
-                                                 workspaceTreeView_->setVisible(false);
-                                             });
-            viewsSelectionButtons->addAction(QIcon(":/svgicons/treelist.svg"),
-                                             "Workspace Tree List", [this]() {
-                                                 QSettings settings;
-                                                 settings.beginGroup("InviwoMainWindow");
-                                                 settings.setValue("showWorkSpaceGridView", false);
-                                                 settings.endGroup();
-                                                 workspaceGridViewArea_->setVisible(false);
-                                                 workspaceTreeView_->setVisible(true);
-                                             });
-
             QIcon clearIcon;
             clearIcon.addFile(":/svgicons/lineedit-clear.svg",
                               utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Normal);
@@ -300,23 +315,60 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             connect(clearAction, &QAction::triggered, filterLineEdit_, &QLineEdit::clear);
             connect(filterLineEdit_, &QLineEdit::textChanged, this,
                     [this, clearAction](const QString& str) {
-                        workspaceProxyModel_->setFilterRegularExpression(str);
-                        workspaceTreeView_->expandItems();
+                        filterModel_->setCustomFilter(str);
 
-                        // select first leaf node
-                        auto index = findFirstLeaf(QModelIndex());
-                        if (index.isValid()) {
-                            workspaceSelectionModel_->setCurrentIndex(
-                                index,
-                                QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-                        }
+                        expandTreeView();
+                        selectFirstLeaf();
+
                         clearAction->setVisible(!str.isEmpty());
                     });
+            filterLineEdit_->setToolTip(utilqt::toQString(filterModel_->description()));
+
+            toolbarLayout->addWidget(filterLineEdit_);
+
+            auto horizontalSpacer = new QSpacerItem(utilqt::emToPx(this, 1.0), 0,
+                                                    QSizePolicy::Minimum, QSizePolicy::Minimum);
+            toolbarLayout->addItem(horizontalSpacer);
+
+            auto viewsSelectionButtons = new QToolBar();
+            toolbarLayout->addWidget(viewsSelectionButtons);
+
+            auto expandCollapse = QIcon();
+            expandCollapse.addFile(":/svgicons/treelist-expand.svg", QSize(), QIcon::Normal,
+                                   QIcon::Off);
+            expandCollapse.addFile(":/svgicons/treelist-collapse.svg", QSize(), QIcon::Normal,
+                                   QIcon::On);
+
+            viewsSelectionButtons
+                ->addAction(expandCollapse, "Workspace Tree List",
+                            [this](bool expand) {
+                                if (expand) {
+                                    workspaceGridView_->expandRecursively({});
+                                    workspaceTreeView_->expandRecursively({});
+                                } else {
+                                    workspaceGridView_->collapseAll();
+                                    workspaceTreeView_->collapseAll();
+                                }
+                            })
+                ->setCheckable(true);
+
+            viewsSelectionButtons->addAction(QIcon(":/svgicons/gridlist.svg"),
+                                             "Workspace Grid List", [this]() {
+                                                 setSetting("showWorkSpaceGridView", true);
+                                                 workspaceGridView_->setVisible(true);
+                                                 workspaceTreeView_->setVisible(false);
+                                             });
+            viewsSelectionButtons->addAction(QIcon(":svgicons/detaillist.svg"),
+                                             "Workspace Tree List", [this]() {
+                                                 setSetting("showWorkSpaceGridView", false);
+                                                 workspaceGridView_->setVisible(false);
+                                                 workspaceTreeView_->setVisible(true);
+                                             });
 
             auto fileTreeLayout = new QVBoxLayout();
             fileTreeLayout->addLayout(toolbarLayout);
-            fileTreeLayout->addWidget(workspaceGridViewArea_);
             fileTreeLayout->addWidget(workspaceTreeView_);
+            fileTreeLayout->addWidget(workspaceGridView_);
             auto filetreeWidget = new QWidget();
             filetreeWidget->setLayout(fileTreeLayout);
             fileTreeLayout->setContentsMargins(2 * space, 0, space, 2 * space);
@@ -342,7 +394,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 auto button = new QToolButton(leftWidget);
                 button->setText(str);
                 button->setIcon(QIcon(iconpath));
-                button->setIconSize(utilqt::emToPx(this, QSize(5, 5)));
+                button->setIconSize(utilqt::emToPx(this, QSize(7, 7)));
                 button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
                 button->setToolTip(toolTip);
                 button->setObjectName(objName);
@@ -388,14 +440,14 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                         QSizePolicy::MinimumExpanding);
             leftSplitter->addWidget(centerWidget);
         }
-        leftSplitter->setStretchFactor(0, 4);
-        leftSplitter->setStretchFactor(1, 1);
+        leftSplitter->setStretchFactor(0, 1);
+        leftSplitter->setStretchFactor(1, 1.5);
         leftSplitter->handle(1)->setAttribute(Qt::WA_Hover);
     }
     {  // right splitter pane: changelog / options
         auto rightColumn = new QFrame(this);
         addWidget(rightColumn);
-        setStretchFactor(0, 3);  // left + center widget (workspace view + details)
+        setStretchFactor(0, 2);  // left + center widget (workspace view + details)
         setStretchFactor(1, 1);  // rightColumn (changelog)
         rightColumn->setObjectName("WelcomeRightColumn");
         auto rightColumnLayout = new QVBoxLayout(rightColumn);
@@ -420,30 +472,18 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             new QSpacerItem(space, space, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
         {
-            QSettings settings;
-            settings.beginGroup("InviwoMainWindow");
-
             auto autoloadWorkspace = new QCheckBox("&Auto-load last workspace", rightColumn);
-            autoloadWorkspace->setChecked(settings.value("autoloadLastWorkspace", true).toBool());
-            QObject::connect(autoloadWorkspace, &QCheckBox::toggled, this, [](bool checked) {
-                QSettings settings;
-                settings.beginGroup("InviwoMainWindow");
-                settings.setValue("autoloadLastWorkspace", checked);
-                settings.endGroup();
+            autoloadWorkspace->setChecked(getSetting("autoloadLastWorkspace", true).toBool());
+            QObject::connect(autoloadWorkspace, &QCheckBox::toggled, this, [this](bool checked) {
+                setSetting("autoloadLastWorkspace", checked);
             });
             rightColumnLayout->addWidget(autoloadWorkspace);
 
             auto showOnStartup = new QCheckBox("&Show this page on startup", rightColumn);
-            showOnStartup->setChecked(settings.value("showWelcomePage", true).toBool());
-            QObject::connect(showOnStartup, &QCheckBox::toggled, this, [](bool checked) {
-                QSettings settings;
-                settings.beginGroup("InviwoMainWindow");
-                settings.setValue("showWelcomePage", checked);
-                settings.endGroup();
-            });
+            showOnStartup->setChecked(getSetting("showWelcomePage", true).toBool());
+            QObject::connect(showOnStartup, &QCheckBox::toggled, this,
+                             [this](bool checked) { setSetting("showWelcomePage", checked); });
             rightColumnLayout->addWidget(showOnStartup);
-
-            settings.endGroup();
 
             setTabOrder(changelog_, autoloadWorkspace);
             setTabOrder(autoloadWorkspace, showOnStartup);
@@ -463,19 +503,28 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     };
 
     if (getScreen()->size().width() < 1200) {
-        this->setSizes(QList<int>({1, 0}));
+        setSizes(QList<int>({1, 0}));
     }
 
-    setTabOrder(filterLineEdit_, workspaceGridViewArea_);
-    setTabOrder(workspaceGridViewArea_, workspaceTreeView_);
-    setTabOrder(workspaceTreeView_, loadWorkspaceBtn_);
+    restoreState(getSetting("mainSplitterState").toByteArray());
+    leftSplitter->restoreState(getSetting("leftSplitterState").toByteArray());
+
+    connect(this, &QSplitter::splitterMoved, this,
+            [this](int, int) { setSetting("mainSplitterState", saveState()); });
+    connect(leftSplitter, &QSplitter::splitterMoved, this, [this, leftSplitter](int, int) {
+        setSetting("leftSplitterState", leftSplitter->saveState());
+    });
+
+    setTabOrder(filterLineEdit_, workspaceTreeView_);
+    setTabOrder(workspaceTreeView_, workspaceGridView_);
+    setTabOrder(workspaceGridView_, loadWorkspaceBtn_);
     setTabOrder(details_, changelog_);
 
     changelog_->loadLog();
 }
 
 void WelcomeWidget::updateRecentWorkspaces(const QStringList& list) {
-    workspaceModel_->updateRecentWorkspaces(list);
+    model_->updateRecentWorkspaces(list);
 }
 
 void WelcomeWidget::enableRestoreButton(bool hasRestoreWorkspace) {
@@ -484,45 +533,72 @@ void WelcomeWidget::enableRestoreButton(bool hasRestoreWorkspace) {
 
 void WelcomeWidget::setFilterFocus() { filterLineEdit_->setFocus(Qt::OtherFocusReason); }
 
+void WelcomeWidget::selectFirstLeaf() const {
+    // select first leaf node
+
+    if (workspaceGridView_->isVisible()) {
+        auto gridIndex = findFirstLeaf(workspaceGridView_->model());
+        if (gridIndex.isValid()) {
+            workspaceGridView_->selectionModel()->setCurrentIndex(
+                gridIndex, QItemSelectionModel::ClearAndSelect);
+        }
+    }
+
+    if (workspaceTreeView_->isVisible()) {
+        auto treeIndex = findFirstLeaf(workspaceTreeView_->model());
+        if (treeIndex.isValid()) {
+            workspaceTreeView_->selectionModel()->setCurrentIndex(
+                treeIndex, QItemSelectionModel::ClearAndSelect);
+        }
+    }
+}
+
+void WelcomeWidget::expandTreeView() const {
+    auto expandSection = [&](std::string_view section) {
+        auto modelIdx = model_->getCategoryIndex(section);
+        if (auto filterIdx = filterModel_->mapFromSource(modelIdx); filterIdx.isValid()) {
+            workspaceTreeView_->expandRecursively(filterIdx);
+
+            if (auto proxyIdx = workspaceGridView_->proxy().mapFromSource(filterIdx);
+                proxyIdx.isValid()) {
+                workspaceGridView_->expandRecursively(proxyIdx);
+            }
+        }
+    };
+
+    if (filterLineEdit_->text().isEmpty()) {
+        expandSection(WorkspaceTreeModel::recent);
+        expandSection(WorkspaceTreeModel::examples);
+    } else {
+        workspaceTreeView_->expandAll();
+        workspaceGridView_->expandAll();
+    }
+}
+
 void WelcomeWidget::showEvent(QShowEvent* event) {
     if (!event->spontaneous()) {
-        QModelIndex index = workspaceSelectionModel_->currentIndex();
-        workspaceModel_->updateExampleEntries();
-        workspaceModel_->updateRegressionTestEntries();
+        model_->updateExampleEntries();
+        model_->updateRegressionTestEntries();
 
-        workspaceTreeView_->expandItems();
-
-        if (index.isValid()) {
-            workspaceSelectionModel_->setCurrentIndex(
-                index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-        } else {
-            workspaceTreeView_->selectRecentWorkspace(0);
-        }
+        expandTreeView();
+        selectFirstLeaf();
     }
     QWidget::showEvent(event);
 }
 
-void inviwo::WelcomeWidget::hideEvent(QHideEvent* event) {
-    if (!event->spontaneous()) {
-        // Keeping all of these workspaces can be quite expensive, so remove them if hidden as they
-        // are updated when shown anyway.
-        workspaceModel_->updateCategory(workspaceModel_->getExampleWorkspaceItem(),
-                                        std::vector<std::unique_ptr<TreeItem>>());
-        workspaceModel_->updateCategory(workspaceModel_->getRegressionTestWorkspaceItem(),
-                                        std::vector<std::unique_ptr<TreeItem>>());
-    }
-    QWidget::hideEvent(event);
-}
-
 void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
-    if ((event->key() >= Qt::Key_0) && (event->key() <= Qt::Key_9)) {
+    if ((event->key() >= Qt::Key_0) && (event->key() <= Qt::Key_9) &&
+        event->modifiers().testFlag(Qt::ControlModifier)) {
         int number = [key = event->key()]() {
             if (key == Qt::Key_0) return 9;
             return key - Qt::Key_1;
         }();
-        if (workspaceTreeView_->selectRecentWorkspace(number)) {
-            if ((event->modifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
-                loadWorkspaceBtn_->animateClick();
+        auto index = model_->getCategoryIndex(WorkspaceTreeModel::recent);
+        if (auto selIndex = filterModel_->mapFromSource(index); selIndex.isValid()) {
+            if (auto wsIndex = filterModel_->index(number, 0, selIndex); wsIndex.isValid()) {
+                const auto filename = utilqt::getData(wsIndex, Role::FilePath).toString();
+                const auto isExample = utilqt::getData(wsIndex, Role::isExample).toBool();
+                emit loadWorkspace(filename, isExample);
             }
             event->accept();
         }
@@ -540,94 +616,109 @@ void WelcomeWidget::updateDetails(const QString& filename) {
         loadWorkspaceBtn_->setEnabled(false);
         return;
     }
-
     loadWorkspaceBtn_->setEnabled(true);
 
     // extract annotations including network screenshot and canvas images from workspace
-    WorkspaceAnnotationsQt annotations;
-    bool fileBroken = false;
+    std::optional<WorkspaceAnnotationsQt> annotations;
     try {
-        auto istream = filesystem::ifstream(utilqt::fromQString(filename));
-        if (istream.is_open()) {
-            LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
-            auto d = app_->getWorkspaceManager()->createWorkspaceDeserializer(
-                istream, utilqt::fromQString(filename), &logger);
-            d.setExceptionHandler([](const ExceptionContext) {});
-            d.deserialize("WorkspaceAnnotations", annotations);
-        } else {
-            fileBroken = true;
-        }
+        annotations.emplace(utilqt::fromQString(filename), app_);
     } catch (Exception& e) {
-        util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
-        fileBroken = "true";
     }
 
     const auto dateformat = "yyyy-MM-dd hh:mm:ss";
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-    auto createdStr = utilqt::fromQString(info.created().toString(dateformat));
-#else
-    auto createdStr = utilqt::fromQString(info.birthTime().toString(dateformat));
-#endif
-    auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateformat));
+    const auto createdStr = utilqt::fromQString(info.birthTime().toString(dateformat));
+    const auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateformat));
+    const auto titleStr = [&]() {
+        auto str = (annotations && !annotations->getTitle().empty())
+                       ? annotations->getTitle()
+                       : utilqt::fromQString(info.completeBaseName());
+        if (!str.empty()) str[0] = static_cast<char>(std::toupper(str[0]));
+        replaceInString(str, "-", " ");
+        replaceInString(str, "_", " ");
+        return str;
+    }();
 
-    const bool hasTitle = !annotations.getTitle().empty();
-    auto titleStr =
-        hasTitle ? annotations.getTitle() : utilqt::fromQString(info.completeBaseName());
-    auto description = htmlEncode(annotations.getDescription());
-    replaceInString(description, "\n", "<br/>");
+    const auto description = [&]() {
+        if (!annotations) return std::string{};
 
-    if (titleStr.size() > 0) titleStr[0] = static_cast<char>(std::toupper(titleStr[0]));
-    replaceInString(titleStr, "-", " ");
-    replaceInString(titleStr, "_", " ");
+        auto str = htmlEncode(annotations->getDescription());
+        replaceInString(str, "\n", "<br/>");
+        return str;
+    }();
 
     Document doc;
     auto body = doc.append("html").append("body");
-    body.append("h2", titleStr,
+    body.append("div", titleStr,
                 {{"style", "font-size:45pt; color:#268bd2; margin-top:0em; padding-top:0em;"}});
 
     auto table = body.append("table", "", {{"style", "margin-bottom:1em;"}});
-    auto addrow = [&](std::string_view name, std::string_view value) {
+    auto addRow = [&](std::string_view name, std::string_view value) {
         if (value.empty()) return;
         auto tr = table.append("tr");
         tr.append("td", name, {{"style", "text-align:right;"}});
         tr.append("td", htmlEncode(value), {{"style", "color:#ebe5df; font-weight:500;"}});
     };
 
-    addrow("File", utilqt::fromQString(info.fileName()));
-    addrow("Modified", modifiedStr);
-    addrow("Created", createdStr);
-    addrow("Author", annotations.getAuthor());
-    addrow("Tags", annotations.getTags());
-    addrow("Categories", annotations.getCategories());
-    addrow("Description", description);
-
-    if (fileBroken) {
+    addRow("File", utilqt::fromQString(info.fileName()));
+    addRow("Path", utilqt::fromQString(info.path()));
+    addRow("Modified", modifiedStr);
+    addRow("Created", createdStr);
+    if (annotations) {
+        addRow("Author", annotations->getAuthor());
+        addRow("Tags", annotations->getTags());
+        addRow("Categories", annotations->getCategories());
+        addRow("Description", description);
+    } else {
         body.append("h3", "Workspace file could not be opened!",
                     {{"style", "color:firebrick;font-weight:600;"}});
     }
+
     auto content = body.append("span");
-    const int maxImgWidth = utilqt::emToPx(this, 16);
-    auto addImage = [&content, maxImgWidth](auto item) {
+    const int maxImageSize = utilqt::emToPx(this, 32);
+    auto addImage = [&content, maxImageSize](auto item) {
         if (!item.isValid()) return;
         auto img = content.append("table", "", {{"style", "float: left;"}});
         img.append("tr").append("td").append("h3", item.name, {{"style", "font-weight:600;"}});
         img.append("tr").append("td").append(
             "img", "",
-            {{"width", std::to_string(std::min(maxImgWidth, item.size.x))},
+            {[&]() -> std::pair<const std::string, std::string> {
+                 if (item.size.x > item.size.y) {
+                     return {"width", std::to_string(std::min(maxImageSize, item.size.x))};
+                 } else {
+                     return {"height", std::to_string(std::min(maxImageSize, item.size.y))};
+                 }
+             }(),
              {"src", "data:image/jpeg;base64," + item.base64jpeg}});
     };
 
-    for (auto& elem : annotations.getCanvasImages()) {
-        addImage(elem);
+    if (annotations) {
+        for (auto& elem : annotations->getCanvasImages()) {
+            addImage(elem);
+        }
+        addImage(annotations->getNetworkImage());
     }
-    addImage(annotations.getNetworkImage());
 
     details_->setHtml(utilqt::toQString(doc));
 }
 
-QModelIndex WelcomeWidget::findFirstLeaf(QModelIndex parent) const {
-    if (!workspaceProxyModel_->hasChildren(parent)) return parent;
-    return findFirstLeaf(workspaceProxyModel_->index(0, 0, parent));
+QModelIndex WelcomeWidget::findFirstLeaf(QAbstractItemModel* model, QModelIndex parent) {
+    if (!model->hasChildren(parent)) return parent;
+    return findFirstLeaf(model, model->index(0, 0, parent));
+}
+
+WelcomeWidget& WelcomeWidget::setSetting(const QString& key, const QVariant& value) {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    settings.setValue(key, value);
+    settings.endGroup();
+    return *this;
+}
+QVariant WelcomeWidget::getSetting(const QString& key, const QVariant& defaultValue) const {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    auto value = settings.value(key, defaultValue);
+    settings.endGroup();
+    return value;
 }
 
 }  // namespace inviwo

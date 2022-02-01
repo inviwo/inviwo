@@ -51,6 +51,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspaceannotationsqt.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacemodelroles.h
     ${MOC_FILES}
 )
 if(TARGET inviwo::meta)
@@ -101,6 +102,7 @@ set(SOURCE_FILES
     welcomewidget.cpp
     workspaceannotationsqt.cpp
     workspacegridview.cpp
+    workspacemodelroles.cpp
     workspacetreemodel.cpp
     workspacetreeview.cpp
 )

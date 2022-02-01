@@ -94,50 +94,62 @@ IVW_MODULE_QTWIDGETS_API std::locale getCurrentStdLocale();
 IVW_MODULE_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
 
 /**
- * \brief convert a std::string to a localized QString using the currently set system locale
+ * \brief create a QString from a UTF8-encoded std::string
  */
-IVW_MODULE_QTWIDGETS_API QString toLocalQString(std::string_view str);
-IVW_MODULE_QTWIDGETS_API QString toLocalQString(std::string str);
+inline QString toLocalQString(std::string_view str) {
+    return QString::fromLocal8Bit(str.data(), str.size());
+}
+/**
+ * \brief create a QString from a UTF8-encoded std::string
+ */
+inline QString toLocalQString(const std::string& str) {
+    return QString::fromLocal8Bit(str.data(), str.size());
+}
 /**
  * \brief convert a QString to a localized 8bit std::string
  */
-IVW_MODULE_QTWIDGETS_API std::string fromLocalQString(const QString& input);
+inline std::string fromLocalQString(const QString& str) {
+    return std::string(str.toLocal8Bit().constData());
+}
 
 /**
  * \brief create a QString from a UTF8-encoded std::string
  */
-IVW_MODULE_QTWIDGETS_API QString toQString(const std::string_view str);
-IVW_MODULE_QTWIDGETS_API QString toQString(const std::string str);
-
+inline QString toQString(std::string_view str) { return QString::fromUtf8(str.data(), str.size()); }
+/**
+ * \brief create a QString from a UTF8-encoded std::string
+ */
+inline QString toQString(const std::string& str) {
+    return QString::fromUtf8(str.data(), str.size());
+}
 /**
  * \brief create a UTF8-encoded std::string from a QString
  */
-IVW_MODULE_QTWIDGETS_API std::string fromQString(const QString& input);
+inline std::string fromQString(const QString& str) { return std::string(str.toUtf8().constData()); }
 
-IVW_MODULE_QTWIDGETS_API dvec2 toGLM(QPointF);
-IVW_MODULE_QTWIDGETS_API ivec2 toGLM(QPoint);
+constexpr QPointF toQPoint(dvec2 v) { return QPointF(v.x, v.y); }
+constexpr QPoint toQPoint(ivec2 v) { return QPoint(v.x, v.y); }
 
-IVW_MODULE_QTWIDGETS_API QPointF toQPoint(dvec2);
-IVW_MODULE_QTWIDGETS_API QPoint toQPoint(ivec2);
+constexpr dvec2 toGLM(QPointF v) { return dvec2(v.x(), v.y()); }
+constexpr ivec2 toGLM(QPoint v) { return ivec2(v.x(), v.y()); }
+constexpr dvec2 toGLM(QSizeF v) { return dvec2(v.width(), v.height()); }
+constexpr ivec2 toGLM(QSize v) { return ivec2(v.width(), v.height()); }
 
-IVW_MODULE_QTWIDGETS_API dvec2 toGLM(QSizeF);
-IVW_MODULE_QTWIDGETS_API ivec2 toGLM(QSize);
+constexpr QSizeF toQSize(dvec2 v) { return QSizeF(v.x, v.y); }
+constexpr QSize toQSize(ivec2 v) { return QSize(v.x, v.y); }
 
-IVW_MODULE_QTWIDGETS_API QSizeF toQSize(dvec2);
-IVW_MODULE_QTWIDGETS_API QSize toQSize(ivec2);
+inline vec3 tovec3(const QColor& c) { return vec3(c.redF(), c.greenF(), c.blueF()); }
+inline ivec3 toivec3(const QColor& c) { return ivec3(c.red(), c.green(), c.blue()); }
+inline vec4 tovec4(const QColor& c) { return vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()); }
+inline ivec4 toivec4(const QColor& c) { return ivec4(c.red(), c.green(), c.blue(), c.alpha()); }
 
-IVW_MODULE_QTWIDGETS_API vec3 tovec3(const QColor&);
-IVW_MODULE_QTWIDGETS_API ivec3 toivec3(const QColor&);
+constexpr QColor toQColor(const ivec3& v) { return QColor(v.r, v.g, v.b); }
+constexpr QColor toQColor(const uvec3& v) { return QColor(v.r, v.g, v.b); }
+constexpr QColor toQColor(const vec3& v) { return toQColor(ivec3(v * 255.0f)); }
 
-IVW_MODULE_QTWIDGETS_API vec4 tovec4(const QColor&);
-IVW_MODULE_QTWIDGETS_API ivec4 toivec4(const QColor&);
-
-IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec3&);
-IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec3&);
-IVW_MODULE_QTWIDGETS_API QColor toQColor(const uvec3&);
-IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec4&);
-IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec4&);
-IVW_MODULE_QTWIDGETS_API QColor toQColor(const uvec4&);
+constexpr QColor toQColor(const ivec4& v) { return QColor(v.r, v.g, v.b, v.a); }
+constexpr QColor toQColor(const uvec4& v) { return QColor(v.r, v.g, v.b, v.a); }
+constexpr QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
 
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunction& tf, const QSize& size);
 
@@ -197,29 +209,31 @@ IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer& layer);
  *
  * \see QImage::save()
  */
-IVW_MODULE_QTWIDGETS_API std::string toBase64(const QImage& image,
-                                              const std::string& format = "PNG", int quality = -1);
+IVW_MODULE_QTWIDGETS_API std::string toBase64(const QImage& image, std::string_view format = "PNG",
+                                              int quality = -1);
 /*
  * \brief Convert base64-encoded string to QImage.
  *
  * @param base64 byte array to be converted
+ * @param format of data (e.g. "jpeg")
  * @return QImage representation of the string
  *
  * \see toBase64
  */
-IVW_MODULE_QTWIDGETS_API QImage fromBase64(std::string_view base64);
+IVW_MODULE_QTWIDGETS_API QImage fromBase64(std::string_view base64,
+                                           std::string_view format = "PNG");
 
 /*
  * \brief Convert base64-encoded string to QIcon.
  *
  * @param base64 byte array to be converted
- * @param format of data (e.g. "jpeg"), auto-detected if nullptr.
+ * @param format of data (e.g. "jpeg"), auto-detected if empty.
  * @return QIcon representation of the string
  *
  * \see QPixmap::loadFromData
  */
 IVW_MODULE_QTWIDGETS_API QIcon fromBase64ToIcon(std::string_view base64,
-                                                std::string_view format = nullptr);
+                                                std::string_view format = "PNG");
 
 /*
  * \brief retrieve the contents of all visible canvases as QImage. A canvas must be ready and

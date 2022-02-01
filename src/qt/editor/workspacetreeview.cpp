@@ -36,21 +36,23 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <tuple>
+#include <inviwo/qt/editor/workspacemodelroles.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-
 #include <QStyledItemDelegate>
 #include <QPainter>
 #include <QStyle>
 #include <QApplication>
 #include <QSortFilterProxyModel>
 #include <QHeaderView>
-
+#include <QPainterPath>
 #include <warn/pop>
 
 namespace inviwo {
+
+using Role = WorkspaceModelRole;
+using Type = WorkspaceModelType;
 
 namespace {
 
@@ -64,9 +66,6 @@ public:
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
 private:
-    std::tuple<QRect, QRect, QRect> getTextBoundingBox(const QStyleOptionViewItem& option,
-                                                       const QModelIndex& index) const;
-
     static QString elidedText(const QString& str, const QFontMetrics& metrics, int width);
 };
 
@@ -75,8 +74,7 @@ SectionDelegate::SectionDelegate(QWidget* parent) : QStyledItemDelegate(parent) 
 void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
                             const QModelIndex& index) const {
 
-    if (index.data(WorkspaceTreeModel::ItemRoles::Type).toInt() ==
-        WorkspaceTreeModel::ListElemType::File) {
+    if (utilqt::getData(index, Role::Type) == Type::File) {
         auto option = o;
         initStyleOption(&option, index);
 
@@ -84,27 +82,56 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         QStyle* style = option.widget ? option.widget->style() : QApplication::style();
         style->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
 
-        if (index.column() > 0) {
-            const auto filename = index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
-            const auto path = index.data(WorkspaceTreeModel::ItemRoles::Path).toString();
-            auto boundingRects = getTextBoundingBox(option, index);
+        const auto name = utilqt::getData(index, Role::Name).toString();
+        const auto path = utilqt::getData(index, Role::Path).toString();
+        const auto image = utilqt::getData(index, Role::Image).value<QImage>();
 
-            // draw text
-            painter->save();
-            auto fontFilename = option.font;
-            fontFilename.setBold(true);
-            painter->setFont(fontFilename);
-            painter->setPen(option.palette.text().color().lighter());
-            painter->drawText(std::get<1>(boundingRects),
-                              Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, filename);
+        // draw text
+        painter->save();
 
-            painter->setFont(option.font);
-            painter->setPen(option.palette.text().color());
-            painter->drawText(
-                std::get<2>(boundingRects), Qt::AlignLeft | Qt::AlignTop,
-                elidedText(path, option.fontMetrics, std::get<0>(boundingRects).width()));
-            painter->restore();
-        }
+        const auto fm = QFontMetrics(option.font);
+        const auto margin = utilqt::emToPx(fm, 0.5);
+        const auto margins = QMargins(margin, margin, margin, margin);
+
+        auto imgRect = option.rect;
+        auto imageWidth = imgRect.height();
+
+        imgRect.setWidth(imageWidth);
+        imgRect = imgRect.marginsRemoved(margins);
+
+        QPainterPath border;
+        border.addRoundedRect(imgRect, 35, 35, Qt::RelativeSize);
+
+        const auto imageCenter = image.rect().center();
+        const auto imageSize = std::min(image.rect().width(), image.rect().height());
+        const QRect sourceRect{imageCenter - QPoint{imageSize, imageSize} / 2,
+                               imageCenter + QPoint{imageSize, imageSize} / 2};
+
+        painter->setClipPath(border);
+        painter->setClipping(true);
+        painter->drawImage(imgRect, image, sourceRect);
+        painter->setClipping(false);
+
+        painter->setPen(QPen{option.palette.text().color(), 1.5});
+        painter->drawPath(border);
+
+        auto nameRect = option.rect;
+        nameRect.adjust(imageWidth, margin, 0, -imageWidth / 2);
+        auto pathRect = option.rect;
+        pathRect.adjust(imageWidth, imageWidth / 2, 0, -margin);
+
+        auto fontFilename = option.font;
+        fontFilename.setBold(true);
+        painter->setFont(fontFilename);
+        painter->setPen(option.palette.text().color().lighter());
+        painter->drawText(nameRect, Qt::AlignLeft | Qt::AlignVCenter, name);
+
+        painter->setFont(option.font);
+        painter->setPen(option.palette.text().color());
+        painter->drawText(pathRect, Qt::AlignLeft | Qt::AlignVCenter,
+                          elidedText(path, option.fontMetrics, pathRect.width()));
+        painter->restore();
+
     } else {
         auto option = o;
         initStyleOption(&option, index);
@@ -119,56 +146,16 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 QSize SectionDelegate::sizeHint(const QStyleOptionViewItem& o, const QModelIndex& index) const {
     if (!index.isValid()) return QSize();
 
-    if (index.data(WorkspaceTreeModel::ItemRoles::Type).toInt() ==
-        WorkspaceTreeModel::ListElemType::File) {
+    if (utilqt::getData(index, Role::Type) == Type::File) {
         auto option = o;
         initStyleOption(&option, index);
 
-        auto boundingRects = getTextBoundingBox(option, index);
+        const auto fm = QFontMetrics(option.font);
+        return QSize{option.rect.width(), utilqt::emToPx(fm, 4)};
 
-        auto sizehint = QSize{option.rect.width(), std::get<0>(boundingRects).height()};
-
-        if (sizehint.height() < option.decorationSize.height()) {
-            sizehint.setHeight(option.decorationSize.height());
-        }
-        return sizehint;
     } else {
         return QStyledItemDelegate::sizeHint(o, index);
     }
-}
-
-std::tuple<QRect, QRect, QRect> SectionDelegate::getTextBoundingBox(
-    const QStyleOptionViewItem& option, const QModelIndex& index) const {
-    if (!index.isValid()) return {};
-
-    const auto filename = index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
-    const auto path = index.data(WorkspaceTreeModel::ItemRoles::Path).toString();
-
-    auto fontFilename = option.font;
-    fontFilename.setBold(true);
-    const auto fm = QFontMetrics(fontFilename);
-
-    const int marginLeft = utilqt::emToPx(fm, 6.0 / utilqt::refEm());
-    const int textSpacing = utilqt::emToPx(fm, 4.0 / utilqt::refEm());
-    const int margin = utilqt::emToPx(fm, 5.0 / utilqt::refEm());
-    const int marginRight = utilqt::emToPx(fm, 6.0 / utilqt::refEm());
-
-    auto textRect = (option.rect.isValid() ? option.rect : QRect());
-    textRect.adjust(marginLeft + option.decorationSize.width(), margin, -marginRight, 0);
-    // set rect height to zero, since the font metric will calculate the required height of
-    // the text
-    textRect.setHeight(0);
-
-    auto filenameRect = fm.boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, filename);
-
-    textRect.setTop(filenameRect.bottom() + textSpacing);
-    auto pathRect = option.fontMetrics.boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, path);
-
-    auto boundingRect = filenameRect.united(pathRect);
-    boundingRect.adjust(0, -margin, 0, margin);
-    boundingRect.setRight(option.rect.right() - marginRight);
-
-    return {boundingRect, filenameRect, pathRect};
 }
 
 QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metrics, int width) {
@@ -216,96 +203,51 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
 
 }  // namespace
 
-WorkspaceTreeView::WorkspaceTreeView(WorkspaceTreeModel* model,
-                                     QSortFilterProxyModel* workspaceProxyModel,
-                                     QItemSelectionModel* workspaceSelectionModel, QWidget* parent)
-    : QTreeView{parent}, model_{model}, proxyModel_{workspaceProxyModel} {
+WorkspaceTreeView::WorkspaceTreeView(QAbstractItemModel* theModel, QWidget* parent)
+    : QTreeView{parent} {
 
-    setModel(proxyModel_);
-    setSelectionModel(workspaceSelectionModel);
+    setModel(theModel);
 
     setHeaderHidden(true);
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
-    setIconSize(utilqt::emToPx(this, QSizeF(2.5, 2.5)));
     setIndentation(utilqt::emToPx(this, 1.0));
     setItemDelegate(new SectionDelegate(this));
 
-    // adjust width of first column
-    // file entries and icons start in column 2, sections headers span all columns
-    header()->setMinimumSectionSize(0);
-    header()->resizeSection(0, utilqt::emToPx(this, 2.0));
-    QObject::connect(model_, &WorkspaceTreeModel::recentWorkspacesUpdated, this,
-                     [this](TreeItem* recentWorkspaceItem) {
-                         if (!recentWorkspaceItem_) {
-                             recentWorkspaceItem_ = recentWorkspaceItem;
-                             auto index =
-                                 proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem));
-                             expand(index);
-                             setFirstColumnSpanned(index.row(), index.parent(), true);
-                         }
-                     });
-    QObject::connect(model_, &WorkspaceTreeModel::exampleWorkspacesUpdated, this,
-                     [this](TreeItem* exampleWorkspaceItem) {
-                         updateWorkspaces(examplesItem_, exampleWorkspaceItem);
-                     });
-    QObject::connect(model_, &WorkspaceTreeModel::regressionTestWorkspacesUpdated, this,
-                     [this](TreeItem* regressionTestWorkspaceItem) {
-                         updateWorkspaces(regressionTestsItem_, regressionTestWorkspaceItem);
-                     });
-
-    QObject::connect(
-        selectionModel(), &QItemSelectionModel::currentRowChanged, this,
-        [this](const QModelIndex& current, const QModelIndex&) {
-            if (current.isValid() && (current.data(WorkspaceTreeModel::ItemRoles::Type) ==
-                                      WorkspaceTreeModel::ListElemType::File)) {
-                const auto filename =
-                    current.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
-                    current.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
-                const auto isExample =
-                    current.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
-                emit selectedFileChanged(filename, isExample);
-            } else {
-                emit selectedFileChanged("", false);
-            }
-        });
-
-    QObject::connect(this, &QTreeView::doubleClicked, this, [this](const QModelIndex& index) {
-        if (index.isValid() && (index.data(WorkspaceTreeModel::ItemRoles::Type) ==
-                                WorkspaceTreeModel::ListElemType::File)) {
-            const auto filename = index.data(WorkspaceTreeModel::ItemRoles::Path).toString() + "/" +
-                                  index.data(WorkspaceTreeModel::ItemRoles::FileName).toString();
-            const auto isExample =
-                index.data(WorkspaceTreeModel::ItemRoles::ExampleWorkspace).toBool();
+    connect(this, &QTreeView::doubleClicked, this, [this](const QModelIndex& index) {
+        if (index.isValid() && (utilqt::getData(index, Role::Type) == Type::File)) {
+            const auto filename = utilqt::getData(index, Role::FilePath).toString();
+            const auto isExample = utilqt::getData(index, Role::isExample).toBool();
             emit loadFile(filename, isExample);
         }
     });
-}
-bool WorkspaceTreeView::selectRecentWorkspace(int index) {
-    if (!recentWorkspaceItem_) return false;
-    if (recentWorkspaceItem_->childCount() < index) return false;
 
-    auto idx = proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem_->child(index)));
-    selectionModel()->setCurrentIndex(
-        idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    connect(this, &QTreeView::clicked, this, [this](const QModelIndex& index) {
+        if (index.isValid() && (utilqt::getData(index, Role::Type) != Type::File)) {
 
-    return true;
-}
+            if (QGuiApplication::keyboardModifiers() & Qt::ControlModifier) {
+                isExpanded(index) ? collapseRecursively(index) : expandRecursively(index);
+            } else {
+                setExpanded(index, !isExpanded(index));
+            }
+        }
+    });
 
-void WorkspaceTreeView::expandItems() {
-    // fold/unfold all tree items based on filtering
-    if (proxyModel_->filterRegularExpression().pattern().isEmpty()) {
-        defaultExpand();
-    } else {
-        expandAll();
-    }
+    connect(selectionModel(), &QItemSelectionModel::currentChanged, this,
+            [this](const QModelIndex& current, const QModelIndex&) {
+                if (current.isValid() && (utilqt::getData(current, Role::Type) == Type::File)) {
+                    const auto filename = utilqt::getData(current, Role::FilePath).toString();
+                    const auto isExample = utilqt::getData(current, Role::isExample).toBool();
+                    emit selectFile(filename, isExample);
+                } else {
+                    emit selectFile("", false);
+                }
+            });
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
-//
 // QTreeView::expandRecursively() was introduced in Qt 5.13
 // see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
-//
 void WorkspaceTreeView::expandRecursively(const QModelIndex& index) {
     if (index.isValid()) {
         for (int i = 0; i < index.model()->rowCount(index); ++i) {
@@ -318,40 +260,14 @@ void WorkspaceTreeView::expandRecursively(const QModelIndex& index) {
 }
 #endif
 
-void WorkspaceTreeView::defaultExpand() {
-    setUpdatesEnabled(false);
-
-    expandRecursively(proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem_)));
-    expandRecursively(proxyModel_->mapFromSource(model_->getIndex(examplesItem_)));
-
-    auto index = proxyModel_->mapFromSource(model_->getIndex(regressionTestsItem_));
-    expandRecursively(index);
-    collapse(index);
-
-    setUpdatesEnabled(true);
-}
-
-void WorkspaceTreeView::updateWorkspaces(TreeItem* currentWorkspaceItem,
-                                         TreeItem* newWorkspaceItem) {
-
-    if (!currentWorkspaceItem) {
-        currentWorkspaceItem = newWorkspaceItem;
-        auto index = proxyModel_->mapFromSource(model_->getIndex(newWorkspaceItem));
-        collapse(index);
-        setFirstColumnSpanned(index.row(), index.parent(), true);
-    }
-    bool isEmpty = newWorkspaceItem->childCount() == 0;
-    setRowHidden(newWorkspaceItem->row(), QModelIndex(), isEmpty);
-
-    if (!isEmpty) {
-        setUpdatesEnabled(false);
-        for (int i = 0; i < newWorkspaceItem->childCount(); ++i) {
-            TreeItem* item = newWorkspaceItem->child(i);
-            auto index = proxyModel_->mapFromSource(model_->getIndex(item));
-            expand(index);
-            setFirstColumnSpanned(index.row(), index.parent(), true);
+void WorkspaceTreeView::collapseRecursively(const QModelIndex& index) {
+    if (index.isValid()) {
+        for (int i = 0; i < model()->rowCount(index); ++i) {
+            collapseRecursively(model()->index(i, 0, index));
         }
-        setUpdatesEnabled(true);
+        if (isExpanded(index)) {
+            collapse(index);
+        }
     }
 }
 

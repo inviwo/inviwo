@@ -54,11 +54,18 @@ public:
         ivec2 size = ivec2{0};
     };
 
-    using ImageVector = std::vector<Base64Image>;
-
     WorkspaceAnnotations(InviwoApplication* app = InviwoApplication::getPtr());
-    WorkspaceAnnotations(const ImageVector& canvasImages,
+    WorkspaceAnnotations(const std::vector<Base64Image>& canvasImages,
                          InviwoApplication* app = InviwoApplication::getPtr());
+
+    /*
+     * Loads workspace annotations from the provided \p path.
+     * An error is logged in case loading fails.
+     * @return WorkspaceAnnotations if successfully loaded, empty WorkspaceAnnotations otherwise.
+     */
+    WorkspaceAnnotations(std::string_view path,
+                         InviwoApplication* app = InviwoApplication::getPtr());
+
     virtual ~WorkspaceAnnotations() = default;
 
     void setTitle(const std::string& title);
@@ -76,20 +83,16 @@ public:
     void setDescription(const std::string& desc);
     std::string getDescription() const;
 
-    void setCanvasImages(const ImageVector& canvases);
+    void setCanvasImages(const std::vector<Base64Image>& canvases);
 
-    const ImageVector getCanvasImages() const;
+    size_t numberOfCanvases() const;
+    const Base64Image& getCanvasImage(size_t i) const;
+    const std::vector<Base64Image>& getCanvasImages() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
     virtual InviwoApplication* getInviwoApplication() override;
-    /*
-     * Loads workspace annotations from the provided \p path.
-     * An error is logged in case loading fails.
-     * @return WorkspaceAnnotations if successfully loaded, empty WorkspaceAnnotations otherwise.
-     */
-    static WorkspaceAnnotations load(std::string_view path, InviwoApplication* app);
 
 protected:
     StringProperty title_;
@@ -98,7 +101,7 @@ protected:
     StringProperty categories_;
     StringProperty description_;
 
-    ImageVector canvases_;
+    std::vector<Base64Image> canvases_;
     InviwoApplication* app_;
 };
 

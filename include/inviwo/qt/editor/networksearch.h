@@ -30,6 +30,8 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/algorithm/seachdsl.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <functional>
 #include <vector>
@@ -64,20 +66,12 @@ public:
     virtual bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
-    struct Item {
-        std::string name;
-        std::string shortcut;
-        std::string description;
-        bool global;
-        std::function<bool(Processor*, const std::string&)> match;
-    };
-    static std::vector<std::pair<std::string, std::string>> tokenize(const std::string& str);
+    SearchDSL<Processor> dsl_;
+    
     static std::unordered_map<std::string, std::string> getModuleMap(InviwoApplication* app);
-    static bool find(const std::string& cont, const std::string& s);
+    static bool find(std::string_view cont, std::string_view s);
     InviwoMainWindow* win_;
     QLineEdit* edit_;
-    std::vector<Item> items_;
-    std::unordered_map<std::string, std::function<bool(Processor*, const std::string&)>> map_;
 };
 
 }  // namespace inviwo

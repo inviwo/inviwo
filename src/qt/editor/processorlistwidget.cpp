@@ -142,9 +142,41 @@ void ProcessorTree::showContextMenu(const QPoint& p) {
     menu.exec(mapToGlobal(p));
 }
 
+auto strMatch = [](std::string_view cont, std::string_view s) {
+    auto icomp = [](std::string::value_type l1, std::string::value_type r1) {
+        return std::tolower(l1) == std::tolower(r1);
+    };
+    return std::search(cont.begin(), cont.end(), s.begin(), s.end(), icomp) != cont.end();
+};
+
+auto matcher = [](auto mptr) {
+    return [mptr](const ProcessorFactoryObject& p, std::string_view str) -> bool {
+        return strMatch(std::invoke(mptr, p), str);
+    };
+};
+
 ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget)
     : InviwoDockWidget(tr("Processors"), parent, "ProcessorTreeWidget")
     , app_{parent->getInviwoApplication()}
+    , dsl_{{
+          {"identifier", "i", "processor class identifier", true,
+           matcher(&ProcessorFactoryObject::getClassIdentifier)},
+          {"name", "n", "processor displayname", true,
+           matcher(&ProcessorFactoryObject::getDisplayName)},
+          {"category", "c", "processor category", true,
+           matcher(&ProcessorFactoryObject::getCategory)},
+          {"tags", "#", "processor tags", true,
+           [](const ProcessorFactoryObject& p, std::string_view str) {
+               for (const auto& tag : p.getTags().tags_) {
+                   if (strMatch(tag.getString(), str)) return true;
+               }
+               return false;
+           }},
+          {"state", "", "processor category", false,
+           [](const ProcessorFactoryObject& p, std::string_view str) {
+               return strMatch(toString(p.getCodeState()), str);
+           }},
+      }}
     , helpWidget_{helpWidget} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -156,27 +188,38 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     vLayout->setSpacing(space);
     vLayout->setContentsMargins(space, space, space, space);
     lineEdit_ = new QLineEdit(centralWidget);
-    lineEdit_->setPlaceholderText("Filter processor list...");
-    QIcon clearIcon;
-    clearIcon.addFile(":/svgicons/lineedit-clear.svg", utilqt::emToPx(this, QSizeF(0.3, 0.3)),
-                      QIcon::Normal);
-    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
-                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Active);
-    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
-                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Selected);
-    auto clearAction = lineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
-    clearAction->setVisible(false);
-    connect(clearAction, &QAction::triggered, lineEdit_, &QLineEdit::clear);
-    connect(lineEdit_, &QLineEdit::textChanged, this, [this, clearAction](const QString& str) {
-        addProcessorsToTree();
-        clearAction->setVisible(!str.isEmpty());
+    {
+        lineEdit_->setPlaceholderText("Filter processor list...");
 
-        QSettings settings;
-        settings.beginGroup(objectName());
-        settings.setValue("filterText", QVariant(lineEdit_->text()));
-        settings.endGroup();
-    });
-    vLayout->addWidget(lineEdit_);
+        using P = Document::PathComponent;
+        auto doc = dsl_.description();
+        auto b = doc.get({P{"html"}, P{"body"}});
+        auto desc = b.insert(P::first(), "div");
+        desc.append("b", "Search Processors", {{"style", "color:white;"}});
+        desc.append("p", "Example: name:raycaster state:stable");
+        lineEdit_->setToolTip(utilqt::toQString(doc));
+
+        QIcon clearIcon;
+        clearIcon.addFile(":/svgicons/lineedit-clear.svg", utilqt::emToPx(this, QSizeF(0.3, 0.3)),
+                          QIcon::Normal);
+        clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                          utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Active);
+        clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                          utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Selected);
+        auto clearAction = lineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
+        clearAction->setVisible(false);
+        connect(clearAction, &QAction::triggered, lineEdit_, &QLineEdit::clear);
+        connect(lineEdit_, &QLineEdit::textChanged, this, [this, clearAction](const QString& str) {
+            addProcessorsToTree();
+            clearAction->setVisible(!str.isEmpty());
+
+            QSettings settings;
+            settings.beginGroup(objectName());
+            settings.setValue("filterText", QVariant(lineEdit_->text()));
+            settings.endGroup();
+        });
+        vLayout->addWidget(lineEdit_);
+    }
     QHBoxLayout* listViewLayout = new QHBoxLayout();
     listViewLayout->addWidget(new QLabel("Group by", centralWidget));
     listView_ = new QComboBox(centralWidget);
@@ -329,19 +372,6 @@ void ProcessorTreeWidget::addProcessor(QString className) {
     }
 }
 
-bool ProcessorTreeWidget::processorFits(ProcessorFactoryObject* processor, const QString& filter) {
-    for (auto& substr : filter.split(' ')) {
-        if (!(utilqt::toQString(processor->getDisplayName())
-                  .contains(substr, Qt::CaseInsensitive) ||
-              utilqt::toQString(processor->getClassIdentifier())
-                  .contains(substr, Qt::CaseInsensitive) ||
-              utilqt::toQString(processor->getTags().getString())
-                  .contains(substr, Qt::CaseInsensitive)))
-            return false;
-    }
-    return true;
-}
-
 const QIcon* ProcessorTreeWidget::getCodeStateIcon(CodeState state) const {
     switch (state) {
         case CodeState::Stable:
@@ -418,16 +448,17 @@ void ProcessorTreeWidget::addProcessorsToTree(ProcessorFactoryObject* item) {
         addToplevelItemTo("Broken Processors", "");
     }
 
+    dsl_.setSearchString(utilqt::fromQString(lineEdit_->text()));
+
     for (auto& elem : app_->getModules()) {
         for (auto& processor : elem->getProcessors()) {
-            if (processor->isVisible() &&
-                (lineEdit_->text().isEmpty() || processorFits(processor, lineEdit_->text()))) {
+            if (processor->isVisible() && (lineEdit_->text().isEmpty() || dsl_.match(*processor))) {
                 extractInfoAndAddProcessor(processor, elem.get());
             }
         }
     }
 
-    if (item && (lineEdit_->text().isEmpty() || processorFits(item, lineEdit_->text()))) {
+    if (item && (lineEdit_->text().isEmpty() || dsl_.match(*item))) {
         extractInfoAndAddProcessor(item, nullptr);
     }
 
