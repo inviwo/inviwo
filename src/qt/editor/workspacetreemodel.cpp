@@ -275,7 +275,6 @@ bool TreeItem::operator==(const TreeItem& tree) const {
 }
 bool TreeItem::operator!=(const TreeItem& tree) const { return !operator==(tree); }
 
-
 WorkspaceTreeModel::WorkspaceTreeModel(InviwoApplication* app, QObject* parent)
     : QAbstractItemModel(parent), app_(app), root_{std::make_unique<TreeItem>(nullptr)} {
 

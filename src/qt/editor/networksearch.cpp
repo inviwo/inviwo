@@ -55,78 +55,78 @@ namespace inviwo {
 NetworkSearch::NetworkSearch(InviwoMainWindow* win)
     : QWidget(win)
     , dsl_{{{"class", "c", "processor class identifier", true,
-            [](const Processor& p,  std::string_view s) -> bool {
-                return find(p.getClassIdentifier(), s);
-            }},
-           {"identifier", "i", "processor identifier", true,
-            [](const Processor& p, std::string_view s) -> bool {
-                return find(p.getIdentifier(), s);
-            }},
-           {"name", "n", "processor display name", true,
-            [](const Processor& p, std::string_view s) -> bool {
-                return find(p.getDisplayName(), s);
-            }},
-           {"category", "", "processor category", true,
-            [](const Processor& p, std::string_view s) -> bool {
-                return find(p.getCategory(), s);
-            }},
-           {"tag", "t", "search processor tags", true,
-            [](const Processor& p, std::string_view s) -> bool {
-                bool tag = false;
-                for (const auto& t : p.getTags().tags_) {
-                    tag |= find(t.getString(), s);
-                }
-                return tag;
-            }},
-           {"state", "s", "processor state", true,
-            [](const Processor& p, std::string_view s) -> bool {
-                return find(toString(p.getCodeState()), s);
-            }},
-           {"inport", "", "search inport class identifiers", true,
-            [](const Processor& p, std::string_view s) -> bool {
-                bool inport = false;
-                for (const auto& pt : p.getInports()) {
-                    inport |= find(pt->getClassIdentifier(), s);
-                }
-                return inport;
-            }},
-           {"outport", "", "search outport class identifiers", true,
-            [](const Processor& p, std::string_view s) -> bool {
-                bool outport = false;
-                for (const auto& pt : p.getOutports()) {
-                    outport |= find(pt->getClassIdentifier(), s);
-                }
-                return outport;
-            }},
-           {"port", "", "search port class identifiers", false,
-            [](const Processor& p, std::string_view s) -> bool {
-                bool port = false;
-                for (const auto& pt : p.getOutports()) {
-                    port |= find(pt->getClassIdentifier(), s);
-                }
-                for (const auto& pt : p.getInports()) {
-                    port |= find(pt->getClassIdentifier(), s);
-                }
-                return port;
-            }},
-           {"property", "p", "search property identifiers", true,
-            [](const Processor& p, std::string_view s) -> bool {
-                bool property = false;
-                for (const auto& pr : p.getPropertiesRecursive()) {
-                    property |= find(pr->getIdentifier(), s);
-                }
-                return property;
-            }},
-           {"module", "m", "processor module", true,
-            [this](const Processor& p, std::string_view s) -> bool {
-                auto moduleMap = getModuleMap(win_->getInviwoApplication());
-                bool module = false;
-                auto mit = moduleMap.find(p.getClassIdentifier());
-                if (mit != moduleMap.end()) {
-                    module |= find(mit->second, s);
-                }
-                return module;
-            }}}}
+             [](const Processor& p, std::string_view s) -> bool {
+                 return find(p.getClassIdentifier(), s);
+             }},
+            {"identifier", "i", "processor identifier", true,
+             [](const Processor& p, std::string_view s) -> bool {
+                 return find(p.getIdentifier(), s);
+             }},
+            {"name", "n", "processor display name", true,
+             [](const Processor& p, std::string_view s) -> bool {
+                 return find(p.getDisplayName(), s);
+             }},
+            {"category", "", "processor category", true,
+             [](const Processor& p, std::string_view s) -> bool {
+                 return find(p.getCategory(), s);
+             }},
+            {"tag", "t", "search processor tags", true,
+             [](const Processor& p, std::string_view s) -> bool {
+                 bool tag = false;
+                 for (const auto& t : p.getTags().tags_) {
+                     tag |= find(t.getString(), s);
+                 }
+                 return tag;
+             }},
+            {"state", "s", "processor state", true,
+             [](const Processor& p, std::string_view s) -> bool {
+                 return find(toString(p.getCodeState()), s);
+             }},
+            {"inport", "", "search inport class identifiers", true,
+             [](const Processor& p, std::string_view s) -> bool {
+                 bool inport = false;
+                 for (const auto& pt : p.getInports()) {
+                     inport |= find(pt->getClassIdentifier(), s);
+                 }
+                 return inport;
+             }},
+            {"outport", "", "search outport class identifiers", true,
+             [](const Processor& p, std::string_view s) -> bool {
+                 bool outport = false;
+                 for (const auto& pt : p.getOutports()) {
+                     outport |= find(pt->getClassIdentifier(), s);
+                 }
+                 return outport;
+             }},
+            {"port", "", "search port class identifiers", false,
+             [](const Processor& p, std::string_view s) -> bool {
+                 bool port = false;
+                 for (const auto& pt : p.getOutports()) {
+                     port |= find(pt->getClassIdentifier(), s);
+                 }
+                 for (const auto& pt : p.getInports()) {
+                     port |= find(pt->getClassIdentifier(), s);
+                 }
+                 return port;
+             }},
+            {"property", "p", "search property identifiers", true,
+             [](const Processor& p, std::string_view s) -> bool {
+                 bool property = false;
+                 for (const auto& pr : p.getPropertiesRecursive()) {
+                     property |= find(pr->getIdentifier(), s);
+                 }
+                 return property;
+             }},
+            {"module", "m", "processor module", true,
+             [this](const Processor& p, std::string_view s) -> bool {
+                 auto moduleMap = getModuleMap(win_->getInviwoApplication());
+                 bool module = false;
+                 auto mit = moduleMap.find(p.getClassIdentifier());
+                 if (mit != moduleMap.end()) {
+                     module |= find(mit->second, s);
+                 }
+                 return module;
+             }}}}
     , win_{win}
     , edit_{new QLineEdit(this)} {
 

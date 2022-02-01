@@ -121,7 +121,6 @@ private:
     QComboBox* listView_;
     QLineEdit* lineEdit_;
     SearchDSL<ProcessorFactoryObject> dsl_;
-    
 
     QPoint dragStartPosition_;
 

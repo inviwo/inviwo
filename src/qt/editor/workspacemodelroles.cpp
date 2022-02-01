@@ -29,5 +29,4 @@
 
 #include <inviwo/qt/editor/workspacemodelroles.h>
 
-namespace inviwo {
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

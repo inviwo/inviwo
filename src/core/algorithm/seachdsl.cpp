@@ -29,6 +29,4 @@
 
 #include <inviwo/core/algorithm/seachdsl.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

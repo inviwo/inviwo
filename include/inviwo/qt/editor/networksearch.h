@@ -67,7 +67,7 @@ public:
 
 private:
     SearchDSL<Processor> dsl_;
-    
+
     static std::unordered_map<std::string, std::string> getModuleMap(InviwoApplication* app);
     static bool find(std::string_view cont, std::string_view s);
     InviwoMainWindow* win_;
