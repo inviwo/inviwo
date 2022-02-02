@@ -201,10 +201,10 @@ constexpr std::string_view to_string_view(const StaticString<N>& s) {
 }  // namespace inviwo
 
 template <size_t N>
-struct ::fmt::formatter<::inviwo::StaticString<N>> : formatter<string_view> {
+struct fmt::formatter<::inviwo::StaticString<N>> : ::fmt::formatter<string_view> {
     // parse is inherited from formatter<string_view>.
     template <typename FormatContext>
     auto format(const ::inviwo::StaticString<N>& str, FormatContext& ctx) {
-        return formatter<string_view>::format(str.view(), ctx);
+        return ::fmt::formatter<string_view>::format(str.view(), ctx);
     }
 };
