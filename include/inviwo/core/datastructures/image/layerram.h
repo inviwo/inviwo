@@ -187,7 +187,7 @@ auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
 class IVW_CORE_API LayerRamResizer {
 public:
     virtual ~LayerRamResizer() = default;
-    
+
     /**
      * Resize and copy src to dst doing some kind of content scaling
      * @see CIMGLayerRamResizer
