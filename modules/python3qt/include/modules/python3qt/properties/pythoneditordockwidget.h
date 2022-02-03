@@ -45,8 +45,9 @@ namespace inviwo {
  */
 class IVW_MODULE_PYTHON3QT_API PythonEditorDockWidget : public TextEditorDockWidget {
 public:
-    /**
-     * @copydoc TextEditorDockWidget::TextEditorDockWidget(Property*)
+     /**
+     * @brief Create a text editor for @p property
+     * @pre Property has to be of type FileProperty or StringProperty
      */
     PythonEditorDockWidget(Property* property);
 

@@ -72,6 +72,7 @@ public:
      *
      * @note nullptr to AnimationManager should mainly be used for unit testing and the likes.
      * @param animationManager used for creating PropertyTrack/KeyframeSequence/Keyframe.
+     * @param name default Animation
      */
     Animation(AnimationManager* animationManager = nullptr, std::string_view name = "Animation");
     Animation(const Animation&);

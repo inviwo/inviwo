@@ -45,18 +45,22 @@ public:
     /**
      * Constructor, no options will be created unless \p noneOption is set to AddNoneOption::Yes
      *
-     * @param noneOption   if equal to AddNoneOption::Yes, "None" will be added as option
-     * @param defaultIndex     index of the selected column when the property options are updated
+     * @param identifier
+     * @param displayName
+     * @param noneOption if equal to AddNoneOption::Yes, "None" will be added as option
+     * @param defaultIndex index of the selected column when the property options are updated
      */
     ColumnOptionProperty(std::string_view identifier, std::string_view displayName,
                          AddNoneOption noneOption = AddNoneOption::No, int defaultIndex = 0);
     /**
-     * Constructor using an inport \p port to popuplate the options. The onChange event of \p port
+     * Constructor using an inport \p port to populate the options. The onChange event of \p port
      * will trigger an update of the options.
      *
+     * @param identifier
+     * @param displayName
      * @param port
-     * @param noneOption  if equal to AddNoneOption::Yes, "None" will be added as option
-     * @param defaultIndex    index of the selected column when the property options are updated
+     * @param noneOption if equal to AddNoneOption::Yes, "None" will be added as option
+     * @param defaultIndex index of the selected column when the property options are updated
      */
     ColumnOptionProperty(std::string_view identifier, std::string_view displayName,
                          DataFrameInport& port, AddNoneOption noneOption = AddNoneOption::No,
@@ -99,7 +103,7 @@ public:
     /**
      * Return whether no column is selected.
      *
-     * @return true if there is a "None" option and it is seleced
+     * @return true if there is a "None" option and it is selected
      */
     bool isNoneSelected() const;
 

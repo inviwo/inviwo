@@ -62,8 +62,7 @@ public:
     using CallbackHandle = std::shared_ptr<std::function<CallbackFunc>>;
 
     /**
-     * @param const Processor* parent web browser processor responsible for the browser. Cannot be
-     * null.
+     * @param parent web browser processor responsible for the browser. Cannot be null.
      */
     explicit ProcessorCefSynchronizer(const Processor* parent);
     virtual ~ProcessorCefSynchronizer() = default;

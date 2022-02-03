@@ -329,11 +329,11 @@ IVW_CORE_API void alignPositionToRight(std::vector<TFPrimitive*> selection);
 IVW_CORE_API void interpolateAlpha(const std::vector<TFPrimitive*>& selection);
 
 /**
- * Flip the positions of the \p primitives with respect to the respective range, i.e.
+ * Flip the positions of the \p selection with respect to the respective range, i.e.
  *      p' = range.max - (p - range.min)
- * with range.min/max corresponding to the lowest/highest position in \p primitives.
+ * with range.min/max corresponding to the lowest/highest position in \p selection.
  *
- * @param primitives   list of primitives to be flipped.
+ * @param selection   list of primitives to be flipped.
  */
 IVW_CORE_API void flipPositions(const std::vector<TFPrimitive*>& selection);
 }  // namespace util

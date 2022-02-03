@@ -35,19 +35,20 @@
 #include <vector>
 #include <memory>
 #include <any>
-#include <iostream>
+#include <ios>
 
 namespace inviwo {
 
 class MetaDataOwner;
 
 /**
- * \defgroup dataio Data Reader & Writers
+ * @defgroup dataio Data Reader & Writers
  */
 
 /**
- * \ingroup dataio
- * \brief A abstract base class for all file readers.
+ * @ingroup dataio
+ * @brief A abstract base class for all file readers.
+ * @see DataReaderFactory InviwoApplication::getDataReaderFactory
  */
 class IVW_CORE_API DataReader {
 public:
@@ -102,8 +103,8 @@ protected:
 };
 
 /**
- * \ingroup dataio
- *\brief Template base class for file readers designating what type of data
+ * @ingroup dataio
+ * @brief Template base class for file readers designating what type of data
  * object the reader returns.
  */
 template <typename T>

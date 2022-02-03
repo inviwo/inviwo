@@ -62,7 +62,7 @@ public:
         TFEditorControlPointType,
         TFControlPointConnectionType,
         TFEditorIsovalueType,
-        Number_of_InviwoWidgetGraphicsItemTypes
+        NumberOfItems
     };
 
     /**
@@ -73,7 +73,8 @@ public:
      *
      * @param primitive pointer to the primitive
      * @param scene    item will be added to this QGraphicsScene
-     * @param pos      normalized position of primitive (scalar value and opacity)
+     * @param position normalized position of primitive
+     * @param alpha    opacity of primitive
      * @param size     base size of primitive
      */
     TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* scene = nullptr,
@@ -92,10 +93,11 @@ public:
     const vec4& getColor() const;
 
     /**
-     * set the position of the primitive using normalized coordinates within the transfer
+     * set the position and alpha of the primitive using normalized coordinates within the transfer
      * function.
      *
-     * @param tfpos   normalized position [0,1] corresponding to scalar value and opacity
+     * @param pos normalized position [0,1] corresponding to scalar value
+     * @param alpha opacity
      */
     void setTFPosition(double pos, float alpha);
 

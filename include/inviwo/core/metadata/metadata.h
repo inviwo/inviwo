@@ -102,8 +102,9 @@ bool operator==(const MetaDataPrimitiveType<T, 0, 0>& lhs,
     return lhs.value_ == rhs.value_;
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T>
-MetaDataPrimitiveType<T, 0, 0>::MetaDataPrimitiveType(const MetaDataPrimitiveType<T, 0, 0>& rhs)
+MetaDataPrimitiveType<T, 0, 0>::MetaDataPrimitiveType(const MetaDataPrimitiveType& rhs)
     : MetaData(rhs), value_(rhs.value_) {}
 
 template <typename T>
@@ -232,7 +233,7 @@ bool operator==(const MetaDataPrimitiveType<T, N, 0>& lhs,
 }
 
 template <typename T, int N>
-MetaDataPrimitiveType<T, N, 0>::MetaDataPrimitiveType(const MetaDataPrimitiveType<T, N, 0>& rhs)
+MetaDataPrimitiveType<T, N, 0>::MetaDataPrimitiveType(const MetaDataPrimitiveType& rhs)
     : MetaData(rhs), value_(rhs.value_) {}
 
 template <typename T, int N>
@@ -345,7 +346,7 @@ bool operator==(const MetaDataPrimitiveType<T, N, N>& lhs,
 }
 
 template <typename T, int N>
-MetaDataPrimitiveType<T, N, N>::MetaDataPrimitiveType(const MetaDataPrimitiveType<T, N, N>& rhs)
+MetaDataPrimitiveType<T, N, N>::MetaDataPrimitiveType(const MetaDataPrimitiveType& rhs)
     : MetaData(rhs), value_(rhs.value_) {}
 
 template <typename T, int N>
@@ -409,5 +410,6 @@ public:
     virtual ~MatrixMetaData(){};
     virtual MatrixMetaData<N, T>* clone() const { return new MatrixMetaData<N, T>(*this); }
 };
+#endif
 
 }  // namespace inviwo

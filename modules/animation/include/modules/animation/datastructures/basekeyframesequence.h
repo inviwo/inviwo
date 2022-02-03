@@ -108,6 +108,8 @@ protected:
     bool isSelected_{false};
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 template <typename Key>
 BaseKeyframeSequence<Key>::BaseKeyframeSequence() : KeyframeSequence(), keyframes_{} {}
 
@@ -300,6 +302,8 @@ void BaseKeyframeSequence<Key>::deserialize(Deserializer& d) {
         })
         .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get(), this); })(d, keyframes_);
 }
+
+#endif
 
 }  // namespace animation
 

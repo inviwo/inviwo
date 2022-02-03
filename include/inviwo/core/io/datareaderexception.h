@@ -32,9 +32,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
 
-#include <string_view>
-#include <fmt/format.h>
-
 namespace inviwo {
 
 class IVW_CORE_API DataReaderException : public Exception {
