@@ -102,7 +102,7 @@ public:
         NanOrZero     ///< "" for categorical, NaN for floating point, and 0 for integer values
     };
 
-    /** @see ::CSVReader::defaultEmptyField */
+    /** @see CSVReader::defaultEmptyField */
     CSVReader& setHandleEmptyFields(EmptyField emptyField);
     EmptyField getHandleEmptyFields() const;
 
@@ -128,7 +128,7 @@ public:
      * @return a DataFrame containing the CSV data
      * @throws DataReaderException if the given stream is in a bad state,
      *   the stream contains no data, the first row should hold column headers,
-     *   but they cannot be found, or if there are unmateched quotes at the end of
+     *   but they cannot be found, or if there are unmatched quotes at the end of
      *   the stream
      */
     std::shared_ptr<DataFrame> readData(std::istream& stream) const;
