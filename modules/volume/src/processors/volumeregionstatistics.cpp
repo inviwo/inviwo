@@ -43,7 +43,6 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <tcb/span.hpp>
-#include <fmt/ostream.h>
 
 namespace inviwo {
 
