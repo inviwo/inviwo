@@ -62,22 +62,22 @@ uniform float samplingRate = 2.0;
 void main() {
     vec4 result = vec4(0.0);   // The accumulated color along the ray;
     vec4 picking = vec4(0.0);  // The picking color of the ray
-    float rayDepth = -1.0;     // The ray depth value (0 to ray length, -1 mean "no" depth.
-                               // The same space as the rayPosition. Usually used to track
-                               // the depth of the "first" hit in DVR
-    float depth = 1.0;         // The image depth, form far (0.0) to near (1.0).
-                               // Will be overridden by rayDepth if != -1 and
+    float rayDepth = -1.0;     // The ray depth value [0, ray length], -1 means "no" depth.
+                               // Uses the same space as rayPosition. Usually used to track
+                               // the depth of the "first" hit in DVR.
+    float depth = 1.0;         // The image depth, from far to near [0, 1].
+                               // Will be overridden by rayDepth if != -1 and then
                                // written to gl_FragDepth
 
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
 
     // The setup placeholder is expected to define:
-    //  * entryPoint the ray start point in the volume in texture coordinates
-    //  * exitPoint the ray exit point in the volume in texture coordinates
-    //  * entryPointDepth the image depth of the entry point
-    //  * exitPointDepth the image depth of the exit point
-    //  * rayLength the distance from the start to the exit point in texture space
-    //  * rayDirection the direction of the ray in texture space, normalized.
+    //  * entryPoint       the ray start point in the volume in texture coordinates
+    //  * exitPoint        the ray exit point in the volume in texture coordinates
+    //  * entryPointDepth  the image depth of the entry point
+    //  * exitPointDepth   the image depth of the exit point
+    //  * rayLength        the distance from the start to the exit point in texture space
+    //  * rayDirection     the direction of the ray in texture space, normalized.
 
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
 

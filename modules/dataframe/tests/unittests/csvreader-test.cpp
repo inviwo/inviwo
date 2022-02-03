@@ -348,7 +348,7 @@ TEST(CSVquotes, singlequotes) {
     EXPECT_EQ("\"b\"", col3);
 }
 
-TEST(CSVquotes, StripSingleQuotes) {
+TEST(CSVquotes, stripSingleQuotes) {
     std::istringstream ss("\"first quote\",not quoted,\"b\"");
 
     CSVReader reader;

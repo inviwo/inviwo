@@ -163,7 +163,7 @@ std::optional<std::string> DataFrameTable::exportFile(
         return util::saveData(*data, path, name, candidateExtensions, overwrite);
     }
 
-    throw Exception("Could not find data frame", IVW_CONTEXT);
+    throw Exception("Inport has no data", IVW_CONTEXT);
 }
 
 }  // namespace inviwo

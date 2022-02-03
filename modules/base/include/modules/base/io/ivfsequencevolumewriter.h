@@ -120,7 +120,7 @@ namespace util {
  */
 IVW_MODULE_BASE_API std::string writeIvfVolumeSequence(const VolumeSequence& volumes,
                                                        std::string_view name, std::string_view path,
-                                                       std::string_view reltivePathToElements = "",
+                                                       std::string_view relativePathToElements = "",
                                                        Overwrite overwrite = Overwrite::Yes);
 }  // namespace util
 

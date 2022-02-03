@@ -360,7 +360,7 @@ std::vector<CSVReader::CellType> CSVReader::findCellTypes(
     size_t sampledRows = sampleRows;
     std::vector<CellType> types(nCol);
 
-    bool cLocale = locale_ == "C";
+    const bool cLocale = locale_ == "C";
 
     for (auto [i, row] : util::enumerate(rows)) {
         util::parse(row.first, delimiters_, nCol, row.second,
@@ -438,7 +438,7 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
     DataFrame& df, const std::vector<CellType>& types,
     const std::vector<std::string>& headers) const {
 
-    bool cLocale = locale_ == "C";
+    const bool cLocale = locale_ == "C";
     std::regex re{unitRegexp_};
     std::smatch m;
 

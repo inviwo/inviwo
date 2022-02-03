@@ -51,7 +51,7 @@ public:
     /**
      * Export some content to `path/name.ext` where ext is the first ext on candidateExtensions that
      * is supported.
-     * @returns a string the the path to the exported file, of std::nullopt if no matching
+     * @returns a string to the path of the exported file, or std::nullopt if no matching
      * extensions were found
      */
     virtual std::optional<std::string> exportFile(
@@ -61,6 +61,11 @@ public:
 
 namespace util {
 
+/**
+ * Exports the data from all export processors in \p network into the directory \p dir using a \p nameTemplate 
+ * and candidate extensions.
+ * @return names of exported files
+ */
 std::vector<std::string> exportAllFiles(ProcessorNetwork& network, std::string_view dir,
                                         std::string_view nameTemplate,
                                         const std::vector<FileExtension>& candidateExtensions,

@@ -206,7 +206,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         {"swizzlemask", [](State& state, std::stringstream& ss) { ss >> state.swizzleMask; }},
         {"interpolation", [](State& state, std::stringstream& ss) { ss >> state.interpolation; }},
         {"wrapping", [](State& state, std::stringstream& ss) { ss >> state.wrapping; }},
-        {"axesnames",
+        {"axisnames",
          [](State& state, std::stringstream& ss) {
              ss >> state.axes[0].name >> state.axes[1].name >> state.axes[2].name;
          }},
@@ -214,7 +214,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         {"axis2name", [](State& state, std::stringstream& ss) { ss >> state.axes[1].name; }},
         {"axis3name", [](State& state, std::stringstream& ss) { ss >> state.axes[2].name; }},
         
-        {"axesunits",
+        {"axisunits",
          [](State& state, std::stringstream& ss) {
              std::string unit;
              ss >> unit;

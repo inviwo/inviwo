@@ -66,7 +66,7 @@ std::ofstream DataWriter::open(std::string_view path, std::ios_base::openmode mo
     checkOverwrite(path);
     auto f = filesystem::ofstream(path, mode);
     if (!f) {
-        throw FileException(IVW_CONTEXT, "could not open file '{}'", path);
+        throw FileException(IVW_CONTEXT, "Could not open file '{}'", path);
     }
     return f;
 }

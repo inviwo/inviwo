@@ -9,5 +9,5 @@ Wrapping: Repeat Repeat Repeat
 BasisVector1: 5.05970000847 0.0 0.0
 BasisVector2: 0.0 5.63039999861 0.0
 BasisVector3: 0.0 0.0 6.98849999885
-AxesNames: x y z
-AxesUnits: Angstrom Angstrom Angstrom
+AxisNames: x y z
+AxisUnits: Angstrom Angstrom Angstrom

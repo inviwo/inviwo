@@ -52,8 +52,9 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(std::string_view filePat
     if (!filesystem::fileExists(filePath)) throw DataReaderException(IVW_CONTEXT, filePath);
 
     auto* fp = filesystem::fopen(filePath, "rb");
-    if (!fp)
+    if (!fp) {
         throw DataReaderException(IVW_CONTEXT, "Failed to open file for reading, {}", filePath);
+    }
     util::OnScopeExit closeFile([fp]() { fclose(fp); });
 
     return readData(fp, filePath);

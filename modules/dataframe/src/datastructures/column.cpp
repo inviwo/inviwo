@@ -139,7 +139,7 @@ glm::uint32_t CategoricalColumn::addOrGetID(std::string_view str) {
         return it->second;
     } else {
         lookUpTable_.emplace_back(str);
-        auto ind = static_cast<glm::uint32_t>(lookUpTable_.size() - 1);
+        auto ind = static_cast<std::uint32_t>(lookUpTable_.size() - 1);
         lookupMap_.emplace(str, ind);
         return ind;
     }

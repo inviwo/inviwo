@@ -61,7 +61,7 @@ namespace inviwo {
  *   * __statistics__ Data Frame with the statistics for each region.
  *
  * ### Properties
- *   * __Result Space__ The spacial domain of the resulting statistics. Data, Model, World, or
+ *   * __Result Space__ The spatial domain of the resulting statistics. Data, Model, World, or
  *                      Index, defaults to World.
  *
  */

@@ -47,7 +47,14 @@ namespace inviwo {
  *   - __ByteOffset__   Offset in to the raw file (Optional, default: 0)
  *   - __DataOffset__   Offset in byte to where the data starts
  *   - __Resolution | Dimension__ the size of the data grid: nx,ny,nz (Mandatory).
- *   - __Format__       The type of values in the raw file. (Mandatory)
+ *   - __Format__       The type of values in the raw file. (Mandatory). The valid formats are:
+                        FLOAT16, FLOAT32, FLOAT64, INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32,
+                        UINT64, Vec2FLOAT16, Vec2FLOAT32, Vec2FLOAT64, Vec2INT8, Vec2INT16,
+                        Vec2INT32, Vec2INT64, Vec2UINT8, Vec2UINT16, Vec2UINT32, Vec2UINT64,
+                        Vec3FLOAT16, Vec3FLOAT32, Vec3FLOAT64, Vec3INT8, Vec3INT16, Vec3INT32,
+                        Vec3INT64, Vec3UINT8, Vec3UINT16, Vec3UINT32, Vec3UINT64, Vec4FLOAT16,
+                        Vec4FLOAT32, Vec4FLOAT64, Vec4INT8, Vec4INT16, Vec4INT32, Vec4INT64,
+                        Vec4UINT8, Vec4UINT16, Vec4UINT32, Vec4UINT64
  *   - __Spacing | SliceThickness__ The size of the voxels in the data. (Optional)
  *   - __BasisVector(1|2|3)__ Defines a coordinate system for the data. (Optional, overrides
  *                            spacing, default: 2*IdentityMatrix);
@@ -63,9 +70,9 @@ namespace inviwo {
  *   - __SwizzleMask__  Data Channel swizzle mask @see SwizzleMask (Optional, defaults to rgba)
  *   - __Interpolation__ Interpolation mode @see InterpolationType (Optional, defaults to Linear)
  *   - __Wrapping__     Wrapping mode @see Wrapping3D (Optional defaults to clampAll
- *   - __AxesNames__    Space separated axes names (Optional, defaults to "")
+ *   - __AxisNames__    Space separated axes names (Optional, defaults to "")
  *   - __Axis(1|2|3)Name__ Axis name (Optional, defaults to "")
- *   - __AxesUnits__    Space separated axes units (Optional, defaults to Unit{})
+ *   - __AxisUnits__    Space separated axes units (Optional, defaults to Unit{})
  *   - __Axis(1|2|3)Unit__ Axis unit (Optional, defaults to Unit{})
  *
  *  The tag names are case insensitive and should always be followed by a ":"

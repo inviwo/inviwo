@@ -64,7 +64,7 @@ void CSVWriter::writeData(const DataFrame* dataFrame, std::ostream& file) const 
     // headers
     auto oj = util::make_ostream_joiner(file, delimiter);
     for (const auto& col : *dataFrame) {
-        if ((col == dataFrame->getIndexColumn()) && !exportIndexCol) {
+        if ((col->getColumnType() == ColumnType::Index) && !exportIndexCol) {
             continue;
         }
         const auto components = col->getBuffer()->getDataFormat()->getComponents();
@@ -81,7 +81,7 @@ void CSVWriter::writeData(const DataFrame* dataFrame, std::ostream& file) const 
 
     std::vector<std::function<void(std::ostream&, size_t)>> printers;
     for (const auto& col : *dataFrame) {
-        if ((col == dataFrame->getIndexColumn()) && !exportIndexCol) {
+        if ((col->getColumnType() == ColumnType::Index) && !exportIndexCol) {
             continue;
         }
         auto df = col->getBuffer()->getDataFormat();
