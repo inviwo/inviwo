@@ -279,6 +279,8 @@ public:
  * \see TemplateColumn, \see CategoricalColumn::get()
  */
 class IVW_MODULE_DATAFRAME_API CategoricalColumn : public TemplateColumn<std::uint32_t> {
+    class AddMany;
+
 public:
     CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {});
     CategoricalColumn(const CategoricalColumn& rhs) = default;
@@ -313,7 +315,23 @@ public:
 
     virtual void add(std::string_view value) override;
 
-    std::function<void(std::string_view)> addMany();
+    /*
+     * For CategoricalColumn you can not do the trick of pulling out the data container
+     * `auto& data = templateColumn->getEditableRAMRepresentation()->getDataContainer();`
+     * like for regular TemplateColumns to efficiently add many elements.
+     * Since adding element to the CategoricalColumn first has to find the string in the lookup and
+     * then insert the corresponding index in the data container. And we can't do the from the
+     * "outside". This function returns a callable object `AddMany` that enables this optimization
+     * for CategoricalColumns. For example:
+     * ```{.cpp}
+     * CategoricalColumn col{...};
+     * auto adder = col.addMany();
+     * for (const auto& str : some_strings) {
+     *     adder(str);
+     * }
+     * ```
+     */
+    AddMany addMany();
 
     /**
      * \brief \copybrief Column::append(const Column&) and builds a union of all
@@ -351,6 +369,22 @@ public:
     std::uint32_t addCategory(std::string_view cat);
 
 private:
+    class IVW_MODULE_DATAFRAME_API AddMany {
+    public:
+        inline void operator()(std::string_view value) const {
+            const auto id = column_->addOrGetID(value);
+            buffer_->getDataContainer().push_back(id);
+        }
+
+    private:
+        friend CategoricalColumn;
+        AddMany(CategoricalColumn* column, BufferRAMPrecision<std::uint32_t>* buffer)
+            : column_{column}, buffer_{buffer} {}
+
+        CategoricalColumn* column_;
+        BufferRAMPrecision<std::uint32_t>* buffer_;
+    };
+
     virtual std::uint32_t addOrGetID(std::string_view str);
 
     std::vector<std::string> lookUpTable_;

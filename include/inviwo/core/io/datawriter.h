@@ -58,10 +58,25 @@ public:
     Overwrite getOverwrite() const;
     void setOverwrite(Overwrite val);
 
+    /**
+     * Verify that you don't overwrite @p path unless @p overwrite is `Yes`.
+     * @throws DataWriterException if the condition is broken.
+     */
     static void checkOverwrite(std::string_view path, Overwrite overwrite);
+
+    /**
+     * Verify that you don't overwrite @p path unless @p overwrite is `Yes`.
+     * @throws DataWriterException if the condition is broken.
+     */
     void checkOverwrite(std::string_view path) const;
 
 protected:
+    /**
+     * Open @p path in @p mode for writing. If the overwrite condition is broken or the file can't
+     * be opened an exception is thrown.
+     * @throws DataWriterException if the condition is broken, and FileException if the file can't
+     * be opened.
+     */
     std::ofstream open(std::string_view path,
                        std::ios_base::openmode mode = std::ios_base::out) const;
 

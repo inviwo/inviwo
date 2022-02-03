@@ -431,7 +431,19 @@ public:
      */
     void setApplicationUsageMode(UsageMode mode);
 
+    /**
+     * Get the current LayerRamResizer
+     * @see LayerRamResizer CIMGLayerRamResizer LayerRAM::copyRepresentationsTo()
+     */
     LayerRamResizer* getLayerRamResizer() const;
+
+    /**
+     * Allow a module the register a LayerRamResizer with the inviwoapplication.
+     * The module is responsible for unregistering the LayerRamResizer before it is removed, by
+     * calling `setLayerRamResizer(nullptr)`, if the current LayerRamResizer was registered by that
+     * module.
+     * @see CIMGLayerRamResizer CImgModule
+     */
     void setLayerRamResizer(LayerRamResizer* obj);
 
 protected:

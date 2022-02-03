@@ -42,21 +42,40 @@ namespace inviwo {
 
 namespace util {
 
+/**
+ * Save @p data to @p filePath using the writer given by @p extension
+ * @param data Object to save to file
+ * @param filePath Complete path, name, and extension of the written file
+ * @param extension The extension used to identifier the DataWriter in the factory
+ * @param overwrite Whether to overwrite any existing file or not
+ * @throws DataWriterException if no write could be found, or if overwrite was violated.
+ */
 template <typename T>
-void saveData(const T& data, std::string_view path, const FileExtension& extension,
+void saveData(const T& data, std::string_view filePath, const FileExtension& extension,
               Overwrite overwrite) {
     auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
-    if (auto writer = factory->getWriterForTypeAndExtension<T>(extension, path)) {
+    if (auto writer = factory->getWriterForTypeAndExtension<T>(extension, filePath)) {
         writer->setOverwrite(overwrite);
-        writer->writeData(&data, path);
+        writer->writeData(&data, filePath);
     } else {
         throw DataWriterException(
-            fmt::format("Could not find a writer for {} of the specified extension {}", path,
+            fmt::format("Could not find a writer for {} of the specified extension {}", filePath,
                         extension.toString()),
             IVW_CONTEXT_CUSTOM("datawriterutil"));
     }
 }
 
+/**
+ * Save @p data to the filePath given by concatenating @p path, "/", @p name, ".", and extension
+ * where extensions is the first extension in @p extensions that we find a matching writer for.
+ * @param data Object to save to file
+ * @param path Directory where the file will be written
+ * @param name Name of the file excluding extension
+ * @param extensions A list of extensions to use for finding a matching DataWriter
+ * @param overwrite Whether to overwrite any existing file or not
+ * @returns The full path to the file written or std::nullopt if no writer was found
+ * @throws DataWriterException if overwrite was violated.
+ */
 template <typename T>
 std::optional<std::string> saveData(const T& data, std::string_view path, std::string_view name,
                                     const std::vector<FileExtension>& extensions,

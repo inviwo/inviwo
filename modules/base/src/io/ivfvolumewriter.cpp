@@ -56,7 +56,7 @@ void writeIvfVolume(const Volume& data, std::string_view filePath, Overwrite ove
     const auto rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
     DataWriter::checkOverwrite(filePath, overwrite);
-    DataWriter::checkOverwrite(filePath, overwrite);
+    DataWriter::checkOverwrite(rawPath, overwrite);
 
     const std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();

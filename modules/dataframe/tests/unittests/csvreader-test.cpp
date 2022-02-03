@@ -191,7 +191,7 @@ TEST(CSVdata, delimiterBeforeLineBreakWithHeader) {
 }
 
 TEST(CSVdata, allEmptyElementLine) {
-    // test whether rows with only delimiters, i.e. ",,,,," are keept
+    // test whether rows with only delimiters, i.e. ",,,,," are kept
     std::istringstream ss("1,a,apple,fruit\n,,,\n,,,\n2,b,banana,fruit\n");
 
     CSVReader reader;

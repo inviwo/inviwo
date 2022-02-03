@@ -60,11 +60,10 @@ CSVSource::CSVSource(const std::string& file)
     , doublePrecision_("doublePrecision", "Double Precision", CSVReader::defaultDoublePrecision)
     , exampleRows_("exampleRows", "Example Rows", CSVReader::defaultNumberOfExampleRows, 0, 10000)
     , locale_("locale", "Locale", CSVReader::defaultLocale)
-    , emptyField_(
-          "emptyField", "Missing Data Mode",
-          {{"Throw", "Throw Exception", CSVReader::EmptyField::Throw},
-           {"DefaultConstruct", "Default Construct", CSVReader::EmptyField::DefaultConstruct},
-           {"NanOrZero", "Nan Or Zero", CSVReader::EmptyField::NanOrZero}})
+    , emptyField_("emptyField", "Missing Data Mode",
+                  {{"throw", "Throw Exception", CSVReader::EmptyField::Throw},
+                   {"emptyOrZero", "Empty Or Zero", CSVReader::EmptyField::EmptyOrZero},
+                   {"nanOrZero", "Nan Or Zero", CSVReader::EmptyField::NanOrZero}})
     , reloadData_("reloadData", "Reload Data")
     , columns_("columns", "Column MetaData")
     , loadingFailed_{false}

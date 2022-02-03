@@ -54,7 +54,7 @@ namespace inviwo {
 </InviwoWorkspace>
  * \endverbatim
  *
- * @see inviwo::IvfSequenceVolumeReader
+ * @see inviwo::IvfSequenceVolumeReader inviwo::util::writeIvfVolumeSequence
  *
  */
 class IVW_MODULE_BASE_API IvfSequenceVolumeWriter : public DataWriterType<VolumeSequence> {
@@ -104,15 +104,15 @@ namespace util {
 /**
  * \brief Writes a volume sequence to disk
  *
- *  Writes a volume sequence to disk. Will create one main file ([name].ivfs) and a series of ivf
+ * Writes a volume sequence to disk. Will create one main file ([name].ivfs) and a series of ivf
  * volumes ([name]xx.ivf), one for each element in the sequence.
  *
  * @param volumes The volume sequence to export
  * @param name the name of the dataset, will be used for to name the output files [name].ivfs and
  * [name]xx.ivf
  * @param path path to the folder to put the main file
- * @param reltivePathToElements relative path (from the path to the main file) to where the sequence
- * elements will be written
+ * @param relativePathToElements relative path (from the path to the main file) to where the
+ * sequence elements will be written
  * @param overwrite whether or not to overwrite existing files.
  * @return path to the created main-file
  * @see inviwo::IvfSequenceVolumeWriter

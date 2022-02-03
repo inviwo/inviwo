@@ -83,7 +83,18 @@ public:
     virtual std::any getOption([[maybe_unused]] std::string_view key) { return std::any{}; }
 
 protected:
+    /**
+     * Verify that @p path exists, and throw DataReaderException if not.
+     * @throws DataReaderException if the file is not found
+     */
     void checkExists(std::string_view path) const;
+
+    /**
+     * Open @p path in @p mode for reading. If the file is not found or the file can't
+     * be opened an exception is thrown.
+     * @throws DataReaderException if the file is not found, and FileException if the file can't
+     * be opened.
+     */
     std::ifstream open(std::string_view path,
                        std::ios_base::openmode mode = std::ios_base::in) const;
 

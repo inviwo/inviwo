@@ -211,7 +211,7 @@ size_t parse(std::string_view str, std::string_view delimiters, std::optional<si
              std::optional<size_t> refLine, Func&& func) {
 
     std::string lookFor{delimiters};
-    lookFor.push_back('"');
+    lookFor.push_back('"');  // We also have to handle quotes
     size_t part = 1;
     size_t index = 0;
 
@@ -354,11 +354,11 @@ std::string_view stripQuotes(std::string_view str) {
 
 }  // namespace util
 
-std::vector<CSVReader::CellType> CSVReader::findCellTypes(
+std::vector<CSVReader::TypeCounts> CSVReader::findCellTypes(
     size_t nCol, const std::vector<std::pair<std::string_view, size_t>>& rows,
     size_t sampleRows) const {
     size_t sampledRows = sampleRows;
-    std::vector<CellType> types(nCol);
+    std::vector<TypeCounts> counts(nCol);
 
     const bool cLocale = locale_ == "C";
 
@@ -368,16 +368,16 @@ std::vector<CSVReader::CellType> CSVReader::findCellTypes(
                         if (cell.empty()) {
                             // Ignore empty cells.
                         } else if (util::isNumber<int>(cell, cLocale)) {
-                            ++types[index].integer;
+                            ++counts[index].integer;
                         } else if (doublePrecision_ ? util::isNumber<double>(cell, cLocale)
                                                     : util::isNumber<float>(cell, cLocale)) {
-                            ++types[index].real;
+                            ++counts[index].real;
                         } else {
-                            ++types[index].string;
+                            ++counts[index].string;
                         }
                     });
         if (i > sampledRows) {
-            if (std::any_of(types.begin(), types.end(), [](const CellType& type) {
+            if (std::any_of(counts.begin(), counts.end(), [](const TypeCounts& type) {
                     return type.integer == 0 && type.real == 0 && type.string == 0;
                 })) {
                 sampledRows *= 2;
@@ -393,7 +393,7 @@ std::vector<CSVReader::CellType> CSVReader::findCellTypes(
             << sampledRows);
     }
 
-    return types;
+    return counts;
 }
 
 template <typename T>
@@ -418,7 +418,7 @@ std::function<void(std::string_view, size_t, size_t)> addColumn(DataFrame& df,
                         data.emplace_back();
                     }
                     break;
-                case CSVReader::EmptyField::DefaultConstruct:
+                case CSVReader::EmptyField::EmptyOrZero:
                     data.emplace_back();
                     break;
                 default:
@@ -435,7 +435,7 @@ std::function<void(std::string_view, size_t, size_t)> addColumn(DataFrame& df,
 }
 
 std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::addColumns(
-    DataFrame& df, const std::vector<CellType>& types,
+    DataFrame& df, const std::vector<TypeCounts>& typeCounts,
     const std::vector<std::string>& headers) const {
 
     const bool cLocale = locale_ == "C";
@@ -443,31 +443,31 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
     std::smatch m;
 
     std::vector<std::function<void(std::string_view, size_t, size_t)>> appenders;
-    for (auto&& [celltype, header] : util::zip(types, headers)) {
+    for (auto&& [counts, header] : util::zip(typeCounts, headers)) {
         auto headerCopy = header;
         Unit unit{};
 
-        if (unitsInHeaders_ && celltype.string == 0) {
+        if (unitsInHeaders_ && counts.string == 0) {
             if (std::regex_match(header, m, re)) {
                 headerCopy = util::trim(m.str(1));
                 unit = units::unit_from_string(m.str(2));
             }
         }
 
-        if (stripQuotes_ && celltype.string > 0) {
+        if (stripQuotes_ && counts.string > 0) {
             auto col = df.addCategoricalColumn(header);
             appenders.emplace_back([f = col->addMany()](std::string_view str, size_t, size_t) {
                 f(util::stripQuotes(str));
             });
-        } else if (celltype.string > 0) {
+        } else if (counts.string > 0) {
             auto col = df.addCategoricalColumn(header);
             appenders.emplace_back(
                 [f = col->addMany()](std::string_view str, size_t, size_t) { f(str); });
-        } else if (doublePrecision_ && celltype.real > 0) {
+        } else if (doublePrecision_ && counts.real > 0) {
             appenders.push_back(addColumn<double>(df, headerCopy, unit, emptyField_, cLocale));
-        } else if (!doublePrecision_ && celltype.real > 0) {
+        } else if (!doublePrecision_ && counts.real > 0) {
             appenders.push_back(addColumn<float>(df, headerCopy, unit, emptyField_, cLocale));
-        } else if (celltype.integer > 0) {
+        } else if (counts.integer > 0) {
             appenders.push_back(addColumn<int>(df, headerCopy, unit, emptyField_, cLocale));
         } else if (stripQuotes_) {
             LogWarn("Detected an empty column, using a categorical type, name: " << header);

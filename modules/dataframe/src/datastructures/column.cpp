@@ -99,12 +99,9 @@ void CategoricalColumn::add(std::string_view value) {
     auto id = addOrGetID(value);
     getTypedBuffer()->getEditableRAMRepresentation()->add(id);
 }
-std::function<void(std::string_view)> CategoricalColumn::addMany() {
+CategoricalColumn::AddMany CategoricalColumn::addMany() {
     auto rep = buffer_->getEditableRAMRepresentation();
-    return [this, rep](std::string_view value) {
-        auto id = addOrGetID(value);
-        rep->getDataContainer().push_back(id);
-    };
+    return AddMany{this, rep};
 }
 
 void CategoricalColumn::append(const Column& col) {
