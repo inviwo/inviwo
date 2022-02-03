@@ -62,8 +62,8 @@ public:
 namespace util {
 
 /**
- * Exports the data from all export processors in \p network into the directory \p dir using a \p nameTemplate 
- * and candidate extensions.
+ * Exports the data from all export processors in \p network into the directory \p dir using a \p
+ * nameTemplate and candidate extensions.
  * @return names of exported files
  */
 std::vector<std::string> exportAllFiles(ProcessorNetwork& network, std::string_view dir,
@@ -71,6 +71,6 @@ std::vector<std::string> exportAllFiles(ProcessorNetwork& network, std::string_v
                                         const std::vector<FileExtension>& candidateExtensions,
                                         Overwrite overwrite);
 
-}
+}  // namespace util
 
 }  // namespace inviwo
