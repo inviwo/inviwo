@@ -106,7 +106,7 @@ QImage WorkspaceAnnotationsQt::getCanvasQImage(size_t i) const {
 namespace {
 
 struct DummyProcessor : Serializable {
-    virtual void serialize(Serializer& s) const override {}
+    virtual void serialize([[maybe_unused]] Serializer& s) const override {}
     virtual void deserialize(Deserializer& d) override {
         d.deserialize("type", type, SerializationTarget::Attribute);
         d.deserialize("identifier", identifier, SerializationTarget::Attribute);
@@ -119,7 +119,7 @@ struct DummyProcessor : Serializable {
 
 struct DummyNetwork : Serializable {
 
-    virtual void serialize(Serializer& s) const override {}
+    virtual void serialize([[maybe_unused]] Serializer& s) const override {}
     virtual void deserialize(Deserializer& d) override {
         d.deserialize("Processors", processors, "Processor");
     }

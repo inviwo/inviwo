@@ -66,7 +66,7 @@ namespace util {
  * nameTemplate and candidate extensions.
  * @return names of exported files
  */
-std::vector<std::string> exportAllFiles(ProcessorNetwork& network, std::string_view dir,
+IVW_CORE_API std::vector<std::string> exportAllFiles(ProcessorNetwork& network, std::string_view dir,
                                         std::string_view nameTemplate,
                                         const std::vector<FileExtension>& candidateExtensions,
                                         Overwrite overwrite);

@@ -78,7 +78,6 @@ public:
     TreeItem* findChild(std::string_view caption) const;
 
 private:
-    void initIconLoad() const;
     WorkspaceTreeModel::Type type_;
     TreeItem* parent_;
     int row_;
@@ -128,7 +127,10 @@ TreeItem::TreeItem(std::string_view filename, InviwoApplication* app,
     , isExample_{isExample}
     , infoLoader_{std::make_shared<WorkspaceInfoLoader>(filename, app)}
     , info_{} {
-
+    // Must register WorkspaceInfo before using queued connection
+    static std::once_flag onceFlag;
+    std::call_once ( onceFlag, [ ]{ qRegisterMetaType<WorkspaceInfo>(); } );
+    
     connect(
         infoLoader_.get(), &WorkspaceInfoLoader::workspaceInfoLoaded, this,
         [this, onChange](WorkspaceInfo info) {

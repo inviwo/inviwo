@@ -201,7 +201,12 @@ public:
 
         connect(model, &QAbstractItemModel::dataChanged, this,
                 [this](const QModelIndex& topLeft, const QModelIndex& bottomRight,
-                       const QList<int>& roles) {
+                    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                       const QVector<int>& roles
+                    #else 
+                       const QList<int>& roles
+                    #endif
+                    ) {
                     for (int i = topLeft.row(); i <= bottomRight.row(); ++i) {
                         auto changed = mapFromSource(sourceModel()->index(i, 0, topLeft.parent()));
                         dataChanged(changed, changed, roles);
@@ -240,7 +245,7 @@ public:
     QModelIndex mapToSource(const QModelIndex& proxyIndex) const override {
         if (!proxyIndex.isValid()) return {};
 
-        auto m = static_cast<const Mapping*>(proxyIndex.constInternalPointer());
+        auto m = static_cast<const Mapping*>(proxyIndex.internalPointer());
         return sourceModel()->index(m->sourceRow, m->sourceCol, m->sourceParent);
     }
 

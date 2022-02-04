@@ -34,6 +34,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QMetaType>
 #include <QString>
 #include <QVariant>
 #include <QImage>
@@ -57,6 +58,7 @@ struct IVW_QTEDITOR_API WorkspaceInfo {
     QImage image;
     QStringList processors;
 };
+Q_DECLARE_METATYPE(WorkspaceInfo); // To be able to use queued Qt connect
 
 class IVW_QTEDITOR_API WorkspaceInfoLoader
     : public QObject,

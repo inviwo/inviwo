@@ -340,7 +340,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                    QIcon::On);
 
             viewsSelectionButtons
-                ->addAction(expandCollapse, "Workspace Tree List",
+                ->addAction(expandCollapse, "Expand/Collapse",
                             [this](bool expand) {
                                 if (expand) {
                                     workspaceGridView_->expandRecursively({});
@@ -353,13 +353,13 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 ->setCheckable(true);
 
             viewsSelectionButtons->addAction(QIcon(":/svgicons/gridlist.svg"),
-                                             "Workspace Grid List", [this]() {
+                                             "Workspace Grid View", [this]() {
                                                  setSetting("showWorkSpaceGridView", true);
                                                  workspaceGridView_->setVisible(true);
                                                  workspaceTreeView_->setVisible(false);
                                              });
             viewsSelectionButtons->addAction(QIcon(":svgicons/detaillist.svg"),
-                                             "Workspace Tree List", [this]() {
+                                             "Workspace Tree View", [this]() {
                                                  setSetting("showWorkSpaceGridView", false);
                                                  workspaceGridView_->setVisible(false);
                                                  workspaceTreeView_->setVisible(true);
@@ -440,8 +440,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                         QSizePolicy::MinimumExpanding);
             leftSplitter->addWidget(centerWidget);
         }
-        leftSplitter->setStretchFactor(0, 1);
-        leftSplitter->setStretchFactor(1, 1.5);
+        leftSplitter->setStretchFactor(0, 2); // FileTree
+        leftSplitter->setStretchFactor(1, 1); // Center widget
         leftSplitter->handle(1)->setAttribute(Qt::WA_Hover);
     }
     {  // right splitter pane: changelog / options
@@ -622,7 +622,7 @@ void WelcomeWidget::updateDetails(const QString& filename) {
     std::optional<WorkspaceAnnotationsQt> annotations;
     try {
         annotations.emplace(utilqt::fromQString(filename), app_);
-    } catch (Exception& e) {
+    } catch (Exception&) {
     }
 
     const auto dateformat = "yyyy-MM-dd hh:mm:ss";
