@@ -34,7 +34,7 @@
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorfactory.h>
-#include <inviwo/core/algorithm/seachdsl.h>
+#include <inviwo/core/algorithm/searchdsl.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

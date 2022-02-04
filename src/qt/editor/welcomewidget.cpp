@@ -39,7 +39,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/workspacemanager.h>
-#include <inviwo/core/algorithm/seachdsl.h>
+#include <inviwo/core/algorithm/searchdsl.h>
 
 #include <inviwo/qt/editor/workspacetreemodel.h>
 #include <inviwo/qt/editor/workspacetreeview.h>

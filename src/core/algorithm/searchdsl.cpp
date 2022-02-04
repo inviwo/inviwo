@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/algorithm/seachdsl.h>
+#include <inviwo/core/algorithm/searchdsl.h>
 
 namespace inviwo {}  // namespace inviwo

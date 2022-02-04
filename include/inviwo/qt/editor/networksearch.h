@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/algorithm/seachdsl.h>
+#include <inviwo/core/algorithm/searchdsl.h>
 #include <inviwo/core/processors/processor.h>
 
 #include <functional>
