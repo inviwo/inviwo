@@ -129,8 +129,8 @@ TreeItem::TreeItem(std::string_view filename, InviwoApplication* app,
     , info_{} {
     // Must register WorkspaceInfo before using queued connection
     static std::once_flag onceFlag;
-    std::call_once ( onceFlag, [ ]{ qRegisterMetaType<WorkspaceInfo>(); } );
-    
+    std::call_once(onceFlag, [] { qRegisterMetaType<WorkspaceInfo>(); });
+
     connect(
         infoLoader_.get(), &WorkspaceInfoLoader::workspaceInfoLoaded, this,
         [this, onChange](WorkspaceInfo info) {

@@ -201,12 +201,12 @@ public:
 
         connect(model, &QAbstractItemModel::dataChanged, this,
                 [this](const QModelIndex& topLeft, const QModelIndex& bottomRight,
-                    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                        const QVector<int>& roles
-                    #else 
+#else 
                        const QList<int>& roles
-                    #endif
-                    ) {
+#endif
+                ) {
                     for (int i = topLeft.row(); i <= bottomRight.row(); ++i) {
                         auto changed = mapFromSource(sourceModel()->index(i, 0, topLeft.parent()));
                         dataChanged(changed, changed, roles);

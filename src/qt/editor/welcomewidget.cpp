@@ -440,8 +440,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                         QSizePolicy::MinimumExpanding);
             leftSplitter->addWidget(centerWidget);
         }
-        leftSplitter->setStretchFactor(0, 2); // FileTree
-        leftSplitter->setStretchFactor(1, 1); // Center widget
+        leftSplitter->setStretchFactor(0, 2);  // FileTree
+        leftSplitter->setStretchFactor(1, 1);  // Center widget
         leftSplitter->handle(1)->setAttribute(Qt::WA_Hover);
     }
     {  // right splitter pane: changelog / options
