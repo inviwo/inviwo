@@ -80,6 +80,7 @@ private:
     BoolProperty stripQuotes_;
     BoolProperty doublePrecision_;
     IntSizeTProperty exampleRows_;
+    StringProperty rowComment_;
     StringProperty locale_;
     TemplateOptionProperty<CSVReader::EmptyField> emptyField_;
     ButtonProperty reloadData_;
