@@ -38,13 +38,6 @@
 
 namespace inviwo {
 
-class IVW_MODULE_CIMG_API TIFFLayerReaderException : public DataReaderException {
-public:
-    TIFFLayerReaderException(const std::string& message = "",
-                             ExceptionContext context = ExceptionContext());
-    virtual ~TIFFLayerReaderException() noexcept = default;
-};
-
 class IVW_MODULE_CIMG_API TIFFLayerReader : public DataReaderType<Layer> {
 public:
     TIFFLayerReader();
@@ -53,7 +46,7 @@ public:
     virtual TIFFLayerReader* clone() const override;
     virtual ~TIFFLayerReader() = default;
 
-    virtual std::shared_ptr<Layer> readData(const std::string& fileName) override;
+    virtual std::shared_ptr<Layer> readData(std::string_view fileName) override;
 
     template <typename Result, typename T>
     std::shared_ptr<Layer> operator()(void* data, size2_t dims, SwizzleMask swizzleMask) const {

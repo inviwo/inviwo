@@ -39,10 +39,6 @@
 
 namespace inviwo {
 
-TIFFStackVolumeReaderException::TIFFStackVolumeReaderException(const std::string& message,
-                                                               ExceptionContext context)
-    : DataReaderException(message, context) {}
-
 TIFFStackVolumeReader::TIFFStackVolumeReader() : DataReaderType<Volume>() {
     addExtension(FileExtension("tif", "TIFF Stack"));
     addExtension(FileExtension("tiff", "TIFF Stack"));
@@ -52,11 +48,8 @@ TIFFStackVolumeReader* TIFFStackVolumeReader::clone() const {
     return new TIFFStackVolumeReader(*this);
 }
 
-std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::string& filePath) {
-    if (!filesystem::fileExists(filePath)) {
-        throw TIFFStackVolumeReaderException("Error could not find input file: " + filePath,
-                                             IVW_CONTEXT);
-    }
+std::shared_ptr<Volume> TIFFStackVolumeReader::readData(std::string_view filePath) {
+    checkExists(filePath);
 
     auto header = cimgutil::getTIFFHeader(filePath);
     auto volume = std::make_shared<Volume>(header.dimensions, header.format);
@@ -77,7 +70,7 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::string& fileP
     return volume;
 }
 
-TIFFStackVolumeRAMLoader::TIFFStackVolumeRAMLoader(const std::string& sourceFile)
+TIFFStackVolumeRAMLoader::TIFFStackVolumeRAMLoader(std::string_view sourceFile)
     : sourceFile_{sourceFile} {}
 
 TIFFStackVolumeRAMLoader* TIFFStackVolumeRAMLoader::clone() const {
@@ -94,8 +87,7 @@ std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresenta
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw TIFFStackVolumeReaderException("Error could not find input file: " + fileName,
-                                                 IVW_CONTEXT);
+            throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
         }
     }
     cimgutil::TIFFHeader header;
@@ -121,8 +113,7 @@ void TIFFStackVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepres
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw TIFFStackVolumeReaderException("Error could not find input file: " + fileName,
-                                                 IVW_CONTEXT);
+            throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
         }
     }
 

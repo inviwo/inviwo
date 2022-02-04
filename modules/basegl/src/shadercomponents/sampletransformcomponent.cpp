@@ -37,16 +37,20 @@ namespace inviwo {
 
 SampleTransformComponent::SampleTransformComponent()
     : ShaderComponent()
+    , sampleTransform_{"sampleTransform", "Sample Transform"}
     , shift_{"shift",
-             "Sample Shift",
+             "Shift",
              vec3{0.0f},
              {vec3{-1.0f}, ConstraintBehavior::Ignore},
              {vec3{1.0f}, ConstraintBehavior::Ignore}}
     , repeat_{"repeat",
               "Repeat",
               ivec3{1},
-              {ivec3{0}, ConstraintBehavior::Immutable},
-              {ivec3{10}, ConstraintBehavior::Ignore}} {}
+              {ivec3{1}, ConstraintBehavior::Immutable},
+              {ivec3{10}, ConstraintBehavior::Ignore}} {
+
+    sampleTransform_.addProperties(shift_, repeat_);
+}
 
 std::string_view SampleTransformComponent::getName() const { return shift_.getIdentifier(); }
 
@@ -54,7 +58,7 @@ void SampleTransformComponent::process(Shader& shader, TextureUnitContainer&) {
     utilgl::setUniforms(shader, shift_, repeat_);
 }
 
-std::vector<Property*> SampleTransformComponent::getProperties() { return {&shift_, &repeat_}; }
+std::vector<Property*> SampleTransformComponent::getProperties() { return {&sampleTransform_}; }
 
 namespace {
 

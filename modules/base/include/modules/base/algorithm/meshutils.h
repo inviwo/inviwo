@@ -157,8 +157,8 @@ template <typename Callback>
 void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback callback) {
     auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Triangles) {
-        throw Exception(fmt::format("Only works for triangles, got {}", info.dt),
-                        IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
+        throw Exception(IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"),
+                        "Only works for triangles, got {}", info.dt);
     }
 
     if (ram.size() < 3) {
@@ -208,8 +208,8 @@ void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback
     }
 
     else {
-        throw Exception(fmt::format("ConnectivityType {} not supported", info.ct),
-                        IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
+        throw Exception(IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"),
+                        "ConnectivityType {} not supported", info.ct);
     }
 }
 
@@ -217,8 +217,8 @@ template <typename Callback>
 void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback&& callback) {
     auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Lines) {
-        throw Exception(fmt::format("Only works for lines, got {}", info.dt),
-                        IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
+        throw Exception(IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"),
+                        "Only works for lines, got {}", info.dt);
     }
 
     if (ram.size() < 2) {
@@ -259,8 +259,8 @@ void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callb
     }
 
     else {
-        throw Exception(fmt::format("ConnectivityType {} not supported", info.ct),
-                        IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
+        throw Exception(IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"),
+                        "ConnectivityType {} not supported", info.ct);
     }
 }
 
@@ -270,8 +270,8 @@ void forEachLine(const Mesh::MeshInfo& info, const IndexBuffer& ib,
                  LineEndCallback&& lineEndCallback) {
     auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Lines) {
-        throw Exception(fmt::format("Only works for lines, got {}", info.dt),
-                        IVW_CONTEXT_CUSTOM("meshutil::forEachLine"));
+        throw Exception(IVW_CONTEXT_CUSTOM("meshutil::forEachLine"), "Only works for lines, got {}",
+                        info.dt);
     }
 
     if (ram.size() < 2) {
@@ -326,8 +326,8 @@ void forEachLine(const Mesh::MeshInfo& info, const IndexBuffer& ib,
     }
 
     else {
-        throw Exception(fmt::format("ConnectivityType {} not supported", info.ct),
-                        IVW_CONTEXT_CUSTOM("meshutil::forEachLine"));
+        throw Exception(IVW_CONTEXT_CUSTOM("meshutil::forEachLine"),
+                        "ConnectivityType {} not supported", info.ct);
     }
 }
 

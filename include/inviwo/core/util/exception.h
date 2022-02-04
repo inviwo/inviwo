@@ -39,6 +39,8 @@
 #include <vector>
 #include <ostream>
 
+#include <fmt/format.h>
+
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>
 #include <warn/ignore/dll-interface>
@@ -51,6 +53,11 @@ using ExceptionHandler = std::function<void(ExceptionContext)>;
 class IVW_CORE_API Exception : public std::runtime_error {
 public:
     Exception(std::string_view message = "", ExceptionContext context = ExceptionContext());
+    Exception(std::string_view format, fmt::format_args&& args, ExceptionContext context);
+    template <typename... Args>
+    Exception(ExceptionContext context, std::string_view format, Args&&... args)
+        : Exception{format, fmt::make_args_checked<Args...>(format, std::forward<Args>(args)...),
+                    std::move(context)} {}
     virtual ~Exception() noexcept;
     virtual std::string getMessage() const;
     std::string getFullMessage() const;
@@ -73,39 +80,32 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 class IVW_CORE_API RangeException : public Exception {
 public:
-    RangeException(std::string_view message = "", ExceptionContext context = ExceptionContext());
-    virtual ~RangeException() noexcept = default;
+    using Exception::Exception;
 };
 
 class IVW_CORE_API NullPointerException : public Exception {
 public:
-    NullPointerException(std::string_view message = "",
-                         ExceptionContext context = ExceptionContext());
-    virtual ~NullPointerException() noexcept = default;
+    using Exception::Exception;
 };
 
 class IVW_CORE_API IgnoreException : public Exception {
 public:
-    IgnoreException(std::string_view message = "", ExceptionContext context = ExceptionContext());
-    virtual ~IgnoreException() noexcept = default;
+    using Exception::Exception;
 };
 
 class IVW_CORE_API AbortException : public Exception {
 public:
-    AbortException(std::string_view message = "", ExceptionContext context = ExceptionContext());
-    virtual ~AbortException() noexcept = default;
+    using Exception::Exception;
 };
 
 class IVW_CORE_API FileException : public Exception {
 public:
-    FileException(std::string_view message = "", ExceptionContext context = ExceptionContext());
-    virtual ~FileException() noexcept = default;
+    using Exception::Exception;
 };
 
 class IVW_CORE_API ResourceException : public Exception {
 public:
-    ResourceException(std::string_view message = "", ExceptionContext context = ExceptionContext());
-    virtual ~ResourceException() noexcept = default;
+    using Exception::Exception;
 };
 
 class IVW_CORE_API ModuleInitException : public Exception {

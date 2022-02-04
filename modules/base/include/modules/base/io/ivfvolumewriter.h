@@ -44,14 +44,14 @@ public:
     IvfVolumeWriter(const IvfVolumeWriter& rhs);
     IvfVolumeWriter& operator=(const IvfVolumeWriter& that);
     virtual IvfVolumeWriter* clone() const;
-    virtual ~IvfVolumeWriter() {}
+    virtual ~IvfVolumeWriter() = default;
 
-    virtual void writeData(const Volume* data, const std::string filePath) const;
+    virtual void writeData(const Volume* data, std::string_view filePath) const;
 };
 
 namespace util {
-IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, const std::string filePath,
-                                        bool overwrite = false);
+IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, std::string_view filePath,
+                                        Overwrite overwrite = Overwrite::No);
 }
 
 }  // namespace inviwo

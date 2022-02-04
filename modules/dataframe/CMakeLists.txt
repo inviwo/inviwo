@@ -11,8 +11,10 @@ set(HEADER_FILES
     include/inviwo/dataframe/datastructures/dataframe.h
     include/inviwo/dataframe/datastructures/datapoint.h
     include/inviwo/dataframe/io/csvreader.h
+    include/inviwo/dataframe/io/csvwriter.h
     include/inviwo/dataframe/io/json/dataframepropertyjsonconverter.h
     include/inviwo/dataframe/io/jsonreader.h
+    include/inviwo/dataframe/io/xmlwriter.h
     include/inviwo/dataframe/jsondataframeconversion.h
     include/inviwo/dataframe/processors/csvsource.h
     include/inviwo/dataframe/processors/dataframeexporter.h
@@ -41,8 +43,10 @@ set(SOURCE_FILES
     src/datastructures/column.cpp
     src/datastructures/dataframe.cpp
     src/io/csvreader.cpp
+    src/io/csvwriter.cpp
     src/io/json/dataframepropertyjsonconverter.cpp
     src/io/jsonreader.cpp
+    src/io/xmlwriter.cpp
     src/jsondataframeconversion.cpp
     src/processors/csvsource.cpp
     src/processors/dataframeexporter.cpp

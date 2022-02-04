@@ -48,6 +48,9 @@
 #include <inviwo/dataframe/io/csvreader.h>
 #include <inviwo/dataframe/io/jsonreader.h>
 
+#include <inviwo/dataframe/io/csvwriter.h>
+#include <inviwo/dataframe/io/xmlwriter.h>
+
 #include <inviwo/core/properties/propertyconverter.h>
 
 #include <modules/json/jsonmodule.h>
@@ -96,6 +99,9 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     // Readers and writes
     registerDataReader(std::make_unique<CSVReader>());
     registerDataReader(std::make_unique<JSONDataFrameReader>());
+
+    registerDataWriter(std::make_unique<CSVWriter>());
+    registerDataWriter(std::make_unique<XMLWriter>());
 
     // Data converters
     registerPropertyConverter(std::make_unique<OptionToStringConverter<ColumnOptionProperty>>());

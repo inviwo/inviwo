@@ -1,0 +1,398 @@
+<?xml version="1.0" ?>
+<InviwoWorkspace version="2">
+    <ProcessorNetworkVersion content="19" />
+    <Processors>
+        <Processor type="org.inviwo.DataFrameTable" identifier="DataFrameTable" displayName="DataFrame Table">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.IntVec2Property" identifier="position">
+                    <value x="1103" y="548" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="175" y="250" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+                <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                    <position x="1103" y="548" />
+                    <dimensions x="256" y="256" />
+                    <visibility content="1" />
+                    <fullScreen content="0" />
+                    <onTop content="1" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.VolumeVoronoiSegmentation" identifier="VolumeVoronoiSegmentation" displayName="Volume Voronoi Segmentation">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="iCol">
+                    <displayName content="Segment Index Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="atomid" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="xCol">
+                    <displayName content="X Coordinate Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="x" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="yCol">
+                    <displayName content="Y Coordinate Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="y" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="zCol">
+                    <displayName content="Z Coordinate Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="z" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="wCol">
+                    <displayName content="Weight Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="none" />
+                            <name content="None" />
+                            <value content="-1" />
+                        </option>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="none" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="200" y="100" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.VolumeSource" identifier="VolumeSource" displayName="Volume Source">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.FileProperty" identifier="filename">
+                    <absolutePath content="/Users/peter/Documents/Inviwo/inviwo/data/volumes/boron.dat" />
+                    <workspaceRelativePath content="../../../../../data/volumes/boron.dat" />
+                    <ivwdataRelativePath content="volumes/boron.dat" />
+                    <selectedExtension>
+                        <extension content="dat" />
+                        <description content="Inviwo dat file format" />
+                    </selectedExtension>
+                    <acceptMode content="0" />
+                    <fileMode content="0" />
+                </Property>
+                <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
+                    <selectedIdentifier content="Inviwo dat file format (*.dat)" />
+                </Property>
+                <Property type="org.inviwo.SequenceTimerProperty" identifier="Sequence">
+                    <visible content="0" />
+                    <Properties>
+                        <Property type="org.inviwo.Size_tProperty" identifier="selectedSequenceIndex">
+                            <displayName content="Sequence Index" />
+                            <semantics semantics="Default" />
+                            <usageMode content="0" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <minConstraint content="0" />
+                            <maxConstraint content="0" />
+                            <minvalue content="1" />
+                            <maxvalue content="1" />
+                            <increment content="1" />
+                            <value content="1" />
+                        </Property>
+                    </Properties>
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="150" y="0" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.CSVSource" identifier="CSVSource" displayName="CSV Source">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.FileProperty" identifier="inputFile_">
+                    <absolutePath content="/Users/peter/Documents/Inviwo/inviwo/modules/volume/data/boron.csv" />
+                    <workspaceRelativePath content="../../../data/boron.csv" />
+                    <ivwdataRelativePath content="../modules/volume/data/boron.csv" />
+                    <selectedExtension>
+                        <extension content="*" />
+                        <description content="All Files" />
+                    </selectedExtension>
+                    <acceptMode content="0" />
+                    <fileMode content="0" />
+                </Property>
+                <Property type="org.inviwo.ColumnMetaDataListProperty" identifier="columns">
+                    <maxNumberOfElements content="0" />
+                    <displayName content="Column MetaData" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <OwnedPropertyIdentifiers>
+                        <PropertyIdentifier content="column1" />
+                        <PropertyIdentifier content="column2" />
+                        <PropertyIdentifier content="column3" />
+                        <PropertyIdentifier content="column4" />
+                        <PropertyIdentifier content="column5" />
+                    </OwnedPropertyIdentifiers>
+                    <Properties>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column1">
+                            <displayName content="index" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column2">
+                            <displayName content="atomid" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column3">
+                            <displayName content="x" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                    <value content="1" />
+                                </Property>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <value x="-2.5299999999999998" y="2.5299999999999998" />
+                                </Property>
+                                <Property type="org.inviwo.StringProperty" identifier="unit">
+                                    <value content="Å" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column4">
+                            <displayName content="y" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                    <value content="1" />
+                                </Property>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <value x="-2.8125" y="2.8125" />
+                                </Property>
+                                <Property type="org.inviwo.StringProperty" identifier="unit">
+                                    <value content="Å" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column5">
+                            <displayName content="z" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                    <value content="1" />
+                                </Property>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <value x="-3.4942500600000002" y="3.4942500000000001" />
+                                </Property>
+                                <Property type="org.inviwo.StringProperty" identifier="unit">
+                                    <value content="Å" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                    </Properties>
+                    <collapsed content="0" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="325" y="0" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.VolumeRegionStatistics" identifier="VolumeRegionStatistics" displayName="Volume Region Statistics">
+            <PortGroups />
+            <Properties />
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="175" y="175" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+    </Processors>
+    <Connections>
+        <Connection src="CSVSource.data" dst="VolumeVoronoiSegmentation.seedPoints" />
+        <Connection src="VolumeSource.data" dst="VolumeVoronoiSegmentation.inputVolume" />
+        <Connection src="VolumeVoronoiSegmentation.outport" dst="VolumeRegionStatistics.atlas" />
+        <Connection src="VolumeSource.data" dst="VolumeRegionStatistics.volume" />
+        <Connection src="VolumeRegionStatistics.statistics" dst="DataFrameTable.inport" />
+    </Connections>
+</InviwoWorkspace>

@@ -31,6 +31,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/io/datawriterexception.h>
+#include <inviwo/core/util/safecstr.h>
 
 #include <tidds/ddsbase.h>
 
@@ -50,10 +51,8 @@ PVMVolumeWriter& PVMVolumeWriter::operator=(const PVMVolumeWriter& that) {
 
 PVMVolumeWriter* PVMVolumeWriter::clone() const { return new PVMVolumeWriter(*this); }
 
-void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) const {
-    if (filesystem::fileExists(filePath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + filePath + " already exists",
-                                  IVW_CONTEXT);
+void PVMVolumeWriter::writeData(const Volume* data, std::string_view filePath) const {
+    checkOverwrite(filePath);
 
     const DataFormatBase* format = data->getDataFormat();
     int components = 0;
@@ -98,38 +97,34 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     }
 
     unsigned char* description = nullptr;
-    auto descMetaData = data->getMetaData<StringMetaData>("description");
-    if (descMetaData) {
+    if (auto descMetaData = data->getMetaData<StringMetaData>("description")) {
         description = new unsigned char[descMetaData->get().size() + 1];
         strncpy((char*)description, descMetaData->get().c_str(), descMetaData->get().size());
         description[descMetaData->get().size()] = '\0';
     }
 
     unsigned char* courtesy = nullptr;
-    auto courMetaData = data->getMetaData<StringMetaData>("courtesy");
-    if (courMetaData) {
+    if (auto courMetaData = data->getMetaData<StringMetaData>("courtesy")) {
         courtesy = new unsigned char[courMetaData->get().size() + 1];
         strncpy((char*)courtesy, courMetaData->get().c_str(), courMetaData->get().size());
         courtesy[courMetaData->get().size()] = '\0';
     }
 
     unsigned char* parameter = nullptr;
-    auto paraMetaData = data->getMetaData<StringMetaData>("parameter");
-    if (paraMetaData) {
+    if (auto paraMetaData = data->getMetaData<StringMetaData>("parameter")) {
         parameter = new unsigned char[paraMetaData->get().size() + 1];
         strncpy((char*)parameter, paraMetaData->get().c_str(), paraMetaData->get().size());
         parameter[paraMetaData->get().size()] = '\0';
     }
 
     unsigned char* comment = nullptr;
-    auto commMetaData = data->getMetaData<StringMetaData>("comment");
-    if (commMetaData) {
+    if (auto commMetaData = data->getMetaData<StringMetaData>("comment")) {
         comment = new unsigned char[commMetaData->get().size() + 1];
         strncpy((char*)comment, commMetaData->get().c_str(), commMetaData->get().size());
         comment[commMetaData->get().size()] = '\0';
     }
 
-    writePVMvolume(filePath.c_str(), dataPtr, static_cast<unsigned int>(dim.x),
+    writePVMvolume(SafeCStr{filePath}.c_str(), dataPtr, static_cast<unsigned int>(dim.x),
                    static_cast<unsigned int>(dim.y), static_cast<unsigned int>(dim.z), components,
                    spacing.x, spacing.y, spacing.z, description, courtesy, parameter, comment);
 

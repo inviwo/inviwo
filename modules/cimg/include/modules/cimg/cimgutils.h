@@ -61,18 +61,18 @@ struct IVW_MODULE_CIMG_API TIFFHeader {
     SwizzleMask swizzleMask;
 };
 
-IVW_MODULE_CIMG_API TIFFHeader getTIFFHeader(const std::string& filename);
+IVW_MODULE_CIMG_API TIFFHeader getTIFFHeader(std::string_view filename);
 
 /**
  * Loads layer data from a specified filePath.
  **/
-IVW_MODULE_CIMG_API void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
+IVW_MODULE_CIMG_API void* loadLayerData(void* dst, std::string_view filePath, uvec2& out_dim,
                                         DataFormatId& formatId, bool rescaleToDim = false);
 
 /**
  * Loads volume data from a specified filePath.
  **/
-IVW_MODULE_CIMG_API void* loadVolumeData(void* dst, const std::string& filePath, size3_t& out_dim,
+IVW_MODULE_CIMG_API void* loadVolumeData(void* dst, std::string_view filePath, size3_t& out_dim,
                                          DataFormatId& formatId);
 
 /**
@@ -81,7 +81,7 @@ IVW_MODULE_CIMG_API void* loadVolumeData(void* dst, const std::string& filePath,
  * format
  * @param inputImage specifies the image that is to be saved.
  */
-IVW_MODULE_CIMG_API void saveLayer(const std::string& filePath, const Layer* inputImage);
+IVW_MODULE_CIMG_API void saveLayer(std::string_view filePath, const Layer* inputImage);
 
 /**
  * Saves an layer of an unsigned char buffer.
@@ -89,14 +89,14 @@ IVW_MODULE_CIMG_API void saveLayer(const std::string& filePath, const Layer* inp
  * @param inputImage specifies the image that is to be saved.
  */
 IVW_MODULE_CIMG_API std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(
-    const std::string& extension, const Layer* inputImage);
+    std::string_view extension, const Layer* inputImage);
 
 /**
  * Load TIFF image data.
  * \see TIFFLayerReader
  * \see getTIFFHeader
  */
-void* loadTIFFLayerData(void* dst, const std::string& filePath, TIFFHeader header,
+void* loadTIFFLayerData(void* dst, std::string_view filePath, TIFFHeader header,
                         bool rescaleToDim = false);
 
 /**
@@ -104,7 +104,7 @@ void* loadTIFFLayerData(void* dst, const std::string& filePath, TIFFHeader heade
  * \see TIFFStackVolumeRAMLoader
  * \see getTIFFHeader
  */
-void* loadTIFFVolumeData(void* dst, const std::string& filePath, TIFFHeader header);
+void* loadTIFFVolumeData(void* dst, std::string_view filePath, TIFFHeader header);
 
 /**
  * \brief Rescales Layer of given image data

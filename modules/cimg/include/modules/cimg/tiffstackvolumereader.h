@@ -40,26 +40,19 @@
 
 namespace inviwo {
 
-class IVW_MODULE_CIMG_API TIFFStackVolumeReaderException : public DataReaderException {
-public:
-    TIFFStackVolumeReaderException(const std::string& message = "",
-                                   ExceptionContext context = ExceptionContext());
-    virtual ~TIFFStackVolumeReaderException() noexcept = default;
-};
-
 class IVW_MODULE_CIMG_API TIFFStackVolumeReader : public DataReaderType<Volume> {
 public:
     TIFFStackVolumeReader();
     virtual TIFFStackVolumeReader* clone() const override;
     virtual ~TIFFStackVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
+    virtual std::shared_ptr<Volume> readData(std::string_view filePath) override;
 };
 
 class IVW_MODULE_CIMG_API TIFFStackVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    TIFFStackVolumeRAMLoader(const std::string& sourceFile);
+    TIFFStackVolumeRAMLoader(std::string_view sourceFile);
     virtual TIFFStackVolumeRAMLoader* clone() const override;
     virtual ~TIFFStackVolumeRAMLoader() = default;
 

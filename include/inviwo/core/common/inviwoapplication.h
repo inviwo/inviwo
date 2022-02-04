@@ -102,6 +102,8 @@ class ConsoleLogger;
 class TimerThread;
 class FileSystemObserver;
 
+class LayerRamResizer;
+
 /**
  * \class InviwoApplication
  *
@@ -429,6 +431,21 @@ public:
      */
     void setApplicationUsageMode(UsageMode mode);
 
+    /**
+     * Get the current LayerRamResizer
+     * @see LayerRamResizer CIMGLayerRamResizer LayerRAM::copyRepresentationsTo()
+     */
+    LayerRamResizer* getLayerRamResizer() const;
+
+    /**
+     * Allow a module the register a LayerRamResizer with the inviwoapplication.
+     * The module is responsible for unregistering the LayerRamResizer before it is removed, by
+     * calling `setLayerRamResizer(nullptr)`, if the current LayerRamResizer was registered by that
+     * module.
+     * @see CIMGLayerRamResizer CImgModule
+     */
+    void setLayerRamResizer(LayerRamResizer* obj);
+
 protected:
     struct Queue {
         // Task queue
@@ -490,6 +507,7 @@ protected:
     WorkspaceManager::SerializationHandle presetsSerializationHandle_;
     WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
     std::unique_ptr<TimerThread> timerThread_;
+    LayerRamResizer* layerRamResizer_;
 
 private:
     friend Singleton<InviwoApplication>;

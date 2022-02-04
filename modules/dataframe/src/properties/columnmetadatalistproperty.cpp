@@ -84,13 +84,13 @@ void ColumnMetaDataListProperty::setPort(DataFrameInport& inport) {
 
 ColumnMetaDataProperty& ColumnMetaDataListProperty::meta(size_t i) {
     if (i >= size()) {
-        throw Exception(fmt::format("ColumnIndex {} greater then size {}", i, size()));
+        throw Exception(IVW_CONTEXT, "ColumnIndex {} greater then size {}", i, size());
     }
     return *static_cast<ColumnMetaDataProperty*>((*this)[i]);
 }
 const ColumnMetaDataProperty& ColumnMetaDataListProperty::meta(size_t i) const {
     if (i >= size()) {
-        throw Exception(fmt::format("ColumnIndex {} greater then size {}", i, size()));
+        throw Exception(IVW_CONTEXT, "ColumnIndex {} greater then size {}", i, size());
     }
     return *static_cast<const ColumnMetaDataProperty*>((*this)[i]);
 }

@@ -60,7 +60,9 @@ CategoricalColumn::CategoricalColumn(std::string_view header,
 
 CategoricalColumn::CategoricalColumn(const CategoricalColumn& rhs,
                                      const std::vector<std::uint32_t>& rowSelection)
-    : TemplateColumn<std::uint32_t>(rhs, rowSelection), lookUpTable_{rhs.lookUpTable_} {}
+    : TemplateColumn<std::uint32_t>(rhs, rowSelection)
+    , lookUpTable_{rhs.lookUpTable_}
+    , lookupMap_{rhs.lookupMap_} {}
 
 CategoricalColumn* CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
 
@@ -97,44 +99,22 @@ void CategoricalColumn::add(std::string_view value) {
     auto id = addOrGetID(value);
     getTypedBuffer()->getEditableRAMRepresentation()->add(id);
 }
-
-namespace detail {
-
-struct AppendHelper {
-    AppendHelper(CategoricalColumn* col, const std::vector<std::string>& lookupTable) : col{col} {
-        for (auto&& [idx, str] : util::enumerate(lookupTable)) {
-            dict[str] = static_cast<std::uint32_t>(idx);
-        }
-    }
-
-    void append(const std::string& value) {
-        auto it = dict.find(value);
-        if (it != dict.end()) {
-            data.push_back(it->second);
-        } else {
-            auto newIdx = col->addCategory(value);
-            dict[value] = newIdx;
-            data.push_back(newIdx);
-        }
-    }
-
-    CategoricalColumn* col;
-    std::unordered_map<std::string, std::uint32_t> dict;
-    std::vector<std::uint32_t> data;
-};
-
-}  // namespace detail
+CategoricalColumn::AddMany CategoricalColumn::addMany() {
+    auto rep = buffer_->getEditableRAMRepresentation();
+    return AddMany{this, rep};
+}
 
 void CategoricalColumn::append(const Column& col) {
     if (col.getSize() == 0) return;
 
     if (auto srccol = dynamic_cast<const CategoricalColumn*>(&col)) {
-        detail::AppendHelper helper{this, lookUpTable_};
+        auto& values = buffer_->getEditableRAMRepresentation()->getDataContainer();
+
         for (auto idx : srccol->getTypedBuffer()->getRAMRepresentation()->getDataContainer()) {
             const auto& value = srccol->lookUpTable_[idx];
-            helper.append(value);
+            values.push_back(addOrGetID(value));
         }
-        buffer_->getEditableRAMRepresentation()->append(helper.data);
+
     } else {
         throw Exception("data formats of columns do not match", IVW_CONTEXT);
     }
@@ -143,22 +123,23 @@ void CategoricalColumn::append(const Column& col) {
 void CategoricalColumn::append(const std::vector<std::string>& data) {
     if (data.empty()) return;
 
-    detail::AppendHelper helper{this, lookUpTable_};
-    for (auto& value : data) {
-        helper.append(value);
+    auto& values = buffer_->getEditableRAMRepresentation()->getDataContainer();
+    for (const auto& elem : data) {
+        values.push_back(addOrGetID(elem));
     }
-    buffer_->getEditableRAMRepresentation()->append(helper.data);
 }
 
 std::uint32_t CategoricalColumn::addCategory(std::string_view cat) { return addOrGetID(cat); }
 
 glm::uint32_t CategoricalColumn::addOrGetID(std::string_view str) {
-    auto it = std::find(lookUpTable_.begin(), lookUpTable_.end(), str);
-    if (it != lookUpTable_.end()) {
-        return static_cast<glm::uint32_t>(std::distance(lookUpTable_.begin(), it));
+    if (auto it = lookupMap_.find(str); it != lookupMap_.end()) {
+        return it->second;
+    } else {
+        lookUpTable_.emplace_back(str);
+        auto ind = static_cast<std::uint32_t>(lookUpTable_.size() - 1);
+        lookupMap_.emplace(str, ind);
+        return ind;
     }
-    lookUpTable_.emplace_back(str);
-    return static_cast<glm::uint32_t>(lookUpTable_.size() - 1);
 }
 
 }  // namespace inviwo

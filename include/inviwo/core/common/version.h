@@ -139,8 +139,8 @@ constexpr Version::Version(std::string_view version) {
         const auto num = version.substr(begin, end - begin);
         for (auto c : num) {
             if (c < '0' || c > '9') {
-                throw Exception(fmt::format("Invalid character found: '{}' in version string '{}'",
-                                            c, version));
+                throw Exception(IVW_CONTEXT, "Invalid character found: '{}' in version string '{}'",
+                                c, version);
             }
             *e = *e * 10 + (c - '0');
         }

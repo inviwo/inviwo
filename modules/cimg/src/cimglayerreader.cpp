@@ -76,10 +76,8 @@ struct Dispatch {
 
 }  // namespace
 
-std::shared_ptr<Layer> CImgLayerReader::readData(const std::string& fileName) {
-    if (!filesystem::fileExists(fileName)) {
-        throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
-    }
+std::shared_ptr<Layer> CImgLayerReader::readData(std::string_view fileName) {
+    checkExists(fileName);
 
     uvec2 dimensions{0u};
     DataFormatId formatId = DataFormatId::NotSpecialized;

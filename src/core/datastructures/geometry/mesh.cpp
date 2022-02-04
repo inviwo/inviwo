@@ -97,8 +97,7 @@ void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> att) {
     if (it == buffers_.end()) {
         buffers_.emplace_back(info, att);
     } else {
-        throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
-                        IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
     }
 }
 
@@ -136,8 +135,7 @@ auto Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase
                 return item.first.location == info.location;
             });
             if (it != buffers_.end()) {
-                throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
-                                IVW_CONTEXT);
+                throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
             }
         }
 
@@ -160,8 +158,7 @@ auto Mesh::replaceBuffer(BufferBase* oldbuffer, BufferInfo info, std::shared_ptr
                 return item.first.location == info.location;
             });
             if (locit != buffers_.end()) {
-                throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
-                                IVW_CONTEXT);
+                throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
             }
         }
 
@@ -255,8 +252,7 @@ void Mesh::setBufferInfo(size_t idx, BufferInfo info) {
             return item.first.location == info.location;
         });
         if (&*locit != &buffers_[idx] && locit != buffers_.end()) {
-            throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
-                            IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
         }
 
         buffers_[idx].first = info;
@@ -273,8 +269,7 @@ void Mesh::setBufferInfo(BufferBase* buffer, BufferInfo info) {
             return item.first.location == info.location;
         });
         if (locit != it && locit != buffers_.end()) {
-            throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
-                            IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
         }
         it->first = info;
     } else {

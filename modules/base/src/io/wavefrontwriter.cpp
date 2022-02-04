@@ -46,19 +46,16 @@ WaveFrontWriter::WaveFrontWriter() : DataWriterType<Mesh>() {
 
 WaveFrontWriter* WaveFrontWriter::clone() const { return new WaveFrontWriter(*this); }
 
-void WaveFrontWriter::writeData(const Mesh* data, const std::string filePath) const {
-    if (filesystem::fileExists(filePath) && !getOverwrite()) {
-        throw DataWriterException("File already exists: " + filePath, IVW_CONTEXT);
-    }
-    auto f = filesystem::ofstream(filePath);
+void WaveFrontWriter::writeData(const Mesh* data, std::string_view filePath) const {
+    auto f = open(filePath);
     writeData(data, f);
 }
 
 std::unique_ptr<std::vector<unsigned char>> WaveFrontWriter::writeDataToBuffer(
-    const Mesh* data, const std::string& /*fileExtension*/) const {
+    const Mesh* data, std::string_view /*fileExtension*/) const {
     std::stringstream ss;
     writeData(data, ss);
-    auto stringdata = ss.str();
+    auto stringdata = std::move(ss).str();
     return std::make_unique<std::vector<unsigned char>>(stringdata.begin(), stringdata.end());
 }
 

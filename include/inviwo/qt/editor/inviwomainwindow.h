@@ -189,7 +189,7 @@ private:
     void saveWindowState();
     void loadWindowState();
 
-    void saveCanvases(std::string path, std::string fileName);
+    void saveSnapshots(std::string path, std::string fileName);
     void getScreenGrab(std::string path, std::string fileName);
 
     void addToRecentWorkspaces(QString workspaceFileName);

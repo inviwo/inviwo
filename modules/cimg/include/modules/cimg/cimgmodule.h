@@ -34,9 +34,17 @@
 
 namespace inviwo {
 
+class CIMGLayerRamResizer;
+
 class IVW_MODULE_CIMG_API CImgModule : public InviwoModule {
 public:
     CImgModule(InviwoApplication* app);
+
+    virtual ~CImgModule() override;
+
+private:
+    InviwoApplication* app_;
+    std::unique_ptr<CIMGLayerRamResizer> resizer_;
 };
 
 }  // namespace inviwo

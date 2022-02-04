@@ -34,6 +34,7 @@
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <tidds/ddsbase.h>
 
@@ -45,13 +46,11 @@ PVMVolumeReader::PVMVolumeReader() : DataReaderType<Volume>() {
 
 PVMVolumeReader* PVMVolumeReader::clone() const { return new PVMVolumeReader(*this); }
 
-std::shared_ptr<Volume> PVMVolumeReader::readData(const std::string& filePath) {
-    if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IVW_CONTEXT);
-    }
-    auto volume = readPVMData(filePath);
+std::shared_ptr<Volume> PVMVolumeReader::readData(std::string_view filePath) {
+    checkExists(filePath);
 
-    if (!volume) return std::shared_ptr<Volume>();
+    auto volume = readPVMData(filePath);
+    if (!volume) return nullptr;
 
     // Print information
     size3_t dim = volume->getDimensions();
@@ -66,7 +65,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readData(const std::string& filePath) {
     return volume;
 }
 
-std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
+std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string_view filePath) {
     uvec3 udim{0};
     vec3 spacing(0.0f);
     unsigned int bytesPerVoxel = 0;
@@ -77,19 +76,19 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
     unsigned char* parameter = nullptr;
     unsigned char* comment = nullptr;
 
-    unsigned char* pvmdata =
-        readPVMvolume(filePath.c_str(), &udim.x, &udim.y, &udim.z, &bytesPerVoxel, &spacing.x,
-                      &spacing.y, &spacing.z, &description, &courtesy, &parameter, &comment);
+    unsigned char* pvmdata = readPVMvolume(SafeCStr{filePath}.c_str(), &udim.x, &udim.y, &udim.z,
+                                           &bytesPerVoxel, &spacing.x, &spacing.y, &spacing.z,
+                                           &description, &courtesy, &parameter, &comment);
 
     util::OnScopeExit release([&]() { free(pvmdata); });
 
     if (!pvmdata) {
-        throw DataReaderException("Error: Could not read data in PVM file: " + filePath,
-                                  IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
+        throw DataReaderException(IVW_CONTEXT_CUSTOM("PVMVolumeReader"),
+                                  "Error: Could not read data in PVM file: {}", filePath);
     }
     if (udim == uvec3{0}) {
-        throw DataReaderException("Error: Unable to find dimensions in .pvm file: " + filePath,
-                                  IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
+        throw DataReaderException(IVW_CONTEXT_CUSTOM("PVMVolumeReader"),
+                                  "Error: Unable to find dimensions in .pvm file: {}", filePath);
     }
     const size_t volsize = glm::compMul(udim) * bytesPerVoxel;
     if (bytesPerVoxel == 2) {
@@ -111,8 +110,8 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
                 return DataVec3UInt8::get();
             default:
                 throw DataReaderException(
-                    "Error: Unsupported format (bytes per voxel) in .pvm file: " + filePath,
-                    IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
+                    IVW_CONTEXT_CUSTOM("PVMVolumeReader"),
+                    "Error: Unsupported format (bytes per voxel) in .pvm file: {}", filePath);
         }
     }();
 
@@ -145,11 +144,11 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
     return volume;
 }
 
-void PVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string key) const {
+void PVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
+                                    std::string_view key) const {
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        key[0] = static_cast<char>(toupper(key[0]));
         LogInfo(key << ": " << metaStr);
     }
 }

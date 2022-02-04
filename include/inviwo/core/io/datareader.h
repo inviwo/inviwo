@@ -35,6 +35,7 @@
 #include <vector>
 #include <memory>
 #include <any>
+#include <iostream>
 
 namespace inviwo {
 
@@ -81,7 +82,22 @@ public:
      */
     virtual std::any getOption([[maybe_unused]] std::string_view key) { return std::any{}; }
 
-private:
+protected:
+    /**
+     * Verify that @p path exists, and throw DataReaderException if not.
+     * @throws DataReaderException if the file is not found
+     */
+    void checkExists(std::string_view path) const;
+
+    /**
+     * Open @p path in @p mode for reading. If the file is not found or the file can't
+     * be opened an exception is thrown.
+     * @throws DataReaderException if the file is not found, and FileException if the file can't
+     * be opened.
+     */
+    std::ifstream open(std::string_view path,
+                       std::ios_base::openmode mode = std::ios_base::in) const;
+
     std::vector<FileExtension> extensions_;
 };
 
@@ -98,17 +114,17 @@ public:
     DataReaderType(DataReaderType&& rhs) noexcept = default;
     DataReaderType& operator=(const DataReaderType& that) = default;
     DataReaderType& operator=(DataReaderType&& that) noexcept = default;
-    virtual DataReaderType* clone() const = 0;
-    virtual ~DataReaderType() = default;
+    virtual DataReaderType* clone() const override = 0;
+    virtual ~DataReaderType() override = default;
 
-    virtual std::shared_ptr<T> readData(const std::string& filePath) = 0;
+    virtual std::shared_ptr<T> readData(std::string_view filePath) = 0;
 
     /**
      * Optional overload that passed a MetaDataOwner to facilitate saving/loading state in the data
      * reader the use is optional and the pointer can be null.
      * @see RawVolumeReader
      */
-    virtual std::shared_ptr<T> readData(const std::string& filePath, MetaDataOwner*) {
+    virtual std::shared_ptr<T> readData(std::string_view filePath, MetaDataOwner*) {
         return readData(filePath);
     };
 };

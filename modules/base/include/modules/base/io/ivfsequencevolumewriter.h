@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
+#include <inviwo/core/io/datawriter.h>
 #include <modules/base/io/ivfvolumewriter.h>
 
 namespace inviwo {
@@ -53,15 +54,17 @@ namespace inviwo {
 </InviwoWorkspace>
  * \endverbatim
  *
- * @see inviwo::IvfSequenceVolumeReader
+ * @see inviwo::IvfSequenceVolumeReader inviwo::util::writeIvfVolumeSequence
  *
  */
-class IVW_MODULE_BASE_API IvfSequenceVolumeWriter {
+class IVW_MODULE_BASE_API IvfSequenceVolumeWriter : public DataWriterType<VolumeSequence> {
 public:
-    IvfSequenceVolumeWriter();
+    IvfSequenceVolumeWriter() = default;
     IvfSequenceVolumeWriter(const IvfSequenceVolumeWriter& rhs) = default;
     IvfSequenceVolumeWriter& operator=(const IvfSequenceVolumeWriter& that) = default;
-    virtual IvfSequenceVolumeWriter* clone() const { return new IvfSequenceVolumeWriter(*this); }
+    virtual IvfSequenceVolumeWriter* clone() const override {
+        return new IvfSequenceVolumeWriter(*this);
+    }
     virtual ~IvfSequenceVolumeWriter() = default;
 
     /**
@@ -85,43 +88,40 @@ public:
      * @param name the name of the dataset, will be used for to name the output files [name].ivfs
      * and [name]xx.ivf
      * @param path path to the folder to put the main file
-     * @param reltivePathToTimesteps relative path (from the path to the main file) to where the
+     * @param relativePathToTimeSteps relative path (from the path to the main file) to where the
      * sequence elements will be written.
      */
-    void writeData(const VolumeSequence* volumes, std::string name, std::string path,
-                   std::string reltivePathToTimesteps = "") const;
+    void writeData(const VolumeSequence* volumes, std::string_view name, std::string_view path,
+                   std::string_view relativePathToTimeSteps = "") const;
 
-    void setOverwrite(bool overwrite) { overwrite_ = overwrite; }
-    bool getOverwrite() const { return overwrite_; }
+    virtual void writeData(const VolumeSequence* data, std::string_view filePath) const override;
 
 private:
     IvfVolumeWriter writer_;
-    bool overwrite_;
 };
 
 namespace util {
 /**
  * \brief Writes a volume sequence to disk
  *
- *  Writes a volume sequence to disk. Will create one main file ([name].ivfs) and a series of ivf
+ * Writes a volume sequence to disk. Will create one main file ([name].ivfs) and a series of ivf
  * volumes ([name]xx.ivf), one for each element in the sequence.
  *
  * @param volumes The volume sequence to export
  * @param name the name of the dataset, will be used for to name the output files [name].ivfs and
  * [name]xx.ivf
  * @param path path to the folder to put the main file
- * @param reltivePathToElements relative path (from the path to the main file) to where the sequence
- * elements will be written
+ * @param relativePathToElements relative path (from the path to the main file) to where the
+ * sequence elements will be written
  * @param overwrite whether or not to overwrite existing files.
  * @return path to the created main-file
  * @see inviwo::IvfSequenceVolumeWriter
  * @see inviwo::IvfSequenceVolumeReader
  */
-
 IVW_MODULE_BASE_API std::string writeIvfVolumeSequence(const VolumeSequence& volumes,
-                                                       std::string name, std::string path,
-                                                       std::string reltivePathToElements = "",
-                                                       bool overwrite = true);
+                                                       std::string_view name, std::string_view path,
+                                                       std::string_view relativePathToElements = "",
+                                                       Overwrite overwrite = Overwrite::Yes);
 }  // namespace util
 
 }  // namespace inviwo

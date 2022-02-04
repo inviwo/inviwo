@@ -46,20 +46,15 @@ MPVMVolumeReader::MPVMVolumeReader() : DataReaderType<Volume>() {
 
 MPVMVolumeReader* MPVMVolumeReader::clone() const { return new MPVMVolumeReader(*this); }
 
-std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) {
+std::shared_ptr<Volume> MPVMVolumeReader::readData(std::string_view filePath) {
 
     std::string fileDirectory = filesystem::getFileDirectory(filePath);
 
     // Read the mpvm file content
-
     std::string textLine;
     std::vector<std::string> files;
     {
-        auto f = filesystem::ifstream(filePath);
-        if (!f.is_open()) {
-            throw FileException("Could not open input file: " + filePath, IVW_CONTEXT);
-        }
-
+        auto f = open(filePath);
         while (!f.eof()) {
             getline(f, textLine);
             textLine = trim(textLine);
@@ -68,11 +63,11 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
     }
 
     if (files.empty())
-        throw DataReaderException("Error: No PVM files found in " + filePath, IVW_CONTEXT);
+        throw DataReaderException(IVW_CONTEXT, "Error: No PVM files found in {}", filePath);
 
     if (files.size() > 4)
-        throw DataReaderException("Error: Maximum 4 pvm files are supported, file: " + filePath,
-                                  IVW_CONTEXT);
+        throw DataReaderException(IVW_CONTEXT, "Error: Maximum 4 pvm files are supported, file: {}",
+                                  filePath);
 
     // Read all pvm volumes
     std::vector<std::shared_ptr<Volume>> volumes;
@@ -85,8 +80,8 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
     }
 
     if (volumes.empty())
-        throw DataReaderException("No PVM volumes could be read from file: " + filePath,
-                                  IVW_CONTEXT);
+        throw DataReaderException(IVW_CONTEXT, "No PVM volumes could be read from file: {}",
+                                  filePath);
 
     if (volumes.size() == 1) {
         printPVMMeta(*volumes[0], fileDirectory + "/" + files[0]);
@@ -153,7 +148,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
     return volume;
 }
 
-void MPVMVolumeReader::printPVMMeta(const Volume& volume, std::string fileName) const {
+void MPVMVolumeReader::printPVMMeta(const Volume& volume, std::string_view fileName) const {
     size3_t dim = volume.getDimensions();
     size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSize());
     std::string size = util::formatBytesToString(bytes);
@@ -164,11 +159,11 @@ void MPVMVolumeReader::printPVMMeta(const Volume& volume, std::string fileName) 
     printMetaInfo(volume, "comment");
 }
 
-void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string key) const {
+void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
+                                     std::string_view key) const {
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        key[0] = static_cast<char>(toupper(key[0]));
         LogInfo(key << ": " << metaStr);
     }
 }

@@ -29,6 +29,7 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/basegl/shadercomponents/shadercomponent.h>
 
@@ -52,6 +53,7 @@ public:
     virtual std::vector<Segment> getSegments() override;
 
 private:
+    CompositeProperty sampleTransform_;
     FloatVec3Property shift_;
     IntVec3Property repeat_;
 };

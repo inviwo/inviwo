@@ -32,9 +32,11 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
-void util::readBytesIntoBuffer(const std::string& file, size_t offset, size_t bytes,
+void util::readBytesIntoBuffer(std::string_view file, size_t offset, size_t bytes,
                                bool littleEndian, size_t elementSize, void* dest) {
     auto fin = filesystem::ifstream(file, std::ios::in | std::ios::binary);
     OnScopeExit close([&fin]() { fin.close(); });
@@ -57,8 +59,8 @@ void util::readBytesIntoBuffer(const std::string& file, size_t offset, size_t by
             delete[] temp;
         }
     } else {
-        throw DataReaderException("Error: Could not read from file: " + file,
-                                  IVW_CONTEXT_CUSTOM("readBytesIntoBuffer"));
+        throw DataReaderException(IVW_CONTEXT_CUSTOM("readBytesIntoBuffer"),
+                                  "Error: Could not read from file: ", file);
     }
 }
 

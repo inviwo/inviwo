@@ -55,9 +55,9 @@ public:
 
     // MetaData
     template <typename T>
-    T* createMetaData(const std::string& key);
+    T* createMetaData(std::string_view key);
     template <typename T, typename U>
-    void setMetaData(const std::string& key, U value);
+    void setMetaData(std::string_view key, U value);
 
     /**
      * \brief unset, i.e. remove the metadata entry matching the given key and type
@@ -65,20 +65,20 @@ public:
      * @param key   key of the entry to be removed
      */
     template <typename T>
-    bool unsetMetaData(const std::string& key);
+    bool unsetMetaData(std::string_view key);
 
     // param val is required to deduce the template argument
     template <typename T, typename U>
-    U getMetaData(const std::string& key, U val) const;
+    U getMetaData(std::string_view key, U val) const;
     template <typename T>
-    T* getMetaData(const std::string& key);
+    T* getMetaData(std::string_view key);
     template <typename T>
-    const T* getMetaData(const std::string& key) const;
+    const T* getMetaData(std::string_view key) const;
     MetaDataMap* getMetaDataMap();
     const MetaDataMap* getMetaDataMap() const;
 
     template <typename T>
-    bool hasMetaData(const std::string& key) const;
+    bool hasMetaData(std::string_view key) const;
 
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
@@ -88,7 +88,7 @@ protected:
 };
 
 template <typename T>
-T* MetaDataOwner::createMetaData(const std::string& key) {
+T* MetaDataOwner::createMetaData(std::string_view key) {
     if (T* metaData = dynamic_cast<T*>(metaData_.get(key))) {
         return metaData;
     } else {
@@ -97,7 +97,7 @@ T* MetaDataOwner::createMetaData(const std::string& key) {
 }
 
 template <typename T, typename U>
-void MetaDataOwner::setMetaData(const std::string& key, U value) {
+void MetaDataOwner::setMetaData(std::string_view key, U value) {
     if (MetaData* baseMetaData = metaData_.get(key)) {
         if (auto derivedMetaData = dynamic_cast<T*>(baseMetaData)) {
             derivedMetaData->set(value);
@@ -108,7 +108,7 @@ void MetaDataOwner::setMetaData(const std::string& key, U value) {
 }
 
 template <typename T>
-bool MetaDataOwner::unsetMetaData(const std::string& key) {
+bool MetaDataOwner::unsetMetaData(std::string_view key) {
     bool existed = hasMetaData<T>(key);
     metaData_.remove(key);
     return existed;
@@ -116,7 +116,7 @@ bool MetaDataOwner::unsetMetaData(const std::string& key) {
 
 // param val is required to deduce the template argument
 template <typename T, typename U>
-U MetaDataOwner::getMetaData(const std::string& key, U val) const {
+U MetaDataOwner::getMetaData(std::string_view key, U val) const {
     if (const MetaData* baseMetadata = metaData_.get(key)) {
         if (auto derivedMetaData = dynamic_cast<const T*>(baseMetadata))
             return derivedMetaData->get();
@@ -125,17 +125,17 @@ U MetaDataOwner::getMetaData(const std::string& key, U val) const {
 }
 
 template <typename T>
-const T* MetaDataOwner::getMetaData(const std::string& key) const {
+const T* MetaDataOwner::getMetaData(std::string_view key) const {
     return dynamic_cast<const T*>(metaData_.get(key));
 }
 
 template <typename T>
-T* MetaDataOwner::getMetaData(const std::string& key) {
+T* MetaDataOwner::getMetaData(std::string_view key) {
     return dynamic_cast<T*>(metaData_.get(key));
 }
 
 template <typename T>
-bool MetaDataOwner::hasMetaData(const std::string& key) const {
+bool MetaDataOwner::hasMetaData(std::string_view key) const {
     if (const MetaData* baseMetadata = metaData_.get(key)) {
         if (const T* derivedMetaData = dynamic_cast<const T*>(baseMetadata)) {
             return true;

@@ -33,31 +33,16 @@
 #include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/io/datawriterexception.h>
-#include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/io/datawriterutil.h>
 
 namespace inviwo {
 
 namespace util {
 
 void saveLayer(const Layer& layer, std::string_view path, const FileExtension& extension) {
-    auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
-
-    auto writer = std::shared_ptr<DataWriterType<Layer>>(
-        factory->getWriterForTypeAndExtension<Layer>(extension, path));
-
-    if (!writer) {
-
-        LogInfoCustom("ImageWriterUtil",
-                      fmt::format("Could not find a writer for {} of the specified extension {}",
-                                  path, extension.toString()));
-        return;
-    }
-
     try {
-        writer->setOverwrite(true);
-        writer->writeData(&layer, std::string{path});
+        util::saveData<Layer>(layer, path, extension, Overwrite::Yes);
         LogInfoCustom("ImageWriterUtil", "Canvas layer exported to disk: " << path);
     } catch (DataWriterException const& e) {
         LogErrorCustom("ImageWriterUtil", e.getMessage());

@@ -35,8 +35,11 @@
 #include <inviwo/core/util/exception.h>
 
 #include <vector>
+#include <iostream>
 
 namespace inviwo {
+
+enum class Overwrite { No, Yes };
 
 /**
  * \ingroup dataio
@@ -52,13 +55,32 @@ public:
     const std::vector<FileExtension>& getExtensions() const;
     void addExtension(FileExtension ext);
 
-    bool getOverwrite() const;
-    void setOverwrite(bool val);
+    Overwrite getOverwrite() const;
+    void setOverwrite(Overwrite val);
+
+    /**
+     * Verify that you don't overwrite @p path unless @p overwrite is `Yes`.
+     * @throws DataWriterException if the condition is broken.
+     */
+    static void checkOverwrite(std::string_view path, Overwrite overwrite);
+
+    /**
+     * Verify that you don't overwrite @p path unless @p overwrite is `Yes`.
+     * @throws DataWriterException if the condition is broken.
+     */
+    void checkOverwrite(std::string_view path) const;
 
 protected:
-    bool overwrite_;
+    /**
+     * Open @p path in @p mode for writing. If the overwrite condition is broken or the file can't
+     * be opened an exception is thrown.
+     * @throws DataWriterException if the condition is broken, and FileException if the file can't
+     * be opened.
+     */
+    std::ofstream open(std::string_view path,
+                       std::ios_base::openmode mode = std::ios_base::out) const;
 
-private:
+    Overwrite overwrite_;
     std::vector<FileExtension> extensions_;
 };
 
@@ -68,21 +90,21 @@ private:
 template <typename T>
 class DataWriterType : public DataWriter {
 public:
-    using repr = typename T::repr;
-
     DataWriterType() = default;
     DataWriterType(const DataWriterType& rhs) = default;
     DataWriterType& operator=(const DataWriterType& that) = default;
     virtual DataWriterType* clone() const = 0;
     virtual ~DataWriterType() = default;
 
-    virtual void writeData(const T* data, const std::string filePath) const = 0;
+    /**
+     * @brief Write @p data to @p filePath
+     * @throws DataWriterException if anything goes wrong
+     */
+    virtual void writeData(const T* data, std::string_view filePath) const = 0;
+
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
-        const T* /*data*/, const std::string& /*fileExtension*/) const {
+        const T* /*data*/, std::string_view /*fileExtension*/) const {
         return nullptr;
-    }
-    virtual bool writeDataToRepresentation(const repr* /*src*/, repr* /*dst*/) const {
-        return false;
     }
 };
 

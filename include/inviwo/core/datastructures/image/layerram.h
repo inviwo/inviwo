@@ -184,4 +184,18 @@ auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
                                                     std::forward<Args>(args)...);
 }
 
+class IVW_CORE_API LayerRamResizer {
+public:
+    virtual ~LayerRamResizer() = default;
+
+    /**
+     * Copy the data from @p src to @p dst. This might involve up or down scaling if the dimensions
+     * do not match. The dimensions of both @p src and @p dst will not change.
+     * This is only intended to be used by LayerRAM::copyRepresentationsTo.
+     * The functionality is likely to be changed and should not be depended on
+     * @see CIMGLayerRamResizer LayerRAM::copyRepresentationsTo
+     */
+    virtual bool resize(const LayerRAM& src, LayerRAM& dst) const = 0;
+};
+
 }  // namespace inviwo

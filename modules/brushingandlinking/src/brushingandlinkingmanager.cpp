@@ -155,8 +155,7 @@ const BitSet& BrushingAndLinkingManager::getIndices(BrushingAction action,
 
 void BrushingAndLinkingManager::clearIndices(BrushingAction action, BrushingTarget target) {
     if (action == BrushingAction::Filter) {
-        throw Exception(fmt::format("Clearing indices for action '{}' is not supported", action),
-                        IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Clearing indices for action '{}' is not supported", action);
     }
 
     std::visit(
@@ -401,8 +400,8 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
 
 int BrushingAndLinkingManager::getActionIndex(BrushingAction action) {
     if (action == BrushingAction::NumberOfActions) {
-        throw Exception(fmt::format("Invalid brushing action '{}'", action),
-                        IVW_CONTEXT_CUSTOM("BrushingAndLinkingManager::actionIndex()"));
+        throw Exception(IVW_CONTEXT_CUSTOM("BrushingAndLinkingManager"),
+                        "Invalid brushing action '{}'", action);
     }
     return static_cast<int>(action);
 }

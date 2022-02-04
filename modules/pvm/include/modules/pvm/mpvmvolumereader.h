@@ -47,11 +47,11 @@ public:
     virtual MPVMVolumeReader* clone() const override;
     virtual ~MPVMVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
+    virtual std::shared_ptr<Volume> readData(std::string_view filePath) override;
 
 protected:
-    void printPVMMeta(const Volume&, std::string) const;
-    void printMetaInfo(const MetaDataOwner&, std::string) const;
+    void printPVMMeta(const Volume&, std::string_view) const;
+    void printMetaInfo(const MetaDataOwner&, std::string_view) const;
 };
 
 }  // namespace inviwo

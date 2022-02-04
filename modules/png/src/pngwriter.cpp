@@ -35,6 +35,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
 
+#include <fmt/format.h>
+
 #include <png.h>
 #include <algorithm>
 
@@ -88,20 +90,23 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
     // TODO better exception messages
     auto png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     if (!png_ptr) {
-        throw PNGLayerWriterException("Internal PNG Error: Failed to create write struct");
+        throw DataWriterException(IVW_CONTEXT_CUSTOM("PNGLayerWriter"),
+                                  "Internal PNG Error: Failed to create write struct");
     }
     util::OnScopeExit cleanup([&]() { png_destroy_write_struct(&png_ptr, nullptr); });
 
     png_set_error_fn(
         png_ptr, nullptr,
         [](png_structp, png_const_charp message) {
-            throw PNGLayerWriterException(std::string("Error writing PNG: ") + message);
+            throw DataWriterException(IVW_CONTEXT_CUSTOM("PNGLayerWriter"), "Error writing PNG: {}",
+                                      message);
         },
         [](png_structp, png_const_charp message) { LogWarnCustom("PNGWriter", message); });
 
     auto info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        throw PNGLayerWriterException("Internal PNG Error: Failed to create info struct");
+        throw DataWriterException(IVW_CONTEXT_CUSTOM("PNGLayerWriter"),
+                                  "Internal PNG Error: Failed to create info struct");
     }
     util::OnScopeExit cleanup2 = std::move(cleanup);
     cleanup2.setAction([&]() { png_destroy_write_struct(&png_ptr, &info_ptr); });
@@ -121,7 +126,8 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
                 return PNG_COLOR_TYPE_RGBA;
             default:
                 // Should not ever reach this
-                throw new PNGLayerWriterException("Unsupported number of channels");
+                throw new DataWriterException(IVW_CONTEXT_CUSTOM("PNGLayerWriter"),
+                                              "Unsupported number of channels");
         }
     }();
 
@@ -175,28 +181,29 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
 
 }  // namespace detail
 
-PNGLayerWriterException::PNGLayerWriterException(const std::string& message,
-                                                 ExceptionContext context)
-    : DataWriterException(message, context) {}
-
 PNGLayerWriter::PNGLayerWriter() : DataWriterType<Layer>() {
     addExtension(FileExtension("png", "Portable Network Graphics"));
 }
 
 PNGLayerWriter* PNGLayerWriter::clone() const { return new PNGLayerWriter(*this); }
 
-void PNGLayerWriter::writeData(const Layer* data, const std::string filePath) const {
-    data->getRepresentation<LayerRAM>()->dispatch<void>([&](auto ram) {
-        FILE* fp = filesystem::fopen(filePath, "wb");
-        if (!fp) throw PNGLayerWriterException("Failed to open file for writing, " + filePath);
-        util::OnScopeExit closeFile([&fp]() { fclose(fp); });
+void PNGLayerWriter::writeData(const Layer* data, FILE* fp) const {
+    data->getRepresentation<LayerRAM>()->dispatch<void>(
+        [&](auto ram) { detail::write(ram, static_cast<png_voidp>(fp)); });
+}
 
-        detail::write(ram, static_cast<png_voidp>(fp));
-    });
+void PNGLayerWriter::writeData(const Layer* data, std::string_view filePath) const {
+    checkOverwrite(filePath);
+    FILE* fp = filesystem::fopen(filePath, "wb");
+    if (!fp)
+        throw DataWriterException(IVW_CONTEXT, "Failed to open file for writing, {}", filePath);
+    util::OnScopeExit closeFile([&fp]() { fclose(fp); });
+
+    writeData(data, fp);
 }
 
 std::unique_ptr<std::vector<unsigned char>> PNGLayerWriter::writeDataToBuffer(
-    const Layer* data, const std::string&) const {
+    const Layer* data, std::string_view) const {
 
     auto buffer = std::make_unique<std::vector<unsigned char>>();
     data->getRepresentation<LayerRAM>()->dispatch<void>([&](auto ram) {
@@ -205,7 +212,5 @@ std::unique_ptr<std::vector<unsigned char>> PNGLayerWriter::writeDataToBuffer(
 
     return buffer;
 }
-
-bool PNGLayerWriter::writeDataToRepresentation(const repr*, repr*) const { return false; }
 
 }  // namespace inviwo

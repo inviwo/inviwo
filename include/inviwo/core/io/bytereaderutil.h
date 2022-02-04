@@ -30,13 +30,13 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <string>
+#include <string_view>
 
 namespace inviwo {
 
 namespace util {
 
-void IVW_CORE_API readBytesIntoBuffer(const std::string& file, size_t offset, size_t bytes,
+void IVW_CORE_API readBytesIntoBuffer(std::string_view file, size_t offset, size_t bytes,
                                       bool littleEndian, size_t elementSize, void* dest);
 }  // namespace util
 

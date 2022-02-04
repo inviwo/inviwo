@@ -84,9 +84,9 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
 std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame& right,
                                          bool ignoreDuplicates, bool fillMissingRows) {
     if (!fillMissingRows && (left.getNumberOfRows() != right.getNumberOfRows())) {
-        throw Exception(fmt::format("Row counts are different (top: {}, bottom: {})",
-                                    left.getNumberOfRows(), right.getNumberOfRows()),
-                        IVW_CONTEXT_CUSTOM("dataframe::appendColumns"));
+        throw Exception(IVW_CONTEXT_CUSTOM("dataframe::appendColumns"),
+                        "Row counts are different (top: {}, bottom: {})", left.getNumberOfRows(),
+                        right.getNumberOfRows());
     }
 
     auto dataframe = std::make_shared<DataFrame>(left);
@@ -128,9 +128,9 @@ std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame&
 std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bottom,
                                       bool matchByName) {
     if (top.getNumberOfColumns() != bottom.getNumberOfColumns()) {
-        throw Exception(fmt::format("Column counts are different (top: {}, bottom: {})",
-                                    top.getNumberOfColumns(), bottom.getNumberOfColumns()),
-                        IVW_CONTEXT_CUSTOM("dataframe::appendRows"));
+        throw Exception(IVW_CONTEXT_CUSTOM("dataframe::appendRows"),
+                        "Column counts are different (top: {}, bottom: {})",
+                        top.getNumberOfColumns(), bottom.getNumberOfColumns());
     }
 
     auto dataframe = std::make_shared<DataFrame>(top);
@@ -139,9 +139,8 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
             if (auto col = dataframe->getColumn(srcCol->getHeader())) {
                 col->append(*srcCol);
             } else {
-                throw Exception(
-                    fmt::format("column '{}' not found in top DataFrame", srcCol->getHeader()),
-                    IVW_CONTEXT_CUSTOM("dataframe::appendRows"));
+                throw Exception(IVW_CONTEXT_CUSTOM("dataframe::appendRows"),
+                                "column '{}' not found in top DataFrame", srcCol->getHeader());
             }
         }
     } else {
@@ -162,12 +161,10 @@ void columnCheck(const DataFrame& left, const DataFrame& right,
         auto indexCol1 = left.getColumn(col);
         auto indexCol2 = right.getColumn(col);
         if (!indexCol1 || !indexCol2) {
-            throw Exception(
-                fmt::format("key column '{}' missing in {}", col,
+            throw Exception(IVW_CONTEXT_CUSTOM(context), "key column '{}' missing in {}", col,
                             (!indexCol1 && !indexCol2)
                                 ? "both DataFrames"
-                                : fmt::format("{} DataFrame", !indexCol1 ? "left" : "right")),
-                IVW_CONTEXT_CUSTOM(context));
+                                : fmt::format("{} DataFrame", !indexCol1 ? "left" : "right"));
         }
 
         const bool catcol1 = indexCol1->getColumnType() == ColumnType::Categorical;
@@ -175,19 +172,17 @@ void columnCheck(const DataFrame& left, const DataFrame& right,
         // check only for categorical types and do not compare column types directly.
         // This enables combining a regular column with an index column, e.g. for indexing.
         if (catcol1 != catcol2) {
-            throw Exception(
-                fmt::format("column type mismatch in key columns '{}': left = {}, right = {}", col,
-                            indexCol1->getColumnType(), indexCol2->getColumnType()),
-                IVW_CONTEXT_CUSTOM(context));
+            throw Exception(IVW_CONTEXT_CUSTOM(context),
+                            "column type mismatch in key columns '{}': left = {}, right = {}", col,
+                            indexCol1->getColumnType(), indexCol2->getColumnType());
         }
 
         if (indexCol1->getBuffer()->getDataFormat()->getId() !=
             indexCol2->getBuffer()->getDataFormat()->getId()) {
-            throw Exception(
-                fmt::format("format mismatch in key columns '{}': left = {}, right = {}", col,
+            throw Exception(IVW_CONTEXT_CUSTOM(context),
+                            "format mismatch in key columns '{}': left = {}, right = {}", col,
                             indexCol1->getBuffer()->getDataFormat()->getString(),
-                            indexCol2->getBuffer()->getDataFormat()->getString()),
-                IVW_CONTEXT_CUSTOM(context));
+                            indexCol2->getBuffer()->getDataFormat()->getString());
         }
     }
 }
@@ -481,19 +476,17 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                 if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
                 auto it = columnType.find(col->getHeader());
                 if (it == columnType.end()) {
-                    throw Exception(
-                        fmt::format("Column {} did not exist in first DataFrame but in at least "
+                    throw Exception(IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"),
+                                    "Column {} did not exist in first DataFrame but in at least "
                                     "one of the others",
-                                    col->getHeader()),
-                        IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"));
+                                    col->getHeader());
                 }
                 if (it->second != col->getBuffer()->getDataFormat()) {
                     if (it == columnType.end()) {
-                        throw Exception(
-                            fmt::format("Column {} has different format in DataFrames ({}, {})",
+                        throw Exception(IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"),
+                                        "Column {} has different format in DataFrames ({}, {})",
                                         col->getHeader(), it->second->getString(),
-                                        col->getBuffer()->getDataFormat()->getSize()),
-                            IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"));
+                                        col->getBuffer()->getDataFormat()->getSize());
                     }
                 }
             }

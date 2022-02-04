@@ -28,10 +28,28 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/datareader.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 
 const std::vector<FileExtension>& DataReader::getExtensions() const { return extensions_; }
 void DataReader::addExtension(FileExtension ext) { extensions_.push_back(ext); }
+
+void DataReader::checkExists(std::string_view path) const {
+    if (!filesystem::fileExists(path)) {
+        throw DataReaderException(IVW_CONTEXT, "Could not find input file: {}", path);
+    }
+}
+
+std::ifstream DataReader::open(std::string_view path, std::ios_base::openmode mode) const {
+    checkExists(path);
+    if (auto file = filesystem::ifstream(path, mode)) {
+        return file;
+    } else {
+        throw FileException(IVW_CONTEXT, "Could not open file: {)", path);
+    }
+}
 
 }  // namespace inviwo

@@ -65,7 +65,6 @@ class InviwoApp:
             command = [self.program,
                        "-q",
                        "-o", report['outputdir'],
-                       "-g", "screenshot.png",
                        "-s", "imgtest/UPN",
                        "-l", "log.txt",
                        "-w", workspace]
@@ -96,7 +95,6 @@ class InviwoApp:
                 raise MissingInivioAppError("Could not find inviwo app at: {}".format(self.program))
 
             report['log'] = "log.txt"
-            report['screenshot'] = "screenshot.png"
             report['returncode'] = process.returncode
             report['elapsed_time'] = time.time() - starttime
 

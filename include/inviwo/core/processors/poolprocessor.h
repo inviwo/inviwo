@@ -47,8 +47,10 @@ namespace inviwo {
 
 class PoolProcessor;
 
+/** PoolProcesor utilities*/
 namespace pool {
 
+/** PoolProcesor implementation details */
 namespace detail {
 
 struct Wrapper;

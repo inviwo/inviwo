@@ -37,6 +37,7 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/processors/exporter.h>
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
@@ -60,7 +61,8 @@ class DataFrameTableProcessorWidget;
  */
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTable : public Processor,
-                                                  public ProcessorWidgetMetaDataObserver {
+                                                  public ProcessorWidgetMetaDataObserver,
+                                                  public Exporter {
 public:
     DataFrameTable();
     virtual ~DataFrameTable();
@@ -74,6 +76,13 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
+    /**
+     * @see Exporter::exportFile
+     */
+    virtual std::optional<std::string> exportFile(
+        std::string_view path, std::string_view name,
+        const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const override;
 
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;

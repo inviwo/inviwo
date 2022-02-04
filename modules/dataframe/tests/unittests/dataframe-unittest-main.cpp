@@ -38,6 +38,8 @@
 
 #include <inviwo/core/datastructures/representationutil.h>
 #include <inviwo/core/datastructures/representationfactorymanager.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,6 +47,12 @@
 #include <warn/pop>
 
 int main(int argc, char** argv) {
+
+    inviwo::LogCentral::init();
+    auto logger = std::make_shared<inviwo::ConsoleLogger>();
+    inviwo::LogCentral::getPtr()->setVerbosity(inviwo::LogVerbosity::Error);
+    inviwo::LogCentral::getPtr()->registerLogger(logger);
+
     inviwo::RepresentationFactoryManager rfm;
     inviwo::util::registerCoreRepresentations(rfm);
 

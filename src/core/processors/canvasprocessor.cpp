@@ -35,12 +35,11 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processorwidget.h>
-#include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/io/datawriterutil.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filedialog.h>
-#include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/io/imagewriterutil.h>
 #include <inviwo/core/network/networklock.h>
 
@@ -264,6 +263,17 @@ void CanvasProcessor::saveImageLayer(std::string_view snapshotPath,
         util::saveLayer(*layer, snapshotPath, extension);
     } else {
         LogError("Could not find visible layer");
+    }
+}
+
+std::optional<std::string> CanvasProcessor::exportFile(
+    std::string_view path, std::string_view name,
+    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
+
+    if (auto layer = getVisibleLayer()) {
+        return util::saveData(*layer, path, name, candidateExtensions, overwrite);
+    } else {
+        throw Exception("Could not find visible layer", IVW_CONTEXT);
     }
 }
 

@@ -35,7 +35,7 @@ from . error import *
 from .. util import *
 
 
-class Test:
+class TestData:
     def __init__(self, name, module, path):
         self.module = module
         self.path = path
@@ -43,6 +43,7 @@ class Test:
         self.script = ""
         self.config = {}
         self.workspaces = glob.glob(self.path + "/*.inv")
+        self.textExtensions = ["txt", "csv"]
 
         configfile = toPath(self.path, "config.json")
         if os.path.exists(configfile):
@@ -66,6 +67,16 @@ class Test:
         imgs = glob.glob(self.path + "/*.png")
         imgs = [os.path.relpath(x, self.path) for x in imgs]
         return imgs
+
+    def getTextExtensions(self):
+        if "textExtensions" in self.config:
+            return self.textExtensions + self.config["textExtensions"]
+        else:
+            return self.textExtensions
+
+    def getTextFiles(self):
+        files = (f for ext in self.getTextExtensions() for f in glob.glob(f"{self.path}/*.{ext}"))
+        return [os.path.relpath(x, self.path) for x in files]
 
     def report(self, report):
         report['module'] = self.module

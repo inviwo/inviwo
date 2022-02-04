@@ -110,13 +110,14 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-#define LogSpecial(logger, logLevel, message)                                            \
-    {                                                                                    \
-        std::ostringstream stream__;                                                     \
-        stream__ << message;                                                             \
-        logger->log(inviwo::parseTypeIdName(std::string(typeid(this).name())), logLevel, \
-                    inviwo::LogAudience::Developer, __FILE__, __FUNCTION__, __LINE__,    \
-                    stream__.str());                                                     \
+#define LogSpecial(logger, logLevel, message)                                                   \
+    {                                                                                           \
+        std::ostringstream stream__;                                                            \
+        stream__ << message;                                                                    \
+        logger->log(inviwo::parseTypeIdName(                                                    \
+                        std::string(typeid(std::remove_const_t<decltype(*this)>).name())),      \
+                    logLevel, inviwo::LogAudience::Developer, __FILE__, __FUNCTION__, __LINE__, \
+                    stream__.str());                                                            \
     }
 
 #define LogCustomSpecial(logger, logLevel, source, message)                                   \

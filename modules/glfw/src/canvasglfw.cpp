@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/exception.h>
 #include <inviwo/core/network/networklock.h>
 
 #include <modules/opengl/inviwoopengl.h>
@@ -250,7 +251,8 @@ ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
         const char* description;
         int code = glfwGetError(&description);
         if (description) {
-            throw Exception(fmt::format("GLFW Error: {} {}", code, description));
+            throw Exception(IVW_CONTEXT_CUSTOM("CanvasGLFW"), "GLFW Error: {} {}", code,
+                            description);
         }
     };
 

@@ -38,19 +38,6 @@
 namespace inviwo {
 
 /**
- * \class CSVDataReaderException
- *
- * \brief This exception is thrown by the CSVReader in case the input is malformed.
- * This includes empty sources, unmatched quotes, missing headers.
- * \see CSVReader
- */
-class IVW_MODULE_DATAFRAME_API CSVDataReaderException : public DataReaderException {
-public:
-    CSVDataReaderException(const std::string& message = "",
-                           ExceptionContext context = ExceptionContext());
-};
-
-/**
  * \class CSVReader
  * \ingroup dataio
  *
@@ -60,7 +47,9 @@ public:
  */
 class IVW_MODULE_DATAFRAME_API CSVReader : public DataReaderType<DataFrame> {
 public:
-    CSVReader(const std::string& delim = ",", bool hasHeader = true, bool doubleprec = false);
+    CSVReader(std::string_view delimiters = defaultDelimiters,
+              bool hasHeader = defaultFirstRowHeader,
+              bool doublePrecision = defaultDoublePrecision);
     CSVReader(const CSVReader&) = default;
     CSVReader(CSVReader&&) noexcept = default;
     CSVReader& operator=(const CSVReader&) = default;
@@ -68,18 +57,54 @@ public:
     virtual CSVReader* clone() const override;
     virtual ~CSVReader() = default;
 
-    void setDelimiters(const std::string& delim);
+    /** @see CSVReader::defaultDelimiters */
+    CSVReader& setDelimiters(const std::string& delim);
     const std::string& getDelimiters() const;
 
-    void setFirstRowHeader(bool hasHeader);
+    /** @see CSVReader::defaultStripQuotes */
+    CSVReader& setStripQuotes(bool stripQuotes);
+    bool getStripQuotes() const;
+
+    /** @see CSVReader::defaultFirstRowHeader */
+    CSVReader& setFirstRowHeader(bool hasHeader);
     bool hasFirstRowHeader() const;
 
+    /** @see CSVReader::defaultUnitInHeaders */
+    CSVReader& setUnitsInHeaders(bool unitInHeaders);
+    bool hasUnitsInHeaders() const;
+
+    /** @see CSVReader::defaultUnitRegexp */
+    CSVReader& setUnitRegexp(std::string_view regexp);
+    const std::string& getUnitRegexp() const;
+
     /**
-     * sets the precision for columns containing floating point values. If \p doubleprec is true,
-     * values are stored as double. Otherwise float32 is used.
+     * sets the precision for columns containing floating point values. If @p useDoublePrecision is
+     * true, values are stored as double (64 bits), otherwise float (32 bits) is used.
+     * @see CSVReader::defaultDoublePrecision
      */
-    void setEnableDoublePrecision(bool doubleprec);
+    CSVReader& setEnableDoublePrecision(bool useDoublePrecision);
     bool hasDoublePrecision() const;
+
+    /** @see CSVReader::defaultNumberOfExampleRows */
+    CSVReader& setNumberOfExampleRows(size_t rows);
+    size_t getNumberOfExamplesRows() const;
+
+    /** @see CSVReader::defaultLocale */
+    CSVReader& setLocale(std::string_view loc);
+    const std::string& getLocale() const;
+
+    /**
+     * How to handle missing / empty data
+     */
+    enum class EmptyField {
+        Throw,        ///< Throw a DataReaderException
+        EmptyOrZero,  ///< "" for categorical and 0 for numerical values
+        NanOrZero     ///< "" for categorical, NaN for floating point, and 0 for integer values
+    };
+
+    /** @see CSVReader::defaultEmptyField */
+    CSVReader& setHandleEmptyFields(EmptyField emptyField);
+    EmptyField getHandleEmptyFields() const;
 
     using DataReaderType<DataFrame>::readData;
 
@@ -89,11 +114,11 @@ public:
      * @param fileName   name of the input CSV file
      * @return a DataFrame containing the CSV data
      * @throws FileException if the file cannot be accessed
-     * @throws CSVDataReaderException if the file contains no data, the first row
+     * @throws DataReaderException if the file contains no data, the first row
      *   should hold column headers, but they cannot be found, or if there are
      *   unmatched quotes at the end of the file
      */
-    virtual std::shared_ptr<DataFrame> readData(const std::string& fileName) override;
+    virtual std::shared_ptr<DataFrame> readData(std::string_view fileName) override;
 
     /**
      * read a CSV file from a input stream, e.g. a std::ifstream. In case
@@ -101,20 +126,84 @@ public:
      *
      * @param stream    input stream with the CSV data
      * @return a DataFrame containing the CSV data
-     * @throws CSVDataReaderException if the given stream is in a bad state,
+     * @throws DataReaderException if the given stream is in a bad state,
      *   the stream contains no data, the first row should hold column headers,
-     *   but they cannot be found, or if there are unmateched quotes at the end of
+     *   but they cannot be found, or if there are unmatched quotes at the end of
      *   the stream
      */
     std::shared_ptr<DataFrame> readData(std::istream& stream) const;
 
+    /**
+     * Set any of the settings supported by the reader, supported keys:
+     * * Delimiters (string)
+     * * StripQuotes (bool)
+     * * FirstRowHeader (bool)
+     * * UnitsInHeaders (bool)
+     * * UnitRegexp (sting)
+     * * DoublePrecision (bool)
+     * * NumberOfExampleRows (size_t)
+     * * Locale (string)
+     * * HandleEmptyFields (EmptyField)
+     */
     virtual bool setOption(std::string_view key, std::any value) override;
+
+    /**
+     * Get any of the settings supported by the reader, supported keys:
+     * * Delimiters (string)
+     * * StripQuotes (bool)
+     * * FirstRowHeader (bool)
+     * * UnitsInHeaders (bool)
+     * * UnitRegexp (sting)
+     * * DoublePrecision (bool)
+     * * NumberOfExampleRows (size_t)
+     * * Locale (string)
+     * * HandleEmptyFields (EmptyField)
+     */
     virtual std::any getOption(std::string_view key) override;
 
+    /** @see CSVReader::setDelimiters */
+    static constexpr std::string_view defaultDelimiters = ",";
+    /** @see CSVReader::setStripQuotes */
+    static constexpr bool defaultStripQuotes = true;
+    /** @see CSVReader::setFirstRowHeader */
+    static constexpr bool defaultFirstRowHeader = true;
+    /** @see CSVReader::setUnitInHeaderss */
+    static constexpr bool defaultUnitInHeaders = true;
+    /** @see CSVReader::setUnitRegexp */
+    static constexpr std::string_view defaultUnitRegexp = R"((.*)\[(.*)\])";
+    /** @see CSVReader::setDoublePrecision */
+    static constexpr bool defaultDoublePrecision = false;
+    /** @see CSVReader::setNumberOfExampleRows */
+    static constexpr size_t defaultNumberOfExampleRows = 50;
+    /** @see CSVReader::setLocale */
+    static constexpr std::string_view defaultLocale = "C";
+    /** @see CSVReader::setHandleEmptyFields */
+    static constexpr EmptyField defaultEmptyField = EmptyField::NanOrZero;
+
 private:
+    struct TypeCounts {
+        size_t integer;
+        size_t real;
+        size_t string;
+    };
+
+    std::vector<TypeCounts> findCellTypes(
+        size_t nCol, const std::vector<std::pair<std::string_view, size_t>>& rows,
+        size_t sampleRows) const;
+
+    std::vector<std::function<void(std::string_view, size_t, size_t)>> addColumns(
+        DataFrame& df, const std::vector<TypeCounts>& types,
+        const std::vector<std::string>& headers) const;
+
     std::string delimiters_;
+    bool stripQuotes_;
     bool firstRowHeader_;
+    bool unitsInHeaders_;
+    std::string unitRegexp_;
     bool doublePrecision_;
+    size_t exampleRows_;
+    std::string locale_;
+    EmptyField emptyField_;
 };
 
 }  // namespace inviwo

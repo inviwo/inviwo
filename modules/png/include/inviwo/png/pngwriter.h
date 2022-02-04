@@ -36,13 +36,6 @@
 
 namespace inviwo {
 
-class IVW_MODULE_PNG_API PNGLayerWriterException : public DataWriterException {
-public:
-    PNGLayerWriterException(const std::string& message = "",
-                            ExceptionContext context = ExceptionContext());
-    virtual ~PNGLayerWriterException() noexcept = default;
-};
-
 class IVW_MODULE_PNG_API PNGLayerWriter : public DataWriterType<Layer> {
 public:
     PNGLayerWriter();
@@ -51,10 +44,10 @@ public:
     virtual PNGLayerWriter* clone() const override;
     virtual ~PNGLayerWriter() = default;
 
-    virtual void writeData(const Layer* data, const std::string filePath) const override;
+    void writeData(const Layer* data, FILE* fp) const;
+    virtual void writeData(const Layer* data, std::string_view filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
-        const Layer* data, const std::string& fileExtension) const override;
-    virtual bool writeDataToRepresentation(const repr* src, repr* dst) const override;
+        const Layer* data, std::string_view fileExtension) const override;
 };
 
 }  // namespace inviwo

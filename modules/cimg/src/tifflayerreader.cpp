@@ -44,10 +44,6 @@
 
 namespace inviwo {
 
-TIFFLayerReaderException::TIFFLayerReaderException(const std::string& message,
-                                                   ExceptionContext context)
-    : DataReaderException(message, context) {}
-
 TIFFLayerReader::TIFFLayerReader() : DataReaderType<Layer>() {
 #ifdef cimg_use_tiff
     addExtension(FileExtension("tif", "TIFF (Tagged Image File Format)"));
@@ -57,9 +53,8 @@ TIFFLayerReader::TIFFLayerReader() : DataReaderType<Layer>() {
 
 TIFFLayerReader* TIFFLayerReader::clone() const { return new TIFFLayerReader(*this); }
 
-std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(const std::string& fileName) {
-    if (!filesystem::fileExists(fileName))
-        throw TIFFLayerReaderException("Failed to open file for reading, " + fileName, IVW_CONTEXT);
+std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(std::string_view fileName) {
+    checkExists(fileName);
 
     auto header = cimgutil::getTIFFHeader(fileName);
     auto data = cimgutil::loadTIFFLayerData(nullptr, fileName, header, false);

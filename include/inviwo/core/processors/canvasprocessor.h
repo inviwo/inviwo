@@ -42,6 +42,7 @@
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/network/networkvisitor.h>
+#include <inviwo/core/processors/exporter.h>
 
 namespace inviwo {
 
@@ -51,7 +52,9 @@ class ProcessorNetworkEvaluator;
 template <typename T>
 class DataWriterType;
 
-class IVW_CORE_API CanvasProcessor : public Processor, public ProcessorWidgetMetaDataObserver {
+class IVW_CORE_API CanvasProcessor : public Processor,
+                                     public ProcessorWidgetMetaDataObserver,
+                                     public Exporter {
 public:
     CanvasProcessor(InviwoApplication* app);
     virtual ~CanvasProcessor();
@@ -82,6 +85,13 @@ public:
      * By setting setEvaluateWhenHidden to true, it will be evaluated regardless.
      */
     void setEvaluateWhenHidden(bool option);
+
+    /**
+     * @see Exporter::exportFile
+     */
+    virtual std::optional<std::string> exportFile(
+        std::string_view path, std::string_view name,
+        const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const override;
 
     /**
      * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the

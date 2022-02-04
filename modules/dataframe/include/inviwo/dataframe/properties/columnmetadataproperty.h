@@ -65,12 +65,14 @@ public:
     dvec2 getRange() const;
     Unit getUnit() const;
     bool getDrop() const;
+    std::string getType() const;
 
     void updateForNewColumn(const Column& col, util::OverwriteState overwrite);
     void updateColumn(Column& col) const;
 
 protected:
     StringProperty header_;
+    StringProperty type_;
     DoubleMinMaxProperty range_;
     StringProperty unit_;
     BoolProperty drop_;

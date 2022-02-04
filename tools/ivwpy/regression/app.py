@@ -34,9 +34,10 @@ import json
 import shutil
 import filecmp
 import logging
+import difflib
 
 from . import inviwoapp
-from . import test
+from . import testdata
 from .. util import *
 from .. colorprint import *
 from .. git import *
@@ -54,7 +55,7 @@ def findModuleTest(path):
     for moduleDir in subDirs(path):
         regressionDir = toPath(path, moduleDir, "tests", "regression")
         for testDir in subDirs(regressionDir):
-            tests.append(test.Test(
+            tests.append(testdata.TestData(
                 name=testDir,
                 module=moduleDir,
                 path=toPath(regressionDir, testDir)
@@ -89,7 +90,9 @@ class App:
         self.summary = App.Summary()
 
         tests = [findModuleTest(p) for p in moduleTestPaths]
+
         self.tests = list(itertools.chain(*tests))
+        self.tests.sort(key=str)
         self.reports = {}
         self.git = Git(pyconfsearchpath=appPath)
         if not self.git.foundGit():
@@ -106,7 +109,7 @@ class App:
 
         report = self.app.runTest(test, report, self.output)
         report = self.compareImages(test, report)
-
+        report = self.compareTextFiles(test, report)
         testsuite = ReportTestSuite(self.testSettings)
         report = testsuite.checkReport(report)
 
@@ -152,33 +155,64 @@ class App:
         selected, reasons = self.filterTests(testrange, testfilter, onlyRunFailed)
         run = self.db.addRun()
         for i, test in enumerate(self.tests):
-            with LogPrinter(logging.getLogger(__name__)) as l:
+            with LogPrinter(logging.getLogger()) as log:
                 if i in selected:
-                    l.pair("Running test {:3d} (Enabled: {:d}, Total: {:d})"
-                           .format(i, len(selected), len(self.tests)), test.toString())
+                    log.pair("Running test {:3d} (Enabled: {:d}, Total: {:d})"
+                             .format(i, len(selected), len(self.tests)), test.toString())
 
                     report = self.runTest(test, run)
                     self.reports[test.toString()] = report
                     for k, v in report.items():
-                        l.pair(k, str(v), width=15)
+                        log.pair(k, v, width=15)
 
                     if len(report["failures"]) > 0:
                         self.summary.failures += 1
-                        self.summary.errors.append(
-                            test.toString() + " Failures: " + ", ".join(report["failures"].keys()))
-                        l.success = False
-                        l.error("{:>15} : {}".format("Result", "Failed " +
-                                                     ", ".join(report["failures"].keys())))
+                        failures = ', '.join(formatKey(f) for f, _ in report["failures"])
+                        self.summary.errors.append(test.toString() + " Failures: " + failures)
+                        log.success = False
+                        log.error(f"{'Result':<15} : Failed {failures}")
                     else:
                         self.summary.successes += 1
-                        l.good("{:>15} : {}".format("Result", "Success"))
+                        log.good(f"{'Result':<15} : Success")
                 else:
                     self.summary.skipped += 1
-                    l.pair("Skipping test {:3d} (Enabled: {:d}, Total: {:d})"
-                           .format(i, len(selected), len(self.tests)),
-                           test.toString())
+                    log.pair("Skipping test {:3d} (Enabled: {:d}, Total: {:d})"
+                             .format(i, len(selected), len(self.tests)),
+                             test.toString())
                     dbtest = self.db.getOrAddTest(test.module, test.name)
                     self.db.addSkipRun(run=run, test=dbtest, reason=reasons[i])
+
+    def compareTextFiles(self, test, report):
+        outputdir = report['outputdir']
+        refFiles = set(test.getTextFiles())
+        txtFiles = set(os.path.relpath(file, toPath(outputdir, 'imgtest'))
+                       for ext in test.getTextExtensions()
+                       for file in glob.glob(f"{outputdir}/imgtest/*.{ext}"))
+
+        txtTests = {
+            "refs": list(refFiles),
+            "txts": list(txtFiles),
+            'missing_refs': list(txtFiles - refFiles),
+            'missing_txts': list(refFiles - txtFiles),
+            'tests': []
+        }
+
+        for file in txtFiles & refFiles:
+            with open(toPath(outputdir, "imgtest", file), 'r') as txtFile, \
+                    open(toPath(test.path, file), 'r') as refFile:
+                txtLines = txtFile.readlines()
+                refLines = refFile.readlines()
+
+            size = len(list(filter(lambda x: x[:2] == "@@",
+                                   list(difflib.unified_diff(refLines, txtLines, n=0)))))
+            txtTest = {
+                "txt": file,
+                "diff": size
+            }
+            txtTests["tests"].append(txtTest)
+
+        report["txts"] = txtTests
+        return report
 
     def compareImages(self, test, report):
         refimgs = test.getImages()
@@ -188,11 +222,13 @@ class App:
         imgs = glob.glob(outputdir + "/imgtest/*.png")
         imgs = set([os.path.relpath(x, toPath(outputdir, 'imgtest')) for x in imgs])
 
-        report["refs"] = list(refimgs)
-        report["imgs"] = list(imgs)
-        report['missing_refs'] = list(imgs - refs)
-        report['missing_imgs'] = list(refs - imgs)
-        report['image_tests'] = []
+        imagetests = {
+            "refs": list(refimgs),
+            "imgs": list(imgs),
+            'missing_refs': list(imgs - refs),
+            'missing_imgs': list(refs - imgs),
+            'tests': []
+        }
 
         olddirs = list(reversed(sorted(glob.glob(outputdir + "/../*"))))
         if len(olddirs) > 1:
@@ -218,7 +254,7 @@ class App:
             comp.saveMaskImage(toPath(maskpath, img))
 
             # do some hardlinks to save disk space...
-            if lastoutdir != None:
+            if lastoutdir is not None:
                 self.linkImages(toPath(lastoutdir, "imgtest", img), toPath(testpath, img))
                 self.linkImages(toPath(lastoutdir, "imgref", img), toPath(refpath, img))
                 self.linkImages(toPath(lastoutdir, "imgdiff", img), toPath(diffpath, img))
@@ -234,8 +270,9 @@ class App:
                 'test_mode': comp.getTestMode(),
                 'ref_mode': comp.getRefMode()
             }
-            report['image_tests'].append(imgtest)
+            imagetests['tests'].append(imgtest)
 
+        report["images"] = imagetests
         return report
 
     def linkImages(self, oldimg, newimg):
@@ -271,8 +308,9 @@ class App:
                           header=header,
                           footer=footer)
         filepath = html.saveHtml(self.htmlFile)
+        date = datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S')
         shutil.copyfile(filepath, toPath(self.output,
-                                         self.htmlFile + "-" + datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S') + ".html"))
+                                         self.htmlFile + "-" + date + ".html"))
 
     def success(self):
         for name, report in self.reports.items():
@@ -286,8 +324,8 @@ class App:
             print_good("Success: {0.successes}, Failues: {0.failures}, Skipped: {0.skipped}".format(
                 self.summary), file=out)
         else:
-            print_error("Success: {0.successes}, Failues: {0.failures}, Skipped: {0.skipped}".format(
-                self.summary), file=out)
+            print_error(f"Success: {self.summary.successes}, Failues: {self.summary.failures},"
+                        f" Skipped: {self.summary.skipped}", file=out)
         for i in self.summary.errors:
             print_error(i, file=out)
 
@@ -318,11 +356,13 @@ class App:
                                testrun=dbtestrun,
                                value=len(report["failures"]))
 
-        for key, messages in report['failures'].items():
+        for key, messages in report['failures']:
+            if isinstance(key, list):
+                key = "/".join(key)
             for message in messages:
                 self.db.addFailure(testrun=dbtestrun, key=key, message=message)
 
-        for img in report["image_tests"]:
+        for img in report["images"]["tests"]:
             db_img_test = self.db.getOrAddSeries(dbtest, dbfrac, "image_test_diff." + img["image"])
             self.db.addMeasurement(series=db_img_test,
                                    testrun=dbtestrun,

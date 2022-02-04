@@ -174,7 +174,7 @@ void TransferFunction::save(const std::string& filename, const FileExtension& ex
         if (!writer) {
             throw DataWriterException("Data writer not found for requested format", IVW_CONTEXT);
         }
-        writer->setOverwrite(true);
+        writer->setOverwrite(Overwrite::Yes);
         writer->writeData(unit8Data.get(), filename);
     }
 }

@@ -320,9 +320,6 @@ struct fmt::formatter<::inviwo::Unit> {
     auto format(const ::inviwo::Unit& unit, FormatContext& ctx) -> decltype(ctx.out()) {
         // ctx.out() is an output iterator to write to.
 
-        constexpr std::array<std::string_view, 3> braceOpen = {"", "(", "["};
-        constexpr std::array<std::string_view, 3> braceClose = {"", ")", "]"};
-
         if (unit == ::inviwo::Unit{}) return ctx.out();
 
         const ::inviwo::unitgroups::EnabledGroups enabledGroups = [&]() {
@@ -341,7 +338,8 @@ struct fmt::formatter<::inviwo::Unit> {
         auto it = std::back_inserter(buff);
 
         if (leadingSpace) *it++ = ' ';
-        it = fmt::format_to(it, "{}", braceOpen[static_cast<int>(braces)]);
+        if (braces == Braces::Paren) *it++ = '(';
+        if (braces == Braces::Square) *it++ = '[';
         if (!units::is_valid(unit)) {
             it = fmt::format_to(it, "Invalid");
         } else if (units::is_error(unit)) {
@@ -349,7 +347,8 @@ struct fmt::formatter<::inviwo::Unit> {
         } else {
             it = ::inviwo::util::formatUnitTo(it, unit, enabledGroups, usePrefix);
         }
-        it = fmt::format_to(it, "{}", braceClose[static_cast<int>(braces)]);
+        if (braces == Braces::Paren) *it++ = ')';
+        if (braces == Braces::Square) *it++ = ']';
 
         return formatter_.format(std::string_view{buff.data(), buff.size()}, ctx);
     }

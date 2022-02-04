@@ -41,7 +41,7 @@ VolumeDisk::VolumeDisk(size3_t dimensions, const DataFormatBase* format,
     , interpolation_{interpolation}
     , wrapping_{wrapping} {}
 
-VolumeDisk::VolumeDisk(std::string srcFile, size3_t dimensions, const DataFormatBase* format,
+VolumeDisk::VolumeDisk(std::string_view srcFile, size3_t dimensions, const DataFormatBase* format,
                        const SwizzleMask& swizzleMask, InterpolationType interpolation,
                        const Wrapping3D& wrapping)
     : VolumeRepresentation(format)

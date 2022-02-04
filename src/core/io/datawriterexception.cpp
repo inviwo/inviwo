@@ -29,9 +29,4 @@
 
 #include <inviwo/core/io/datawriterexception.h>
 
-namespace inviwo {
-
-DataWriterException::DataWriterException(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/exporter.h>
 
 namespace inviwo {
 
@@ -62,7 +63,7 @@ struct PWObserver;
  * the property list in the widget.
  *
  */
-class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessor : public Processor {
+class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessor : public Processor, public Exporter {
 public:
     CanvasWithPropertiesProcessor();
     virtual ~CanvasWithPropertiesProcessor();
@@ -75,6 +76,13 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void propagateEvent(Event* event, Outport* source) override;
+
+    /**
+     * @see Exporter::exportFile
+     */
+    virtual std::optional<std::string> exportFile(
+        std::string_view path, std::string_view name,
+        const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const override;
 
 private:
     std::unique_ptr<PWObserver> pwObserver_;

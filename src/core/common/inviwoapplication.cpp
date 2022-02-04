@@ -162,7 +162,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
           processorNetwork_.get())}
     , workspaceManager_{std::make_unique<WorkspaceManager>(this)}
     , propertyPresetManager_{std::make_unique<PropertyPresetManager>(this)}
-    , portInspectorManager_{std::make_unique<PortInspectorManager>(this)} {
+    , portInspectorManager_{std::make_unique<PortInspectorManager>(this)}
+    , layerRamResizer_{nullptr} {
 
     // Keep the pool at size 0 if are quiting directly to make sure that we don't have
     // unfinished results in the worker threads
@@ -372,6 +373,9 @@ UsageMode InviwoApplication::getApplicationUsageMode() const {
 void InviwoApplication::setApplicationUsageMode(UsageMode mode) {
     systemSettings_->applicationUsageMode_.set(mode);
 }
+
+LayerRamResizer* InviwoApplication::getLayerRamResizer() const { return layerRamResizer_; }
+void InviwoApplication::setLayerRamResizer(LayerRamResizer* obj) { layerRamResizer_ = obj; }
 
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }
 

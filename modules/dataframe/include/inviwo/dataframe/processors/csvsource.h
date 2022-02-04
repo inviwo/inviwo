@@ -39,6 +39,10 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/dataframe/io/csvreader.h>
 
 namespace inviwo {
 
@@ -70,8 +74,14 @@ private:
     DataOutport<DataFrame> data_;
     FileProperty inputFile_;
     BoolProperty firstRowIsHeaders_;
+    BoolCompositeProperty unitsInHeaders_;
+    StringProperty unitRegexp_;
     StringProperty delimiters_;
+    BoolProperty stripQuotes_;
     BoolProperty doublePrecision_;
+    IntSizeTProperty exampleRows_;
+    StringProperty locale_;
+    TemplateOptionProperty<CSVReader::EmptyField> emptyField_;
     ButtonProperty reloadData_;
 
     ColumnMetaDataListProperty columns_;

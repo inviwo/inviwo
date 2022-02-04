@@ -91,16 +91,16 @@ std::string fromWstring(std::wstring_view str) {
 
     int length = WideCharToMultiByte(CP_UTF8, 0, str.data(), s_size, nullptr, 0, nullptr, nullptr);
     if (length == 0) {
-        throw Exception(fmt::format("Invalid string conversion Error:{}", GetLastError()),
-                        IVW_CONTEXT_CUSTOM("String Conversion"));
+        throw Exception(IVW_CONTEXT_CUSTOM("String Conversion"),
+                        "Invalid string conversion Error:{}", GetLastError());
     }
 
     std::string result(length, 0);
     length = WideCharToMultiByte(CP_UTF8, 0, str.data(), s_size, result.data(), length, nullptr,
                                  nullptr);
     if (length == 0) {
-        throw Exception(fmt::format("Invalid string conversion Error:{}", GetLastError()),
-                        IVW_CONTEXT_CUSTOM("String Conversion"));
+        throw Exception(IVW_CONTEXT_CUSTOM("String Conversion"),
+                        "Invalid string conversion Error:{}", GetLastError());
     }
     return result;
 #else

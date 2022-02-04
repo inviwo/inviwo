@@ -61,25 +61,12 @@ DatVolumeSequenceReader* DatVolumeSequenceReader::clone() const {
 }
 
 std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader::readData(
-    const std::string& filePath) {
-    std::string fileName = filePath;
-    if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
+    std::string_view filePath) {
 
-        if (filesystem::fileExists(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
-        }
-    }
-
-    std::string fileDirectory = filesystem::getFileDirectory(fileName);
+    const std::string fileDirectory = filesystem::getFileDirectory(filePath);
 
     // Read the dat file content
-    auto f = filesystem::ifstream(fileName);
-    if (!f) {
-        throw DataReaderException("Error could open file: " + fileName, IVW_CONTEXT);
-    }
+    auto f = open(filePath);
 
     struct State {
         std::string rawFile;
@@ -219,7 +206,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         {"swizzlemask", [](State& state, std::stringstream& ss) { ss >> state.swizzleMask; }},
         {"interpolation", [](State& state, std::stringstream& ss) { ss >> state.interpolation; }},
         {"wrapping", [](State& state, std::stringstream& ss) { ss >> state.wrapping; }},
-        {"axesnames",
+        {"axisnames",
          [](State& state, std::stringstream& ss) {
              ss >> state.axes[0].name >> state.axes[1].name >> state.axes[2].name;
          }},
@@ -227,7 +214,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         {"axis2name", [](State& state, std::stringstream& ss) { ss >> state.axes[1].name; }},
         {"axis3name", [](State& state, std::stringstream& ss) { ss >> state.axes[2].name; }},
         
-        {"axesunits",
+        {"axisunits",
          [](State& state, std::stringstream& ss) {
              std::string unit;
              ss >> unit;
@@ -280,9 +267,8 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             it->second(state, ss);
             if (!ss) {
                 throw DataReaderException(
-                    fmt::format("Unable to parse key: '{}' with value: '{} in .dat file: '{}'", key,
-                                value, fileName),
-                    IVW_CONTEXT);
+                    IVW_CONTEXT, "Unable to parse key: '{}' with value: '{} in .dat file: '{}'",
+                    key, value, filePath);
             }
         } else {
             state.metadata[key] = value;
@@ -304,34 +290,35 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
         }
         if (enableLogOutput_) {
-            LogInfo("Loaded multiple volumes: " << fileName
+            LogInfo("Loaded multiple volumes: " << filePath
                                                 << " volumes: " << state.datFiles.size());
         }
 
     } else {
-        if (state.dimensions == size3_t(0))
+        if (state.dimensions == size3_t(0)) {
             throw DataReaderException(
-                "Error: Unable to find \"Resolution\" tag in .dat file: " + fileName, IVW_CONTEXT);
-        else if (state.format == nullptr)
+                IVW_CONTEXT, "Error: Unable to find \"Resolution\" tag in .dat file: {}", filePath);
+        } else if (state.format == nullptr) {
             throw DataReaderException(
-                "Error: Unable to find \"Format\" tag in .dat file: " + fileName, IVW_CONTEXT);
-        else if (state.format->getId() == DataFormatId::NotSpecialized)
+                IVW_CONTEXT, "Error: Unable to find \"Format\" tag in .dat file: {}", filePath);
+        } else if (state.format->getId() == DataFormatId::NotSpecialized) {
             throw DataReaderException(
-                "Error: Invalid format string found: " + state.formatFlag + " in " + fileName +
-                    "\nThe valid formats are:\n" +
-                    "FLOAT16, FLOAT32, FLOAT64, INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, "
-                    "UINT64, Vec2FLOAT16, Vec2FLOAT32, Vec2FLOAT64, Vec2INT8, Vec2INT16, "
-                    "Vec2INT32, Vec2INT64, Vec2UINT8, Vec2UINT16, Vec2UINT32, Vec2UINT64, "
-                    "Vec3FLOAT16, Vec3FLOAT32, Vec3FLOAT64, Vec3INT8, Vec3INT16, Vec3INT32, "
-                    "Vec3INT64, Vec3UINT8, Vec3UINT16, Vec3UINT32, Vec3UINT64, Vec4FLOAT16, "
-                    "Vec4FLOAT32, Vec4FLOAT64, Vec4INT8, Vec4INT16, Vec4INT32, Vec4INT64, "
-                    "Vec4UINT8, Vec4UINT16, Vec4UINT32, Vec4UINT64",
-                IVW_CONTEXT);
+                IVW_CONTEXT,
+                "Error: Invalid format string found: {} in {} \nThe valid formats are:\n"
+                "FLOAT16, FLOAT32, FLOAT64, INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, "
+                "UINT64, Vec2FLOAT16, Vec2FLOAT32, Vec2FLOAT64, Vec2INT8, Vec2INT16, "
+                "Vec2INT32, Vec2INT64, Vec2UINT8, Vec2UINT16, Vec2UINT32, Vec2UINT64, "
+                "Vec3FLOAT16, Vec3FLOAT32, Vec3FLOAT64, Vec3INT8, Vec3INT16, Vec3INT32, "
+                "Vec3INT64, Vec3UINT8, Vec3UINT16, Vec3UINT32, Vec3UINT64, Vec4FLOAT16, "
+                "Vec4FLOAT32, Vec4FLOAT64, Vec4INT8, Vec4INT16, Vec4INT32, Vec4INT64, "
+                "Vec4UINT8, Vec4UINT16, Vec4UINT32, Vec4UINT64",
+                state.formatFlag, filePath);
 
-        else if (state.rawFile == "")
+        } else if (state.rawFile == "") {
             throw DataReaderException(
-                "Error: Unable to find \"ObjectFilename\" tag in .dat file: " + fileName,
-                IVW_CONTEXT);
+                IVW_CONTEXT, "Error: Unable to find \"ObjectFilename\" tag in .dat file: {}",
+                filePath);
+        }
 
         if (state.spacing) {
             state.basis[0][0] = state.dimensions.x * state.spacing->x;
@@ -387,7 +374,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             } else {
                 volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
             }
-            auto diskRepr = std::make_shared<VolumeDisk>(fileName, state.dimensions, state.format,
+            auto diskRepr = std::make_shared<VolumeDisk>(filePath, state.dimensions, state.format,
                                                          state.swizzleMask, state.interpolation,
                                                          state.wrapping);
             const auto filePos = t * bytes + state.byteOffset;
@@ -429,7 +416,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
                         "adding for example: \n"
                         << "DataRange: " << computedRange[0] << " " << computedRange[1]
                         << "\nValueRange: " << computedRange[0] << " " << computedRange[1]
-                        << "\nin file: " << fileName);
+                        << "\nin file: " << filePath);
                 }
                 if (state.sequences > 1) {
                     LogWarn(
@@ -443,7 +430,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
 
         if (enableLogOutput_) {
             const auto size = util::formatBytesToString(bytes * state.sequences);
-            LogInfo("Loaded volume sequence: " << fileName << " size: " << size);
+            LogInfo("Loaded volume sequence: " << filePath << " size: " << size);
         }
     }
     return volumes;

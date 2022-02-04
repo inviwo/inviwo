@@ -53,21 +53,16 @@ DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) = defau
 
 DatVolumeWriter* DatVolumeWriter::clone() const { return new DatVolumeWriter(*this); }
 
-void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) const {
+void DatVolumeWriter::writeData(const Volume* data, std::string_view filePath) const {
     util::writeDatVolume(*data, filePath, getOverwrite());
 }
 
 namespace util {
-void writeDatVolume(const Volume& data, const std::string filePath, bool overwrite) {
+void writeDatVolume(const Volume& data, std::string_view filePath, Overwrite overwrite) {
     std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
-    if (filesystem::fileExists(filePath) && !overwrite)
-        throw DataWriterException("Output file: " + filePath + " already exists",
-                                  IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
-
-    if (filesystem::fileExists(rawPath) && !overwrite)
-        throw DataWriterException("Output file: " + rawPath + " already exists",
-                                  IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
+    DataWriter::checkOverwrite(filePath, overwrite);
+    DataWriter::checkOverwrite(rawPath, overwrite);
 
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     // Write the .dat file content
@@ -128,15 +123,15 @@ void writeDatVolume(const Volume& data, const std::string filePath, bool overwri
     if (auto f = filesystem::ofstream(filePath)) {
         f << ss.str();
     } else {
-        throw DataWriterException("Could not write to dat file: " + filePath,
-                                  IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
+        throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeDatVolume"),
+                                  "Could not write to dat file: {}", filePath);
     }
 
     if (auto f = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
         f.write(static_cast<const char*>(vr->getData()), vr->getNumberOfBytes());
     } else {
-        throw DataWriterException("Could not write to raw file: " + rawPath,
-                                  IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
+        throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeDatVolume"),
+                                  "Could not write to raw file: {}", rawPath);
     }
 }
 }  // namespace util

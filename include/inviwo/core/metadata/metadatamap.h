@@ -42,18 +42,18 @@ public:
     MetaDataMap& operator=(const MetaDataMap& map);
     virtual ~MetaDataMap() = default;
 
-    MetaData* add(const std::string& key, MetaData* metaData);
+    MetaData* add(std::string_view key, MetaData* metaData);
     template <typename T>  // T Should derive from MetaData
-    T* add(const std::string& key, std::unique_ptr<T> metaData);
+    T* add(std::string_view key, std::unique_ptr<T> metaData);
 
-    void remove(const std::string& key);
+    void remove(std::string_view key);
     void removeAll();
 
-    void rename(const std::string& newKey, const std::string& oldKey);
+    void rename(std::string_view newKey, const std::string& oldKey);
 
     std::vector<std::string> getKeys() const;
-    MetaData* get(const std::string& key);
-    const MetaData* get(const std::string& key) const;
+    MetaData* get(std::string_view key);
+    const MetaData* get(std::string_view key) const;
 
     bool empty() const;
 
@@ -64,13 +64,13 @@ public:
     friend bool IVW_CORE_API operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs);
 
 private:
-    std::map<std::string, std::unique_ptr<MetaData>> metaData_;
+    std::map<std::string, std::unique_ptr<MetaData>, std::less<>> metaData_;
 };
 
 template <typename T>
-T* inviwo::MetaDataMap::add(const std::string& key, std::unique_ptr<T> metaData) {
+T* MetaDataMap::add(std::string_view key, std::unique_ptr<T> metaData) {
     auto ptr = metaData.get();
-    metaData_[key] = std::move(metaData);
+    metaData_[std::string{key}] = std::move(metaData);
     return ptr;
 }
 

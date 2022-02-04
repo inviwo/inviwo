@@ -60,7 +60,7 @@ namespace filesystem {
  *
  * \see fopen, _wfopen
  */
-IVW_CORE_API FILE* fopen(const std::string& filename, const char* mode);
+IVW_CORE_API FILE* fopen(std::string_view filename, const char* mode);
 
 /**
  * Creates and returns a std::fstream for the given file name (utf-8 encoded). The call
@@ -81,7 +81,7 @@ IVW_CORE_API FILE* fopen(const std::string& filename, const char* mode);
  *
  * \see std::fstream
  */
-IVW_CORE_API std::fstream fstream(const std::string& filename,
+IVW_CORE_API std::fstream fstream(std::string_view filename,
                                   std::ios_base::openmode mode = std::ios_base::in |
                                                                  std::ios_base::out);
 
@@ -104,7 +104,7 @@ IVW_CORE_API std::fstream fstream(const std::string& filename,
  *
  * \see std::ifstream
  */
-IVW_CORE_API std::ifstream ifstream(const std::string& filename,
+IVW_CORE_API std::ifstream ifstream(std::string_view filename,
                                     std::ios_base::openmode mode = std::ios_base::in);
 
 /**
@@ -126,7 +126,7 @@ IVW_CORE_API std::ifstream ifstream(const std::string& filename,
  *
  * \see std::ofstream
  */
-IVW_CORE_API std::ofstream ofstream(const std::string& filename,
+IVW_CORE_API std::ofstream ofstream(std::string_view filename,
                                     std::ios_base::openmode mode = std::ios_base::out);
 
 /**
@@ -331,8 +331,8 @@ IVW_CORE_API std::string getFileExtension(std::string_view url);
  * Replace the last file extension to newFileExtension, if no extension exists append
  * newFileExtension. newFileExtension should not contain any leading "."
  */
-IVW_CORE_API std::string replaceFileExtension(const std::string& url,
-                                              const std::string& newFileExtension);
+IVW_CORE_API std::string replaceFileExtension(std::string_view url,
+                                              std::string_view newFileExtension);
 
 /**
  * \brief Make a path relative to basePath.

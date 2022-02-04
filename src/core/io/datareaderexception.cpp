@@ -29,9 +29,4 @@
 
 #include <inviwo/core/io/datareaderexception.h>
 
-namespace inviwo {
-
-DataReaderException::DataReaderException(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

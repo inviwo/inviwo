@@ -40,19 +40,19 @@ MetaDataMap::MetaDataMap(const MetaDataMap& inMap) {
     }
 }
 
-MetaData* MetaDataMap::add(const std::string& key, MetaData* metaData) {
-    metaData_[key] = std::unique_ptr<MetaData>(metaData);
+MetaData* MetaDataMap::add(std::string_view key, MetaData* metaData) {
+    metaData_[std::string{key}] = std::unique_ptr<MetaData>(metaData);
     return metaData;
 }
 
-void MetaDataMap::remove(const std::string& key) { metaData_.erase(key); }
+void MetaDataMap::remove(std::string_view key) { metaData_.erase(metaData_.find(key)); }
 
 void MetaDataMap::removeAll() { metaData_.clear(); }
 
-void MetaDataMap::rename(const std::string& newKey, const std::string& oldKey) {
+void MetaDataMap::rename(std::string_view newKey, const std::string& oldKey) {
     auto it = metaData_.find(oldKey);
     if (it != metaData_.end()) {
-        metaData_[newKey] = std::move(it->second);
+        metaData_[std::string{newKey}] = std::move(it->second);
         metaData_.erase(oldKey);
     }
 }
@@ -64,13 +64,13 @@ std::vector<std::string> MetaDataMap::getKeys() const {
     return keys;
 }
 
-MetaData* MetaDataMap::get(const std::string& key) {
+MetaData* MetaDataMap::get(std::string_view key) {
     auto it = metaData_.find(key);
     if (it != metaData_.end()) return it->second.get();
     return nullptr;
 }
 
-const MetaData* MetaDataMap::get(const std::string& key) const {
+const MetaData* MetaDataMap::get(std::string_view key) const {
     auto it = metaData_.find(key);
     if (it != metaData_.end()) {
         return it->second.get();
