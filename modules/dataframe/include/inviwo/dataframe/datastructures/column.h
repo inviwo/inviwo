@@ -316,13 +316,14 @@ public:
     virtual void add(std::string_view value) override;
 
     /*
-     * For CategoricalColumn you can not do the trick of pulling out the data container
+     * For CategoricalColumn you cannot do the trick of pulling out the data container
      * `auto& data = templateColumn->getEditableRAMRepresentation()->getDataContainer();`
      * like for regular TemplateColumns to efficiently add many elements.
-     * Since adding element to the CategoricalColumn first has to find the string in the lookup and
-     * then insert the corresponding index in the data container. And we can't do the from the
-     * "outside". This function returns a callable object `AddMany` that enables this optimization
-     * for CategoricalColumns. For example:
+     * This is because adding element to the CategoricalColumn first has to find the string in the
+     * lookup table and then insert the corresponding index into the data container. And we can't
+     * do that from the "outside". This function returns a callable object `AddMany` that enables
+     * this optimization for CategoricalColumns.
+     * For example:
      * ```{.cpp}
      * CategoricalColumn col{...};
      * auto adder = col.addMany();

@@ -189,8 +189,11 @@ public:
     virtual ~LayerRamResizer() = default;
 
     /**
-     * Resize and copy src to dst doing some kind of content scaling
-     * @see CIMGLayerRamResizer
+     * Copy the data from @p src to @p dst. This might involve up or down scaling if the dimensions
+     * do not match. The dimensions of both @p src and @p dst will not change.
+     * This is only intended to be used by LayerRAM::copyRepresentationsTo.
+     * The functionality is likely to be changed and should not be depended on
+     * @see CIMGLayerRamResizer LayerRAM::copyRepresentationsTo
      */
     virtual bool resize(const LayerRAM& src, LayerRAM& dst) const = 0;
 };

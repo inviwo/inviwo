@@ -48,8 +48,6 @@
 #include <type_traits>
 #include <regex>
 
-#include <inviwo/core/util/clock.h>
-
 namespace inviwo {
 
 CSVReader::CSVReader(std::string_view delim, bool hasHeader, bool doublePrecision)
