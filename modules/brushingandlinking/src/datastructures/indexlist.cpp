@@ -53,16 +53,21 @@ const BitSet& IndexList::getIndices() const {
 }
 
 bool IndexList::set(std::string_view src, const BitSet& indices) {
-    if ((indicesBySource_.count(std::string(src)) > 0)) {
-        if (indicesBySource_[std::string(src)] == indices) return false;
-    } else if (indices.empty()) {
-        return false;
-    }
+    const std::string source(src);
+    auto it = indicesBySource_.find(source);
 
-    if (indices.empty()) {
-        indicesBySource_.erase(std::string(src));
+    if (it == indicesBySource_.end()) {
+        if (indices.empty()) return false;
+
+        indicesBySource_.emplace(std::make_pair(source, indices));
     } else {
-        indicesBySource_[std::string(src)] = indices;
+        if (it->second == indices) return false;
+
+        if (indices.empty()) {
+            indicesBySource_.erase(it);
+        } else {
+            it->second = indices;
+        }
     }
     indicesDirty_ = true;
     return true;

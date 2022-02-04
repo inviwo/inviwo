@@ -48,7 +48,7 @@ public:
     void clear();
 
     /**
-     * update the indexlist with source \p src and \p indices, if \p indices are different
+     * Update the indexlist with source \p src and \p indices, if \p indices are different
      *
      * @return true if the indexlist was modified that is \p this and \p indices were different
      */

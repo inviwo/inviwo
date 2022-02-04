@@ -118,13 +118,13 @@ public:
     BitSetIterator end() const;
 
     /**
-     * return the number of elements the bitset holds
+     * Return the number of elements the bitset holds
      *
      * \see size()
      */
     uint32_t cardinality() const;
     /**
-     * return the number of elements the bitset holds
+     * Return the number of elements the bitset holds
      *
      * \see cardinality()
      */
@@ -135,16 +135,16 @@ public:
     void clear();
 
     /**
-     * check whether this bitset is a subset of \p b
+     * Check whether this bitset is a subset of \p b
      */
     bool isSubsetOf(const BitSet& b) const;
     /**
-     * check whether this bitset is a strict subset of \p b
+     * Check whether this bitset is a strict subset of \p b
      */
     bool isStrictSubsetOf(const BitSet& b) const;
 
     /**
-     * replace the bitset with the contents of \p b, returns true if modified
+     * Replace the bitset with the contents of \p b, returns true if modified
      *
      * @return true if the bitset was modified that is \p this and \p b were different
      */
@@ -180,7 +180,7 @@ public:
     bool addChecked(uint32_t v);
 
     /**
-     * adds all values from the open range [min,max)
+     * Adds all values from the open range [min,max)
      *
      * @param min   lower bound
      * @param max   upper bound (not included)
@@ -188,7 +188,7 @@ public:
     void addRange(uint32_t min, uint32_t max);
 
     /**
-     * adds all values from the closed range [min,max]
+     * Adds all values from the closed range [min,max]
      *
      * @param min   lower bound
      * @param max   upper bound (included)
@@ -241,7 +241,7 @@ public:
     bool containsRange(uint32_t min, uint32_t max) const;
 
     /**
-     * flip the value \p v, that is add it to the bitset if not part of it, otherwise remove it
+     * Flip the value \p v, that is add it to the bitset if not part of it, otherwise remove it
      *
      * @param v  value to flip
      */
