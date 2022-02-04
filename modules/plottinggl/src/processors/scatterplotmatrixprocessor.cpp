@@ -115,9 +115,10 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
 
     color_.onChange([&]() {
         if (dataFrame_.hasData()) {
-            auto colorCol = dataFrame_.getData()->getColumn(color_.getSelectedValue());
+            auto index = color_.getSelectedValue();
+            auto colorCol = index >= 0 ? dataFrame_.getData()->getColumn(index).get() : nullptr;
             for (auto& p : plots_) {
-                p->setColorData(colorCol.get());
+                p->setColorData(colorCol);
             }
             scatterPlotproperties_.tf_.setVisible(colorCol != nullptr);
             scatterPlotproperties_.color_.setVisible(colorCol == nullptr);
