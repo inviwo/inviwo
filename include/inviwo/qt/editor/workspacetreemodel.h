@@ -59,7 +59,7 @@ struct IVW_QTEDITOR_API WorkspaceInfo {
     QStringList processors;
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 Q_DECLARE_METATYPE(inviwo::WorkspaceInfo);  // To be able to use queued Qt connect
 
 namespace inviwo {
