@@ -74,7 +74,7 @@ signals:
 
 protected:
     virtual void showEvent(QShowEvent* event) override;
-        
+
     virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:

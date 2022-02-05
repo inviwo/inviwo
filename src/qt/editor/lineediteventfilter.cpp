@@ -43,7 +43,7 @@ LineEditEventFilter::LineEditEventFilter(QWidget* w, QLineEdit* parent, bool foc
 
 bool LineEditEventFilter::eventFilter(QObject* obj, QEvent* e) {
     if (widget_->isHidden()) QObject::eventFilter(obj, e);
-    
+
     switch (e->type()) {
         case QEvent::KeyPress: {
             QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);

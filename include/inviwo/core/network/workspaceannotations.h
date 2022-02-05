@@ -87,9 +87,9 @@ public:
 
     size_t numberOfCanvases() const;
     const Base64Image& getCanvasImage(size_t i) const;
-    
+
     const Base64Image* getPrimaryCanvasImage() const;
-    
+
     const std::vector<Base64Image>& getCanvasImages() const;
 
     virtual void serialize(Serializer& s) const override;
