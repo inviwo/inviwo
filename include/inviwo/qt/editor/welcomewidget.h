@@ -65,7 +65,6 @@ public:
 
     void updateRecentWorkspaces(const QStringList& list);
     void enableRestoreButton(bool hasRestoreWorkspace);
-    void setFilterFocus();
 
 signals:
     void loadWorkspace(const QString& filename, bool isExample);
@@ -75,16 +74,17 @@ signals:
 
 protected:
     virtual void showEvent(QShowEvent* event) override;
+        
     virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
     WelcomeWidget& setSetting(const QString& key, const QVariant& value);
     QVariant getSetting(const QString& key, const QVariant& defaultValue = QVariant()) const;
 
-    void updateDetails(const QString& filename);
+    void updateDetails(const QModelIndex& index);
     static QModelIndex findFirstLeaf(QAbstractItemModel* model, QModelIndex parent = QModelIndex());
 
-    void selectFirstLeaf() const;
+    void selectFirstLeaf();
 
     void expandTreeView() const;
 

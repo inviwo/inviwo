@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-template <typename T>
+template <typename... Ts>
 class SearchDSL {
 public:
     struct Item {
@@ -49,14 +49,14 @@ public:
         std::string shortcut;
         std::string description;
         bool global;
-        std::function<bool(const T&, std::string_view)> match;
+        std::function<bool(std::string_view, const Ts&...)> match;
     };
 
     SearchDSL(std::vector<Item> items)
         : global_{"global", "*", "", true,
-                  [this](const T& thing, std::string_view s) -> bool {
+                  [this](std::string_view str, const Ts&... things) -> bool {
                       for (const auto& item : items_) {
-                          if (item.global && item.match(thing, s)) {
+                          if (item.global && item.match(str, things...)) {
                               return true;
                           }
                       }
@@ -110,9 +110,9 @@ public:
         return true;
     }
 
-    bool match(const T& thing) const {
+    bool match(const Ts&... things) const {
         for (const auto& [item, str] : current_) {
-            if (!item->match(thing, str)) return false;
+            if (!item->match(str, things...)) return false;
         }
         return true;
     }

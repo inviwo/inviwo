@@ -150,33 +150,34 @@ auto strMatch = [](std::string_view cont, std::string_view s) {
 };
 
 auto matcher = [](auto mptr) {
-    return [mptr](const ProcessorFactoryObject& p, std::string_view str) -> bool {
-        return strMatch(std::invoke(mptr, p), str);
-    };
+    return [mptr](std::string_view str, const ProcessorFactoryObject& p,
+                  const InviwoModule&) -> bool { return strMatch(std::invoke(mptr, p), str); };
 };
 
 ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget)
     : InviwoDockWidget(tr("Processors"), parent, "ProcessorTreeWidget")
     , app_{parent->getInviwoApplication()}
-    , dsl_{{
-          {"identifier", "i", "processor class identifier", true,
-           matcher(&ProcessorFactoryObject::getClassIdentifier)},
-          {"name", "n", "processor displayname", true,
-           matcher(&ProcessorFactoryObject::getDisplayName)},
-          {"category", "c", "processor category", true,
-           matcher(&ProcessorFactoryObject::getCategory)},
-          {"tags", "#", "processor tags", true,
-           [](const ProcessorFactoryObject& p, std::string_view str) {
-               for (const auto& tag : p.getTags().tags_) {
-                   if (strMatch(tag.getString(), str)) return true;
-               }
-               return false;
-           }},
-          {"state", "", "processor category", false,
-           [](const ProcessorFactoryObject& p, std::string_view str) {
-               return strMatch(toString(p.getCodeState()), str);
-           }},
-      }}
+    , dsl_{{{"identifier", "i", "processor class identifier", true,
+             matcher(&ProcessorFactoryObject::getClassIdentifier)},
+            {"name", "n", "processor displayname", true,
+             matcher(&ProcessorFactoryObject::getDisplayName)},
+            {"category", "c", "processor category", true,
+             matcher(&ProcessorFactoryObject::getCategory)},
+            {"tags", "#", "processor tags", true,
+             [](std::string_view str, const ProcessorFactoryObject& p, const InviwoModule&) {
+                 for (const auto& tag : p.getTags().tags_) {
+                     if (strMatch(tag.getString(), str)) return true;
+                 }
+                 return false;
+             }},
+            {"state", "", "processor category", false,
+             [](std::string_view str, const ProcessorFactoryObject& p, const InviwoModule&) {
+                 return strMatch(toString(p.getCodeState()), str);
+             }},
+            {"module", "m", "processor module", false,
+             [](std::string_view str, const ProcessorFactoryObject&, const InviwoModule& m) {
+                 return strMatch(m.getIdentifier(), str);
+             }}}}
     , helpWidget_{helpWidget} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -404,7 +405,7 @@ QTreeWidgetItem* ProcessorTreeWidget::addToplevelItemTo(QString title, const std
     return newItem;
 }
 
-void ProcessorTreeWidget::onRegister(ProcessorFactoryObject* item) { addProcessorsToTree(item); }
+void ProcessorTreeWidget::onRegister(ProcessorFactoryObject*) { addProcessorsToTree(); }
 
 void ProcessorTreeWidget::onUnRegister(ProcessorFactoryObject*) { addProcessorsToTree(); }
 
@@ -438,7 +439,7 @@ void ProcessorTreeWidget::recordProcessorUse(const std::string& id) {
     useTimes_[id] = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 }
 
-void ProcessorTreeWidget::addProcessorsToTree(ProcessorFactoryObject* item) {
+void ProcessorTreeWidget::addProcessorsToTree() {
     processorTree_->clear();
     // add processors from all modules to the list
 
@@ -452,14 +453,11 @@ void ProcessorTreeWidget::addProcessorsToTree(ProcessorFactoryObject* item) {
 
     for (auto& elem : app_->getModules()) {
         for (auto& processor : elem->getProcessors()) {
-            if (processor->isVisible() && (lineEdit_->text().isEmpty() || dsl_.match(*processor))) {
+            if (processor->isVisible() &&
+                (lineEdit_->text().isEmpty() || dsl_.match(*processor, *elem))) {
                 extractInfoAndAddProcessor(processor, elem.get());
             }
         }
-    }
-
-    if (item && (lineEdit_->text().isEmpty() || dsl_.match(*item))) {
-        extractInfoAndAddProcessor(item, nullptr);
     }
 
     // Apply sorting

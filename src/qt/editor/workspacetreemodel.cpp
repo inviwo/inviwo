@@ -43,6 +43,14 @@
 #include <QFontMetrics>
 #include <warn/pop>
 
+namespace {
+
+struct RegisterWorkspaceInfo {
+    RegisterWorkspaceInfo() { qRegisterMetaType<inviwo::WorkspaceInfo>(); }
+} registerWorkspaceInfo;
+
+}  // namespace
+
 namespace inviwo {
 
 class TreeItem : public QObject {
@@ -95,12 +103,12 @@ private:
 void WorkspaceInfoLoader::operator()() {
     try {
         WorkspaceAnnotationsQt annotations{filename_, app_};
+
         emit workspaceInfoLoaded(WorkspaceInfo{
             utilqt::toQString(annotations.getTitle()), utilqt::toQString(annotations.getAuthor()),
             utilqt::toQString(annotations.getTags()),
             utilqt::toQString(annotations.getCategories()),
-            utilqt::toQString(annotations.getDescription()),
-            annotations.numberOfCanvases() > 0 ? annotations.getCanvasQImage(0) : QImage{},
+            utilqt::toQString(annotations.getDescription()), annotations.getPrimaryCanvasQImage(),
             WorkspaceAnnotationsQt::workspaceProcessors(filename_, app_)});
     } catch (const Exception&) {
     }
@@ -127,9 +135,6 @@ TreeItem::TreeItem(std::string_view filename, InviwoApplication* app,
     , isExample_{isExample}
     , infoLoader_{std::make_shared<WorkspaceInfoLoader>(filename, app)}
     , info_{} {
-    // Must register WorkspaceInfo before using queued connection
-    static std::once_flag onceFlag;
-    std::call_once(onceFlag, [] { qRegisterMetaType<WorkspaceInfo>(); });
 
     connect(
         infoLoader_.get(), &WorkspaceInfoLoader::workspaceInfoLoaded, this,
@@ -228,7 +233,7 @@ QVariant TreeItem::data(int column, int role) const {
             case static_cast<int>(Role::Processors):
                 infoLoader_->submit();
                 return info_.processors;
-            case static_cast<int>(Role::Image): {
+            case static_cast<int>(Role::PrimaryImage): {
                 infoLoader_->submit();
                 if (info_.image.isNull()) {
                     return QImage{":/inviwo/inviwo_light.png"};

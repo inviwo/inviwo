@@ -66,14 +66,11 @@ WorkspaceAnnotations::WorkspaceAnnotations(const std::vector<Base64Image>& canva
     , categories_{"categories", "Categories", ""}
     , description_("description", "Description", "", InvalidationLevel::InvalidOutput,
                    PropertySemantics::Multiline)
+    , primaryCanvasId_{"primaryCanvasId", "Primany canvas identifier", ""}
     , canvases_{canvasImages}
     , app_{app} {
 
-    addProperty(title_);
-    addProperty(author_);
-    addProperty(tags_);
-    addProperty(categories_);
-    addProperty(description_);
+    addProperties(title_, author_, tags_, categories_, description_, primaryCanvasId_);
 }
 
 WorkspaceAnnotations::WorkspaceAnnotations(std::string_view path, InviwoApplication* app)
@@ -142,6 +139,19 @@ void WorkspaceAnnotations::setCanvasImages(const std::vector<Base64Image>& canva
 size_t WorkspaceAnnotations::numberOfCanvases() const { return canvases_.size(); }
 const WorkspaceAnnotations::Base64Image& WorkspaceAnnotations::getCanvasImage(size_t i) const {
     return canvases_[i];
+}
+
+const WorkspaceAnnotations::Base64Image* WorkspaceAnnotations::getPrimaryCanvasImage() const {
+    auto it = std::find_if(canvases_.begin(), canvases_.end(), [&](const Base64Image& img) {
+        return img.name == primaryCanvasId_.get();
+    });
+    if (it != canvases_.end()) {
+        return &*it;
+    } else if (!canvases_.empty()) {
+        return &canvases_.front();
+    } else {
+        return nullptr;
+    }
 }
 
 const std::vector<WorkspaceAnnotations::Base64Image>& WorkspaceAnnotations::getCanvasImages()

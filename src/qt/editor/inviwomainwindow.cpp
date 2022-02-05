@@ -1243,10 +1243,11 @@ void InviwoMainWindow::showWelcomeScreen() {
     centralWidget_->addWidget(welcomeWidget);
     centralWidget_->setCurrentWidget(welcomeWidget);
     welcomeWidget->enableRestoreButton(hasRestoreWorkspace());
-    welcomeWidget->setFilterFocus();
+
     app_->processEvents(QEventLoop::ExcludeUserInputEvents);
     setUpdatesEnabled(true);
     app_->processEvents(QEventLoop::ExcludeUserInputEvents);
+    welcomeWidget->setFocus();
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {
@@ -1312,7 +1313,7 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
 
 WelcomeWidget* inviwo::InviwoMainWindow::getWelcomeWidget() {
     // The welcome widget is rather expensive to keep around, so do not create it unnecessarily.
-    // Tested on Windows, where 50 MB was released upon deletion.
+    // Tested on Windows, where 50 MB were released upon deletion.
     if (!welcomeWidget_) {
         welcomeWidget_ = new WelcomeWidget(getInviwoApplication(), centralWidget_);
         welcomeWidget_->updateRecentWorkspaces(getRecentWorkspaceList());

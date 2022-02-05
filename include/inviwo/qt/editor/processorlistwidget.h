@@ -95,7 +95,7 @@ public:
     void focusSearch();
     void addSelectedProcessor();
     void addProcessor(QString className);
-    void addProcessorsToTree(ProcessorFactoryObject* item = nullptr);
+    void addProcessorsToTree();
     void recordProcessorUse(const std::string& id);
 
     std::unique_ptr<Processor> createProcessor(QString cid);
@@ -120,7 +120,7 @@ private:
     ProcessorTree* processorTree_;
     QComboBox* listView_;
     QLineEdit* lineEdit_;
-    SearchDSL<ProcessorFactoryObject> dsl_;
+    SearchDSL<ProcessorFactoryObject, InviwoModule> dsl_;
 
     QPoint dragStartPosition_;
 

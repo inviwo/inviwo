@@ -57,6 +57,7 @@ public:
     const Base64Image& getNetworkImage() const;
     QImage getNetworkQImage() const;
     QImage getCanvasQImage(size_t i) const;
+    QImage getPrimaryCanvasQImage() const;
 
     using WorkspaceAnnotations::setCanvasImages;
     void setCanvasImages(const std::vector<std::pair<std::string, QImage>>& canvasImages);

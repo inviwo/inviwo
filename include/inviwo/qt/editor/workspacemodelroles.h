@@ -41,7 +41,7 @@ enum class WorkspaceModelRole {
     Name = Qt::UserRole + 100,
     Path,
     FilePath,
-    Image,
+    PrimaryImage,
     Type,
     isExample,
     Title,
@@ -68,7 +68,8 @@ template <typename Enum>
 QVariant getData(const QModelIndex& index, Enum e) {
     return index.data(static_cast<std::underlying_type_t<Enum>>(e));
 }
-inline QVariant getData(const QModelIndex& index, Qt::ItemDataRole e) { return index.data(e); }
+inline QVariant getData(const QModelIndex& index, Qt::ItemDataRole r) { return index.data(r); }
+
 }  // namespace utilqt
 
 }  // namespace inviwo

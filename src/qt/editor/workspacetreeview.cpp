@@ -84,7 +84,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 
         const auto name = utilqt::getData(index, Role::Name).toString();
         const auto path = utilqt::getData(index, Role::Path).toString();
-        const auto image = utilqt::getData(index, Role::Image).value<QImage>();
+        const auto image = utilqt::getData(index, Role::PrimaryImage).value<QImage>();
 
         // draw text
         painter->save();
@@ -236,11 +236,9 @@ WorkspaceTreeView::WorkspaceTreeView(QAbstractItemModel* theModel, QWidget* pare
     connect(selectionModel(), &QItemSelectionModel::currentChanged, this,
             [this](const QModelIndex& current, const QModelIndex&) {
                 if (current.isValid() && (utilqt::getData(current, Role::Type) == Type::File)) {
-                    const auto filename = utilqt::getData(current, Role::FilePath).toString();
-                    const auto isExample = utilqt::getData(current, Role::isExample).toBool();
-                    emit selectFile(filename, isExample);
+                    emit selectFile(current);
                 } else {
-                    emit selectFile("", false);
+                    emit selectFile(QModelIndex{});
                 }
             });
 }

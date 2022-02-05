@@ -64,7 +64,7 @@ public:
 
 signals:
     void loadFile(QString filename, bool isExample);
-    void selectFile(QString filename, bool isExample);
+    void selectFile(const QModelIndex& index);
 };
 
 }  // namespace inviwo

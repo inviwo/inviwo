@@ -159,7 +159,7 @@ using Role = WorkspaceTreeModel::Role;
 namespace {
 
 auto matcher = [](Role role) {
-    return [role](const QModelIndex& i, std::string_view str) -> bool {
+    return [role](std::string_view str, const QModelIndex& i) -> bool {
         return utilqt::getData(i, role).toString().contains(utilqt::toQString(str),
                                                             Qt::CaseInsensitive);
     };
@@ -179,7 +179,7 @@ public:
                 {"category", "c", "workspace category", true, matcher(Role::Categories)},
                 {"processors", "p",
                  "search processor identifiers, display names, and class identifiers", false,
-                 [](const QModelIndex& i, std::string_view str) -> bool {
+                 [](std::string_view str, const QModelIndex& i) -> bool {
                      const auto list = utilqt::getData(i, Role::Processors).toStringList();
                      const auto qstr = utilqt::toQString(str);
                      for (const auto& item : list) {
@@ -272,12 +272,17 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         leftSplitter->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         {  // left column: workspace filter, list of recently used workspaces, and examples
-            auto load = [this](const QString& filename, bool isExample) {
-                updateDetails(filename);
+            auto load = [this](const QModelIndex& index) {
+                updateDetails(index);
                 loadWorkspaceBtn_->disconnect();
-                QObject::connect(
-                    loadWorkspaceBtn_, &QToolButton::clicked, this,
-                    [this, filename, isExample]() { emit loadWorkspace(filename, isExample); });
+
+                if (index.isValid()) {
+                    const auto filename = utilqt::getData(index, Role::FilePath).toString();
+                    const auto isExample = utilqt::getData(index, Role::isExample).toBool();
+                    QObject::connect(
+                        loadWorkspaceBtn_, &QToolButton::clicked, this,
+                        [this, filename, isExample]() { emit loadWorkspace(filename, isExample); });
+                }
             };
 
             workspaceTreeView_ = new WorkspaceTreeView(filterModel_, this);
@@ -302,7 +307,9 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             filterLineEdit_ = new QLineEdit();
             filterLineEdit_->setPlaceholderText("Search for Workspace...");
             filterLineEdit_->installEventFilter(
-                new LineEditEventFilter(workspaceTreeView_, filterLineEdit_));
+                new LineEditEventFilter(workspaceTreeView_, filterLineEdit_, false));
+            filterLineEdit_->installEventFilter(
+                new LineEditEventFilter(workspaceGridView_, filterLineEdit_, false));
             QIcon clearIcon;
             clearIcon.addFile(":/svgicons/lineedit-clear.svg",
                               utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Normal);
@@ -440,8 +447,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                         QSizePolicy::MinimumExpanding);
             leftSplitter->addWidget(centerWidget);
         }
-        leftSplitter->setStretchFactor(0, 2);  // FileTree
-        leftSplitter->setStretchFactor(1, 1);  // Center widget
+        leftSplitter->setStretchFactor(0, 1);    // FileTree
+        leftSplitter->setStretchFactor(1, 1.5);  // Center widget
         leftSplitter->handle(1)->setAttribute(Qt::WA_Hover);
     }
     {  // right splitter pane: changelog / options
@@ -520,6 +527,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     setTabOrder(workspaceGridView_, loadWorkspaceBtn_);
     setTabOrder(details_, changelog_);
 
+    setFocusProxy(filterLineEdit_);
+
     changelog_->loadLog();
 }
 
@@ -531,26 +540,15 @@ void WelcomeWidget::enableRestoreButton(bool hasRestoreWorkspace) {
     restoreButton_->setEnabled(hasRestoreWorkspace);
 }
 
-void WelcomeWidget::setFilterFocus() { filterLineEdit_->setFocus(Qt::OtherFocusReason); }
-
-void WelcomeWidget::selectFirstLeaf() const {
+void WelcomeWidget::selectFirstLeaf() {
     // select first leaf node
+    QTreeView* view = workspaceGridView_->isVisible() ? static_cast<QTreeView*>(workspaceGridView_)
+                                                      : static_cast<QTreeView*>(workspaceTreeView_);
+    auto gridIndex = findFirstLeaf(view->model());
+    view->selectionModel()->setCurrentIndex(gridIndex, QItemSelectionModel::ClearAndSelect);
 
-    if (workspaceGridView_->isVisible()) {
-        auto gridIndex = findFirstLeaf(workspaceGridView_->model());
-        if (gridIndex.isValid()) {
-            workspaceGridView_->selectionModel()->setCurrentIndex(
-                gridIndex, QItemSelectionModel::ClearAndSelect);
-        }
-    }
-
-    if (workspaceTreeView_->isVisible()) {
-        auto treeIndex = findFirstLeaf(workspaceTreeView_->model());
-        if (treeIndex.isValid()) {
-            workspaceTreeView_->selectionModel()->setCurrentIndex(
-                treeIndex, QItemSelectionModel::ClearAndSelect);
-        }
-    }
+    // Seems we don't get any notification about the current item changing when we clear it.
+    if (!gridIndex.isValid()) updateDetails(QModelIndex{});
 }
 
 void WelcomeWidget::expandTreeView() const {
@@ -583,7 +581,9 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
         expandTreeView();
         selectFirstLeaf();
     }
-    QWidget::showEvent(event);
+
+    QSplitter::showEvent(event);
+    filterLineEdit_->setFocus(Qt::OtherFocusReason);
 }
 
 void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
@@ -609,14 +609,30 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
     QWidget::keyPressEvent(event);
 }
 
-void WelcomeWidget::updateDetails(const QString& filename) {
-    QFileInfo info(filename);
-    if (filename.isEmpty() || !info.exists()) {
+namespace {
+std::string formatTitle(std::string str) {
+    if (!str.empty()) str[0] = static_cast<char>(std::toupper(str[0]));
+    replaceInString(str, "-", " ");
+    replaceInString(str, "_", " ");
+    return str;
+}
+
+std::string formatDescription(std::string_view str) {
+    auto string = htmlEncode(str);
+    replaceInString(string, "\n", "<br/>");
+    return string;
+}
+}  // namespace
+
+void WelcomeWidget::updateDetails(const QModelIndex& index) {
+    loadWorkspaceBtn_->setEnabled(index.isValid());
+    if (!index.isValid()) {
         details_->clear();
-        loadWorkspaceBtn_->setEnabled(false);
         return;
     }
-    loadWorkspaceBtn_->setEnabled(true);
+
+    const auto filename = utilqt::getData(index, Role::FilePath).toString();
+    const QFileInfo info(filename);
 
     // extract annotations including network screenshot and canvas images from workspace
     std::optional<WorkspaceAnnotationsQt> annotations;
@@ -625,26 +641,14 @@ void WelcomeWidget::updateDetails(const QString& filename) {
     } catch (Exception&) {
     }
 
-    const auto dateformat = "yyyy-MM-dd hh:mm:ss";
-    const auto createdStr = utilqt::fromQString(info.birthTime().toString(dateformat));
-    const auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateformat));
-    const auto titleStr = [&]() {
-        auto str = (annotations && !annotations->getTitle().empty())
-                       ? annotations->getTitle()
-                       : utilqt::fromQString(info.completeBaseName());
-        if (!str.empty()) str[0] = static_cast<char>(std::toupper(str[0]));
-        replaceInString(str, "-", " ");
-        replaceInString(str, "_", " ");
-        return str;
-    }();
-
-    const auto description = [&]() {
-        if (!annotations) return std::string{};
-
-        auto str = htmlEncode(annotations->getDescription());
-        replaceInString(str, "\n", "<br/>");
-        return str;
-    }();
+    const auto dateFormat = "yyyy-MM-dd hh:mm:ss";
+    const auto createdStr = utilqt::fromQString(info.birthTime().toString(dateFormat));
+    const auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateFormat));
+    const auto titleStr = (annotations && !annotations->getTitle().empty())
+                              ? annotations->getTitle()
+                              : formatTitle(utilqt::fromQString(info.completeBaseName()));
+    const auto description =
+        annotations ? formatDescription(annotations->getDescription()) : std::string{};
 
     Document doc;
     auto body = doc.append("html").append("body");

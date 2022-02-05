@@ -96,7 +96,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 
         const auto name = utilqt::getData(index, Qt::DisplayRole).toString();
         const auto path = utilqt::getData(index, Role::Path).toString();
-        const auto image = utilqt::getData(index, Role::Image).value<QImage>();
+        const auto image = utilqt::getData(index, Role::PrimaryImage).value<QImage>();
 
         const auto margin = utilqt::emToPx(option.fontMetrics, 0.5);
 
@@ -199,19 +199,14 @@ public:
         connect(model, &QAbstractItemModel::modelAboutToBeReset, this, reset);
         connect(model, &QAbstractItemModel::layoutAboutToBeChanged, this, reset);
 
-        connect(model, &QAbstractItemModel::dataChanged, this,
-                [this](const QModelIndex& topLeft, const QModelIndex& bottomRight,
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-                       const QVector<int>& roles
-#else 
-                       const QList<int>& roles
-#endif
-                ) {
-                    for (int i = topLeft.row(); i <= bottomRight.row(); ++i) {
-                        auto changed = mapFromSource(sourceModel()->index(i, 0, topLeft.parent()));
-                        dataChanged(changed, changed, roles);
-                    }
-                });
+        connect(
+            model, &QAbstractItemModel::dataChanged, this,
+            [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const auto& roles) {
+                for (int i = topLeft.row(); i <= bottomRight.row(); ++i) {
+                    auto changed = mapFromSource(sourceModel()->index(i, 0, topLeft.parent()));
+                    dataChanged(changed, changed, roles);
+                }
+            });
     }
 
     virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override {
@@ -343,11 +338,9 @@ WorkspaceGridView::WorkspaceGridView(QAbstractItemModel* theModel, QWidget* pare
     connect(selectionModel(), &QItemSelectionModel::currentChanged, this,
             [this](const QModelIndex& current, const QModelIndex&) {
                 if (current.isValid() && (utilqt::getData(current, Role::Type) == Type::File)) {
-                    const auto filename = utilqt::getData(current, Role::FilePath).toString();
-                    const auto isExample = utilqt::getData(current, Role::isExample).toBool();
-                    emit selectFile(filename, isExample);
+                    emit selectFile(current);
                 } else {
-                    emit selectFile("", false);
+                    emit selectFile(QModelIndex{});
                 }
             });
 

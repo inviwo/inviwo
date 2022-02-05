@@ -55,23 +55,23 @@ namespace inviwo {
 NetworkSearch::NetworkSearch(InviwoMainWindow* win)
     : QWidget(win)
     , dsl_{{{"class", "c", "processor class identifier", true,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  return find(p.getClassIdentifier(), s);
              }},
             {"identifier", "i", "processor identifier", true,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  return find(p.getIdentifier(), s);
              }},
             {"name", "n", "processor display name", true,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  return find(p.getDisplayName(), s);
              }},
             {"category", "", "processor category", true,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  return find(p.getCategory(), s);
              }},
             {"tag", "t", "search processor tags", true,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  bool tag = false;
                  for (const auto& t : p.getTags().tags_) {
                      tag |= find(t.getString(), s);
@@ -79,11 +79,11 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
                  return tag;
              }},
             {"state", "s", "processor state", true,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  return find(toString(p.getCodeState()), s);
              }},
             {"inport", "", "search inport class identifiers", true,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  bool inport = false;
                  for (const auto& pt : p.getInports()) {
                      inport |= find(pt->getClassIdentifier(), s);
@@ -91,7 +91,7 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
                  return inport;
              }},
             {"outport", "", "search outport class identifiers", true,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  bool outport = false;
                  for (const auto& pt : p.getOutports()) {
                      outport |= find(pt->getClassIdentifier(), s);
@@ -99,7 +99,7 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
                  return outport;
              }},
             {"port", "", "search port class identifiers", false,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  bool port = false;
                  for (const auto& pt : p.getOutports()) {
                      port |= find(pt->getClassIdentifier(), s);
@@ -110,7 +110,7 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
                  return port;
              }},
             {"property", "p", "search property identifiers", true,
-             [](const Processor& p, std::string_view s) -> bool {
+             [](std::string_view s, const Processor& p) -> bool {
                  bool property = false;
                  for (const auto& pr : p.getPropertiesRecursive()) {
                      property |= find(pr->getIdentifier(), s);
@@ -118,7 +118,7 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
                  return property;
              }},
             {"module", "m", "processor module", true,
-             [this](const Processor& p, std::string_view s) -> bool {
+             [this](std::string_view s, const Processor& p) -> bool {
                  auto moduleMap = getModuleMap(win_->getInviwoApplication());
                  bool module = false;
                  auto mit = moduleMap.find(p.getClassIdentifier());

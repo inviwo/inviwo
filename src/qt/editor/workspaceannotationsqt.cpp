@@ -103,6 +103,14 @@ QImage WorkspaceAnnotationsQt::getCanvasQImage(size_t i) const {
     return utilqt::fromBase64(canvases_[i].base64jpeg, "JPEG");
 }
 
+QImage WorkspaceAnnotationsQt::getPrimaryCanvasQImage() const {
+    if (auto img = getPrimaryCanvasImage()) {
+        return utilqt::fromBase64(img->base64jpeg, "JPEG");
+    } else {
+        return QImage{};
+    }
+}
+
 namespace {
 
 struct DummyProcessor : Serializable {
