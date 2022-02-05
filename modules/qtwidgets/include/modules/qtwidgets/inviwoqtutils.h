@@ -98,7 +98,7 @@ IVW_MODULE_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
  */
 inline QString toLocalQString(std::string_view str) {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    return QString::fromLocal8Bit(str.data(), str.size())
+    return QString::fromLocal8Bit(str.data(), str.size());
 #else
     return QString::fromLocal8Bit(str.data(), static_cast<int>(str.size()));
 #endif
@@ -108,7 +108,7 @@ inline QString toLocalQString(std::string_view str) {
  */
 inline QString toLocalQString(const std::string& str) {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    return QString::fromLocal8Bit(str.data(), str.size())
+    return QString::fromLocal8Bit(str.data(), str.size());
 #else
     return QString::fromLocal8Bit(str.data(), static_cast<int>(str.size()));
 #endif
@@ -125,7 +125,7 @@ inline std::string fromLocalQString(const QString& str) {
  */
 inline QString toQString(std::string_view str) {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    return QString::fromUtf8(str.data(), str.size())
+    return QString::fromUtf8(str.data(), str.size());
 #else
     return QString::fromUtf8(str.data(), static_cast<int>(str.size()));
 #endif
@@ -135,7 +135,7 @@ inline QString toQString(std::string_view str) {
  */
 inline QString toQString(const std::string& str) {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    return QString::fromUtf8(str.data(), str.size())
+    return QString::fromUtf8(str.data(), str.size());
 #else
     return QString::fromUtf8(str.data(), static_cast<int>(str.size()));
 #endif

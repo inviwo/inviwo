@@ -58,7 +58,11 @@ struct IVW_QTEDITOR_API WorkspaceInfo {
     QImage image;
     QStringList processors;
 };
-Q_DECLARE_METATYPE(WorkspaceInfo);  // To be able to use queued Qt connect
+
+} // namespace inviwo
+Q_DECLARE_METATYPE(inviwo::WorkspaceInfo);  // To be able to use queued Qt connect
+
+namespace inviwo {
 
 class IVW_QTEDITOR_API WorkspaceInfoLoader
     : public QObject,
