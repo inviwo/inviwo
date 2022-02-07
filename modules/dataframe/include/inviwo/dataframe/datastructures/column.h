@@ -195,7 +195,7 @@ public:
     virtual void add(std::string_view value) override;
 
     /**
-     * \copydoc Column::append(const Column&)
+     * @copydoc inviwo::Column::append(const Column&)
      * @throws Exception if data format does not match
      */
     virtual void append(const Column& col) override;
@@ -391,6 +391,8 @@ private:
     std::vector<std::string> lookUpTable_;
     std::map<std::string, std::uint32_t, std::less<>> lookupMap_;
 };
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(std::string_view header, std::shared_ptr<Buffer<T>> buffer,
@@ -661,5 +663,7 @@ template <typename T>
 size_t TemplateColumn<T>::getSize() const {
     return buffer_->getSize();
 }
+
+#endif
 
 }  // namespace inviwo

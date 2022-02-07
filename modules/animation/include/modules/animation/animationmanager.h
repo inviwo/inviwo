@@ -78,7 +78,7 @@ public:
      * This AnimationManager is passed to the Animation constructor to enable its Property-based
      * adding convenience functions.
      * @note The animations are often tightly coupled to the processors in the workspace.
-     * @param Deserialization stream
+     * @param d stream
      * @return All animations found, empty .
      */
     std::vector<Animation> import(Deserializer& d);

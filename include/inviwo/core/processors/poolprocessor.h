@@ -113,7 +113,7 @@ private:
     const size_t id_;
 };
 
-/** @enum pool::Option
+/**
  * Settings for the PoolProcessor
  * \see PoolProcessor
  */

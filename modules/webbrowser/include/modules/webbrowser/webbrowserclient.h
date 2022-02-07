@@ -83,9 +83,8 @@ public:
      * to access the parent processor.
      * Connection will be removed when the browser closes or removeBrowserParent is called.
      * A browser can only have one Processor as parent.
-     * @param CefRefPtr<CefBrowser> browser to be associated with a processor.
-     * @param const Processor* parent web browser processor responsible for the browser. Cannot be
-     * null.
+     * @param browser to be associated with a processor.
+     * @param parent web browser processor responsible for the browser. Cannot be null.
      * @see ProcessorCefSynchronizer
      */
     void setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent);
@@ -93,7 +92,7 @@ public:
      * Removes Processor parent associated with the provided browser.
      * Processor invalidation will not be called on repaints after removing the processor.
      * Will do nothing if browser has no assoicated Processor.
-     * @param CefRefPtr<CefBrowser> browser to remove processor association from.
+     * @param browser to remove processor association from.
      */
     void removeBrowserParent(CefRefPtr<CefBrowser> browser);
 

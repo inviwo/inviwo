@@ -46,8 +46,18 @@ struct IsovalueParameters {
  * @param result           color accumulated so far during raycasting
  * @param isovalue         isovalue of isosurface to be drawn
  * @param isocolor         color of the isosurface used for blending
- * @param voxel            scalar values of current sampling position
- * @param previousVoxel    scalar values of previous sample
+ * @param value            scalar values of current sampling position
+ * @param previousValue    scalar values of previous sample
+ * @param gradient
+ * @param previousGradient
+ * @param textureToWorld
+ * @param lighting
+ * @param rayPosition
+ * @param rayDirection
+ * @param toCameraDir
+ * @param t
+ * @param tIncr
+ * @param tDepth
  * @return in case of an isosurface, result is blended with the color of the isosurface.
  *       Otherwise result is returned
  */

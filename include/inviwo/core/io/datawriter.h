@@ -35,7 +35,7 @@
 #include <inviwo/core/util/exception.h>
 
 #include <vector>
-#include <iostream>
+#include <ios>
 
 namespace inviwo {
 
@@ -43,6 +43,8 @@ enum class Overwrite { No, Yes };
 
 /**
  * \ingroup dataio
+ * @brief A abstract base class for all file writers.
+ * @see DataWriterFactory InviwoApplication::getDataWriterFactory
  */
 class IVW_CORE_API DataWriter {
 public:
@@ -85,7 +87,9 @@ protected:
 };
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
+ * @brief Template base class for file writers designating what type of data
+ * object the writer writes.
  */
 template <typename T>
 class DataWriterType : public DataWriter {

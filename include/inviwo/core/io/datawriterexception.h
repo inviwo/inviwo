@@ -31,8 +31,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
 
-#include <string>
-
 namespace inviwo {
 
 class IVW_CORE_API DataWriterException : public Exception {

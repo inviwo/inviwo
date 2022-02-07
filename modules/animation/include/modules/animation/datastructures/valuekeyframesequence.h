@@ -156,6 +156,8 @@ private:
     std::unique_ptr<InterpolationTyped<Key>> interpolation_{nullptr};
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 template <typename Key>
 bool operator==(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
     return a.getEasingType() == b.getEasingType() && a.getInterpolation() == b.getInterpolation() &&
@@ -291,6 +293,8 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
         setInterpolation(std::move(interpolation));
     }
 }
+
+#endif
 
 }  // namespace animation
 

@@ -142,6 +142,13 @@ function(ivw_private_make_doxyfile)
 
     ivw_private_format_doxy_arg(example_paths ${IVW_EXTERNAL_MODULES})
 
+    if(ARG_GENERATE_IMG) 
+        set(generate_images "YES")
+    else()
+        set(generate_images "NO")
+    endif()
+
+
     set(doxyfile "\
 PROJECT_NAME           = \"${ARG_NAME}\"
 PROJECT_NUMBER         = \"${IVW_VERSION}\"
@@ -184,9 +191,7 @@ INCLUDE_PATH           = ${incpaths}
 
 EXTENSION_MAPPING      = no_extension=C++ frag=C++ vert=C++ geom=C++ glsl=C++ comp=C++
 
-FILE_PATTERNS          = *.c \\
-                         *.cpp \\
-                         *.hpp \\
+FILE_PATTERNS          = *.hpp \\
                          *.h \\
                          *.cl \\
                          *.dox \\
@@ -198,7 +203,9 @@ FILE_PATTERNS          = *.c \\
 
 RECURSIVE              = YES
 EXCLUDE                =
-EXCLUDE_PATTERNS       = */moc_* \\
+EXCLUDE_PATTERNS       = *.c \\
+                         *.cpp \\
+                         */moc_* \\
                          */qrc_* \\
                          */modules/*/ext/* \\
                          */clogs/* \\
@@ -248,17 +255,16 @@ ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 EXTERNAL_PAGES         = YES
 
-CLASS_DIAGRAMS         = ${ARG_GENERATE_IMG}
 HAVE_DOT               = ${DOXYGEN_DOT_FOUND}
 
-CLASS_GRAPH            = ${ARG_GENERATE_IMG}
-COLLABORATION_GRAPH    = NO # To large to be useful most of the time, ${ARG_GENERATE_IMG}
-GROUP_GRAPHS           = ${ARG_GENERATE_IMG}
+CLASS_GRAPH            = ${generate_images}
+COLLABORATION_GRAPH    = NO # To large to be useful most of the time, ${generate_images}
+GROUP_GRAPHS           = ${generate_images}
 UML_LOOK               = NO
 UML_LIMIT_NUM_FIELDS   = 10
 TEMPLATE_RELATIONS     = YES
-INCLUDE_GRAPH          = NO # needs SEARCH_INCLUDES = YES, ${ARG_GENERATE_IMG}
-INCLUDED_BY_GRAPH      = NO # needs SEARCH_INCLUDES = YES, ${ARG_GENERATE_IMG}
+INCLUDE_GRAPH          = NO # needs SEARCH_INCLUDES = YES, ${generate_images}
+INCLUDED_BY_GRAPH      = NO # needs SEARCH_INCLUDES = YES, ${generate_images}
 
 CALL_GRAPH             = NO
 CALLER_GRAPH           = NO
@@ -266,7 +272,7 @@ CALLER_GRAPH           = NO
 GRAPHICAL_HIERARCHY    = NO
 DIRECTORY_GRAPH        = NO
 DOT_IMAGE_FORMAT       = png
-INTERACTIVE_SVG        = ${ARG_GENERATE_IMG}
+INTERACTIVE_SVG        = ${generate_images}
 DOT_PATH               = \"${DOXYGEN_DOT_PATH}\"
 DOTFILE_DIRS           =
 DOT_GRAPH_MAX_NODES    = 200
@@ -338,7 +344,6 @@ function(ivw_private_make_help)
         "DISABLE_INDEX          = YES"
         "SEARCHENGINE           = NO"
         "GENERATE_AUTOGEN_DEF   = NO"
-        "CLASS_DIAGRAMS         = NO"
     )
 
     ivw_private_make_doxyfile(
@@ -403,7 +408,7 @@ set(ivw_doxy_dir ${IVW_ROOT_DIR}/docs)
 set(output_dir ${CMAKE_CURRENT_BINARY_DIR})
 set(tag_files "")
 set(dependency_list "")
-set(GENERATE_IMG "YES")
+
 if(Python3_Interpreter_FOUND)
     if(${MSVC})
         set(PREFIX_PYTHON "python ")

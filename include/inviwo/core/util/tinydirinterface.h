@@ -56,6 +56,7 @@ public:
     /**
      * @brief Opens the given path as directory resource.
      * @param path Path of the directory whose contents will be queried.
+     * @param mode @see ListMode
      * @throws FileException if opening the directory resource is unsuccessful.
      */
     TinyDirInterface(const std::string& path, ListMode mode = ListMode::FilesOnly);

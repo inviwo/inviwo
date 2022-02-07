@@ -49,13 +49,13 @@ public:
 
     /**
      * Execute currently set onProgressChange javascript function
-     * @param New progress between [0 1]
+     * @param progress New progress between [0 1]
      */
     virtual void progressChanged(float progress) override;
 
     /**
      * Execute currently set OnProgressVisibleChange javascript function
-     * @param visibility state that ProgressBar changed into
+     * @param visible state that ProgressBar changed into
      */
     virtual void progressBarVisibilityChanged(bool visible) override;
     /*
@@ -75,8 +75,8 @@ public:
     void setFrame(CefRefPtr<CefFrame> frame);
 
 private:
-    std::string onProgressChange_;         /// Javascript callback to execute when progress changes
-    std::string onProgressVisibleChange_;  /// Javascript callback to execute when vibility changes
+    std::string onProgressChange_;         /// Callback to execute when progress changes
+    std::string onProgressVisibleChange_;  /// Callback to execute when visibility changes
     CefRefPtr<CefFrame> frame_;            /// Browser frame containing corresponding callbacks
 };
 

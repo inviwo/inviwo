@@ -51,7 +51,6 @@ public:
      * @param usage BufferUsage::Static if not changing all the time, else BufferUsage::Dynamic.
      * @param target BufferTarget::Data for vertex buffers and BufferTarget::Index for index buffers
      * @param data Will be created if nullptr.
-     * @return
      */
     BufferGL(size_t size, const DataFormatBase* format, BufferUsage usage, BufferTarget target,
              std::shared_ptr<BufferObject> data = std::shared_ptr<BufferObject>(nullptr));

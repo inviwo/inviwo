@@ -156,6 +156,8 @@ private:
     std::vector<std::unique_ptr<Seq>> sequences_;
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 template <typename Seq>
 BaseTrack<Seq>::BaseTrack(const std::string& name, size_t priority)
     : name_{name}, priority_{priority} {}
@@ -513,6 +515,8 @@ void BaseTrack<Seq>::deserialize(Deserializer& d) {
         .onRemove([&](Elem& seq) { this->notifyKeyframeSequenceRemoved(this, seq.get()); })(
             d, sequences_);
 }
+
+#endif
 
 }  // namespace animation
 

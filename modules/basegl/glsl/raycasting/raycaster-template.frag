@@ -27,13 +27,9 @@
  *
  *********************************************************************************/
 
-// The special //? and //! comments are helpers for the visual studio shader validation
-
-//? #version 460
-
-#include "utils/structs.glsl"    //! #include "../../../opengl/glsl/utils/structs.glsl"
-#include "utils/sampler3d.glsl"  //! #include "../../../opengl/glsl/utils/sampler3d.glsl"
-#include "utils/depth.glsl"      //! #include "../../../opengl/glsl/utils/depth.glsl"
+#include "utils/structs.glsl"
+#include "utils/sampler3d.glsl"
+#include "utils/depth.glsl"
 
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_INCLUDE
 
@@ -53,9 +49,6 @@ layout(location = 1) out vec4 PickingData;
 
 uniform ImageParameters outportParameters;
 uniform float samplingRate = 2.0;
-
-//? uniform VolumeParameters volumeParameters;
-//? uniform CameraParameters camera;
 
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_UNIFORM
 

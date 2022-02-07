@@ -105,7 +105,7 @@ IVW_MODULE_BASE_API std::shared_ptr<ColoredMesh> cameraFrustum(
 enum class IncludeNormals { Yes, No };
 
 /**
- * @breif Create parallelepiped mesh
+ * @brief Create parallelepiped mesh
  *
  * The parallelepiped is anchored at origin and spanned by p1, p2, and p2
  *
@@ -134,7 +134,7 @@ enum class IncludeNormals { Yes, No };
  *      ╱
  *     ╱
  *    ╱
- * @endverbatim'
+ * @endverbatim
  *
  * @param origin position
  * @param p1 basis vector 1
