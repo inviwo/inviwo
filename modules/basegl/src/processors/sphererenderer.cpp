@@ -30,6 +30,7 @@
 #include <modules/basegl/processors/sphererenderer.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 
 #include <inviwo/core/util/zip.h>

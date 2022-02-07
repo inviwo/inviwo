@@ -39,6 +39,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/image/layergl.h>
 
 #include <glm/gtx/handed_coordinate_space.hpp>
 

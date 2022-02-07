@@ -33,6 +33,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/texture/texture3d.h>
 
 namespace inviwo {
 

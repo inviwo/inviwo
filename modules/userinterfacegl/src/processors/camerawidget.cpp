@@ -44,11 +44,13 @@
 #include <inviwo/core/util/filesystem.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/image/layergl.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/glformats.h>
+#include <modules/opengl/texture/textureutils.h>
 
 #include <modules/base/algorithm/meshutils.h>
 

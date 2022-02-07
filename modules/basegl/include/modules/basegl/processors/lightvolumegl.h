@@ -41,6 +41,8 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/texture3d.h>
+#include <modules/opengl/glformats.h>
 
 #include <array>
 

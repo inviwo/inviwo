@@ -40,6 +40,7 @@
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/volume/volumeutils.h>
 
 #include <random>
 

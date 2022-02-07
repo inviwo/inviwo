@@ -29,7 +29,9 @@
 
 #include <modules/postprocessing/processors/fxaa.h>
 #include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/geometry/meshgl.h>
