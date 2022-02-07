@@ -37,6 +37,8 @@
 
 namespace inviwo {
 
+bool IndexList::empty() const { return indices_.empty(); }
+
 size_t IndexList::size() const { return indices_.size(); }
 
 void IndexList::clear() {
@@ -50,13 +52,25 @@ const BitSet& IndexList::getIndices() const {
     return indices_;
 }
 
-void IndexList::set(std::string_view src, const BitSet& indices) {
-    if (indices.empty()) {
-        indicesBySource_.erase(std::string(src));
+bool IndexList::set(std::string_view src, const BitSet& indices) {
+    const std::string source(src);
+    auto it = indicesBySource_.find(source);
+
+    if (it == indicesBySource_.end()) {
+        if (indices.empty()) return false;
+
+        indicesBySource_.emplace(std::make_pair(source, indices));
     } else {
-        indicesBySource_[std::string(src)] = indices;
+        if (it->second == indices) return false;
+
+        if (indices.empty()) {
+            indicesBySource_.erase(it);
+        } else {
+            it->second = indices;
+        }
     }
     indicesDirty_ = true;
+    return true;
 }
 
 bool IndexList::contains(uint32_t idx) const {
@@ -76,7 +90,7 @@ bool IndexList::removeSources(const std::vector<std::string>& sources) {
 void IndexList::update() const {
     if (!indicesDirty_) return;
 
-    using T = SourceIndexMap::value_type;
+    using T = std::unordered_map<std::string, BitSet>::value_type;
     util::map_erase_remove_if(indicesBySource_, [](const T& p) { return p.second.empty(); });
 
     auto bitsets =
