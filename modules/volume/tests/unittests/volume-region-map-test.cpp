@@ -27,50 +27,15 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/volume/volumemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <optional>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeRegionMap, Volume Region Map}
- * ![](org.inviwo.VolumeRegionMap.png?classIdentifier=org.inviwo.VolumeRegionMap)
- * Indices are remapped to values provided in CSV file. Requires two columns. 1st column is old
- * indices, second contains values to be mapped to.
- * ### Inports
- *   * __inputVolume__ Input volume
- *
- * ### Outports
- *   * __outputVolume__ Output volume
- *
- * ### Properties
- * * __from__ Index being mapped from
- * * __to__ Index being mapped to
- */
-class IVW_MODULE_VOLUME_API VolumeRegionMap : public Processor {
-public:
-    VolumeRegionMap();
-    virtual ~VolumeRegionMap() = default;
+TEST(Volume, volume_region_map_test) {
+    EXPECT_EQ(1, 1);
+}   
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    DataFrameInport dataFrame_;
-    VolumeInport inport_;
-    VolumeOutport outport_;
-    ColumnOptionProperty from_;
-    ColumnOptionProperty to_;
-};
-
-}  // namespace inviwo
+}  // namespace inviwo 

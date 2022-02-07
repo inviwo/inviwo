@@ -1,0 +1,1072 @@
+<?xml version="1.0" ?>
+<InviwoWorkspace version="2">
+    <ProcessorNetworkVersion content="19" />
+    <Processors>
+        <Processor type="org.inviwo.AtlasVolumeRaycaster" identifier="AtlasVolumeRaycaster" displayName="Atlas Volume Raycaster">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.IsoTFProperty" identifier="isotf">
+                    <MetaDataMap>
+                        <MetaDataItem type="org.inviwo.IntMetaData" key="PropertyEditorWidgetDockStatus">
+                            <MetaData content="0" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetFloating">
+                            <MetaData content="1" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
+                            <MetaData x="2385" y="1702" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetSize">
+                            <MetaData x="775" y="375" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetSticky">
+                            <MetaData content="1" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetVisible">
+                            <MetaData content="0" />
+                        </MetaDataItem>
+                    </MetaDataMap>
+                    <Properties>
+                        <Property type="org.inviwo.IsoValueProperty" identifier="isovalues">
+                            <histogramSelection content="00000000000000000000000000000001" />
+                        </Property>
+                        <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction">
+                            <TransferFunction>
+                                <maskMin content="0" />
+                                <maskMax content="1" />
+                                <type content="0" />
+                                <Points>
+                                    <Point>
+                                        <pos content="0.3641906846984162" />
+                                        <rgba x="0" y="0" z="0" w="0" />
+                                    </Point>
+                                    <Point>
+                                        <pos content="0.36993904149737405" />
+                                        <rgba x="1" y="1" z="1" w="0.98233217" />
+                                    </Point>
+                                </Points>
+                            </TransferFunction>
+                            <histogramSelection content="00000000000000000000000000000001" />
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.FloatProperty" identifier="selectionMix">
+                    <value content="0.2869" />
+                </Property>
+                <Property type="org.inviwo.FloatProperty" identifier="filteredAlpha">
+                    <value content="0.076" />
+                </Property>
+                <Property type="org.inviwo.FloatProperty" identifier="filteredMix">
+                    <value content="0.0876" />
+                </Property>
+                <Property type="org.inviwo.TransferFunctionProperty" identifier="atlasTF">
+                    <MetaDataMap>
+                        <MetaDataItem type="org.inviwo.IntMetaData" key="PropertyEditorWidgetDockStatus">
+                            <MetaData content="0" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetFloating">
+                            <MetaData content="1" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
+                            <MetaData x="2057" y="905" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetSize">
+                            <MetaData x="1016" y="401" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetSticky">
+                            <MetaData content="1" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetVisible">
+                            <MetaData content="0" />
+                        </MetaDataItem>
+                        <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState" />
+                    </MetaDataMap>
+                    <TransferFunction>
+                        <maskMin content="0" />
+                        <maskMax content="1" />
+                        <type content="0" />
+                        <Points>
+                            <Point>
+                                <pos content="0" />
+                                <rgba x="0" y="0" z="0" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.01851851851849632" />
+                                <rgba x="0.74509805" y="0.68235296" z="0.83137256" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.05555555555553336" />
+                                <rgba x="0.12156863" y="0.47058824" z="0.7058824" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.055555555555555566" />
+                                <rgba x="0.69803923" y="0.8745098" z="0.5411765" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.09259259259257041" />
+                                <rgba x="0.69803923" y="0.8745098" z="0.5411765" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.09259259259259262" />
+                                <rgba x="0.2" y="0.627451" z="0.17254902" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.12962962962960745" />
+                                <rgba x="0.2" y="0.627451" z="0.17254902" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.12962962962962965" />
+                                <rgba x="0.9843137" y="0.6039216" z="0.6" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.16666666666664448" />
+                                <rgba x="0.9843137" y="0.6039216" z="0.6" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.16666666666666669" />
+                                <rgba x="0.8901961" y="0.10196079" z="0.10980392" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.20370370370368154" />
+                                <rgba x="0.8901961" y="0.10196079" z="0.10980392" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.20370370370370375" />
+                                <rgba x="0.99215686" y="0.7490196" z="0.43529412" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.24074074074071858" />
+                                <rgba x="0.99215686" y="0.7490196" z="0.43529412" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.24074074074074078" />
+                                <rgba x="1" y="0.49803922" z="0" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.2777777777777556" />
+                                <rgba x="1" y="0.49803922" z="0" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.2777777777777778" />
+                                <rgba x="0.7921569" y="0.69803923" z="0.8392157" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.3148148148147927" />
+                                <rgba x="0.7921569" y="0.69803923" z="0.8392157" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.3148148148148149" />
+                                <rgba x="0.41568628" y="0.23921569" z="0.6039216" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.35185185185182966" />
+                                <rgba x="0.41568628" y="0.23921569" z="0.6039216" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.35185185185185186" />
+                                <rgba x="1" y="1" z="0.6" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.38888888888886675" />
+                                <rgba x="1" y="1" z="0.6" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.38888888888888895" />
+                                <rgba x="0.69411767" y="0.34901962" z="0.15686275" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.42592592592590384" />
+                                <rgba x="0.69411767" y="0.34901962" z="0.15686275" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.42592592592592604" />
+                                <rgba x="0.6509804" y="0.80784315" z="0.8901961" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.4629629629629408" />
+                                <rgba x="0.6509804" y="0.80784315" z="0.8901961" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.462962962962963" />
+                                <rgba x="0.12156863" y="0.47058824" z="0.7058824" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.4999999999999779" />
+                                <rgba x="0.12156863" y="0.47058824" z="0.7058824" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.5000000000000001" />
+                                <rgba x="0.69803923" y="0.8745098" z="0.5411765" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.5370370370370149" />
+                                <rgba x="0.69803923" y="0.8745098" z="0.5411765" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.5370370370370371" />
+                                <rgba x="0.2" y="0.627451" z="0.17254902" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.574074074074052" />
+                                <rgba x="0.2" y="0.627451" z="0.17254902" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.5740740740740742" />
+                                <rgba x="0.9843137" y="0.6039216" z="0.6" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.6111111111110891" />
+                                <rgba x="0.9843137" y="0.6039216" z="0.6" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.6111111111111113" />
+                                <rgba x="0.8901961" y="0.10196079" z="0.10980392" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.648148148148126" />
+                                <rgba x="0.8901961" y="0.10196079" z="0.10980392" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.6481481481481483" />
+                                <rgba x="0.99215686" y="0.7490196" z="0.43529412" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.6851851851851631" />
+                                <rgba x="0.99215686" y="0.7490196" z="0.43529412" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.6851851851851853" />
+                                <rgba x="1" y="0.49803922" z="0" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.7222222222222001" />
+                                <rgba x="1" y="0.49803922" z="0" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.7222222222222223" />
+                                <rgba x="0.7921569" y="0.69803923" z="0.8392157" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.7592592592592372" />
+                                <rgba x="0.7921569" y="0.69803923" z="0.8392157" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.7592592592592594" />
+                                <rgba x="0.41568628" y="0.23921569" z="0.6039216" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.7962962962962742" />
+                                <rgba x="0.41568628" y="0.23921569" z="0.6039216" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.7962962962962964" />
+                                <rgba x="1" y="1" z="0.6" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.8333333333333113" />
+                                <rgba x="1" y="1" z="0.6" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.8333333333333335" />
+                                <rgba x="0.69411767" y="0.34901962" z="0.15686275" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.8703703703703484" />
+                                <rgba x="0.69411767" y="0.34901962" z="0.15686275" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.8703703703703706" />
+                                <rgba x="0.6509804" y="0.80784315" z="0.8901961" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.9074074074073853" />
+                                <rgba x="0.6509804" y="0.80784315" z="0.8901961" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.9074074074074076" />
+                                <rgba x="0.12156863" y="0.47058824" z="0.7058824" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.9444444444444224" />
+                                <rgba x="0.12156863" y="0.47058824" z="0.7058824" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.9444444444444446" />
+                                <rgba x="0.69803923" y="0.8745098" z="0.5411765" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.9814814814814595" />
+                                <rgba x="0.69803923" y="0.8745098" z="0.5411765" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.9814814814814817" />
+                                <rgba x="0.2" y="0.627451" z="0.17254902" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="1" />
+                                <rgba x="0.2" y="0.627451" z="0.17254902" w="1" />
+                            </Point>
+                            <Point>
+                                <pos content="0.018518518518518524" />
+                                <rgba x="0.12156863" y="0.47058824" z="0.7058824" w="1" />
+                            </Point>
+                        </Points>
+                    </TransferFunction>
+                    <zoomH_ x="0" y="0.162109375" />
+                </Property>
+                <Property type="org.inviwo.OptionPropertyEnumInt" identifier="coloringScheme">
+                    <selectedIdentifier content="Paired" />
+                </Property>
+                <Property type="org.inviwo.ButtonGroupProperty" identifier="coloringApply" />
+                <Property type="org.inviwo.RaycastingProperty" identifier="raycaster">
+                    <Properties>
+                        <Property type="org.inviwo.FloatProperty" identifier="samplingRate">
+                            <increment content="0.1" />
+                            <value content="3" />
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.CameraProperty" identifier="camera">
+                    <Properties>
+                        <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                            <minvalue x="-126.4925" y="-140.76001" z="-174.71251" />
+                            <maxvalue x="126.4925" y="140.76001" z="174.71251" />
+                        </Property>
+                        <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                            <minvalue x="-5.0597" y="-5.6304" z="-6.9885" />
+                            <maxvalue x="5.0597" y="5.6304" z="6.9885" />
+                        </Property>
+                        <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                            <maxvalue content="1817.01" />
+                        </Property>
+                    </Properties>
+                    <Camera type="PerspectiveCamera">
+                        <lookFrom x="14.013855" y="-11.935959" z="8.998711" />
+                        <lookTo x="0" y="0" z="0" />
+                        <lookUp x="-0.27446264" y="-0.798642" z="-0.5355756" />
+                        <near content="0.0181701" />
+                        <far content="181.701" />
+                        <aspectRatio content="1" />
+                        <fov content="30" />
+                    </Camera>
+                </Property>
+                <Property type="org.inviwo.SimpleLightingProperty" identifier="lighting">
+                    <Properties>
+                        <Property type="org.inviwo.FloatVec3Property" identifier="lightPosition">
+                            <minvalue x="0" y="0" z="0" />
+                            <maxvalue x="1" y="1" z="1" />
+                            <value x="-2.1760373e-08" y="0.4978193" z="0.5579163" />
+                        </Property>
+                        <Property type="org.inviwo.FloatVec3Property" identifier="lightColorAmbient">
+                            <value x="0.93333334" y="0.93333334" z="0.93333334" />
+                        </Property>
+                        <Property type="org.inviwo.FloatVec3Property" identifier="lightColorDiffuse">
+                            <value x="0.49803922" y="0.49803922" z="0.49803922" />
+                        </Property>
+                        <Property type="org.inviwo.FloatProperty" identifier="materialShininess">
+                            <value content="170" />
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.BoolCompositeProperty" identifier="enabled">
+                    <Properties>
+                        <Property type="org.inviwo.IntProperty" identifier="interval">
+                            <value content="130" />
+                        </Property>
+                    </Properties>
+                    <collapsed content="0" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="100" y="400" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.CSVSource" identifier="CSVSource" displayName="CSV Source">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.FileProperty" identifier="inputFile_">
+                    <absolutePath content="C:/devInwivo/inviwo/modules/volume/data/boron.csv" />
+                    <workspaceRelativePath content="../../../data/boron.csv" />
+                    <ivwdataRelativePath content="../modules/volume/data/boron.csv" />
+                    <selectedExtension>
+                        <extension content="*" />
+                        <description content="All Files" />
+                    </selectedExtension>
+                    <acceptMode content="0" />
+                    <fileMode content="0" />
+                </Property>
+                <Property type="org.inviwo.ColumnMetaDataListProperty" identifier="columns">
+                    <maxNumberOfElements content="0" />
+                    <displayName content="Column MetaData" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <OwnedPropertyIdentifiers>
+                        <PropertyIdentifier content="column1" />
+                        <PropertyIdentifier content="column2" />
+                        <PropertyIdentifier content="column3" />
+                        <PropertyIdentifier content="column4" />
+                        <PropertyIdentifier content="column5" />
+                    </OwnedPropertyIdentifiers>
+                    <Properties>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column1">
+                            <displayName content="index" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column2">
+                            <displayName content="atomid" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column3">
+                            <displayName content="x" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                    <value content="1" />
+                                </Property>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <value x="-2.53" y="2.53" />
+                                </Property>
+                                <Property type="org.inviwo.StringProperty" identifier="unit">
+                                    <value content="Å" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column4">
+                            <displayName content="y" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                    <value content="1" />
+                                </Property>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <value x="-2.8125" y="2.8125" />
+                                </Property>
+                                <Property type="org.inviwo.StringProperty" identifier="unit">
+                                    <value content="Å" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column5">
+                            <displayName content="z" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties>
+                                <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                    <value content="1" />
+                                </Property>
+                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                    <value x="-3.49425006" y="3.49425" />
+                                </Property>
+                                <Property type="org.inviwo.StringProperty" identifier="unit">
+                                    <value content="Å" />
+                                </Property>
+                            </Properties>
+                            <collapsed content="0" />
+                        </Property>
+                    </Properties>
+                    <collapsed content="0" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="300" y="25" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.VolumeSource" identifier="VolumeSource" displayName="Volume Source">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.FileProperty" identifier="filename">
+                    <absolutePath content="C:/devInwivo/inviwo/data/volumes/boron.dat" />
+                    <workspaceRelativePath content="../../../../../data/volumes/boron.dat" />
+                    <ivwdataRelativePath content="volumes/boron.dat" />
+                    <selectedExtension>
+                        <extension content="dat" />
+                        <description content="Inviwo dat file format" />
+                    </selectedExtension>
+                    <acceptMode content="0" />
+                    <fileMode content="0" />
+                </Property>
+                <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
+                    <selectedIdentifier content="Inviwo dat file format (*.dat)" />
+                </Property>
+                <Property type="org.inviwo.SequenceTimerProperty" identifier="Sequence">
+                    <visible content="0" />
+                    <Properties>
+                        <Property type="org.inviwo.Size_tProperty" identifier="selectedSequenceIndex">
+                            <displayName content="Sequence Index" />
+                            <semantics semantics="Default" />
+                            <usageMode content="0" />
+                            <visible content="0" />
+                            <readonly content="0" />
+                            <minConstraint content="0" />
+                            <maxConstraint content="0" />
+                            <minvalue content="1" />
+                            <maxvalue content="1" />
+                            <increment content="1" />
+                            <value content="1" />
+                        </Property>
+                    </Properties>
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="125" y="25" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.CubeProxyGeometry" identifier="CubeProxyGeometry" displayName="Cube Proxy Geometry">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.IntMinMaxProperty" identifier="clipX">
+                    <displayName content="Clip X Slices" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <range x="0" y="149" />
+                    <increment content="1" />
+                    <minSeparation content="1" />
+                    <value x="0" y="149" />
+                </Property>
+                <Property type="org.inviwo.IntMinMaxProperty" identifier="clipY">
+                    <displayName content="Clip Y Slices" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <range x="0" y="149" />
+                    <increment content="1" />
+                    <minSeparation content="1" />
+                    <value x="0" y="149" />
+                </Property>
+                <Property type="org.inviwo.IntMinMaxProperty" identifier="clipZ">
+                    <displayName content="Clip Z Slices" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <range x="0" y="149" />
+                    <increment content="1" />
+                    <minSeparation content="1" />
+                    <value x="0" y="149" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="-50" y="125" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.TransformMesh" identifier="TransformMesh" displayName="Transform Mesh">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.TransformListProperty" identifier="transformations">
+                    <Properties>
+                        <Property type="org.inviwo.ListProperty" identifier="internalTransforms">
+                            <maxNumberOfElements content="0" />
+                            <OwnedPropertyIdentifiers>
+                                <PropertyIdentifier content="scaling" />
+                            </OwnedPropertyIdentifiers>
+                            <Properties>
+                                <Property type="org.inviwo.trafo.ScaleProperty" identifier="scaling">
+                                    <displayName content="Scaling" />
+                                    <semantics semantics="Default" />
+                                    <usageMode content="1" />
+                                    <visible content="1" />
+                                    <readonly content="0" />
+                                    <Properties>
+                                        <Property type="org.inviwo.FloatVec3Property" identifier="scale">
+                                            <semantics semantics="SpinBox" />
+                                            <minvalue x="0" y="0" z="0" />
+                                            <maxvalue x="10" y="10" z="10" />
+                                            <increment x="1" y="1" z="1" />
+                                        </Property>
+                                    </Properties>
+                                    <collapsed content="0" />
+                                </Property>
+                            </Properties>
+                        </Property>
+                    </Properties>
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="-50" y="200" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.VolumeVoronoiSegmentation" identifier="VolumeVoronoiSegmentation" displayName="Volume Voronoi Segmentation">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="iCol">
+                    <displayName content="Segment Index Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="atomid" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="xCol">
+                    <displayName content="X Coordinate Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="x" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="yCol">
+                    <displayName content="Y Coordinate Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="y" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="zCol">
+                    <displayName content="Z Coordinate Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="z" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="wCol">
+                    <displayName content="Weight Column" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="none" />
+                            <name content="None" />
+                            <value content="-1" />
+                        </option>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="atomid" />
+                            <name content="atomid" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="x" />
+                            <name content="x" />
+                            <value content="2" />
+                        </option>
+                        <option>
+                            <id content="y" />
+                            <name content="y" />
+                            <value content="3" />
+                        </option>
+                        <option>
+                            <id content="z" />
+                            <name content="z" />
+                            <value content="4" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="none" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="250" y="100" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                    <Properties>
+                        <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
+                            <readonly content="1" />
+                            <value x="523" y="750" />
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.IntVec2Property" identifier="position">
+                    <value x="1141" y="518" />
+                </Property>
+                <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                    <displayName content="Color Layer ID" />
+                    <semantics semantics="Default" />
+                    <usageMode content="0" />
+                    <visible content="0" />
+                    <readonly content="0" />
+                    <minConstraint content="0" />
+                    <maxConstraint content="0" />
+                    <minvalue content="0" />
+                    <maxvalue content="0" />
+                    <increment content="1" />
+                    <value content="0" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="100" y="550" />
+                    <visibility content="1" />
+                    <selection content="1" />
+                </MetaDataItem>
+                <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                    <position x="1141" y="518" />
+                    <dimensions x="400" y="400" />
+                    <visibility content="1" />
+                    <fullScreen content="0" />
+                    <onTop content="1" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.EntryExitPoints" identifier="EntryExitPoints" displayName="Entry Exit Points">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.CameraProperty" identifier="camera">
+                    <Properties>
+                        <Property type="org.inviwo.FloatRefProperty" identifier="aspectRatio">
+                            <increment content="0.1" />
+                        </Property>
+                        <Property type="org.inviwo.FloatRefProperty" identifier="fov">
+                            <usageMode content="0" />
+                            <minvalue content="30" />
+                            <maxvalue content="360" />
+                        </Property>
+                    </Properties>
+                    <Camera type="PerspectiveCamera">
+                        <lookFrom x="14.013855" y="-11.935959" z="8.998711" />
+                        <lookTo x="0" y="0" z="0" />
+                        <lookUp x="-0.27446264" y="-0.798642" z="-0.5355756" />
+                        <near content="0.0181701" />
+                        <far content="181.701" />
+                        <aspectRatio content="1" />
+                        <fov content="30" />
+                    </Camera>
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="-50" y="275" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.Background" identifier="Background" displayName="Background">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.FloatVec4Property" identifier="bgColor1">
+                    <semantics semantics="Color" />
+                    <value x="0.3137255" y="0.3137255" z="0.3137255" w="1" />
+                </Property>
+                <Property type="org.inviwo.FloatVec4Property" identifier="bgColor2">
+                    <semantics semantics="Color" />
+                    <value x="0.6" y="0.6" z="0.6" w="1" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="100" y="475" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.CSVSource" identifier="CSVSource2" displayName="CSV Source">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.FileProperty" identifier="inputFile_">
+                    <absolutePath content="C:/devInwivo/inviwo/modules/volume/data/regionmap.csv" />
+                    <workspaceRelativePath content="../../../data/regionmap.csv" />
+                    <ivwdataRelativePath content="../modules/volume/data/regionmap.csv" />
+                    <selectedExtension>
+                        <extension content="*" />
+                        <description content="All Files" />
+                    </selectedExtension>
+                    <acceptMode content="0" />
+                    <fileMode content="0" />
+                </Property>
+                <Property type="org.inviwo.StringProperty" identifier="delimiters">
+                    <value content=",;" />
+                </Property>
+                <Property type="org.inviwo.ColumnMetaDataListProperty" identifier="columns">
+                    <maxNumberOfElements content="0" />
+                    <displayName content="Column MetaData" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <OwnedPropertyIdentifiers>
+                        <PropertyIdentifier content="column1" />
+                        <PropertyIdentifier content="column2" />
+                        <PropertyIdentifier content="column3" />
+                    </OwnedPropertyIdentifiers>
+                    <Properties>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column1">
+                            <displayName content="index" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column2">
+                            <displayName content="pre" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="1" />
+                        </Property>
+                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column3">
+                            <displayName content="new" />
+                            <semantics semantics="Default" />
+                            <usageMode content="1" />
+                            <visible content="1" />
+                            <readonly content="0" />
+                            <Properties />
+                            <collapsed content="1" />
+                        </Property>
+                    </Properties>
+                    <collapsed content="0" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="275" y="200" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.VolumeRegionMap" identifier="VolumeRegionMap2" displayName="Volume Region Map">
+            <PortGroups />
+            <Properties>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="from">
+                    <displayName content="From" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="pre" />
+                            <name content="pre" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="new" />
+                            <name content="new" />
+                            <value content="2" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="pre" />
+                </Property>
+                <Property type="org.inviwo.DataFrameColumnProperty" identifier="to">
+                    <displayName content="to" />
+                    <semantics semantics="Default" />
+                    <usageMode content="1" />
+                    <visible content="1" />
+                    <readonly content="0" />
+                    <options>
+                        <option>
+                            <id content="index" />
+                            <name content="index" />
+                            <value content="0" />
+                        </option>
+                        <option>
+                            <id content="pre" />
+                            <name content="pre" />
+                            <value content="1" />
+                        </option>
+                        <option>
+                            <id content="new" />
+                            <name content="new" />
+                            <value content="2" />
+                        </option>
+                    </options>
+                    <selectedIdentifier content="new" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="250" y="275" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+    </Processors>
+    <Connections>
+        <Connection src="VolumeSource.data" dst="CubeProxyGeometry.volume" />
+        <Connection src="CSVSource.data" dst="VolumeVoronoiSegmentation.seedPoints" />
+        <Connection src="VolumeSource.data" dst="VolumeVoronoiSegmentation.inputVolume" />
+        <Connection src="EntryExitPoints.entry" dst="AtlasVolumeRaycaster.entry" />
+        <Connection src="EntryExitPoints.exit" dst="AtlasVolumeRaycaster.exit" />
+        <Connection src="AtlasVolumeRaycaster.outport" dst="Background.inport" />
+        <Connection src="CubeProxyGeometry.proxyGeometry" dst="TransformMesh.inport_" />
+        <Connection src="TransformMesh.outport_" dst="EntryExitPoints.geometry" />
+        <Connection src="Background.outport" dst="Canvas.inport" />
+        <Connection src="VolumeSource.data" dst="AtlasVolumeRaycaster.volume" />
+        <Connection src="VolumeVoronoiSegmentation.outport" dst="VolumeRegionMap2.inport" />
+        <Connection src="CSVSource2.data" dst="VolumeRegionMap2.mapping_indexes" />
+        <Connection src="VolumeRegionMap2.outport" dst="AtlasVolumeRaycaster.atlas" />
+    </Connections>
+    <PropertyLinks>
+        <PropertyLink src="EntryExitPoints.camera" dst="AtlasVolumeRaycaster.camera" />
+        <PropertyLink src="AtlasVolumeRaycaster.camera" dst="EntryExitPoints.camera" />
+    </PropertyLinks>
+</InviwoWorkspace>

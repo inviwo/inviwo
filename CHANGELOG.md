@@ -17,6 +17,9 @@ for (auto v : col) {
 The welcome widget now has an icon grid view with previews of the first canvas in each network. 
 The workspace and processor search fields gained new features. One can for example search for all networks with a `Volume Raycaster` processor that was created by `Martin` like this: `processors:\"Volume Raycaster\" author:Martin"`. The tooltip for each search field has more details. 
 
+## 2022-01-31 Volume Region Map
+The processor Volume Region Map has been added.
+
 ## 2021-12-09 DataFrame Column Units
 The `DataFrame` `Column` now has a `unit` member and many processors (`PCP`, `ScatterPlot`, `DataFrameTable`), operating on DataFrames will now also display the column units if available. The `ColumnMetaDataProperty` used in the `CSVSource` processor got support for specifying units. 
 
