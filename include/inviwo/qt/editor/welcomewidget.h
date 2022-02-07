@@ -32,6 +32,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QModelIndex>
 #include <QSplitter>
 #include <QStringList>
 #include <QTextEdit>
@@ -41,12 +42,17 @@ class QTabWidget;
 class QToolButton;
 class QLineEdit;
 class QTextEdit;
+class QScrollArea;
+class QSortFilterProxyModel;
 
 namespace inviwo {
 
-class FileTreeWidget;
+class WorkspaceTreeModel;
+class WorkspaceTreeView;
+class WorkspaceGridView;
 class InviwoApplication;
 class ChangeLog;
+class WorkspaceFilter;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
 #include <warn/push>
@@ -59,7 +65,6 @@ public:
 
     void updateRecentWorkspaces(const QStringList& list);
     void enableRestoreButton(bool hasRestoreWorkspace);
-    void setFilterFocus();
 
 signals:
     void loadWorkspace(const QString& filename, bool isExample);
@@ -69,14 +74,27 @@ signals:
 
 protected:
     virtual void showEvent(QShowEvent* event) override;
+
     virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
-    void updateDetails(const QString& filename);
+    WelcomeWidget& setSetting(const QString& key, const QVariant& value);
+    QVariant getSetting(const QString& key, const QVariant& defaultValue = QVariant()) const;
+
+    void updateDetails(const QModelIndex& index);
+    static QModelIndex findFirstLeaf(QAbstractItemModel* model, QModelIndex parent = QModelIndex());
+
+    void selectFirstLeaf();
+
+    void expandTreeView() const;
 
     InviwoApplication* app_;
 
-    FileTreeWidget* filetree_;
+    WorkspaceTreeModel* model_;
+    WorkspaceFilter* filterModel_;
+    WorkspaceTreeView* workspaceTreeView_;
+    WorkspaceGridView* workspaceGridView_;
+
     QLineEdit* filterLineEdit_;
     QTextEdit* details_;
     ChangeLog* changelog_;

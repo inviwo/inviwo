@@ -164,6 +164,8 @@ public:
     Document(Document&&) = default;
     Document& operator=(Document&&) = default;
 
+    bool empty() const { return root_->children_.empty(); };
+
     DocumentHandle handle() const;
 
     DocumentHandle get(const std::vector<PathComponent>& path);

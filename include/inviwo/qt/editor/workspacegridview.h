@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -28,48 +29,53 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/io/datawriter.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <vector>
-#include <string_view>
-#include <optional>
-#include <string>
+#include <warn/push>
+#include <warn/ignore/all>
+
+#include <QtGlobal>
+#include <QTreeView>
+#include <QAbstractProxyModel>
+
+#include <warn/pop>
+
+class QItemSelectionModel;
+class QAbstractItemModel;
+class QResizeEvent;
 
 namespace inviwo {
 
-class ProcessorNetwork;
+class InviwoApplication;
+class TreeItem;
+class WorkspaceTreeModel;
+class ChunkProxyModel;
 
-/**
- * \brief A base class for a Processor that might export a file. For example a CanvasProcessor
- */
-class IVW_CORE_API Exporter {
+class IVW_QTEDITOR_API WorkspaceGridView : public QTreeView {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    virtual ~Exporter() = default;
+    explicit WorkspaceGridView(QAbstractItemModel* model, QWidget* parent = nullptr);
+    virtual ~WorkspaceGridView() = default;
+    const QAbstractProxyModel& proxy() const;
 
-    /**
-     * Export some content to `path/name.ext` where ext is the first ext on candidateExtensions that
-     * is supported.
-     * @returns a string to the path of the exported file, or std::nullopt if no matching
-     * extensions were found
-     */
-    virtual std::optional<std::string> exportFile(
-        std::string_view path, std::string_view name,
-        const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const = 0;
+#if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
+    // QTreeView::expandRecursively() was introduced in Qt 5.13
+    // see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
+    void expandRecursively(const QModelIndex& index);
+#endif
+    void collapseRecursively(const QModelIndex& index);
+
+signals:
+    void loadFile(QString filename, bool isExample);
+    void selectFile(const QModelIndex& index);
+
+protected:
+    virtual void resizeEvent(QResizeEvent* event) override;
+
+    int itemSize_;
+    ChunkProxyModel* proxy_;
 };
-
-namespace util {
-
-/**
- * Exports the data from all export processors in \p network into the directory \p dir using a \p
- * nameTemplate and candidate extensions.
- * @return names of exported files
- */
-IVW_CORE_API std::vector<std::string> exportAllFiles(
-    ProcessorNetwork& network, std::string_view dir, std::string_view nameTemplate,
-    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite);
-
-}  // namespace util
-
 }  // namespace inviwo

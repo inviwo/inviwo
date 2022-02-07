@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/algorithm/searchdsl.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -94,7 +95,7 @@ public:
     void focusSearch();
     void addSelectedProcessor();
     void addProcessor(QString className);
-    void addProcessorsToTree(ProcessorFactoryObject* item = nullptr);
+    void addProcessorsToTree();
     void recordProcessorUse(const std::string& id);
 
     std::unique_ptr<Processor> createProcessor(QString cid);
@@ -102,7 +103,6 @@ public:
     Grouping getGrouping() const;
 
 protected:
-    bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
     const QIcon* getCodeStateIcon(CodeState) const;
 
 private:
@@ -120,6 +120,7 @@ private:
     ProcessorTree* processorTree_;
     QComboBox* listView_;
     QLineEdit* lineEdit_;
+    SearchDSL<ProcessorFactoryObject, InviwoModule> dsl_;
 
     QPoint dragStartPosition_;
 

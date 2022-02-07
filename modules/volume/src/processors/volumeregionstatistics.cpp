@@ -377,13 +377,14 @@ void VolumeRegionStatistics::process() {
     auto calc = [volume = volume_.getData(), atlas = atlas_.getData(),
                  space = space_.getSelectedValue()]() {
         if (volume->getDimensions() != atlas->getDimensions()) {
-            throw Exception(IVW_CONTEXT, "Unexpected dimension missmatch. Volume: {}, Atlas: {}",
+            throw Exception(IVW_CONTEXT_CUSTOM("VolumeRegionStatistics::process"),
+                            "Unexpected dimension missmatch. Volume: {}, Atlas: {}",
                             volume->getDimensions(), atlas->getDimensions());
         }
         if (atlas->getDataFormat()->getComponents() != 1 ||
             atlas->getDataFormat()->getNumericType() != NumericType::UnsignedInteger) {
             throw Exception(
-                IVW_CONTEXT,
+                IVW_CONTEXT_CUSTOM("VolumeRegionStatistics::process"),
                 "Unexpected atlas format found, expected an unsigned integer type. Got: {}",
                 atlas->getDataFormat()->getString());
         }

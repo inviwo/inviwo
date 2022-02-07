@@ -102,15 +102,16 @@ Document::PathComponent::PathComponent(int index)
     }} {}
 
 Document::PathComponent::PathComponent(std::string_view name)
-    : strrep_(name), matcher_{[name](const ElemVec& elements) -> ElemVec::const_iterator {
+    : strrep_(name)
+    , matcher_{[name = std::string(name)](const ElemVec& elements) -> ElemVec::const_iterator {
         return std::find_if(elements.begin(), elements.end(),
-                            [name](const auto& e) { return e->isNode() && e->name() == name; });
+                            [&](const auto& e) { return e->isNode() && e->name() == name; });
     }} {}
 
 Document::PathComponent::PathComponent(
     const std::unordered_map<std::string, std::string>& attributes)
     : strrep_("attr"), matcher_{[attributes](const ElemVec& elements) -> ElemVec::const_iterator {
-        return std::find_if(elements.begin(), elements.end(), [attributes](const auto& e) {
+        return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
             if (e->isText()) return false;
             for (auto& attr : attributes) {
                 auto it = e->attributes().find(attr.first);
@@ -124,8 +125,9 @@ Document::PathComponent::PathComponent(
 Document::PathComponent::PathComponent(
     std::string_view name, const std::unordered_map<std::string, std::string>& attributes)
     : strrep_("attr")
-    , matcher_{[name, attributes](const ElemVec& elements) -> ElemVec::const_iterator {
-        return std::find_if(elements.begin(), elements.end(), [name, attributes](const auto& e) {
+    , matcher_{[name = std::string(name),
+                attributes](const ElemVec& elements) -> ElemVec::const_iterator {
+        return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
             if (e->isText()) return false;
             if (e->name() != name) return false;
             for (auto& attr : attributes) {
@@ -190,7 +192,14 @@ Document::DocumentHandle Document::DocumentHandle::append(
 
 Document::DocumentHandle Document::DocumentHandle::insert(PathComponent pos, Document doc) {
     auto iter = pos(elem_->children_);
-    auto it = elem_->children_.insert(iter, std::move(doc.root_));
+
+    if (doc.empty()) {
+        return {doc_, nullptr};
+    }
+
+    auto it = elem_->children_.insert(iter, std::move_iterator(doc.root_->children_.begin()),
+                                      std::move_iterator(doc.root_->children_.end()));
+
     return DocumentHandle(doc_, it->get());
 }
 Document::DocumentHandle Document::DocumentHandle::append(Document doc) {

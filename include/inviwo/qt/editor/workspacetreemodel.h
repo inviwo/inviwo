@@ -29,40 +29,72 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/qt/editor/workspacemodelroles.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-
+#include <QMetaType>
 #include <QString>
 #include <QVariant>
-#include <QIcon>
+#include <QImage>
 #include <QAbstractItemModel>
-
 #include <warn/pop>
 
 #include <memory>
+#include <mutex>
 
 namespace inviwo {
 
 class TreeItem;
+class InviwoApplication;
 
-class IVW_QTEDITOR_API FileTreeModel : public QAbstractItemModel {
+struct IVW_QTEDITOR_API WorkspaceInfo {
+    QString title;
+    QString author;
+    QString tags;
+    QString categories;
+    QString description;
+    QImage image;
+    QStringList processors;
+};
+
+}  // namespace inviwo
+Q_DECLARE_METATYPE(inviwo::WorkspaceInfo);  // To be able to use queued Qt connect
+
+namespace inviwo {
+
+class IVW_QTEDITOR_API WorkspaceInfoLoader
+    : public QObject,
+      public std::enable_shared_from_this<WorkspaceInfoLoader> {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    enum ItemRoles { FileName = Qt::UserRole + 100, Path, Type, ExampleWorkspace };
+    WorkspaceInfoLoader() = default;
+    WorkspaceInfoLoader(std::string_view filename, InviwoApplication* app)
+        : filename_{filename}, app_{app} {}
 
-    enum class ListElemType { File = 1, Section, SubSection, None };
+    void operator()();
+    void submit();
 
-    friend bool operator==(const QVariant&, ListElemType);
-    friend bool operator==(ListElemType, const QVariant&);
-    friend bool operator!=(const QVariant&, ListElemType);
-    friend bool operator!=(ListElemType, const QVariant&);
+signals:
+    void workspaceInfoLoaded(WorkspaceInfo info);
 
-    explicit FileTreeModel(QObject* parent = nullptr);
-    virtual ~FileTreeModel() = default;
+private:
+    std::string filename_;
+    InviwoApplication* app_;
+    std::once_flag flag_;
+};
+
+class IVW_QTEDITOR_API WorkspaceTreeModel : public QAbstractItemModel {
+public:
+    using Role = WorkspaceModelRole;
+    using Type = WorkspaceModelType;
+
+    explicit WorkspaceTreeModel(InviwoApplication* app, QObject* parent = nullptr);
+    virtual ~WorkspaceTreeModel();
 
     virtual QModelIndex index(int row, int column,
                               const QModelIndex& parent = QModelIndex()) const override;
@@ -74,67 +106,28 @@ public:
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-    virtual bool insertRows(int position, int rows,
-                            const QModelIndex& parent = QModelIndex()) override;
-    virtual bool removeRows(int position, int rows,
-                            const QModelIndex& parent = QModelIndex()) override;
+    void updateRecentWorkspaces(const QStringList& recentFiles);
+    void updateExampleEntries();
+    void updateRegressionTestEntries();
 
-    void updateCategory(TreeItem* item, std::vector<std::unique_ptr<TreeItem>> children);
-
-    void addEntry(TreeItem* root, std::unique_ptr<TreeItem> child);
-    bool removeEntry(TreeItem* node);
-    bool removeChildren(TreeItem* root);
-    QModelIndex getIndex(TreeItem* item, int column = 0) const;
+    QModelIndex getCategoryIndex(std::string_view category);
+    static constexpr std::string_view recent = "Recent Workspaces";
+    static constexpr std::string_view examples = "Examples";
+    static constexpr std::string_view tests = "Regression Tests";
 
 private:
+    void updateModules(std::string_view category, ModulePath pathType, bool recursive);
+
+    QModelIndex getIndex(TreeItem* item, int column = 0) const;
+    void updateCategory(TreeItem* item, std::vector<std::unique_ptr<TreeItem>> children);
+    void addEntry(TreeItem* root, std::unique_ptr<TreeItem> child);
+
+    TreeItem* getCategory(std::string_view name) const;
+
     TreeItem* getItem(const QModelIndex& index) const;
+    InviwoApplication* app_;
 
     std::unique_ptr<TreeItem> root_;
-};
-
-class IVW_QTEDITOR_API TreeItem {
-public:
-    explicit TreeItem(TreeItem* parent = nullptr);
-    TreeItem(const QString& caption, FileTreeModel::ListElemType type, TreeItem* parent = nullptr);
-    TreeItem(const QIcon& icon, const std::string& filename, bool isExample = false,
-             TreeItem* parent = nullptr);
-    TreeItem(const TreeItem&) = delete;
-    TreeItem& operator=(const TreeItem&) = delete;
-    ~TreeItem() = default;
-
-    void addChild(std::unique_ptr<TreeItem> child);
-    void addChildren(std::vector<std::unique_ptr<TreeItem>> children);
-
-    bool insertChildren(int position, int count);
-    bool removeChildren(int position, int count);
-    void removeChildren();
-
-    TreeItem* child(int row) const;
-    int row() const;
-    int childCount() const;
-    int columnCount() const;
-    TreeItem* parent() const;
-
-    QVariant data(int column, int role) const;
-    FileTreeModel::ListElemType type() const;
-
-    void setData(const QString& caption, FileTreeModel::ListElemType type);
-    void setData(const QIcon& icon, const std::string& filename, bool isExample);
-
-    bool operator==(const TreeItem& tree) const;
-    bool operator!=(const TreeItem& tree) const;
-
-private:
-    TreeItem* parent_;
-    std::vector<std::unique_ptr<TreeItem>> childItems_;
-
-    FileTreeModel::ListElemType type_ = FileTreeModel::ListElemType::None;
-
-    QIcon icon_;
-    QString caption_;
-    QString file_;
-    QString path_;
-    bool isExample_ = false;
 };
 
 }  // namespace inviwo

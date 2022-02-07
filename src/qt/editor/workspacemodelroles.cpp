@@ -26,50 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/io/datawriter.h>
+#include <inviwo/qt/editor/workspacemodelroles.h>
 
-#include <vector>
-#include <string_view>
-#include <optional>
-#include <string>
-
-namespace inviwo {
-
-class ProcessorNetwork;
-
-/**
- * \brief A base class for a Processor that might export a file. For example a CanvasProcessor
- */
-class IVW_CORE_API Exporter {
-public:
-    virtual ~Exporter() = default;
-
-    /**
-     * Export some content to `path/name.ext` where ext is the first ext on candidateExtensions that
-     * is supported.
-     * @returns a string to the path of the exported file, or std::nullopt if no matching
-     * extensions were found
-     */
-    virtual std::optional<std::string> exportFile(
-        std::string_view path, std::string_view name,
-        const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const = 0;
-};
-
-namespace util {
-
-/**
- * Exports the data from all export processors in \p network into the directory \p dir using a \p
- * nameTemplate and candidate extensions.
- * @return names of exported files
- */
-IVW_CORE_API std::vector<std::string> exportAllFiles(
-    ProcessorNetwork& network, std::string_view dir, std::string_view nameTemplate,
-    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite);
-
-}  // namespace util
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
