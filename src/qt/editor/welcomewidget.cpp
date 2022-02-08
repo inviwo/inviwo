@@ -53,7 +53,7 @@
 
 #include <QScreen>
 #include <QTabWidget>
-#include <QToolbar>
+#include <QToolBar>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
