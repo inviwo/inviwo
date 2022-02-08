@@ -1,0 +1,110 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+#
+# Find more information at:
+# https://github.com/microsoft/msvc-code-analysis-action
+
+name: Microsoft C++ Code Analysis
+
+on:
+  push:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'        # recognized by vcpkg
+  # msvc-code-analysis-action needs this for running vcpkg from cmake without the presets...
+  VCPKG_OVERLAY_PORTS : "${{ github.workspace }}/inviwo/tools/vcpkg"
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: windows-latest
+
+    steps:
+    - name: Install Chocolatey
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        choco install doxygen.install 
+        choco install nsis
+        choco install tinytex
+        GP=`cygpath -u $GITHUB_PATH` 
+        
+        echo "/c/Program Files/doxygen/bin" >> $GP
+        echo "/c/Program Files (x86)/NSIS" >> $GP
+        echo "/c/tools/TinyTeX/bin/win32" >> $GP
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+        architecture: 'x64'
+    
+    - name: Install Python Modules 
+      shell: bash
+      run: pip3 install numpy Sphinx sphinx-rtd-theme recommonmark
+    
+    - name: Clone VCPKG
+      uses: actions/checkout@v2
+      with:
+        repository: 'microsoft/vcpkg'
+        path: 'vcpkg' # The cmake vcpkg present expects vcpkg to be next to the inviwo source folder
+            
+    - name: 'Setup NuGet Credentials'
+      shell: bash
+      run: >
+        `vcpkg fetch nuget | tail -n 1`
+        sources add
+        -source "https://nuget.pkg.github.com/inviwo/index.json"
+        -storepasswordincleartext
+        -name "GitHub"
+        -username "inviwo"
+        -password "${{ secrets.GITHUB_TOKEN }}"
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: 6.2.3
+        dir: ${{ github.workspace }}
+    
+    - name: Clone Inviwo
+      uses: actions/checkout@v2
+      with: 
+        path: inviwo
+        submodules: recursive
+        
+    - name: Configure CMake
+      shell: bash
+      run: >
+        cmake -S inviwo -B build --preset=msvc-dev-vcpkg
+        -DVCPKG_TARGET_TRIPLET=x64-windows
+        -DIVW_MODULE_HDF5=ON
+
+    - name: Setup C++ Log matchers
+      uses: Trass3r/setup-cpp@v1
+
+    - name: Build
+      timeout-minutes: 360
+      shell: bash
+      run: cmake --build build --config Release --parallel --target ALL_BUILD
+
+    - name: Initialize MSVC Code Analysis
+      uses: microsoft/msvc-code-analysis-action@04825f6d9e00f87422d6bf04e1a38b1f3ed60d99
+      # Provide a unique ID to access the sarif output path
+      id: inviwo-msvc-code-analysis
+      with:
+        cmakeBuildDirectory: build
+        ignoredTargetPaths: "inviwo/ext;inviwo/modules;inviwo/src/qt;inviwo/include/qt"
+        # Ruleset file that will determine what checks will be run
+        ruleset: NativeRecommendedRules.ruleset
+
+    # Upload SARIF file to GitHub Code Scanning Alerts
+    - name: Upload SARIF to GitHub
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: ${{ steps.run-analysis.outputs.sarif }}
+
