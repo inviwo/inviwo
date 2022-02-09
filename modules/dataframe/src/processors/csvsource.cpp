@@ -60,6 +60,7 @@ CSVSource::CSVSource(const std::string& file)
     , doublePrecision_("doublePrecision", "Double Precision", CSVReader::defaultDoublePrecision)
     , exampleRows_("exampleRows", "Example Rows", CSVReader::defaultNumberOfExampleRows, 0, 10000)
     , rowComment_("rowComment", "Comment marker", CSVReader::defaultRowComment)
+    , keepOnly_("keepOnly", "Keeping marker", CSVReader::defaultKeepOnly)
     , locale_("locale", "Locale", CSVReader::defaultLocale)
     , emptyField_("emptyField", "Missing Data Mode",
                   {{"throw", "Throw Exception", CSVReader::EmptyField::Throw},
@@ -77,14 +78,14 @@ CSVSource::CSVSource(const std::string& file)
 
     unitsInHeaders_.addProperty(unitRegexp_);
     addProperties(inputFile_, firstRowIsHeaders_, unitsInHeaders_, delimiters_, stripQuotes_,
-                  doublePrecision_, exampleRows_, rowComment_, locale_, emptyField_, reloadData_,
+                  doublePrecision_, exampleRows_, rowComment_, keepOnly_, locale_, emptyField_, reloadData_,
                   columns_);
 
     isReady_.setUpdate(
         [this]() { return !loadingFailed_ && filesystem::fileExists(inputFile_.get()); });
     for (auto&& item : util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_,
                                            firstRowIsHeaders_, unitsInHeaders_, unitRegexp_, doublePrecision_, exampleRows_,
-                             rowComment_, locale_, emptyField_)) {
+                             rowComment_, keepOnly_, locale_, emptyField_)) {
         std::invoke(&Property::onChange, item, [this]() {
             loadingFailed_ = false;
             isReady_.update();
@@ -107,7 +108,7 @@ void CSVSource::process() {
 
         if (util::any_of(util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_,
                                              firstRowIsHeaders_, unitsInHeaders_, unitRegexp_,
-                                             doublePrecision_, exampleRows_, rowComment_, locale_,
+                                             doublePrecision_, exampleRows_, rowComment_, keepOnly_, locale_,
                                              emptyField_),
                          &Property::isModified)) {
             CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
@@ -117,7 +118,8 @@ void CSVSource::process() {
                 .setHandleEmptyFields(emptyField_)
                 .setUnitsInHeaders(unitsInHeaders_)
                 .setUnitRegexp(unitRegexp_)
-                .setRowComment(rowComment_);
+                .setRowComment(rowComment_)
+                .setKeepOnly(keepOnly_);
             loadedData_ = reader.readData(inputFile_.get());
             columns_.updateForNewDataFrame(*loadedData_, overwrite);
         }
