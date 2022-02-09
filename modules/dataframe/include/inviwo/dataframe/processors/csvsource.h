@@ -81,6 +81,7 @@ private:
     BoolProperty doublePrecision_;
     IntSizeTProperty exampleRows_;
     StringProperty rowComment_;
+    StringProperty keepOnly_;
     StringProperty locale_;
     TemplateOptionProperty<CSVReader::EmptyField> emptyField_;
     ButtonProperty reloadData_;

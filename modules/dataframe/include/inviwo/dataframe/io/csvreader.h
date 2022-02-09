@@ -93,6 +93,10 @@ public:
     CSVReader& setRowComment(std::string_view comment);
     const std::string& getRowComment() const;
 
+    /** @see CSVReader::defaultKeepOnly */
+    CSVReader& setKeepOnly(std::string_view only);
+    const std::string& getKeepOnly() const;
+
     /** @see CSVReader::defaultLocale */
     CSVReader& setLocale(std::string_view loc);
     const std::string& getLocale() const;
@@ -181,6 +185,8 @@ public:
     static constexpr size_t defaultNumberOfExampleRows = 50;
     /** @see CSVReader::setRowComment */
     static constexpr std::string_view defaultRowComment = "";
+    /** @see CSVReader::setKeepOnly */
+    static constexpr std::string_view defaultKeepOnly = "";
     /** @see CSVReader::setLocale */
     static constexpr std::string_view defaultLocale = "C";
     /** @see CSVReader::setHandleEmptyFields */
@@ -209,6 +215,7 @@ private:
     bool doublePrecision_;
     size_t exampleRows_;
     std::string rowComment_;
+    std::string keepOnly_;
     std::string locale_;
     EmptyField emptyField_;
 };

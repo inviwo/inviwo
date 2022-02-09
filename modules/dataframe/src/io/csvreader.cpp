@@ -60,6 +60,7 @@ CSVReader::CSVReader(std::string_view delim, bool hasHeader, bool doublePrecisio
     , doublePrecision_(doublePrecision)
     , exampleRows_{defaultNumberOfExampleRows}
     , rowComment_{defaultRowComment}
+    , keepOnly_{defaultKeepOnly}
     , locale_{defaultLocale}
     , emptyField_{defaultEmptyField} {
     addExtension(FileExtension("csv", "Comma Separated Values"));
@@ -115,6 +116,12 @@ CSVReader& CSVReader::setRowComment(std::string_view comment) {
     return *this;
 }
 const std::string& CSVReader::getRowComment() const { return rowComment_; }
+
+CSVReader& CSVReader::setKeepOnly(std::string_view only) {
+    keepOnly_ = only;
+    return *this;
+}
+const std::string& CSVReader::getKeepOnly() const { return keepOnly_; }
 
 CSVReader& CSVReader::setLocale(std::string_view loc) {
     locale_ = loc;
@@ -518,9 +525,20 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
         rows.end());
 
     // Ignore comment lines
-    if (! rowComment_.empty()) {
+    if (!rowComment_.empty()) {
         rows.erase(std::remove_if(rows.begin(), rows.end(),
-                                  [this](const auto& row) { return row.first.substr(0, rowComment_.size()) == rowComment_; }),
+                                  [this](const auto& row) {
+                                      return row.first.substr(0, rowComment_.size()) == rowComment_;
+                                  }),
+                   rows.end());
+    }
+
+    // Ignore non-kept lines
+    if (!keepOnly_.empty()) {
+        rows.erase(std::remove_if(rows.begin(), rows.end(),
+                                  [this](const auto& row) {
+                                      return !(row.first.substr(0, keepOnly_.size()) == keepOnly_);
+                                  }),
                    rows.end());
     }
 
