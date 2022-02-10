@@ -78,13 +78,14 @@ CSVSource::CSVSource(const std::string& file)
 
     unitsInHeaders_.addProperty(unitRegexp_);
     addProperties(inputFile_, firstRowIsHeaders_, unitsInHeaders_, delimiters_, stripQuotes_,
-                  doublePrecision_, exampleRows_, rowComment_, keepOnly_, locale_, emptyField_, reloadData_,
-                  columns_);
+                  doublePrecision_, exampleRows_, rowComment_, keepOnly_, locale_, emptyField_,
+                  reloadData_, columns_);
 
     isReady_.setUpdate(
         [this]() { return !loadingFailed_ && filesystem::fileExists(inputFile_.get()); });
-    for (auto&& item : util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_,
-                                           firstRowIsHeaders_, unitsInHeaders_, unitRegexp_, doublePrecision_, exampleRows_,
+    for (auto&& item :
+         util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_,
+                             unitsInHeaders_, unitRegexp_, doublePrecision_, exampleRows_,
                              rowComment_, keepOnly_, locale_, emptyField_)) {
         std::invoke(&Property::onChange, item, [this]() {
             loadingFailed_ = false;
@@ -108,8 +109,8 @@ void CSVSource::process() {
 
         if (util::any_of(util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_,
                                              firstRowIsHeaders_, unitsInHeaders_, unitRegexp_,
-                                             doublePrecision_, exampleRows_, rowComment_, keepOnly_, locale_,
-                                             emptyField_),
+                                             doublePrecision_, exampleRows_, rowComment_, keepOnly_,
+                                             locale_, emptyField_),
                          &Property::isModified)) {
             CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
             reader.setLocale(locale_)
