@@ -340,7 +340,7 @@ int WorkspaceTreeModel::rowCount(const QModelIndex& parent) const {
     return parentItem ? parentItem->childCount() : 0;
 }
 
-int WorkspaceTreeModel::columnCount(const QModelIndex& parent) const {
+int WorkspaceTreeModel::columnCount(const QModelIndex&) const {
     return root_->columnCount();
 }
 

@@ -46,6 +46,7 @@
 #include <locale>
 
 #include <fmt/format.h>
+#include <fmt/args.h>
 
 namespace inviwo {
 
