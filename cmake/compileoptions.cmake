@@ -79,8 +79,7 @@ function(ivw_define_standard_properties)
             if(NOT IVW_USE_OPENMP)
                 list(APPEND comp_opts "/permissive-")
             endif()
-            list(APPEND comp_opts "/std:c++latest")
-            #list(APPEND comp_opts "/diagnostics:caret") not supporeted by cmake yet... https://developercommunity.visualstudio.com/content/problem/9385/cmakeliststxt-cannot-override-diagnosticsclassic-d.html
+            list(APPEND comp_opts "/utf-8")
         endif()
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
