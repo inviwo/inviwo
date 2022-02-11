@@ -49,7 +49,12 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
 endif()
 
 function(ivw_define_standard_properties)
-    foreach(target ${ARGN})
+    set(options "QT")
+    set(oneValueArgs "")
+    set(multiValueArgs "")
+    cmake_parse_arguments(PARSE_ARGV 0 ARG "${options}" "${oneValueArgs}" "${multiValueArgs}")
+
+    foreach(target ${ARG_UNPARSED_ARGUMENTS})
         get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
         # Specify warnings
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
@@ -80,6 +85,12 @@ function(ivw_define_standard_properties)
                 list(APPEND comp_opts "/permissive-")
             endif()
             list(APPEND comp_opts "/utf-8")
+            if(ARG_QT)
+                # Qt adds uint ushort to the global namespace which creatas many of these warnings.
+                list(APPEND comp_opts "/wd4459") # declaration of 'identifier' hides global declaration
+            endif()
+
+
         endif()
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")

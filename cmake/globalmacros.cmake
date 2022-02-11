@@ -472,7 +472,7 @@ endfunction()
 # This it called from the inviwo module CMakeLists.txt 
 # that is included from ivw_register_modules. 
 function(ivw_create_module)
-    set(options "NO_PCH")
+    set(options "NO_PCH" "QT")
     set(oneValueArgs "VERSION" "GROUP")
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -481,6 +481,12 @@ function(ivw_create_module)
         set(LEGACY false)
     else()
         set(LEGACY true)
+    endif()
+
+    if(ARG_QT)
+        set(qt "QT")
+    else()
+        set(qt "")
     endif()
 
     string(TOLOWER ${PROJECT_NAME} l_project_name)
@@ -522,7 +528,7 @@ function(ivw_create_module)
 
     # Define standard properties
     ivw_define_standard_definitions(${${mod}_opt} ${${mod}_target})
-    ivw_define_standard_properties(${${mod}_target})
+    ivw_define_standard_properties(${${mod}_target} ${qt})
 
     # Add dependencies from depends.cmake and InviwoCore
     ivw_mod_name_to_alias(ivw_dep_targets ${${mod}_dependencies})
