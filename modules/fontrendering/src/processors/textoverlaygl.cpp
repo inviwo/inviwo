@@ -46,7 +46,10 @@
 #include <locale>
 
 #include <fmt/format.h>
+
+#if __has_include(<fmt/args.h>) // New in fmt v8
 #include <fmt/args.h>
+#endif
 
 namespace inviwo {
 
