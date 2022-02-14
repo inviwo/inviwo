@@ -89,11 +89,17 @@ public:
     CSVReader& setNumberOfExampleRows(size_t rows);
     size_t getNumberOfExamplesRows() const;
 
-    /** @see CSVReader::defaultRowComment */
+    /** 
+    * sets the string that indicates that a row should be commented/removed
+    * @see CSVReader::defaultRowComment 
+    */
     CSVReader& setRowComment(std::string_view comment);
     const std::string& getRowComment() const;
 
-    /** @see CSVReader::defaultKeepOnly */
+    /** 
+    * sets the string that indicates that a row should be kept
+    * @see CSVReader::defaultKeepOnly 
+    */
     CSVReader& setKeepOnly(std::string_view only);
     const std::string& getKeepOnly() const;
 
