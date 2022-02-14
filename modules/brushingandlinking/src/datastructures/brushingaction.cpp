@@ -38,12 +38,7 @@ namespace inviwo {
 const BrushingTarget BrushingTarget::Row("row");
 const BrushingTarget BrushingTarget::Column("column");
 
-std::ostream& operator<<(std::ostream& os, BrushingTarget bt) {
-    os << bt.getString();
-    return os;
-}
-
-inline std::string_view BrushingTarget::findOrAdd(std::string_view target) {
+std::string_view BrushingTarget::findOrAdd(std::string_view target) {
     static std::mutex mutex;
     static std::vector<std::unique_ptr<const std::string>> targets{};
     std::scoped_lock lock{mutex};

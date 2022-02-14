@@ -28,406 +28,50 @@
  #################################################################################
 
 include(CMakeParseArguments)
+include(CMakeDependentOption)
 
-if(${MSVC})
-    option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" OFF)
-    if(${IVW_DOXYGEN_PROJECT})
-        message(STATUS
-            "In Visual Studio the doxygen project will rerun every time you run\n"
-            "\"ALL_BUILD\" even if it is up to date. Hence, you propbably want\n"
-            "to disable generation of doxygen on each build this can be done\n"
-            "by right clicking on the docs folder in the \"Solution Explorer\" and\n"
-            "select \"Unload Project\".")
-    endif()
+option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" OFF)
+cmake_dependent_option(IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD
+                       "Open the generated doxygen HTML when build is done"
+                       OFF
+                       "IVW_DOXYGEN_PROJECT"
+                       OFF)
+
+if(IVW_DOXYGEN_PROJECT)
+    # sets: DOXYGEN_FOUND, DOXYGEN_EXECUTABLE, DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
+    find_package(Doxygen REQUIRED)
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
 else()
-    find_package(Doxygen QUIET)
-    option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" ${DOXYGEN_FOUND})
-endif()
-
-option(IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD "Open the generated doxygen HTML when build is done" OFF)
-
-function(ivw_get_glsl_dirs retval)
-    set(glslpaths "")
-    foreach(mod IN LISTS ARGN)
-        if(${${mod}_opt})
-            if(EXISTS "${${mod}_path}/glsl")
-                list(APPEND glslpaths "\"${${mod}_path}/glsl\"")
-            endif()
-            ivw_mod_name_to_mod_dep(depmods ${${mod}_dependencies})
-            ivw_get_glsl_dirs(deps ${depmods})
-            list(APPEND glslpaths ${deps})
-        endif()
-    endforeach()
-    list(REMOVE_DUPLICATES glslpaths)
-    list(SORT glslpaths)
-    set(${retval} ${glslpaths} PARENT_SCOPE)
-endfunction()
-
-function(ivw_get_include_dirs retval)
-    set(inc_dirs "")
-    foreach(target IN LISTS ARGN)
-        ivw_get_target_property_recursive(dirs ${target} INTERFACE_INCLUDE_DIRECTORIES True)
-        list(APPEND inc_dirs ${dirs})
-        ivw_get_target_property_recursive(dirs ${target} INCLUDE_DIRECTORIES False)
-        list(APPEND inc_dirs ${dirs})
-        list(REMOVE_DUPLICATES inc_dirs)
-    endforeach()
-    
-    # filter generator expr
-    set(inc_dirs_nogen "")
-    foreach(item IN LISTS inc_dirs)
-        string(REGEX MATCH [=[^\$<BUILD_INTERFACE:([^$<>]+)>$]=] repl ${item})
-        if(CMAKE_MATCH_1)
-            list(APPEND inc_dirs_nogen "${CMAKE_MATCH_1}")
-        endif()
-        string(REGEX MATCH [=[^[^$<>]*$]=] repl ${item})
-        if(CMAKE_MATCH_0)
-            list(APPEND inc_dirs_nogen "${CMAKE_MATCH_0}")
-        endif()
-    endforeach()
-    list(REMOVE_DUPLICATES inc_dirs_nogen)
-    
-    # filter non existing folders
-    set(inc_dirs_exist "")
-    foreach(item IN LISTS inc_dirs_nogen)
-        if(EXISTS ${item})
-            get_filename_component(real ${item} REALPATH)
-            list(APPEND inc_dirs_exist "\"${real}\"")
-        endif()
-    endforeach()
-     list(REMOVE_DUPLICATES inc_dirs_exist)
-     list(SORT inc_dirs_exist)
-
-    set(${retval} ${inc_dirs_exist} PARENT_SCOPE)
-endfunction()
-
-function(ivw_private_format_doxy_arg retval )
-    string(REGEX REPLACE ";" " \\\\\n                         " result "${ARGN}")
-    set(${retval} ${result} PARENT_SCOPE)
-endfunction()
-
-function(ivw_private_make_doxyfile)
-    set(options
-        GENERATE_IMG
-        GENERATE_QHP
-    )
-    set(oneValueArgs
-        NAME
-        BRIEF
-        OUTPUT_DIR
-        WARNING_FORMAT
-        TAG_FILE
-    )
-    set(multiValueArgs
-        INCLUDE_PATHS
-        INPUTS
-        IMAGE_PATHS
-        ALIASES
-        INPUT_TAGS
-        FILTER_PATTERNS
-        ADDITIONAL_FLAGS
-    )
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-    ivw_private_format_doxy_arg(inputs ${ARG_INPUTS})
-    ivw_private_format_doxy_arg(image_paths ${ARG_IMAGE_PATHS})
-    ivw_private_format_doxy_arg(aliases ${ARG_ALIASES})
-    ivw_private_format_doxy_arg(input_tags ${ARG_INPUT_TAGS})
-    ivw_private_format_doxy_arg(filter_patterns ${ARG_FILTER_PATTERNS})
-    ivw_private_format_doxy_arg(incpaths ${ARG_INCLUDE_PATHS})
-
-    string(REGEX REPLACE ";" "\n" additional_flags "${ARG_ADDITIONAL_FLAGS}")
-
-    string(TOLOWER ${ARG_NAME} name_lower)
-
-    ivw_private_format_doxy_arg(example_paths ${IVW_EXTERNAL_MODULES})
-
-    if(ARG_GENERATE_IMG) 
-        set(generate_images "YES")
-    else()
-        set(generate_images "NO")
-    endif()
-
-
-    set(doxyfile "\
-PROJECT_NAME           = \"${ARG_NAME}\"
-PROJECT_NUMBER         = \"${IVW_VERSION}\"
-PROJECT_BRIEF          = \"${ARG_BRIEF}\"
-PROJECT_LOGO           = \"${IVW_RESOURCES_DIR}/inviwo/inviwo_dark.png\"
-OUTPUT_DIRECTORY       = \"${ARG_OUTPUT_DIR}/${name_lower}\"
-WARNINGS               = YES
-WARN_NO_PARAMDOC       = NO
-WARN_IF_UNDOCUMENTED   = NO
-WARN_FORMAT            = \"${ARG_WARNING_FORMAT}\"
-QUIET                  = YES
-CREATE_SUBDIRS         = NO
-ALLOW_UNICODE_NAMES    = YES
-JAVADOC_AUTOBRIEF      = NO
-QT_AUTOBRIEF           = NO
-FULL_PATH_NAMES        = NO
-SHOW_FILES             = NO
-SOURCE_BROWSER         = NO
-VERBATIM_HEADERS       = NO
-SORT_GROUP_NAMES       = YES
-EXTRACT_LOCAL_CLASSES  = NO
-
-TAB_SIZE               = 4
-
-ALIASES                = ${aliases}
-MARKDOWN_SUPPORT       = YES
-BUILTIN_STL_SUPPORT    = YES
-
-CASE_SENSE_NAMES       = YES
-
-INPUT                  = ${ivw_doxy_dir}/markdown/Index.md \\
-                         ${inputs}
-
-ENABLE_PREPROCESSING   = YES
-SEARCH_INCLUDES        = NO
-
-IMAGE_PATH             = ${image_paths}
-
-INCLUDE_PATH           = ${incpaths}
-
-EXTENSION_MAPPING      = no_extension=C++ frag=C++ vert=C++ geom=C++ glsl=C++ comp=C++
-
-FILE_PATTERNS          = *.hpp \\
-                         *.h \\
-                         *.cl \\
-                         *.dox \\
-                         *.comp \\
-                         *.frag \\
-                         *.vert \\
-                         *.geom \\
-                         *.glsl
-
-RECURSIVE              = YES
-EXCLUDE                =
-EXCLUDE_PATTERNS       = *.c \\
-                         *.cpp \\
-                         */moc_* \\
-                         */qrc_* \\
-                         */modules/*/ext/* \\
-                         */clogs/* \\
-                         *-test.cpp \\
-                         *sqlite3* \\
-
-EXCLUDE_SYMBOLS        = cl::* \\
-                         TCLAP::* \\
-                         clogs::* \\
-                         glm::*
-
-FILTER_PATTERNS        = ${filter_patterns}
-
-USE_MDFILE_AS_MAINPAGE = ${ivw_doxy_dir}/markdown/Index.md
-
-HTML_EXTRA_FILES       = 
-
-EXAMPLE_PATH           = ${IVW_ROOT_DIR} \\
-                         ${example_paths}
-
-HTML_COLORSTYLE_HUE    = 240
-HTML_COLORSTYLE_SAT    = 6
-HTML_COLORSTYLE_GAMMA  = 80
-
-HTML_DYNAMIC_SECTIONS  = YES
-HTML_INDEX_NUM_ENTRIES = 100
-
-GENERATE_LATEX         = NO
-
-GENERATE_DOCSET        = NO
-DOCSET_FEEDNAME        = \"Interactive Visualization Workshop\"
-DOCSET_BUNDLE_ID       = org.inviwo
-DOCSET_PUBLISHER_ID    = org.inviwo
-DOCSET_PUBLISHER_NAME  = Inviwo
-
-GENERATE_QHP           = ${ARG_GENERATE_QHP}
-QHP_NAMESPACE          = org.inviwo.${name_lower}
-QHP_VIRTUAL_FOLDER     = doc
-
-GENERATE_TREEVIEW      = YES
-TREEVIEW_WIDTH         = 300
-
-TAGFILES               = ${input_tags}
-GENERATE_TAGFILE       = ${ARG_TAG_FILE}
-
-ALLEXTERNALS           = NO
-EXTERNAL_GROUPS        = YES
-EXTERNAL_PAGES         = YES
-
-HAVE_DOT               = ${DOXYGEN_DOT_FOUND}
-
-CLASS_GRAPH            = ${generate_images}
-COLLABORATION_GRAPH    = NO # To large to be useful most of the time, ${generate_images}
-GROUP_GRAPHS           = ${generate_images}
-UML_LOOK               = NO
-UML_LIMIT_NUM_FIELDS   = 10
-TEMPLATE_RELATIONS     = YES
-INCLUDE_GRAPH          = NO # needs SEARCH_INCLUDES = YES, ${generate_images}
-INCLUDED_BY_GRAPH      = NO # needs SEARCH_INCLUDES = YES, ${generate_images}
-
-CALL_GRAPH             = NO
-CALLER_GRAPH           = NO
-
-GRAPHICAL_HIERARCHY    = NO
-DIRECTORY_GRAPH        = NO
-DOT_IMAGE_FORMAT       = png
-INTERACTIVE_SVG        = ${generate_images}
-DOT_PATH               = \"${DOXYGEN_DOT_PATH}\"
-DOTFILE_DIRS           =
-DOT_GRAPH_MAX_NODES    = 200
-MAX_DOT_GRAPH_DEPTH    = 0
-DOT_TRANSPARENT        = NO
-DOT_MULTI_TARGETS      = YES
-GENERATE_LEGEND        = YES
-DOT_CLEANUP            = YES
-PREDEFINED             = DOXYGEN_SHOULD_SKIP_THIS
-SHOW_INCLUDE_FILES     = YES
-ALPHABETICAL_INDEX     = YES
-
-${additional_flags}
-")
-    if(NOT EXISTS "${ARG_OUTPUT_DIR}")
-        file(MAKE_DIRECTORY ${ARG_OUTPUT_DIR})
-    endif()
-    file(WRITE ${ARG_OUTPUT_DIR}/${name_lower}.doxy ${doxyfile})
-endfunction()
-
- # Help, used for the help inside inviwo
-function(ivw_private_make_help)
-    if(NOT ${IVW_DOXYGEN_PROJECT})
-        return()
-    endif()
-
-    set(options "")
-    set(oneValueArgs
-        NAME
-        HTML_DIR
-        WARNING_FORMAT
-        OUTPUT_DIR
-        DOC_DIR
-    )
-    set(multiValueArgs
-        INPUTS
-        IMAGE_PATHS
-        FILTER_PATTERNS
-        INCLUDE_PATHS
-    )
-    cmake_parse_arguments(HARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-    
-    string(TOLOWER ${HARG_NAME} name_lower)
-
-    set(aliases_list
-        "docpage{1}=\"\\page docpage-\\1 \\1\""
-        "docpage{2}=\"\\page docpage-\\1 \\2\""
-    )
-
-    set(additional_flags_list
-        "LAYOUT_FILE            = ${HARG_HTML_DIR}/layout.xml"
-        "HTML_STYLESHEET        = ${HARG_HTML_DIR}/stylesheet.css"
-        "HTML_HEADER            = ${HARG_HTML_DIR}/header.html"
-        "HTML_FOOTER            = ${HARG_HTML_DIR}/footer.html"
-        "AUTOLINK_SUPPORT       = NO"
-        "HIDE_SCOPE_NAMES       = YES"
-        "SHOW_INCLUDE_FILES     = NO"
-        "GENERATE_TODOLIST      = NO"
-        "GENERATE_TESTLIST      = NO"
-        "GENERATE_BUGLIST       = NO"
-        "GENERATE_DEPRECATEDLIST= NO"
-        "SHOW_USED_FILES        = NO"
-        "SHOW_FILES             = NO"
-        "SHOW_NAMESPACES        = NO"
-        "WARN_IF_UNDOCUMENTED   = NO"
-        "SOURCE_BROWSER         = NO"
-        "ALPHABETICAL_INDEX     = NO"
-        "HTML_DYNAMIC_SECTIONS  = NO"
-        "DISABLE_INDEX          = YES"
-        "SEARCHENGINE           = NO"
-        "GENERATE_AUTOGEN_DEF   = NO"
-    )
-
-    ivw_private_make_doxyfile(
-        NAME "${HARG_NAME}"
-        BRIEF "Inviwo ${HARG_NAME} help"
-        OUTPUT_DIR "${HARG_OUTPUT_DIR}"
-        WARNING_FORMAT ${HARG_WARNING_FORMAT}
-        INPUTS ${HARG_INPUTS}
-        INCLUDE_PATHS ${HARG_INCLUDE_PATHS}
-        IMAGE_PATHS ${HARG_IMAGE_PATHS}
-        ALIASES ${aliases_list}
-        FILTER_PATTERNS ${HARG_FILTER_PATTERNS}
-        ADDITIONAL_FLAGS ${additional_flags_list}
-        GENERATE_QHP
-    )
-
-    find_program(IVW_DOXYGEN_QHELPGENERATOR "qhelpgenerator")
-
-    add_custom_target("DOXY-HELP-${HARG_NAME}"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running Doxygen for ${HARG_NAME}"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${HARG_OUTPUT_DIR}/${name_lower}/html"
-        COMMAND ${DOXYGEN_EXECUTABLE} "${HARG_OUTPUT_DIR}/${name_lower}.doxy"
-
-        COMMAND ${CMAKE_COMMAND} -DQHP_FILE="${HARG_OUTPUT_DIR}/${name_lower}/html/index.qhp"
-                                 -DSTRIPPED_FILE="${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
-                                 -P "${ivw_doxy_dir}/strip-qhp.cmake"
-
-        COMMAND ${CMAKE_COMMAND} -E echo "Building ${name_lower}.qch"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXYGEN_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch \
-                                 ${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
-        COMMAND ${IVW_DOXYGEN_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch"
-                                            "${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
-
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${HARG_DOC_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy "${HARG_OUTPUT_DIR}/${name_lower}.qch" "${HARG_DOC_DIR}/"
-
-        WORKING_DIRECTORY ${HARG_OUTPUT_DIR}
-        COMMENT "Building Qt QCH files for ${HARG_NAME}"
-        VERBATIM
-    )
-    set_target_properties("DOXY-HELP-${HARG_NAME}" PROPERTIES FOLDER "docs/qch" EXCLUDE_FROM_ALL TRUE)
-endfunction()
-
-if(NOT ${IVW_DOXYGEN_PROJECT})
     return()
 endif()
+
+if(MSVC AND IVW_DOXYGEN_PROJECT)
+    message(STATUS
+        "In Visual Studio the doxygen project will rerun every time you run\n"
+        "\"ALL_BUILD\" even if it is up to date. Hence, you propbably want\n"
+        "to disable generation of doxygen on each build this can be done\n"
+        "by right clicking on the docs folder in the \"Solution Explorer\" and\n"
+        "select \"Unload Project\".")
+endif()
+
+include(docutils.cmake)
 
 ivw_retrieve_all_modules(reg_modules)
 ivw_mod_name_to_mod_dep(modules ${reg_modules})
 
-find_package(Doxygen QUIET)         # sets: DOXYGEN_FOUND, DOXYGEN_EXECUTABLE,
-                                    # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
-find_package(Python3 COMPONENTS Interpreter QUIET)    # sets: Python3_Interpreter_FOUND Python3_EXECUTABLE
-if(NOT ${DOXYGEN_FOUND})
-message(WARNING "Tried to create doxygen project, but doxygen was not found")
-    return()
-endif()
-if(${DOXYGEN_DOT_FOUND})
-    get_filename_component(DOXYGEN_DOT_PATH ${DOXYGEN_DOT_EXECUTABLE} PATH)
-endif()
 set(ivw_doxy_dir ${IVW_ROOT_DIR}/docs)
 set(output_dir ${CMAKE_CURRENT_BINARY_DIR})
 set(tag_files "")
 set(dependency_list "")
 
-if(Python3_Interpreter_FOUND)
-    if(${MSVC})
-        set(PREFIX_PYTHON "python ")
-    else()
-        set(PREFIX_PYTHON "python3 ")
-    endif()
-    #string(REPLACE " " "\ " SPACE_PYTHON ${PYTHON_EXECUTABLE})
-    #set(PREFIX_PYTHON "${SPACE_PYTHON} ") # This is sometimes needed but gives errors on win7
-    
-    set(filer_patterns_list
-        "\"*.frag=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
-        "\"*.vert=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
-        "\"*.geom=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
-        "\"*.glsl=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
-        "\"*.comp=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
-     )
-else()
-    set(filer_patterns_list "")
-endif()
+set(filer_patterns_list
+    "\"*.frag=${Python3_EXECUTABLE}${ivw_doxy_dir}/filter/glslfilter.py\""
+    "\"*.vert=${Python3_EXECUTABLE}${ivw_doxy_dir}/filter/glslfilter.py\""
+    "\"*.geom=${Python3_EXECUTABLE}${ivw_doxy_dir}/filter/glslfilter.py\""
+    "\"*.glsl=${Python3_EXECUTABLE}${ivw_doxy_dir}/filter/glslfilter.py\""
+    "\"*.comp=${Python3_EXECUTABLE}${ivw_doxy_dir}/filter/glslfilter.py\""
+)
+
 set(extra_files "${ivw_doxy_dir}/style/img_downArrow.png")
 set(aliases_list
     "docpage{1}=\"\\ingroup processors\""
@@ -439,36 +83,41 @@ set(image_path_list
 )
 set(all_input
     "${IVW_INCLUDE_DIR}"
-    "${IVW_SOURCE_DIR}"
     "${IVW_CORE_INCLUDE_DIR}"
-    "${IVW_CORE_SOURCE_DIR}"
     "${IVW_QT_INCLUDE_DIR}"
-    "${IVW_QT_SOURCE_DIR}"
     "${IVW_APPLICATION_DIR}"
     "${IVW_ROOT_DIR}/docs"
 )
-if(${MSVC})
+
+set(file_patterns "*.hpp *.h *.cl *.dox")
+set(glsl_file_patterns "*.comp *.frag *.vert *.geom *.glsl")
+set(exclude_patterns "*.c *.cpp */moc_* */qrc_* */modules/*/ext/* */clogs/* *-test.cpp *sqlite3*")
+
+if(MSVC)
     set(warn_format "\$file(\$line): \$text")
 endif()
+
 # Group target
-add_custom_target("DOXY-ALL"
+add_custom_target(DOXY-ALL
     WORKING_DIRECTORY ${output_dir}
     COMMENT "Generating ALL API documentation with Doxygen"
     VERBATIM
 )
 set_target_properties("DOXY-ALL" PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
+
 # Modules
 set(module_bases "")
 set(module_targets "")
 foreach(mod IN LISTS modules)
     if(${${mod}_opt}) # Only include enabled modules
-        list(APPEND all_input ${${mod}_path})
+        list(APPEND all_input ${${mod}_incPath})
         list(APPEND module_targets ${${mod}_target})
         if(EXISTS "${${mod}_path}/docs/images")
             list(APPEND image_path_list "${${mod}_path}/docs/images")
         endif()
     endif()
 endforeach()
+
 # include paths
 ivw_get_include_dirs(incpaths ${module_targets})
 ivw_get_glsl_dirs(glslpaths ${modules})
@@ -476,16 +125,20 @@ ivw_get_glsl_dirs(glslpaths ${modules})
 ivw_private_make_doxyfile(
     NAME "Inviwo"
     BRIEF "Inviwo documentation"
+    DOXY_DIR "${ivw_doxy_dir}"
     OUTPUT_DIR "${output_dir}"
     WARNING_FORMAT ${warn_format}
     INPUTS ${all_input}
-    INCLUDE_PATHS ${incpaths} ${glslpaths}
+    INCLUDE_PATHS "${incpaths} ${glslpaths}"
+    FILE_PATTERNS "${file_patterns} ${glsl_file_patterns}"
+    EXCLUDE_PATTERNS ${exclude_patterns}
     IMAGE_PATHS ${image_path_list}
     ALIASES ${aliases_list}
     TAG_FILE ${output_dir}/inviwo/inviwo.tag
     FILTER_PATTERNS ${filer_patterns_list}
     GENERATE_IMG
 )
+
 add_custom_target("DOXY-Clear"
     COMMAND ${CMAKE_COMMAND} -E remove_directory "${output_dir}/inviwo"
     WORKING_DIRECTORY ${output_dir}
@@ -510,7 +163,7 @@ add_custom_target("DOXY-Inviwo"
 )
 set_target_properties("DOXY-Inviwo" PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
 add_dependencies("DOXY-ALL" "DOXY-Inviwo")
-if(${IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD})
+if(IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD)
     if(WIN32)
         set(OPEN_COMMAND "start")
     elseif(APPLE)
@@ -524,6 +177,31 @@ if(${IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD})
         ARGS "${output_dir}/inviwo/html/index.html"
     )
 endif()
+
+string(TIMESTAMP YEAR "%Y") # used in conf.py.in
+set(PYMODULES "") # used in index.rst.in
+get_property(pymodules GLOBAL PROPERTY IVW_PYMODULE_LIST)
+get_property(pyapps GLOBAL PROPERTY IVW_PYAPP_LIST)
+foreach(module IN LISTS pymodules pyapps)
+    get_target_property(name ${module} NAME)
+    string(APPEND PYMODULES "    ${name}\n")
+endforeach()
+
+configure_file("${ivw_doxy_dir}/python-api/conf.py.in" ${output_dir}/python-api-in/conf.py @ONLY)
+configure_file("${ivw_doxy_dir}/python-api/index.rst.in" ${output_dir}/python-api-in/index.rst @ONLY)
+add_custom_target("DOXY-Python"
+    COMMAND ${CMAKE_COMMAND} -E rm -rf ${output_dir}/python-api-in/_generated ${output_dir}/python-api
+    COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=$<TARGET_FILE_DIR:inviwopy> 
+            ${Python3_EXECUTABLE} -m sphinx -a -b html ${output_dir}/python-api-in ${output_dir}/python-api
+    WORKING_DIRECTORY ${output_dir}
+    COMMENT "Generate Inviwo python API documentation with sphinx"
+    VERBATIM
+)
+
+add_dependencies(DOXY-Python ${pymodules} ${pyapps})
+set_target_properties("DOXY-Python" PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
+add_dependencies("DOXY-ALL" "DOXY-Python")
+
 add_custom_target("DOXY-generate-processor-previews"
     COMMAND inviwo --save-previews "${output_dir}/inviwo/html" --quit
     WORKING_DIRECTORY ${output_dir}
@@ -532,25 +210,18 @@ add_custom_target("DOXY-generate-processor-previews"
 )
 add_dependencies("DOXY-generate-processor-previews" "DOXY-Clear")
 set_target_properties("DOXY-generate-processor-previews"
-                        PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
-option(IVW_DOXYGEN_ENFORCE_PROCESSOR_PREVIEWS "Turn on to enforce generating processor previews when building doxygen documentation (DOXY-Inviwo)" ON)
-if(${IVW_DOXYGEN_ENFORCE_PROCESSOR_PREVIEWS})
-    add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews" "DOXY-Clear")
-else()
-    add_dependencies("DOXY-Inviwo" "DOXY-Clear")
-endif()
+                       PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
+add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews")
+
 # Help, used for the help inside inviwo
 set(module_bases "")
 foreach(mod IN LISTS modules)
-    if(${${mod}_opt}) # Only include enabled modules
-        if(${mod} STREQUAL "INVIWOCOREMODULE")
-            continue() # skip the core module
-        endif()
-        if(EXISTS "${${mod}_path}/docs/images")
-            set(image_path "${${mod}_path}/docs/images")
-        else()
-            set(image_path "")
-        endif()
+    # Only include enabled modules, skip the core module
+    if(${${mod}_opt} AND (NOT ${mod} STREQUAL "INVIWOCOREMODULE")) 
+        ivw_set_if(COND EXISTS "${${mod}_path}/docs/images" 
+                   TRUEVAL "${${mod}_path}/docs/images" 
+                   FALSEVAL "" 
+                   RETVAL image_path)
 
         ivw_get_include_dirs(incpaths ${${mod}_target})
         ivw_get_glsl_dirs(glslpaths ${mod})
@@ -559,6 +230,7 @@ foreach(mod IN LISTS modules)
             OUTPUT_DIR "${output_dir}/help"
             HTML_DIR "${ivw_doxy_dir}/help"
             DOC_DIR "${${mod}_path}/docs"
+            DOXY_DIR "${ivw_doxy_dir}"
             INPUTS "${${mod}_path}"
             INCLUDE_PATHS ${incpaths} ${glslpaths}
             IMAGE_PATHS "${image_path}"

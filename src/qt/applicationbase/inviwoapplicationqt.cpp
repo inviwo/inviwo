@@ -139,7 +139,8 @@ InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, const std::stri
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName)
     , mainWindow_(nullptr)
-    , uiLocal_(getCurrentStdLocale()) {
+    , uiLocal_(getCurrentStdLocale())
+    , undoTrigger_{[]() {}} {
 
     setAttribute(Qt::AA_NativeWindows);
     setWindowIcon(QIcon(":/inviwo/inviwo_light.png"));

@@ -51,7 +51,6 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/datastructures/tfprimitive.h>
-//#include <inviwo/core/datastructures/tfprimitiveset.h>
 
 #include <pybind11/functional.h>
 

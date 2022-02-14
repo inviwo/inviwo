@@ -365,6 +365,7 @@ public:
     void setIdentityGetter(IdentityGetter getter) { idGetter_ = getter; }
 
 private:
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     IdentityGetter idGetter_ = [](TxElement* node) {
         K val{};
         detail::getNodeAttribute(node, "identifier", val);
@@ -373,6 +374,7 @@ private:
 
     Getter getItem_;
     const std::string itemKey_;
+#endif
 };
 
 namespace util {
@@ -445,9 +447,11 @@ public:
     }
 
 private:
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     std::function<T()> makeNewItem_ = []() -> T { return T{}; };
     std::function<void(T&)> onNewItem_ = [](T&) {};
     std::function<void(T&)> onRemoveItem_ = [](T&) {};
+#endif
 
     std::string key_;
     std::string itemKey_;
@@ -506,6 +510,7 @@ public:
     }
 
 private:
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     std::function<K(const T&)> getID_ = [](const T&) -> K {
         throw Exception("IdentifiedDeserializer: GetID callback is not set!");
     };
@@ -522,6 +527,7 @@ private:
     std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
         return true;
     };
+#endif
 
     std::string key_;
     std::string itemKey_;
@@ -584,6 +590,7 @@ public:
     }
 
 private:
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     std::function<T()> makeNewItem_ = []() -> T {
         throw Exception("MapDeserializer: MakeNew callback is not set!");
     };
@@ -599,6 +606,7 @@ private:
     std::function<K(const K&)> identifierTransform_ = [](const K& identifier) {
         return identifier;
     };
+#endif
 
     const std::string key_;
     const std::string itemKey_;

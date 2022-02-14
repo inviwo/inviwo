@@ -510,8 +510,10 @@ protected:
     LayerRamResizer* layerRamResizer_;
 
 private:
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     friend Singleton<InviwoApplication>;
     static InviwoApplication* instance_;
+#endif
 };
 
 /**

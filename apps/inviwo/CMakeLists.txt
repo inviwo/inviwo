@@ -105,8 +105,10 @@ endif()
 
 # Add build dependency towards any pybind11 targets and inviwo,
 # if python is not enabled, this list will be empty
-if(_allPyBindWrappers)
-    add_dependencies(inviwo ${_allPyBindWrappers})
+
+get_property(pymodules GLOBAL PROPERTY IVW_PYMODULE_LIST)
+if(pymodules)
+    add_dependencies(inviwo ${pymodules})
 endif()
 ivw_memleak_setup(inviwo)
 
@@ -136,8 +138,8 @@ if(WIN32)
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
 
-    if(_allPyBindWrappers)
-        add_dependencies(inviwo-cli ${_allPyBindWrappers})
+    if(pymodules)
+        add_dependencies(inviwo-cli ${pymodules})
     endif()
 
     # prevent inviwo-cli from building in parallel with inviwo since that might cause errors with the moc generation

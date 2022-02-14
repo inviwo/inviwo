@@ -78,7 +78,7 @@ struct IterRangeGenerator : iter_range<Iter> {
 }  // namespace util
 
 template <typename Iter>
-pybind11::class_<util::IterRangeGenerator<Iter>> exposeIterRangeGenerator(pybind11::module& m,
+pybind11::class_<util::IterRangeGenerator<Iter>> exposeIterRangeGenerator(pybind11::handle& m,
                                                                           const std::string& name) {
 
     return pybind11::class_<util::IterRangeGenerator<Iter>>(m, (name + "Generator").c_str())
@@ -101,14 +101,15 @@ template <typename Port>
 pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
                                                            const std::string& name) {
 
-    exposeIterRangeGenerator<typename Port::const_iterator>(m, name + "InportData");
-    exposeIterRangeGenerator<typename Port::const_iterator_port>(m, name + "InportOutportAndData");
-    exposeIterRangeGenerator<typename Port::const_iterator_changed>(m,
-                                                                    name + "InportChangedAndData");
-
     namespace py = pybind11;
-    return pybind11::class_<Port, Inport, PortPtr<Port>>(m, (name + "Inport").c_str())
-        .def(py::init<std::string>())
+
+    pybind11::class_<Port, Inport, PortPtr<Port>> pyInport{m, (name + "Inport").c_str()};
+    
+    exposeIterRangeGenerator<typename Port::const_iterator>(pyInport, "Data");
+    exposeIterRangeGenerator<typename Port::const_iterator_port>(pyInport, "OutportAndData");
+    exposeIterRangeGenerator<typename Port::const_iterator_changed>(pyInport, "ChangedAndData");
+    
+    pyInport.def(py::init<std::string>())
         .def("hasData", &Port::hasData)
         .def("getData", &Port::getData)
         .def("getVectorData", &Port::getVectorData)
@@ -127,6 +128,8 @@ pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
             return util::IterRangeGenerator<typename Port::const_iterator_changed>(
                 p->changedAndData());
         });
+
+    return pyInport;
 }
 
 template <typename T>

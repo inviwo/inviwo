@@ -135,8 +135,11 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
     inline friend bool operator>=(BrushingTarget lhs, BrushingTarget rhs) {
         return !operator<(lhs, rhs);
     }
-    IVW_MODULE_BRUSHINGANDLINKING_API friend std::ostream& operator<<(std::ostream& os,
-                                                                      BrushingTarget bt);
+    inline friend std::ostream& operator<<(std::ostream& os, BrushingTarget bt) {
+        os << bt.getString();
+        return os;
+    }
+
     template <class Elem, class Traits>
     friend std::basic_istream<Elem, Traits>& operator>>(std::basic_istream<Elem, Traits>& ss,
                                                         BrushingTarget& bt) {

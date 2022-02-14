@@ -74,20 +74,35 @@ PYBIND11_MODULE(inviwopy, m) {
 #endif
 
     using namespace inviwo;
-    m.doc() = "Python interface for Inviwo";
+    m.doc() = R"doc(
+        Core API
+        
+        All the bindings for the Inviwo core classes, Processor, Property, Port etc.
+         
+        .. rubric:: Modules
+        
+        .. autosummary::
+            :toctree: .
+            
+            data
+            data.formats
+            glm
+            properties
+            camerautil
+            
+        )doc";
 
     exposeGLMTypes(m);
 
-    auto propertiesModule = m.def_submodule("properties", "Exposing various Inviwo Properties");
-    auto dataModule =
-        m.def_submodule("data", "Module containing class mapping to the Inviwo data structures");
-    auto formatsModule =
-        dataModule.def_submodule("formats", "Module containing the various data formats");
+    auto propertiesModule = m.def_submodule("properties", "Inviwo Properties");
+    auto dataModule = m.def_submodule("data", "Inviwo Data Structures");
+    auto formatsModule = dataModule.def_submodule("formats", "Inviwo Data Formats");
 
     exposeLogging(m);
     exposeInviwoApplication(m);
     exposeDataFormat(formatsModule);
     exposePropertyOwner(propertiesModule);
+    exposeTFPrimitiveSet(dataModule);  // defines TFPrimitiveData used in exposeProperties
     exposeProperties(propertiesModule);
     exposePort(m);
     exposeProcessors(m);
@@ -101,7 +116,6 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeBuffer(dataModule);
     exposeMesh(dataModule);
     exposeCamera(dataModule);
-    exposeTFPrimitiveSet(dataModule);
     exposeInviwoModule(m);
     exposeCameraProperty(m, propertiesModule);
 

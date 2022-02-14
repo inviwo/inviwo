@@ -144,10 +144,10 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    friend IVW_CORE_API bool operator==(const Camera& lhs, const Camera& rhs) {
+    inline friend bool operator==(const Camera& lhs, const Camera& rhs) {
         return lhs.equal(rhs);
     }
-    friend IVW_CORE_API bool operator!=(const Camera& lhs, const Camera& rhs) {
+    inline friend bool operator!=(const Camera& lhs, const Camera& rhs) {
         return !(lhs == rhs);
     }
 

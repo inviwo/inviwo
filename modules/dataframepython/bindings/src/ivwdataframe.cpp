@@ -46,7 +46,10 @@ PYBIND11_MODULE(ivwdataframe, m) {
     py::module::import("inviwopy");
 
     using namespace inviwo;
-    m.doc() = "Python interface for Inviwo DataFrame";
+
+    m.doc() = R"doc(
+        DataFrame Module API
+        )doc";
 
     exposeDataFrame(m);
 

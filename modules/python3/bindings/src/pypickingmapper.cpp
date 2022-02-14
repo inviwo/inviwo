@@ -47,7 +47,7 @@ void exposePickingMapper(pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<PickingState>(m, "PickingState")
-        .value("None", PickingState::None)
+        .value("NoState", PickingState::None)
         .value("Started", PickingState::Started)
         .value("Updated", PickingState::Updated)
         .value("Finished", PickingState::Finished);
@@ -57,14 +57,14 @@ void exposePickingMapper(pybind11::module& m) {
     py::enum_<PickingPressState>(m, "PickingPressState")
         .value("DoubleClick", PickingPressState::DoubleClick)
         .value("Move", PickingPressState::Move)
-        .value("None", PickingPressState::None)
+        .value("NoPress", PickingPressState::None)
         .value("Press", PickingPressState::Press)
         .value("Release", PickingPressState::Release);
 
     exposeFlags<PickingPressState>(m, "PickingPressStates");
 
     py::enum_<PickingPressItem>(m, "PickingPressItem")
-        .value("None", PickingPressItem::None)
+        .value("NoItem", PickingPressItem::None)
         .value("Primary", PickingPressItem::Primary)
         .value("Secondary", PickingPressItem::Secondary)
         .value("Tertiary", PickingPressItem::Tertiary);
@@ -75,7 +75,7 @@ void exposePickingMapper(pybind11::module& m) {
         .value("Enter", PickingHoverState::Enter)
         .value("Exit", PickingHoverState::Exit)
         .value("Move", PickingHoverState::Move)
-        .value("None", PickingHoverState::None);
+        .value("NoHover", PickingHoverState::None);
 
     exposeFlags<PickingHoverState>(m, "PickingHoverStates");
 

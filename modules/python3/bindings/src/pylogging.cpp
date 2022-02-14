@@ -48,7 +48,7 @@ void exposeLogging(pybind11::module& m) {
         .value("Info", LogVerbosity::Info)
         .value("Warn", LogVerbosity::Warn)
         .value("Error", LogVerbosity::Error)
-        .value("None", LogVerbosity::None);
+        .value("Nothing", LogVerbosity::None);
 
     py::enum_<LogAudience>(m, "LogAudience")
         .value("User", LogAudience::User)

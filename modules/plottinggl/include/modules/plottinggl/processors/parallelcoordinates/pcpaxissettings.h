@@ -147,7 +147,7 @@ public:
 
     /**
      * Get data-range value from a normalized value. This the inverse function of getNormalized, ie
-     * (\f$ x = getValue(getNormalized(x)) \f$).
+     * `x = getValue(getNormalized(x))`.
      * @see getNormalized(double)
      */
     double getValue(double normalizedV) const;

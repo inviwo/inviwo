@@ -31,7 +31,17 @@
 
 # Needed for the function pybind11_add_module and dependency pybind11::module 
 
-set(_allPyBindWrappers "" CACHE INTERNAL  "")
+define_property(
+    GLOBAL PROPERTY IVW_PYMODULE_LIST
+    BRIEF_DOCS "List of inviwo python module targets"
+    FULL_DOCS "List of inviwo python module targets"
+)
+
+define_property(
+    GLOBAL PROPERTY IVW_PYAPP_LIST
+    BRIEF_DOCS "List of inviwo python app targets"
+    FULL_DOCS "List of inviwo python app targets"
+)
 
 function (ivw_add_py_wrapper target)
     if(IVW_MODULE_PYTHON3)
@@ -42,8 +52,7 @@ function (ivw_add_py_wrapper target)
         ivw_define_standard_definitions(${target} ${target})
         ivw_folder(${target} pymodules)
 
-        set(_allPyBindWrappers "${_allPyBindWrappers};${target}" CACHE INTERNAL  "_allPyBindWrappers")
-
+        set_property(GLOBAL APPEND PROPERTY IVW_PYMODULE_LIST ${target})
         ivw_define_standard_properties(${target})
 
         # pybind will set the visibility to hidden by default, but we run into problems with dynamic cast

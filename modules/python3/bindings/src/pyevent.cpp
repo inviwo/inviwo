@@ -61,7 +61,7 @@ void exposeEvents(pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<KeyModifier>(m, "KeyModifier")
-        .value("None", KeyModifier::None)
+        .value("NoModifier", KeyModifier::None)
         .value("Control", KeyModifier::Control)
         .value("Shift", KeyModifier::Shift)
         .value("Alt", KeyModifier::Alt)
@@ -224,7 +224,7 @@ void exposeEvents(pybind11::module& m) {
         .value("RightMeta", IvwKey::RightMeta);
 
     py::enum_<MouseButton>(m, "MouseButton")
-        .value("None", MouseButton::None)
+        .value("NoButton", MouseButton::None)
         .value("Left", MouseButton::Left)
         .value("Middle", MouseButton::Middle)
         .value("Right", MouseButton::Right);
@@ -240,7 +240,7 @@ void exposeEvents(pybind11::module& m) {
     exposeFlags<MouseState>(m, "MouseStates");
 
     py::enum_<TouchState>(m, "TouchState")
-        .value("None", TouchState::None)
+        .value("NoTouch", TouchState::None)
         .value("Started", TouchState::Started)
         .value("Updated", TouchState::Updated)
         .value("Stationary", TouchState::Stationary)
@@ -349,8 +349,8 @@ void exposeEvents(pybind11::module& m) {
         .def_property_readonly("ndc", &TouchPoint::ndc);
 
     py::enum_<TouchDevice::DeviceType>(m, "TouchDeviceType")
-        .value("None", TouchDevice::DeviceType::TouchScreen)
-        .value("Left", TouchDevice::DeviceType::TouchPad);
+        .value("Screen", TouchDevice::DeviceType::TouchScreen)
+        .value("Pad", TouchDevice::DeviceType::TouchPad);
 
     py::class_<TouchDevice>(m, "TouchDevice")
         .def(py::init<TouchDevice::DeviceType, std::string>(),

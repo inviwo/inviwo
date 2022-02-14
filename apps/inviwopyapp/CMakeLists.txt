@@ -54,3 +54,5 @@ target_compile_definitions(inviwopyapp PUBLIC
 ivw_folder(inviwopyapp minimals)
 # Add application to pack
 ivw_default_install_comp_targets(qt_app inviwopyapp)
+
+set_property(GLOBAL APPEND PROPERTY IVW_PYAPP_LIST inviwopyapp)

@@ -497,6 +497,18 @@ function(ivw_reverse_list_copy list_var revlist)
 endfunction()
 
 #--------------------------------------------------------------------
+# Assign one of two values to a variable as a result of a condition
+# ivw_set_if(COND <bool value> TRUEVAL <if true> FALSEVAL <if false> RETVAL <output var>)
+function(ivw_set_if)
+    cmake_parse_arguments(PARSE_ARGV 0 ARG "" "RETVAL;TRUEVAL;FALSEVAL" "COND")
+    if(${ARG_COND})
+        set(${ARG_RETVAL} ${ARG_TRUEVAL} PARENT_SCOPE)
+    else()
+        set(${ARG_RETVAL} ${ARG_FALSEVAL} PARENT_SCOPE)
+    endif()
+endfunction()
+
+#--------------------------------------------------------------------
 # helper function for topological sort
 function(ivw_private_visit_node node sorted_var marked_var tempmarked_var node_list_var node_edge_var count)
     MATH(EXPR count "${count}+1")

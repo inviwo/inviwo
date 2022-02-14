@@ -289,18 +289,16 @@ struct IVW_MODULE_OPENGL_API Viewport {
     GLsizei width() const { return view_[2]; }
     GLsizei height() const { return view_[3]; }
 
-    friend bool IVW_MODULE_OPENGL_API operator==(const Viewport& a, const Viewport& b);
+    friend inline bool operator==(const Viewport& a, const Viewport& b) {
+        return a.view_ == b.view_;
+    }
+    friend inline bool operator!=(const Viewport& lhs, const Viewport& rhs) {
+        return !(lhs == rhs);
+    }
 
 private:
     std::array<GLint, 4> view_;
 };
-
-inline bool IVW_MODULE_OPENGL_API operator==(const Viewport& a, const Viewport& b) {
-    return a.view_ == b.view_;
-}
-inline bool IVW_MODULE_OPENGL_API operator!=(const Viewport& lhs, const Viewport& rhs) {
-    return !(lhs == rhs);
-}
 
 /**
  * @brief RAII object for OpenGL viewports
@@ -334,18 +332,16 @@ struct IVW_MODULE_OPENGL_API ScissorBox {
     GLsizei width() const { return box_[2]; }
     GLsizei height() const { return box_[3]; }
 
-    friend bool IVW_MODULE_OPENGL_API operator==(const ScissorBox& a, const ScissorBox& b);
+    friend inline bool operator==(const ScissorBox& a, const ScissorBox& b) {
+        return a.box_ == b.box_;
+    }
+    friend inline bool operator!=(const ScissorBox& lhs, const ScissorBox& rhs) {
+        return !(lhs == rhs);
+    }
 
 private:
     std::array<GLint, 4> box_;
 };
-
-inline bool IVW_MODULE_OPENGL_API operator==(const ScissorBox& a, const ScissorBox& b) {
-    return a.box_ == b.box_;
-}
-inline bool IVW_MODULE_OPENGL_API operator!=(const ScissorBox& lhs, const ScissorBox& rhs) {
-    return !(lhs == rhs);
-}
 
 /**
  * @brief RAII object for OpenGL scissor state
@@ -380,18 +376,16 @@ struct IVW_MODULE_OPENGL_API ColorMask {
     GLboolean blue() const { return mask_[2]; }
     GLboolean alpha() const { return mask_[3]; }
 
-    friend bool IVW_MODULE_OPENGL_API operator==(const ColorMask& a, const ColorMask& b);
+    friend inline bool operator==(const ColorMask& a, const ColorMask& b) {
+        return a.mask_ == b.mask_;
+    }
+    friend inline bool operator!=(const ColorMask& lhs, const ColorMask& rhs) {
+        return !(lhs == rhs);
+    }
 
 private:
     std::array<GLboolean, 4> mask_;
 };
-
-inline bool IVW_MODULE_OPENGL_API operator==(const ColorMask& a, const ColorMask& b) {
-    return a.mask_ == b.mask_;
-}
-inline bool IVW_MODULE_OPENGL_API operator!=(const ColorMask& lhs, const ColorMask& rhs) {
-    return !(lhs == rhs);
-}
 
 /**
  * @brief representation of the OpenGL color write mask of a specific buffer
@@ -410,19 +404,17 @@ struct IVW_MODULE_OPENGL_API ColorMaski {
     GLboolean blue() const { return mask_[2]; }
     GLboolean alpha() const { return mask_[3]; }
 
-    friend bool IVW_MODULE_OPENGL_API operator==(const ColorMaski& a, const ColorMaski& b);
+    friend inline bool operator==(const ColorMaski& a, const ColorMaski& b) {
+        return a.buf_ == b.buf_ && a.mask_ == b.mask_;
+    }
+    friend inline bool operator!=(const ColorMaski& lhs, const ColorMaski& rhs) {
+        return !(lhs == rhs);
+    }
 
 private:
     GLuint buf_;
     std::array<GLboolean, 4> mask_;
 };
-
-inline bool IVW_MODULE_OPENGL_API operator==(const ColorMaski& a, const ColorMaski& b) {
-    return a.buf_ == b.buf_ && a.mask_ == b.mask_;
-}
-inline bool IVW_MODULE_OPENGL_API operator!=(const ColorMaski& lhs, const ColorMaski& rhs) {
-    return !(lhs == rhs);
-}
 
 /**
  * @brief RAII object for OpenGL color mask state, sets the color mask for _all_ draw buffers
