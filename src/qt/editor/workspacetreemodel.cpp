@@ -340,9 +340,7 @@ int WorkspaceTreeModel::rowCount(const QModelIndex& parent) const {
     return parentItem ? parentItem->childCount() : 0;
 }
 
-int WorkspaceTreeModel::columnCount(const QModelIndex&) const {
-    return root_->columnCount();
-}
+int WorkspaceTreeModel::columnCount(const QModelIndex&) const { return root_->columnCount(); }
 
 void WorkspaceTreeModel::updateCategory(TreeItem* item,
                                         std::vector<std::unique_ptr<TreeItem>> children) {

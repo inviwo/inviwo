@@ -45,7 +45,6 @@
 #include <QMenu>
 #include <warn/pop>
 
-
 namespace inviwo {
 
 void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TFEditorPrimitive*) {}
