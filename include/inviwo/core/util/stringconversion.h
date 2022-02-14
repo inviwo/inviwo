@@ -79,7 +79,7 @@ struct IVW_CORE_API StrBuffer {
      */
     template <typename... Args>
     explicit StrBuffer(std::string_view format, Args&&... args) {
-        fmt::format_to(buff, format, std::forward<Args>(args)...);
+        fmt::format_to(std::back_inserter(buff), format, std::forward<Args>(args)...);
     }
 
     /**
@@ -87,7 +87,7 @@ struct IVW_CORE_API StrBuffer {
      */
     template <typename... Args>
     StrBuffer& append(std::string_view format, Args&&... args) {
-        fmt::format_to(buff, format, std::forward<Args>(args)...);
+        fmt::format_to(std::back_inserter(buff), format, std::forward<Args>(args)...);
         return *this;
     }
 
@@ -97,7 +97,7 @@ struct IVW_CORE_API StrBuffer {
     template <typename... Args>
     StrBuffer& replace(std::string_view format, Args&&... args) {
         buff.clear();
-        fmt::format_to(buff, format, std::forward<Args>(args)...);
+        fmt::format_to(std::back_inserter(buff), format, std::forward<Args>(args)...);
         return *this;
     }
 

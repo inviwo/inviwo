@@ -96,7 +96,7 @@ auto addColumns(DataFrame& df, size_t extent, std::string_view name, size_t size
                               ->getDataContainer();
             return data;
         },
-        0, extent);
+        0, static_cast<int>(extent));
 }
 
 auto addColumns(DataFrame& df, size_t extent, size_t comps, std::string_view name, size_t size,
@@ -121,9 +121,9 @@ auto addColumns(DataFrame& df, size_t extent, size_t comps, std::string_view nam
                                       ->getDataContainer();
                     return data;
                 },
-                0, comps);
+                0, static_cast<int>(comps));
         },
-        0, extent);
+        0, static_cast<int>(extent));
 }
 
 /**
@@ -275,7 +275,7 @@ struct StatsFunctor {
     StatsFunctor(const Volume& volume, const Volume& atlas, CoordinateSpace destSpace)
         : nRegions{static_cast<size_t>(atlas.dataMap_.dataRange.y)}
         , channels{volume.getDataFormat()->getComponents()}
-        , df{std::make_shared<DataFrame>(nRegions)}
+        , df{std::make_shared<DataFrame>(static_cast<uint32_t>(nRegions))}
         , volumeRep{volume.getRepresentation<VolumeRAM>()}
         , atlasRep{atlas.getRepresentation<VolumeRAM>()}
         , map{volume.dataMap_}
@@ -327,8 +327,9 @@ struct StatsFunctor {
             [&](auto rep) { return rep->getDataTyped()[index]; });
     }
     double getValue(size_t index, size_t channel) const {
-        return volumeRep->dispatch<double, dispatching::filter::All>(
-            [&](auto rep) { return util::glmcomp(rep->getDataTyped()[index], channel); });
+        return volumeRep->dispatch<double, dispatching::filter::All>([&](auto rep) {
+            return static_cast<double>(util::glmcomp(rep->getDataTyped()[index], channel));
+        });
     }
 
     template <Wrapping wrapX, Wrapping wrapY, Wrapping wrapZ>

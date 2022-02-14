@@ -146,48 +146,48 @@ std::string_view AtlasComponent::getName() const { return atlas_.getIdentifier()
 void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, atlas_);
 
-    auto nSegments = static_cast<size_t>(atlas_.getData()->dataMap_.dataRange.y);
+    auto nSegments = static_cast<uint32_t>(atlas_.getData()->dataMap_.dataRange.y);
     picking_.resize(nSegments + 1);
     shader.setUniform(fmt::format("{0}PickingStart", getName()),
                       static_cast<uint32_t>(picking_.getPickingId(0)));
-    shader.setUniform(fmt::format("{0}Size", getName()), static_cast<uint32_t>(nSegments));
+    shader.setUniform(fmt::format("{0}Size", getName()), nSegments);
 
     if (coloringAction_ != ColoringAction::None) {
-        const auto foreachInGroup = [&]() -> std::function<void(std::function<void(size_t)>)> {
+        const auto foreachInGroup = [&]() -> std::function<void(std::function<void(uint32_t)>)> {
             switch (coloringGroup_.get()) {
                 default:
                 case ColoringGroup::All:
-                    return [&](std::function<void(size_t)> fun) {
-                        for (size_t i = 1; i <= nSegments; ++i) {
+                    return [&](std::function<void(uint32_t)> fun) {
+                        for (uint32_t i = 1; i <= nSegments; ++i) {
                             fun(i);
                         }
                     };
                 case ColoringGroup::Selected:
-                    return [&](std::function<void(size_t)> fun) {
+                    return [&](std::function<void(uint32_t)> fun) {
                         for (auto i : brushing_.getSelectedIndices()) {
                             fun(i + 1);
                         }
                     };
                 case ColoringGroup::Unselected:
-                    return [&](std::function<void(size_t)> fun) {
-                        for (size_t i = 1; i <= nSegments; ++i) {
+                    return [&](std::function<void(uint32_t)> fun) {
+                        for (uint32_t i = 1; i <= nSegments; ++i) {
                             if (!brushing_.isSelected(i - 1)) fun(i);
                         }
                     };
                 case ColoringGroup::Filtered:
-                    return [&](std::function<void(size_t)> fun) {
+                    return [&](std::function<void(uint32_t)> fun) {
                         for (auto i : brushing_.getFilteredIndices()) {
                             fun(i + 1);
                         }
                     };
                 case ColoringGroup::Unfiltered:
-                    return [&](std::function<void(size_t)> fun) {
-                        for (size_t i = 1; i <= nSegments; ++i) {
+                    return [&](std::function<void(uint32_t)> fun) {
+                        for (uint32_t i = 1; i <= nSegments; ++i) {
                             if (!brushing_.isFiltered(i - 1)) fun(i);
                         }
                     };
                 case ColoringGroup::Zero:
-                    return [&](std::function<void(size_t)> fun) { fun(0); };
+                    return [&](std::function<void(uint32_t)> fun) { fun(0); };
             }
         }();
 
@@ -253,7 +253,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
             static_cast<LayerRAMPrecision<vec4>*>(colors_.getEditableRepresentation<LayerRAM>())
                 ->getDataTyped();
 
-        for (size_t i = 0; i <= nSegments; ++i) {
+        for (uint32_t i = 0; i <= nSegments; ++i) {
             auto color = tf_->sample(static_cast<double>(i) / nSegments);
             lrp[im(i, 0)] = color;
             lrp[im(i, 1)] = color;
@@ -293,7 +293,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
 }
 
 void AtlasComponent::onPickingEvent(PickingEvent* e) {
-    auto id = e->getPickedId();
+    const auto id = static_cast<uint32_t>(e->getPickedId());
 
     if (e->getHoverState() == PickingHoverState::Enter) {
         e->setToolTip(fmt::format("Segment {}", id));

@@ -33,6 +33,8 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <fmt/ostream.h>
+
 namespace inviwo {
 
 Image::Image(size2_t dimensions, const DataFormatBase* format)

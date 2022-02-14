@@ -32,6 +32,8 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/datastructures/datamapper.h>
 
+#include <fmt/format.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsScene>
@@ -42,8 +44,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 #include <warn/pop>
-
-#include <fmt/format.h>
 
 namespace inviwo {
 

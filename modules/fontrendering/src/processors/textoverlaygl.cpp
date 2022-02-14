@@ -47,6 +47,10 @@
 
 #include <fmt/format.h>
 
+#if __has_include(<fmt/args.h>)  // New in fmt v8
+#include <fmt/args.h>
+#endif
+
 namespace inviwo {
 
 const std::string TextOverlayProperty::classIdentifier = "org.inviwo.TextOverlayProperty";

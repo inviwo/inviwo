@@ -98,7 +98,7 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
     setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
-void DataFrameTableView::leaveEvent(QEvent* event) {
+void DataFrameTableView::leaveEvent(QEvent*) {
     if (ignoreEvents_) return;
     model_->highlightRow(QModelIndex{});
 }

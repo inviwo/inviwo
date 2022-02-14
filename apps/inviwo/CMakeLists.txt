@@ -64,7 +64,7 @@ set_target_properties(inviwo PROPERTIES OUTPUT_NAME "Inviwo")
 # Determine dendendencies and set runtime module loading defines
 ivw_configure_application_module_dependencies(inviwo ${enabled_modules})
 ivw_define_standard_definitions(inviwo inviwo)
-ivw_define_standard_properties(inviwo)
+ivw_define_standard_properties(QT inviwo)
 
 # Add application to pack
 ivw_default_install_targets(inviwo)

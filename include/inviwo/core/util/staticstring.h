@@ -115,11 +115,15 @@ struct StaticString {
     constexpr auto end() const noexcept { return str.begin() + N; }
     constexpr auto end() noexcept { return str.begin() + N; }
 
-    constexpr operator std::string_view() const noexcept { return view(); }
+    constexpr operator std::string_view() const noexcept { return {str.data(), N}; }
+    constexpr operator fmt::string_view() const noexcept { return {str.data(), N}; }
     constexpr std::string_view view() const noexcept { return {str.data(), N}; }
 
     std::string string() const { return {str.data(), N}; }
-    operator std::string() const noexcept { return string(); }
+    operator std::string() const noexcept {
+        return {str.data(), N};
+        ;
+    }
 
     constexpr const char* c_str() const { return str.data(); }
 

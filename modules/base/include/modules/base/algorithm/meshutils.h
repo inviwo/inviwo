@@ -34,6 +34,9 @@
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 #include <functional>
 #include <memory>
 

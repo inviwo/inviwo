@@ -31,6 +31,7 @@
 #include <inviwo/core/util/exception.h>
 
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <cmath>
 
 namespace inviwo {

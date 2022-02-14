@@ -34,6 +34,7 @@
 #include <inviwo/core/util/assertion.h>
 
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <optional>
 
 namespace inviwo {

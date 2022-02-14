@@ -153,7 +153,7 @@ target_compile_definitions(inviwo-qteditor PUBLIC
 
 # Define defintions
 ivw_define_standard_definitions(IVW_QTEDITOR inviwo-qteditor)
-ivw_define_standard_properties(inviwo-qteditor)
+ivw_define_standard_properties(QT inviwo-qteditor)
 
 # Optimize compilation with pre-compilied headers
 ivw_compile_optimize_on_target(inviwo-qteditor)

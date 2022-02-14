@@ -73,7 +73,7 @@ endif()
 source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc ${QRC_FILE})
 
 # Create module
-ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
+ivw_create_module(NO_PCH QT ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
 target_link_libraries(inviwo-module-animationqt PRIVATE 
     Qt${QT_VERSION_MAJOR}::Core 
     Qt${QT_VERSION_MAJOR}::Gui
