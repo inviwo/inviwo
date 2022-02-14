@@ -236,7 +236,7 @@ QVariant TreeItem::data(int column, int role) const {
             case static_cast<int>(Role::PrimaryImage): {
                 infoLoader_->submit();
                 if (info_.image.isNull()) {
-                    return QImage{":/inviwo/inviwo_light.png"};
+                    return QImage{":/inviwo/inviwo-logo-light.svg"};
                 } else {
                     return info_.image;
                 }
@@ -340,9 +340,7 @@ int WorkspaceTreeModel::rowCount(const QModelIndex& parent) const {
     return parentItem ? parentItem->childCount() : 0;
 }
 
-int WorkspaceTreeModel::columnCount(const QModelIndex& parent) const {
-    return root_->columnCount();
-}
+int WorkspaceTreeModel::columnCount(const QModelIndex&) const { return root_->columnCount(); }
 
 void WorkspaceTreeModel::updateCategory(TreeItem* item,
                                         std::vector<std::unique_ptr<TreeItem>> children) {
