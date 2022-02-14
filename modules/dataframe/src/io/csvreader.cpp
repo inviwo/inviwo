@@ -524,7 +524,8 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
         std::remove_if(rows.begin(), rows.end(), [](const auto& row) { return row.first.empty(); }),
         rows.end());
 
-    // Ignore comment lines
+    // Ignore comment lines 
+    // The row must start with the comment character. Applied before keep only
     if (!rowComment_.empty()) {
         rows.erase(std::remove_if(rows.begin(), rows.end(),
                                   [this](const auto& row) {
