@@ -41,6 +41,7 @@ if(IVW_DOXYGEN_PROJECT)
     # sets: DOXYGEN_FOUND, DOXYGEN_EXECUTABLE, DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
     find_package(Doxygen REQUIRED)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
+    find_program(IVW_DOXYGEN_LATEX_PATH NAMES pdflatex pdflatex.exe latex latex.exe REQUIRED)
 else()
     return()
 endif()
