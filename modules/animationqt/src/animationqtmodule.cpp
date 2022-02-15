@@ -30,6 +30,7 @@
 #include <modules/animationqt/animationqtmodule.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
@@ -148,50 +149,45 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             QObject::connect(menu_.get(), &QObject::destroyed, [&](QObject*) { menu_.release(); });
         }
 
-        {
-            auto action = menu->addAction("Animation Editor");
+        const auto addWidgetLazy = [&](QString name, Qt::DockWidgetArea area, auto factory) {
+            auto* action = menu->addAction(name);
             action->setCheckable(true);
-            win->connect(action, &QAction::triggered, [this, win, app]() {
-                if (!editor_) {
-                    auto animationModule = app->getModuleByType<AnimationModule>();
-                    editor_ = std::make_unique<AnimationEditorDockWidgetQt>(
-                        animationModule->getWorkspaceAnimations(),
-                        animationModule->getAnimationManager(), "Animation Editor",
-                        getTrackWidgetQtFactory(), getSequenceEditorFactory(), win);
-                    win->addDockWidget(Qt::BottomDockWidgetArea, editor_.get());
-                    editor_->hide();
-                    editor_->loadState();
-                    // Release pointer if destroyed by Qt before module is destroyed
-                    QObject::connect(editor_.get(), &QObject::destroyed,
-                                     [this](QObject*) { editor_.release(); });
-                    editor_->setVisible(true);
-                } else {
-                    editor_->setVisible(!editor_->isVisible());
-                }
-            });
-        }
+            QObject::connect(action, &QAction::triggered, [action, win, area, menu, factory]() {
+                // The first time the callback is called we will create the widget. And then replace
+                // this action with the toggleViewAction from the new widget.
+                util::OnScopeExit onExit([action]() { delete action; });
+                auto widget = factory();
+                win->addDockWidget(area, widget);
+                widget->hide();
+                widget->loadState();
+                widget->setVisible(true);
 
-        {
-            auto action = menu->addAction("Demo Navigator");
-            action->setCheckable(true);
-            win->connect(action, &QAction::triggered, [this, win, app]() {
-                if (!navigator_) {
-                    auto animationModule = app->getModuleByType<AnimationModule>();
-                    auto& demoController = animationModule->getDemoController();
-                    navigator_ = std::make_unique<DemoNavigatorDockWidgetQt>(demoController,
-                                                                             "Demo Navigator", win);
-                    win->addDockWidget(Qt::RightDockWidgetArea, navigator_.get());
-                    navigator_->hide();
-                    navigator_->loadState();
-                    // Release pointer if destroyed by Qt before module is destroyed
-                    QObject::connect(navigator_.get(), &QObject::destroyed,
-                                     [this](QObject*) { navigator_.release(); });
-                    navigator_->setVisible(true);
-                } else {
-                    navigator_->setVisible(!navigator_->isVisible());
-                }
+                menu->insertAction(action, widget->toggleViewAction());
+                menu->removeAction(action);
             });
-        }
+        };
+
+        addWidgetLazy("Animation Editor", Qt::BottomDockWidgetArea, [this, app, win]() {
+            auto* animationModule = app->getModuleByType<AnimationModule>();
+            editor_ = std::make_unique<AnimationEditorDockWidgetQt>(
+                animationModule->getWorkspaceAnimations(), animationModule->getAnimationManager(),
+                "Animation Editor", getTrackWidgetQtFactory(), getSequenceEditorFactory(), win);
+            // Release pointer if destroyed by Qt before module is destroyed
+            QObject::connect(editor_.get(), &QObject::destroyed,
+                             [this](QObject*) { editor_.release(); });
+            return editor_.get();
+        });
+
+        addWidgetLazy("Demo Navigator", Qt::RightDockWidgetArea, [this, app, win]() {
+            auto* animationModule = app->getModuleByType<AnimationModule>();
+            auto& demoController = animationModule->getDemoController();
+            navigator_ =
+                std::make_unique<DemoNavigatorDockWidgetQt>(demoController, "Demo Navigator", win);
+            // Release pointer if destroyed by Qt before module is destroyed
+            QObject::connect(navigator_.get(), &QObject::destroyed,
+                             [this](QObject*) { navigator_.release(); });
+            return navigator_.get();
+        });
     }
 
     // register widgets
@@ -230,7 +226,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
 
     registerTrackToSequenceEditorMap(ControlTrack::classIdentifier(),
                                      ControlSequenceEditor::classIdentifier());
-}
+}  // namespace inviwo
 
 AnimationQtModule::~AnimationQtModule() {
     // Unregister everything from the factory since this module _owns_ the factory. This is

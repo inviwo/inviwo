@@ -122,6 +122,8 @@
         <file>icons/python-run.png</file>
         <file>icons/python.png</file>
 
+        <file>inviwo/inviwo-logo.svg</file>
+        <file>inviwo/inviwo-logo-light.svg</file>
         <file>inviwo/inviwo_dark.ico</file>
         <file>inviwo/inviwo_dark.png</file>
         <file>inviwo/inviwo_light.ico</file>

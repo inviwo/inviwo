@@ -51,6 +51,7 @@
 #include <QHash>
 #include <QResizeEvent>
 #include <QPersistentModelIndex>
+#include <QScrollBar>
 #include <warn/pop>
 
 namespace inviwo {
@@ -86,6 +87,8 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 
     auto option = o;
     initStyleOption(&option, index);
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing |
+                            QPainter::SmoothPixmapTransform);
 
     painter->save();
     if (utilqt::getData(index, Role::Type) == Type::File) {
@@ -316,6 +319,13 @@ WorkspaceGridView::WorkspaceGridView(QAbstractItemModel* theModel, QWidget* pare
     setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
     setItemDelegate(new SectionDelegate(itemSize_, this));
     setIndentation(0);
+
+#if defined(WIN32)
+    // Scrolling on Windows is set to scroll per item by default. Also need to adjust the step size
+    // since the default appears to be based on the number of items in the view.
+    setVerticalScrollMode(ScrollPerPixel);
+    verticalScrollBar()->setSingleStep(utilqt::emToPx(parent, 1.5));
+#endif
 
     connect(this, &QTreeView::doubleClicked, this, [this](const QModelIndex& index) {
         if (index.isValid() && (utilqt::getData(index, Role::Type) == Type::File)) {

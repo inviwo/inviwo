@@ -236,7 +236,7 @@ QVariant TreeItem::data(int column, int role) const {
             case static_cast<int>(Role::PrimaryImage): {
                 infoLoader_->submit();
                 if (info_.image.isNull()) {
-                    return QImage{":/inviwo/inviwo_light.png"};
+                    return QImage{":/inviwo/inviwo-logo-light.svg"};
                 } else {
                     return info_.image;
                 }
