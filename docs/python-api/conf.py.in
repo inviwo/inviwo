@@ -1,0 +1,33 @@
+project = 'Inviwo Python API'
+copyright = '@YEAR@, Inviwo Foundation'
+author = 'Inviwo Foundation'
+release = '@IVW_VERSION@'
+
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.napoleon',
+    'recommonmark',
+    'sphinx_rtd_theme',
+]
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+html_theme = "sphinx_rtd_theme"
+html_show_sourcelink = False
+
+autodoc_default_options = {
+    'members': True,
+    'private-members': False,
+    'special-members': True,
+    'show-inheritance': True,
+    'undoc-members': True,
+    'exclude-members': ', '.join(['__weakref__', '__getstate__', '__setstate__', '__annotations__',
+                                  '__module__', '__members__', '__dict__'])
+}
+autodoc_member_order = "groupwise"
+autodoc_typehints = 'both'
+autosummary_generate = True
+intersphinx_mapping = {'https://docs.python.org/3.10': None}
+primary_domain = 'py'
+highlight_language = 'python3'

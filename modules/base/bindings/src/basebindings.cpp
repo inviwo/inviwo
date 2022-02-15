@@ -41,11 +41,20 @@ PYBIND11_MODULE(ivwbase, m) {
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
     VLDDisable();
 #endif
+    m.doc() = R"doc(
+        Base Module API
+    
+        .. rubric:: Modules
+        
+        .. autosummary::
+            :toctree: .
+            
+            io
+            algorithm
+        )doc";
 
-    m.doc() = "Gives python scripts access to inviwo functionality in base";
-
-    auto ioMod = m.def_submodule("io", "Exposes various input/output functions");
-    auto utilMod = m.def_submodule("algorithm", "Exposes various algorithms and util functions");
+    auto ioMod = m.def_submodule("io", "Input and Output functions");
+    auto utilMod = m.def_submodule("algorithm", "Algorithms and util functions");
 
     inviwo::exposeVolumeWriteMethods(ioMod);
     inviwo::exposeVolumeOperations(utilMod);

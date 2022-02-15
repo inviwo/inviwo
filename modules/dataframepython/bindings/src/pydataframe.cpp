@@ -233,84 +233,84 @@ void exposeDataFrame(pybind11::module& m) {
     util::for_each_type<Scalars>{}(DataFrameAddColumnReg{}, dataframe);
 
     m.def("appendColumns", dataframe::appendColumns, py::arg("left"), py::arg("right"),
-          py::arg("ignoreduplicates") = false, py::arg("fillmissingrows") = false,
+          py::arg("ignoreDuplicates") = false, py::arg("fillMissingRows") = false,
           R"delim(
-Create a new DataFrame by appending the columns of DataFrame right to DataFrame left
-
-Parameters
-----------
-ignoreduplicates   duplicate columns, i.e. same column header, are ignored if true
-fillmissingrows    if true, missing rows in either DataFrame are filled with 0 or
-                   "undefined" (for categorical columns)
-)delim")
+          Create a new DataFrame by appending the columns of DataFrame right to
+          DataFrame left
+    
+          Args:
+              ignoreDuplicates: duplicate columns, i.e. same column header, are ignored
+                  if true
+              fillMissingRows: if true, missing rows in either DataFrame are filled with
+                  0 or "undefined" (for categorical columns)
+          )delim")
         .def("appendRows", dataframe::appendRows, py::arg("top"), py::arg("bottom"),
-             py::arg("matchbyname") = false,
+             py::arg("matchByName") = false,
              R"delim(
-Create a new DataFrame by appending the rows of DataFrame bottom to DataFrame top
-
-Parameters
-----------
-matchByName    if true, column headers are used for matching columns. Otherwise columns
-               are matched by order (default)
-)delim")
+             Create a new DataFrame by appending the rows of DataFrame bottom to DataFrame top
+      
+             Args:
+                 matchByName: if true, column headers are used for matching columns.
+                     Otherwise columns are matched by order (default)
+             )delim")
         .def("innerJoin",
              py::overload_cast<const DataFrame&, const DataFrame&, const std::string&>(
                  dataframe::innerJoin),
-             py::arg("left"), py::arg("right"), py::arg("keycolumn") = "index",
+             py::arg("left"), py::arg("right"), py::arg("keyColumn") = "index",
              R"delim(
-Create a new DataFrame by using an inner join of DataFrame left and DataFrame right.
-That is only rows with matching keys are kept.
-
-It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
-
-Parameters
-----------
-keycolumn    header of the column used as key for the join operation (default: index column)
-)delim")
+             Create a new DataFrame by using an inner join of DataFrame left and DataFrame
+             right. That is only rows with matching keys are kept.
+                 
+             It is assumed that the entries in the key columns are unique. Otherwise results
+             are undefined.
+             
+             Args:
+                 keyColumn: header of the column used as key for the join operation
+                     (default: index column)
+             )delim")
         .def("innerJoin",
              py::overload_cast<const DataFrame&, const DataFrame&, const std::vector<std::string>&>(
                  dataframe::innerJoin),
-             py::arg("left"), py::arg("right"), py::arg("keycolumns"),
+             py::arg("left"), py::arg("right"), py::arg("keyColumn"),
              R"delim(
-Create a new DataFrame by using an inner join of DataFrame left and DataFrame right.
-That is only rows with matching all keys are kept.
-
-It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
-
-Parameters
-----------
-keycolumns    list of headers of the columns used as key for the join operation
-)delim")
+             Create a new DataFrame by using an inner join of DataFrame left and DataFrame
+             right. That is only rows with matching all keys are kept.
+                 
+             It is assumed that the entries in the key columns are unique. Otherwise results
+             are undefined.
+             
+             Args:
+                 keyColumn: list of headers of the columns used as key for the join operation
+             )delim")
         .def("innerJoin",
              py::overload_cast<const DataFrame&, const DataFrame&, const std::string&>(
                  dataframe::leftJoin),
-             py::arg("left"), py::arg("right"), py::arg("keycolumn") = "index",
+             py::arg("left"), py::arg("right"), py::arg("keyColumn") = "index",
              R"delim(
-Create a new DataFrame by using an outer left join of DataFrame left and DataFrame right.
-That is all rows of left are augmented with matching rows from right.
-
-It is assumed that the entries in the key columns of right are unique. Otherwise results
-are undefined.
-
-Parameters
-----------
-keycolumn    header of the column used as key for the join operation (default: index column)
-)delim")
+             Create a new DataFrame by using an outer left join of DataFrame left and DataFrame
+             right. That is all rows of left are augmented with matching rows from right.
+                 
+             It is assumed that the entries in the key columns of right are unique. Otherwise
+             results are undefined.
+             
+             Args:
+                 keyColumn: header of the column used as key for the join operation
+                     (default: index column)
+             )delim")
         .def("leftJoin",
              py::overload_cast<const DataFrame&, const DataFrame&, const std::vector<std::string>&>(
                  dataframe::leftJoin),
-             py::arg("left"), py::arg("right"), py::arg("keycolumns"),
+             py::arg("left"), py::arg("right"), py::arg("keyColumn"),
              R"delim(
-Create a new DataFrame by using an outer left join of DataFrame left and DataFrame right.
-That is all rows of left are augmented with matching rows from right.
-
-It is assumed that the entries in the key columns of right are unique. Otherwise results
-are undefined.
-
-Parameters
-----------
-keycolumns    list of headers of the columns used as key for the join operation
-)delim");
+             Create a new DataFrame by using an outer left join of DataFrame left and DataFrame
+             right. That is all rows of left are augmented with matching rows from right.
+                 
+             It is assumed that the entries in the key columns of right are unique. Otherwise
+             results are undefined.
+             
+             Args:
+                 keyColumn: list of headers of the columns used as key for the join operation
+             )delim");
 
     exposeStandardDataPorts<DataFrame>(m, "DataFrame");
 }

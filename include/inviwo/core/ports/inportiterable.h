@@ -178,6 +178,8 @@ private:
     const InportType& self() const { return static_cast<const InportType&>(*this); }
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 // Specialization for non flat case.
 template <typename InportType, typename T>
 class InportIterable<InportType, T, false> {
@@ -295,5 +297,7 @@ private:
     InportType& self() { return static_cast<InportType&>(*this); }
     const InportType& self() const { return static_cast<const InportType&>(*this); }
 };
+
+#endif
 
 }  // namespace inviwo

@@ -1,0 +1,16 @@
+Python API Reference
+--------------------
+
+.. rubric:: Modules
+
+.. autosummary::
+    :toctree: _generated
+
+@PYMODULES@
+
+Indices and tables
+-------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

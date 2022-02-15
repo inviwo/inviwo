@@ -27,9 +27,9 @@ def make_cmd_parser():
 def main(workspace=None, properties=None, screenshot=None, run=False, ipython=False,
          list_processors=False, list_properties=None):
     """ Constructs a Inviwo application and loads a workspace.
-        
+
     :param workspace: Path to workspace to load, defaults load boron.inv
-    :param properties: List of processor identifiers and property paths to show in the 
+    :param properties: List of processor identifiers and property paths to show in the
         property list widget
     :param screenshot: Path to a output file for a screenshot of the 'Canvas' processor
     :paran run: Start the qt event loop, default False
@@ -40,7 +40,7 @@ def main(workspace=None, properties=None, screenshot=None, run=False, ipython=Fa
 
 
     If python can't find the i`inviwopy` module use the '--libdir' CLI argument to pass
-    in the path to inviwo bin directory.  
+    in the path to inviwo bin directory.
 
     If the program complains about missing QT plugins try passing the '--libdir'
     CLI argument. It will set the 'QT_PLUGIN_PATH' in python. Or you can try and

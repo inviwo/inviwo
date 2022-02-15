@@ -53,7 +53,13 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(inviwopyapp, m) {
+
     using namespace inviwo;
+    m.doc() = R"doc(
+        Inviwo Python Application
+        -------------------------
+        
+        )doc";
 
     auto inviwopy = py::module::import("inviwopy");
     auto inviwoApplicationClass = static_cast<py::object>(inviwopy.attr("InviwoApplication"));
@@ -117,5 +123,4 @@ PYBIND11_MODULE(inviwopyapp, m) {
             py::arg("maxJobs") = 0);
 
     m.add_object("py", inviwopy);
-    m.doc() = "Python inviwo application";
 }

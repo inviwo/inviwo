@@ -145,7 +145,7 @@ void exposeProcessors(pybind11::module& m) {
         .def_readwrite("tags", &Tags::tags_)
         .def(py::self == py::self)
         .def(py::self < py::self)
-        .def_readonly_static("None", &Tags::None)
+        .def_readonly_static("Empty", &Tags::None)
         .def_readonly_static("CPU", &Tags::CPU)
         .def_readonly_static("GL", &Tags::GL)
         .def_readonly_static("CL", &Tags::CL)

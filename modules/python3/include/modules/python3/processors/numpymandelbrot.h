@@ -38,8 +38,6 @@
 
 namespace inviwo {
 
-//(\f$ Z_{n+1} = Z_{n}^p + C \f$)
-
 /** \docpage{org.inviwo.NumpyMandelbrot, NumPy Mandelbrot}
  * ![](org.inviwo.NumpyMandelbrot.png?classIdentifier=org.inviwo.NumpyMandelbrot)
  *

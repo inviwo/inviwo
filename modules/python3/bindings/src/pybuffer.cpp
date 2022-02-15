@@ -119,7 +119,7 @@ void exposeBuffer(pybind11::module& m) {
         .value("Triangles", DrawType::Triangles);
 
     py::enum_<ConnectivityType>(m, "ConnectivityType")
-        .value("None_", ConnectivityType::None)
+        .value("Unconnected", ConnectivityType::None)
         .value("Strip", ConnectivityType::Strip)
         .value("Loop", ConnectivityType::Loop)
         .value("Fan", ConnectivityType::Fan)
