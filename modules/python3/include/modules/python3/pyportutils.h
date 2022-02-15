@@ -104,11 +104,11 @@ pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
     namespace py = pybind11;
 
     pybind11::class_<Port, Inport, PortPtr<Port>> pyInport{m, (name + "Inport").c_str()};
-    
+
     exposeIterRangeGenerator<typename Port::const_iterator>(pyInport, "Data");
     exposeIterRangeGenerator<typename Port::const_iterator_port>(pyInport, "OutportAndData");
     exposeIterRangeGenerator<typename Port::const_iterator_changed>(pyInport, "ChangedAndData");
-    
+
     pyInport.def(py::init<std::string>())
         .def("hasData", &Port::hasData)
         .def("getData", &Port::getData)
