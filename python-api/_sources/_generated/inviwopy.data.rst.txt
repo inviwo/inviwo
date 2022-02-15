@@ -1,0 +1,168 @@
+inviwopy.data
+=============
+
+.. automodule:: inviwopy.data
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Axis
+      BasicMesh
+      BasicMeshVertex
+      Buffer
+      BufferFLOAT16
+      BufferFLOAT32
+      BufferFLOAT64
+      BufferFlatMultiInport
+      BufferINT16
+      BufferINT32
+      BufferINT64
+      BufferINT8
+      BufferInfo
+      BufferInport
+      BufferMultiInport
+      BufferOutport
+      BufferTarget
+      BufferType
+      BufferUINT16
+      BufferUINT32
+      BufferUINT64
+      BufferUINT8
+      BufferUsage
+      BufferVec2FLOAT16
+      BufferVec2FLOAT32
+      BufferVec2FLOAT64
+      BufferVec2INT16
+      BufferVec2INT32
+      BufferVec2INT64
+      BufferVec2INT8
+      BufferVec2UINT16
+      BufferVec2UINT32
+      BufferVec2UINT64
+      BufferVec2UINT8
+      BufferVec3FLOAT16
+      BufferVec3FLOAT32
+      BufferVec3FLOAT64
+      BufferVec3INT16
+      BufferVec3INT32
+      BufferVec3INT64
+      BufferVec3INT8
+      BufferVec3UINT16
+      BufferVec3UINT32
+      BufferVec3UINT64
+      BufferVec3UINT8
+      BufferVec4FLOAT16
+      BufferVec4FLOAT32
+      BufferVec4FLOAT64
+      BufferVec4INT16
+      BufferVec4INT32
+      BufferVec4INT64
+      BufferVec4INT8
+      BufferVec4UINT16
+      BufferVec4UINT32
+      BufferVec4UINT64
+      BufferVec4UINT8
+      Camera
+      ConnectivityType
+      DataMapper
+      DrawType
+      Image
+      ImageChannel
+      ImageInport
+      ImageMultiInport
+      ImageOutport
+      IndexBufferFLOAT16
+      IndexBufferFLOAT32
+      IndexBufferFLOAT64
+      IndexBufferINT16
+      IndexBufferINT32
+      IndexBufferINT64
+      IndexBufferINT8
+      IndexBufferUINT16
+      IndexBufferUINT32
+      IndexBufferUINT64
+      IndexBufferUINT8
+      IndexBufferVec2FLOAT16
+      IndexBufferVec2FLOAT32
+      IndexBufferVec2FLOAT64
+      IndexBufferVec2INT16
+      IndexBufferVec2INT32
+      IndexBufferVec2INT64
+      IndexBufferVec2INT8
+      IndexBufferVec2UINT16
+      IndexBufferVec2UINT32
+      IndexBufferVec2UINT64
+      IndexBufferVec2UINT8
+      IndexBufferVec3FLOAT16
+      IndexBufferVec3FLOAT32
+      IndexBufferVec3FLOAT64
+      IndexBufferVec3INT16
+      IndexBufferVec3INT32
+      IndexBufferVec3INT64
+      IndexBufferVec3INT8
+      IndexBufferVec3UINT16
+      IndexBufferVec3UINT32
+      IndexBufferVec3UINT64
+      IndexBufferVec3UINT8
+      IndexBufferVec4FLOAT16
+      IndexBufferVec4FLOAT32
+      IndexBufferVec4FLOAT64
+      IndexBufferVec4INT16
+      IndexBufferVec4INT32
+      IndexBufferVec4INT64
+      IndexBufferVec4INT8
+      IndexBufferVec4UINT16
+      IndexBufferVec4UINT32
+      IndexBufferVec4UINT64
+      IndexBufferVec4UINT8
+      InterpolationType
+      IsoValueCollection
+      Layer
+      LayerType
+      Mesh
+      MeshFlatMultiInport
+      MeshInfo
+      MeshInport
+      MeshMultiInport
+      MeshOutport
+      OrthographicCamera
+      PerspectiveCamera
+      SkewedPerspectiveCamera
+      SwizzleMask
+      TFPrimitive
+      TFPrimitiveData
+      TFPrimitiveSet
+      TFPrimitiveSetType
+      TransferFunction
+      Unit
+      Volume
+      VolumeFlatMultiInport
+      VolumeInport
+      VolumeMultiInport
+      VolumeOutport
+      VolumeSequence
+      VolumeSequenceFlatMultiInport
+      VolumeSequenceInport
+      VolumeSequenceMultiInport
+      VolumeSequenceOutport
+      Wrapping
+   
+   
+
+   
+   
+   
+
+
+

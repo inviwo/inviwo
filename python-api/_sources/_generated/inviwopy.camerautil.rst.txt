@@ -1,0 +1,40 @@
+inviwopy.camerautil
+===================
+
+.. automodule:: inviwopy.camerautil
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      computeCameraNearFar
+      setCameraLookRanges
+      setCameraNearFar
+      setCameraView
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Side
+      UpdateLookRanges
+      UpdateNearFar
+   
+   
+
+   
+   
+   
+
+
+

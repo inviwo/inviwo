@@ -1,0 +1,19 @@
+Python API Reference
+--------------------
+
+.. rubric:: Modules
+
+.. autosummary::
+    :toctree: _generated
+
+    ivwbase
+    inviwopy
+    inviwopyapp
+
+
+Indices and tables
+-------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

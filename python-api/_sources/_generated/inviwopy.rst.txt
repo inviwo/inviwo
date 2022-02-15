@@ -1,0 +1,219 @@
+﻿inviwopy
+========
+
+.. automodule:: inviwopy
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      debugBreak
+      getApp
+      handlePythonOutput
+      log
+      logError
+      logInfo
+      logWarn
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CanvasProcessor
+      CodeState
+      ConsoleLogger
+      Event
+      FileLogger
+      Inport
+      InportVectorWrapper
+      InteractionEvent
+      InviwoApplication
+      InviwoModule
+      InviwoModuleFactoryObject
+      IvwKey
+      KeyModifier
+      KeyModifiers
+      KeyModifiersIterator
+      KeyState
+      KeyStates
+      KeyStatesIterator
+      KeyboardEvent
+      LicenseInfo
+      LogAudience
+      LogCentral
+      LogLevel
+      LogVerbosity
+      Logger
+      MessageBreakLevel
+      ModulePath
+      ModuleVectorWrapper
+      MouseButton
+      MouseButtons
+      MouseButtonsIterator
+      MouseEvent
+      MouseInteractionEvent
+      MouseState
+      MouseStates
+      MouseStatesIterator
+      Outport
+      OutportVectorWrapper
+      PathType
+      PickingEvent
+      PickingHoverState
+      PickingHoverStates
+      PickingHoverStatesIterator
+      PickingMapper
+      PickingPressItem
+      PickingPressItems
+      PickingPressItemsIterator
+      PickingPressState
+      PickingPressStates
+      PickingPressStatesIterator
+      PickingState
+      PickingStates
+      PickingStatesIterator
+      Port
+      PortConnection
+      Processor
+      ProcessorFactory
+      ProcessorFactoryObject
+      ProcessorInfo
+      ProcessorMetaData
+      ProcessorNetwork
+      ProcessorWidget
+      ProcessorWidgetFactory
+      ProcessorWidgetFactoryObject
+      PropertyLink
+      ProtectedModule
+      PythonScriptProcessor
+      ResizeEvent
+      Settings
+      Tag
+      Tags
+      TouchDevice
+      TouchDeviceType
+      TouchEvent
+      TouchPoint
+      TouchState
+      TouchStates
+      TouchStatesIterator
+      Version
+      ViewEvent
+      ViewEventFitData
+      ViewEventFlipUp
+      WheelEvent
+      dvec2FlatMultiInport
+      dvec2Inport
+      dvec2MultiInport
+      dvec2Outport
+      dvec2VectorFlatMultiInport
+      dvec2VectorInport
+      dvec2VectorMultiInport
+      dvec2VectorOutport
+      dvec3FlatMultiInport
+      dvec3Inport
+      dvec3MultiInport
+      dvec3Outport
+      dvec3VectorFlatMultiInport
+      dvec3VectorInport
+      dvec3VectorMultiInport
+      dvec3VectorOutport
+      dvec4FlatMultiInport
+      dvec4Inport
+      dvec4MultiInport
+      dvec4Outport
+      dvec4VectorFlatMultiInport
+      dvec4VectorInport
+      dvec4VectorMultiInport
+      dvec4VectorOutport
+      ivec2FlatMultiInport
+      ivec2Inport
+      ivec2MultiInport
+      ivec2Outport
+      ivec2VectorFlatMultiInport
+      ivec2VectorInport
+      ivec2VectorMultiInport
+      ivec2VectorOutport
+      ivec3FlatMultiInport
+      ivec3Inport
+      ivec3MultiInport
+      ivec3Outport
+      ivec3VectorFlatMultiInport
+      ivec3VectorInport
+      ivec3VectorMultiInport
+      ivec3VectorOutport
+      ivec4FlatMultiInport
+      ivec4Inport
+      ivec4MultiInport
+      ivec4Outport
+      ivec4VectorFlatMultiInport
+      ivec4VectorInport
+      ivec4VectorMultiInport
+      ivec4VectorOutport
+      uvec2FlatMultiInport
+      uvec2Inport
+      uvec2MultiInport
+      uvec2Outport
+      uvec2VectorFlatMultiInport
+      uvec2VectorInport
+      uvec2VectorMultiInport
+      uvec2VectorOutport
+      uvec3FlatMultiInport
+      uvec3Inport
+      uvec3MultiInport
+      uvec3Outport
+      uvec3VectorFlatMultiInport
+      uvec3VectorInport
+      uvec3VectorMultiInport
+      uvec3VectorOutport
+      uvec4FlatMultiInport
+      uvec4Inport
+      uvec4MultiInport
+      uvec4Outport
+      uvec4VectorFlatMultiInport
+      uvec4VectorInport
+      uvec4VectorMultiInport
+      uvec4VectorOutport
+      vec2FlatMultiInport
+      vec2Inport
+      vec2MultiInport
+      vec2Outport
+      vec2VectorFlatMultiInport
+      vec2VectorInport
+      vec2VectorMultiInport
+      vec2VectorOutport
+      vec3FlatMultiInport
+      vec3Inport
+      vec3MultiInport
+      vec3Outport
+      vec3VectorFlatMultiInport
+      vec3VectorInport
+      vec3VectorMultiInport
+      vec3VectorOutport
+      vec4FlatMultiInport
+      vec4Inport
+      vec4MultiInport
+      vec4Outport
+      vec4VectorFlatMultiInport
+      vec4VectorInport
+      vec4VectorMultiInport
+      vec4VectorOutport
+   
+   
+
+   
+   
+   
+
+
+

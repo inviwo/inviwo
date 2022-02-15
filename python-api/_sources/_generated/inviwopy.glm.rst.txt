@@ -1,0 +1,170 @@
+inviwopy.glm
+============
+
+.. automodule:: inviwopy.glm
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      abs
+      acos
+      all
+      any
+      asin
+      atan
+      ceil
+      clamp
+      compAdd
+      compMax
+      compMin
+      compMul
+      cos
+      cross
+      distance
+      distance2
+      dot
+      exp
+      floor
+      greaterThan
+      greaterThanEqual
+      length
+      length2
+      lessThan
+      lessThanEqual
+      normalize
+      rotate
+      sin
+      tan
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      bvec2
+      bvec2Vector
+      bvec3
+      bvec3Vector
+      bvec4
+      bvec4Vector
+      dmat2
+      dmat2Vector
+      dmat2x3
+      dmat2x3Vector
+      dmat2x4
+      dmat2x4Vector
+      dmat3
+      dmat3Vector
+      dmat3x2
+      dmat3x2Vector
+      dmat3x4
+      dmat3x4Vector
+      dmat4
+      dmat4Vector
+      dmat4x2
+      dmat4x2Vector
+      dmat4x3
+      dmat4x3Vector
+      dvec2
+      dvec2Vector
+      dvec3
+      dvec3Vector
+      dvec4
+      dvec4Vector
+      imat2
+      imat2Vector
+      imat2x3
+      imat2x3Vector
+      imat2x4
+      imat2x4Vector
+      imat3
+      imat3Vector
+      imat3x2
+      imat3x2Vector
+      imat3x4
+      imat3x4Vector
+      imat4
+      imat4Vector
+      imat4x2
+      imat4x2Vector
+      imat4x3
+      imat4x3Vector
+      ivec2
+      ivec2Vector
+      ivec3
+      ivec3Vector
+      ivec4
+      ivec4Vector
+      mat2
+      mat2Vector
+      mat2x3
+      mat2x3Vector
+      mat2x4
+      mat2x4Vector
+      mat3
+      mat3Vector
+      mat3x2
+      mat3x2Vector
+      mat3x4
+      mat3x4Vector
+      mat4
+      mat4Vector
+      mat4x2
+      mat4x2Vector
+      mat4x3
+      mat4x3Vector
+      size2_t
+      size2_tVector
+      size3_t
+      size3_tVector
+      size4_t
+      size4_tVector
+      umat2
+      umat2Vector
+      umat2x3
+      umat2x3Vector
+      umat2x4
+      umat2x4Vector
+      umat3
+      umat3Vector
+      umat3x2
+      umat3x2Vector
+      umat3x4
+      umat3x4Vector
+      umat4
+      umat4Vector
+      umat4x2
+      umat4x2Vector
+      umat4x3
+      umat4x3Vector
+      uvec2
+      uvec2Vector
+      uvec3
+      uvec3Vector
+      uvec4
+      uvec4Vector
+      vec2
+      vec2Vector
+      vec3
+      vec3Vector
+      vec4
+      vec4Vector
+   
+   
+
+   
+   
+   
+
+
+

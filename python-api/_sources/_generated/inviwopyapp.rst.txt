@@ -1,0 +1,29 @@
+﻿inviwopyapp
+===========
+
+.. automodule:: inviwopyapp
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      InviwoApplicationQt
+   
+   
+
+   
+   
+   
+
+
+
