@@ -45,7 +45,7 @@ namespace util {
 class IVW_CORE_API TempFileHandle {
 public:
     explicit TempFileHandle(const std::string& prefix = "", const std::string& suffix = "",
-                            const char* mode = "rw");
+                            const char* mode = "wb+");
 
     TempFileHandle(const TempFileHandle&) = delete;
     TempFileHandle& operator=(const TempFileHandle&) = delete;

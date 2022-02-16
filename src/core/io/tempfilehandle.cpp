@@ -52,8 +52,8 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
                                const char* mode) {
 #ifdef WIN32
     // get temp directory
-    std::array<wchar_t, MAX_PATH> tempPath;
-    std::array<wchar_t, MAX_PATH> tempFile;
+    std::array<wchar_t, MAX_PATH + 1> tempPath;
+    std::array<wchar_t, MAX_PATH + 1> tempFile;
     auto retVal = GetTempPath(MAX_PATH, tempPath.data());
     if ((retVal > MAX_PATH) || (retVal == 0)) {
         throw Exception("could not locate temp folder", IVW_CONTEXT);
@@ -70,6 +70,12 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
 
     filename_ = util::fromWstring(std::wstring(tempFile.data()));
     filename_ += suffix;
+
+    if (!suffix.empty()) {
+        // Delete the file GetTempFileName has already created since GetTempFileName does not
+        // support suffixes. The file will be recreated by filesystem::fopen.
+        DeleteFile(tempFile.data());
+    }
 
     handle_ = filesystem::fopen(filename_, mode);
     if (!handle_) {
