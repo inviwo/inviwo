@@ -76,4 +76,8 @@ target_compile_definitions(inviwo-module-openglqt PUBLIC
 ivw_deploy_qt(inviwo-module-openglqt)
 
 ivw_make_package(InviwoOpenGLQtModule inviwo-module-openglqt)
-ivw_qt_add_to_install(qt_modules Qt${QT_VERSION_MAJOR}OpenGL)
+if(QT_VERSION_MAJOR EQUAL 6)
+    ivw_qt_add_to_install(qt_modules Qt6OpenGL Qt6OpenGLWidgets)
+else()
+    ivw_qt_add_to_install(qt_modules Qt5OpenGL)
+endif()

@@ -69,7 +69,7 @@
       "name": "msvc-dev",
       "displayName": "MSVC Development",
       "description": "MSVC Development configuration",
-      "generator": "Visual Studio 16 2019",
+      "generator": "Visual Studio 17 2022",
       "architecture" : "x64",
       "binaryDir": "${sourceParentDir}/builds/msvc-dev",
       "inherits" : ["modules", "develop"]

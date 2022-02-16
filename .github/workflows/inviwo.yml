@@ -1,0 +1,155 @@
+name: Build Inviwo
+
+on: 
+  push:
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+  VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'         # recognized by vcpkg
+  # QT_DEBUG_PLUGINS: 1                                        # print qt plugin debug info
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest] #, macos-latest, ubuntu-20.04]
+        include:
+          - os: 'windows-latest'
+            triplet: 'x64-windows'
+            mono: ''
+            cmake: '-DIVW_MODULE_HDF5=ON'
+            generator: 'Visual Studio 17 2022'
+            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+            installer: 'inviwo-installer-win'
+            artifact: 'build/inviwo-v*.exe'
+         # - os: 'macos-latest'
+         #   triplet: 'x64-osx'
+         #   mono: 'mono'
+         #   cmake: '-DIVW_MODULE_HDF5=OFF'
+         #   generator: 'Ninja'
+         #   targets: 'ALL_BUILD package'
+         #   installer: 'inviwo-installer-macos'
+         #   artifact: 'build/inviwo-v*.dmg'
+         # - os: 'ubuntu-20.04'
+         #   triplet: 'x64-linux'
+         #   mono: 'mono'
+         #   cmake: '-DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
+         #   generator: 'Ninja' 
+         #   targets: 'ALL_BUILD package'
+         #   installer: 'inviwo-installer-ubuntu'
+         #   artifact: 'build/inviwo-v*.zip'
+      fail-fast: false
+      
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 360
+    
+    steps:
+    - name: Install Chocolatey
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        choco install doxygen.install 
+        choco install nsis
+        choco install tinytex
+        GP=`cygpath -u $GITHUB_PATH` 
+        
+        echo "/c/Program Files/doxygen/bin" >> $GP
+        echo "/c/Program Files (x86)/NSIS" >> $GP
+        echo "/c/tools/TinyTeX/bin/win32" >> $GP
+
+    #- name: Setup tmate session
+    #  uses: mxschmitt/action-tmate@v3
+    #  timeout-minutes: 60
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+        architecture: 'x64'
+    
+    - name: Install Python Modules 
+      shell: bash
+      run: pip3 install numpy Sphinx sphinx-rtd-theme recommonmark
+    
+    - name: Clone VCPKG
+      uses: actions/checkout@v2
+      with:
+        repository: 'microsoft/vcpkg'
+        path: 'vcpkg' # The cmake vcpkg present expects vcpkg to be next to the inviwo source folder
+            
+    - name: 'Setup NuGet Credentials'
+      shell: bash
+      run: >
+        ${{ matrix.mono }} `vcpkg fetch nuget | tail -n 1`
+        sources add
+        -source "https://nuget.pkg.github.com/inviwo/index.json"
+        -storepasswordincleartext
+        -name "GitHub"
+        -username "inviwo"
+        -password "${{ secrets.GITHUB_TOKEN }}"
+
+    - name: Install Apt
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build doxygen-latex
+      
+    - name: Install Brew
+      shell: bash
+      if: runner.os == 'macOS'
+      run: |
+        brew install ninja doxygen
+        brew cask install basictex
+        eval "$(/usr/libexec/path_helper)"
+        echo "$(dirname $(which latex))" >> $GITHUB_PATH
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: 6.2.3
+        dir: ${{ github.workspace }}
+    
+    - name: Clone Inviwo
+      uses: actions/checkout@v2
+      with: 
+        path: inviwo
+        submodules: recursive
+        
+    - name: Configure CMake
+      shell: bash
+      run: >
+        cmake -S inviwo -B build --preset=msvc-dev-vcpkg
+        -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
+        -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        -DIVW_DOXYGEN_PROJECT=ON
+        -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
+        ${{ matrix.cmake }}
+
+    - name: Setup C++ Log matchers
+      uses: Trass3r/setup-cpp@v1
+
+    - name: Build
+      timeout-minutes: 360
+      shell: bash
+      run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel --target ${{ matrix.targets }}
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.installer }}
+        path: ${{ matrix.artifact }}
+
+    - name: Upload doxygen
+      uses: actions/upload-artifact@v2
+      with:
+        name: inviwo-cpp-api
+        path: build/docs/inviwo/html/*
+
+    - name: Upload shpinx
+      uses: actions/upload-artifact@v2
+      with:
+        name: inviwo-python-api
+        path: build/docs/python-api/*
+
+
