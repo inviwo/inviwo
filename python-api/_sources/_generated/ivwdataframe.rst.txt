@@ -1,0 +1,59 @@
+﻿ivwdataframe
+============
+
+.. automodule:: ivwdataframe
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      appendColumns
+      appendRows
+      innerJoin
+      leftJoin
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CategoricalColumn
+      Column
+      ColumnType
+      DataFrame
+      DataFrameFlatMultiInport
+      DataFrameInport
+      DataFrameMultiInport
+      DataFrameOutport
+      DataPointBase
+      DoubleColumn
+      DoubleDataPoint
+      FloatColumn
+      FloatDataPoint
+      IndexColumn
+      Int64Column
+      Int64DataPoint
+      IntColumn
+      IntDataPoint
+      Size_tColumn
+      Size_tDataPoint
+      UIntColumn
+      UIntDataPoint
+   
+   
+
+   
+   
+   
+
+
+
