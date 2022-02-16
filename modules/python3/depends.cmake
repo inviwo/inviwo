@@ -5,6 +5,6 @@ set(dependencies
 )
 set(protected ON)
 
-if(PYTHONLIBS_FOUND)
+if(Python3_Development_FOUND)
     set(EnableByDefault ON)
 endif()
