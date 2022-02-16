@@ -507,4 +507,66 @@ TEST(CSVlinebreaks, mixed) {
     ASSERT_EQ(4, dataframe->getNumberOfRows()) << "row count does not match";
 }
 
+TEST(CSVFilters, comments) {
+    std::istringstream ss("# comment\n1,2,3\n# 4,5,6\n7,8,9\n# foo");
+
+    const std::string comment = "#";
+    csvfilters::Filters filters;
+    filters.excludeRows.push_back({[comment](std::string_view row, size_t) {
+                                       return row.substr(0, comment.size()) == comment;
+                                   },
+                                   false});
+
+    CSVReader reader;
+    reader.setFirstRowHeader(false);
+    reader.setFilters(filters);
+    auto dataframe = reader.readData(ss);
+
+    // columns will use first data row as header
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+    EXPECT_EQ("1", dataframe->getColumn(1)->get(0, false)->toString());
+    EXPECT_EQ("7", dataframe->getColumn(1)->get(1, false)->toString());
+}
+
+TEST(CSVFilters, commentsBeforeHeaders) {
+    std::istringstream ss("#,header,comment\n1,2,3\n# 4,5,6\n7,8,9\n# foo");
+
+    const std::string comment = "#";
+    csvfilters::Filters filters;
+    filters.excludeRows.push_back({[comment](std::string_view row, size_t) {
+                                       return row.substr(0, comment.size()) == comment;
+                                   },
+                                   true});
+
+    CSVReader reader;
+    reader.setFirstRowHeader(true);
+    reader.setFilters(filters);
+    auto dataframe = reader.readData(ss);
+
+    // columns will use first data row as header
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
+    EXPECT_EQ("1", dataframe->getColumn(1)->getHeader());
+    EXPECT_EQ("7", dataframe->getColumn(1)->get(0, false)->toString());
+}
+
+TEST(CSVFilters, keepLines) {
+    std::istringstream ss("1,2,3\n4,5,6\n7,8,9\n");
+
+    csvfilters::Filters filters;
+    filters.includeRows.push_back({[](std::string_view, size_t line) { return (line < 2) || (line > 2); }, true});
+
+    CSVReader reader;
+    reader.setFirstRowHeader(false);
+    reader.setFilters(filters);
+    auto dataframe = reader.readData(ss);
+
+    // columns will use first data row as header
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+    EXPECT_EQ("1", dataframe->getColumn(1)->get(0, false)->toString());
+    EXPECT_EQ("7", dataframe->getColumn(1)->get(1, false)->toString());
+}
+
 }  // namespace inviwo

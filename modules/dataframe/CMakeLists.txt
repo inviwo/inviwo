@@ -31,8 +31,10 @@ set(HEADER_FILES
     include/inviwo/dataframe/properties/columnmetadataproperty.h
     include/inviwo/dataframe/properties/columnoptionproperty.h
     include/inviwo/dataframe/properties/dataframecolormapproperty.h
+    include/inviwo/dataframe/properties/filterlistproperty.h
     include/inviwo/dataframe/properties/optionconverter.h
     include/inviwo/dataframe/util/dataframeutil.h
+    include/inviwo/dataframe/util/filters.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -63,8 +65,10 @@ set(SOURCE_FILES
     src/properties/columnmetadataproperty.cpp
     src/properties/columnoptionproperty.cpp
     src/properties/dataframecolormapproperty.cpp
+    src/properties/filterlistproperty.cpp
     src/properties/optionconverter.cpp
     src/util/dataframeutil.cpp
+    src/util/filters.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

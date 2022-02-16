@@ -35,6 +35,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 
@@ -59,8 +60,6 @@ CSVReader::CSVReader(std::string_view delim, bool hasHeader, bool doublePrecisio
     , unitRegexp_(defaultUnitRegexp)
     , doublePrecision_(doublePrecision)
     , exampleRows_{defaultNumberOfExampleRows}
-    , rowComment_{defaultRowComment}
-    , keepOnly_{defaultKeepOnly}
     , locale_{defaultLocale}
     , emptyField_{defaultEmptyField} {
     addExtension(FileExtension("csv", "Comma Separated Values"));
@@ -111,23 +110,17 @@ CSVReader& CSVReader::setNumberOfExampleRows(size_t rows) {
 }
 size_t CSVReader::getNumberOfExamplesRows() const { return exampleRows_; }
 
-CSVReader& CSVReader::setRowComment(std::string_view comment) {
-    rowComment_ = comment;
-    return *this;
-}
-const std::string& CSVReader::getRowComment() const { return rowComment_; }
-
-CSVReader& CSVReader::setKeepOnly(std::string_view only) {
-    keepOnly_ = only;
-    return *this;
-}
-const std::string& CSVReader::getKeepOnly() const { return keepOnly_; }
-
 CSVReader& CSVReader::setLocale(std::string_view loc) {
     locale_ = loc;
     return *this;
 }
 const std::string& CSVReader::getLocale() const { return locale_; }
+
+CSVReader& CSVReader::setFilters(const csvfilters::Filters& filters) {
+    filters_ = filters;
+    return *this;
+}
+const csvfilters::Filters& CSVReader::getFilters() const { return filters_; }
 
 CSVReader& CSVReader::setHandleEmptyFields(EmptyField emptyField) {
     emptyField_ = emptyField;
@@ -498,13 +491,92 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
     return appenders;
 }
 
+bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHeader) const {
+
+    auto filterRow = [&](bool neutralValue) {
+        return [&](const auto& f) {
+            if (!firstRowHeader_ || (f.filterOnHeader == filterOnHeader)) {
+                return f.filter(row, lineNumber);
+            }
+            return neutralValue;
+        };
+    };
+    auto filterItems = [&](const std::vector<csvfilters::ItemFilter>& filters, bool neutralValue) {
+        const bool cLocale = locale_ == "C";
+
+        bool retval = false;
+        util::parse(row, delimiters_, std::nullopt, lineNumber,
+                    [&, l = lineNumber](std::string_view cell, size_t colIndex,
+                                        [[maybe_unused]] size_t part) {
+                        auto stringFilter = [&](const std::function<bool(std::string_view)>& func) {
+                            return func(cell);
+                        };
+                        auto intFilter = [&](const std::function<bool(int)>& func) {
+                            if (auto val = util::toNumber<int>(cell, cLocale)) {
+                                return func(*val);
+                            }
+                            return neutralValue;
+                        };
+                        auto floatFilter = [&](const std::function<bool(float)>& func) {
+                            if (auto val = util::toNumber<float>(cell, cLocale)) {
+                                return func(*val);
+                            }
+                            return neutralValue;
+                        };
+                        auto doubleFilter = [&](const std::function<bool(double)>& func) {
+                            if (auto val = util::toNumber<double>(cell, cLocale)) {
+                                return func(*val);
+                            }
+                            return neutralValue;
+                        };
+
+                        for (auto f : filters) {
+                            if (!firstRowHeader_ || (f.filterOnHeader == filterOnHeader)) {
+                                if (f.column == colIndex) {
+                                    retval |=
+                                        std::visit(util::overloaded{stringFilter, intFilter,
+                                                                    floatFilter, doubleFilter},
+                                                   f.filter);
+                                }
+                            }
+                        }
+                    });
+        return retval;
+    };
+
+    auto filterApplicable = [&](auto& filters) {
+        return !filters.empty() &&
+               (!firstRowHeader_ || std::any_of(filters.begin(), filters.end(), [&](auto& f) {
+                   return (f.filterOnHeader == filterOnHeader);
+               }));
+    };
+
+    if (filterApplicable(filters_.includeRows) &&
+        std::none_of(filters_.includeRows.begin(), filters_.includeRows.end(), filterRow(true))) {
+        return true;
+    }
+    if (std::any_of(filters_.excludeRows.begin(), filters_.excludeRows.end(), filterRow(false))) {
+        return true;
+    }
+
+    if (filterApplicable(filters_.includeItems) && !filterItems(filters_.includeItems, true)) {
+        return true;
+    }
+    if (filterItems(filters_.excludeItems, false)) {
+        return true;
+    }
+
+    return false;
+}
+
 std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     filesystem::skipByteOrderMark(stream);
 
     util::OnScopeExit cleanup{nullptr};
     if (!config::charconv || locale_ != "C") {
         // We need to use the C locale here to force use of decimal "."
-        std::string prev{std::setlocale(LC_ALL, nullptr)};
+        auto prevLocale = std::setlocale(LC_ALL, nullptr);
+        std::string prev{prevLocale ? prevLocale : ""};
         if (!std::setlocale(LC_ALL, locale_.c_str())) {
             LogWarn("Failed to set locale " << locale_);
         }
@@ -516,32 +588,10 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     std::vector<std::pair<std::string_view, size_t>> rows;
     util::parse(content, "\n", std::nullopt, std::nullopt,
                 [&](std::string_view line, [[maybe_unused]] size_t index, size_t lineNumber) {
-                    rows.emplace_back(line, lineNumber);
+                    if (!line.empty() && !skipRow(line, lineNumber, true)) {
+                        rows.emplace_back(line, lineNumber);
+                    }
                 });
-
-    // Ignore empty lines
-    rows.erase(
-        std::remove_if(rows.begin(), rows.end(), [](const auto& row) { return row.first.empty(); }),
-        rows.end());
-
-    // Ignore comment lines 
-    // The row must start with the comment character. Applied before keep only
-    if (!rowComment_.empty()) {
-        rows.erase(std::remove_if(rows.begin(), rows.end(),
-                                  [this](const auto& row) {
-                                      return row.first.substr(0, rowComment_.size()) == rowComment_;
-                                  }),
-                   rows.end());
-    }
-
-    // Ignore non-kept lines
-    if (!keepOnly_.empty()) {
-        rows.erase(std::remove_if(rows.begin(), rows.end(),
-                                  [this](const auto& row) {
-                                      return !(row.first.substr(0, keepOnly_.size()) == keepOnly_);
-                                  }),
-                   rows.end());
-    }
 
     if (rows.empty()) {
         throw DataReaderException("No data", IVW_CONTEXT);
@@ -558,6 +608,11 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
 
     if (firstRowHeader_) {
         rows.erase(rows.begin());
+        // remove lines skipped by filters
+        rows.erase(
+            std::remove_if(rows.begin(), rows.end(),
+                           [&](const auto& row) { return skipRow(row.first, row.second, false); }),
+            rows.end());
     } else {
         for (auto&& [i, header] : util::enumerate(headers)) {
             header = fmt::format("Column {}", i + 1);
