@@ -1335,6 +1335,7 @@ var hierarchy =
       [ "inviwo::BrushingAndLinkingModule", "classinviwo_1_1BrushingAndLinkingModule.html", null ],
       [ "inviwo::CImgModule", "classinviwo_1_1CImgModule.html", null ],
       [ "inviwo::DataFrameModule", "classinviwo_1_1DataFrameModule.html", null ],
+      [ "inviwo::DataFramePythonModule", "classinviwo_1_1DataFramePythonModule.html", null ],
       [ "inviwo::DataFrameQtModule", "classinviwo_1_1DataFrameQtModule.html", null ],
       [ "inviwo::EigenUtilsModule", "classinviwo_1_1EigenUtilsModule.html", null ],
       [ "inviwo::FontRenderingModule", "classinviwo_1_1FontRenderingModule.html", null ],

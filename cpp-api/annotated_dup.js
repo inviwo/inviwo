@@ -679,6 +679,7 @@ var annotated_dup =
       [ "DataFrameMetaData", "classinviwo_1_1DataFrameMetaData.html", "classinviwo_1_1DataFrameMetaData" ],
       [ "DataFrameModel", "classinviwo_1_1DataFrameModel.html", null ],
       [ "DataFrameModule", "classinviwo_1_1DataFrameModule.html", null ],
+      [ "DataFramePythonModule", "classinviwo_1_1DataFramePythonModule.html", null ],
       [ "DataFrameQtModule", "classinviwo_1_1DataFrameQtModule.html", null ],
       [ "DataFrameSortFilterProxy", "classinviwo_1_1DataFrameSortFilterProxy.html", null ],
       [ "DataFrameSource", "classinviwo_1_1DataFrameSource.html", null ],
