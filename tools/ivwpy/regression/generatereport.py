@@ -285,7 +285,7 @@ class TestRun:
 
         with self.item(self.head(), status=self.totalstatus()):
             with self.tag('ul'):
-                if "image" in self.report.keys():
+                if "images" in self.report.keys():
                     self.doc.asis(listItem(keyval("Images", imagesShort(self.report)),
                                            self.images(self.report["images"]["tests"],
                                                        self.report["outputdir"]),
