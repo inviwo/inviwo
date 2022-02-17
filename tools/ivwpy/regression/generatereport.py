@@ -285,20 +285,22 @@ class TestRun:
 
         with self.item(self.head(), status=self.totalstatus()):
             with self.tag('ul'):
-                self.doc.asis(listItem(keyval("Images", imagesShort(self.report)),
-                                       self.images(self.report["images"]["tests"],
-                                                   self.report["outputdir"]),
-                                       status=self.status('images')))
-                for key in [["images", "missing_imgs"], ["images", "missing_refs"]]:
-                    self.simple(key)
+                if "image" in self.report.keys():
+                    self.doc.asis(listItem(keyval("Images", imagesShort(self.report)),
+                                           self.images(self.report["images"]["tests"],
+                                                       self.report["outputdir"]),
+                                           status=self.status('images')))
+                    for key in [["images", "missing_imgs"], ["images", "missing_refs"]]:
+                        self.simple(key)
 
-                self.doc.asis(listItem(keyval("Txts", txtsShort(self.report)),
-                                       self.txtsItem(self.report["txts"]["tests"],
-                                                     self.report["path"],
-                                                     self.report["outputdir"]),
-                                       status=self.status('txts')))
-                for key in [["txts", "missing_txts"], ["txts", "missing_refs"]]:
-                    self.simple(key)
+                if "txts" in self.report.keys():
+                    self.doc.asis(listItem(keyval("Txts", txtsShort(self.report)),
+                                           self.txtsItem(self.report["txts"]["tests"],
+                                                         self.report["path"],
+                                                         self.report["outputdir"]),
+                                           status=self.status('txts')))
+                    for key in [["txts", "missing_txts"], ["txts", "missing_refs"]]:
+                        self.simple(key)
 
                 self.simple(["returncode"])
                 self.doc.asis(formatLog(toPath(report['outputdir'], report['log'])))
