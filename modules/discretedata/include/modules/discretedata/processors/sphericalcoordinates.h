@@ -129,9 +129,10 @@ struct SphericalCoordinateDispatcher {
                         return;
                     }
 
-                    velocityDegrees[0] = uv[0] / (DEGREE_TO_RAD * AVG_EARTH_RADIUS);
+                    velocityDegrees[1] =
+                        uv[0] / (DEGREE_TO_RAD * AVG_EARTH_RADIUS);  // * SEC_TO_DAY;
                     double latRadius = std::cos(latLon[0] * DEGREE_TO_RAD) * AVG_EARTH_RADIUS;
-                    velocityDegrees[1] = -uv[1] / (DEGREE_TO_RAD * latRadius);
+                    velocityDegrees[0] = uv[1] / (DEGREE_TO_RAD * latRadius);  // * SEC_TO_DAY;
                     // double mag = std::sqrt(velocityDegrees[0] * velocityDegrees[0] +
                     //                        velocityDegrees[1] * velocityDegrees[1]);
                     // velocityDegrees[0] /= mag;
@@ -141,7 +142,7 @@ struct SphericalCoordinateDispatcher {
                     // velocityDegrees[1] *= 3600000;
                 },
                 velocityChannel->size(),
-                fmt::format("{}_in_lat_lon_per_second", velocityChannel->getName()));
+                fmt::format("{}_in_lat_lon_per_day", velocityChannel->getName()));
         }
 
         return results;

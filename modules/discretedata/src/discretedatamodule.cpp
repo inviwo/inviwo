@@ -49,6 +49,7 @@
 #include <modules/discretedata/processors/createindexchannel.h>
 #include <modules/discretedata/processors/createindexchannel.h>
 #include <modules/discretedata/processors/exampledataset.h>
+#include <modules/discretedata/processors/extendspatialsampler.h>
 #include <modules/discretedata/processors/sphericalcoordinates.h>
 
 #include <modules/discretedata/sampling/interpolant.h>
@@ -64,7 +65,6 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     registerProcessor<CombineDataSets>();
     registerProcessor<DataSetInformation>();
     registerProcessor<AddDataSetSampler>();
-    // registerProcessor<DataSetToSpatialSampler>();
     registerProcessor<DataSetToSpatialSampler2D>();
     registerProcessor<DataSetToSpatialSampler3D>();
     registerProcessor<SphericalCoordinates>();
@@ -75,6 +75,7 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     registerProcessor<CreateUniformGrid>();
     registerProcessor<DataSetFromVolume>();
     registerProcessor<ComputeGridMeasure>();
+    registerProcessor<ExtendSpatialSampler>();
     registerProcessor<MeshFromDataSet>();
     registerProcessor<ImageFromDataSet>();
     registerProcessor<VolumeFromDataSet>();
