@@ -103,7 +103,9 @@ DataSetToSpatialSampler<SpatialDims, DataDims, T>::DataSetToSpatialSampler()
                          2)
     , dataChannel_("dataChannel", "Data Channel", &dataIn_,
                    [](const std::shared_ptr<const Channel> ch) -> bool {
-                       return std::dynamic_pointer_cast<const DataChannel<T, DataDims>>(ch).get();
+                       //    return std::dynamic_pointer_cast<const DataChannel<T,
+                       //    DataDims>>(ch).get();
+                       return ch->getNumComponents() == DataDims;
                    })
 // , interpolationChanged_(false)
 {
@@ -148,17 +150,14 @@ void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
     firstProcess_ = false;
 
     // Something missing to create a SpatialSampler?
-    std::cout << "# Try'na get a channel." << std::endl;
-    if (!datasetSamplerName_.size() || !dataChannel_.getCurrentChannel()) {
-        std::cout << "We didn't get a channel!" << std::endl;
+    if (!datasetSamplerName_.size()) {
+        LogError("No sampler available.");
         sampler_.setData(nullptr);
         return;
     }
-    std::cout << "# Got a channel..." << std::endl;
 
     // Actually build a SpatialSampler.
-    auto dataTN =
-        std::dynamic_pointer_cast<const DataChannel<T, DataDims>>(dataChannel_.getCurrentChannel());
+    auto dataTN = dataChannel_.getCurrentChannelTyped<T, DataDims>();
     if (!dataTN) {
         LogError("The given data channel is not of the expected type.");
         sampler_.setData(nullptr);

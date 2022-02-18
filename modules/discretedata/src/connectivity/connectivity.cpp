@@ -40,6 +40,7 @@ ind Connectivity::getNumElements(GridPrimitive elementType) const {
     assert((ind)numGridPrimitives_.size() == (ind)gridDimension_ + 1 &&
            "GridPrimitive count vector has the wrong size.");
     assert(numGridPrimitives_[(int)elementType] != -1 && "No size stored.");
+    if ((int)elementType < 0 || (int)elementType >= numGridPrimitives_.size()) return 0;
     return numGridPrimitives_[(int)elementType];
 }
 

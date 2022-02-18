@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
+#include <modules/discretedata/channels/formatconversionchannel.h>
 
 namespace inviwo {
 
@@ -47,9 +48,6 @@ namespace discretedata {
 using GridPrimitiveProperty = TemplateOptionProperty<GridPrimitive>;
 
 class IVW_MODULE_DISCRETEDATA_API DataChannelProperty : public CompositeProperty {
-    // friend class PropertyFactoryObjectTemplate<DataChannelProperty>;
-    // friend class std::unique_ptr<DataChannelProperty>;
-    // friend
 
 public:
     using ChannelFilter = std::function<bool(const std::shared_ptr<const Channel>&)>;
@@ -62,23 +60,12 @@ public:
     // Methods
 public:
     static const std::string classIdentifier;
-    // const std::string classIdentifierConst =
-    //     "inviwo.discretedata.datachannelproperty";  //"org.inviwo.ColormapProperty";
-    virtual std::string getClassIdentifier() const override {
-        return classIdentifier;  //"inviwo.discretedata.datachannelproperty";
-    }
+    virtual std::string getClassIdentifier() const override { return classIdentifier; }
 
     DataChannelProperty(const std::string& identifier, const std::string& displayName,
                         DataSetInport* dataInport = nullptr, ChannelFilter filter = &FilterPassAll,
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
-
-    // protected:
-    //     DataChannelProperty(const std::string& identifier, const std::string& displayName,
-    //                         ChannelFilter filter = &FilterPassAll,
-    //                         InvalidationLevel invalidationLevel =
-    //                         InvalidationLevel::InvalidOutput, PropertySemantics semantics =
-    //                         PropertySemantics::Default);
 
 public:
     DataChannelProperty(const DataChannelProperty& prop);
@@ -88,12 +75,11 @@ public:
 
     virtual void updateChannelList();
     std::shared_ptr<const Channel> getCurrentChannel() const;
+    template <class T, ind N>
+    std::shared_ptr<const DataChannel<T, N>> getCurrentChannelTyped() const;
     bool hasSelectableChannels() const { return channelName_.size() > 1; }
     DataSetInport* getDatasetInput() { return datasetInput_; }
     void setDatasetInput(DataSetInport* port);
-
-    // virtual void deserialize(Deserializer&) override;
-    // virtual void serialize(Serializer& s) const override;
 
 protected:
     DataSetInport* datasetInput_;
@@ -102,10 +88,32 @@ public:
     ChannelFilter channelFilter_;
     OptionPropertyString channelName_;
     GridPrimitiveProperty gridPrimitive_;
+    mutable std::vector<std::shared_ptr<const Channel>> convertedChannels_;
 
 private:
     bool ongoingChange_ = false;
 };
+
+template <class T, ind N>
+std::shared_ptr<const DataChannel<T, N>> DataChannelProperty::getCurrentChannelTyped() const {
+    auto channel = getCurrentChannel();
+    if (!channel || channel->getNumComponents() != N) return nullptr;
+
+    auto channelTN = std::dynamic_pointer_cast<const DataChannel<T, N>>(channel);
+    if (channelTN) return channelTN;
+
+    std::string name = fmt::format("{}_{}", channel->getName(), DataFormat<T>::str());
+
+    for (auto& chann : convertedChannels_) {
+        if (chann->getName().compare(name)) {
+            return std::dynamic_pointer_cast<const DataChannel<T, N>>(chann);
+        }
+    }
+
+    auto converted = createFormatConversionChannel(channel, DataFormat<T>::id(), name);
+    convertedChannels_.push_back(converted);
+    return std::dynamic_pointer_cast<const DataChannel<T, N>>(converted);
+}
 
 }  // namespace discretedata
 }  // namespace inviwo

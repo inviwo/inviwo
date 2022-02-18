@@ -43,15 +43,14 @@ namespace discretedata {
 template <typename T, ind N>
 class BufferChannel;
 
-template <typename T, ind N>
-class BaseChannel : public Channel {
-    friend class BufferChannel<T, N>;
+template <typename T>
+class BaseTypedChannel : public Channel {
     friend class Channel;
 
 public:
-    BaseChannel(const std::string& name, DataFormatId dataFormat,
-                GridPrimitive definedOn = GridPrimitive::Vertex)
-        : Channel(N, name, dataFormat, definedOn) {}
+    BaseTypedChannel(ind numComponents, const std::string& name, DataFormatId dataFormat,
+                     GridPrimitive definedOn = GridPrimitive::Vertex)
+        : Channel(numComponents, name, dataFormat, definedOn) {}
 
     virtual void fillRaw(T* dest, ind index, ind numElements = 1) const = 0;
 
@@ -59,6 +58,19 @@ protected:
     virtual void fillRaw(void* dest, ind index, ind numElements = 1) const {
         fillRaw(reinterpret_cast<T*>(dest), index, numElements);
     }
+};
+
+template <typename T, ind N>
+class BaseChannel : public BaseTypedChannel<T> {
+    friend class BufferChannel<T, N>;
+    friend class Channel;
+
+public:
+    BaseChannel(const std::string& name, DataFormatId dataFormat,
+                GridPrimitive definedOn = GridPrimitive::Vertex)
+        : BaseTypedChannel<T>(N, name, dataFormat, definedOn) {}
+
+protected:
     virtual ChannelGetter<T, N>* newIterator() = 0;
 };
 

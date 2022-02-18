@@ -46,22 +46,20 @@ ChannelOperations::ChannelOperations()
     : Processor()
     , dataIn_("dataIn")
     , dataOut_("dataOut")
-    , channelOperations_(
-          "channelOps", "Channel Operations",
-          [this]() {
-              std::vector<std::unique_ptr<Property>> v;
-              v.emplace_back(std::make_unique<ChannelOpProperty<NormalizeChannelOperation>>(
-                  "normalizeChannel", "Normalize Channel", &dataIn_, "Normalized"));
-              v.emplace_back(std::make_unique<ChannelOpProperty<MagnitudeOperation>>(
-                  "magnitude", "Magnitude", &dataIn_, "Magnitude"));
-              v.emplace_back(std::make_unique<ChannelOpProperty<NormalizedMagnitudeOperation>>(
-                  "normalizedMagnitude", "Normalized Magnitude", &dataIn_, "NormMag"));
-              v.emplace_back(std::make_unique<ChannelOpProperty<AppendOperation>>(
-                  "append", "Append Value", &dataIn_, "Appended"));
-              return v;
-          }())
-// , testProp_("normalizeChannel", "Normalize Channel", &dataIn_, "Normalized")
-{
+    , channelOperations_("channelOps", "Channel Operations", [this]() {
+        std::vector<std::unique_ptr<Property>> v;
+        v.emplace_back(std::make_unique<ChannelOpProperty<NormalizeChannelOperation>>(
+            "normalizeChannel", "Normalize Channel", &dataIn_, "Normalized"));
+        v.emplace_back(std::make_unique<ChannelOpProperty<MagnitudeOperation>>(
+            "magnitude", "Magnitude", &dataIn_, "Magnitude"));
+        v.emplace_back(std::make_unique<ChannelOpProperty<NormalizedMagnitudeOperation>>(
+            "normalizedMagnitude", "Normalized Magnitude", &dataIn_, "NormMag"));
+        v.emplace_back(std::make_unique<ChannelOpProperty<AppendOperation>>(
+            "append", "Append Value", &dataIn_, "Appended"));
+        v.emplace_back(std::make_unique<ChannelOpProperty<DataFormatOperation>>(
+            "format", "Format Value", &dataIn_, "Formatted"));
+        return v;
+    }()) {
 
     addPort(dataIn_);
     addPort(dataOut_);

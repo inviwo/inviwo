@@ -77,18 +77,13 @@ public:
         }
 
         auto firstScalarType = this->getDataFormatId();
-        // const DataFormatBase* const firstScalarType = DataFormatBase::get(
-        //     combinedFormat->getNumericType(), 1, combinedFormat->getPrecision());
         size_t numTotalComponents = 0;
 
         // Check all channels against the type of the first one.
         for (auto channel : channels_) {
-            // combinedFormat = DataFormatBase::get(channel->getDataFormatId());
             auto scalarType = channel->getDataFormatId();
             std::cout << fmt::format("<< For channel {}, invalid value is {}", channel->getName(),
                                      channel->getInvalidValueDouble());
-            //  DataFormatBase::get(combinedFormat->getNumericType(), 1,
-            //                                       combinedFormat->getPrecision());
 
             if (scalarType != firstScalarType) {
                 LogError(fmt::format(

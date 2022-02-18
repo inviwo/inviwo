@@ -140,10 +140,15 @@ void ExampleDataSet::makeSphereDataSet() {
 
     auto linearLon = std::make_shared<AnalyticChannel<float, 2, glm::vec2>>(
         [dataSize](auto& vec, ind idx) {
+            static const double AVG_EARTH_RADIUS = 6371000.0f;
             ind x = idx % dataSize[0];
             ind y = idx / dataSize[0];
-            ind halfXSize = dataSize[0] / 2;
-            vec = {0, float(y) / dataSize[0]};
+            // ind halfXSize = dataSize[0] / 2;
+            double lonRad = AVG_EARTH_RADIUS * std::cos(std::abs(double(y) - 0.5) * M_PI * 0.5);
+            double vx = lonRad * M_PI / 180;
+            static double vy = AVG_EARTH_RADIUS * M_PI / 180;
+
+            vec = {vx, vy};
         },
         dataset->getGrid()->getNumElements(), "LinearLon");
 

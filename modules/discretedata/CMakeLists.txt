@@ -17,6 +17,7 @@ set(HEADER_FILES
     include/modules/discretedata/channels/channeliterator.h
     include/modules/discretedata/channels/combinedchannel.h
     include/modules/discretedata/channels/datachannel.h
+    include/modules/discretedata/channels/extendedchannel.h
     include/modules/discretedata/channels/formatconversionchannel.h
     include/modules/discretedata/channels/roichannel.h
     include/modules/discretedata/connectivity/cell.h
@@ -25,6 +26,7 @@ set(HEADER_FILES
     include/modules/discretedata/connectivity/elementiterator.h
     include/modules/discretedata/connectivity/euclideanmeasure.h
     include/modules/discretedata/connectivity/explicitconnectivity.h
+    include/modules/discretedata/connectivity/extrudedgrid.h
     include/modules/discretedata/connectivity/lineset.h
     include/modules/discretedata/connectivity/periodicgrid.h
     include/modules/discretedata/connectivity/pointcloud.h
@@ -51,6 +53,7 @@ set(HEADER_FILES
     include/modules/discretedata/processors/datasetsource.h
     include/modules/discretedata/processors/datasettospatialsampler.h
     include/modules/discretedata/processors/exampledataset.h
+    include/modules/discretedata/processors/extendspatialsampler.h
     include/modules/discretedata/processors/imagefromdataset.h
     include/modules/discretedata/processors/meshfromdataset.h
     include/modules/discretedata/processors/segmentationvoxelizer.h
@@ -61,6 +64,7 @@ set(HEADER_FILES
     include/modules/discretedata/sampling/datasetsampler.h
     include/modules/discretedata/sampling/datasetsampler.inl
     include/modules/discretedata/sampling/datasetspatialsampler.h
+    include/modules/discretedata/sampling/extendedspatialsampler.h
     include/modules/discretedata/sampling/interpolant.h
     include/modules/discretedata/util/arrayutil.h
     include/modules/discretedata/util/prefixsumvector.h
@@ -78,6 +82,7 @@ set(SOURCE_FILES
     src/channels/channel.cpp
     src/channels/combinedchannel.cpp
     src/channels/datachannel.cpp
+    src/channels/extendedchannel.cpp
     src/channels/formatconversionchannel.cpp
     src/connectivity/cell.cpp
     src/connectivity/connectioniterator.cpp
@@ -85,6 +90,7 @@ set(SOURCE_FILES
     src/connectivity/elementiterator.cpp
     src/connectivity/euclideanmeasure.cpp
     src/connectivity/explicitconnectivity.cpp
+    src/connectivity/extrudedgrid.cpp
     src/connectivity/lineset.cpp
     src/connectivity/pointcloud.cpp
     src/connectivity/trianglemesh.cpp
@@ -105,6 +111,7 @@ set(SOURCE_FILES
     src/processors/datasetroi.cpp
     src/processors/datasetsource.cpp
     src/processors/exampledataset.cpp
+    src/processors/extendspatialsampler.cpp
     src/processors/imagefromdataset.cpp
     src/processors/meshfromdataset.cpp
     src/processors/segmentationvoxelizer.cpp
@@ -112,6 +119,7 @@ set(SOURCE_FILES
     src/processors/volumefromdataset.cpp
     src/properties/datachannelproperty.cpp
     src/sampling/datasetsampler.cpp
+    src/sampling/extendedspatialsampler.cpp
     src/sampling/interpolant.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
@@ -124,6 +132,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/dataset-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/data-access-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/example-code.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/extended-channel-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/interpolation-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/lineset-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/structured-grid-test.cpp

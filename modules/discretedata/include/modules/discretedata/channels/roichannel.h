@@ -71,7 +71,7 @@ protected:
      * @param index Linear point index
      */
     virtual void fillRaw(T* dest, ind index, ind numElements) const override {
-        baseChannel_->fillRaw(dest, index - offset_, numElements);
+        baseChannel_->fillRaw(dest, index + offset_, numElements);
     }
 
     const std::shared_ptr<const DataChannel<T, N>> baseChannel_;

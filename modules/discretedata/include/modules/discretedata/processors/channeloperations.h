@@ -38,6 +38,7 @@
 #include <modules/discretedata/properties/datachannelproperty.h>
 #include <modules/discretedata/ports/datasetport.h>
 #include <modules/discretedata/channels/analyticchannel.h>
+#include <modules/discretedata/channels/formatconversionchannel.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -222,6 +223,31 @@ struct AppendOperation {
     static std::string getIdentifier() { return "append"; }
 
     DoubleProperty appendValue_;
+};
+
+struct DataFormatOperation {
+    DataFormatOperation(ChannelOpProperty<DataFormatOperation>* property)
+        : format_("format", "Data Format") {
+        property->addProperty(format_);
+        for (int format = static_cast<int>(DataFormatId::Float16);
+             format <= static_cast<int>(DataFormatId::UInt64); ++format) {
+            std::string name =
+                std::string(DataFormatBase::get(static_cast<DataFormatId>(format))->getString());
+            format_.addOption(name, name, format);
+        }
+    }
+
+    template <typename T, ind N>
+    std::shared_ptr<Channel> operator()(std::shared_ptr<const DataChannel<T, N>> channel,
+                                        ChannelOpProperty<DataFormatOperation>* property) {
+
+        return createFormatConversionChannel(channel, static_cast<DataFormatId>(format_.get()),
+                                             property->channelName_.get());
+    }
+
+    static std::string getIdentifier() { return "format"; }
+
+    OptionPropertyInt format_;
 };
 
 template <typename ChannelOp>

@@ -121,6 +121,10 @@ std::shared_ptr<const Channel> DataChannelProperty::getCurrentChannel() const {
 void DataChannelProperty::updateChannelList() {
     if (ongoingChange_) return;
 
+    convertedChannels_.clear();
+    // If no dataset is given, keep names for now.
+    if (!datasetInput_->hasData()) return;
+
     // Get the current name to select same name if possible.
     std::string lastName = channelName_.get();  // channelName_.size() ? channelName_.get() : "";
     GridPrimitive lastPrimitive =
