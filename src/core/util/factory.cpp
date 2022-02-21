@@ -31,6 +31,7 @@
 
 namespace inviwo {
 
-template class IVW_CORE_TMPL_INST FactoryBase<std::string_view>;
+FactoryBase::FactoryBase() = default;
+FactoryBase::~FactoryBase() = default;
 
 }  // namespace inviwo

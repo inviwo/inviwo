@@ -280,7 +280,7 @@ public:
     template <typename T, typename K>
     friend class ContainerWrapper;
 
-    void registerFactory(FactoryBase<std::string_view>* factory);
+    void registerFactory(FactoryBase* factory);
 
     int getInviwoWorkspaceVersion() const;
 
@@ -297,7 +297,7 @@ private:
     TxElement* retrieveChild(std::string_view key);
 
     ExceptionHandler exceptionHandler_;
-    std::vector<FactoryBase<std::string_view>*> registeredFactories_;
+    std::vector<FactoryBase*> registeredFactories_;
 
     int inviwoWorkspaceVersion_ = 0;
 };
