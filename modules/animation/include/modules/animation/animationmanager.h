@@ -70,8 +70,8 @@ public:
      * @param propertyClassID Property::getClassIdentifier
      * @param trackClassID PropertyTrack::getIdentifier()
      */
-    void registerPropertyTrackConnection(const std::string& propertyClassID,
-                                         const std::string& trackClassID);
+    void registerPropertyTrackConnection(std::string_view propertyClassID,
+                                         std::string_view trackClassID);
 
     /**
      * Extracts each "Animation" in "Animations" in the Deserializer stream.

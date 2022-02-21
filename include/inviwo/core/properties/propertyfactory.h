@@ -37,19 +37,19 @@
 namespace inviwo {
 
 class IVW_CORE_API PropertyFactory
-    : public StandardFactory<Property, PropertyFactoryObject, const std::string& /*key*/,
-                             const std::string& /*identifier*/, const std::string& /*displayName*/>,
-      public Factory<Property, const std::string& /*key*/> {
+    : public StandardFactory<Property, PropertyFactoryObject, std::string_view /*key*/,
+                             std::string_view /*identifier*/, std::string_view /*displayName*/>,
+      public Factory<Property, std::string_view /*key*/> {
 public:
-    using Parent = StandardFactory<Property, PropertyFactoryObject, const std::string&,
-                                   const std::string&, const std::string&>;
+    using Parent = StandardFactory<Property, PropertyFactoryObject, std::string_view,
+                                   std::string_view, std::string_view>;
 
     PropertyFactory() = default;
     virtual ~PropertyFactory() = default;
 
     using Parent::create;
-    virtual std::unique_ptr<Property> create(const std::string& className) const override;
-    virtual bool hasKey(const std::string& key) const override;
+    virtual std::unique_ptr<Property> create(std::string_view className) const override;
+    virtual bool hasKey(std::string_view key) const override;
 };
 
 }  // namespace inviwo

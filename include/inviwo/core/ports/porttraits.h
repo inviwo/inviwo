@@ -61,7 +61,7 @@ struct PortTraits {
      * In case it is not found an empty string will be returned. An empty class identifier will be
      * considered an error in various factories.
      */
-    static std::string classIdentifier() { return util::classIdentifier<T>(); }
+    static const std::string& classIdentifier() { return util::classIdentifier<T>(); }
 };
 
 }  // namespace inviwo

@@ -36,7 +36,7 @@ namespace plot {
 const std::string PlotTextProperty::classIdentifier = "org.inviwo.PlotTextProperty";
 std::string PlotTextProperty::getClassIdentifier() const { return classIdentifier; }
 
-PlotTextProperty::PlotTextProperty(const std::string& identifier, const std::string& displayName,
+PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view displayName,
                                    bool checked, InvalidationLevel invalidationLevel,
                                    PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName, checked, invalidationLevel, semantics)

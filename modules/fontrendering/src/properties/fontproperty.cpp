@@ -37,8 +37,8 @@ namespace inviwo {
 const std::string FontProperty::classIdentifier = "org.inviwo.FontProperty";
 std::string FontProperty::getClassIdentifier() const { return classIdentifier; }
 
-FontProperty::FontProperty(const std::string& identifier, const std::string& displayName,
-                           const std::string& fontFace, int size, float lineSpacing, vec2 anchorPos,
+FontProperty::FontProperty(std::string_view identifier, std::string_view displayName,
+                           std::string_view fontFace, int size, float lineSpacing, vec2 anchorPos,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , fontFace_("fontFace", "Font Face")
@@ -62,7 +62,7 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
     addProperty(anchorPos_);
 }
 
-FontProperty::FontProperty(const std::string& identifier, const std::string& displayName,
+FontProperty::FontProperty(std::string_view identifier, std::string_view displayName,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : FontProperty(identifier, displayName, font::getFont(font::FontType::Default), 14, 0.0f,
                    vec2{-1.0f}, invalidationLevel, semantics) {}

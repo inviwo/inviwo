@@ -75,10 +75,10 @@ bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
     return true;
 }
 
-std::unique_ptr<Processor> ProcessorFactory::create(const std::string& key) const {
+std::unique_ptr<Processor> ProcessorFactory::create(std::string_view key) const {
     return Parent::create(key, app_);
 }
 
-bool ProcessorFactory::hasKey(const std::string& key) const { return Parent::hasKey(key); }
+bool ProcessorFactory::hasKey(std::string_view key) const { return Parent::hasKey(key); }
 
 }  // namespace inviwo

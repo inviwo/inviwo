@@ -45,7 +45,7 @@ public:
 
     enum class Direction { FWD = 1, BWD = 2, BOTH = 3 };
 
-    IntegralLineProperties(std::string identifier, std::string displayName);
+    IntegralLineProperties(std::string_view identifier, std::string_view displayName);
     IntegralLineProperties(const IntegralLineProperties& rhs);
     virtual IntegralLineProperties* clone() const override;
     virtual ~IntegralLineProperties();

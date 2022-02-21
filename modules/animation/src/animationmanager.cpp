@@ -54,8 +54,8 @@ const InterpolationFactory& AnimationManager::getInterpolationFactory() const {
     return interpolationFactory_;
 }
 
-void AnimationManager::registerPropertyTrackConnection(const std::string& propertyClassID,
-                                                       const std::string& trackClassID) {
+void AnimationManager::registerPropertyTrackConnection(std::string_view propertyClassID,
+                                                       std::string_view trackClassID) {
     trackFactory_.registerPropertyTrackConnection(propertyClassID, trackClassID);
 }
 

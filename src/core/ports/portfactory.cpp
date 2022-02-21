@@ -32,24 +32,16 @@
 
 namespace inviwo {
 
-bool InportFactory::hasKey(const std::string& key) const {
-    return StandardFactory<Inport, InportFactoryObject>::hasKey(key);
-}
-
-std::unique_ptr<Inport> InportFactory::create(const std::string& className,
-                                              const std::string& identifier) const {
+std::unique_ptr<Inport> InportFactory::create(std::string_view className,
+                                              std::string_view identifier) const {
     return std::unique_ptr<Inport>(util::map_find_or_null(
-        map_, className, [&identifier](InportFactoryObject* o) { return o->create(identifier); }));
+        this->map_, className, [&identifier](InportFactoryObject* o) { return o->create(identifier); }));
 }
 
-bool OutportFactory::hasKey(const std::string& key) const {
-    return StandardFactory<Outport, OutportFactoryObject>::hasKey(key);
-}
-
-std::unique_ptr<Outport> OutportFactory::create(const std::string& className,
-                                                const std::string& identifier) const {
+std::unique_ptr<Outport> OutportFactory::create(std::string_view className,
+                                                std::string_view identifier) const {
     return std::unique_ptr<Outport>(util::map_find_or_null(
-        map_, className, [&identifier](OutportFactoryObject* o) { return o->create(identifier); }));
+        this->map_, className, [&identifier](OutportFactoryObject* o) { return o->create(identifier); }));
 }
 
 }  // namespace inviwo

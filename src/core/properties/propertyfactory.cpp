@@ -33,10 +33,10 @@
 
 namespace inviwo {
 
-std::unique_ptr<Property> PropertyFactory::create(const std::string& className) const {
+std::unique_ptr<Property> PropertyFactory::create(std::string_view className) const {
     return Parent::create(className, "", "");
 }
 
-bool PropertyFactory::hasKey(const std::string& key) const { return Parent::hasKey(key); }
+bool PropertyFactory::hasKey(std::string_view key) const { return Parent::hasKey(key); }
 
 }  // namespace inviwo

@@ -48,7 +48,7 @@ public:
     static const std::string classIdentifier;
 
     LayerInformationProperty(
-        std::string identifier, std::string displayName,
+        std::string_view identifier, std::string_view displayName,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     LayerInformationProperty(const LayerInformationProperty& rhs);

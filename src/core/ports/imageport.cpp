@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
+ImageOutport::ImageOutport(std::string_view identifier, const DataFormatBase* format,
                            bool handleResizeEvents)
     : DataOutport<Image>(identifier), format_(format), handleResizeEvents_(handleResizeEvents) {
 
@@ -44,7 +44,7 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
     }
 }
 
-ImageOutport::ImageOutport(std::string identifier, bool handleResizeEvents)
+ImageOutport::ImageOutport(std::string_view identifier, bool handleResizeEvents)
     : ImageOutport(identifier, DataVec4UInt8::get(), handleResizeEvents) {}
 
 std::string ImageOutport::getClassIdentifier() const {

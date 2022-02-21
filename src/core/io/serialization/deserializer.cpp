@@ -108,7 +108,7 @@ TxElement* Deserializer::retrieveChild(std::string_view key) {
     return retrieveChild_ ? rootElement_->FirstChildElement(SafeCStr{key}, false) : rootElement_;
 }
 
-void Deserializer::registerFactory(FactoryBase* factory) {
+void Deserializer::registerFactory(FactoryBase<std::string_view>* factory) {
     registeredFactories_.push_back(factory);
 }
 

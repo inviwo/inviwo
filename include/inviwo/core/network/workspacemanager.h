@@ -43,6 +43,7 @@
 
 namespace inviwo {
 
+template <typename T>
 class FactoryBase;
 class InviwoApplication;
 
@@ -145,7 +146,7 @@ public:
     /**
      *	Register a factory that should be used by the workspace loading to create items.
      */
-    void registerFactory(FactoryBase* factory);
+    void registerFactory(FactoryBase<std::string_view>* factory);
 
     /**
      *	Create a deserializer for a workspace stream, and apply all needed version updates.
@@ -155,7 +156,7 @@ public:
 
 private:
     InviwoApplication* app_;
-    std::vector<FactoryBase*> registeredFactories_;
+    std::vector<FactoryBase<std::string_view>*> registeredFactories_;
 
     ClearDispatcher clears_;
     SerializationDispatcher serializers_;

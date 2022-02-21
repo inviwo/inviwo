@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/representationfactory.h>
 
+#include <unordered_map>
+
 namespace inviwo {
 
 /**
@@ -48,7 +50,6 @@ namespace inviwo {
 class IVW_CORE_API RepresentationMetaFactory {
 public:
     using BaseReprId = BaseRepresentationFactory::BaseReprId;
-    using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationFactory*>;
 
     RepresentationMetaFactory() = default;
     ~RepresentationMetaFactory() = default;
@@ -61,7 +62,7 @@ public:
     RepresentationFactory<BaseRepr>* getRepresentationFactory() const;
 
 private:
-    FactoryMap map_;
+    std::unordered_map<BaseReprId, BaseRepresentationFactory*> map_;
 };
 
 template <typename BaseRepr>

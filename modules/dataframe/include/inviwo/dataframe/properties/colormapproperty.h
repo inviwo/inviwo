@@ -74,7 +74,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    ColormapProperty(std::string identifier, std::string displayName,
+    ColormapProperty(std::string_view identifier, std::string_view displayName,
                      ColormapType type = ColormapType::Continuous,
                      colorbrewer::Family family = colorbrewer::Family::Blues,
                      size_t numColors = getMinNumberOfColorsForFamily(colorbrewer::Family::Blues),

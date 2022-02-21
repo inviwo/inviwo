@@ -44,7 +44,7 @@ namespace plot {
 const std::string AxisProperty::classIdentifier = "org.inviwo.AxisProperty";
 std::string AxisProperty::getClassIdentifier() const { return classIdentifier; }
 
-AxisProperty::AxisProperty(const std::string& identifier, const std::string& displayName,
+AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName,
                            Orientation orientation, InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
     : BoolCompositeProperty{identifier, displayName, true, invalidationLevel, semantics}

@@ -110,7 +110,7 @@ protected:
      * @note The internal isReady_ lambda function must be set by derived class, e.g.,
      * perform isReady_.setUpdate(...) in the constructor of your derived class as in DataOutport.
      */
-    Outport(std::string identifier = "");
+    Outport(std::string_view identifier);
 
     // These function are only called by the corresponding inport.
     virtual void connectTo(Inport* port);

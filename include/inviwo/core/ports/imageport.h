@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -91,7 +91,7 @@ public:
 template <size_t N = 1>
 class BaseImageInport : public DataInport<Image, N>, public ImagePortBase {
 public:
-    BaseImageInport(std::string identifier, bool outportDeterminesSize = false);
+    BaseImageInport(std::string_view identifier, bool outportDeterminesSize = false);
     virtual ~BaseImageInport();
     virtual std::string getClassIdentifier() const override;
 
@@ -192,9 +192,9 @@ class IVW_CORE_API ImageOutport : public DataOutport<Image> {
     friend class BaseImageInport;
 
 public:
-    ImageOutport(std::string identifier, const DataFormatBase* format = DataVec4UInt8::get(),
+    ImageOutport(std::string_view identifier, const DataFormatBase* format = DataVec4UInt8::get(),
                  bool handleResizeEvents = true);
-    ImageOutport(std::string identifier, bool handleResizeEvents);
+    ImageOutport(std::string_view identifier, bool handleResizeEvents);
 
     virtual ~ImageOutport() = default;
     virtual std::string getClassIdentifier() const override;
@@ -270,7 +270,7 @@ struct PortTraits<ImageOutport> {
 
 // Image Inport
 template <size_t N>
-BaseImageInport<N>::BaseImageInport(std::string identifier, bool outportDeterminesSize)
+BaseImageInport<N>::BaseImageInport(std::string_view identifier, bool outportDeterminesSize)
     : DataInport<Image, N>(identifier), outportDeterminesSize_(outportDeterminesSize) {}
 
 template <size_t N>

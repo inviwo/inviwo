@@ -49,7 +49,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    MarginProperty(std::string identifier, std::string displayName, float top = 20.0f,
+    MarginProperty(std::string_view identifier, std::string_view displayName, float top = 20.0f,
                    float right = 20.0f, float bottom = 20.0f, float left = 20.0f,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);

@@ -188,7 +188,7 @@ void WorkspaceManager::load(std::string_view path, const ExceptionHandler& excep
     }
 }
 
-void WorkspaceManager::registerFactory(FactoryBase* factory) {
+void WorkspaceManager::registerFactory(FactoryBase<std::string_view>* factory) {
     registeredFactories_.push_back(factory);
 }
 

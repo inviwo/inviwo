@@ -34,7 +34,7 @@ namespace inviwo {
 const std::string PositionProperty::classIdentifier = "org.inviwo.PositionProperty";
 std::string PositionProperty::getClassIdentifier() const { return classIdentifier; }
 
-PositionProperty::PositionProperty(std::string identifier, std::string displayName,
+PositionProperty::PositionProperty(std::string_view identifier, std::string_view displayName,
                                    FloatVec3Property position, CameraProperty* camera,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)

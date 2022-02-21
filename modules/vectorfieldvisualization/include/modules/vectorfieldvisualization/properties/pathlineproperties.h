@@ -41,7 +41,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    PathLineProperties(std::string identifier, std::string displayName);
+    PathLineProperties(std::string_view identifier, std::string_view displayName);
     PathLineProperties(const PathLineProperties& rhs);
     virtual PathLineProperties* clone() const override;
     virtual ~PathLineProperties();

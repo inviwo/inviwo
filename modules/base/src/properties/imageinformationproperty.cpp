@@ -38,7 +38,8 @@ namespace inviwo {
 const std::string ImageInformationProperty::classIdentifier = "org.inviwo.ImageInformationProperty";
 std::string ImageInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
-ImageInformationProperty::ImageInformationProperty(std::string identifier, std::string displayName,
+ImageInformationProperty::ImageInformationProperty(std::string_view identifier,
+                                                   std::string_view displayName,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)

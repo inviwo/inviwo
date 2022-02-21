@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,44 +27,10 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/util/timer.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/util/factory.h>
 
 namespace inviwo {
 
-/**
- * \ingroup properties
- * A CompositeProperty holding the properties needed to animate over a sequence.
- */
-class IVW_MODULE_BASE_API SequenceTimerProperty : public CompositeProperty {
-public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    SequenceTimerProperty(std::string_view identifier, std::string_view displayName,
-                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                          PropertySemantics semantics = PropertySemantics::Default);
-    SequenceTimerProperty(const SequenceTimerProperty& rhs);
-    virtual SequenceTimerProperty* clone() const override;
-    virtual ~SequenceTimerProperty() = default;
-
-    void updateMax(size_t max);
-
-    IntSizeTProperty index_;
-    BoolProperty play_;
-    IntSizeTProperty framesPerSecond_;
-    EventProperty playPause_;
-    Timer timer_;
-
-private:
-    void onTimerEvent();
-    void onPlaySequenceToggled();
-};
+template class IVW_CORE_TMPL_INST FactoryBase<std::string_view>;
 
 }  // namespace inviwo

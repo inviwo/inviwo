@@ -59,7 +59,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    CategoricalAxisProperty(const std::string& identifier, const std::string& displayName,
+    CategoricalAxisProperty(std::string_view identifier, std::string_view displayName,
                             std::vector<std::string> categories = {"Category"},
                             Orientation orientation = Orientation::Horizontal,
                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,

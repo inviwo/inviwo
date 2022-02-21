@@ -48,7 +48,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    PlotTextProperty(const std::string& identifier, const std::string& displayName,
+    PlotTextProperty(std::string_view identifier, std::string_view displayName,
                      bool checked = false,
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);

@@ -46,6 +46,8 @@
 #include <bitset>
 #include <array>
 #include <vector>
+#include <map>
+#include <unordered_map>
 
 #include <fmt/format.h>
 
@@ -54,7 +56,6 @@ namespace inviwo {
 class Serializable;
 class VersionConverter;
 class InviwoApplication;
-class FactoryBase;
 template <typename T, typename K>
 class ContainerWrapper;
 
@@ -279,7 +280,7 @@ public:
     template <typename T, typename K>
     friend class ContainerWrapper;
 
-    void registerFactory(FactoryBase* factory);
+    void registerFactory(FactoryBase<std::string_view>* factory);
 
     int getInviwoWorkspaceVersion() const;
 
@@ -296,7 +297,7 @@ private:
     TxElement* retrieveChild(std::string_view key);
 
     ExceptionHandler exceptionHandler_;
-    std::vector<FactoryBase*> registeredFactories_;
+    std::vector<FactoryBase<std::string_view>*> registeredFactories_;
 
     int inviwoWorkspaceVersion_ = 0;
 };
@@ -614,21 +615,6 @@ private:
 };
 
 }  // namespace util
-
-template <typename T>
-T* Deserializer::getRegisteredType(std::string_view className) {
-    for (auto base : registeredFactories_) {
-        if (auto factory = dynamic_cast<Factory<T>*>(base)) {
-            if (auto data = factory->create(std::string(className))) return data.release();
-        }
-    }
-    return nullptr;
-}
-
-template <typename T>
-T* Deserializer::getNonRegisteredType() {
-    return util::defaultConstructType<T>();
-}
 
 template <typename T>
 class DeserializationErrorHandle {
@@ -1123,6 +1109,23 @@ void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H,
             handleError(IVW_CONTEXT);
         }
     });
+}
+
+template <typename T>
+T* Deserializer::getRegisteredType(std::string_view className) {
+    for (auto base : registeredFactories_) {
+        if (base->hasKey(className)) {
+            if (auto factory = dynamic_cast<Factory<T, std::string_view>*>(base)) {
+                if (auto data = factory->create(className)) return data.release();
+            }
+        }
+    }
+    return nullptr;
+}
+
+template <typename T>
+T* Deserializer::getNonRegisteredType() {
+    return util::defaultConstructType<T>();
 }
 
 template <class T>

@@ -45,7 +45,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    StipplingProperty(const std::string& identifier, const std::string& displayName,
+    StipplingProperty(std::string_view identifier, std::string_view displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
     StipplingProperty(const StipplingProperty& rhs);

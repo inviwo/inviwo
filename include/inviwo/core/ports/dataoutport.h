@@ -51,7 +51,7 @@ template <typename T>
 class DataOutport : public Outport, public OutportIterableImpl<DataOutport<T>, T> {
 public:
     using type = T;
-    DataOutport(std::string identifier);
+    DataOutport(std::string_view identifier);
     virtual ~DataOutport() = default;
 
     virtual std::string getClassIdentifier() const override;
@@ -101,7 +101,7 @@ struct PortTraits<DataOutport<T>> {
 };
 
 template <typename T>
-DataOutport<T>::DataOutport(std::string identifier)
+DataOutport<T>::DataOutport(std::string_view identifier)
     : Outport(identifier), OutportIterableImpl<DataOutport<T>, T>{}, data_() {
 
     isReady_.setUpdate([this]() {
