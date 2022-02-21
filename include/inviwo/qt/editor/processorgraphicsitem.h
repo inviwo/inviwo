@@ -145,6 +145,7 @@ private:
     std::vector<std::unique_ptr<QWidget>> ownedWidgets_;
 
     bool highlight_;
+    QColor backgroundColor_;
 
     std::shared_ptr<std::function<void(std::string_view, std::string_view)>> idChange_;
     std::shared_ptr<std::function<void(std::string_view, std::string_view)>> nameChange_;

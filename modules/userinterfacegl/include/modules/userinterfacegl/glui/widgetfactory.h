@@ -34,20 +34,20 @@
 #include <modules/userinterfacegl/glui/element.h>
 #include <modules/userinterfacegl/glui/widgetfactoryobject.h>
 
+#include <string_view>
+
 namespace inviwo {
 
 class Processor;
+class Property;
 
 namespace glui {
 
 class Renderer;
 
 class IVW_MODULE_USERINTERFACEGL_API WidgetFactory
-    : public StandardFactory<Element, WidgetFactoryObject, const std::string& /*key*/,
-                             Property& /*prop*/, Processor& /*proc*/, Renderer& /*renderer*/> {
-public:
-    WidgetFactory() = default;
-    virtual ~WidgetFactory() = default;
+    : public StandardFactory<Element, WidgetFactoryObject, std::string_view, Property&, Processor&,
+                             Renderer&> {
 };
 
 }  // namespace glui

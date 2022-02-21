@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -42,8 +41,8 @@ ProcessorFactory::ProcessorFactory(InviwoApplication* app) : Parent(), app_{app}
 
 bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
     auto moduleId = [&]() {
-        auto module = util::getProcessorModule(processor->getClassIdentifier(), *app_);
-        return module ? module->getIdentifier() : std::string("Unknown");
+        auto optId = util::getProcessorModuleIdentifier(processor->getClassIdentifier(), *app_);
+        return optId ? *optId : std::string("Unknown");
     };
 
     if (!Parent::registerObject(processor)) {

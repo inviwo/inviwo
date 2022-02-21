@@ -42,7 +42,7 @@ class ProcessorWidget;
 
 class IVW_CORE_API ProcessorWidgetFactoryObject {
 public:
-    ProcessorWidgetFactoryObject(const std::string& processorClassIdentifier);
+    ProcessorWidgetFactoryObject(std::string_view processorClassIdentifier);
     virtual ~ProcessorWidgetFactoryObject();
 
     virtual std::unique_ptr<ProcessorWidget> create(Processor* p) = 0;

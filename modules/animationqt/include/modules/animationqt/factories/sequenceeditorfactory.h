@@ -34,6 +34,8 @@
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 #include <modules/animationqt/factories/sequenceeditorfactoryobject.h>
 
+#include <map>
+
 namespace inviwo {
 
 namespace animation {
@@ -43,21 +45,18 @@ class KeyframeSequence;
 class AnimationManager;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorFactory
-    : public StandardFactory<SequenceEditorWidget, SequenceEditorFactoryObject, const std::string&,
+    : public StandardFactory<SequenceEditorWidget, SequenceEditorFactoryObject, std::string_view,
                              KeyframeSequence&, Track&, AnimationManager&> {
 public:
-    SequenceEditorFactory() = default;
-    virtual ~SequenceEditorFactory() = default;
-
-    using StandardFactory<SequenceEditorWidget, SequenceEditorFactoryObject, const std::string&,
+    using StandardFactory<SequenceEditorWidget, SequenceEditorFactoryObject, std::string_view,
                           KeyframeSequence&, Track&, AnimationManager&>::create;
 
-    void registerTrackToSequenceEditorMap(const std::string& trackId, const std::string& widgetId);
+    void registerTrackToSequenceEditorMap(std::string_view trackId, std::string_view widgetId);
 
-    std::string getSequenceEditorId(const std::string& trackId) const;
+    std::string getSequenceEditorId(std::string_view trackId) const;
 
 private:
-    std::unordered_map<std::string, std::string> trackToEditor_;
+    std::map<std::string, std::string, std::less<>> trackToEditor_;
 };
 
 }  // namespace animation

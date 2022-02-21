@@ -51,8 +51,7 @@ class IVW_MODULE_ANIMATION_API TrackFactory
 
 public:
     TrackFactory(ProcessorNetwork* network);
-    virtual ~TrackFactory() = default;
-
+    
     using Parent::create;
 
     virtual bool hasKey(std::string_view key) const override;

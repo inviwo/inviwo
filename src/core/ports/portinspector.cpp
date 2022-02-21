@@ -42,8 +42,8 @@ namespace inviwo {
 
 PortInspector::PortInspector() = default;
 
-PortInspector::PortInspector(std::string portClassIdentifier,
-                             std::string inspectorWorkspaceFileName)
+PortInspector::PortInspector(std::string_view portClassIdentifier,
+                             std::string_view inspectorWorkspaceFileName)
     : inspectorNetworkFileName_(inspectorWorkspaceFileName)
     , portClassIdentifier_(portClassIdentifier) {
 

@@ -33,12 +33,12 @@ namespace inviwo {
 
 namespace animation {
 
-void SequenceEditorFactory::registerTrackToSequenceEditorMap(const std::string& trackId,
-                                                             const std::string& widgetId) {
-    trackToEditor_[trackId] = widgetId;
+void SequenceEditorFactory::registerTrackToSequenceEditorMap(std::string_view trackId,
+                                                             std::string_view widgetId) {
+    trackToEditor_.try_emplace(std::string(trackId), widgetId);
 }
 
-std::string SequenceEditorFactory::getSequenceEditorId(const std::string& trackId) const {
+std::string SequenceEditorFactory::getSequenceEditorId(std::string_view trackId) const {
     auto it = trackToEditor_.find(trackId);
     if (it != trackToEditor_.end()) {
         return it->second;

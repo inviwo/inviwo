@@ -31,9 +31,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/animationmanager.h>
 
-#include <modules/animation/factories/interpolationfactory.h>
 #include <modules/animation/factories/interpolationfactoryobject.h>
-#include <modules/animation/factories/trackfactory.h>
 #include <modules/animation/factories/trackfactoryobject.h>
 
 namespace inviwo {
@@ -79,6 +77,9 @@ public:
     void unRegisterAll();
 
 private:
+    void registerTrackObject(std::unique_ptr<TrackFactoryObject> obj);
+    void registerInterpolationObject(std::unique_ptr<InterpolationFactoryObject> obj);
+
     AnimationManager& manager_;
     std::vector<std::unique_ptr<TrackFactoryObject>> tracks_;
     std::vector<std::unique_ptr<InterpolationFactoryObject>> interpolations_;
@@ -86,18 +87,12 @@ private:
 
 template <typename T>
 void AnimationSupplier::registerInterpolation() {
-    auto interpolation = std::make_unique<InterpolationFactoryObjectTemplate<T>>();
-    if (manager_.getInterpolationFactory().registerObject(interpolation.get())) {
-        interpolations_.push_back(std::move(interpolation));
-    }
+    registerInterpolationObject(std::make_unique<InterpolationFactoryObjectTemplate<T>>());
 }
 
 template <typename T>
 void AnimationSupplier::registerTrack() {
-    auto track = std::make_unique<TrackFactoryObjectTemplate<T>>();
-    if (manager_.getTrackFactory().registerObject(track.get())) {
-        tracks_.push_back(std::move(track));
-    }
+    registerTrackObject(std::make_unique<TrackFactoryObjectTemplate<T>>());
 }
 
 }  // namespace animation

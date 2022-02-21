@@ -197,7 +197,9 @@ void exposeProcessors(pybind11::module& m) {
         .def("registerObject", &ProcessorWidgetFactory::registerObject)
         .def("unRegisterObject", &ProcessorWidgetFactory::unRegisterObject)
         .def("create", [](ProcessorWidgetFactory* pf, Processor* p) { return pf->create(p); })
-        .def("hasKey", &ProcessorWidgetFactory::hasKey)
+        .def("hasKey", [](ProcessorWidgetFactory* pf, Processor* p) { return pf->hasKey(p); })
+        .def("hasKey",
+             [](ProcessorWidgetFactory* pf, std::string_view id) { return pf->hasKey(id); })
         .def("getkeys", &ProcessorWidgetFactory::getKeys);
 
     py::class_<ProcessorWidgetFactoryObject, ProcessorWidgetFactoryObjectTrampoline>(

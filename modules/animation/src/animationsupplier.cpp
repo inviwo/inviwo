@@ -29,6 +29,8 @@
 
 #include <modules/animation/animationsupplier.h>
 #include <modules/animation/animationmodule.h>
+#include <modules/animation/factories/interpolationfactory.h>
+#include <modules/animation/factories/trackfactory.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -67,6 +69,20 @@ void AnimationSupplier::unRegisterAll() {
         manager_.getInterpolationFactory().unRegisterObject(elem.get());
     }
     interpolations_.clear();
+}
+
+void AnimationSupplier::registerTrackObject(std::unique_ptr<TrackFactoryObject> obj) {
+    if (manager_.getTrackFactory().registerObject(obj.get())) {
+        tracks_.push_back(std::move(obj));
+    }
+}
+
+void AnimationSupplier::registerInterpolationObject(
+    std::unique_ptr<InterpolationFactoryObject> obj) {
+
+    if (manager_.getInterpolationFactory().registerObject(obj.get())) {
+        interpolations_.push_back(std::move(obj));
+    }
 }
 
 }  // namespace animation

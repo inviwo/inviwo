@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/dataframe/processors/csvsource.h>
 #include <modules/basegl/processors/background.h>

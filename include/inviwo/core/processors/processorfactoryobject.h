@@ -51,11 +51,11 @@ public:
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) = 0;
 
-    ProcessorInfo getProcessorInfo() const { return info_; }
-    std::string getClassIdentifier() const { return info_.classIdentifier; }
-    std::string getDisplayName() const { return info_.displayName; }
-    Tags getTags() const { return info_.tags; }
-    std::string getCategory() const { return info_.category; }
+    const ProcessorInfo& getProcessorInfo() const { return info_; }
+    const std::string& getClassIdentifier() const { return info_.classIdentifier; }
+    const std::string& getDisplayName() const { return info_.displayName; }
+    const Tags& getTags() const { return info_.tags; }
+    const std::string& getCategory() const { return info_.category; }
     CodeState getCodeState() const { return info_.codeState; }
     bool isVisible() { return info_.visible; }
 
