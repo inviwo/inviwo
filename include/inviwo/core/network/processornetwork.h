@@ -42,6 +42,7 @@
 #include <inviwo/core/util/exception.h>
 
 #include <string_view>
+#include <memory>
 
 namespace inviwo {
 
@@ -71,10 +72,6 @@ class IVW_CORE_API ProcessorNetwork : public Serializable,
                                       public PropertyOwnerObserver,
                                       public ProcessorMetaDataObserver {
 public:
-    using ProcessorMap = std::unordered_map<std::string, Processor*>;
-    using PortConnections = std::unordered_set<PortConnection>;
-    using PropertyLinks = std::unordered_set<PropertyLink>;
-
     ProcessorNetwork(InviwoApplication* application);
     virtual ~ProcessorNetwork();
 
@@ -84,15 +81,30 @@ public:
      * @param[in] processor The Processor to be added.
      * @see removeProcessor(), Processor::setIdentifier()
      */
-    Processor* addProcessor(std::unique_ptr<Processor> processor);
+    Processor* addProcessor(std::shared_ptr<Processor> processor);
+    template <typename T, class = typename std::enable_if_t<std::is_base_of_v<Processor, T>, void>>
+    T* addProcessor(std::shared_ptr<T> processor) {
+        return static_cast<T*>(addProcessor(std::shared_ptr<Processor>(std::move(processor))));
+    }
+    template <typename T, class = typename std::enable_if_t<std::is_base_of_v<Processor, T>, void>,
+              typename... Args>
+    std::shared_ptr<T> emplaceProcessor(Args&&... args) {
+        auto processor = [&]() {
+            if constexpr (std::is_constructible_v<T, Args...>) {
+                return std::make_shared<T>(std::forward<Args>(args)...);
+            } else {
+                return std::make_shared<T>(std::forward<Args>(args)..., application_);
+            }
+        }();
 
-    /**
-     * Adds a Processor to the ProcessorNetwork. The identifiers of all processors in the
-     * ProcessorNetwork should be unique.
-     * @param[in] processor The Processor to be added. The network will take ownership.
-     * @see removeProcessor(), Processor::setIdentifier()
-     */
-    bool addProcessor(Processor* processor);
+        auto name = ProcessorTraits<T>::getProcessorInfo().displayName;
+        assignIdentifierAndName(*processor, name);
+        if (addProcessor(processor)) {
+            return processor;
+        } else {
+            return nullptr;
+        }
+    }
 
     /**
      * Removes a Processor from the ProcessorNetwork. To ensure that the network does not end up
@@ -101,16 +113,9 @@ public:
      * @param[in] processor The Processor to be removed.
      * @see addProcessor()
      */
-    void removeProcessor(Processor* processor);
+    std::shared_ptr<Processor> removeProcessor(Processor* processor);
 
-    /**
-     * Removes and deletes a Processor from the ProcessorNetwork. To ensure that the network does
-     * not end up in a corrupt state, this method first removes and deletes all PortConnections and
-     * ProcessorLinks, which are related to the Processor to be removed.
-     * @param[in] processor The Processor to be removed.
-     * @see addProcessor()
-     */
-    void removeAndDeleteProcessor(Processor* processor);
+    std::shared_ptr<Processor> removeProcessor(std::string_view identifier);
 
     /**
      * Returns the Processor from the ProcessorNetwork, which has the given identifier.
@@ -292,6 +297,7 @@ public:
     int runningBackgroundJobs() const { return backgoundJobs_; }
 
 private:
+    void assignIdentifierAndName(Processor& p, std::string_view name);
     void removeProcessorHelper(Processor* processor);
 
     // PropertyOwnerObserver overrides
@@ -322,12 +328,12 @@ private:
 
     InviwoApplication* application_;
 
-    ProcessorMap processors_;
-    PortConnections connections_;
+    std::unordered_map<std::string, std::shared_ptr<Processor>> processors_;
+    std::unordered_set<PortConnection> connections_;
     // This vector is needed to keep the connections in chronological order, since some processors
     // depends on the order of connections, ideally we would get rid of this.
     std::vector<PortConnection> connectionsVec_;
-    PropertyLinks links_;
+    std::unordered_set<PropertyLink> links_;
 
     LinkEvaluator linkEvaluator_;
     std::vector<Processor*> processorsInvalidating_;
@@ -338,16 +344,15 @@ private:
 template <class T>
 std::vector<T*> ProcessorNetwork::getProcessorsByType() const {
     std::vector<T*> processors;
-    for (ProcessorMap::const_iterator it = processors_.begin(); it != processors_.end(); ++it) {
-        T* processor = dynamic_cast<T*>(it->second);
-        if (processor) processors.push_back(processor);
+    for (const auto& [identifier, processor] : processors_) {
+        if (auto p = dynamic_cast<T*>(processor.get())) processors.push_back(p);
     }
     return processors;
 }
 
 template <typename C>
 void ProcessorNetwork::forEachProcessor(C callback) {
-    for (auto& item : processors_) callback(item.second);
+    for (auto& item : processors_) callback(item.second.get());
 }
 
 template <typename C>

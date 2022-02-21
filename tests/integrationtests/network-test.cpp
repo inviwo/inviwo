@@ -46,17 +46,14 @@ public:
 
 protected:
     virtual void SetUp() {
-        Processor* p1 = new VolumeSource(InviwoApplication::getPtr());
+        auto p1 = network.emplaceProcessor<VolumeSource>();
         p1->setIdentifier("volumeSource");
-        network.addProcessor(p1);
 
-        Processor* p2 = new CubeProxyGeometry();
+        auto p2 = network.emplaceProcessor<CubeProxyGeometry>();
         p2->setIdentifier("cubeProxyGeometry");
-        network.addProcessor(p2);
 
-        Processor* p3 = new VolumeSlice();
+        auto p3 = network.emplaceProcessor<VolumeSlice>();
         p3->setIdentifier("volumeSlice");
-        network.addProcessor(p3);
 
         network.addConnection(p1->getOutport("data"), p2->getInport("volume"));
         network.addConnection(p1->getOutport("data"), p3->getInport("inputVolume"));

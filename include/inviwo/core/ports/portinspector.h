@@ -55,7 +55,7 @@ public:
     const std::string& getInspectorNetworkFileName() const;
     const std::string& getPortClassName() const;
 
-    const std::vector<Processor*>& getProcessors() const;
+    const std::vector<std::shared_ptr<Processor>>& getProcessors() const;
     const std::vector<Inport*>& getInports() const;
     CanvasProcessor* getCanvasProcessor() const;
     const std::vector<PortConnection>& getConnections() const;
@@ -65,7 +65,7 @@ private:
     std::string inspectorNetworkFileName_;
     std::string portClassIdentifier_;
 
-    std::vector<Processor*> processors_;
+    std::vector<std::shared_ptr<Processor>> processors_;
     std::vector<Inport*> inports_;
     std::vector<PortConnection> connections_;
     std::vector<PropertyLink> propertyLinks_;

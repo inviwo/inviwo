@@ -574,7 +574,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                         }
                     }
                 }
-                network_->removeAndDeleteProcessor(p);
+                network_->removeProcessor(p);
             });
 
             menu.addSeparator();
@@ -805,7 +805,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
     util::erase_remove_if(items, [&](QGraphicsItem* item) {
         auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item);
         if (pgi && !pgi->isEditingProcessorName()) {
-            network_->removeAndDeleteProcessor(pgi->getProcessor());
+            network_->removeProcessor(pgi->getProcessor());
             return true;
         } else {
             return false;

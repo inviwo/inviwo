@@ -313,7 +313,7 @@ void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
 
 void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
     try {
-        std::vector<std::unique_ptr<Processor>> processors;
+        std::vector<std::shared_ptr<Processor>> processors;
         std::vector<NetworkEdge> internalConnections;
         std::vector<NetworkEdge> externalConnections;
         std::vector<NetworkEdge> internalLinks;
@@ -334,12 +334,11 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
         std::map<std::string, std::string, std::less<>> processorIds;
         for (auto& p : processors) {
             auto orgId = p->getIdentifier();
-            network_->addProcessor(p.get());
+            network_->addProcessor(p);
             processorIds[orgId] = p->getIdentifier();
             AutoLinker::addLinks(network_, p.get());
 
             addedProcessors_.push_back(p.get());
-            p.release();
         }
 
         for (auto& c : internalConnections) {
@@ -394,7 +393,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
     }
 }
 
-bool addProcessorOnConnection(ProcessorNetwork* network, std::unique_ptr<Processor> processor,
+bool addProcessorOnConnection(ProcessorNetwork* network, std::shared_ptr<Processor> processor,
                               PortConnection connection) {
 
     Inport* connectionInport = connection.getInport();
@@ -424,12 +423,13 @@ bool addProcessorOnConnection(ProcessorNetwork* network, std::unique_ptr<Process
     }
 }
 
-void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> aNewProcessor,
-                      Processor* oldProcessor) {
+std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
+                                            std::shared_ptr<Processor> newProcessor,
+                                            Processor* oldProcessor) {
 
-    auto newProcessor = network->addProcessor(std::move(aNewProcessor));
+    network->addProcessor(newProcessor);
 
-    util::setPosition(newProcessor, util::getPosition(oldProcessor));
+    util::setPosition(newProcessor.get(), util::getPosition(oldProcessor));
 
     NetworkLock lock(network);
 
@@ -519,11 +519,12 @@ void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> aNew
     }
 
     // remove old processor
-    network->removeProcessor(oldProcessor);
-    delete oldProcessor;
+    auto old = network->removeProcessor(oldProcessor);
 
     // create all new connections
     for (auto& con : newConnections) network->addConnection(con);
+
+    return old;
 }
 
 }  // namespace util

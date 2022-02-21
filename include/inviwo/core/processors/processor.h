@@ -41,6 +41,8 @@
 #include <inviwo/core/util/statecoordinator.h>
 #include <inviwo/core/util/dispatcher.h>
 
+#include <memory>
+
 namespace inviwo {
 
 class Event;
@@ -163,7 +165,8 @@ class InviwoApplication;
 class IVW_CORE_API Processor : public PropertyOwner,
                                public MetaDataOwner,
                                public ProcessorObservable,
-                               public EventPropagator {
+                               public EventPropagator,
+                               public std::enable_shared_from_this<Processor> {
 public:
     using NameDispatcher = Dispatcher<void(std::string_view, std::string_view)>;
     using NameDispatcherHandle = typename NameDispatcher::Handle;

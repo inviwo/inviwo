@@ -107,7 +107,7 @@ void PortInspectorManager::insertNetwork(PortInspector* portInspector, Processor
 
     // Do auto-linking.
     for (auto& processor : portInspector->getProcessors()) {
-        AutoLinker al(network, processor, outport->getProcessor());
+        AutoLinker al(network, processor.get(), outport->getProcessor());
         al.addLinksToClosestCandidates(bidirectionalAutoLinks);
     }
 }
@@ -115,7 +115,7 @@ void PortInspectorManager::insertNetwork(PortInspector* portInspector, Processor
 void PortInspectorManager::removeNetwork(PortInspector* portInspector, ProcessorNetwork* network) {
     auto processors = portInspector->getProcessors();
     for (auto& processor : processors) {
-        network->removeProcessor(processor);
+        network->removeProcessor(processor.get());
     }
 }
 
@@ -158,7 +158,7 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
             }
 
             std::vector<std::string> processorIds;
-            for (auto* p : portInspector->getProcessors()) {
+            for (auto& p : portInspector->getProcessors()) {
                 processorIds.emplace_back(p->getIdentifier());
             }
             embeddedProcessors_[outport->getPath()] = std::move(processorIds);
@@ -193,9 +193,7 @@ void PortInspectorManager::removePortInspector(Outport* outport) {
         auto it = embeddedProcessors_.find(portId);
         if (it != embeddedProcessors_.end()) {
             for (const auto& id : it->second) {
-                if (auto proc = network->getProcessorByIdentifier(id)) {
-                    network->removeAndDeleteProcessor(proc);
-                }
+                network->removeProcessor(id);
             }
             embeddedProcessors_.erase(it);
         }
@@ -267,9 +265,7 @@ void PortInspectorManager::clear() {
 
     for (const auto& item : embeddedProcessors_) {
         for (const auto& id : item.second) {
-            if (auto proc = network->getProcessorByIdentifier(id)) {
-                network->removeAndDeleteProcessor(proc);
-            }
+            network->removeProcessor(id);
         }
     }
     portInspectors_.clear();

@@ -170,10 +170,8 @@ TEST(PortTests, SingleInportOutport) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
 
-    auto& source1 = *static_cast<OutportTestProcessor*>(
-        network.addProcessor(std::make_unique<OutportTestProcessor>("source1", 1)));
-    auto& sink = *static_cast<InportTestProcessor*>(
-        network.addProcessor(std::make_unique<InportTestProcessor>("sink")));
+    auto& source1 = *network.emplaceProcessor<OutportTestProcessor>("source1", 1);
+    auto& sink = *network.emplaceProcessor<InportTestProcessor>("sink");
 
     EXPECT_CALL(sink, process).WillOnce([&]() {
         EXPECT_TRUE(sink.inport.isConnected());
@@ -209,14 +207,9 @@ TEST(PortTests, MultiInportOutport) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
 
-    auto& source1 = *static_cast<OutportTestProcessor*>(
-        network.addProcessor(std::make_unique<OutportTestProcessor>("source1", 1)));
-
-    auto& source2 = *static_cast<OutportTestProcessor*>(
-        network.addProcessor(std::make_unique<OutportTestProcessor>("source2", 2)));
-
-    auto& sink = *static_cast<MultiInportTestProcessor*>(
-        network.addProcessor(std::make_unique<MultiInportTestProcessor>("sink")));
+    auto& source1 = *network.emplaceProcessor<OutportTestProcessor>("source1", 1);
+    auto& source2 = *network.emplaceProcessor<OutportTestProcessor>("source2", 2);
+    auto& sink = *network.emplaceProcessor<MultiInportTestProcessor>("sink");
 
     EXPECT_CALL(sink, process)
         .WillOnce([&]() {
@@ -290,14 +283,10 @@ TEST(PortTests, FlatMultiInportOutport) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
 
-    auto& source1 = *static_cast<OutportTestProcessor*>(
-        network.addProcessor(std::make_unique<OutportTestProcessor>("source1", 1)));
-
-    auto& source2 = *static_cast<VectorOutportTestProcessor*>(network.addProcessor(
-        std::make_unique<VectorOutportTestProcessor>("source2", std::vector<int>{2, 3, 4})));
-
-    auto& sink = *static_cast<FlatMultiInportTestProcessor*>(
-        network.addProcessor(std::make_unique<FlatMultiInportTestProcessor>("sink")));
+    auto& source1 = *network.emplaceProcessor<OutportTestProcessor>("source1", 1);
+    auto& source2 =
+        *network.emplaceProcessor<VectorOutportTestProcessor>("source2", std::vector<int>{2, 3, 4});
+    auto& sink = *network.emplaceProcessor<FlatMultiInportTestProcessor>("sink");
 
     EXPECT_CALL(sink, process)
         .WillOnce([&]() {

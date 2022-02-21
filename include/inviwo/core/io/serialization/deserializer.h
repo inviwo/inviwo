@@ -251,6 +251,9 @@ public:
     template <class T>
     void deserialize(std::string_view key, std::unique_ptr<T>& data);
 
+    template <class T>
+    void deserialize(std::string_view key, std::shared_ptr<T>& data);
+
     template <class Base, class T>
     void deserializeAs(std::string_view key, std::unique_ptr<T>& data);
 
@@ -1196,6 +1199,72 @@ void Deserializer::deserialize(std::string_view key, std::unique_ptr<T>& data) {
         T* ptr = nullptr;
         deserialize(key, ptr);
         data.reset(ptr);
+    }
+}
+
+template <class T>
+void Deserializer::deserialize(std::string_view key, std::shared_ptr<T>& data) {
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+
+    auto keyNode = retrieveChild(key);
+    if (!keyNode) return;
+
+    const std::string typeId{detail::getNodeAttribute(keyNode, SerializeConstants::TypeAttribute)};
+
+    if constexpr (util::HasGetClassIdentifier<T>::value) {
+        if (data && !typeId.empty() && typeId != data->getClassIdentifier()) {
+            // object has wrong type, delete it and let the deserialization create a new object
+            // with the correct type
+            data.reset();
+        }
+    }
+
+    if (!data) {
+        if (typeId.empty()) {
+            try {
+                data.reset(getNonRegisteredType<T>());
+            } catch (Exception& e) {
+                NodeDebugger error(keyNode);
+                throw SerializationException(
+                    "Error trying to create " + error.toString(0) + ". Reason:\n" + e.getMessage(),
+                    e.getContext(), key, typeId, error[0].identifier, keyNode);
+            }
+            if (!data) {
+                NodeDebugger error(keyNode);
+                throw SerializationException("Could not create " + error.toString(0) +
+                                                 ". Reason: No default constructor found.",
+                                             IVW_CONTEXT, key, typeId, error[0].identifier,
+                                             keyNode);
+            }
+        } else {
+            try {
+                for (auto base : registeredFactories_) {
+                    if (base->hasKey(typeId)) {
+                        if (auto factory = dynamic_cast<Factory<T, std::string_view>*>(base)) {
+                            if ((data = std::shared_ptr<T>(factory->create(typeId)))) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception& e) {
+                NodeDebugger error(keyNode);
+                throw SerializationException(
+                    "Error trying to create " + error.toString(0) + ". Reason:\n" + e.getMessage(),
+                    e.getContext(), key, typeId, error[0].identifier, keyNode);
+            }
+            if (!data) {
+                NodeDebugger error(keyNode);
+                throw SerializationException(
+                    "Could not create " + error.toString(0) + ". Reason: \"" + typeId +
+                        "\" Not found in factory.",
+                    IVW_CONTEXT, key, typeId, error[0].identifier, keyNode);
+            }
+        }
+    }
+
+    if (data) {
+        deserialize(key, *data);
     }
 }
 
