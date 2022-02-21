@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORMIMEDATA_H
-#define IVW_PROCESSORMIMEDATA_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,10 +46,10 @@ class IVW_QTEDITOR_API ProcessorMimeData : public QMimeData {
     Q_OBJECT
 #include <warn/pop>
 public:
-    ProcessorMimeData(std::unique_ptr<Processor> processor);
+    ProcessorMimeData(std::shared_ptr<Processor> processor);
     virtual ~ProcessorMimeData() = default;
 
-    std::unique_ptr<Processor> get() const;
+    std::shared_ptr<Processor> get() const;
     Processor* processor() const;
 
     static const std::string& getMimeTag();
@@ -57,21 +57,9 @@ public:
     static const ProcessorMimeData* toProcessorMimeData(const QMimeData* data);
 
 private:
-    struct ContextAwareDelete {
-        template <typename T>
-        ContextAwareDelete(std::default_delete<T>&&) noexcept {}
-
-        template <typename T>
-        operator std::default_delete<T>() {
-            return {};
-        }
-
-        void operator()(Processor* p) const noexcept;
-    };
-
-    mutable std::unique_ptr<Processor, ContextAwareDelete> processor_;
+   std::shared_ptr<Processor> processor_;
+   util::OnScopeExit activateContext_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_PROCESSORMIMEDATA_H

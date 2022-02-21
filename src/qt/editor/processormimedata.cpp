@@ -40,13 +40,10 @@
 
 namespace inviwo {
 
-void ProcessorMimeData::ContextAwareDelete::operator()(Processor* p) const noexcept {
-    rendercontext::activateDefault();
-    delete p;
-}
-
-ProcessorMimeData::ProcessorMimeData(std::unique_ptr<Processor> processor)
-    : QMimeData{}, processor_{std::move(processor)} {
+ProcessorMimeData::ProcessorMimeData(std::shared_ptr<Processor> processor)
+    : QMimeData{}
+    , processor_{std::move(processor)}
+    , activateContext_{[]() { rendercontext::activateDefault(); }} {
 
     auto cid = utilqt::toQString(processor_->getClassIdentifier());
 
@@ -59,7 +56,7 @@ ProcessorMimeData::ProcessorMimeData(std::unique_ptr<Processor> processor)
     setText(cid);
 }
 
-std::unique_ptr<Processor> ProcessorMimeData::get() const { return std::move(processor_); }
+std::shared_ptr<Processor> ProcessorMimeData::get() const { return processor_; }
 
 Processor* ProcessorMimeData::processor() const { return processor_.get(); }
 
