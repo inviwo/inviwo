@@ -166,14 +166,14 @@ void PickingController::propagateEvent(GestureEvent*, EventPropagator*) {
 
 void PickingController::setPickingSource(const std::shared_ptr<const Image>& src) { src_ = src; }
 
-size_t PickingController::pickId(const uvec2& coord) {
+size_t PickingController::pickId(const dvec2& coord) {
     if (auto src = src_.lock()) {
-        if (auto dim = src->getDimensions(); glm::any(
-                glm::lessThan(coord, uvec2{0}) | glm::greaterThan(coord, uvec2{dim} - uvec2{1}))) {
+        if (auto dim = src->getDimensions();
+            glm::any(glm::lessThan(coord, dvec2{0}) ||
+                     glm::greaterThan(coord, dvec2{dim} - dvec2{1.0}))) {
             return PickingManager::VoidId;
         }
-        const auto value = src->readPixel(coord, LayerType::Picking);
-        if (value.a > 0.0) {
+        if (const auto value = src->readPixel(uvec2{coord}, LayerType::Picking); value.a > 0.0) {
             return PickingManager::colorToIndex(uvec3(value));
         }
     }
