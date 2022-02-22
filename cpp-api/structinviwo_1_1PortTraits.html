@@ -98,23 +98,23 @@ $(document).ready(function(){initNavTree('structinviwo_1_1PortTraits.html',''); 
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a18905fc23ff0e09c78dc22a1b302fb21"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1PortTraits.html#a18905fc23ff0e09c78dc22a1b302fb21">classIdentifier</a> ()</td></tr>
-<tr class="separator:a18905fc23ff0e09c78dc22a1b302fb21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a699c099169b85312f7b097307fe4b231"><td class="memItemLeft" align="right" valign="top">static const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1PortTraits.html#a699c099169b85312f7b097307fe4b231">classIdentifier</a> ()</td></tr>
+<tr class="separator:a699c099169b85312f7b097307fe4b231"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T, typename = void&gt;<br />
 class inviwo::PortTraits&lt; T, typename &gt;</div><p >A traits class for getting the class identifier from a <a class="el" href="classinviwo_1_1Port.html" title="A abstract base class for all ports. A port can be connected to other ports and is owned by a process...">Port</a>. This provides a customization point if one wants to generate the class identifier dynamically, by specializing the traits for your kind of <a class="el" href="classinviwo_1_1Port.html" title="A abstract base class for all ports. A port can be connected to other ports and is owned by a process...">Port</a>: </p>
 <div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><span class="keyword">struct </span>PortTraits&lt;MyPort&lt;T&gt;&gt; {</div>
-<div class="line">   <span class="keyword">static</span> std::string <a class="code hl_function" href="structinviwo_1_1PortTraits.html#a18905fc23ff0e09c78dc22a1b302fb21">classIdentifier</a>() {</div>
+<div class="line">   <span class="keyword">static</span> std::string <a class="code hl_function" href="structinviwo_1_1PortTraits.html#a699c099169b85312f7b097307fe4b231">classIdentifier</a>() {</div>
 <div class="line">      <span class="keywordflow">return</span> generateMyPortClassIdentifier&lt;T&gt;();</div>
 <div class="line">   }</div>
 <div class="line">};</div>
-<div class="ttc" id="astructinviwo_1_1PortTraits_html_a18905fc23ff0e09c78dc22a1b302fb21"><div class="ttname"><a href="structinviwo_1_1PortTraits.html#a18905fc23ff0e09c78dc22a1b302fb21">inviwo::PortTraits::classIdentifier</a></div><div class="ttdeci">static std::string classIdentifier()</div><div class="ttdef"><b>Definition:</b> porttraits.h:64</div></div>
+<div class="ttc" id="astructinviwo_1_1PortTraits_html_a699c099169b85312f7b097307fe4b231"><div class="ttname"><a href="structinviwo_1_1PortTraits.html#a699c099169b85312f7b097307fe4b231">inviwo::PortTraits::classIdentifier</a></div><div class="ttdeci">static const std::string &amp; classIdentifier()</div><div class="ttdef"><b>Definition:</b> porttraits.h:64</div></div>
 </div><!-- fragment --><p> The default behavior returns the static member "classIdentifier"; </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a18905fc23ff0e09c78dc22a1b302fb21" name="a18905fc23ff0e09c78dc22a1b302fb21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a18905fc23ff0e09c78dc22a1b302fb21">&#9670;&nbsp;</a></span>classIdentifier()</h2>
+<a id="a699c099169b85312f7b097307fe4b231" name="a699c099169b85312f7b097307fe4b231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a699c099169b85312f7b097307fe4b231">&#9670;&nbsp;</a></span>classIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -125,7 +125,7 @@ template&lt;typename T , typename  = void&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static std::string <a class="el" href="structinviwo_1_1PortTraits.html">inviwo::PortTraits</a>&lt; T, typename &gt;::classIdentifier </td>
+          <td class="memname">static const std::string &amp; <a class="el" href="structinviwo_1_1PortTraits.html">inviwo::PortTraits</a>&lt; T, typename &gt;::classIdentifier </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

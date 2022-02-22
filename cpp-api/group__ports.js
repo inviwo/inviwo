@@ -20,7 +20,7 @@ var group__ports =
       [ "setHandleResizeEvents", "classinviwo_1_1ImageOutport.html#a18dbedde49eb6809be7f42c328087863", null ]
     ] ],
     [ "inviwo::Port", "classinviwo_1_1Port.html", [
-      [ "Port", "classinviwo_1_1Port.html#a20f620bce13874929ec03a614a11d8d9", null ],
+      [ "Port", "classinviwo_1_1Port.html#ae22dfcc9368fe81f9ba567b0da48c9b2", null ],
       [ "getColorCode", "classinviwo_1_1Port.html#a4a4e1fa8b669dedf737d67442030b58b", null ],
       [ "getPath", "classinviwo_1_1Port.html#a013b5886880e37e693fe988ed10f5348", null ]
     ] ],

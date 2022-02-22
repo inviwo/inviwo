@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Inviwo: inviwo::StandardFactory&lt; T, M, K, Args &gt; Class Template Reference</title>
+<title>Inviwo: inviwo::StandardFactory&lt; T, FactoryObject, Key, Args &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -85,64 +85,44 @@ $(document).ready(function(){initNavTree('classinviwo_1_1StandardFactory.html','
 
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classinviwo_1_1StandardFactory-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::StandardFactory&lt; T, M, K, Args &gt; Class Template Reference</div></div>
+  <div class="headertitle"><div class="title">inviwo::StandardFactory&lt; T, FactoryObject, Key, Args &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;factory.h&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::StandardFactory&lt; T, M, K, Args &gt;:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::StandardFactory&lt; T, FactoryObject, Key, Args &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
  <div class="center">
-  <img src="classinviwo_1_1StandardFactory.png" usemap="#inviwo::StandardFactory_3C_20T_2C_20M_2C_20K_2C_20Args_20_3E_map" alt=""/>
-  <map id="inviwo::StandardFactory_3C_20T_2C_20M_2C_20K_2C_20Args_20_3E_map" name="inviwo::StandardFactory_3C_20T_2C_20M_2C_20K_2C_20Args_20_3E_map">
-<area href="classinviwo_1_1Factory.html" alt="inviwo::Factory&lt; T, const std::string &amp;, Args... &gt;" shape="rect" coords="0,112,288,136"/>
-<area href="classinviwo_1_1FactoryObservable.html" alt="inviwo::FactoryObservable&lt; M &gt;" shape="rect" coords="298,112,586,136"/>
-<area href="classinviwo_1_1FactoryBase.html" alt="inviwo::FactoryBase" shape="rect" coords="0,56,288,80"/>
-<area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; FactoryObserver&lt; M &gt; &gt;" shape="rect" coords="298,56,586,80"/>
-<area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="298,0,586,24"/>
+  <img src="classinviwo_1_1StandardFactory.png" usemap="#inviwo::StandardFactory_3C_20T_2C_20FactoryObject_2C_20Key_2C_20Args_20_3E_map" alt=""/>
+  <map id="inviwo::StandardFactory_3C_20T_2C_20FactoryObject_2C_20Key_2C_20Args_20_3E_map" name="inviwo::StandardFactory_3C_20T_2C_20FactoryObject_2C_20Key_2C_20Args_20_3E_map">
+<area href="classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html" alt="inviwo::Factory&lt; T, std::string_view, Args... &gt;" shape="rect" coords="0,168,553,192"/>
+<area href="classinviwo_1_1FactoryRegister.html" alt="inviwo::FactoryRegister&lt; FactoryObject, factoryKeyType&lt; std::string_view &gt;, std::string_view &gt;" shape="rect" coords="563,168,1116,192"/>
+<area href="classinviwo_1_1FactoryBase.html" alt="inviwo::FactoryBase" shape="rect" coords="0,112,553,136"/>
+<area href="classinviwo_1_1FactoryObservable.html" alt="inviwo::FactoryObservable&lt; FactoryObject &gt;" shape="rect" coords="563,112,1116,136"/>
+<area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; FactoryObserver&lt; FactoryObject &gt; &gt;" shape="rect" coords="563,56,1116,80"/>
+<area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="563,0,1116,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a99504ce4243f43cc20e3569d29a0e1f7"><td class="memItemLeft" align="right" valign="top"><a id="a99504ce4243f43cc20e3569d29a0e1f7" name="a99504ce4243f43cc20e3569d29a0e1f7"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Key</b> = typename std::remove_cv&lt; typename std::remove_reference&lt; K &gt;::type &gt;::type</td></tr>
-<tr class="separator:a99504ce4243f43cc20e3569d29a0e1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ebb987a3dc2429845b66bc77773a59b"><td class="memItemLeft" align="right" valign="top"><a id="a3ebb987a3dc2429845b66bc77773a59b" name="a3ebb987a3dc2429845b66bc77773a59b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Map</b> = std::unordered_map&lt; Key, M * &gt;</td></tr>
-<tr class="separator:a3ebb987a3dc2429845b66bc77773a59b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a56066905d8ebb3387544ea4ae8a716ba"><td class="memItemLeft" align="right" valign="top"><a id="a56066905d8ebb3387544ea4ae8a716ba" name="a56066905d8ebb3387544ea4ae8a716ba"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>registerObject</b> (M *obj)</td></tr>
-<tr class="separator:a56066905d8ebb3387544ea4ae8a716ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab144288df17f6c4241c3a12d5c74db8f"><td class="memItemLeft" align="right" valign="top"><a id="ab144288df17f6c4241c3a12d5c74db8f" name="ab144288df17f6c4241c3a12d5c74db8f"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>unRegisterObject</b> (M *obj)</td></tr>
-<tr class="separator:ab144288df17f6c4241c3a12d5c74db8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a06ed1a52ef1ee1c574b5822de1cb24"><td class="memItemLeft" align="right" valign="top"><a id="a4a06ed1a52ef1ee1c574b5822de1cb24" name="a4a06ed1a52ef1ee1c574b5822de1cb24"></a>
-virtual std::unique_ptr&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (K key, Args... args) const override</td></tr>
-<tr class="separator:a4a06ed1a52ef1ee1c574b5822de1cb24"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6bafb2bc88ca38425dafab199a22dadb"><td class="memItemLeft" align="right" valign="top"><a id="a6bafb2bc88ca38425dafab199a22dadb" name="a6bafb2bc88ca38425dafab199a22dadb"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (K key) const override</td></tr>
-<tr class="separator:a6bafb2bc88ca38425dafab199a22dadb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a039c95cb768554aaf962016b54e7b33b"><td class="memItemLeft" align="right" valign="top"><a id="a039c95cb768554aaf962016b54e7b33b" name="a039c95cb768554aaf962016b54e7b33b"></a>
-virtual std::vector&lt; Key &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getKeys</b> () const</td></tr>
-<tr class="separator:a039c95cb768554aaf962016b54e7b33b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1Factory"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Factory')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; T, const std::string &amp;, Args... &gt;</a></td></tr>
-<tr class="memitem:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory"><td class="memItemLeft" align="right" valign="top"><a id="aa60830c46245ac6a6fa70496a300cae7" name="aa60830c46245ac6a6fa70496a300cae7"></a>
-virtual std::unique_ptr&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (const std::string &amp; key, Args... args) const=0</td></tr>
-<tr class="separator:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65b506e9e5cce624082f624a1f3efc87 inherit pub_methods_classinviwo_1_1Factory"><td class="memItemLeft" align="right" valign="top"><a id="a65b506e9e5cce624082f624a1f3efc87" name="a65b506e9e5cce624082f624a1f3efc87"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (const std::string &amp; key) const=0</td></tr>
-<tr class="separator:a65b506e9e5cce624082f624a1f3efc87 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1487107f85700c411503c758e114c60a"><td class="memItemLeft" align="right" valign="top"><a id="a1487107f85700c411503c758e114c60a" name="a1487107f85700c411503c758e114c60a"></a>
+virtual std::unique_ptr&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (Key key, Args... args) const override</td></tr>
+<tr class="separator:a1487107f85700c411503c758e114c60a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad313cb58ada07ef3b40d89e7d79248f2"><td class="memItemLeft" align="right" valign="top"><a id="ad313cb58ada07ef3b40d89e7d79248f2" name="ad313cb58ada07ef3b40d89e7d79248f2"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (Key key) const override</td></tr>
+<tr class="separator:ad313cb58ada07ef3b40d89e7d79248f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html">inviwo::Factory&lt; T, std::string_view, Args... &gt;</a></td></tr>
+<tr class="memitem:a3969ccc0038baf37b4fdd81e204f7151 inherit pub_methods_classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4"><td class="memItemLeft" align="right" valign="top"><a id="a3969ccc0038baf37b4fdd81e204f7151" name="a3969ccc0038baf37b4fdd81e204f7151"></a>
+virtual std::unique_ptr&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (std::string_view key, Args... args) const =0</td></tr>
+<tr class="separator:a3969ccc0038baf37b4fdd81e204f7151 inherit pub_methods_classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfb7add57f0d9bca9ec198d7267043bd inherit pub_methods_classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html#acfb7add57f0d9bca9ec198d7267043bd">hasKey</a> (std::string_view key) const =0</td></tr>
+<tr class="separator:acfb7add57f0d9bca9ec198d7267043bd inherit pub_methods_classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1FactoryBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1FactoryBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1FactoryBase.html">inviwo::FactoryBase</a></td></tr>
 <tr class="memitem:adae91895023550032f53007cfdfb9e44 inherit pub_methods_classinviwo_1_1FactoryBase"><td class="memItemLeft" align="right" valign="top"><a id="adae91895023550032f53007cfdfb9e44" name="adae91895023550032f53007cfdfb9e44"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>FactoryBase</b> (const <a class="el" href="classinviwo_1_1FactoryBase.html">FactoryBase</a> &amp;)=delete</td></tr>
@@ -156,20 +136,35 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (c
 <tr class="memitem:a002b3c9e5593486b6871e4f018580d79 inherit pub_methods_classinviwo_1_1FactoryBase"><td class="memItemLeft" align="right" valign="top"><a id="a002b3c9e5593486b6871e4f018580d79" name="a002b3c9e5593486b6871e4f018580d79"></a>
 <a class="el" href="classinviwo_1_1FactoryBase.html">FactoryBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1FactoryBase.html">FactoryBase</a> &amp;&amp;)=default</td></tr>
 <tr class="separator:a002b3c9e5593486b6871e4f018580d79 inherit pub_methods_classinviwo_1_1FactoryBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; FactoryObserver&lt; M &gt; &gt;</a></td></tr>
-<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8">Observable</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; M &gt; &gt; &amp;other)</td></tr>
+<tr class="memitem:ac735d55955b1d9bdaf1a3c8d965341cd inherit pub_methods_classinviwo_1_1FactoryBase"><td class="memItemLeft" align="right" valign="top"><a id="ac735d55955b1d9bdaf1a3c8d965341cd" name="ac735d55955b1d9bdaf1a3c8d965341cd"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (std::string_view key) const =0</td></tr>
+<tr class="separator:ac735d55955b1d9bdaf1a3c8d965341cd inherit pub_methods_classinviwo_1_1FactoryBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1FactoryRegister"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1FactoryRegister')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1FactoryRegister.html">inviwo::FactoryRegister&lt; FactoryObject, factoryKeyType&lt; std::string_view &gt;, std::string_view &gt;</a></td></tr>
+<tr class="memitem:a0b244528108edd1f87507df782b7bf4e inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1FactoryRegister.html#a0b244528108edd1f87507df782b7bf4e">registerObject</a> (FactoryObject *obj)</td></tr>
+<tr class="separator:a0b244528108edd1f87507df782b7bf4e inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e4f4fb99c4820e004d6e11d14e3c7a2 inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memItemLeft" align="right" valign="top"><a id="a2e4f4fb99c4820e004d6e11d14e3c7a2" name="a2e4f4fb99c4820e004d6e11d14e3c7a2"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>unRegisterObject</b> (FactoryObject *obj)</td></tr>
+<tr class="separator:a2e4f4fb99c4820e004d6e11d14e3c7a2 inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af03b130c4592cf73675d25bc8321e6a8 inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memItemLeft" align="right" valign="top"><a id="af03b130c4592cf73675d25bc8321e6a8" name="af03b130c4592cf73675d25bc8321e6a8"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (std::string_view key) const</td></tr>
+<tr class="separator:af03b130c4592cf73675d25bc8321e6a8 inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cc4205f630c4c9f6a4961846d9013db inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memItemLeft" align="right" valign="top"><a id="a3cc4205f630c4c9f6a4961846d9013db" name="a3cc4205f630c4c9f6a4961846d9013db"></a>
+std::vector&lt; factoryKeyType&lt; std::string_view &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getKeys</b> () const</td></tr>
+<tr class="separator:a3cc4205f630c4c9f6a4961846d9013db inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; FactoryObserver&lt; FactoryObject &gt; &gt;</a></td></tr>
+<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8">Observable</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; FactoryObject &gt; &gt; &amp;other)</td></tr>
 <tr class="separator:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ab7afb68122ba0150f1c7c20eb9086987">Observable</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; M &gt; &gt; &amp;&amp;other)</td></tr>
+<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ab7afb68122ba0150f1c7c20eb9086987">Observable</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; FactoryObject &gt; &gt; &amp;&amp;other)</td></tr>
 <tr class="separator:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; M &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a0ab0efc8a80e36322a1197e8750e036b">operator=</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; M &gt; &gt; &amp;other)</td></tr>
+<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; FactoryObject &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a0ab0efc8a80e36322a1197e8750e036b">operator=</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; FactoryObject &gt; &gt; &amp;other)</td></tr>
 <tr class="separator:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; M &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ae893ae3c28d44f320cd1a2efa704932e">operator=</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; M &gt; &gt; &amp;&amp;other)</td></tr>
+<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; FactoryObject &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ae893ae3c28d44f320cd1a2efa704932e">operator=</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; FactoryObject &gt; &gt; &amp;&amp;other)</td></tr>
 <tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="aa342929bb9eb6a886ce783bc59dcf7f6" name="aa342929bb9eb6a886ce783bc59dcf7f6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (<a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; M &gt; *observer)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (<a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; FactoryObject &gt; *observer)</td></tr>
 <tr class="separator:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbabbb01670a61065bfb2b58950feea3 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="acbabbb01670a61065bfb2b58950feea3" name="acbabbb01670a61065bfb2b58950feea3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (<a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; M &gt; *observer)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (<a class="el" href="classinviwo_1_1FactoryObserver.html">FactoryObserver</a>&lt; FactoryObject &gt; *observer)</td></tr>
 <tr class="separator:acbabbb01670a61065bfb2b58950feea3 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aceded27239088ecdeca8e590770614d9 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#aceded27239088ecdeca8e590770614d9">startBlockingNotifications</a> () override final</td></tr>
 <tr class="separator:aceded27239088ecdeca8e590770614d9 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,22 +177,16 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>startBlocking
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>stopBlockingNotifications</b> ()=0</td></tr>
 <tr class="separator:aad7549e6b8fe40542a442dfc77a9e311"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:aa3f8803864fc745fe1a6c687f899cdbb"><td class="memItemLeft" align="right" valign="top"><a id="aa3f8803864fc745fe1a6c687f899cdbb" name="aa3f8803864fc745fe1a6c687f899cdbb"></a>
-Map&#160;</td><td class="memItemRight" valign="bottom"><b>map_</b></td></tr>
-<tr class="separator:aa3f8803864fc745fe1a6c687f899cdbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pro_methods_classinviwo_1_1FactoryObservable"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classinviwo_1_1FactoryObservable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1FactoryObservable.html">inviwo::FactoryObservable&lt; M &gt;</a></td></tr>
+<tr class="inherit_header pro_methods_classinviwo_1_1FactoryObservable"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classinviwo_1_1FactoryObservable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1FactoryObservable.html">inviwo::FactoryObservable&lt; FactoryObject &gt;</a></td></tr>
 <tr class="memitem:a921a6b802936fa22fd507e58cdbc2571 inherit pro_methods_classinviwo_1_1FactoryObservable"><td class="memItemLeft" align="right" valign="top"><a id="a921a6b802936fa22fd507e58cdbc2571" name="a921a6b802936fa22fd507e58cdbc2571"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversOnRegister</b> (M *p)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversOnRegister</b> (FactoryObject *p)</td></tr>
 <tr class="separator:a921a6b802936fa22fd507e58cdbc2571 inherit pro_methods_classinviwo_1_1FactoryObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a051b1133be0bcfe51c5322ce6032c266 inherit pro_methods_classinviwo_1_1FactoryObservable"><td class="memItemLeft" align="right" valign="top"><a id="a051b1133be0bcfe51c5322ce6032c266" name="a051b1133be0bcfe51c5322ce6032c266"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversOnUnRegister</b> (M *p)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversOnUnRegister</b> (FactoryObject *p)</td></tr>
 <tr class="separator:a051b1133be0bcfe51c5322ce6032c266 inherit pro_methods_classinviwo_1_1FactoryObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; FactoryObserver&lt; M &gt; &gt;</a></td></tr>
+<tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; FactoryObserver&lt; FactoryObject &gt; &gt;</a></td></tr>
 <tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a980d804dbfb060d91d5b54161f14dc8f" name="a980d804dbfb060d91d5b54161f14dc8f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>forEachObserver</b> (C callback)</td></tr>
 <tr class="separator:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -217,10 +206,22 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addObservationHelper<
 <tr class="memitem:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memItemLeft" align="right" valign="top"><a id="ac3efb1aaffc402b45b07c2c599b9785e" name="ac3efb1aaffc402b45b07c2c599b9785e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservationHelper</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> *observer)</td></tr>
 <tr class="separator:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classinviwo_1_1FactoryRegister"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classinviwo_1_1FactoryRegister')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1FactoryRegister.html">inviwo::FactoryRegister&lt; FactoryObject, factoryKeyType&lt; std::string_view &gt;, std::string_view &gt;</a></td></tr>
+<tr class="memitem:ad7d4fcb0bc59e3b9313f0f57fbf48b3c inherit pro_attribs_classinviwo_1_1FactoryRegister"><td class="memItemLeft" align="right" valign="top"><a id="ad7d4fcb0bc59e3b9313f0f57fbf48b3c" name="ad7d4fcb0bc59e3b9313f0f57fbf48b3c"></a>
+std::map&lt; factoryKeyType&lt; std::string_view &gt;, FactoryObject *, std::less&lt;&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>map_</b></td></tr>
+<tr class="separator:ad7d4fcb0bc59e3b9313f0f57fbf48b3c inherit pro_attribs_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename T, typename M, typename K = const std::string&amp;, typename... Args&gt;<br />
-class inviwo::StandardFactory&lt; T, M, K, Args &gt;</div><p >T Models the object created M Models a object with a function create(K key, Args...) that can create objects of type T with constructor T(Args...) M would usually be a "factory object" type K Models a key used to look up T </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T, typename FactoryObject, typename Key = std::string_view, typename... Args&gt;<br />
+class inviwo::StandardFactory&lt; T, FactoryObject, Key, Args &gt;</div><p >Standard setup of <a class="el" href="classinviwo_1_1Factory.html">Factory</a> using factory objects to create an instance. The factory will use a <a class="el" href="classinviwo_1_1FactoryRegister.html">FactoryRegister</a> of <code>FactoryObject</code> and <code>factoryKeyType&lt;Key&gt;</code>. This indirection allows std::string_view to be used as key where as the <a class="el" href="classinviwo_1_1FactoryRegister.html">FactoryRegister</a> will store strings for the keys. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The object created </td></tr>
+    <tr><td class="paramname">FactoryObject</td><td>An object with a function <code>std::unique_ptr&lt;T&gt; create(Args...)</code> that can create objects of type <code>T</code> with constructor <code>T(Args...)</code>. <code>FactoryObject</code> would usually be a "factory object". A `getClassIdentifier()´ function is also required for registration. </td></tr>
+    <tr><td class="paramname">Key</td><td>Models a key used to look up <code>T</code> </td></tr>
+    <tr><td class="paramname">Args</td><td>A variadic list of arguments passed to <code>T</code> on construction </td></tr>
+  </table>
+  </dd>
+</dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>factory.h</li>
 </ul>
