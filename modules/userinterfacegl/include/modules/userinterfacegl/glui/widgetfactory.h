@@ -47,8 +47,7 @@ class Renderer;
 
 class IVW_MODULE_USERINTERFACEGL_API WidgetFactory
     : public StandardFactory<Element, WidgetFactoryObject, std::string_view, Property&, Processor&,
-                             Renderer&> {
-};
+                             Renderer&> {};
 
 }  // namespace glui
 

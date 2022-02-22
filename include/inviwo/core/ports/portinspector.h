@@ -44,7 +44,8 @@ namespace inviwo {
 class IVW_CORE_API PortInspector {
 public:
     PortInspector();  // Should only be used for deserialization.
-    PortInspector(std::string_view portClassIdentifier, std::string_view inspectorWorkspaceFileName);
+    PortInspector(std::string_view portClassIdentifier,
+                  std::string_view inspectorWorkspaceFileName);
     PortInspector(const PortInspector&) = delete;
     PortInspector(PortInspector&&) = default;
     PortInspector& operator=(const PortInspector&) = delete;

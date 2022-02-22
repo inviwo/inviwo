@@ -41,12 +41,9 @@ namespace plot {
 const std::string CategoricalAxisProperty::classIdentifier = "org.inviwo.CategoricalAxisProperty";
 std::string CategoricalAxisProperty::getClassIdentifier() const { return classIdentifier; }
 
-CategoricalAxisProperty::CategoricalAxisProperty(std::string_view identifier,
-                                                 std::string_view displayName,
-                                                 std::vector<std::string> categories,
-                                                 Orientation orientation,
-                                                 InvalidationLevel invalidationLevel,
-                                                 PropertySemantics semantics)
+CategoricalAxisProperty::CategoricalAxisProperty(
+    std::string_view identifier, std::string_view displayName, std::vector<std::string> categories,
+    Orientation orientation, InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , visible_{"visible", "Visible", true}
     , color_{"color",    "Color",     vec4{vec3{0.0f}, 1.0f},           vec4{0.0f},
