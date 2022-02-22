@@ -35,13 +35,15 @@ namespace inviwo {
 std::unique_ptr<Inport> InportFactory::create(std::string_view className,
                                               std::string_view identifier) const {
     return std::unique_ptr<Inport>(util::map_find_or_null(
-        this->map_, className, [&identifier](InportFactoryObject* o) { return o->create(identifier); }));
+        this->map_, className,
+        [&identifier](InportFactoryObject* o) { return o->create(identifier); }));
 }
 
 std::unique_ptr<Outport> OutportFactory::create(std::string_view className,
                                                 std::string_view identifier) const {
     return std::unique_ptr<Outport>(util::map_find_or_null(
-        this->map_, className, [&identifier](OutportFactoryObject* o) { return o->create(identifier); }));
+        this->map_, className,
+        [&identifier](OutportFactoryObject* o) { return o->create(identifier); }));
 }
 
 }  // namespace inviwo

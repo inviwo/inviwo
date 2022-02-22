@@ -144,8 +144,8 @@ public:
     static const std::string classIdentifier;
 
     CustomTransformProperty(
-        std::string_view identifier, std::string_view displayName,
-        const mat4& value = mat4{1.0f}, const mat4& minValue = util::filled<mat4>(-1.e6f),
+        std::string_view identifier, std::string_view displayName, const mat4& value = mat4{1.0f},
+        const mat4& minValue = util::filled<mat4>(-1.e6f),
         const mat4& maxValue = util::filled<mat4>(1.e6f),
         const mat4& increment = Defaultvalues<mat4>::getInc(),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

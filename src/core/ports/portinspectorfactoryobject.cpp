@@ -32,8 +32,8 @@
 
 namespace inviwo {
 
-PortInspectorFactoryObject::PortInspectorFactoryObject(
-    std::string_view portClassIdentifier, std::string_view inspectorWorkspaceFileName)
+PortInspectorFactoryObject::PortInspectorFactoryObject(std::string_view portClassIdentifier,
+                                                       std::string_view inspectorWorkspaceFileName)
     : portClassIdentifier_(portClassIdentifier)
     , inspectorWorkspaceFileName_(inspectorWorkspaceFileName) {}
 
