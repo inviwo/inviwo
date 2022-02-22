@@ -38,6 +38,7 @@
 
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/document.h>
 
 #include <type_traits>
 #include <string>
@@ -58,6 +59,13 @@ public:
     const std::string& getCategory() const { return info_.category; }
     CodeState getCodeState() const { return info_.codeState; }
     bool isVisible() { return info_.visible; }
+    
+    /**
+     * Overload this function to provide additional information
+     */
+    virtual Document getMetaInformation() const {
+        return Document();
+    }
 
 private:
     const ProcessorInfo info_;
