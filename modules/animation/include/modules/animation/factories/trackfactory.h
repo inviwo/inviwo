@@ -34,6 +34,8 @@
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/factories/trackfactoryobject.h>
 
+#include <map>
+
 namespace inviwo {
 
 class ProcessorNetwork;
@@ -43,10 +45,9 @@ namespace animation {
 
 class IVW_MODULE_ANIMATION_API TrackFactory
     : public Factory<Track>,
-      public StandardFactory<Track, TrackFactoryObject, const std::string&, ProcessorNetwork*> {
+      public StandardFactory<Track, TrackFactoryObject, std::string_view, ProcessorNetwork*> {
 
-    using Parent =
-        StandardFactory<Track, TrackFactoryObject, const std::string&, ProcessorNetwork*>;
+    using Parent = StandardFactory<Track, TrackFactoryObject, std::string_view, ProcessorNetwork*>;
 
 public:
     TrackFactory(ProcessorNetwork* network);
@@ -54,8 +55,8 @@ public:
 
     using Parent::create;
 
-    virtual bool hasKey(const std::string& key) const override;
-    virtual std::unique_ptr<Track> create(const std::string& key) const override;
+    virtual bool hasKey(std::string_view key) const override;
+    virtual std::unique_ptr<Track> create(std::string_view key) const override;
     virtual std::unique_ptr<Track> create(Property* property) const;
 
     /**
@@ -64,13 +65,13 @@ public:
      * @param propertyClassID Property::getClassIdentifier
      * @param trackClassID PropertyTrack::getIdentifier()
      */
-    void registerPropertyTrackConnection(const std::string& propertyClassID,
-                                         const std::string& trackClassID);
+    void registerPropertyTrackConnection(std::string_view propertyClassID,
+                                         std::string_view trackClassID);
 
     ProcessorNetwork* network_;
 
 protected:
-    std::unordered_map<std::string, std::string> propertyToTrackMap_;
+    std::map<std::string, std::string, std::less<>> propertyToTrackMap_;
 };
 
 }  // namespace animation

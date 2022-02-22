@@ -35,28 +35,33 @@
 
 namespace inviwo {
 
-class IVW_CORE_API InportFactory : public Factory<Inport, const std::string&, const std::string&>,
+class IVW_CORE_API InportFactory : public Factory<Inport, std::string_view, std::string_view>,
                                    public StandardFactory<Inport, InportFactoryObject> {
 public:
     InportFactory() = default;
     virtual ~InportFactory() = default;
 
     using StandardFactory<Inport, InportFactoryObject>::create;
-    virtual bool hasKey(const std::string& key) const override;
-    virtual std::unique_ptr<Inport> create(const std::string& className,
-                                           const std::string& identifier) const override;
+    virtual std::unique_ptr<Inport> create(std::string_view className,
+                                           std::string_view identifier) const override;
+    virtual bool hasKey(std::string_view key) const override {
+        return StandardFactory<Inport, InportFactoryObject>::hasKey(key);
+    }
 };
 
-class IVW_CORE_API OutportFactory : public Factory<Outport, const std::string&, const std::string&>,
+class IVW_CORE_API OutportFactory : public Factory<Outport, std::string_view, std::string_view>,
                                     public StandardFactory<Outport, OutportFactoryObject> {
 public:
     OutportFactory() = default;
     virtual ~OutportFactory() = default;
 
     using StandardFactory<Outport, OutportFactoryObject>::create;
-    virtual bool hasKey(const std::string& key) const override;
-    virtual std::unique_ptr<Outport> create(const std::string& className,
-                                            const std::string& identifier) const override;
+    virtual std::unique_ptr<Outport> create(std::string_view className,
+                                            std::string_view identifier) const override;
+
+    virtual bool hasKey(std::string_view key) const override {
+        return StandardFactory<Outport, OutportFactoryObject>::hasKey(key);
+    }
 };
 
 }  // namespace inviwo

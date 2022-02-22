@@ -40,7 +40,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    StreamLineProperties(std::string identifier, std::string displayName);
+    StreamLineProperties(std::string_view identifier, std::string_view displayName);
     StreamLineProperties(const StreamLineProperties& rhs);
     virtual StreamLineProperties* clone() const override;
     virtual ~StreamLineProperties();

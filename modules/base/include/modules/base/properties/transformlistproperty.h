@@ -43,7 +43,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API TransformListProperty : public CompositeProperty {
 public:
-    TransformListProperty(const std::string& identifier, const std::string& displayName,
+    TransformListProperty(std::string_view identifier, std::string_view displayName,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                           PropertySemantics semantics = PropertySemantics::Default);
     TransformListProperty(const TransformListProperty& other);
@@ -64,7 +64,7 @@ namespace transform {
 
 class IVW_MODULE_BASE_API TransformProperty : public CompositeProperty {
 public:
-    TransformProperty(const std::string& identifier, const std::string& displayName,
+    TransformProperty(std::string_view identifier, std::string_view displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
     virtual ~TransformProperty() = default;
@@ -77,7 +77,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    TranslateProperty(const std::string& identifier, const std::string& displayName,
+    TranslateProperty(std::string_view identifier, std::string_view displayName,
                       const vec3& value = vec3{0.0f}, const vec3& minValue = vec3{-1.e6f},
                       const vec3& maxValue = vec3{1.e6f},
                       const vec3& increment = Defaultvalues<vec3>::getInc(),
@@ -99,7 +99,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    RotateProperty(const std::string& identifier, const std::string& displayName,
+    RotateProperty(std::string_view identifier, std::string_view displayName,
                    const vec3& axis = vec3{1.0f, 0.0f, 0.0f}, const float angle = 0.0f,
                    const float minAngle = -glm::pi<float>(),
                    const float maxAngle = glm::pi<float>(),
@@ -123,7 +123,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    ScaleProperty(const std::string& identifier, const std::string& displayName,
+    ScaleProperty(std::string_view identifier, std::string_view displayName,
                   const vec3& value = vec3{1.0f}, const vec3& minValue = vec3{-1.e3f},
                   const vec3& maxValue = vec3{1.e3f},
                   const vec3& increment = Defaultvalues<vec3>::getInc(),
@@ -144,8 +144,8 @@ public:
     static const std::string classIdentifier;
 
     CustomTransformProperty(
-        const std::string& identifier, const std::string& displayName,
-        const mat4& value = mat4{1.0f}, const mat4& minValue = util::filled<mat4>(-1.e6f),
+        std::string_view identifier, std::string_view displayName, const mat4& value = mat4{1.0f},
+        const mat4& minValue = util::filled<mat4>(-1.e6f),
         const mat4& maxValue = util::filled<mat4>(1.e6f),
         const mat4& increment = Defaultvalues<mat4>::getInc(),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

@@ -34,7 +34,7 @@ namespace inviwo {
 const std::string DataRangeProperty::classIdentifier = "org.inviwo.DataRangeProperty";
 std::string DataRangeProperty::getClassIdentifier() const { return classIdentifier; }
 
-DataRangeProperty::DataRangeProperty(std::string identifier, std::string displayName,
+DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_view displayName,
                                      bool customRanges, InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
@@ -96,7 +96,7 @@ DataRangeProperty::DataRangeProperty(std::string identifier, std::string display
     addProperties(dataRange_, valueRange_, useCustomRange_);
 }
 
-DataRangeProperty::DataRangeProperty(std::string identifier, std::string displayName,
+DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_view displayName,
                                      VolumeInport& port, bool customRanges,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)

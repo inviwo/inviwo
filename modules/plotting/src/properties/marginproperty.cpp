@@ -38,7 +38,7 @@ const std::string MarginProperty::classIdentifier = "org.inviwo.MarginProperty";
 std::string MarginProperty::getClassIdentifier() const { return classIdentifier; }
 
 MarginProperty::MarginProperty(
-    std::string identifier, std::string displayName, float top, float right, float bottom,
+    std::string_view identifier, std::string_view displayName, float top, float right, float bottom,
     float left, InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
     PropertySemantics semantics /*= PropertySemantics::Default*/)
     : CompositeProperty(identifier, displayName)

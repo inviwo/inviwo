@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-InportFactoryObject::InportFactoryObject(const std::string& className) : className_(className) {
+InportFactoryObject::InportFactoryObject(std::string_view className) : className_(className) {
     if (className_.empty()) {
         throw Exception("Port must have a non empty class identifier", IVW_CONTEXT);
     }
@@ -40,7 +40,7 @@ InportFactoryObject::InportFactoryObject(const std::string& className) : classNa
 
 const std::string& InportFactoryObject::getClassIdentifier() const { return className_; }
 
-OutportFactoryObject::OutportFactoryObject(const std::string& className) : className_(className) {
+OutportFactoryObject::OutportFactoryObject(std::string_view className) : className_(className) {
     if (className_.empty()) {
         throw Exception("Port must have a non empty class identifier", IVW_CONTEXT);
     }

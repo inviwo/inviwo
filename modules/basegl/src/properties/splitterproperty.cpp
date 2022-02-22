@@ -34,7 +34,7 @@ namespace inviwo {
 const std::string SplitterProperty::classIdentifier = "org.inviwo.SplitterProperty";
 std::string SplitterProperty::getClassIdentifier() const { return classIdentifier; }
 
-SplitterProperty::SplitterProperty(const std::string& identifier, const std::string& displayName,
+SplitterProperty::SplitterProperty(std::string_view identifier, std::string_view displayName,
                                    bool checked, splitter::Style style, vec4 color, vec4 bgColor,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName, checked, invalidationLevel, semantics)

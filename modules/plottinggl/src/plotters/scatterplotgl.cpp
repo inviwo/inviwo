@@ -55,7 +55,7 @@ const std::string ScatterPlotGL::Properties::classIdentifier =
     "org.inviwo.ScatterPlotGL.Properties";
 std::string ScatterPlotGL::Properties::getClassIdentifier() const { return classIdentifier; }
 
-ScatterPlotGL::Properties::Properties(std::string identifier, std::string displayName,
+ScatterPlotGL::Properties::Properties(std::string_view identifier, std::string_view displayName,
                                       InvalidationLevel invalidationLevel,
                                       PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)

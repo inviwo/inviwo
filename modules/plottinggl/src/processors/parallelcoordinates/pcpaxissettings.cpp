@@ -67,7 +67,8 @@ const std::string PCPAxisSettings::classIdentifier =
     "org.inviwo.parallelcoordinates.axissettingsproperty";
 std::string PCPAxisSettings::getClassIdentifier() const { return classIdentifier; }
 
-PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName, size_t columnId)
+PCPAxisSettings::PCPAxisSettings(std::string_view identifier, std::string_view displayName,
+                                 size_t columnId)
     : BoolCompositeProperty(identifier, displayName, true)
     , range("range", "Axis Range")
     , invertRange("invertRange", "Invert Range")

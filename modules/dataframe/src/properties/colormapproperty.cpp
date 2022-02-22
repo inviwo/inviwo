@@ -37,7 +37,7 @@ namespace inviwo {
 const std::string ColormapProperty::classIdentifier = "org.inviwo.ColormapProperty";
 std::string ColormapProperty::getClassIdentifier() const { return classIdentifier; }
 
-ColormapProperty::ColormapProperty(std::string identifier, std::string displayName,
+ColormapProperty::ColormapProperty(std::string_view identifier, std::string_view displayName,
                                    ColormapType selectedCategory,
                                    colorbrewer::Family selectedFamily, size_t numColors,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)

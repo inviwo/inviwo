@@ -46,10 +46,11 @@ class IVW_MODULE_BASE_API DataRangeProperty : public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
-    DataRangeProperty(std::string identifier, std::string displayName, bool customRanges = true,
+    DataRangeProperty(std::string_view identifier, std::string_view displayName,
+                      bool customRanges = true,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
-    DataRangeProperty(std::string identifier, std::string displayName, VolumeInport& port,
+    DataRangeProperty(std::string_view identifier, std::string_view displayName, VolumeInport& port,
                       bool customRanges = true,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);

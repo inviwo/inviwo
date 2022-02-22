@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-Inport::Inport(std::string identifier)
+Inport::Inport(std::string_view identifier)
     : Port(identifier)
     , isReady_{false, [](const bool& /*isReady*/) {},
                [this]() {

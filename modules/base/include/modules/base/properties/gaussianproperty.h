@@ -45,7 +45,7 @@ namespace inviwo {
 template <typename T>
 class GaussianProperty : public CompositeProperty {
 public:
-    GaussianProperty(const std::string& identifier, const std::string& displayName,
+    GaussianProperty(std::string_view identifier, std::string_view displayName,
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default)
         : CompositeProperty(identifier, displayName, invalidationLevel, semantics)

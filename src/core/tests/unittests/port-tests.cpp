@@ -50,7 +50,7 @@ namespace inviwo {
 namespace {
 
 struct OutportTestProcessor : Processor {
-    OutportTestProcessor(const std::string& id, int val)
+    OutportTestProcessor(std::string_view id, int val)
         : Processor(id, id), outport{"outport"}, val{val} {
         addPort(outport);
     }
@@ -74,7 +74,7 @@ const ProcessorInfo OutportTestProcessor::processorInfo_{
 };
 
 struct VectorOutportTestProcessor : Processor {
-    VectorOutportTestProcessor(const std::string& id, std::vector<int> val)
+    VectorOutportTestProcessor(std::string_view id, std::vector<int> val)
         : Processor(id, id), outport{"outport"}, val{val} {
         addPort(outport);
     }
@@ -102,7 +102,7 @@ const ProcessorInfo VectorOutportTestProcessor::processorInfo_{
 #include <warn/ignore/gnu-zero-variadic-macro-arguments>
 
 struct InportTestProcessor : Processor {
-    InportTestProcessor(const std::string& id) : Processor(id, id), inport{"inport"} {
+    InportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
         addPort(inport);
     }
     virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
@@ -121,7 +121,7 @@ const ProcessorInfo InportTestProcessor::processorInfo_{
 };
 
 struct MultiInportTestProcessor : Processor {
-    MultiInportTestProcessor(const std::string& id) : Processor(id, id), inport{"inport"} {
+    MultiInportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
         addPort(inport);
     }
     virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
@@ -139,7 +139,7 @@ const ProcessorInfo MultiInportTestProcessor::processorInfo_{
 };
 
 struct FlatMultiInportTestProcessor : Processor {
-    FlatMultiInportTestProcessor(const std::string& id) : Processor(id, id), inport{"inport"} {
+    FlatMultiInportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
         addPort(inport);
     }
     virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }

@@ -39,7 +39,8 @@ namespace inviwo {
 const std::string MeshInformationProperty::classIdentifier = "org.inviwo.MeshInformationProperty";
 std::string MeshInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
-MeshInformationProperty::MeshInformationProperty(std::string identifier, std::string displayName,
+MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
+                                                 std::string_view displayName,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)

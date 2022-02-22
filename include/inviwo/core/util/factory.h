@@ -36,8 +36,9 @@
 #include <inviwo/core/util/logcentral.h>
 
 #include <string>
+#include <string_view>
 #include <memory>
-#include <unordered_map>
+#include <map>
 
 namespace inviwo {
 
@@ -62,57 +63,144 @@ protected:
 };
 
 /**
- * A common factory base class
+ * A base class for factories using std::string_view keys.
+ * @see Deserializer::registerFactory WorkspaceManager::registerFactory
  */
 class IVW_CORE_API FactoryBase {
 public:
-    FactoryBase() = default;
-    virtual ~FactoryBase() = default;
+    FactoryBase();
+    virtual ~FactoryBase();
     FactoryBase(const FactoryBase&) = delete;
     FactoryBase& operator=(const FactoryBase&) = delete;
     FactoryBase(FactoryBase&&) = default;
     FactoryBase& operator=(FactoryBase&&) = default;
+
+    virtual bool hasKey(std::string_view key) const = 0;
 };
 
 /**
- * An abstract factory interface. Inherits virtually from factory base, since an implementation
- * might implement several factory interfaces
- * T Models the object created, T will be constructed using Args...
- * K Models a key used to look up T
+ * An abstract factory interface.
+ * @tparam T Models the object created, @p T will be constructed using @p Args...
+ * @tparam Args A variadic list of arguments passed to @p T on construction
  */
-template <typename T, typename K = const std::string&, typename... Args>
-class Factory : public virtual FactoryBase {
+template <typename T, typename K = std::string_view, typename... Args>
+class Factory {
 public:
     Factory() = default;
+    virtual ~Factory() = default;
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+    Factory(Factory&&) = default;
+    Factory& operator=(Factory&&) = default;
+
     virtual std::unique_ptr<T> create(K key, Args... args) const = 0;
     virtual bool hasKey(K key) const = 0;
 };
 
 /**
- * T Models the object created
- * M Models a object with a function create(K key, Args...) that can create objects of type T with
- * constructor T(Args...)
- * M would usually be a "factory object" type
- * K Models a key used to look up T
+ * An abstract factory interface for factories using std::string_view keys. Inherits virtually from
+ * factory base, since an implementation might implement several factory interfaces
  */
-template <typename T, typename M, typename K = const std::string&, typename... Args>
-class StandardFactory : public Factory<T, K, Args...>, public FactoryObservable<M> {
+template <typename T, typename... Args>
+class Factory<T, std::string_view, Args...> : public virtual FactoryBase {
 public:
-    using Key = typename std::remove_cv<typename std::remove_reference<K>::type>::type;
-    using Map = std::unordered_map<Key, M*>;
-    StandardFactory() = default;
+    Factory() = default;
+    virtual std::unique_ptr<T> create(std::string_view key, Args... args) const = 0;
+    virtual bool hasKey(std::string_view key) const = 0;
+};
 
-    // The factory will not assume ownership over obj, although is assumes that obj will be
-    // valid for the lifetime of the factory
-    virtual bool registerObject(M* obj);
-    virtual bool unRegisterObject(M* obj);
+/**
+ * A map of @p Keys and associated @p FactoryObjects.
+ *
+ * @tparam FactoryObject A factory type for some object. A `LookUpKey getClassIdentifier()´
+ *                       function is required for registration in the map.
+ * @tparam Key the key type used in the map
+ * @tparam LookUpKey A type used to lookup FactoryObjects in the map
+ */
+template <typename FactoryObject, typename Key, typename LookUpKey>
+class FactoryRegister : public FactoryObservable<FactoryObject> {
+public:
+    /**
+     * The factory will not assume ownership over obj, although is assumes that obj will be
+     * valid for the lifetime of the factory
+     */
+    virtual bool registerObject(FactoryObject* obj);
+    virtual bool unRegisterObject(FactoryObject* obj);
 
-    virtual std::unique_ptr<T> create(K key, Args... args) const override;
-    virtual bool hasKey(K key) const override;
-    virtual std::vector<Key> getKeys() const;
+    bool hasKey(LookUpKey key) const;
+    std::vector<Key> getKeys() const;
 
 protected:
-    Map map_;
+    std::map<Key, FactoryObject*, std::less<>> map_;
+};
+
+/**
+ * Map the "lookup key" type of a map to the stored key type.
+ * I.e the lookup `const std::string&` would map to `std::string`
+ */
+template <typename K>
+struct FactoryKeyType {
+    using type = std::remove_cv_t<std::remove_reference_t<K>>;
+};
+/**
+ * Specialization that maps std::string_view to std::string
+ * @see FactoryKeyType
+ */
+template <>
+struct FactoryKeyType<std::string_view> {
+    using type = std::string;
+};
+template <typename K>
+using factoryKeyType = typename FactoryKeyType<K>::type;
+
+/**
+ * Standard setup of Factory using factory objects to create an instance.
+ * The factory will use a FactoryRegister of @p FactoryObject and @p factoryKeyType<Key>. This
+ * indirection allows std::string_view to be used as key where as the FactoryRegister will store
+ * strings for the keys.
+ * @tparam T The object created
+ * @tparam FactoryObject An object with a function `std::unique_ptr<T> create(Args...)` that can
+ *                       create objects of type @p T with constructor `T(Args...)`.
+ *                       @p FactoryObject would usually be a "factory object".
+ *                       A `getClassIdentifier()´ function is also required for registration.
+ * @tparam Key Models a key used to look up @p T
+ * @tparam Args A variadic list of arguments passed to @p T on construction
+ */
+template <typename T, typename FactoryObject, typename Key = std::string_view, typename... Args>
+class StandardFactory : public Factory<T, Key, Args...>,
+                        public FactoryRegister<FactoryObject, factoryKeyType<Key>, Key> {
+public:
+    virtual std::unique_ptr<T> create(Key key, Args... args) const override {
+        auto it = this->map_.find(key);
+        if (it != end(this->map_)) {
+            return it->second->create(args...);
+        } else {
+            return nullptr;
+        }
+    }
+    virtual bool hasKey(Key key) const override {
+        return FactoryRegister<FactoryObject, factoryKeyType<Key>, Key>::hasKey(key);
+    }
+};
+
+/**
+ * A factory for cloning object
+ * The type @p T needs to have a `clone()` and a `getClassIdentifier()´ function.
+ * @tparam T Models the object created.
+ */
+template <typename T>
+class CloningFactory : public Factory<T, std::string_view>,
+                       public FactoryRegister<T, std::string, std::string_view> {
+public:
+    CloningFactory() = default;
+
+    virtual std::unique_ptr<T> create(std::string_view key) const override {
+        return std::unique_ptr<T>(
+            util::map_find_or_null(this->map_, key, [](T* o) { return o->clone(); }));
+    }
+    virtual bool hasKey(std::string_view key) const override {
+        return FactoryRegister<T, std::string, std::string_view>::hasKey(key);
+    }
 };
 
 namespace detail {
@@ -128,8 +216,8 @@ typename std::enable_if<!util::is_stream_insertable<T>::value, std::string>::typ
 
 }  // namespace detail
 
-template <typename T, typename M, typename K, typename... Args>
-bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
+template <typename M, typename Key, typename K>
+bool FactoryRegister<M, Key, K>::registerObject(M* obj) {
     if (util::insert_unique(map_, obj->getClassIdentifier(), obj)) {
         this->notifyObserversOnRegister(obj);
         return true;
@@ -140,10 +228,10 @@ bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
     }
 }
 
-template <typename T, typename M, typename K, typename... Args>
-bool StandardFactory<T, M, K, Args...>::unRegisterObject(M* obj) {
-    size_t removed = util::map_erase_remove_if(
-        map_, [obj](typename Map::value_type& elem) { return elem.second == obj; });
+template <typename M, typename Key, typename K>
+bool FactoryRegister<M, Key, K>::unRegisterObject(M* obj) {
+    size_t removed =
+        util::map_erase_remove_if(map_, [obj](const auto& elem) { return elem.second == obj; });
     if (removed > 0) {
         this->notifyObserversOnRegister(obj);
         return true;
@@ -152,79 +240,15 @@ bool StandardFactory<T, M, K, Args...>::unRegisterObject(M* obj) {
     }
 }
 
-template <typename T, typename M, typename K, typename... Args>
-std::unique_ptr<T> StandardFactory<T, M, K, Args...>::create(K key, Args... args) const {
-    auto it = map_.find(key);
-    if (it != end(map_)) {
-        return it->second->create(args...);
-    } else {
-        return nullptr;
-    }
+template <typename M, typename Key, typename K>
+bool FactoryRegister<M, Key, K>::hasKey(K key) const {
+    return map_.find(key) != map_.end();
 }
 
-template <typename T, typename M, typename K, typename... Args>
-bool StandardFactory<T, M, K, Args...>::hasKey(K key) const {
-    return util::has_key(map_, key);
-}
-
-template <typename T, typename M, typename K, typename... Args>
-auto StandardFactory<T, M, K, Args...>::getKeys() const -> std::vector<Key> {
+template <typename M, typename Key, typename K>
+auto FactoryRegister<M, Key, K>::getKeys() const -> std::vector<Key> {
     auto res = std::vector<Key>();
-    for (auto& elem : map_) res.push_back(elem.first);
-    return res;
-}
-
-/**
- * T Models the object created
- * T needs to have a clone() function.
- */
-template <typename T, typename K = const std::string&>
-class CloningFactory : public Factory<T, K> {
-public:
-    using Key = typename std::remove_cv<typename std::remove_reference<K>::type>::type;
-    using Map = std::unordered_map<Key, T*>;
-    CloningFactory() = default;
-
-    // The factory will not assume ownership over obj, although is assumes that obj will be
-    // valid for the lifetime of the factory
-    virtual bool registerObject(T* obj);
-    virtual bool unRegisterObject(T* obj);
-
-    virtual std::unique_ptr<T> create(K key) const override;
-    virtual bool hasKey(K key) const override;
-    virtual std::vector<Key> getKeys() const;
-
-protected:
-    Map map_;
-};
-
-template <typename T, typename K /*= const std::string&*/>
-bool inviwo::CloningFactory<T, K>::registerObject(T* obj) {
-    return util::insert_unique(map_, obj->getClassIdentifier(), obj);
-}
-
-template <typename T, typename K /*= const std::string&*/>
-bool inviwo::CloningFactory<T, K>::unRegisterObject(T* obj) {
-    size_t removed = util::map_erase_remove_if(
-        map_, [obj](typename Map::value_type& elem) { return elem.second == obj; });
-
-    return removed > 0;
-}
-
-template <typename T, typename K /*= const std::string&*/>
-std::unique_ptr<T> inviwo::CloningFactory<T, K>::create(K key) const {
-    return std::unique_ptr<T>(util::map_find_or_null(map_, key, [](T* o) { return o->clone(); }));
-}
-
-template <typename T, typename K /*= const std::string&*/>
-bool inviwo::CloningFactory<T, K>::hasKey(K key) const {
-    return util::has_key(map_, key);
-}
-
-template <typename T, typename K /*= const std::string&*/>
-auto inviwo::CloningFactory<T, K>::getKeys() const -> std::vector<Key> {
-    auto res = std::vector<Key>();
-    for (auto& elem : map_) res.push_back(elem.first);
+    for (const auto& elem : map_) res.push_back(elem.first);
     return res;
 }
 

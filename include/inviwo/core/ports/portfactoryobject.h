@@ -43,11 +43,11 @@ namespace inviwo {
 
 class IVW_CORE_API InportFactoryObject {
 public:
-    InportFactoryObject(const std::string& className);
+    InportFactoryObject(std::string_view className);
     virtual ~InportFactoryObject() = default;
 
     virtual std::unique_ptr<Inport> create() = 0;
-    virtual std::unique_ptr<Inport> create(const std::string& identifier) = 0;
+    virtual std::unique_ptr<Inport> create(std::string_view identifier) = 0;
     const std::string& getClassIdentifier() const;
 
 protected:
@@ -65,18 +65,18 @@ public:
 
     virtual std::unique_ptr<Inport> create() override { return std::make_unique<T>(className_); }
 
-    virtual std::unique_ptr<Inport> create(const std::string& identifier) override {
+    virtual std::unique_ptr<Inport> create(std::string_view identifier) override {
         return std::make_unique<T>(identifier);
     }
 };
 
 class IVW_CORE_API OutportFactoryObject {
 public:
-    OutportFactoryObject(const std::string& className);
+    OutportFactoryObject(std::string_view className);
     virtual ~OutportFactoryObject() = default;
 
     virtual std::unique_ptr<Outport> create() = 0;
-    virtual std::unique_ptr<Outport> create(const std::string& identifier) = 0;
+    virtual std::unique_ptr<Outport> create(std::string_view identifier) = 0;
     const std::string& getClassIdentifier() const;
 
 protected:
@@ -94,8 +94,12 @@ public:
 
     virtual std::unique_ptr<Outport> create() override { return std::make_unique<T>(className_); }
 
-    virtual std::unique_ptr<Outport> create(const std::string& identifier) override {
-        return std::make_unique<T>(identifier);
+    virtual std::unique_ptr<Outport> create(std::string_view identifier) override {
+        if constexpr (std::is_constructible_v<T, std::string_view>) {
+            return std::make_unique<T>(identifier);
+        } else {
+            return std::make_unique<T>(std::string(identifier));
+        }
     }
 };
 

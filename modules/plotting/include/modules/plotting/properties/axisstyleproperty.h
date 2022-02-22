@@ -50,7 +50,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    AxisStyleProperty(const std::string& identifier, const std::string& displayName,
+    AxisStyleProperty(std::string_view identifier, std::string_view displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     AxisStyleProperty(const AxisStyleProperty& rhs);

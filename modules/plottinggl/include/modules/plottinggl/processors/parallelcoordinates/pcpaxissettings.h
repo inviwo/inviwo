@@ -120,7 +120,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    PCPAxisSettings(std::string identifier, std::string displayName, size_t columnId = 0);
+    PCPAxisSettings(std::string_view identifier, std::string_view displayName, size_t columnId = 0);
     PCPAxisSettings(const PCPAxisSettings& rhs);
     virtual PCPAxisSettings* clone() const override;
 

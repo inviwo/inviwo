@@ -63,7 +63,7 @@ public:
     static constexpr bool flattenData = Flat;
     static constexpr size_t maxConnections = N;
 
-    DataInport(std::string identifier);
+    DataInport(std::string_view identifier);
     virtual ~DataInport() = default;
 
     virtual std::string getClassIdentifier() const override;
@@ -109,7 +109,7 @@ struct PortTraits<DataInport<T, N, Flat>> {
 };
 
 template <typename T, size_t N, bool Flat>
-DataInport<T, N, Flat>::DataInport(std::string identifier)
+DataInport<T, N, Flat>::DataInport(std::string_view identifier)
     : Inport(identifier), InportIterable<DataInport<T, N, Flat>, T, Flat>{} {}
 
 template <typename T, size_t N, bool Flat>

@@ -46,8 +46,8 @@ const std::string IndexBufferInformationProperty::classIdentifier =
     "org.inviwo.IndexBufferInformationProperty";
 std::string IndexBufferInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
-BufferInformationProperty::BufferInformationProperty(std::string identifier,
-                                                     std::string displayName,
+BufferInformationProperty::BufferInformationProperty(std::string_view identifier,
+                                                     std::string_view displayName,
                                                      InvalidationLevel invalidationLevel,
                                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
@@ -87,8 +87,8 @@ void BufferInformationProperty::updateFromBuffer(const BufferBase& buffer) {
     target_.set(toString(buffer.getBufferTarget()));
 }
 
-MeshBufferInformationProperty::MeshBufferInformationProperty(std::string identifier,
-                                                             std::string displayName,
+MeshBufferInformationProperty::MeshBufferInformationProperty(std::string_view identifier,
+                                                             std::string_view displayName,
                                                              InvalidationLevel invalidationLevel,
                                                              PropertySemantics semantics)
     : BufferInformationProperty(identifier, displayName, invalidationLevel, semantics)
@@ -126,8 +126,8 @@ void MeshBufferInformationProperty::updateFromBuffer(Mesh::BufferInfo info,
     location_.set(info.location);
 }
 
-IndexBufferInformationProperty::IndexBufferInformationProperty(std::string identifier,
-                                                               std::string displayName,
+IndexBufferInformationProperty::IndexBufferInformationProperty(std::string_view identifier,
+                                                               std::string_view displayName,
                                                                InvalidationLevel invalidationLevel,
                                                                PropertySemantics semantics)
     : BufferInformationProperty(identifier, displayName, invalidationLevel, semantics)

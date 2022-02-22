@@ -34,8 +34,8 @@ namespace inviwo {
 const std::string LineSettingsProperty::classIdentifier = "org.inviwo.LineSettingsProperty";
 std::string LineSettingsProperty::getClassIdentifier() const { return classIdentifier; }
 
-LineSettingsProperty::LineSettingsProperty(const std::string& identifier,
-                                           const std::string& displayName,
+LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
+                                           std::string_view displayName,
                                            InvalidationLevel invalidationLevel,
                                            PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)

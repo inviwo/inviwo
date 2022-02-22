@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-Outport::Outport(std::string identifier)
+Outport::Outport(std::string_view identifier)
     : Port(identifier)
     , isReady_{false,
                [this](const bool&) {

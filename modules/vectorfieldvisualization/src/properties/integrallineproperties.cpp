@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-IntegralLineProperties::IntegralLineProperties(std::string identifier, std::string displayName)
+IntegralLineProperties::IntegralLineProperties(std::string_view identifier,
+                                               std::string_view displayName)
     : CompositeProperty(identifier, displayName)
     , numberOfSteps_("steps", "Number of Steps", 100, 1, 1000)
     , stepSize_("stepSize", "Step size", 0.001f, 0.001f, 1.0f, 0.001f)

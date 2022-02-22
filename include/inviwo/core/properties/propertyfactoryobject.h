@@ -41,7 +41,8 @@ public:
     PropertyFactoryObject(std::string_view className);
     virtual ~PropertyFactoryObject();
 
-    virtual std::unique_ptr<Property> create(std::string identifier, std::string displayName) = 0;
+    virtual std::unique_ptr<Property> create(std::string_view identifier,
+                                             std::string_view displayName) = 0;
 
     const std::string& getClassIdentifier() const;
 
@@ -56,8 +57,13 @@ public:
 
     virtual ~PropertyFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Property> create(std::string identifier, std::string displayName) {
-        return std::make_unique<T>(identifier, displayName);
+    virtual std::unique_ptr<Property> create(std::string_view identifier,
+                                             std::string_view displayName) {
+        if constexpr (std::is_constructible_v<T, std::string_view, std::string_view>) {
+            return std::make_unique<T>(identifier, displayName);
+        } else {
+            return std::make_unique<T>(std::string(identifier), std::string(displayName));
+        }
     }
 };
 

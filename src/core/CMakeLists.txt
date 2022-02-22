@@ -627,6 +627,7 @@ set(SOURCE_FILES
     util/document.cpp
     util/enumtraits.cpp
     util/exception.cpp
+    util/factory.cpp
     util/filedialog.cpp
     util/fileextension.cpp
     util/filelogger.cpp

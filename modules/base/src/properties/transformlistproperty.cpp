@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-TransformListProperty::TransformListProperty(const std::string& identifier,
-                                             const std::string& displayName,
+TransformListProperty::TransformListProperty(std::string_view identifier,
+                                             std::string_view displayName,
                                              InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
@@ -97,7 +97,7 @@ const mat4& TransformListProperty::getMatrix() const { return result_.get(); }
 
 namespace transform {
 
-TransformProperty::TransformProperty(const std::string& identifier, const std::string& displayName,
+TransformProperty::TransformProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics) {}
@@ -105,7 +105,7 @@ TransformProperty::TransformProperty(const std::string& identifier, const std::s
 const std::string TranslateProperty::classIdentifier = "org.inviwo.trafo.TranslateProperty";
 std::string TranslateProperty::getClassIdentifier() const { return classIdentifier; }
 
-TranslateProperty::TranslateProperty(const std::string& identifier, const std::string& displayName,
+TranslateProperty::TranslateProperty(std::string_view identifier, std::string_view displayName,
                                      const vec3& value, const vec3& minValue, const vec3& maxValue,
                                      const vec3& increment, InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
@@ -127,7 +127,7 @@ mat4 TranslateProperty::getMatrix() const { return glm::translate(*translate); }
 const std::string RotateProperty::classIdentifier = "org.inviwo.trafo.RotateProperty";
 std::string RotateProperty::getClassIdentifier() const { return classIdentifier; }
 
-RotateProperty::RotateProperty(const std::string& identifier, const std::string& displayName,
+RotateProperty::RotateProperty(std::string_view identifier, std::string_view displayName,
                                const vec3& axisValue, const float angleValue, const float minAngle,
                                const float maxAngle, const float increment,
                                AngleMeasure angleMeasure, InvalidationLevel invalidationLevel,
@@ -177,7 +177,7 @@ mat4 RotateProperty::getMatrix() const {
 const std::string ScaleProperty::classIdentifier = "org.inviwo.trafo.ScaleProperty";
 std::string ScaleProperty::getClassIdentifier() const { return classIdentifier; }
 
-ScaleProperty::ScaleProperty(const std::string& identifier, const std::string& displayName,
+ScaleProperty::ScaleProperty(std::string_view identifier, std::string_view displayName,
                              const vec3& value, const vec3& minValue, const vec3& maxValue,
                              const vec3& increment, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
@@ -199,8 +199,8 @@ const std::string CustomTransformProperty::classIdentifier =
     "org.inviwo.trafo.CustomTransformProperty";
 std::string CustomTransformProperty::getClassIdentifier() const { return classIdentifier; }
 
-CustomTransformProperty::CustomTransformProperty(const std::string& identifier,
-                                                 const std::string& displayName, const mat4& value,
+CustomTransformProperty::CustomTransformProperty(std::string_view identifier,
+                                                 std::string_view displayName, const mat4& value,
                                                  const mat4& minValue, const mat4& maxValue,
                                                  const mat4& increment,
                                                  InvalidationLevel invalidationLevel,

@@ -35,6 +35,8 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/raiiutils.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 namespace detail {
@@ -59,18 +61,18 @@ std::string IntegralLineVectorToMesh::ColorByProperty::getClassIdentifier() cons
 }
 
 IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(
-    std::string identifier, std::string displayName,
+    std::string_view identifier, std::string_view displayName,
     InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/)
     : CompositeProperty(identifier, displayName, invalidationLevel)
     , scaleBy_("scaleBy", "Data Range (for normalization)", 0, 1,
                std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), 0.01)
     , loopTF_("loopTF", "Loop Transfer Function", false)
-    , minValue_("minValue", "Min " + displayName, 0, std::numeric_limits<double>::lowest(),
-                std::numeric_limits<double>::max(), 0.01, InvalidationLevel::InvalidOutput,
-                PropertySemantics::Text)
-    , maxValue_("maxValue", "Max " + displayName, 0, std::numeric_limits<double>::lowest(),
-                std::numeric_limits<double>::max(), 0.01, InvalidationLevel::InvalidOutput,
-                PropertySemantics::Text)
+    , minValue_("minValue", fmt::format("Min {}", displayName), 0,
+                std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), 0.01,
+                InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , maxValue_("maxValue", fmt::format("Max {}", displayName), 0,
+                std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), 0.01,
+                InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , tf_("transferFunction", "Transfer function")
     , key_(identifier) {
     scaleBy_.setSemantics(PropertySemantics::Text);

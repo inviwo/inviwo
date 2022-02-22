@@ -37,7 +37,7 @@ namespace inviwo {
 const std::string BasisProperty::classIdentifier = "org.inviwo.VolumeBasisProperty";
 std::string BasisProperty::getClassIdentifier() const { return classIdentifier; }
 
-BasisProperty::BasisProperty(std::string identifier, std::string displayName,
+BasisProperty::BasisProperty(std::string_view identifier, std::string_view displayName,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , mode_("mode", "Mode",

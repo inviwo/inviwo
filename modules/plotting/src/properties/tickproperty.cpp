@@ -42,7 +42,7 @@ std::string MajorTickProperty::getClassIdentifier() const { return classIdentifi
 const std::string MinorTickProperty::classIdentifier = "org.inviwo.MinorTickProperty";
 std::string MinorTickProperty::getClassIdentifier() const { return classIdentifier; }
 
-MajorTickProperty::MajorTickProperty(const std::string& identifier, const std::string& displayName,
+MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
@@ -97,7 +97,7 @@ double MajorTickProperty::getTickDelta() const { return tickDelta_.get(); }
 
 bool MajorTickProperty::getRangeBasedTicks() const { return rangeBasedTicks_.get(); }
 
-MinorTickProperty::MinorTickProperty(const std::string& identifier, const std::string& displayName,
+MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
@@ -152,7 +152,7 @@ float MinorTickProperty::getTickWidth() const { return tickWidth_.get(); }
 
 int MinorTickProperty::getTickFrequency() const { return tickFrequency_.get(); }
 
-TickProperty::TickProperty(const std::string& identifier, const std::string& displayName,
+TickProperty::TickProperty(std::string_view identifier, std::string_view displayName,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , majorTicks_("majorTicks", "Major Ticks")

@@ -87,7 +87,7 @@ protected:
      *                   characters, "-" and "_".
      * @see Processor::addPort()
      */
-    Port(std::string identifier = "");
+    Port(std::string_view identifier);
 
     void setProcessor(Processor* processor);
 

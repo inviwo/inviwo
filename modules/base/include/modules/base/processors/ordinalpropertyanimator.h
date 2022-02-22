@@ -61,7 +61,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     using valueType = T;
 
-    OrdinalAnimationProperty(const std::string& identifier, const std::string& displayName);
+    OrdinalAnimationProperty(std::string_view identifier, std::string_view displayName);
     OrdinalAnimationProperty(const OrdinalAnimationProperty& rhs);
     OrdinalAnimationProperty& operator=(const OrdinalAnimationProperty& that) = default;
     virtual OrdinalAnimationProperty* clone() const override;
@@ -97,8 +97,8 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 template <typename T>
-OrdinalAnimationProperty<T>::OrdinalAnimationProperty(const std::string& identifier,
-                                                      const std::string& displayName)
+OrdinalAnimationProperty<T>::OrdinalAnimationProperty(std::string_view identifier,
+                                                      std::string_view displayName)
     : BaseOrdinalAnimationProperty(identifier, displayName)
     , value_("value", "Value")
     , delta_("delta", "Delta")
