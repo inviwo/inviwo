@@ -192,6 +192,7 @@ var namespaceinviwo_1_1util =
     [ "getPositions", "namespaceinviwo_1_1util.html#a917b0dac4338ee41354df68a988d4bca", null ],
     [ "getProcessorModule", "namespaceinviwo_1_1util.html#a97b3a4cdb6bbdfa1398237053e844f65", null ],
     [ "getProcessorModule", "namespaceinviwo_1_1util.html#a4ee3e86bf4e266b4a15880bf67c34d8a", null ],
+    [ "getProcessorModuleIdentifier", "namespaceinviwo_1_1util.html#aa3d0fa4ad06fba067f12d5f75e38b715", null ],
     [ "getVolumeDimensions", "namespaceinviwo_1_1util.html#ab73ec645cb3206ba1ffd1d9bea0747ee", null ],
     [ "getVolumeMargins", "namespaceinviwo_1_1util.html#a2694731debfdf03c3fe12fd45f760e22", null ],
     [ "haltonSequence", "namespaceinviwo_1_1util.html#aad439de0e73fffe0976f1f758a3fa3c1", null ],

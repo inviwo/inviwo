@@ -99,6 +99,7 @@ $(document).ready(function(){initNavTree('classinviwo_1_1DataReaderFactory.html'
   <img src="classinviwo_1_1DataReaderFactory.png" usemap="#inviwo::DataReaderFactory_map" alt=""/>
   <map id="inviwo::DataReaderFactory_map" name="inviwo::DataReaderFactory_map">
 <area href="classinviwo_1_1Factory.html" alt="inviwo::Factory&lt; DataReader, const FileExtension &amp; &gt;" shape="rect" coords="0,0,322,24"/>
+<area href="classinviwo_1_1Factory.html" alt="inviwo::Factory&lt; DataReader, std::string_view &gt;" shape="rect" coords="332,0,654,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -113,12 +114,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>unRegisterObject</b> 
 <tr class="memitem:a1c2532307081bf77c3c6f3d6d3cc042c"><td class="memItemLeft" align="right" valign="top"><a id="a1c2532307081bf77c3c6f3d6d3cc042c" name="a1c2532307081bf77c3c6f3d6d3cc042c"></a>
 virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;key) const override</td></tr>
 <tr class="separator:a1c2532307081bf77c3c6f3d6d3cc042c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69034ca4b94186828a562a767c42cfb2"><td class="memItemLeft" align="right" valign="top"><a id="a69034ca4b94186828a562a767c42cfb2" name="a69034ca4b94186828a562a767c42cfb2"></a>
-virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (std::string_view key) const</td></tr>
-<tr class="separator:a69034ca4b94186828a562a767c42cfb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a545bf03d1f36dfc82eeff823d8367a19"><td class="memItemLeft" align="right" valign="top"><a id="a545bf03d1f36dfc82eeff823d8367a19" name="a545bf03d1f36dfc82eeff823d8367a19"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (std::string_view key) const</td></tr>
-<tr class="separator:a545bf03d1f36dfc82eeff823d8367a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72ccdf719018509f748904bf9fa5935d"><td class="memItemLeft" align="right" valign="top"><a id="a72ccdf719018509f748904bf9fa5935d" name="a72ccdf719018509f748904bf9fa5935d"></a>
+virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (std::string_view key) const override</td></tr>
+<tr class="separator:a72ccdf719018509f748904bf9fa5935d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac607c283832dae092b11ec7261336463"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReaderFactory.html#ac607c283832dae092b11ec7261336463">hasKey</a> (std::string_view key) const override</td></tr>
+<tr class="separator:ac607c283832dae092b11ec7261336463"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a554eae86640b29e5367c3afd4cb8235d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReaderFactory.html#a554eae86640b29e5367c3afd4cb8235d">hasKey</a> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;key) const override</td></tr>
 <tr class="separator:a554eae86640b29e5367c3afd4cb8235d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7d0ec38542431f0b8e74a785f0b34ef"><td class="memTemplParams" colspan="2"><a id="ac7d0ec38542431f0b8e74a785f0b34ef" name="ac7d0ec38542431f0b8e74a785f0b34ef"></a>
@@ -162,6 +162,25 @@ virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">
 <tr class="separator:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65b506e9e5cce624082f624a1f3efc87 inherit pub_methods_classinviwo_1_1Factory"><td class="memItemLeft" align="right" valign="top"><a id="a65b506e9e5cce624082f624a1f3efc87" name="a65b506e9e5cce624082f624a1f3efc87"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp; key) const=0</td></tr>
+<tr class="separator:a65b506e9e5cce624082f624a1f3efc87 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1Factory"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Factory')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; DataReader, std::string_view &gt;</a></td></tr>
+<tr class="memitem:ac68d271c0cdf775582d28550f458736c inherit pub_methods_classinviwo_1_1Factory"><td class="memItemLeft" align="right" valign="top"><a id="ac68d271c0cdf775582d28550f458736c" name="ac68d271c0cdf775582d28550f458736c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Factory</b> (const <a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;)=delete</td></tr>
+<tr class="separator:ac68d271c0cdf775582d28550f458736c inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30e37a599a42e5c2876c45611d482ffa inherit pub_methods_classinviwo_1_1Factory"><td class="memItemLeft" align="right" valign="top"><a id="a30e37a599a42e5c2876c45611d482ffa" name="a30e37a599a42e5c2876c45611d482ffa"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Factory</b> (<a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a30e37a599a42e5c2876c45611d482ffa inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c4d0a52fe5899c4614a798f45d91df2 inherit pub_methods_classinviwo_1_1Factory"><td class="memItemLeft" align="right" valign="top"><a id="a7c4d0a52fe5899c4614a798f45d91df2" name="a7c4d0a52fe5899c4614a798f45d91df2"></a>
+<a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;)=delete</td></tr>
+<tr class="separator:a7c4d0a52fe5899c4614a798f45d91df2 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5533ff4eb8c68fad94d9a5757835b060 inherit pub_methods_classinviwo_1_1Factory"><td class="memItemLeft" align="right" valign="top"><a id="a5533ff4eb8c68fad94d9a5757835b060" name="a5533ff4eb8c68fad94d9a5757835b060"></a>
+<a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a5533ff4eb8c68fad94d9a5757835b060 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory"><td class="memItemLeft" align="right" valign="top"><a id="aa60830c46245ac6a6fa70496a300cae7" name="aa60830c46245ac6a6fa70496a300cae7"></a>
+virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (std::string_view key, Args... args) const=0</td></tr>
+<tr class="separator:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65b506e9e5cce624082f624a1f3efc87 inherit pub_methods_classinviwo_1_1Factory"><td class="memItemLeft" align="right" valign="top"><a id="a65b506e9e5cce624082f624a1f3efc87" name="a65b506e9e5cce624082f624a1f3efc87"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (std::string_view key) const=0</td></tr>
 <tr class="separator:a65b506e9e5cce624082f624a1f3efc87 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -226,7 +245,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="a554eae86640b29e5367c3afd4cb8235d" name="a554eae86640b29e5367c3afd4cb8235d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a554eae86640b29e5367c3afd4cb8235d">&#9670;&nbsp;</a></span>hasKey()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a554eae86640b29e5367c3afd4cb8235d">&#9670;&nbsp;</a></span>hasKey() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -250,6 +269,34 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; DataReader, const FileExtension &amp; &gt;</a>.</p>
+
+</div>
+</div>
+<a id="ac607c283832dae092b11ec7261336463" name="ac607c283832dae092b11ec7261336463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac607c283832dae092b11ec7261336463">&#9670;&nbsp;</a></span>hasKey() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool inviwo::DataReaderFactory::hasKey </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; DataReader, std::string_view &gt;</a>.</p>
 
 </div>
 </div>

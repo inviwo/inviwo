@@ -895,7 +895,13 @@ var hierarchy =
     [ "inviwo::Factory< DataReader, const FileExtension & >", "classinviwo_1_1Factory.html", [
       [ "inviwo::DataReaderFactory", "classinviwo_1_1DataReaderFactory.html", null ]
     ] ],
+    [ "inviwo::Factory< DataReader, std::string_view >", "classinviwo_1_1Factory.html", [
+      [ "inviwo::DataReaderFactory", "classinviwo_1_1DataReaderFactory.html", null ]
+    ] ],
     [ "inviwo::Factory< DataWriter, const FileExtension & >", "classinviwo_1_1Factory.html", [
+      [ "inviwo::DataWriterFactory", "classinviwo_1_1DataWriterFactory.html", null ]
+    ] ],
+    [ "inviwo::Factory< DataWriter, std::string_view >", "classinviwo_1_1Factory.html", [
       [ "inviwo::DataWriterFactory", "classinviwo_1_1DataWriterFactory.html", null ]
     ] ],
     [ "inviwo::Factory< Dialog, std::string_view, Args... >", "classinviwo_1_1Factory.html", [
@@ -903,8 +909,8 @@ var hierarchy =
         [ "inviwo::DialogFactory", "classinviwo_1_1DialogFactory.html", null ]
       ] ]
     ] ],
-    [ "inviwo::Factory< Element, const std::string &, Args... >", "classinviwo_1_1Factory.html", [
-      [ "inviwo::StandardFactory< Element, WidgetFactoryObject, const std::string &, Property &, Processor &, Renderer & >", "classinviwo_1_1StandardFactory.html", [
+    [ "inviwo::Factory< Element, std::string_view, Args... >", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Element, WidgetFactoryObject, std::string_view, Property &, Processor &, Renderer & >", "classinviwo_1_1StandardFactory.html", [
         [ "inviwo::glui::WidgetFactory", "classinviwo_1_1glui_1_1WidgetFactory.html", null ]
       ] ]
     ] ],
@@ -950,8 +956,13 @@ var hierarchy =
         [ "inviwo::ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ]
       ] ]
     ] ],
-    [ "inviwo::Factory< ProcessorWidget, const std::string &, Processor * >", "classinviwo_1_1Factory.html", [
+    [ "inviwo::Factory< ProcessorWidget, Processor * >", "classinviwo_1_1Factory.html", [
       [ "inviwo::ProcessorWidgetFactory", "classinviwo_1_1ProcessorWidgetFactory.html", null ]
+    ] ],
+    [ "inviwo::Factory< ProcessorWidget, std::string_view, Args... >", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< ProcessorWidget, ProcessorWidgetFactoryObject, std::string_view, Processor * >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::ProcessorWidgetFactory", "classinviwo_1_1ProcessorWidgetFactory.html", null ]
+      ] ]
     ] ],
     [ "inviwo::Factory< Property, std::string_view >", "classinviwo_1_1Factory.html", [
       [ "inviwo::PropertyFactory", "classinviwo_1_1PropertyFactory.html", null ]
@@ -974,8 +985,8 @@ var hierarchy =
         [ "inviwo::RepresentationFactory< Representation >", "classinviwo_1_1RepresentationFactory.html", null ]
       ] ]
     ] ],
-    [ "inviwo::Factory< SequenceEditorWidget, const std::string &, Args... >", "classinviwo_1_1Factory.html", [
-      [ "inviwo::StandardFactory< SequenceEditorWidget, SequenceEditorFactoryObject, const std::string &, KeyframeSequence &, Track &, AnimationManager & >", "classinviwo_1_1StandardFactory.html", [
+    [ "inviwo::Factory< SequenceEditorWidget, std::string_view, Args... >", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< SequenceEditorWidget, SequenceEditorFactoryObject, std::string_view, KeyframeSequence &, Track &, AnimationManager & >", "classinviwo_1_1StandardFactory.html", [
         [ "inviwo::animation::SequenceEditorFactory", "classinviwo_1_1animation_1_1SequenceEditorFactory.html", null ]
       ] ]
     ] ],
@@ -990,8 +1001,8 @@ var hierarchy =
         [ "inviwo::animation::TrackFactory", "classinviwo_1_1animation_1_1TrackFactory.html", null ]
       ] ]
     ] ],
-    [ "inviwo::Factory< TrackWidgetQt, const std::string &, Args... >", "classinviwo_1_1Factory.html", [
-      [ "inviwo::StandardFactory< TrackWidgetQt, TrackWidgetQtFactoryObject, const std::string &, Track & >", "classinviwo_1_1StandardFactory.html", [
+    [ "inviwo::Factory< TrackWidgetQt, std::string_view, Args... >", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< TrackWidgetQt, TrackWidgetQtFactoryObject, std::string_view, Track & >", "classinviwo_1_1StandardFactory.html", [
         [ "inviwo::animation::TrackWidgetQtFactory", "classinviwo_1_1animation_1_1TrackWidgetQtFactory.html", null ]
       ] ]
     ] ],
@@ -1738,6 +1749,13 @@ var hierarchy =
           [ "inviwo::Processor", "classinviwo_1_1Processor.html", null ]
         ] ]
       ] ],
+      [ "inviwo::Observable< FactoryObserver< ProcessorWidgetFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< ProcessorWidgetFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< ProcessorWidgetFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< ProcessorWidget, ProcessorWidgetFactoryObject, std::string_view, Processor * >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< ProcessorWidgetMetaDataObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::ProcessorWidgetMetaData", "classinviwo_1_1ProcessorWidgetMetaData.html", null ]
       ] ],
@@ -1873,8 +1891,8 @@ var hierarchy =
       ] ],
       [ "inviwo::Observable< FactoryObserver< SequenceEditorFactoryObject > >", "classinviwo_1_1Observable.html", [
         [ "inviwo::FactoryObservable< SequenceEditorFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
-          [ "inviwo::FactoryRegister< SequenceEditorFactoryObject, factoryKeyType< const std::string & >, const std::string & >", "classinviwo_1_1FactoryRegister.html", [
-            [ "inviwo::StandardFactory< SequenceEditorWidget, SequenceEditorFactoryObject, const std::string &, KeyframeSequence &, Track &, AnimationManager & >", "classinviwo_1_1StandardFactory.html", null ]
+          [ "inviwo::FactoryRegister< SequenceEditorFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< SequenceEditorWidget, SequenceEditorFactoryObject, std::string_view, KeyframeSequence &, Track &, AnimationManager & >", "classinviwo_1_1StandardFactory.html", null ]
           ] ]
         ] ]
       ] ],
@@ -1904,8 +1922,8 @@ var hierarchy =
       ] ],
       [ "inviwo::Observable< FactoryObserver< TrackWidgetQtFactoryObject > >", "classinviwo_1_1Observable.html", [
         [ "inviwo::FactoryObservable< TrackWidgetQtFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
-          [ "inviwo::FactoryRegister< TrackWidgetQtFactoryObject, factoryKeyType< const std::string & >, const std::string & >", "classinviwo_1_1FactoryRegister.html", [
-            [ "inviwo::StandardFactory< TrackWidgetQt, TrackWidgetQtFactoryObject, const std::string &, Track & >", "classinviwo_1_1StandardFactory.html", null ]
+          [ "inviwo::FactoryRegister< TrackWidgetQtFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< TrackWidgetQt, TrackWidgetQtFactoryObject, std::string_view, Track & >", "classinviwo_1_1StandardFactory.html", null ]
           ] ]
         ] ]
       ] ],
@@ -1918,8 +1936,8 @@ var hierarchy =
       ] ],
       [ "inviwo::Observable< FactoryObserver< WidgetFactoryObject > >", "classinviwo_1_1Observable.html", [
         [ "inviwo::FactoryObservable< WidgetFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
-          [ "inviwo::FactoryRegister< WidgetFactoryObject, factoryKeyType< const std::string & >, const std::string & >", "classinviwo_1_1FactoryRegister.html", [
-            [ "inviwo::StandardFactory< Element, WidgetFactoryObject, const std::string &, Property &, Processor &, Renderer & >", "classinviwo_1_1StandardFactory.html", null ]
+          [ "inviwo::FactoryRegister< WidgetFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< Element, WidgetFactoryObject, std::string_view, Property &, Processor &, Renderer & >", "classinviwo_1_1StandardFactory.html", null ]
           ] ]
         ] ]
       ] ],
@@ -1939,6 +1957,7 @@ var hierarchy =
       [ "inviwo::FactoryObserver< ProcessorFactoryObject >", "classinviwo_1_1FactoryObserver.html", [
         [ "inviwo::ProcessorTreeWidget", "classinviwo_1_1ProcessorTreeWidget.html", null ]
       ] ],
+      [ "inviwo::FactoryObserver< ProcessorWidgetFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< PropertyJSONConverterFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< RepresentationFactoryObject< Representation > >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< InterpolationFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],

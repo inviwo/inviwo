@@ -714,6 +714,9 @@ IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>updateRe
 <tr class="memitem:a9bb4e1d0a952f2a8216385f68ac32178"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#a9bb4e1d0a952f2a8216385f68ac32178">trySetProperty</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *proc, std::string_view <a class="el" href="structinviwo_1_1util_1_1identifier.html">identifier</a>, V &amp;&amp;val, bool recursive=false)</td></tr>
 <tr class="memdesc:a9bb4e1d0a952f2a8216385f68ac32178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to set a processor's property to a given value.  <a href="namespaceinviwo_1_1util.html#a9bb4e1d0a952f2a8216385f68ac32178">More...</a><br /></td></tr>
 <tr class="separator:a9bb4e1d0a952f2a8216385f68ac32178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3d0fa4ad06fba067f12d5f75e38b715"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#aa3d0fa4ad06fba067f12d5f75e38b715">getProcessorModuleIdentifier</a> (std::string_view classIdentifier, const <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;app)</td></tr>
+<tr class="memdesc:aa3d0fa4ad06fba067f12d5f75e38b715"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the module identifier of a registered processor.  <a href="namespaceinviwo_1_1util.html#aa3d0fa4ad06fba067f12d5f75e38b715">More...</a><br /></td></tr>
+<tr class="separator:aa3d0fa4ad06fba067f12d5f75e38b715"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada3f90c8cfa64a0898b021cca551de05"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API <a class="el" href="structinviwo_1_1OrdinalPropertyState.html">OrdinalPropertyState</a>&lt; vec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#ada3f90c8cfa64a0898b021cca551de05">ordinalColor</a> (float r, float g, float b, float a=1.0f, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput)</td></tr>
 <tr class="separator:ada3f90c8cfa64a0898b021cca551de05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81edf9b276066462960fe0b021067ac9"><td class="memItemLeft" align="right" valign="top"><a id="a81edf9b276066462960fe0b021067ac9" name="a81edf9b276066462960fe0b021067ac9"></a>
@@ -3339,6 +3342,44 @@ template&lt;class T , typename std::enable_if&lt; <a class="el" href="structinvi
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the <a class="el" href="classinviwo_1_1InviwoModule.html" title="A module class contains registrations of functionality, such as processors, ports,...">InviwoModule</a> that registered the processor or nullptr if not found </dd></dl>
+
+</div>
+</div>
+<a id="aa3d0fa4ad06fba067f12d5f75e38b715" name="aa3d0fa4ad06fba067f12d5f75e38b715"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3d0fa4ad06fba067f12d5f75e38b715">&#9670;&nbsp;</a></span>getProcessorModuleIdentifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_CORE_API std::optional&lt; std::string &gt; inviwo::util::getProcessorModuleIdentifier </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>classIdentifier</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;&#160;</td>
+          <td class="paramname"><em>app</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find the module identifier of a registered processor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">classIdentifier</td><td>the class identifier of the processor to look for </td></tr>
+    <tr><td class="paramname">app</td><td>the <a class="el" href="classinviwo_1_1InviwoApplication.html" title="The main application which holds the instances of all modules.">InviwoApplication</a> needed to get the modules </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the identifer of the module that registered the processor or nullopt if not found </dd></dl>
 
 </div>
 </div>
