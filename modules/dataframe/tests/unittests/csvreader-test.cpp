@@ -102,12 +102,14 @@ TEST(CSVdata, emptyRowAtEnd) {
 
 TEST(CSVdata, emptyRowsAtEnd) {
     // test for empty rows at the end
-    std::istringstream ss("1\n2\n\n\n\n");
+    std::istringstream ss("1\n2\n  \n\n  \n");
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
 
-    EXPECT_THROW(reader.readData(ss), DataReaderException);
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 }
 
 TEST(CSVdata, emptyFields) {
@@ -255,23 +257,6 @@ TEST(CSVheader, missingHeader) {
     EXPECT_EQ("1", dataframe->getColumn(1)->getHeader());
     EXPECT_EQ("2", dataframe->getColumn(2)->getHeader());
     EXPECT_EQ("3", dataframe->getColumn(3)->getHeader());
-}
-
-TEST(CSVheader, duplicateHeader) {
-    const std::string data = "1,2,3,4,5\n6,7,8,9,10";
-    std::istringstream ss("First,Second,First,Second,First\n" + data);
-
-    CSVReader reader;
-    reader.setFirstRowHeader(true);
-    auto dataframe = reader.readData(ss);
-
-    // dataFrame should have 4 columns, three for data + 1 index
-    ASSERT_EQ(6, dataframe->getNumberOfColumns()) << "column count does not match";
-    EXPECT_EQ("First", dataframe->getColumn(1)->getHeader());
-    EXPECT_EQ("Second", dataframe->getColumn(2)->getHeader());
-    EXPECT_EQ("First.1", dataframe->getColumn(3)->getHeader());
-    EXPECT_EQ("Second.1", dataframe->getColumn(4)->getHeader());
-    EXPECT_EQ("First.2", dataframe->getColumn(5)->getHeader());
 }
 
 TEST(CSVdelimiter, comma) {
@@ -580,7 +565,7 @@ TEST(CSVFilters, keepLines) {
 TEST(CSVFilters, emptyRows) {
     // test for empty rows in between
     std::istringstream ss("1\n2\n\n\n3\n4\n\n\5\n6");
-    
+
     csvfilters::Filters filters;
     filters.excludeRows.push_back(csvfilters::emptyLines());
 
@@ -596,7 +581,7 @@ TEST(CSVFilters, emptyRows) {
 TEST(CSVFilters, emptyRowsAtEnd) {
     // test for empty rows at the end
     std::istringstream ss("1\n2\n\n\n\n");
-    
+
     csvfilters::Filters filters;
     filters.excludeRows.push_back(csvfilters::emptyLines());
 

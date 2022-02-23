@@ -49,8 +49,6 @@
 #include <type_traits>
 #include <regex>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 CSVReader::CSVReader(std::string_view delim, bool hasHeader, bool doublePrecision)
@@ -483,13 +481,11 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
         } else if (counts.integer > 0) {
             appenders.push_back(addColumn<int>(df, headerCopy, unit, emptyField_, cLocale));
         } else if (stripQuotes_) {
-            LogWarn("Detected an empty column, using a categorical type, name: " << header);
             auto col = df.addCategoricalColumn(header);
             appenders.emplace_back([f = col->addMany()](std::string_view str, size_t, size_t) {
                 f(util::stripQuotes(str));
             });
         } else {
-            LogWarn("Detected an empty column, using a categorical type, name: " << header);
             auto col = df.addCategoricalColumn(header);
             appenders.emplace_back(
                 [f = col->addMany()](std::string_view str, size_t, size_t) { f(str); });
@@ -502,11 +498,11 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
 bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHeader) const {
 
     auto filterRow = [&](bool neutralValue) {
-        return [&](const auto& f) {
+        return [&, neutral = neutralValue](const auto& f) {
             if (!firstRowHeader_ || (f.filterOnHeader == filterOnHeader)) {
                 return f.filter(row, lineNumber);
             }
-            return neutralValue;
+            return neutral;
         };
     };
 
@@ -538,7 +534,7 @@ bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHe
                     }};
                 for (const auto& f : filters) {
                     if ((!firstRowHeader_ || (f.filterOnHeader == filterOnHeader)) &&
-                        f.column == colIndex) {
+                        f.column == static_cast<int>(colIndex)) {
                         retval |= std::visit(test, f.filter);
                     }
                 }
@@ -586,19 +582,18 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     }
 
     std::string content{std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
+    std::string_view trimmed{content};
+    if (auto pos = trimmed.find_last_not_of(" \f\n\r\t\v"); pos != std::string_view::npos) {
+        trimmed = trimmed.substr(0, pos + 1);
+    }
 
     std::vector<std::pair<std::string_view, size_t>> rows;
-    util::parse(content, "\n", std::nullopt, std::nullopt,
+    util::parse(trimmed, "\n", std::nullopt, std::nullopt,
                 [&](std::string_view line, [[maybe_unused]] size_t index, size_t lineNumber) {
                     if (!skipRow(line, lineNumber, true)) {
                         rows.emplace_back(line, lineNumber);
                     }
                 });
-
-    // remove trailing new line
-    if (!rows.empty() && rows.back().first.empty()) {
-        rows.erase(rows.end() - 1);
-    }
 
     if (rows.empty()) {
         throw DataReaderException("No data", IVW_CONTEXT);
@@ -615,18 +610,6 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
 
     if (firstRowHeader_) {
         rows.erase(rows.begin());
-
-        // demangle duplicate column headers similar to Pandas' default behavior
-        // @see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
-        std::unordered_map<std::string, int> headerCount;
-        for (auto& header : headers) {
-            if (int count = ++headerCount[header]; count > 1) {
-                header.append(fmt::format(".{}", count - 1));
-            }
-        }
-        if (headerCount.size() != headers.size()) {
-            LogWarn("Duplicate column headers detected. Affected headers are demangled.");
-        }
     } else {
         for (auto&& [i, header] : util::enumerate(headers)) {
             header = fmt::format("Column {}", i + 1);

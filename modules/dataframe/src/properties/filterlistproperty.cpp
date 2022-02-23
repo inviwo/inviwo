@@ -61,7 +61,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
         return p;
     };
 
-    if (supportedFilters & FilterType::Rows) {
+    if (supportedFilters.contains(FilterType::Rows)) {
         {
             auto emptyLines =
                 std::make_unique<BoolCompositeProperty>("emptyLines", "Empty Lines", true);
@@ -94,7 +94,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
             InvalidationLevel::InvalidOutput, PropertySemantics::Text);
     };
 
-    if (supportedFilters & FilterType::StringItem) {
+    if (supportedFilters.contains(FilterType::StringItem)) {
         auto stringItem =
             std::make_unique<BoolCompositeProperty>("stringItem", "String Match", true);
         stringItem->addProperty(columnProp());
@@ -110,7 +110,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(stringItem));
     }
-    if (supportedFilters & FilterType::IntItem) {
+    if (supportedFilters.contains(FilterType::IntItem)) {
         auto intItem =
             std::make_unique<BoolCompositeProperty>("intItem", "Integer Comparison", true);
         intItem->addProperty(columnProp());
@@ -130,7 +130,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(intItem));
     }
-    if (supportedFilters & FilterType::FloatItem) {
+    if (supportedFilters.contains(FilterType::FloatItem)) {
         auto floatItem =
             std::make_unique<BoolCompositeProperty>("floatItem", "Float Comparison", true);
         floatItem->addProperty(columnProp());
@@ -154,7 +154,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(floatItem));
     }
-    if (supportedFilters & FilterType::DoubleItem) {
+    if (supportedFilters.contains(FilterType::DoubleItem)) {
         auto doubleItem =
             std::make_unique<BoolCompositeProperty>("doubleItem", "Double Comparison", true);
         doubleItem->addProperty(columnProp());
@@ -178,7 +178,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(doubleItem));
     }
-    if (supportedFilters & FilterType::IntRange) {
+    if (supportedFilters.contains(FilterType::IntRange)) {
         auto intRange = std::make_unique<BoolCompositeProperty>("intRangeItem", "Int Range", true);
         intRange->addProperty(columnProp());
         intRange->addProperty(std::make_unique<IntMinMaxProperty>(
@@ -188,7 +188,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(intRange));
     }
-    if (supportedFilters & FilterType::FloatRange) {
+    if (supportedFilters.contains(FilterType::FloatRange)) {
         auto floatRange =
             std::make_unique<BoolCompositeProperty>("floatRangeItem", "Float Range", true);
         floatRange->addProperty(columnProp());
@@ -199,7 +199,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(floatRange));
     }
-    if (supportedFilters & FilterType::DoubleRange) {
+    if (supportedFilters.contains(FilterType::DoubleRange)) {
         auto doubleRange =
             std::make_unique<BoolCompositeProperty>("doubleRangeItem", "Double Range", true);
         doubleRange->addProperty(columnProp());
