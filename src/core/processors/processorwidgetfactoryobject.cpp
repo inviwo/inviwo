@@ -32,7 +32,7 @@
 namespace inviwo {
 
 ProcessorWidgetFactoryObject::ProcessorWidgetFactoryObject(
-    const std::string& processorClassIdentifier)
+    std::string_view processorClassIdentifier)
     : classIdentifier_(processorClassIdentifier) {}
 
 ProcessorWidgetFactoryObject::~ProcessorWidgetFactoryObject() {}

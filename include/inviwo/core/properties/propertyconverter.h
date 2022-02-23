@@ -44,7 +44,7 @@ namespace inviwo {
 
 class IVW_CORE_API PropertyConverter {
 public:
-    PropertyConverter(const std::string& srcClassIdentifier, const std::string& dstClassIdentifier);
+    PropertyConverter(std::string_view srcClassIdentifier, std::string_view dstClassIdentifier);
     virtual ~PropertyConverter();
 
     std::string getSourcePropertyClassIdenetifier() const;

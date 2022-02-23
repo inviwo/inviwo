@@ -33,12 +33,12 @@ namespace inviwo {
 
 namespace animation {
 
-void TrackWidgetQtFactory::registerTrackToWidgetMap(const std::string& trackId,
-                                                    const std::string& widgetId) {
-    trackToWidget_[trackId] = widgetId;
+void TrackWidgetQtFactory::registerTrackToWidgetMap(std::string_view trackId,
+                                                    std::string_view widgetId) {
+    trackToWidget_.try_emplace(std::string{trackId}, widgetId);
 }
 
-std::string TrackWidgetQtFactory::getWidgetId(const std::string& trackId) const {
+std::string TrackWidgetQtFactory::getWidgetId(std::string_view trackId) const {
     auto it = trackToWidget_.find(trackId);
     if (it != trackToWidget_.end()) {
         return it->second;

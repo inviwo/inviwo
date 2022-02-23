@@ -112,7 +112,7 @@ public:
 
     int getMatches(const Tags&) const;
 
-    IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const inviwo::Tags& obj);
+    IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const Tags& obj);
 
     std::vector<Tag> tags_;
 

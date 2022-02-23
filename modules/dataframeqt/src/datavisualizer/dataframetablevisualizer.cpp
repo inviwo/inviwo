@@ -32,6 +32,7 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/dataframe/processors/csvsource.h>
 #include <inviwo/dataframeqt/processors/dataframetable.h>

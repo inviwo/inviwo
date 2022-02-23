@@ -39,6 +39,7 @@
 #include <modules/basegl/processors/background.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 

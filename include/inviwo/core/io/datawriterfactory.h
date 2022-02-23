@@ -30,6 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/util/fileextension.h>
@@ -43,7 +44,8 @@ namespace inviwo {
 template <typename T>
 class DataWriterType;
 
-class IVW_CORE_API DataWriterFactory : public Factory<DataWriter, const FileExtension&> {
+class IVW_CORE_API DataWriterFactory : public Factory<DataWriter, const FileExtension&>,
+                                       public Factory<DataWriter, std::string_view> {
 public:
     DataWriterFactory() = default;
     virtual ~DataWriterFactory() = default;
@@ -51,10 +53,10 @@ public:
     bool registerObject(DataWriter* reader);
     bool unRegisterObject(DataWriter* reader);
 
-    virtual std::unique_ptr<DataWriter> create(std::string_view key) const;
+    virtual std::unique_ptr<DataWriter> create(std::string_view key) const override;
     virtual std::unique_ptr<DataWriter> create(const FileExtension& key) const override;
 
-    virtual bool hasKey(std::string_view key) const;
+    virtual bool hasKey(std::string_view key) const override;
     virtual bool hasKey(const FileExtension& key) const override;
 
     template <typename T>

@@ -133,6 +133,7 @@ bool iCaseEndsWith(std::string_view str, std::string_view suffix) {
 
 std::string elideLines(std::string_view str, std::string_view abbrev, size_t maxLineLength) {
     std::string result;
+    if (str.empty()) return result;
     const auto maxSize = maxLineLength - abbrev.size();
     util::forEachStringPart(str, "\n", [&](std::string_view line) {
         if (line.size() > maxLineLength) {

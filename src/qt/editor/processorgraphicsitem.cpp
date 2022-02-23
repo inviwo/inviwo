@@ -82,6 +82,8 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , statusItem_(nullptr)
     , linkItem_(nullptr)
     , highlight_(false)
+    , backgroundColor_(
+          processor_->getProcessorInfo().codeState == CodeState::Deprecated ? "#562e14" : "#3b3d3d")
 #if IVW_PROFILING
     , processCount_(0)
     , countLabel_(nullptr)
@@ -315,16 +317,12 @@ void ProcessorGraphicsItem::paint(QPainter* p,
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);
     QColor selectionColor("#7a191b");
-    QColor deprecatedColor("#562e14");
-    QColor backgroundColor("#3b3d3d");
     QColor borderColor("#282828");
 
     if (isSelected()) {
         p->setBrush(selectionColor);
-    } else if (processor_->getProcessorInfo().codeState == CodeState::Deprecated) {
-        p->setBrush(deprecatedColor);
     } else {
-        p->setBrush(backgroundColor);
+        p->setBrush(backgroundColor_);
     }
     p->setPen(QPen(QBrush(borderColor), 2.0));
 

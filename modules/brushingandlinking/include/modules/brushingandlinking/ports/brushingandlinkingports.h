@@ -234,8 +234,7 @@ private:
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport : public Outport {
 public:
     using type = void;
-
-    BrushingAndLinkingOutport(std::string identifier);
+    BrushingAndLinkingOutport(std::string_view identifier);
     virtual ~BrushingAndLinkingOutport() = default;
 
     BrushingAndLinkingManager& getManager();

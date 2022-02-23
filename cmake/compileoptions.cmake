@@ -81,6 +81,7 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
             list(APPEND comp_opts "/w35038") # class member reorder
+            list(APPEND comp_opts "/wd4250") # inherits via dominance https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-2-c4250?view=msvc-160
             if(NOT IVW_USE_OPENMP)
                 list(APPEND comp_opts "/permissive-")
             endif()

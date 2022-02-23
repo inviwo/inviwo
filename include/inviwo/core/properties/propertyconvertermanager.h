@@ -46,12 +46,11 @@ public:
     bool registerObject(PropertyConverter* converter);
     bool unRegisterObject(PropertyConverter* converter);
 
-    bool canConvert(const std::string& srcClassIdentifier,
-                    const std::string& dstClassIdentifier) const;
+    bool canConvert(std::string_view srcClassIdentifier, std::string_view dstClassIdentifier) const;
     bool canConvert(const Property* srcProperty, const Property* dstProperty) const;
 
-    const PropertyConverter* getConverter(const std::string& srcClassIdentifier,
-                                          const std::string& dstClassIdentifier) const;
+    const PropertyConverter* getConverter(std::string_view srcClassIdentifier,
+                                          std::string_view dstClassIdentifier) const;
 
     const PropertyConverter* getConverter(const Property* srcProperty,
                                           const Property* dstProperty) const;

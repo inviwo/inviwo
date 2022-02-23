@@ -51,7 +51,6 @@ class IVW_MODULE_ANIMATION_API TrackFactory
 
 public:
     TrackFactory(ProcessorNetwork* network);
-    virtual ~TrackFactory() = default;
 
     using Parent::create;
 

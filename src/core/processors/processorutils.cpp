@@ -98,6 +98,16 @@ InviwoModule* getProcessorModule(std::string_view classIdentifier, const InviwoA
     return it != app.getModules().end() ? it->get() : nullptr;
 }
 
+std::optional<std::string> getProcessorModuleIdentifier(std::string_view classIdentifier,
+                                                        const InviwoApplication& app) {
+
+    if (auto m = getProcessorModule(classIdentifier, app)) {
+        return m->getIdentifier();
+    } else {
+        return std::nullopt;
+    }
+}
+
 }  // namespace util
 
 }  // namespace inviwo

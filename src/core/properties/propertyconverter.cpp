@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-PropertyConverter::PropertyConverter(const std::string& srcClassIdentifier,
-                                     const std::string& dstClassIdentifier)
+PropertyConverter::PropertyConverter(std::string_view srcClassIdentifier,
+                                     std::string_view dstClassIdentifier)
     : srcClassIdentifier_(srcClassIdentifier), dstClassIdentifier_(dstClassIdentifier) {}
 
 PropertyConverter::~PropertyConverter() = default;
