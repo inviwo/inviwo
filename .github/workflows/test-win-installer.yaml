@@ -22,10 +22,15 @@ jobs:
     - name: Run Installer
       shell: pwsh
       run: |
-        $exe = (Get-ChildItem -Name Inviwo-*.exe)
-        echo $exe
+        # find the name of the installer
+        $exe = Get-ChildItem -Name Inviwo-*.exe
+        # launch the nsis installer in "silent mode" (/S), should run without user interaction
         Invoke-expression "./$exe /S"
-        Start-Sleep -Seconds 180
+        # this will spawn the installer in the background so we need to wait for it to finish
+        $proc = Get-Process | where {$_.ProcessName -like "Inviwo-*"} | Select-Object -First 1
+        if ($proc) { 
+          Wait-Process -Id $proc.id
+        }
         
     - name: Run Inviwo
       shell: pwsh
