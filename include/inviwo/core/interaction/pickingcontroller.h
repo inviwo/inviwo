@@ -66,7 +66,7 @@ private:
     void propagateEvent(TouchEvent*, EventPropagator*);
     void propagateEvent(GestureEvent*, EventPropagator*);
 
-    size_t pickId(const uvec2& coord);
+    size_t pickId(const dvec2& coord);
     std::weak_ptr<const Image> src_;
 
     PickingControllerMouseState mouseState_;

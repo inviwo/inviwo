@@ -600,6 +600,8 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
             }
         }
 
+        b.append(processor->getMetaInformation());
+
         newItem->setToolTip(0, utilqt::toQString(doc));
         if (hasTags) {
             newItem->setToolTip(1, utilqt::toQString(doc));

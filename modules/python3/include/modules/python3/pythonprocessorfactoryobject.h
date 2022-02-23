@@ -62,6 +62,12 @@ public:
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
 
+    virtual Document getMetaInformation() const override {
+        Document doc;
+        doc.append("b", file_);
+        return doc;
+    }
+
 private:
     InviwoApplication* app_;
     virtual void fileChanged(const std::string& filename) override;

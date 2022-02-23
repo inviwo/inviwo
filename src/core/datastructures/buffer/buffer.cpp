@@ -54,34 +54,20 @@ const std::string BufferBase::classIdentifier = "org.inviwo.Buffer";
 const std::string BufferBase::dataName = "Buffer";
 
 void BufferBase::setSize(size_t size) {
-    if (size == getSize()) return;
-
-    defaultSize_ = size;
-
-    if (lastValidRepresentation_) {
-        // Resize last valid representation
-        lastValidRepresentation_->setSize(size);
-        invalidateAllOther(lastValidRepresentation_.get());
+    if (size != getSize()) {
+        defaultSize_ = size;
+        setLastAndInvalidateOther(&BufferRepresentation::setSize, size);
     }
 }
 
 size_t BufferBase::getSize() const {
-    // We need to update the size if a representation has changed size
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getSize();
-    }
-
-    return defaultSize_;
+    return getLastOr(&BufferRepresentation::getSize, defaultSize_);
 }
 
 void BufferBase::setDataFormat(const DataFormatBase* format) { defaultDataFormat_ = format; }
 
 const DataFormatBase* BufferBase::getDataFormat() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getDataFormat();
-    }
-
-    return defaultDataFormat_;
+    return getLastOr(&BufferRepresentation::getDataFormat, defaultDataFormat_);
 }
 
 }  // namespace inviwo

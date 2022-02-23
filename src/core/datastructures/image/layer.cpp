@@ -65,107 +65,49 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
 Layer* Layer::clone() const { return new Layer(*this); }
 
 LayerType Layer::getLayerType() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getLayerType();
-    }
-    return defaultLayerType_;
+    return getLastOr(&LayerRepresentation::getLayerType, defaultLayerType_);
 }
 
 void Layer::setDimensions(const size2_t& dim) {
     defaultDimensions_ = dim;
-    if (lastValidRepresentation_) {
-        // Resize last valid representation
-        lastValidRepresentation_->setDimensions(dim);
-        invalidateAllOther(lastValidRepresentation_.get());
-    }
+    setLastAndInvalidateOther(&LayerRepresentation::setDimensions, dim);
 }
 
 size2_t Layer::getDimensions() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getDimensions();
-    }
-    return defaultDimensions_;
+    return getLastOr(&LayerRepresentation::getDimensions, defaultDimensions_);
 }
 
 void Layer::setDataFormat(const DataFormatBase* format) { defaultDataFormat_ = format; }
 
 const DataFormatBase* Layer::getDataFormat() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getDataFormat();
-    }
-
-    return defaultDataFormat_;
+    return getLastOr(&LayerRepresentation::getDataFormat, defaultDataFormat_);
 }
 
 void Layer::setSwizzleMask(const SwizzleMask& mask) {
     defaultSwizzleMask_ = mask;
-    if (lastValidRepresentation_) {
-        lastValidRepresentation_->setSwizzleMask(mask);
-        invalidateAllOther(lastValidRepresentation_.get());
-    }
+    setLastAndInvalidateOther(&LayerRepresentation::setSwizzleMask, mask);
 }
 
 SwizzleMask Layer::getSwizzleMask() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getSwizzleMask();
-    }
-    return defaultSwizzleMask_;
+    return getLastOr(&LayerRepresentation::getSwizzleMask, defaultSwizzleMask_);
 }
 
 void Layer::setInterpolation(InterpolationType interpolation) {
     defaultInterpolation_ = interpolation;
-    if (lastValidRepresentation_) {
-        lastValidRepresentation_->setInterpolation(interpolation);
-        invalidateAllOther(lastValidRepresentation_.get());
-    }
+    setLastAndInvalidateOther(&LayerRepresentation::setInterpolation, interpolation);
 }
 
 InterpolationType Layer::getInterpolation() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getInterpolation();
-    }
-    return defaultInterpolation_;
+    return getLastOr(&LayerRepresentation::getInterpolation, defaultInterpolation_);
 }
 
 void Layer::setWrapping(const Wrapping2D& wrapping) {
     defaultWrapping_ = wrapping;
-    if (lastValidRepresentation_) {
-        lastValidRepresentation_->setWrapping(wrapping);
-        invalidateAllOther(lastValidRepresentation_.get());
-    }
+    setLastAndInvalidateOther(&LayerRepresentation::setWrapping, wrapping);
 }
 
 Wrapping2D Layer::getWrapping() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getWrapping();
-    }
-    return defaultWrapping_;
-}
-
-void Layer::copyRepresentationsTo(Layer* targetLayer) {
-    for (auto& source : representations_) {
-        auto sourceRepr = source.second.get();
-        if (sourceRepr->isValid()) {
-            for (auto& target : targetLayer->representations_) {
-                auto targetRepr = target.second.get();
-                if (typeid(*sourceRepr) == typeid(*targetRepr)) {
-                    if (sourceRepr->copyRepresentationsTo(targetRepr)) {
-                        targetLayer->invalidateAllOther(targetRepr);
-                        return;
-                    }
-                }
-            }
-        }
-    }
-
-    // Fall-back
-    auto clone = std::shared_ptr<LayerRepresentation>(lastValidRepresentation_->clone());
-    targetLayer->addRepresentation(clone);
-    targetLayer->removeOtherRepresentations(clone.get());
-
-    if (!lastValidRepresentation_->copyRepresentationsTo(clone.get())) {
-        throw Exception("Failed to copy Layer Representation", IVW_CONTEXT);
-    }
+    return getLastOr(&LayerRepresentation::getWrapping, defaultWrapping_);
 }
 
 std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
