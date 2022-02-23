@@ -69,8 +69,9 @@ CSVSource::CSVSource(const std::string& file)
     , doublePrecision_("doublePrecision", "Double Precision", CSVReader::defaultDoublePrecision)
     , exampleRows_("exampleRows", "Example Rows", CSVReader::defaultNumberOfExampleRows, 0, 10000)
     , rowComment_("rowComment", "Comment marker", "")
-    , keepOnly_("keepOnly", "Keeping marker", "")
-    , includeFilters_("includeFilters", "Include Filters", true)
+    , includeFilters_("includeFilters", "Include Filters", true,
+                      FilterType::Rows | FilterType::StringItem | FilterType::DoubleItem |
+                          FilterType::DoubleRange)
     , excludeFilters_("excludeFilters", "Exclude Filters", true)
     , locale_("locale", "Locale", CSVReader::defaultLocale)
     , emptyField_("emptyField", "Missing Data Mode",
@@ -89,8 +90,8 @@ CSVSource::CSVSource(const std::string& file)
 
     unitsInHeaders_.addProperty(unitRegexp_);
     addProperties(inputFile_, firstRowIsHeaders_, unitsInHeaders_, delimiters_, stripQuotes_,
-                  doublePrecision_, exampleRows_, rowComment_, keepOnly_, locale_, emptyField_,
-                  reloadData_, includeFilters_, excludeFilters_, columns_);
+                  doublePrecision_, exampleRows_, rowComment_, locale_, emptyField_, reloadData_,
+                  includeFilters_, excludeFilters_, columns_);
 
     includeFilters_.setCollapsed(true);
     excludeFilters_.setCollapsed(true);
@@ -100,7 +101,7 @@ CSVSource::CSVSource(const std::string& file)
     for (auto&& item :
          util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_,
                              unitsInHeaders_, unitRegexp_, doublePrecision_, exampleRows_,
-                             rowComment_, keepOnly_, locale_, emptyField_)) {
+                             rowComment_, locale_, emptyField_)) {
         std::invoke(&Property::onChange, item, [this]() {
             loadingFailed_ = false;
             isReady_.update();
@@ -121,12 +122,11 @@ void CSVSource::process() {
         const auto overwrite = deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes;
         deserialized_ = false;
 
-        if (util::any_of(
-                util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_,
-                                    firstRowIsHeaders_, unitsInHeaders_, unitRegexp_,
-                                    doublePrecision_, exampleRows_, rowComment_, keepOnly_,
-                                    includeFilters_, excludeFilters_, locale_, emptyField_),
-                &Property::isModified)) {
+        if (util::any_of(util::ref<Property>(
+                             inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_,
+                             unitsInHeaders_, unitRegexp_, doublePrecision_, exampleRows_,
+                             rowComment_, includeFilters_, excludeFilters_, locale_, emptyField_),
+                         &Property::isModified)) {
             CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
             reader.setLocale(locale_)
                 .setStripQuotes(stripQuotes_)
@@ -184,10 +184,13 @@ csvfilters::Filters CSVSource::createFilters() const {
 
                 const auto& identifier = cp->getIdentifier();
 
-                if (startsWith(identifier, "rowBegin")) {
-                    rowFilters.push_back(csvfilters::rowBegin(
-                        std::string_view{detail::getValue<StringProperty>(cp, "match")},
+                if (startsWith(identifier, "emptyLine")) {
+                    rowFilters.push_back(csvfilters::emptyLines(
                         detail::getValue<BoolProperty>(cp, "filterOnHeader")));
+                } else if (startsWith(identifier, "rowBegin")) {
+                    rowFilters.push_back(
+                        csvfilters::rowBegin(detail::getValue<StringProperty>(cp, "match"),
+                                             detail::getValue<BoolProperty>(cp, "filterOnHeader")));
                 } else if (startsWith(identifier, "lineRange")) {
                     const auto& range = detail::getValue<IntMinMaxProperty>(cp, "range");
                     rowFilters.push_back(csvfilters::lineRange(
@@ -237,9 +240,6 @@ csvfilters::Filters CSVSource::createFilters() const {
 
     if (!rowComment_.get().empty()) {
         filters.excludeRows.push_back(csvfilters::rowBegin(rowComment_, true));
-    }
-    if (!keepOnly_.get().empty()) {
-        filters.includeRows.push_back(csvfilters::rowBegin(keepOnly_, false));
     }
     return filters;
 }

@@ -38,6 +38,9 @@
 
 namespace inviwo {
 
+/**
+ * Utility functions for DataFrame operations
+ */
 namespace dataframe {
 
 IVW_MODULE_DATAFRAME_API std::shared_ptr<BufferBase> cloneBufferRange(

@@ -31,19 +31,35 @@
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/properties/listproperty.h>
 
+#include <flags/flags.h>
+
 namespace inviwo {
 
+enum class FilterType {
+    Rows,
+    StringItem,
+    IntItem,
+    FloatItem,
+    DoubleItem,
+    IntRange,
+    FloatRange,
+    DoubleRange
+};
+
+ALLOW_FLAGS_FOR_ENUM(FilterType)
+using FilterTypes = flags::flags<FilterType>;
+
 /**
- * @class FilterListProperty
  * @brief A list property with different sub-properties for defining row and item filters.
  *
  * This property has a number of prefab objects for adding row and item filter properties
  * (BoolCompositeProperty). A row filter is applied to the entire row of a dataset. Item filters, in
- * contrast, are applied to the individual data items, that is columns. The distinction between row
- * and item filters is based on the property identifiers.
+ * contrast, are applied to the individual data items. The distinction between row and item filters
+ * is based on the property identifiers.
  *
  * Identifiers of the properties for row filters begin with the following names and hold the listed
  * sub-properties:
+ *  - @p "emptyLines": Matches empty lines
  *  - @p "rowBegin":   StringProperty @p match for matching the beginning of a row
  *  - @p "lineRange":  IntMinMaxProperty @p range for a line range (inclusive)
  *
@@ -71,7 +87,9 @@ public:
     static const std::string classIdentifier;
 
     FilterListProperty(std::string_view identifier, std::string_view displayName,
-                       bool supportsFilterOnHeader = false, size_t maxNumberOfElements = 0,
+                       bool supportsFilterOnHeader = false,
+                       FilterTypes supportedFilters = FilterTypes(flags::any),
+                       size_t maxNumberOfElements = 0,
                        ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add |
                                                      ListPropertyUIFlag::Remove,
                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

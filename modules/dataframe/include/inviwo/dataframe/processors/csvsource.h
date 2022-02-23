@@ -84,7 +84,6 @@ private:
     BoolProperty doublePrecision_;
     IntSizeTProperty exampleRows_;
     StringProperty rowComment_;
-    StringProperty keepOnly_;
     FilterListProperty includeFilters_;
     FilterListProperty excludeFilters_;
     StringProperty locale_;

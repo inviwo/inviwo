@@ -49,6 +49,8 @@
 #include <type_traits>
 #include <regex>
 
+#pragma optimize("", off)
+
 namespace inviwo {
 
 CSVReader::CSVReader(std::string_view delim, bool hasHeader, bool doublePrecision)
@@ -162,6 +164,10 @@ bool CSVReader::setOption(std::string_view key, std::any value) {
                emptyField && key == "HandleEmptyFields") {
         setHandleEmptyFields(*emptyField);
         return true;
+    } else if (auto* filters = std::any_cast<csvfilters::Filters>(&value);
+               filters && key == "Filters") {
+        setFilters(*filters);
+        return true;
     }
 
     return false;
@@ -186,6 +192,8 @@ std::any CSVReader::getOption(std::string_view key) {
         return getLocale();
     } else if (key == "HandleEmptyFields") {
         return getHandleEmptyFields();
+    } else if (key == "Filters") {
+        return getFilters();
     }
     return std::any{};
 }
@@ -501,46 +509,40 @@ bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHe
             return neutralValue;
         };
     };
+
     auto filterItems = [&](const std::vector<csvfilters::ItemFilter>& filters, bool neutralValue) {
         const bool cLocale = locale_ == "C";
-
         bool retval = false;
-        util::parse(row, delimiters_, std::nullopt, lineNumber,
-                    [&, l = lineNumber](std::string_view cell, size_t colIndex,
-                                        [[maybe_unused]] size_t part) {
-                        auto stringFilter = [&](const std::function<bool(std::string_view)>& func) {
-                            return func(cell);
-                        };
-                        auto intFilter = [&](const std::function<bool(int)>& func) {
-                            if (auto val = util::toNumber<int>(cell, cLocale)) {
-                                return func(*val);
-                            }
-                            return neutralValue;
-                        };
-                        auto floatFilter = [&](const std::function<bool(float)>& func) {
-                            if (auto val = util::toNumber<float>(cell, cLocale)) {
-                                return func(*val);
-                            }
-                            return neutralValue;
-                        };
-                        auto doubleFilter = [&](const std::function<bool(double)>& func) {
-                            if (auto val = util::toNumber<double>(cell, cLocale)) {
-                                return func(*val);
-                            }
-                            return neutralValue;
-                        };
-
-                        for (auto f : filters) {
-                            if (!firstRowHeader_ || (f.filterOnHeader == filterOnHeader)) {
-                                if (f.column == colIndex) {
-                                    retval |=
-                                        std::visit(util::overloaded{stringFilter, intFilter,
-                                                                    floatFilter, doubleFilter},
-                                                   f.filter);
-                                }
-                            }
+        util::parse(
+            row, delimiters_, std::nullopt, lineNumber,
+            [&](std::string_view cell, size_t colIndex, [[maybe_unused]] size_t part) {
+                auto test = util::overloaded{
+                    [&](const std::function<bool(std::string_view)>& func) { return func(cell); },
+                    [&](const std::function<bool(int)>& func) {
+                        if (auto val = util::toNumber<int>(cell, cLocale)) {
+                            return func(*val);
                         }
-                    });
+                        return neutralValue;
+                    },
+                    [&](const std::function<bool(float)>& func) {
+                        if (auto val = util::toNumber<float>(cell, cLocale)) {
+                            return func(*val);
+                        }
+                        return neutralValue;
+                    },
+                    [&](const std::function<bool(double)>& func) {
+                        if (auto val = util::toNumber<double>(cell, cLocale)) {
+                            return func(*val);
+                        }
+                        return neutralValue;
+                    }};
+                for (const auto& f : filters) {
+                    if ((!firstRowHeader_ || (f.filterOnHeader == filterOnHeader)) &&
+                        f.column == colIndex) {
+                        retval |= std::visit(test, f.filter);
+                    }
+                }
+            });
         return retval;
     };
 
@@ -588,10 +590,15 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     std::vector<std::pair<std::string_view, size_t>> rows;
     util::parse(content, "\n", std::nullopt, std::nullopt,
                 [&](std::string_view line, [[maybe_unused]] size_t index, size_t lineNumber) {
-                    if (!line.empty() && !skipRow(line, lineNumber, true)) {
+                    if (!skipRow(line, lineNumber, true)) {
                         rows.emplace_back(line, lineNumber);
                     }
                 });
+
+    // remove trailing new line
+    if (!rows.empty() && rows.back().first.empty()) {
+        rows.erase(rows.end() - 1);
+    }
 
     if (rows.empty()) {
         throw DataReaderException("No data", IVW_CONTEXT);
@@ -608,11 +615,18 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
 
     if (firstRowHeader_) {
         rows.erase(rows.begin());
-        // remove lines skipped by filters
-        rows.erase(
-            std::remove_if(rows.begin(), rows.end(),
-                           [&](const auto& row) { return skipRow(row.first, row.second, false); }),
-            rows.end());
+
+        // demangle duplicate column headers similar to Pandas' default behavior
+        // @see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+        std::unordered_map<std::string, int> headerCount;
+        for (auto& header : headers) {
+            if (int count = ++headerCount[header]; count > 1) {
+                header.append(fmt::format(".{}", count - 1));
+            }
+        }
+        if (headerCount.size() != headers.size()) {
+            LogWarn("Duplicate column headers detected. Affected headers are demangled.");
+        }
     } else {
         for (auto&& [i, header] : util::enumerate(headers)) {
             header = fmt::format("Column {}", i + 1);
@@ -625,11 +639,13 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     const auto appenders = addColumns(*df, types, headers);
 
     for (const auto& [row, lineNumber] : rows) {
-        util::parse(
-            row, delimiters_, headers.size(), lineNumber,
-            [&, l = lineNumber](std::string_view cell, size_t index, [[maybe_unused]] size_t part) {
-                appenders[index](cell, l, index + 1);
-            });
+        if (!skipRow(row, lineNumber, false)) {
+            util::parse(row, delimiters_, headers.size(), lineNumber,
+                        [&, l = lineNumber](std::string_view cell, size_t index,
+                                            [[maybe_unused]] size_t part) {
+                            appenders[index](cell, l, index + 1);
+                        });
+        }
     }
 
     df->updateIndexBuffer();

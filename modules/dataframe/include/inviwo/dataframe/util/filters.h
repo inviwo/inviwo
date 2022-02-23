@@ -45,6 +45,9 @@ enum class NumberComp { Equal, NotEqual, Less, LessEqual, Greater, GreaterEqual 
 
 }  // namespace filters
 
+/**
+ * CSV-specific filters when parsing CSV files
+ */
 namespace csvfilters {
 /**
  * Predicate functor for filtering rows.

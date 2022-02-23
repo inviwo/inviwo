@@ -48,8 +48,8 @@ const std::string FilterListProperty::classIdentifier = "org.inviwo.FilterListPr
 std::string FilterListProperty::getClassIdentifier() const { return classIdentifier; }
 
 FilterListProperty::FilterListProperty(std::string_view identifier, std::string_view displayName,
-                                       bool supportsFilterOnHeader, size_t maxNumberOfElements,
-                                       ListPropertyUIFlags uiFlags,
+                                       bool supportsFilterOnHeader, FilterTypes supportedFilters,
+                                       size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                                        InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
     : ListProperty(identifier, displayName, maxNumberOfElements, uiFlags, invalidationLevel,
@@ -61,21 +61,31 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
         return p;
     };
 
-    {
-        auto rowBegin = std::make_unique<BoolCompositeProperty>("rowBegin", "Row Begin", true);
-        rowBegin->addProperty(onHeaderProp());
-        rowBegin->addProperty(std::make_unique<StringProperty>("match", "Matching String", ""));
+    if (supportedFilters & FilterType::Rows) {
+        {
+            auto emptyLines =
+                std::make_unique<BoolCompositeProperty>("emptyLines", "Empty Lines", true);
+            emptyLines->addProperty(onHeaderProp());
 
-        addPrefab(std::move(rowBegin));
-    }
-    {
-        auto lineRange = std::make_unique<BoolCompositeProperty>("lineRange", "Line Range", true);
-        lineRange->addProperty(onHeaderProp());
-        lineRange->addProperty(std::make_unique<IntMinMaxProperty>(
-            "range", "Line Range", 0, 100, 0, std::numeric_limits<int>::max(), 1, 0,
-            InvalidationLevel::InvalidOutput, PropertySemantics::Text));
+            addPrefab(std::move(emptyLines));
+        }
+        {
+            auto rowBegin = std::make_unique<BoolCompositeProperty>("rowBegin", "Row Begin", true);
+            rowBegin->addProperty(onHeaderProp());
+            rowBegin->addProperty(std::make_unique<StringProperty>("match", "Matching String", ""));
 
-        addPrefab(std::move(lineRange));
+            addPrefab(std::move(rowBegin));
+        }
+        {
+            auto lineRange =
+                std::make_unique<BoolCompositeProperty>("lineRange", "Line Range", true);
+            lineRange->addProperty(onHeaderProp());
+            lineRange->addProperty(std::make_unique<IntMinMaxProperty>(
+                "range", "Line Range", 0, 100, 0, std::numeric_limits<int>::max(), 1, 0,
+                InvalidationLevel::InvalidOutput, PropertySemantics::Text));
+
+            addPrefab(std::move(lineRange));
+        }
     }
 
     auto columnProp = []() {
@@ -84,7 +94,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
             InvalidationLevel::InvalidOutput, PropertySemantics::Text);
     };
 
-    {
+    if (supportedFilters & FilterType::StringItem) {
         auto stringItem =
             std::make_unique<BoolCompositeProperty>("stringItem", "String Match", true);
         stringItem->addProperty(columnProp());
@@ -100,7 +110,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(stringItem));
     }
-    {
+    if (supportedFilters & FilterType::IntItem) {
         auto intItem =
             std::make_unique<BoolCompositeProperty>("intItem", "Integer Comparison", true);
         intItem->addProperty(columnProp());
@@ -120,7 +130,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(intItem));
     }
-    {
+    if (supportedFilters & FilterType::FloatItem) {
         auto floatItem =
             std::make_unique<BoolCompositeProperty>("floatItem", "Float Comparison", true);
         floatItem->addProperty(columnProp());
@@ -144,7 +154,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(floatItem));
     }
-    {
+    if (supportedFilters & FilterType::DoubleItem) {
         auto doubleItem =
             std::make_unique<BoolCompositeProperty>("doubleItem", "Double Comparison", true);
         doubleItem->addProperty(columnProp());
@@ -168,7 +178,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(doubleItem));
     }
-    {
+    if (supportedFilters & FilterType::IntRange) {
         auto intRange = std::make_unique<BoolCompositeProperty>("intRangeItem", "Int Range", true);
         intRange->addProperty(columnProp());
         intRange->addProperty(std::make_unique<IntMinMaxProperty>(
@@ -178,7 +188,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(intRange));
     }
-    {
+    if (supportedFilters & FilterType::FloatRange) {
         auto floatRange =
             std::make_unique<BoolCompositeProperty>("floatRangeItem", "Float Range", true);
         floatRange->addProperty(columnProp());
@@ -189,9 +199,9 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
 
         addPrefab(std::move(floatRange));
     }
-    {
+    if (supportedFilters & FilterType::DoubleRange) {
         auto doubleRange =
-            std::make_unique<BoolCompositeProperty>("doubleRangeItem", "Ddouble Range", true);
+            std::make_unique<BoolCompositeProperty>("doubleRangeItem", "Double Range", true);
         doubleRange->addProperty(columnProp());
         doubleRange->addProperty(std::make_unique<DoubleMinMaxProperty>(
             "range", "Double Range", 0.0, 100.0, std::numeric_limits<double>::min(),

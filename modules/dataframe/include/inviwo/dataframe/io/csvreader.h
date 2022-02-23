@@ -152,6 +152,7 @@ public:
      * * NumberOfExampleRows (size_t)
      * * Locale (string)
      * * HandleEmptyFields (EmptyField)
+     * * Filters (csvfilters::Filters)
      */
     virtual bool setOption(std::string_view key, std::any value) override;
 
@@ -166,6 +167,7 @@ public:
      * * NumberOfExampleRows (size_t)
      * * Locale (string)
      * * HandleEmptyFields (EmptyField)
+     * * Filters (csvfilters::Filters)
      */
     virtual std::any getOption(std::string_view key) override;
 
