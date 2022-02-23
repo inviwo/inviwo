@@ -599,7 +599,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
                 tb(H("Last"), "Never");
             }
         }
-        
+
         b.append(processor->getMetaInformation());
 
         newItem->setToolTip(0, utilqt::toQString(doc));

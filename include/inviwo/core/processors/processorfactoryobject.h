@@ -59,13 +59,11 @@ public:
     const std::string& getCategory() const { return info_.category; }
     CodeState getCodeState() const { return info_.codeState; }
     bool isVisible() { return info_.visible; }
-    
+
     /**
      * Overload this function to provide additional information
      */
-    virtual Document getMetaInformation() const {
-        return Document();
-    }
+    virtual Document getMetaInformation() const { return Document(); }
 
 private:
     const ProcessorInfo info_;
