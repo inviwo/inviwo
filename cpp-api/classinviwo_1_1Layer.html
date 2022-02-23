@@ -151,8 +151,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWrapping</b> (cons
 <tr class="memitem:affebe19880f9bdc99aeeab04db699486"><td class="memItemLeft" align="right" valign="top"><a id="affebe19880f9bdc99aeeab04db699486" name="affebe19880f9bdc99aeeab04db699486"></a>
 Wrapping2D&#160;</td><td class="memItemRight" valign="bottom"><b>getWrapping</b> () const</td></tr>
 <tr class="separator:affebe19880f9bdc99aeeab04db699486"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accdfb10562b9ab832a47c5ed953853df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Layer.html#accdfb10562b9ab832a47c5ed953853df">copyRepresentationsTo</a> (<a class="el" href="classinviwo_1_1Layer.html">Layer</a> *target)</td></tr>
-<tr class="separator:accdfb10562b9ab832a47c5ed953853df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64ab7ab95627b197b0f0acbc69992c65"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; std::vector&lt; unsigned char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Layer.html#a64ab7ab95627b197b0f0acbc69992c65">getAsCodedBuffer</a> (const std::string &amp;fileExtension) const</td></tr>
 <tr class="memdesc:a64ab7ab95627b197b0f0acbc69992c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">encode the layer contents to a buffer considering the requested image format  <a href="classinviwo_1_1Layer.html#a64ab7ab95627b197b0f0acbc69992c65">More...</a><br /></td></tr>
 <tr class="separator:a64ab7ab95627b197b0f0acbc69992c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,6 +160,9 @@ virtual <a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el"
 <tr class="separator:ab92b333604a1365ad9949f91235b02c4 inherit pub_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d094d4a0db9cb25a43411f1b1f83226 inherit pub_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top">const T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Data.html#a6d094d4a0db9cb25a43411f1b1f83226">getRepresentation</a> () const</td></tr>
 <tr class="separator:a6d094d4a0db9cb25a43411f1b1f83226 inherit pub_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eabada87876de3f0522a8c03adc4693 inherit pub_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="a3eabada87876de3f0522a8c03adc4693" name="a3eabada87876de3f0522a8c03adc4693"></a>
+std::shared_ptr&lt; const T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getRepresentationShared</b> () const</td></tr>
+<tr class="separator:a3eabada87876de3f0522a8c03adc4693 inherit pub_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a0bc7c8cd54a98e41e600bda03e9936 inherit pub_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Data.html#a5a0bc7c8cd54a98e41e600bda03e9936">getEditableRepresentation</a> ()</td></tr>
 <tr class="separator:a5a0bc7c8cd54a98e41e600bda03e9936 inherit pub_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4af3fbbf797c856f9d36c7b6a799033e inherit pub_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Data.html#a4af3fbbf797c856f9d36c7b6a799033e">hasRepresentation</a> () const</td></tr>
@@ -274,25 +275,12 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>repr</b> = <a class=
 <tr class="memitem:ad55c58966a63a7884b2d90095e742d56 inherit pro_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="ad55c58966a63a7884b2d90095e742d56" name="ad55c58966a63a7884b2d90095e742d56"></a>
 <a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a>, <a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a>, <a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a> &gt; &amp;rhs)</td></tr>
 <tr class="separator:ad55c58966a63a7884b2d90095e742d56 inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d0291a4e1be5e519fe8858d356a3879 inherit pro_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="a0d0291a4e1be5e519fe8858d356a3879" name="a0d0291a4e1be5e519fe8858d356a3879"></a>
-const T *&#160;</td><td class="memItemRight" valign="bottom"><b>getValidRepresentation</b> () const</td></tr>
-<tr class="separator:a0d0291a4e1be5e519fe8858d356a3879 inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ac0fd8b243b518e9539d9a6ef2b1d12 inherit pro_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="a4ac0fd8b243b518e9539d9a6ef2b1d12" name="a4ac0fd8b243b518e9539d9a6ef2b1d12"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>copyRepresentationsTo</b> (<a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a>, <a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a> &gt; *targetData) const</td></tr>
-<tr class="separator:a4ac0fd8b243b518e9539d9a6ef2b1d12 inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8388ae6288a12c666be655e823ca74c inherit pro_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="ae8388ae6288a12c666be655e823ca74c" name="ae8388ae6288a12c666be655e823ca74c"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>addRepresentationInternal</b> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a> &gt; representation) const</td></tr>
-<tr class="separator:ae8388ae6288a12c666be655e823ca74c inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classinviwo_1_1Data"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classinviwo_1_1Data')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1Data.html">inviwo::Data&lt; Layer, LayerRepresentation &gt;</a></td></tr>
-<tr class="memitem:a9ae9d94848fe6bdc2f18cc1e8de3e9bf inherit pro_attribs_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="a9ae9d94848fe6bdc2f18cc1e8de3e9bf" name="a9ae9d94848fe6bdc2f18cc1e8de3e9bf"></a>
-std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>mutex_</b></td></tr>
-<tr class="separator:a9ae9d94848fe6bdc2f18cc1e8de3e9bf inherit pro_attribs_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0466004ac9785a5d8a242de0ffa95531 inherit pro_attribs_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="a0466004ac9785a5d8a242de0ffa95531" name="a0466004ac9785a5d8a242de0ffa95531"></a>
-std::unordered_map&lt; std::type_index, std::shared_ptr&lt; <a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>representations_</b></td></tr>
-<tr class="separator:a0466004ac9785a5d8a242de0ffa95531 inherit pro_attribs_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53d3ac8eb8fc3bf66b88ea31e40807bd inherit pro_attribs_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="a53d3ac8eb8fc3bf66b88ea31e40807bd" name="a53d3ac8eb8fc3bf66b88ea31e40807bd"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lastValidRepresentation_</b></td></tr>
-<tr class="separator:a53d3ac8eb8fc3bf66b88ea31e40807bd inherit pro_attribs_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33888a68aa7cf9d01f39cd3bf71f79ae inherit pro_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="a33888a68aa7cf9d01f39cd3bf71f79ae" name="a33888a68aa7cf9d01f39cd3bf71f79ae"></a>
+decltype(auto)&#160;</td><td class="memItemRight" valign="bottom"><b>getLastOr</b> (F &amp;&amp;f, T &amp;&amp;fallback) const</td></tr>
+<tr class="separator:a33888a68aa7cf9d01f39cd3bf71f79ae inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc21341b6eeebdc61904883f21b3dce7 inherit pro_methods_classinviwo_1_1Data"><td class="memItemLeft" align="right" valign="top"><a id="afc21341b6eeebdc61904883f21b3dce7" name="afc21341b6eeebdc61904883f21b3dce7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setLastAndInvalidateOther</b> (F &amp;&amp;f, T &amp;&amp;value)</td></tr>
+<tr class="separator:afc21341b6eeebdc61904883f21b3dce7 inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1SpatialEntity"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classinviwo_1_1SpatialEntity')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1SpatialEntity.html">inviwo::SpatialEntity&lt; N &gt;</a></td></tr>
 <tr class="memitem:a06488d1edb7f04a09e1a0033b43c4092 inherit pro_attribs_classinviwo_1_1SpatialEntity"><td class="memItemLeft" align="right" valign="top"><a id="a06488d1edb7f04a09e1a0033b43c4092" name="a06488d1edb7f04a09e1a0033b43c4092"></a>
 <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a>&lt; N &gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>transformer_</b></td></tr>
@@ -332,25 +320,6 @@ Matrix&lt; N+1, float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classinviwo_1_1StructuredGridEntity.html">inviwo::StructuredGridEntity&lt; 2 &gt;</a>.</p>
-
-</div>
-</div>
-<a id="accdfb10562b9ab832a47c5ed953853df" name="accdfb10562b9ab832a47c5ed953853df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#accdfb10562b9ab832a47c5ed953853df">&#9670;&nbsp;</a></span>copyRepresentationsTo()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void inviwo::Layer::copyRepresentationsTo </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Layer.html">Layer</a> *&#160;</td>
-          <td class="paramname"><em>target</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Copy and resize the representation of this onto the representations of target. Does not change the dimensions of target. </p>
 
 </div>
 </div>

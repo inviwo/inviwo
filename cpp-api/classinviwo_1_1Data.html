@@ -88,7 +88,6 @@ $(document).ready(function(){initNavTree('classinviwo_1_1Data.html',''); initRes
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classinviwo_1_1Data-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::Data&lt; Self, Repr &gt; Class Template Reference<span class="mlabels"><span class="mlabel">abstract</span></span><div class="ingroups"><a class="el" href="group__datastructures.html">Datastructures</a></div></div></div>
 </div><!--header-->
@@ -116,6 +115,10 @@ virtual <a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; Self, Repr &g
 <tr class="memitem:a6d094d4a0db9cb25a43411f1b1f83226"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a6d094d4a0db9cb25a43411f1b1f83226"><td class="memTemplItemLeft" align="right" valign="top">const T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Data.html#a6d094d4a0db9cb25a43411f1b1f83226">getRepresentation</a> () const</td></tr>
 <tr class="separator:a6d094d4a0db9cb25a43411f1b1f83226"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eabada87876de3f0522a8c03adc4693"><td class="memTemplParams" colspan="2"><a id="a3eabada87876de3f0522a8c03adc4693" name="a3eabada87876de3f0522a8c03adc4693"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3eabada87876de3f0522a8c03adc4693"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getRepresentationShared</b> () const</td></tr>
+<tr class="separator:a3eabada87876de3f0522a8c03adc4693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a0bc7c8cd54a98e41e600bda03e9936"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5a0bc7c8cd54a98e41e600bda03e9936"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Data.html#a5a0bc7c8cd54a98e41e600bda03e9936">getEditableRepresentation</a> ()</td></tr>
 <tr class="separator:a5a0bc7c8cd54a98e41e600bda03e9936"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,28 +146,14 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:ad55c58966a63a7884b2d90095e742d56"><td class="memItemLeft" align="right" valign="top"><a id="ad55c58966a63a7884b2d90095e742d56" name="ad55c58966a63a7884b2d90095e742d56"></a>
 <a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; Self, Repr &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; Self, Repr &gt; &amp;rhs)</td></tr>
 <tr class="separator:ad55c58966a63a7884b2d90095e742d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d0291a4e1be5e519fe8858d356a3879"><td class="memTemplParams" colspan="2"><a id="a0d0291a4e1be5e519fe8858d356a3879" name="a0d0291a4e1be5e519fe8858d356a3879"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a0d0291a4e1be5e519fe8858d356a3879"><td class="memTemplItemLeft" align="right" valign="top">const T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getValidRepresentation</b> () const</td></tr>
-<tr class="separator:a0d0291a4e1be5e519fe8858d356a3879"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ac0fd8b243b518e9539d9a6ef2b1d12"><td class="memItemLeft" align="right" valign="top"><a id="a4ac0fd8b243b518e9539d9a6ef2b1d12" name="a4ac0fd8b243b518e9539d9a6ef2b1d12"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>copyRepresentationsTo</b> (<a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; Self, Repr &gt; *targetData) const</td></tr>
-<tr class="separator:a4ac0fd8b243b518e9539d9a6ef2b1d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8388ae6288a12c666be655e823ca74c"><td class="memItemLeft" align="right" valign="top"><a id="ae8388ae6288a12c666be655e823ca74c" name="ae8388ae6288a12c666be655e823ca74c"></a>
-std::shared_ptr&lt; Repr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>addRepresentationInternal</b> (std::shared_ptr&lt; Repr &gt; representation) const</td></tr>
-<tr class="separator:ae8388ae6288a12c666be655e823ca74c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:a9ae9d94848fe6bdc2f18cc1e8de3e9bf"><td class="memItemLeft" align="right" valign="top"><a id="a9ae9d94848fe6bdc2f18cc1e8de3e9bf" name="a9ae9d94848fe6bdc2f18cc1e8de3e9bf"></a>
-std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>mutex_</b></td></tr>
-<tr class="separator:a9ae9d94848fe6bdc2f18cc1e8de3e9bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0466004ac9785a5d8a242de0ffa95531"><td class="memItemLeft" align="right" valign="top"><a id="a0466004ac9785a5d8a242de0ffa95531" name="a0466004ac9785a5d8a242de0ffa95531"></a>
-std::unordered_map&lt; std::type_index, std::shared_ptr&lt; Repr &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>representations_</b></td></tr>
-<tr class="separator:a0466004ac9785a5d8a242de0ffa95531"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53d3ac8eb8fc3bf66b88ea31e40807bd"><td class="memItemLeft" align="right" valign="top"><a id="a53d3ac8eb8fc3bf66b88ea31e40807bd" name="a53d3ac8eb8fc3bf66b88ea31e40807bd"></a>
-std::shared_ptr&lt; Repr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lastValidRepresentation_</b></td></tr>
-<tr class="separator:a53d3ac8eb8fc3bf66b88ea31e40807bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33888a68aa7cf9d01f39cd3bf71f79ae"><td class="memTemplParams" colspan="2"><a id="a33888a68aa7cf9d01f39cd3bf71f79ae" name="a33888a68aa7cf9d01f39cd3bf71f79ae"></a>
+template&lt;typename F , typename T &gt; </td></tr>
+<tr class="memitem:a33888a68aa7cf9d01f39cd3bf71f79ae"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getLastOr</b> (F &amp;&amp;f, T &amp;&amp;fallback) const</td></tr>
+<tr class="separator:a33888a68aa7cf9d01f39cd3bf71f79ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc21341b6eeebdc61904883f21b3dce7"><td class="memTemplParams" colspan="2"><a id="afc21341b6eeebdc61904883f21b3dce7" name="afc21341b6eeebdc61904883f21b3dce7"></a>
+template&lt;typename F , typename T &gt; </td></tr>
+<tr class="memitem:afc21341b6eeebdc61904883f21b3dce7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setLastAndInvalidateOther</b> (F &amp;&amp;f, T &amp;&amp;value)</td></tr>
+<tr class="separator:afc21341b6eeebdc61904883f21b3dce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Self, typename Repr&gt;<br />

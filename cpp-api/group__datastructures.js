@@ -84,7 +84,6 @@ var group__datastructures =
       [ "readPixel", "classinviwo_1_1ImageRepresentation.html#a362870b0305d5a2b1185259751a8acc3", null ]
     ] ],
     [ "inviwo::Layer", "classinviwo_1_1Layer.html", [
-      [ "copyRepresentationsTo", "classinviwo_1_1Layer.html#accdfb10562b9ab832a47c5ed953853df", null ],
       [ "getAsCodedBuffer", "classinviwo_1_1Layer.html#a64ab7ab95627b197b0f0acbc69992c65", null ],
       [ "setDataFormat", "classinviwo_1_1Layer.html#a22cec9c5eda608715ab9f3247e33ecdc", null ],
       [ "setDimensions", "classinviwo_1_1Layer.html#a5a391bf0198feabcfc3303d7a6ec6ce9", null ],
