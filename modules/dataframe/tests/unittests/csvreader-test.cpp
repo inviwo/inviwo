@@ -34,6 +34,7 @@
 
 #include <inviwo/core/io/tempfilehandle.h>
 #include <inviwo/dataframe/io/csvreader.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 #include <sstream>
 
@@ -84,9 +85,7 @@ TEST(CSVdata, emptyRows) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
-    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
-    ASSERT_EQ(6, dataframe->getNumberOfRows()) << "row count does not match";
+    EXPECT_THROW(reader.readData(ss), DataReaderException);
 }
 
 TEST(CSVdata, emptyRowAtEnd) {
@@ -103,7 +102,7 @@ TEST(CSVdata, emptyRowAtEnd) {
 
 TEST(CSVdata, emptyRowsAtEnd) {
     // test for empty rows at the end
-    std::istringstream ss("1\n2\n\n\n\n");
+    std::istringstream ss("1\n2\n  \n\n  \n");
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
@@ -365,7 +364,7 @@ TEST(CSVquotes, stripSingleQuotes) {
     EXPECT_EQ("b", col3);
 }
 
-TEST(CVSquotes, headerQuotes) {
+TEST(CSVquotes, headerQuotes) {
     std::istringstream ss("\"first col\",second,\"third\"\n1,2,3");
 
     CSVReader reader;
@@ -379,7 +378,7 @@ TEST(CVSquotes, headerQuotes) {
     EXPECT_EQ("\"third\"", dataframe->getColumn(3)->getHeader()) << "Column Header 3";
 }
 
-TEST(CVSquotes, stripHeaderQuotes) {
+TEST(CSVquotes, stripHeaderQuotes) {
     std::istringstream ss("\"first col\",second,\"third\"\n1,2,3");
 
     CSVReader reader;
@@ -505,6 +504,94 @@ TEST(CSVlinebreaks, mixed) {
 
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(4, dataframe->getNumberOfRows()) << "row count does not match";
+}
+
+TEST(CSVFilters, comments) {
+    std::istringstream ss("# comment\n1,2,3\n# 4,5,6\n7,8,9\n# foo");
+
+    const std::string comment = "#";
+    csvfilters::Filters filters;
+    filters.excludeRows.push_back(csvfilters::rowBegin(comment, false));
+
+    CSVReader reader;
+    reader.setFirstRowHeader(false);
+    reader.setFilters(filters);
+    auto dataframe = reader.readData(ss);
+
+    // columns will use first data row as header
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+    EXPECT_EQ("1", dataframe->getColumn(1)->get(0, false)->toString());
+    EXPECT_EQ("7", dataframe->getColumn(1)->get(1, false)->toString());
+}
+
+TEST(CSVFilters, commentsBeforeHeaders) {
+    std::istringstream ss("#,header,comment\n1,2,3\n# 4,5,6\n7,8,9\n# foo");
+
+    const std::string comment = "#";
+    csvfilters::Filters filters;
+    filters.excludeRows.push_back(csvfilters::rowBegin(comment, true));
+
+    CSVReader reader;
+    reader.setFirstRowHeader(true);
+    reader.setFilters(filters);
+    auto dataframe = reader.readData(ss);
+
+    // columns will use first data row as header
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
+    EXPECT_EQ("1", dataframe->getColumn(1)->getHeader());
+    EXPECT_EQ("7", dataframe->getColumn(1)->get(0, false)->toString());
+}
+
+TEST(CSVFilters, keepLines) {
+    std::istringstream ss("1,2,3\n4,5,6\n7,8,9\n");
+
+    csvfilters::Filters filters;
+    filters.includeRows.push_back(
+        {[](std::string_view, size_t line) { return (line < 2) || (line > 2); }, true});
+
+    CSVReader reader;
+    reader.setFirstRowHeader(false);
+    reader.setFilters(filters);
+    auto dataframe = reader.readData(ss);
+
+    // columns will use first data row as header
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+    EXPECT_EQ("1", dataframe->getColumn(1)->get(0, false)->toString());
+    EXPECT_EQ("7", dataframe->getColumn(1)->get(1, false)->toString());
+}
+TEST(CSVFilters, emptyRows) {
+    // test for empty rows in between
+    std::istringstream ss("1\n2\n\n\n3\n4\n\n\5\n6");
+
+    csvfilters::Filters filters;
+    filters.excludeRows.push_back(csvfilters::emptyLines());
+
+    CSVReader reader;
+    reader.setFilters(filters);
+    reader.setFirstRowHeader(false);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(6, dataframe->getNumberOfRows()) << "row count does not match";
+}
+
+TEST(CSVFilters, emptyRowsAtEnd) {
+    // test for empty rows at the end
+    std::istringstream ss("1\n2\n\n\n\n");
+
+    csvfilters::Filters filters;
+    filters.excludeRows.push_back(csvfilters::emptyLines());
+
+    CSVReader reader;
+    reader.setFilters(filters);
+    reader.setFirstRowHeader(false);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 }
 
 }  // namespace inviwo

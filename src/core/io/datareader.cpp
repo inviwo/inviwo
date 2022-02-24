@@ -48,7 +48,7 @@ std::ifstream DataReader::open(std::string_view path, std::ios_base::openmode mo
     if (auto file = filesystem::ifstream(path, mode)) {
         return file;
     } else {
-        throw FileException(IVW_CONTEXT, "Could not open file: {)", path);
+        throw FileException(IVW_CONTEXT, "Could not open file: {}", path);
     }
 }
 

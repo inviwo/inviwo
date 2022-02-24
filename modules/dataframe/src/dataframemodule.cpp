@@ -44,6 +44,7 @@
 #include <inviwo/dataframe/properties/columnmetadataproperty.h>
 #include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
 #include <inviwo/dataframe/properties/optionconverter.h>
+#include <inviwo/dataframe/properties/filterlistproperty.h>
 
 #include <inviwo/dataframe/io/csvreader.h>
 #include <inviwo/dataframe/io/jsonreader.h>
@@ -95,6 +96,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     registerProperty<ColumnOptionProperty>();
     registerProperty<ColumnMetaDataProperty>();
     registerProperty<ColumnMetaDataListProperty>();
+    registerProperty<FilterListProperty>();
 
     // Readers and writes
     registerDataReader(std::make_unique<CSVReader>());

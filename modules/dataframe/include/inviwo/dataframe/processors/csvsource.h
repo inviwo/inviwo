@@ -33,6 +33,7 @@
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
+#include <inviwo/dataframe/properties/filterlistproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/properties/fileproperty.h>
@@ -71,6 +72,8 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
+    csvfilters::Filters createFilters() const;
+
     DataOutport<DataFrame> data_;
     FileProperty inputFile_;
     BoolProperty firstRowIsHeaders_;
@@ -80,6 +83,9 @@ private:
     BoolProperty stripQuotes_;
     BoolProperty doublePrecision_;
     IntSizeTProperty exampleRows_;
+    StringProperty rowComment_;
+    FilterListProperty includeFilters_;
+    FilterListProperty excludeFilters_;
     StringProperty locale_;
     TemplateOptionProperty<CSVReader::EmptyField> emptyField_;
     ButtonProperty reloadData_;

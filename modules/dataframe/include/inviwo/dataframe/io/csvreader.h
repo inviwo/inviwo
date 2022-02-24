@@ -34,6 +34,7 @@
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/util/filters.h>
 
 namespace inviwo {
 
@@ -41,9 +42,9 @@ namespace inviwo {
  * \class CSVReader
  * \ingroup dataio
  *
- * \brief A reader for comma separated value (CSV) files with customizable delimiters.
+ * \brief A reader for comma separated value (CSV) files with customizable delimiters and filters.
  * The default delimiter is ',' and headers are included. Floating point values are stored as
- * float32.
+ * float32 unless double precision is enabled.
  */
 class IVW_MODULE_DATAFRAME_API CSVReader : public DataReaderType<DataFrame> {
 public:
@@ -78,7 +79,7 @@ public:
     const std::string& getUnitRegexp() const;
 
     /**
-     * sets the precision for columns containing floating point values. If @p useDoublePrecision is
+     * Sets the precision for columns containing floating point values. If @p useDoublePrecision is
      * true, values are stored as double (64 bits), otherwise float (32 bits) is used.
      * @see CSVReader::defaultDoublePrecision
      */
@@ -92,6 +93,13 @@ public:
     /** @see CSVReader::defaultLocale */
     CSVReader& setLocale(std::string_view loc);
     const std::string& getLocale() const;
+
+    /**
+     * Sets row and column filters.
+     * @see Filters
+     */
+    CSVReader& setFilters(const csvfilters::Filters& filters);
+    const csvfilters::Filters& getFilters() const;
 
     /**
      * How to handle missing / empty data
@@ -144,6 +152,7 @@ public:
      * * NumberOfExampleRows (size_t)
      * * Locale (string)
      * * HandleEmptyFields (EmptyField)
+     * * Filters (csvfilters::Filters)
      */
     virtual bool setOption(std::string_view key, std::any value) override;
 
@@ -158,6 +167,7 @@ public:
      * * NumberOfExampleRows (size_t)
      * * Locale (string)
      * * HandleEmptyFields (EmptyField)
+     * * Filters (csvfilters::Filters)
      */
     virtual std::any getOption(std::string_view key) override;
 
@@ -195,6 +205,8 @@ private:
         DataFrame& df, const std::vector<TypeCounts>& types,
         const std::vector<std::string>& headers) const;
 
+    bool skipRow(std::string_view row, size_t lineNumber, bool filterOnHeader) const;
+
     std::string delimiters_;
     bool stripQuotes_;
     bool firstRowHeader_;
@@ -204,6 +216,7 @@ private:
     size_t exampleRows_;
     std::string locale_;
     EmptyField emptyField_;
+    csvfilters::Filters filters_;
 };
 
 }  // namespace inviwo
