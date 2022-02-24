@@ -528,7 +528,8 @@ var hierarchy =
           [ "inviwo::LineSettingsProperty", "classinviwo_1_1LineSettingsProperty.html", null ],
           [ "inviwo::ListOrSingleValueProperty< Prop, N >", "classinviwo_1_1ListOrSingleValueProperty.html", null ],
           [ "inviwo::ListProperty", "classinviwo_1_1ListProperty.html", [
-            [ "inviwo::ColumnMetaDataListProperty", "classinviwo_1_1ColumnMetaDataListProperty.html", null ]
+            [ "inviwo::ColumnMetaDataListProperty", "classinviwo_1_1ColumnMetaDataListProperty.html", null ],
+            [ "inviwo::FilterListProperty", "classinviwo_1_1FilterListProperty.html", null ]
           ] ],
           [ "inviwo::MeshInformationProperty", "classinviwo_1_1MeshInformationProperty.html", null ],
           [ "inviwo::MeshRasterizer::AlphaSettings", "structinviwo_1_1MeshRasterizer_1_1AlphaSettings.html", null ],
@@ -1047,6 +1048,7 @@ var hierarchy =
     [ "inviwo::dispatching::detail::Filter< Predicate >", "structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Predicate_01_4.html", null ],
     [ "inviwo::dispatching::detail::Filter< Predicate, Head, Tail... >", "structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Predicate_00_01Head_00_01Tail_8_8_8_01_4.html", null ],
     [ "inviwo::dispatching::detail::Filter< Predicate, std::tuple< Args... > >", "structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Predicate_00_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html", null ],
+    [ "inviwo::csvfilters::Filters", "structinviwo_1_1csvfilters_1_1Filters.html", null ],
     [ "inviwo::animation::FindDivisionsResult", "structinviwo_1_1animation_1_1FindDivisionsResult.html", null ],
     [ "inviwo::ViewEvent::FitData", "structinviwo_1_1ViewEvent_1_1FitData.html", null ],
     [ "inviwo::ViewEvent::FlipUp", "structinviwo_1_1ViewEvent_1_1FlipUp.html", null ],
@@ -1392,6 +1394,7 @@ var hierarchy =
     [ "inviwo::util::detail::is_unsigned_int< T >", "structinviwo_1_1util_1_1detail_1_1is__unsigned__int.html", null ],
     [ "inviwo::ContainerWrapper< T, K >::Item", "structinviwo_1_1ContainerWrapper_1_1Item.html", null ],
     [ "inviwo::SearchDSL< Ts >::Item", "structinviwo_1_1SearchDSL_1_1Item.html", null ],
+    [ "inviwo::csvfilters::ItemFilter", "structinviwo_1_1csvfilters_1_1ItemFilter.html", null ],
     [ "inviwo::util::sequence< T >::iterator", "structinviwo_1_1util_1_1sequence_1_1iterator.html", null ],
     [ "inviwo::util::detailzip::iterator_tools< T >", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools.html", null ],
     [ "inviwo::util::detailzip::iterator_tools< Iterables >", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools.html", null ],
@@ -2766,6 +2769,7 @@ var hierarchy =
       [ "inviwo::TypedResource< T >", "classinviwo_1_1TypedResource.html", null ]
     ] ],
     [ "inviwo::IntegralLineTracer< SpatialSampler, TimeDependent >::Result", "structinviwo_1_1IntegralLineTracer_1_1Result.html", null ],
+    [ "inviwo::csvfilters::RowFilter", "structinviwo_1_1csvfilters_1_1RowFilter.html", null ],
     [ "inviwo::RuntimeModuleLoading", "structinviwo_1_1RuntimeModuleLoading.html", null ],
     [ "inviwo::SafeCStr< N >", "classinviwo_1_1SafeCStr.html", null ],
     [ "inviwo::util::same_extent< T, U >", "structinviwo_1_1util_1_1same__extent.html", null ],

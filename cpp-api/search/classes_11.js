@@ -68,6 +68,7 @@ var searchData=
   ['resourcemanagerobserver_65',['ResourceManagerObserver',['../classinviwo_1_1ResourceManagerObserver.html',1,'inviwo']]],
   ['result_66',['Result',['../structinviwo_1_1IntegralLineTracer_1_1Result.html',1,'inviwo::IntegralLineTracer']]],
   ['rotateproperty_67',['RotateProperty',['../classinviwo_1_1transform_1_1RotateProperty.html',1,'inviwo::transform']]],
-  ['rowlayout_68',['RowLayout',['../classinviwo_1_1RowLayout.html',1,'inviwo']]],
-  ['runtimemoduleloading_69',['RuntimeModuleLoading',['../structinviwo_1_1RuntimeModuleLoading.html',1,'inviwo']]]
+  ['rowfilter_68',['RowFilter',['../structinviwo_1_1csvfilters_1_1RowFilter.html',1,'inviwo::csvfilters']]],
+  ['rowlayout_69',['RowLayout',['../classinviwo_1_1RowLayout.html',1,'inviwo']]],
+  ['runtimemoduleloading_70',['RuntimeModuleLoading',['../structinviwo_1_1RuntimeModuleLoading.html',1,'inviwo']]]
 ];

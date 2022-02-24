@@ -122,6 +122,11 @@ var annotated_dup =
         [ "ColorBrewerException", "classinviwo_1_1colorbrewer_1_1ColorBrewerException.html", null ],
         [ "UnsupportedNumberOfColorsException", "classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html", null ]
       ] ],
+      [ "csvfilters", "namespaceinviwo_1_1csvfilters.html", [
+        [ "Filters", "structinviwo_1_1csvfilters_1_1Filters.html", null ],
+        [ "ItemFilter", "structinviwo_1_1csvfilters_1_1ItemFilter.html", "structinviwo_1_1csvfilters_1_1ItemFilter" ],
+        [ "RowFilter", "structinviwo_1_1csvfilters_1_1RowFilter.html", "structinviwo_1_1csvfilters_1_1RowFilter" ]
+      ] ],
       [ "detail", null, [
         [ "BufferRamConstDispatcher", "structinviwo_1_1detail_1_1BufferRamConstDispatcher.html", null ],
         [ "BufferRamDispatcher", "structinviwo_1_1detail_1_1BufferRamDispatcher.html", null ],
@@ -797,6 +802,7 @@ var annotated_dup =
       [ "FileSystemObserver", "classinviwo_1_1FileSystemObserver.html", "classinviwo_1_1FileSystemObserver" ],
       [ "FileToStringConverter", "classinviwo_1_1FileToStringConverter.html", null ],
       [ "FileWatcher", "classinviwo_1_1FileWatcher.html", "classinviwo_1_1FileWatcher" ],
+      [ "FilterListProperty", "classinviwo_1_1FilterListProperty.html", "classinviwo_1_1FilterListProperty" ],
       [ "FindEdges", "classinviwo_1_1FindEdges.html", "classinviwo_1_1FindEdges" ],
       [ "FirstIvwProcessor", "classinviwo_1_1FirstIvwProcessor.html", "classinviwo_1_1FirstIvwProcessor" ],
       [ "Fog", "classinviwo_1_1Fog.html", "classinviwo_1_1Fog" ],

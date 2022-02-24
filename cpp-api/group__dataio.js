@@ -59,6 +59,7 @@ var group__dataio =
       [ "readData", "classinviwo_1_1CSVReader.html#a6f503ebef4cc2ccf89958dcb51e17774", null ],
       [ "setDelimiters", "classinviwo_1_1CSVReader.html#a161c7609ee62590f3ded4bcf2bf63ba0", null ],
       [ "setEnableDoublePrecision", "classinviwo_1_1CSVReader.html#a5c235e3e45f47bb149b91e6cbcbdc611", null ],
+      [ "setFilters", "classinviwo_1_1CSVReader.html#a673226aaba1185b626488a27d5615cef", null ],
       [ "setFirstRowHeader", "classinviwo_1_1CSVReader.html#a7493f2a7f2d74523ed2805fa8fa18c29", null ],
       [ "setHandleEmptyFields", "classinviwo_1_1CSVReader.html#ad8e16060dca686b74f35c5b72bc4a2d4", null ],
       [ "setLocale", "classinviwo_1_1CSVReader.html#ae2fd26930ac7af73f0d87e9504023093", null ],

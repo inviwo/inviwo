@@ -38,6 +38,14 @@ var namespaceinviwo =
       [ "ycbcr2rgb", "namespaceinviwo_1_1color.html#a32d3c81a4ed4172c973ade0c3bfd6d6c", null ]
     ] ],
     [ "colorbrewer", "namespaceinviwo_1_1colorbrewer.html", "namespaceinviwo_1_1colorbrewer" ],
+    [ "csvfilters", "namespaceinviwo_1_1csvfilters.html", "namespaceinviwo_1_1csvfilters" ],
+    [ "dataframe", "namespaceinviwo_1_1dataframe.html", [
+      [ "appendColumns", "namespaceinviwo_1_1dataframe.html#a48908047b7f77639e8bb3929f3a3056e", null ],
+      [ "appendRows", "namespaceinviwo_1_1dataframe.html#a6d016364ffdd05323da9d17e6d25ce84", null ],
+      [ "filteredRows", "namespaceinviwo_1_1dataframe.html#a36342d9db1bb2e056e8f645701e24abe", null ],
+      [ "innerJoin", "namespaceinviwo_1_1dataframe.html#a7e55832fd97c53786889a9f166a11419", null ],
+      [ "leftJoin", "namespaceinviwo_1_1dataframe.html#a3fd4b9b29091b6af32b25fa9a88af296", null ]
+    ] ],
     [ "detail", null, [
       [ "BufferRamConstDispatcher", "structinviwo_1_1detail_1_1BufferRamConstDispatcher.html", null ],
       [ "BufferRamDispatcher", "structinviwo_1_1detail_1_1BufferRamDispatcher.html", null ],
@@ -490,6 +498,7 @@ var namespaceinviwo =
     [ "FileSystemObserver", "classinviwo_1_1FileSystemObserver.html", "classinviwo_1_1FileSystemObserver" ],
     [ "FileToStringConverter", "classinviwo_1_1FileToStringConverter.html", null ],
     [ "FileWatcher", "classinviwo_1_1FileWatcher.html", "classinviwo_1_1FileWatcher" ],
+    [ "FilterListProperty", "classinviwo_1_1FilterListProperty.html", "classinviwo_1_1FilterListProperty" ],
     [ "FindEdges", "classinviwo_1_1FindEdges.html", "classinviwo_1_1FindEdges" ],
     [ "FirstIvwProcessor", "classinviwo_1_1FirstIvwProcessor.html", "classinviwo_1_1FirstIvwProcessor" ],
     [ "Fog", "classinviwo_1_1Fog.html", "classinviwo_1_1Fog" ],

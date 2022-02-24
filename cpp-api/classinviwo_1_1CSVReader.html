@@ -94,7 +94,7 @@ $(document).ready(function(){initNavTree('classinviwo_1_1CSVReader.html',''); in
 </div><!--header-->
 <div class="contents">
 
-<p>A reader for comma separated value (CSV) files with customizable delimiters. The default delimiter is ',' and headers are included. Floating point values are stored as float32.  
+<p>A reader for comma separated value (CSV) files with customizable delimiters and filters. The default delimiter is ',' and headers are included. Floating point values are stored as float32 unless double precision is enabled.  
  <a href="classinviwo_1_1CSVReader.html#details">More...</a></p>
 
 <p><code>#include &lt;csvreader.h&gt;</code></p>
@@ -178,6 +178,11 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNumberOfExamples
 <tr class="memitem:ada7a6722a0b6674eb0e472a30b3f993b"><td class="memItemLeft" align="right" valign="top"><a id="ada7a6722a0b6674eb0e472a30b3f993b" name="ada7a6722a0b6674eb0e472a30b3f993b"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getLocale</b> () const</td></tr>
 <tr class="separator:ada7a6722a0b6674eb0e472a30b3f993b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a673226aaba1185b626488a27d5615cef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1CSVReader.html">CSVReader</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CSVReader.html#a673226aaba1185b626488a27d5615cef">setFilters</a> (const <a class="el" href="structinviwo_1_1csvfilters_1_1Filters.html">csvfilters::Filters</a> &amp;filters)</td></tr>
+<tr class="separator:a673226aaba1185b626488a27d5615cef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1aa95cdb0d39f123a36bc37cef5e7d0b"><td class="memItemLeft" align="right" valign="top"><a id="a1aa95cdb0d39f123a36bc37cef5e7d0b" name="a1aa95cdb0d39f123a36bc37cef5e7d0b"></a>
+const <a class="el" href="structinviwo_1_1csvfilters_1_1Filters.html">csvfilters::Filters</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFilters</b> () const</td></tr>
+<tr class="separator:a1aa95cdb0d39f123a36bc37cef5e7d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8e16060dca686b74f35c5b72bc4a2d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1CSVReader.html">CSVReader</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CSVReader.html#ad8e16060dca686b74f35c5b72bc4a2d4">setHandleEmptyFields</a> (<a class="el" href="classinviwo_1_1CSVReader.html#a64f39e3ad1f7c7af5e91e99a6a28a4f7">EmptyField</a> emptyField)</td></tr>
 <tr class="separator:ad8e16060dca686b74f35c5b72bc4a2d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adedcb2e49c7c7d42f714cdd730c872ae"><td class="memItemLeft" align="right" valign="top"><a id="adedcb2e49c7c7d42f714cdd730c872ae" name="adedcb2e49c7c7d42f714cdd730c872ae"></a>
@@ -273,7 +278,7 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
 <tr class="separator:a71081c98921bdf342dbf54e43de3f195 inherit pro_attribs_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >A reader for comma separated value (CSV) files with customizable delimiters. The default delimiter is ',' and headers are included. Floating point values are stored as float32. </p>
+<div class="textblock"><p >A reader for comma separated value (CSV) files with customizable delimiters and filters. The default delimiter is ',' and headers are included. Floating point values are stored as float32 unless double precision is enabled. </p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a64f39e3ad1f7c7af5e91e99a6a28a4f7" name="a64f39e3ad1f7c7af5e91e99a6a28a4f7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a64f39e3ad1f7c7af5e91e99a6a28a4f7">&#9670;&nbsp;</a></span>EmptyField</h2>
@@ -366,7 +371,8 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
 <li>DoublePrecision (bool)</li>
 <li>NumberOfExampleRows (size_t)</li>
 <li>Locale (string)</li>
-<li>HandleEmptyFields (EmptyField) </li>
+<li>HandleEmptyFields (EmptyField)</li>
+<li>Filters (<a class="el" href="structinviwo_1_1csvfilters_1_1Filters.html">csvfilters::Filters</a>) </li>
 </ul>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1DataReader.html#af1dd2c460dea514384a877eb0ceb6e88">inviwo::DataReader</a>.</p>
@@ -482,7 +488,26 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
         </tr>
       </table>
 </div><div class="memdoc">
-<p >sets the precision for columns containing floating point values. If <code>useDoublePrecision</code> is true, values are stored as double (64 bits), otherwise float (32 bits) is used. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1CSVReader.html#a6e40ea4b98a2b6b7428a4ebf011c40e9">CSVReader::defaultDoublePrecision</a> </dd></dl>
+<p >Sets the precision for columns containing floating point values. If <code>useDoublePrecision</code> is true, values are stored as double (64 bits), otherwise float (32 bits) is used. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1CSVReader.html#a6e40ea4b98a2b6b7428a4ebf011c40e9">CSVReader::defaultDoublePrecision</a> </dd></dl>
+
+</div>
+</div>
+<a id="a673226aaba1185b626488a27d5615cef" name="a673226aaba1185b626488a27d5615cef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a673226aaba1185b626488a27d5615cef">&#9670;&nbsp;</a></span>setFilters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1CSVReader.html">CSVReader</a> &amp; inviwo::CSVReader::setFilters </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1csvfilters_1_1Filters.html">csvfilters::Filters</a> &amp;&#160;</td>
+          <td class="paramname"><em>filters</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Sets row and column filters. </p><dl class="section see"><dt>See also</dt><dd>Filters </dd></dl>
 
 </div>
 </div>
@@ -604,7 +629,8 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
 <li>DoublePrecision (bool)</li>
 <li>NumberOfExampleRows (size_t)</li>
 <li>Locale (string)</li>
-<li>HandleEmptyFields (EmptyField) </li>
+<li>HandleEmptyFields (EmptyField)</li>
+<li>Filters (<a class="el" href="structinviwo_1_1csvfilters_1_1Filters.html">csvfilters::Filters</a>) </li>
 </ul>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1DataReader.html#a0ac5d98ed2647ec10447661f4f371148">inviwo::DataReader</a>.</p>
