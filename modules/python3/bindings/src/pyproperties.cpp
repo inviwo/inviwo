@@ -171,15 +171,14 @@ void exposeProperties(py::module& m) {
             py::return_value_policy::reference);
 
     py::class_<BoolCompositeProperty, CompositeProperty, PropertyOwner>(m, "BoolCompositeProperty")
-        .def(
-            py::init([](std::string_view identifier, std::string_view displayName, bool checked,
-                        InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                return new BoolCompositeProperty(identifier, displayName, checked,
-                                                 invalidationLevel, semantics);
-            }),
-            py::arg("identifier"), py::arg("displayName"), py::arg("checked"),
-            py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
-            py::arg("semantics") = PropertySemantics::Default)
+        .def(py::init([](std::string_view identifier, std::string_view displayName, bool checked,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new BoolCompositeProperty(identifier, displayName, checked,
+                                                  invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("checked"),
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+             py::arg("semantics") = PropertySemantics::Default)
         .def("isChecked", &BoolCompositeProperty::isChecked)
         .def("setChecked", &BoolCompositeProperty::setChecked)
         .def_property("checked", &BoolCompositeProperty::isChecked,

@@ -90,7 +90,7 @@ PYBIND11_MODULE(inviwopy, m) {
             
         )doc";
 
-	auto glmModule = m.def_submodule("glm", "GML vec and mat types");
+    auto glmModule = m.def_submodule("glm", "GML vec and mat types");
     auto propertiesModule = m.def_submodule("properties", "Inviwo Properties");
     auto dataModule = m.def_submodule("data", "Inviwo Data Structures");
     auto formatsModule = dataModule.def_submodule("formats", "Inviwo Data Formats");
@@ -98,7 +98,7 @@ PYBIND11_MODULE(inviwopy, m) {
     // Note the order is important here, we need to load all base classes before any derived clases
     exposeGLMTypes(glmModule);
     exposeGLMMatTypes(glmModule);
-    
+
     exposeLogging(m);
     exposeInviwoApplication(m);
     exposeDataFormat(formatsModule);
@@ -106,7 +106,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeTFPrimitiveSet(dataModule);  // defines TFPrimitiveData used in exposeProperties
     exposeProperties(propertiesModule);
     exposePort(m);
- 
+
     exposeProcessors(m);
     exposeNetwork(m);
     exposeEvents(m);
@@ -142,7 +142,6 @@ PYBIND11_MODULE(inviwopy, m) {
             }
         }
     });
-    
 
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
     VLDEnable();

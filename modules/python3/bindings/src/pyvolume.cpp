@@ -108,7 +108,7 @@ void exposeVolume(pybind11::module& m) {
         .def_property("interpolation", &Volume::getInterpolation, &Volume::setInterpolation)
         .def_property("wrapping", &Volume::getWrapping, &Volume::setWrapping)
         .def_readwrite("dataMap", &Volume::dataMap_)
-		.def_readwrite("axes", &Volume::axes)
+        .def_readwrite("axes", &Volume::axes)
         .def("hasRepresentations", &Volume::hasRepresentations)
         .def("addRepresentation", &Volume::addRepresentation)
         .def("removeRepresentation", &Volume::removeRepresentation)

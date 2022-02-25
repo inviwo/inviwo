@@ -37,7 +37,6 @@
 
 #include <pybind11/detail/common.h>
 
-
 namespace inviwo {
 
 void exposePropertyOwner(pybind11::module& m) {

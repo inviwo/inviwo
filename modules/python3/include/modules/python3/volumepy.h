@@ -100,6 +100,4 @@ public:
                         std::shared_ptr<VolumeRAM> destination) const override;
 };
 
-
-
 }  // namespace inviwo

@@ -310,8 +310,7 @@ void exposeEvents(pybind11::module& m) {
     py::class_<MouseEvent, MouseInteractionEvent>(m, "MouseEvent")
         .def(py::init<MouseButton, MouseState, MouseButtons, KeyModifiers, dvec2, uvec2, double>(),
              py::arg("button") = MouseButton::Left, py::arg("state") = MouseState::Press,
-             py::arg("buttonState") = MouseButton::None,
-             py::arg("modifiers") = KeyModifier::None,
+             py::arg("buttonState") = MouseButton::None, py::arg("modifiers") = KeyModifier::None,
              py::arg("normalizedPosition") = dvec2(0), py::arg("canvasSize") = uvec2(0),
              py::arg("depth") = 1.0)
         .def_property("button", &MouseEvent::button, &MouseEvent::setButton)
@@ -320,10 +319,9 @@ void exposeEvents(pybind11::module& m) {
 
     py::class_<WheelEvent, MouseInteractionEvent>(m, "WheelEvent")
         .def(py::init<MouseButtons, KeyModifiers, dvec2, dvec2, uvec2, double>(),
-             py::arg("buttonState") = MouseButton::None,
-             py::arg("modifiers") = KeyModifier::None, py::arg("delta") = dvec2(0),
-             py::arg("normalizedPosition") = dvec2(0), py::arg("canvasSize") = uvec2(0),
-             py::arg("depth") = 1.0)
+             py::arg("buttonState") = MouseButton::None, py::arg("modifiers") = KeyModifier::None,
+             py::arg("delta") = dvec2(0), py::arg("normalizedPosition") = dvec2(0),
+             py::arg("canvasSize") = uvec2(0), py::arg("depth") = 1.0)
         .def_property("delta", &WheelEvent::delta, &WheelEvent::setDelta)
         .def_property_readonly_static("chash", &WheelEvent::chash);
 

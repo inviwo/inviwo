@@ -177,8 +177,7 @@ void exposeDataFrame(pybind11::module& m) {
                                c.getSize(), c.getCategories().size());
         });
 
-    py::class_<IndexColumn, TemplateColumn<std::uint32_t>>(
-        m, "IndexColumn")
+    py::class_<IndexColumn, TemplateColumn<std::uint32_t>>(m, "IndexColumn")
         .def(py::init<std::string_view>());
 
     py::class_<DataFrame> dataframe(m, "DataFrame");
