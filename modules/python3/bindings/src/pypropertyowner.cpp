@@ -57,7 +57,7 @@ void exposePropertyOwner(pybind11::module& m) {
                                               key + "'"};
                 }
             },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def_property_readonly(
             "properties", [](PropertyOwner& po) { return PropertyVecWrapper(po.getProperties()); })
         .def("getPropertiesRecursive", &PropertyOwner::getPropertiesRecursive)
@@ -77,10 +77,10 @@ void exposePropertyOwner(pybind11::module& m) {
              [](PropertyOwner& po, size_t index) { return po.removeProperty(index); })
         .def("clear", &PropertyOwner::clear)
         .def("getPropertyByIdentifier", &PropertyOwner::getPropertyByIdentifier,
-             py::return_value_policy::reference, py::arg("identifier"),
+             py::return_value_policy::reference_internal, py::arg("identifier"),
              py::arg("recursiveSearch") = false)
         .def("getPropertyByPath", &PropertyOwner::getPropertyByPath,
-             py::return_value_policy::reference)
+             py::return_value_policy::reference_internal)
         .def("getIdentifier", &PropertyOwner::getIdentifier)
         .def(
             "getOwner", [](PropertyOwner* po) { return po->getOwner(); },

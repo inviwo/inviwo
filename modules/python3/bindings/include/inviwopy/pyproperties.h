@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 #include <fmt/format.h>
@@ -67,7 +68,7 @@ struct polymorphic_type_hook<inviwo::Property> {
             return dynamic_cast<const void*>(prop);
         }
 
-        // check if the exact type is registed in python, then return that.
+        // check if the exact type is resisted in python, then return that.
         const auto& id = typeid(*prop);
         if (detail::get_type_info(id)) {
             type = &id;
@@ -75,7 +76,10 @@ struct polymorphic_type_hook<inviwo::Property> {
         }
 
         // else check if we know a more derived base then Property and return that.
-        if (auto cp = dynamic_cast<const inviwo::CompositeProperty*>(prop)) {
+        if (auto bp = dynamic_cast<const inviwo::BoolCompositeProperty*>(prop)) {
+            type = &typeid(inviwo::BoolCompositeProperty);
+            return dynamic_cast<const void*>(bp);
+        } else if (auto cp = dynamic_cast<const inviwo::CompositeProperty*>(prop)) {
             type = &typeid(inviwo::CompositeProperty);
             return dynamic_cast<const void*>(cp);
         } else if (auto op = dynamic_cast<const inviwo::BaseOptionProperty*>(prop)) {

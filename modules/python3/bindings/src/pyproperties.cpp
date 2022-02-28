@@ -144,7 +144,8 @@ void exposeProperties(py::module& m) {
                  p->readonlyDependsOn(*other, func);
              });
 
-    py::class_<CompositeProperty, Property, PropertyOwner>(m, "CompositeProperty")
+    py::class_<CompositeProperty, Property, PropertyOwner>(m, "CompositeProperty",
+                                                           py::multiple_inheritance{})
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new CompositeProperty(identifier, displayName, invalidationLevel,
@@ -168,9 +169,10 @@ void exposeProperties(py::module& m) {
                         po.getPath(), key)};
                 }
             },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
-    py::class_<BoolCompositeProperty, CompositeProperty, PropertyOwner>(m, "BoolCompositeProperty")
+    py::class_<BoolCompositeProperty, CompositeProperty, PropertyOwner>(m, "BoolCompositeProperty",
+                                                                        py::multiple_inheritance{})
         .def(py::init([](std::string_view identifier, std::string_view displayName, bool checked,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new BoolCompositeProperty(identifier, displayName, checked,
@@ -205,9 +207,12 @@ void exposeProperties(py::module& m) {
              [](ListProperty& list, const Property& prefab) {
                  list.addPrefab(std::unique_ptr<Property>(prefab.clone()));
              })
-        .def("getPrefab", [](ListProperty& list, size_t idx) -> Property* {
-            return list.getPrefabs()[idx].get();
-        });
+        .def(
+            "getPrefab",
+            [](ListProperty& list, size_t idx) -> Property* {
+                return list.getPrefabs()[idx].get();
+            },
+            py::return_value_policy::reference_internal);
 
     py::class_<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
