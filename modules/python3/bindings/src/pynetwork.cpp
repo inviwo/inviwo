@@ -29,19 +29,17 @@
 
 #include <inviwopy/pynetwork.h>
 
-#include <inviwopy/inviwopy.h>
-#include <inviwopy/pyglmtypes.h>
-
-#include <inviwopy/pyproperties.h>
-
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 
+#include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pyproperties.h>
 #include <inviwopy/vectoridentifierwrapper.h>
 
 namespace py = pybind11;

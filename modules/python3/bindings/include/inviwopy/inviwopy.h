@@ -29,13 +29,6 @@
 
 #pragma once
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
-
 namespace pybind11 {
-
-PYBIND11_RUNTIME_EXCEPTION(attribute_error, PyExc_AttributeError)
 
 }  // namespace pybind11

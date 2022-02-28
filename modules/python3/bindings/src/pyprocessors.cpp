@@ -29,7 +29,12 @@
 
 #include <inviwopy/pyprocessors.h>
 
-#include <inviwopy/inviwopy.h>
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/operators.h>
+#include <pybind11/stl.h>
+#include <warn/pop>
+
 #include <inviwopy/vectoridentifierwrapper.h>
 
 #include <inviwo/core/processors/processor.h>
@@ -50,11 +55,6 @@
 
 #include <modules/python3/processors/pythonscriptprocessor.h>
 #include <modules/python3/processortrampoline.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/operators.h>
-#include <warn/pop>
 
 namespace inviwo {
 

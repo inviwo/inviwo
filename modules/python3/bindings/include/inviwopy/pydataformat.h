@@ -33,6 +33,7 @@
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <warn/pop>
+
 namespace inviwo {
 
 void exposeDataFormat(pybind11::module& m);

@@ -29,6 +29,9 @@
 
 #include <inviwopy/pyevent.h>
 
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
+
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
@@ -51,9 +54,6 @@
 #include <inviwo/core/processors/processor.h>
 
 #include <inviwopy/pyflags.h>
-
-#include <pybind11/stl.h>
-#include <pybind11/functional.h>
 
 namespace inviwo {
 

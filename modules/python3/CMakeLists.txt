@@ -78,12 +78,9 @@ ivw_add_unittest(${TEST_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 
 find_package(pybind11 CONFIG REQUIRED)
-target_link_libraries(inviwo-module-python3 PUBLIC 
+target_link_libraries(inviwo-module-python3 PUBLIC
     pybind11::embed
     Python3::Python
-)
-target_include_directories(inviwo-module-python3 PUBLIC
-    ${IVW_EXTENSIONS_DIR}/pybind11/include
 )
 target_compile_definitions(inviwo-module-python3 PUBLIC PYBIND11_USE_SMART_HOLDER_AS_DEFAULT)
 

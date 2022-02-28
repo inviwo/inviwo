@@ -33,6 +33,7 @@
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <warn/pop>
+
 #include <memory>
 #include <sstream>
 #include <inviwo/core/util/ostreamjoiner.h>

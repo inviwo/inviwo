@@ -29,6 +29,7 @@
 
 #include <inviwopy/pytfprimitiveset.h>
 
+#include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/isovaluecollection.h>

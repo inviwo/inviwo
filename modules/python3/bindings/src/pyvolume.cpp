@@ -29,27 +29,24 @@
 
 #include <inviwopy/pyvolume.h>
 
-#include <inviwo/core/util/formatdispatching.h>
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/numpy.h>
+#include <pybind11/stl_bind.h>
+#include <warn/pop>
 
-#include <inviwopy/inviwopy.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/ports/volumeport.h>
+
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
 #include <inviwopy/pyimage.h>  // for the opaque swizzlemask
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/volumepy.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl_bind.h>
-#include <warn/pop>
-
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/ports/volumeport.h>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>

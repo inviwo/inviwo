@@ -34,11 +34,6 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
-
 namespace inviwo {
 
 void exposePort(pybind11::module& m) {

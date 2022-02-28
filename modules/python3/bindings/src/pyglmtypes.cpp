@@ -29,17 +29,17 @@
 
 #include <inviwopy/pyglmtypes.h>
 
-#include <inviwo/core/util/ostreamjoiner.h>
-
-#include <inviwopy/pyglmmattypes.h>
-#include <modules/python3/pyportutils.h>
-
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/operators.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl_bind.h>
 #include <warn/pop>
+
+#include <inviwo/core/util/ostreamjoiner.h>
+
+#include <inviwopy/pyglmmattypes.h>
+#include <modules/python3/pyportutils.h>
 
 #include <fmt/format.h>
 

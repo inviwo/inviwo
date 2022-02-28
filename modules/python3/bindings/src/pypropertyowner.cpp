@@ -31,11 +31,8 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/processors/processor.h>
 
-#include <inviwopy/inviwopy.h>
 #include <inviwopy/vectoridentifierwrapper.h>
 #include <inviwopy/pyproperties.h>
-
-#include <pybind11/detail/common.h>
 
 namespace inviwo {
 

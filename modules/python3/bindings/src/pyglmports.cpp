@@ -29,13 +29,14 @@
 
 #include <inviwopy/pyglmtypes.h>
 
-#include <modules/python3/pyportutils.h>
-
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/stl_bind.h>
 #include <pybind11/numpy.h>
 #include <warn/pop>
+
+#include <inviwo/core/util/glm.h>
+#include <modules/python3/pyportutils.h>
 
 #include <vector>
 
