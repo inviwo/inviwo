@@ -79,6 +79,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 /**
  * @brief pure interface for representing a data column, i.e. a Buffer with a name
+ * @ingroup datastructures
  */
 class IVW_MODULE_DATAFRAME_API Column : public MetaDataOwner {
 public:
@@ -144,6 +145,7 @@ protected:
 /**
  * @brief Data column used for plotting which represents a named buffer of type T. The name
  * is used as column header.
+ * @ingroup datastructures
  */
 template <typename T>
 class TemplateColumn : public Column {
@@ -267,7 +269,6 @@ public:
 };
 
 /**
- * \class CategoricalColumn
  * \brief Specialized data column representing categorical values, i.e. strings.
  * Categorical values are internally mapped to a number representation.
  *
@@ -277,6 +278,7 @@ public:
  *    The original string values can be accessed using CategoricalColumn::get(index, true)
  *
  * \see TemplateColumn, \see CategoricalColumn::get()
+ * @ingroup datastructures
  */
 class IVW_MODULE_DATAFRAME_API CategoricalColumn : public TemplateColumn<std::uint32_t> {
     class AddMany;

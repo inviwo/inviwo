@@ -69,11 +69,11 @@ public:
     virtual ~DataTypeMismatch() noexcept {}
 };
 /**
- * \class DataFrame
  * Table of data for plotting where each column can have a header (title).
  * Missing float/double data is stored as Not a Number (NaN)
  * All columns must have the same number of elements for the
  * DataFrame to be valid.
+ * @ingroup datastructures
  */
 class IVW_MODULE_DATAFRAME_API DataFrame : public MetaDataOwner {
 public:
