@@ -33,6 +33,7 @@
 #include <warn/pop>
 
 #include <inviwo/dataframe/datastructures/column.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
@@ -193,6 +194,80 @@ TEST(ColumnAppend, TypeMismatch) {
     EXPECT_THROW(floatCol.append(intCol), Exception);
 
     EXPECT_NO_THROW(intCol.append(intCol)) << "Cannot append rows of same column type";
+}
+
+TEST(ColumnFilter, Categorical) {
+    CategoricalColumn col("Column");
+    col.add("a");
+    col.add("c");
+    col.add("a");
+    col.add("b");
+
+    dataframefilters::Filters filters;
+    filters.include.push_back(dataframefilters::stringMatch(0, filters::StringComp::Equal, "a"));
+
+    const auto result = dataframe::filteredRows(col, filters);
+    EXPECT_EQ(2, result.size()) << "Incorrect number of filtered rows";
+
+    const std::vector<uint32_t> expected = {0, 2};
+    EXPECT_EQ(expected, result) << "Filter result does not match";
+}
+
+TEST(ColumnFilter, CategoricalMulti) {
+    CategoricalColumn col("Column");
+    col.add("a");
+    col.add("c");
+    col.add("a");
+    col.add("b");
+
+    dataframefilters::Filters filters;
+    filters.include.push_back(dataframefilters::stringMatch(0, filters::StringComp::Equal, "a"));
+    filters.include.push_back(dataframefilters::stringMatch(0, filters::StringComp::Equal, "b"));
+
+    const auto result = dataframe::filteredRows(col, filters);
+    EXPECT_EQ(3, result.size()) << "Incorrect number of filtered rows";
+
+    const std::vector<uint32_t> expected = {0, 2, 3};
+    EXPECT_EQ(expected, result) << "Filter result does not match";
+}
+
+TEST(ColumnFilter, IntLess) {
+    TemplateColumn<int> intCol("IntCol", {0, 1, 2, 2, 4, 7, 10, 9, 5, 3});
+
+    dataframefilters::Filters filters;
+    filters.include.push_back(dataframefilters::intMatch(0, filters::NumberComp::Less, 4));
+
+    const auto result = dataframe::filteredRows(intCol, filters);
+    EXPECT_EQ(5, result.size()) << "Incorrect number of filtered rows";
+
+    const std::vector<uint32_t> expected = {0, 1, 2, 3, 9};
+    EXPECT_EQ(expected, result) << "Filter result does not match";
+}
+
+TEST(ColumnFilter, IntRange) {
+    TemplateColumn<int> intCol("IntCol", {0, 1, 2, 2, 4, 7, 10, 9, 5, 3});
+
+    dataframefilters::Filters filters;
+    filters.include.push_back(dataframefilters::intRange(0, 2, 5));
+
+    const auto result = dataframe::filteredRows(intCol, filters);
+    EXPECT_EQ(5, result.size()) << "Incorrect number of filtered rows";
+
+    const std::vector<uint32_t> expected = {2, 3, 4, 8, 9};
+    EXPECT_EQ(expected, result) << "Filter result does not match";
+}
+
+TEST(ColumnFilter, IntExclude) {
+    TemplateColumn<int> intCol("IntCol", {0, 8, 2, 2, 4, 7, 10, 9, 5, 3});
+
+    dataframefilters::Filters filters;
+    filters.exclude.push_back(dataframefilters::intMatch(0, filters::NumberComp::Less, 4));
+
+    const auto result = dataframe::filteredRows(intCol, filters);
+    EXPECT_EQ(6, result.size()) << "Incorrect number of filtered rows";
+
+    const std::vector<uint32_t> expected = {1, 4, 5, 6, 7, 8};
+    EXPECT_EQ(expected, result) << "Filter result does not match";
 }
 
 }  // namespace inviwo
