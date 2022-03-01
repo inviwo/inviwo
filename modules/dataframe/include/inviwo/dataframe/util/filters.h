@@ -43,26 +43,6 @@ enum class StringComp { Equal, NotEqual, Regex, RegexPartial };
 
 enum class NumberComp { Equal, NotEqual, Less, LessEqual, Greater, GreaterEqual };
 
-}  // namespace filters
-
-/**
- * CSV-specific filters when parsing CSV files
- */
-namespace csvfilters {
-/**
- * Predicate functor for filtering rows.
- * @p RowFilter::filter is called once per row.
- * If @p RowFilter::filterOnHeader is true, then this filter is applied before the header row is
- * extracted.
- */
-struct RowFilter {
-    /**
-     * Predicate function for rows. The first argument is the content of the entire row, the
-     * second argument holds the line number.
-     */
-    std::function<bool(std::string_view, size_t)> filter;
-    bool filterOnHeader;
-};
 /**
  * Predicate functor for filtering items in a specific column of a row. Column indices are
  * zero-based.
@@ -84,28 +64,6 @@ struct ItemFilter {
     int column;  //!< zero-based column index
     bool filterOnHeader;
 };
-
-/**
- * Filters to be applied per row while parsing the CSV file.
- * All respective filter predicates are combined using a union operation.
- * First, rows are filtered for includes and then excludes. Secondly, individual data items of
- * the remaining rows are filtered for includes and excludes.
- */
-struct Filters {
-    std::vector<RowFilter> includeRows;
-    std::vector<RowFilter> excludeRows;
-    std::vector<ItemFilter> includeItems;
-    std::vector<ItemFilter> excludeItems;
-};
-
-/// create a filter matching empty rows
-IVW_MODULE_DATAFRAME_API RowFilter emptyLines(bool filterOnHeader = true);
-
-/// create a filter matching rows starting with @p begin, for example comment rows starting with '#'
-IVW_MODULE_DATAFRAME_API RowFilter rowBegin(std::string_view begin, bool filterOnHeader);
-
-/// create a filter matching an inclusive line range [@p min, @p max]
-IVW_MODULE_DATAFRAME_API RowFilter lineRange(int min, int max, bool filterOnHeader);
 
 /// create an item filter matching strings with @p match based on @p op
 IVW_MODULE_DATAFRAME_API ItemFilter stringMatch(int column, filters::StringComp op,
@@ -132,6 +90,71 @@ IVW_MODULE_DATAFRAME_API ItemFilter floatRange(int column, float min, float max)
 
 /// create an item filter matching an inclusive double range [@p min, @p max]
 IVW_MODULE_DATAFRAME_API ItemFilter doubleRange(int column, double min, double max);
+
+}  // namespace filters
+
+/**
+ * DataFrame-specific filters
+ */
+namespace dataframefilters {
+
+using namespace filters;
+
+/**
+ * Filters to be applied per row when filtering a DataFrame. All respective filter predicates are
+ * combined using a union operation. Individual data items of the rows are filtered for includes and
+ * excludes.
+ */
+struct Filters {
+    std::vector<ItemFilter> include;
+    std::vector<ItemFilter> exclude;
+};
+
+}  // namespace dataframefilters
+
+/**
+ * CSV-specific filters when parsing CSV files
+ */
+namespace csvfilters {
+
+using namespace filters;
+
+/**
+ * Predicate functor for filtering rows.
+ * @p RowFilter::filter is called once per row.
+ * If @p RowFilter::filterOnHeader is true, then this filter is applied before the header row is
+ * extracted.
+ */
+struct RowFilter {
+    /**
+     * Predicate function for rows. The first argument is the content of the entire row, the
+     * second argument holds the line number.
+     */
+    std::function<bool(std::string_view, size_t)> filter;
+    bool filterOnHeader;
+};
+
+/**
+ * Filters to be applied per row while parsing the CSV file.
+ * All respective filter predicates are combined using a union operation.
+ * First, rows are filtered for includes and then excludes. Secondly, individual data items of
+ * the remaining rows are filtered for includes and excludes.
+ */
+struct Filters {
+    std::vector<RowFilter> includeRows;
+    std::vector<RowFilter> excludeRows;
+    std::vector<ItemFilter> includeItems;
+    std::vector<ItemFilter> excludeItems;
+};
+
+/// create a filter matching empty rows
+IVW_MODULE_DATAFRAME_API RowFilter emptyLines(bool filterOnHeader = true);
+
+/// create a filter matching rows starting with @p begin, for example comment rows starting with '#'
+IVW_MODULE_DATAFRAME_API RowFilter rowBegin(std::string_view begin, bool filterOnHeader);
+
+/// create a filter matching an inclusive line range [@p min, @p max]
+IVW_MODULE_DATAFRAME_API RowFilter lineRange(int min, int max, bool filterOnHeader);
 
 }  // namespace csvfilters
 

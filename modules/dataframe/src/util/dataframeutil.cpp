@@ -524,6 +524,64 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
     return newDataFrame;
 }
 
+#include <warn/push>
+#include <warn/ignore/conversion>
+std::vector<std::uint32_t> filteredRows(const Column& col, dataframefilters::Filters filters) {
+
+    if (col.getColumnType() == ColumnType::Categorical) {
+        const auto& catCol = dynamic_cast<const CategoricalColumn&>(col);
+        std::vector<std::uint32_t> rows;
+        for (auto&& [row, value] : util::enumerate<std::uint32_t>(catCol.getValues())) {
+            auto test = util::overloaded{
+                [v = value](const std::function<bool(std::string_view)>& func) { return func(v); },
+                [](const auto&) { return false; }};
+            if (std::any_of(filters.include.begin(), filters.include.end(),
+                            [&](const auto& f) { return std::visit(test, f.filter); })) {
+                rows.push_back(row);
+            }
+        }
+        return rows;
+    } else {
+        return col.getBuffer()
+            ->getRepresentation<BufferRAM>()
+            ->dispatch<std::vector<std::uint32_t>, dispatching::filter::Scalars>(
+                [filters](auto typedBuf) {
+                    using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
+                    std::vector<std::uint32_t> rows;
+                    for (auto&& [row, value] :
+                         util::enumerate<std::uint32_t>(typedBuf->getDataContainer())) {
+                        auto test = util::overloaded{
+                            [v = value](const std::function<bool(int)>& func) {
+                                if constexpr (std::is_integral_v<ValueType>) {
+                                    return func(static_cast<int>(v));
+                                }
+                                return false;
+                            },
+                            [v = value](const std::function<bool(float)>& func) {
+                                if constexpr (std::is_floating_point_v<ValueType>) {
+                                    return func(static_cast<float>(v));
+                                }
+                                return false;
+                            },
+                            [v = value](const std::function<bool(double)>& func) {
+                                if constexpr (std::is_floating_point_v<ValueType>) {
+                                    return func(v);
+                                }
+                                return false;
+                            },
+                            [](const auto&) { return false; }};
+                        auto op = [&](const auto& f) { return std::visit(test, f.filter); };
+                        if (std::any_of(filters.include.begin(), filters.include.end(), op) &&
+                            std::none_of(filters.exclude.begin(), filters.exclude.end(), op)) {
+                            rows.push_back(row);
+                        }
+                    }
+                    return rows;
+                });
+    }
+}
+#include <warn/pop>
+
 std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId) {
     using H = utildoc::TableBuilder::Header;
     using P = Document::PathComponent;

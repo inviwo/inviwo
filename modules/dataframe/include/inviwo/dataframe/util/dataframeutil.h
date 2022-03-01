@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/util/filters.h>
 #include <inviwo/core/util/zip.h>
 
 namespace inviwo {
@@ -152,6 +153,8 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> combineDataFrames(
  */
 template <typename Pred>
 std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred pred);
+IVW_MODULE_DATAFRAME_API std::vector<std::uint32_t> filteredRows(const Column& col,
+                                                                 dataframefilters::Filters filters);
 
 IVW_MODULE_DATAFRAME_API std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId);
 

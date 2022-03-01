@@ -35,25 +35,7 @@
 
 namespace inviwo {
 
-namespace csvfilters {
-
-RowFilter emptyLines(bool filterOnHeader) {
-    return RowFilter{[](std::string_view row, size_t) { return row.empty(); }, filterOnHeader};
-}
-
-RowFilter rowBegin(std::string_view begin, bool filterOnHeader) {
-    return RowFilter{[str = std::string{begin}](std::string_view row, size_t) {
-                         return row.substr(0, str.size()) == str;
-                     },
-                     filterOnHeader};
-}
-
-RowFilter lineRange(int min, int max, bool filterOnHeader) {
-    return RowFilter{
-        [min = static_cast<size_t>(std::max(min, 0)), max = static_cast<size_t>(std::max(max, 0))](
-            std::string_view, size_t line) { return (line >= min) && (line <= max); },
-        filterOnHeader};
-}
+namespace filters {
 
 ItemFilter stringMatch(int column, filters::StringComp op, std::string_view match) {
     switch (op) {
@@ -166,6 +148,28 @@ ItemFilter floatRange(int column, float min, float max) {
 
 ItemFilter doubleRange(int column, double min, double max) {
     return detail::rangeComparison(column, min, max);
+}
+
+}  // namespace filters
+
+namespace csvfilters {
+
+RowFilter emptyLines(bool filterOnHeader) {
+    return RowFilter{[](std::string_view row, size_t) { return row.empty(); }, filterOnHeader};
+}
+
+RowFilter rowBegin(std::string_view begin, bool filterOnHeader) {
+    return RowFilter{[str = std::string{begin}](std::string_view row, size_t) {
+                         return row.substr(0, str.size()) == str;
+                     },
+                     filterOnHeader};
+}
+
+RowFilter lineRange(int min, int max, bool filterOnHeader) {
+    return RowFilter{
+        [min = static_cast<size_t>(std::max(min, 0)), max = static_cast<size_t>(std::max(max, 0))](
+            std::string_view, size_t line) { return (line >= min) && (line <= max); },
+        filterOnHeader};
 }
 
 }  // namespace csvfilters
