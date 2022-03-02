@@ -35,6 +35,8 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/transformiterator.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/metadata/metadataowner.h>
 
 #include <modules/base/algorithm/dataminmax.h>
@@ -360,9 +362,18 @@ public:
     /**
      * \brief returns column contents as list of categorical values
      *
-     * @return all categorical values stored in column
+     * @return all categorical values stored in the column
+     * @see values
      */
     std::vector<std::string> getValues() const;
+
+    /**
+     * returns column contents as iterator range of const std::string&
+     *
+     * @return iterator range over all categorical values stored in the column
+     * @see getValues
+     */
+    auto values() const;
 
     /**
      * \brief add a category \p cat. It will not be added if the category already exists.
@@ -664,6 +675,13 @@ std::shared_ptr<const Buffer<T>> TemplateColumn<T>::getTypedBuffer() const {
 template <typename T>
 size_t TemplateColumn<T>::getSize() const {
     return buffer_->getSize();
+}
+
+inline auto CategoricalColumn::values() const {
+    auto transform = [&](std::uint32_t idx) -> const std::string& { return lookUpTable_[idx]; };
+
+    return util::as_range(util::makeTransformIterator(transform, begin()),
+                          util::makeTransformIterator(transform, end()));
 }
 
 #endif

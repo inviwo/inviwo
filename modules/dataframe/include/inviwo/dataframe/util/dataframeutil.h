@@ -164,7 +164,7 @@ template <typename Pred>
 std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred pred) {
     if (auto catCol = dynamic_cast<const CategoricalColumn*>(col.get())) {
         std::vector<std::uint32_t> rows;
-        for (auto&& [row, v] : util::enumerate<std::uint32_t>(catCol->getValues())) {
+        for (auto&& [row, v] : util::enumerate<std::uint32_t>(catCol->values())) {
             if (pred(v)) {
                 rows.push_back(row);
             }

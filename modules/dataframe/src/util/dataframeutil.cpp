@@ -200,8 +200,8 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Co
         auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
         IVW_ASSERT(catCol2, "right column is not categorical");
 
-        auto valuesRight = catCol2->getValues();
-        for (auto&& [i, key] : util::enumerate(catCol1->getValues())) {
+        auto valuesRight = catCol2->values();
+        for (auto&& [i, key] : util::enumerate(catCol1->values())) {
             // find all matching rows in right column
             std::vector<std::uint32_t> matches;
             for (auto&& [r, value] : util::enumerate<std::uint32_t>(valuesRight)) {
@@ -253,12 +253,13 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
             auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
             IVW_ASSERT(catCol2, "right column is not categorical");
 
-            auto valuesLeft = catCol1->getValues();
-            auto valuesRight = catCol2->getValues();
+            auto valuesLeftIt = catCol1->values().begin();
+            auto valuesRightIt = catCol2->values().begin();
             for (auto&& [i, rowMatches] : util::enumerate<std::uint32_t>(rows)) {
-                util::erase_remove_if(rowMatches, [key = valuesLeft[i], &valuesRight](auto row) {
-                    return key != valuesRight[row];
-                });
+                util::erase_remove_if(rowMatches,
+                                      [key = *(valuesLeftIt + i), valuesRightIt](auto row) {
+                                          return key != *(valuesRightIt + row);
+                                      });
             }
         } else {
             leftCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
@@ -310,8 +311,8 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
         if (auto c = dynamic_cast<CategoricalColumn*>(srcCol.get())) {
-            auto data = util::transform(rows, [src = c->getValues()](auto v) {
-                return v.has_value() ? src[v.value()] : "undefined";
+            auto data = util::transform(rows, [range = c->values()](auto v) {
+                return v.has_value() ? *(range.begin() + v.value()) : "undefined";
             });
             dst->addCategoricalColumn(c->getHeader(), data);
         } else {
