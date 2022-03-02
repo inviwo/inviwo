@@ -594,4 +594,153 @@ TEST(CSVFilters, emptyRowsAtEnd) {
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 }
 
+TEST(CSVItemFilters, stringMatchEqual) {
+    std::istringstream ss("a,1\nb,2\nc,3\na,4");
+
+    csvfilters::Filters filters;
+    filters.includeItems.push_back(csvfilters::stringMatch(0, filters::StringComp::Equal, "a"));
+
+    CSVReader reader;
+    reader.setFilters(filters);
+    reader.setFirstRowHeader(false);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(3, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+
+    EXPECT_EQ("a", dataframe->getColumn(1)->get(0, true)->toString());
+    EXPECT_EQ("a", dataframe->getColumn(1)->get(1, true)->toString());
+
+    const std::vector<int> expected = {1, 4};
+
+    auto bufferram = static_cast<const BufferRAMPrecision<int>*>(
+        dataframe->getColumn(2)->getBuffer()->getRepresentation<BufferRAM>());
+    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Row contents incorrect";
+}
+
+TEST(CSVItemFilters, stringMatchRegex) {
+    std::istringstream ss("apple\napples\nbanana\napple");
+
+    csvfilters::Filters filters;
+    filters.includeItems.push_back(csvfilters::stringMatch(0, filters::StringComp::Regex, ".p+l."));
+
+    CSVReader reader;
+    reader.setFilters(filters);
+    reader.setFirstRowHeader(false);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+
+    EXPECT_EQ("apple", dataframe->getColumn(1)->get(0, true)->toString());
+    EXPECT_EQ("apple", dataframe->getColumn(1)->get(1, true)->toString());
+}
+
+TEST(CSVItemFilters, stringMatchPartialRegex) {
+    std::istringstream ss("apple\napples\nbanana\napple");
+
+    csvfilters::Filters filters;
+    filters.includeItems.push_back(
+        csvfilters::stringMatch(0, filters::StringComp::RegexPartial, "p+l"));
+
+    CSVReader reader;
+    reader.setFilters(filters);
+    reader.setFirstRowHeader(false);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
+
+    EXPECT_EQ("apple", dataframe->getColumn(1)->get(0, true)->toString());
+    EXPECT_EQ("apples", dataframe->getColumn(1)->get(1, true)->toString());
+    EXPECT_EQ("apple", dataframe->getColumn(1)->get(2, true)->toString());
+}
+
+TEST(CSVItemFilters, intMatch) {
+    std::istringstream ss("1\n2\n3\n2\n4");
+
+    csvfilters::Filters filters;
+    filters.includeItems.push_back(csvfilters::intMatch(0, filters::NumberComp::Less, 3));
+
+    CSVReader reader;
+    reader.setFilters(filters);
+    reader.setFirstRowHeader(false);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
+
+    const std::vector<int> expected = {1, 2, 2};
+
+    auto bufferram = static_cast<const BufferRAMPrecision<int>*>(
+        dataframe->getColumn(1)->getBuffer()->getRepresentation<BufferRAM>());
+    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Row contents incorrect";
+}
+
+TEST(CSVItemFilters, intRange) {
+    std::istringstream ss("10\n2\n3\n2\n4\n20\n8");
+
+    csvfilters::Filters filters;
+    filters.includeItems.push_back(csvfilters::intRange(0, 3, 9));
+
+    CSVReader reader;
+    reader.setFilters(filters);
+    reader.setFirstRowHeader(false);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
+
+    const std::vector<int> expected = {3, 4, 8};
+
+    auto bufferram = static_cast<const BufferRAMPrecision<int>*>(
+        dataframe->getColumn(1)->getBuffer()->getRepresentation<BufferRAM>());
+    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Row contents incorrect";
+}
+
+TEST(CSVItemFilters, doubleMatch) {
+    std::istringstream ss("3.2\n3.3\n1.5\n4.5\n10.0");
+
+    csvfilters::Filters filters;
+    filters.includeItems.push_back(
+        csvfilters::doubleMatch(0, filters::NumberComp::Equal, 3.25, 0.06));
+
+    CSVReader reader;
+    reader.setFilters(filters);
+    reader.setFirstRowHeader(false);
+    reader.setEnableDoublePrecision(true);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+
+    const std::vector<double> expected = {3.2, 3.3};
+
+    auto bufferram = static_cast<const BufferRAMPrecision<double>*>(
+        dataframe->getColumn(1)->getBuffer()->getRepresentation<BufferRAM>());
+    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Row contents incorrect";
+}
+
+TEST(CSVItemFilters, doubleRange) {
+    std::istringstream ss("3.2\n3.3\n1.5\n4.5\n10.0");
+
+    csvfilters::Filters filters;
+    filters.includeItems.push_back(csvfilters::doubleRange(0, 3.3, 5.0));
+
+    CSVReader reader;
+    reader.setFilters(filters);
+    reader.setFirstRowHeader(false);
+    reader.setEnableDoublePrecision(true);
+
+    auto dataframe = reader.readData(ss);
+    ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+
+    const std::vector<double> expected = {3.3, 4.5};
+
+    auto bufferram = static_cast<const BufferRAMPrecision<double>*>(
+        dataframe->getColumn(1)->getBuffer()->getRepresentation<BufferRAM>());
+    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Row contents incorrect";
+}
+
 }  // namespace inviwo
