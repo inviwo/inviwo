@@ -28,6 +28,4 @@
  *********************************************************************************/
 #pragma once
 
-namespace pybind11 {
-
-}  // namespace pybind11
+namespace pybind11 {}  // namespace pybind11
