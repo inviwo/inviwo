@@ -35,6 +35,7 @@
 #include <vector>
 
 class QMenu;
+class QToolBar;
 
 namespace inviwo {
 
@@ -49,6 +50,7 @@ public:
 
 private:
     std::vector<std::unique_ptr<PythonEditorWidget>> editors_;
+    std::unique_ptr<QToolBar> toolbar_;
     std::unique_ptr<QMenu> menu_;
 };
 

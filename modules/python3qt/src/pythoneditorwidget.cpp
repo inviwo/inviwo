@@ -83,7 +83,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     , app_(app)
     , appendLog_(nullptr)
     , fileObserver_(this, "Python Editor") {
-    setWindowIcon(QIcon(":/icons/python.png"));
+    setWindowIcon(QIcon(":/svgicons/python.svg"));
 
     mainWindow_ = new QMainWindow();
     mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);

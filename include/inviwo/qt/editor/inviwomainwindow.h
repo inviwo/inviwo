@@ -162,8 +162,7 @@ protected:
 
 private:
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
-
-    void visibilityModeChangedInSettings();
+    
     /*
      * Access the WelcomeWidget using this function as it does delayed initialization, i.e., creates
      * it if non-existing.
@@ -230,7 +229,6 @@ private:
 
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
-    QAction* visibilityModeAction_;
 
     std::unique_ptr<FileAssociations> fileAssociations_;
 

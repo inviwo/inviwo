@@ -380,12 +380,23 @@ void InviwoMainWindow::addActions() {
 
     auto workspaceToolBar = addToolBar("File");
     workspaceToolBar->setObjectName("fileToolBar");
+    workspaceToolBar->setMovable(false);
+    workspaceToolBar->setFloatable(false);
+
     auto editToolBar = addToolBar("Edit");
     editToolBar->setObjectName("fileToolBar");
-    auto viewModeToolBar = addToolBar("View");
-    viewModeToolBar->setObjectName("viewModeToolBar");
+    editToolBar->setMovable(false);
+    editToolBar->setFloatable(false);
+
+    auto findToolBar = addToolBar("Edit");
+    findToolBar->setObjectName("findToolBar");
+    findToolBar->setMovable(false);
+    findToolBar->setFloatable(false);
+
     auto networkToolBar = addToolBar("Network");
     networkToolBar->setObjectName("networkToolBar");
+    networkToolBar->setMovable(false);
+    networkToolBar->setFloatable(false);
 
     // file menu entries
 
@@ -681,10 +692,10 @@ void InviwoMainWindow::addActions() {
         // add actions to tool bar
         editToolBar->addAction(undoManager_.getUndoAction());
         editToolBar->addAction(undoManager_.getRedoAction());
-        editToolBar->addSeparator();
-        editToolBar->addAction(searchNetwork);
-        editToolBar->addAction(findAction);
-        editToolBar->addAction(addProcessorAction);
+
+        findToolBar->addAction(searchNetwork);
+        findToolBar->addAction(findAction);
+        findToolBar->addAction(addProcessorAction);
     }
 
     // View
@@ -703,35 +714,6 @@ void InviwoMainWindow::addActions() {
         viewMenuItem->addAction(consoleWidget_->toggleViewAction());
         helpWidget_->toggleViewAction()->setText(tr("&Help"));
         viewMenuItem->addAction(helpWidget_->toggleViewAction());
-    }
-
-    {
-        // application/developer mode menu entries
-        QIcon visibilityModeIcon;
-        visibilityModeIcon.addFile(":/svgicons/usermode.svg", QSize(), QIcon::Normal, QIcon::Off);
-        visibilityModeIcon.addFile(":/svgicons/developermode.svg", QSize(), QIcon::Normal,
-                                   QIcon::On);
-        visibilityModeAction_ = new QAction(visibilityModeIcon, tr("&Application Mode"), this);
-        visibilityModeAction_->setToolTip("Switch to Application Mode");
-        visibilityModeAction_->setCheckable(true);
-        visibilityModeAction_->setChecked(false);
-        viewMenuItem->addAction(visibilityModeAction_);
-        viewModeToolBar->addAction(visibilityModeAction_);
-        connect(visibilityModeAction_, &QAction::triggered, [this](bool appView) {
-            if (appView) {
-                app_->setApplicationUsageMode(UsageMode::Application);
-                visibilityModeAction_->setToolTip("Switch to Developer Mode");
-                visibilityModeAction_->setText("&Developer Mode");
-            } else {
-                app_->setApplicationUsageMode(UsageMode::Development);
-                visibilityModeAction_->setToolTip("Switch to Application Mode");
-                visibilityModeAction_->setText("&Application Mode");
-            }
-        });
-
-        auto& appUsageModeProp_ = app_->getSystemSettings().applicationUsageMode_;
-        appUsageModeProp_.onChange([this]() { visibilityModeChangedInSettings(); });
-        visibilityModeChangedInSettings();
     }
 
     // Network
@@ -968,12 +950,9 @@ void InviwoMainWindow::addActions() {
 }
 
 void InviwoMainWindow::updateWindowTitle() {
-    static const QString format{"Inviwo - Interactive Visualization Workshop - %1%2 (%3)"};
-
+    static const QString format{"Inviwo - Interactive Visualization Workshop - %1%2"};
     setWindowTitle(
-        format.arg(currentWorkspaceFileName_)
-            .arg(getNetworkEditor()->isModified() ? "*" : "")
-            .arg(visibilityModeAction_->isChecked() ? "Application mode" : "Developer mode"));
+        format.arg(currentWorkspaceFileName_).arg(getNetworkEditor()->isModified() ? "*" : ""));
 }
 
 void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
@@ -1274,41 +1253,6 @@ void InviwoMainWindow::showAboutBox() {
         inviwoAboutWindow_->loadState();
     }
     inviwoAboutWindow_->show();
-}
-
-void InviwoMainWindow::visibilityModeChangedInSettings() {
-    auto network = app_->getProcessorNetwork();
-    switch (app_->getApplicationUsageMode()) {
-        case UsageMode::Development: {
-            for (auto& p : network->getProcessors()) {
-                auto md = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-                if (md->isSelected()) {
-                    propertyListWidget_->addProcessorProperties(p);
-                } else {
-                    propertyListWidget_->removeProcessorProperties(p);
-                }
-            }
-
-            if (visibilityModeAction_->isChecked()) {
-                visibilityModeAction_->setChecked(false);
-            }
-            networkEditorView_->hideNetwork(false);
-            break;
-        }
-        case UsageMode::Application: {
-            if (!visibilityModeAction_->isChecked()) {
-                visibilityModeAction_->setChecked(true);
-            }
-            networkEditorView_->hideNetwork(true);
-
-            for (auto& p : network->getProcessors()) {
-                propertyListWidget_->addProcessorProperties(p);
-            }
-            break;
-        }
-    }
-
-    updateWindowTitle();
 }
 
 WelcomeWidget* inviwo::InviwoMainWindow::getWelcomeWidget() {
