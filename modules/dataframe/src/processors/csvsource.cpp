@@ -204,13 +204,7 @@ csvfilters::Filters CSVSource::createFilters() const {
                     itemFilters.push_back(csvfilters::intMatch(
                         detail::getValue<IntProperty>(cp, "column"),
                         detail::getValue<TemplateOptionProperty<filters::NumberComp>>(cp, "comp"),
-                        detail::getValue<IntProperty>(cp, "value")));
-                } else if (startsWith(identifier, "floatItem")) {
-                    itemFilters.push_back(csvfilters::floatMatch(
-                        detail::getValue<IntProperty>(cp, "column"),
-                        detail::getValue<TemplateOptionProperty<filters::NumberComp>>(cp, "comp"),
-                        detail::getValue<FloatProperty>(cp, "value"),
-                        detail::getValue<FloatProperty>(cp, "epsilon")));
+                        detail::getValue<Int64Property>(cp, "value")));
                 } else if (startsWith(identifier, "doubleItem")) {
                     itemFilters.push_back(csvfilters::doubleMatch(
                         detail::getValue<IntProperty>(cp, "column"),
@@ -218,12 +212,8 @@ csvfilters::Filters CSVSource::createFilters() const {
                         detail::getValue<DoubleProperty>(cp, "value"),
                         detail::getValue<DoubleProperty>(cp, "epsilon")));
                 } else if (startsWith(identifier, "intRangeItem")) {
-                    const auto& range = detail::getValue<IntMinMaxProperty>(cp, "range");
+                    const auto& range = detail::getValue<Int64MinMaxProperty>(cp, "range");
                     itemFilters.push_back(csvfilters::intRange(
-                        detail::getValue<IntProperty>(cp, "column"), range.x, range.y));
-                } else if (startsWith(identifier, "floatRangeItem")) {
-                    const auto& range = detail::getValue<FloatMinMaxProperty>(cp, "range");
-                    itemFilters.push_back(csvfilters::floatRange(
                         detail::getValue<IntProperty>(cp, "column"), range.x, range.y));
                 } else if (startsWith(identifier, "doubleRangeItem")) {
                     const auto& range = detail::getValue<DoubleMinMaxProperty>(cp, "range");

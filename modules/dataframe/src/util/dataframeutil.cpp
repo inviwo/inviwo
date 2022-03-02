@@ -531,7 +531,7 @@ std::vector<std::uint32_t> filteredRows(const Column& col, dataframefilters::Fil
     if (col.getColumnType() == ColumnType::Categorical) {
         const auto& catCol = dynamic_cast<const CategoricalColumn&>(col);
         std::vector<std::uint32_t> rows;
-        for (auto&& [row, value] : util::enumerate<std::uint32_t>(catCol.getValues())) {
+        for (auto&& [row, value] : util::enumerate<std::uint32_t>(catCol.values())) {
             auto test = util::overloaded{
                 [v = value](const std::function<bool(std::string_view)>& func) { return func(v); },
                 [](const auto&) { return false; }};
@@ -551,15 +551,9 @@ std::vector<std::uint32_t> filteredRows(const Column& col, dataframefilters::Fil
                     for (auto&& [row, value] :
                          util::enumerate<std::uint32_t>(typedBuf->getDataContainer())) {
                         auto test = util::overloaded{
-                            [v = value](const std::function<bool(int)>& func) {
+                            [v = value](const std::function<bool(std::int64_t)>& func) {
                                 if constexpr (std::is_integral_v<ValueType>) {
-                                    return func(static_cast<int>(v));
-                                }
-                                return false;
-                            },
-                            [v = value](const std::function<bool(float)>& func) {
-                                if constexpr (std::is_floating_point_v<ValueType>) {
-                                    return func(static_cast<float>(v));
+                                    return func(static_cast<std::int64_t>(v));
                                 }
                                 return false;
                             },

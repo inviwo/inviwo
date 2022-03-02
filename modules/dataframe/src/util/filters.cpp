@@ -106,43 +106,36 @@ ItemFilter rangeComparison(int column, T min, T max) {
 
 }  // namespace detail
 
-ItemFilter intMatch(int column, filters::NumberComp op, int value) {
+ItemFilter intMatch(int column, filters::NumberComp op, std::int64_t value) {
     auto createFilter = [v = value, column](auto comp) {
-        return ItemFilter{std::function<bool(int)>([v, comp](int value) { return comp(value, v); }),
+        return ItemFilter{std::function<bool(std::int64_t)>(
+                              [v, column, comp](std::int64_t value) { return comp(value, v); }),
                           column, false};
     };
 
     switch (op) {
         case filters::NumberComp::Equal:
-            return createFilter(std::equal_to<int>());
+            return createFilter(std::equal_to<std::int64_t>());
         case filters::NumberComp::NotEqual:
-            return createFilter(std::not_equal_to<int>());
+            return createFilter(std::not_equal_to<std::int64_t>());
         case filters::NumberComp::Less:
-            return createFilter(std::less<int>());
+            return createFilter(std::less<std::int64_t>());
         case filters::NumberComp::LessEqual:
-            return createFilter(std::less_equal<int>());
+            return createFilter(std::less_equal<std::int64_t>());
         case filters::NumberComp::Greater:
-            return createFilter(std::greater<int>());
+            return createFilter(std::greater<std::int64_t>());
         case filters::NumberComp::GreaterEqual:
-            return createFilter(std::greater_equal<int>());
+            return createFilter(std::greater_equal<std::int64_t>());
         default:
-            return createFilter(std::equal_to<int>());
+            return createFilter(std::equal_to<std::int64_t>());
     }
-}
-
-ItemFilter floatMatch(int column, filters::NumberComp op, float value, float epsilon) {
-    return detail::epsilonComparison(column, op, value, epsilon);
 }
 
 ItemFilter doubleMatch(int column, filters::NumberComp op, double value, double epsilon) {
     return detail::epsilonComparison(column, op, value, epsilon);
 }
 
-ItemFilter intRange(int column, int min, int max) {
-    return detail::rangeComparison(column, min, max);
-}
-
-ItemFilter floatRange(int column, float min, float max) {
+ItemFilter intRange(int column, std::int64_t min, std::int64_t max) {
     return detail::rangeComparison(column, min, max);
 }
 

@@ -69,14 +69,11 @@ using FilterTypes = flags::flags<FilterType>;
  * Item filters own an IntProperty @column defining the target column. Identifiers begin with:
  *  - @p "stringItem":      StringProperty @match for matching strings and a
  *                          TemplateOptionProperty<filters::StringComp> @comp for the comparison
- *  - @p "intItem":         IntProperty @value, TemplateOptionProperty<filters::NumberComp> @comp
+ *  - @p "intItem":         Int64Property @value, TemplateOptionProperty<filters::NumberComp> @comp
  *                          for the comparison
- *  - @p "floatItem":       FloatProperty @value and FloatProperty @epsilon,
- *                          TemplateOptionProperty<filters::NumberComp> @comp for the comparison
  *  - @p "doubleItem":      DoubleProperty @value and DoubleProperty @epsilon,
  *                          TemplateOptionProperty<filters::NumberComp> @comp for the comparison
- *  - @p "intRangeItem":    IntMinMaxProperty @range for an inclusive range [min, max]
- *  - @p "floatRangeItem":  FloatMinMaxProperty @range for an inclusive range [min, max]
+ *  - @p "intRangeItem":    Int64MinMaxProperty @range for an inclusive range [min, max]
  *  - @p "doubleRangeItem": DoubleMinMaxProperty @range for an inclusive range [min, max]
  *
  * @see CSVReader

@@ -124,35 +124,12 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
                 {"greater", "greater (>)", filters::NumberComp::Greater},
                 {"greaterEqual", "Greater Equal (>=)", filters::NumberComp::GreaterEqual}},
             0));
-        intItem->addProperty(std::make_unique<IntProperty>(
-            "value", "Value", 0, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(),
-            1, InvalidationLevel::InvalidOutput, PropertySemantics::Text));
+        intItem->addProperty(std::make_unique<Int64Property>(
+            "value", "Value", 0, std::numeric_limits<int64_t>::min(),
+            std::numeric_limits<int64_t>::max(), 1, InvalidationLevel::InvalidOutput,
+            PropertySemantics::Text));
 
         addPrefab(std::move(intItem));
-    }
-    if (supportedFilters.contains(FilterType::FloatItem)) {
-        auto floatItem =
-            std::make_unique<BoolCompositeProperty>("floatItem", "Float Comparison", true);
-        floatItem->addProperty(columnProp());
-        floatItem->addProperty(std::make_unique<TemplateOptionProperty<filters::NumberComp>>(
-            "comp", "Comparison",
-            std::vector<OptionPropertyOption<filters::NumberComp>>{
-                {"equal", "equal (==)", filters::NumberComp::Equal},
-                {"notEqual", "Not Equal (!=)", filters::NumberComp::NotEqual},
-                {"less", "Less (<)", filters::NumberComp::Less},
-                {"lessEqual", "Less Equal (<=)", filters::NumberComp::LessEqual},
-                {"greater", "greater (>)", filters::NumberComp::Greater},
-                {"greaterEqual", "Greater Equal (>=)", filters::NumberComp::GreaterEqual}},
-            0));
-        floatItem->addProperty(std::make_unique<FloatProperty>(
-            "value", "Value", 0.0f, std::numeric_limits<float>::lowest(),
-            std::numeric_limits<float>::max(), 0.1f, InvalidationLevel::InvalidOutput,
-            PropertySemantics::Text));
-        floatItem->addProperty(std::make_unique<FloatProperty>(
-            "epsilon", "Epsilon", 0.0f, 0.0f, std::numeric_limits<float>::max(), 0.1f,
-            InvalidationLevel::InvalidOutput, PropertySemantics::Text));
-
-        addPrefab(std::move(floatItem));
     }
     if (supportedFilters.contains(FilterType::DoubleItem)) {
         auto doubleItem =
@@ -181,23 +158,12 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
     if (supportedFilters.contains(FilterType::IntRange)) {
         auto intRange = std::make_unique<BoolCompositeProperty>("intRangeItem", "Int Range", true);
         intRange->addProperty(columnProp());
-        intRange->addProperty(std::make_unique<IntMinMaxProperty>(
-            "range", "Integer Range", 0, 100, std::numeric_limits<int>::min(),
-            std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
+        intRange->addProperty(std::make_unique<Int64MinMaxProperty>(
+            "range", "Integer Range", 0, 100, std::numeric_limits<int64_t>::min(),
+            std::numeric_limits<int64_t>::max(), 1, 0, InvalidationLevel::InvalidOutput,
             PropertySemantics::Text));
 
         addPrefab(std::move(intRange));
-    }
-    if (supportedFilters.contains(FilterType::FloatRange)) {
-        auto floatRange =
-            std::make_unique<BoolCompositeProperty>("floatRangeItem", "Float Range", true);
-        floatRange->addProperty(columnProp());
-        floatRange->addProperty(std::make_unique<FloatMinMaxProperty>(
-            "range", "Float Range", 0.0f, 100.0f, std::numeric_limits<float>::lowest(),
-            std::numeric_limits<float>::max(), 0.1f, 0.0f, InvalidationLevel::InvalidOutput,
-            PropertySemantics::Text));
-
-        addPrefab(std::move(floatRange));
     }
     if (supportedFilters.contains(FilterType::DoubleRange)) {
         auto doubleRange =
