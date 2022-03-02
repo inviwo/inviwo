@@ -32,9 +32,12 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/datastructures/bitset.h>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <tcb/span.hpp>
 #include <optional>
 
 namespace inviwo {
@@ -527,18 +530,19 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
 
 #include <warn/push>
 #include <warn/ignore/conversion>
-std::vector<std::uint32_t> filteredRows(const Column& col, dataframefilters::Filters filters) {
-
+std::vector<std::uint32_t> selectedRows(const Column& col, dataframefilters::Filters filters) {
     if (col.getColumnType() == ColumnType::Categorical) {
         const auto& catCol = dynamic_cast<const CategoricalColumn&>(col);
         std::vector<std::uint32_t> rows;
         for (auto&& [row, value] : util::enumerate<std::uint32_t>(catCol.values())) {
             auto test = util::overloaded{
                 [v = value](const std::function<bool(std::string_view)>& func) { return func(v); },
-                [](const const std::function<bool(int64_t)>&) { return false; },
-                [](const const std::function<bool(double)>&) { return false; }};
-            if (std::any_of(filters.include.begin(), filters.include.end(),
-                            [&](const auto& f) { return std::visit(test, f.filter); })) {
+                [](const std::function<bool(int64_t)>&) { return false; },
+                [](const std::function<bool(double)>&) { return false; }};
+            auto op = [&](const auto& f) { return std::visit(test, f.filter); };
+            if ((std::any_of(filters.include.begin(), filters.include.end(), op) ||
+                 filters.include.empty()) &&
+                std::none_of(filters.exclude.begin(), filters.exclude.end(), op)) {
                 rows.push_back(row);
             }
         }
@@ -580,6 +584,33 @@ std::vector<std::uint32_t> filteredRows(const Column& col, dataframefilters::Fil
     }
 }
 #include <warn/pop>
+
+std::vector<std::uint32_t> selectedRows(const DataFrame& dataframe,
+                                        dataframefilters::Filters filters) {
+    const int colCount = static_cast<int>(dataframe.getNumberOfColumns());
+    std::unordered_map<int, dataframefilters::Filters> filterCols;
+    for (auto& f : filters.include) {
+        if (f.column >= 0 && f.column < colCount) filterCols[f.column].include.push_back(f);
+    }
+    for (auto& f : filters.exclude) {
+        if (f.column >= 0 && f.column < colCount) filterCols[f.column].exclude.push_back(f);
+    }
+    if (filterCols.empty()) {
+        auto seq = util::sequence<std::uint32_t>(
+            0, static_cast<std::uint32_t>(dataframe.getNumberOfRows()), 1);
+        return {seq.begin(), seq.end()};
+    }
+
+    if (filterCols.size() == 1) {
+        return selectedRows(*dataframe.getColumn(filterCols.begin()->first).get(),
+                            filterCols.begin()->second);
+    }
+    BitSet b;
+    for (auto&& [colIndex, f] : filterCols) {
+        b.add(selectedRows(*dataframe.getColumn(colIndex).get(), f));
+    }
+    return b.toVector();
+}
 
 std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId) {
     using H = utildoc::TableBuilder::Header;

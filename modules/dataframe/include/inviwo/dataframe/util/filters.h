@@ -76,7 +76,7 @@ IVW_MODULE_DATAFRAME_API ItemFilter intMatch(int column, filters::NumberComp op,
 /// create an item filter matching doubles with @p value using @p op, @epsilon is used for equal and
 /// not equal comparisons
 IVW_MODULE_DATAFRAME_API ItemFilter doubleMatch(int column, filters::NumberComp op, double value,
-                                                double epsilon);
+                                                double epsilon = 0.0);
 
 /// create an item filter matching an inclusive integer range [@p min, @p max]
 IVW_MODULE_DATAFRAME_API ItemFilter intRange(int column, std::int64_t min, std::int64_t max);

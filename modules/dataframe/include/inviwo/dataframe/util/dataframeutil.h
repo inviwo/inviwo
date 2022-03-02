@@ -150,10 +150,33 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> combineDataFrames(
  * @param col   column containing data for filtering
  * @param pred  predicate to check values from \p col
  * @return list of row indices where rows fulfill the predicate
+ * @see selectedRows(const DataFrame&, dataframefilters::Filters)
  */
 template <typename Pred>
-std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred pred);
-IVW_MODULE_DATAFRAME_API std::vector<std::uint32_t> filteredRows(const Column& col,
+std::vector<std::uint32_t> selectedRows(std::shared_ptr<const Column> col, Pred pred);
+
+/**
+ * \brief apply the \p filters to each row of column \p col and return the row indices where
+ * any of the include filters and no exclude filter evaluates to true.
+ *
+ * @param dataframe   column containing data for filtering
+ * @param filters     predicate to check values from \p col
+ * @return list of row indices where rows satisfy all \p filters
+ * @see selectedRows(const DataFrame&, dataframefilters::Filters)
+ */
+IVW_MODULE_DATAFRAME_API std::vector<std::uint32_t> selectedRows(const Column& col,
+                                                                 dataframefilters::Filters filters);
+
+/**
+ * \brief apply the \p filters to each row of \p dataframe and return the row indices where
+ * any of the include filters and no exclude filter evaluates to true.
+ *
+ * @param dataframe   column containing data for filtering
+ * @param filters     predicate to check values from \p col
+ * @return list of row indices where rows satisfy all \p filters
+ * @see selectedRows(const Column&, dataframefilters::Filters)
+ */
+IVW_MODULE_DATAFRAME_API std::vector<std::uint32_t> selectedRows(const DataFrame& dataframe,
                                                                  dataframefilters::Filters filters);
 
 IVW_MODULE_DATAFRAME_API std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId);
@@ -161,7 +184,7 @@ IVW_MODULE_DATAFRAME_API std::string createToolTipForRow(const DataFrame& datafr
 #include <warn/push>
 #include <warn/ignore/conversion>
 template <typename Pred>
-std::vector<std::uint32_t> filteredRows(std::shared_ptr<const Column> col, Pred pred) {
+std::vector<std::uint32_t> selectedRows(std::shared_ptr<const Column> col, Pred pred) {
     if (auto catCol = dynamic_cast<const CategoricalColumn*>(col.get())) {
         std::vector<std::uint32_t> rows;
         for (auto&& [row, v] : util::enumerate<std::uint32_t>(catCol->values())) {
