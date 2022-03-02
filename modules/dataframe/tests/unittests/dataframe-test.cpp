@@ -35,6 +35,8 @@
 #include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
+#include <inviwo/dataframe/util/filters.h>
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 
@@ -182,6 +184,84 @@ TEST(DataFrameTests, RowAccess) {
         const int expected = intcol->get(rowIndex);
         EXPECT_EQ(expected, retval);
     }
+}
+
+TEST(DataFrameFilter, NoFilter) {
+    DataFrame dataframe;
+    dataframe.addColumnFromBuffer("FloatCol",
+                                  util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f}));
+    dataframe.updateIndexBuffer();
+
+    EXPECT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
+    EXPECT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
+
+    const auto result = dataframe::selectedRows(dataframe, {});
+
+    EXPECT_EQ(dataframe.getNumberOfRows(), result.size()) << "Incorrect number of filtered rows";
+}
+
+TEST(DataFrameFilter, SingleColumn) {
+    DataFrame dataframe;
+    dataframe.addColumnFromBuffer("FloatCol",
+                                  util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f}));
+    dataframe.updateIndexBuffer();
+
+    EXPECT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
+    EXPECT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
+
+    dataframefilters::Filters filters;
+    filters.include.push_back(
+        dataframefilters::doubleMatch(1, filters::NumberComp::LessEqual, 2.0));
+
+    const auto result = dataframe::selectedRows(dataframe, filters);
+    EXPECT_EQ(2, result.size()) << "Incorrect number of filtered rows";
+
+    const std::vector<uint32_t> expected = {0, 1};
+    EXPECT_EQ(expected, result) << "Filter result does not match";
+}
+
+TEST(DataFrameFilter, MultiColumn) {
+    DataFrame dataframe;
+    dataframe.addColumnFromBuffer("FloatCol",
+                                  util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f}));
+    dataframe.addColumnFromBuffer("FloatCol2",
+                                  util::makeBuffer(std::vector<float>{3.2f, 2.2f, 1.2f}));
+    dataframe.updateIndexBuffer();
+
+    EXPECT_EQ(3, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
+    EXPECT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
+
+    dataframefilters::Filters filters;
+    filters.include.push_back(dataframefilters::doubleMatch(2, filters::NumberComp::Less, 2.3));
+
+    const auto result = dataframe::selectedRows(dataframe, filters);
+    EXPECT_EQ(2, result.size()) << "Incorrect number of filtered rows";
+
+    const std::vector<uint32_t> expected = {1, 2};
+    EXPECT_EQ(expected, result) << "Filter result does not match";
+}
+
+TEST(DataFrameFilter, MultiColumnFilter) {
+    DataFrame dataframe;
+    dataframe.addColumnFromBuffer("FloatCol",
+                                  util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f}));
+    dataframe.addColumnFromBuffer("IntCol", util::makeBuffer(std::vector<int>{6, 2, 3}));
+    dataframe.addColumnFromBuffer("FloatCol2",
+                                  util::makeBuffer(std::vector<float>{3.2f, 2.2f, 1.2f}));
+    dataframe.updateIndexBuffer();
+
+    EXPECT_EQ(4, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
+    EXPECT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
+
+    dataframefilters::Filters filters;
+    filters.include.push_back(dataframefilters::intMatch(2, filters::NumberComp::Equal, 2));
+    filters.include.push_back(dataframefilters::doubleMatch(3, filters::NumberComp::Less, 2.3));
+
+    const auto result = dataframe::selectedRows(dataframe, filters);
+    EXPECT_EQ(2, result.size()) << "Incorrect number of filtered rows";
+
+    const std::vector<uint32_t> expected = {1, 2};
+    EXPECT_EQ(expected, result) << "Filter result does not match";
 }
 
 }  // namespace inviwo

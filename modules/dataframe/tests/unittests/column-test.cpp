@@ -196,6 +196,14 @@ TEST(ColumnAppend, TypeMismatch) {
     EXPECT_NO_THROW(intCol.append(intCol)) << "Cannot append rows of same column type";
 }
 
+TEST(ColumnFilter, NoFilter) {
+    TemplateColumn<int> intCol("IntCol", {0, 1, 2, 2, 4, 7, 10, 9, 5, 3});
+
+    dataframefilters::Filters filters;
+
+    const auto result = dataframe::selectedRows(intCol, filters);
+    EXPECT_EQ(10, result.size()) << "Incorrect number of filtered rows";
+}
 TEST(ColumnFilter, Categorical) {
     CategoricalColumn col("Column");
     col.add("a");
@@ -206,7 +214,7 @@ TEST(ColumnFilter, Categorical) {
     dataframefilters::Filters filters;
     filters.include.push_back(dataframefilters::stringMatch(0, filters::StringComp::Equal, "a"));
 
-    const auto result = dataframe::filteredRows(col, filters);
+    const auto result = dataframe::selectedRows(col, filters);
     EXPECT_EQ(2, result.size()) << "Incorrect number of filtered rows";
 
     const std::vector<uint32_t> expected = {0, 2};
@@ -224,7 +232,7 @@ TEST(ColumnFilter, CategoricalMulti) {
     filters.include.push_back(dataframefilters::stringMatch(0, filters::StringComp::Equal, "a"));
     filters.include.push_back(dataframefilters::stringMatch(0, filters::StringComp::Equal, "b"));
 
-    const auto result = dataframe::filteredRows(col, filters);
+    const auto result = dataframe::selectedRows(col, filters);
     EXPECT_EQ(3, result.size()) << "Incorrect number of filtered rows";
 
     const std::vector<uint32_t> expected = {0, 2, 3};
@@ -237,7 +245,7 @@ TEST(ColumnFilter, IntLess) {
     dataframefilters::Filters filters;
     filters.include.push_back(dataframefilters::intMatch(0, filters::NumberComp::Less, 4));
 
-    const auto result = dataframe::filteredRows(intCol, filters);
+    const auto result = dataframe::selectedRows(intCol, filters);
     EXPECT_EQ(5, result.size()) << "Incorrect number of filtered rows";
 
     const std::vector<uint32_t> expected = {0, 1, 2, 3, 9};
@@ -250,7 +258,7 @@ TEST(ColumnFilter, IntRange) {
     dataframefilters::Filters filters;
     filters.include.push_back(dataframefilters::intRange(0, 2, 5));
 
-    const auto result = dataframe::filteredRows(intCol, filters);
+    const auto result = dataframe::selectedRows(intCol, filters);
     EXPECT_EQ(5, result.size()) << "Incorrect number of filtered rows";
 
     const std::vector<uint32_t> expected = {2, 3, 4, 8, 9};
@@ -263,7 +271,7 @@ TEST(ColumnFilter, IntExclude) {
     dataframefilters::Filters filters;
     filters.exclude.push_back(dataframefilters::intMatch(0, filters::NumberComp::Less, 4));
 
-    const auto result = dataframe::filteredRows(intCol, filters);
+    const auto result = dataframe::selectedRows(intCol, filters);
     EXPECT_EQ(6, result.size()) << "Incorrect number of filtered rows";
 
     const std::vector<uint32_t> expected = {1, 4, 5, 6, 7, 8};
