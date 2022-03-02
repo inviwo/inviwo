@@ -534,7 +534,8 @@ std::vector<std::uint32_t> filteredRows(const Column& col, dataframefilters::Fil
         for (auto&& [row, value] : util::enumerate<std::uint32_t>(catCol.values())) {
             auto test = util::overloaded{
                 [v = value](const std::function<bool(std::string_view)>& func) { return func(v); },
-                [](const auto&) { return false; }};
+                [](const const std::function<bool(int64_t)>&) { return false; },
+                [](const const std::function<bool(double)>&) { return false; }};
             if (std::any_of(filters.include.begin(), filters.include.end(),
                             [&](const auto& f) { return std::visit(test, f.filter); })) {
                 rows.push_back(row);
@@ -555,17 +556,20 @@ std::vector<std::uint32_t> filteredRows(const Column& col, dataframefilters::Fil
                                 if constexpr (std::is_integral_v<ValueType>) {
                                     return func(static_cast<std::int64_t>(v));
                                 }
+                                (void)v;
                                 return false;
                             },
                             [v = value](const std::function<bool(double)>& func) {
                                 if constexpr (std::is_floating_point_v<ValueType>) {
                                     return func(v);
                                 }
+                                (void)v;
                                 return false;
                             },
-                            [](const auto&) { return false; }};
+                            [](const std::function<bool(std::string_view)>&) { return false; }};
                         auto op = [&](const auto& f) { return std::visit(test, f.filter); };
-                        if (std::any_of(filters.include.begin(), filters.include.end(), op) &&
+                        if ((std::any_of(filters.include.begin(), filters.include.end(), op) ||
+                             filters.include.empty()) &&
                             std::none_of(filters.exclude.begin(), filters.exclude.end(), op)) {
                             rows.push_back(row);
                         }

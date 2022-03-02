@@ -109,7 +109,7 @@ ItemFilter rangeComparison(int column, T min, T max) {
 ItemFilter intMatch(int column, filters::NumberComp op, std::int64_t value) {
     auto createFilter = [v = value, column](auto comp) {
         return ItemFilter{std::function<bool(std::int64_t)>(
-                              [v, column, comp](std::int64_t value) { return comp(value, v); }),
+                              [v, comp](std::int64_t value) { return comp(value, v); }),
                           column, false};
     };
 
