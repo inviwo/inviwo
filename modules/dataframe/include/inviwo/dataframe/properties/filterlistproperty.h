@@ -59,22 +59,22 @@ using FilterTypes = flags::flags<FilterType>;
  *
  * Identifiers of the properties for row filters begin with the following names and hold the listed
  * sub-properties:
- *  - @p "emptyLines": Matches empty lines
- *  - @p "rowBegin":   StringProperty @p match for matching the beginning of a row
- *  - @p "lineRange":  IntMinMaxProperty @p range for a line range (inclusive)
+ *  - @c emptyLines: Matches empty lines
+ *  - @c rowBegin:   StringProperty @c match for matching the beginning of a row
+ *  - @c lineRange:  IntMinMaxProperty @c range for a line range (inclusive)
  *
- * Row filter properties also own a BoolProperty @p filterOnHeader. If true, the filter should be
+ * Row filter properties also own a BoolProperty @c filterOnHeader. If true, the filter should be
  * applied to all rows including headers where applicable (for example in the CSVReader).
  *
- * Item filters own an IntProperty @column defining the target column. Identifiers begin with:
- *  - @p "stringItem":      StringProperty @match for matching strings and a
- *                          TemplateOptionProperty<filters::StringComp> @comp for the comparison
- *  - @p "intItem":         Int64Property @value, TemplateOptionProperty<filters::NumberComp> @comp
- *                          for the comparison
- *  - @p "doubleItem":      DoubleProperty @value and DoubleProperty @epsilon,
- *                          TemplateOptionProperty<filters::NumberComp> @comp for the comparison
- *  - @p "intRangeItem":    Int64MinMaxProperty @range for an inclusive range [min, max]
- *  - @p "doubleRangeItem": DoubleMinMaxProperty @range for an inclusive range [min, max]
+ * Item filters own an IntProperty @c column defining the target column. Identifiers begin with:
+ *  - @c stringItem:      StringProperty @c match for matching strings and a
+ *                        TemplateOptionProperty<filters::StringComp> @c comp for the comparison
+ *  - @c intItem:         Int64Property @c value, TemplateOptionProperty<filters::NumberComp> 
+ *                        @c comp for the comparison
+ *  - @c doubleItem:      DoubleProperty @c value and DoubleProperty @epsilon,
+ *                        TemplateOptionProperty<filters::NumberComp> @c comp for the comparison
+ *  - @c intRangeItem:    Int64MinMaxProperty @c range for an inclusive range [min, max]
+ *  - @c doubleRangeItem: DoubleMinMaxProperty @c range for an inclusive range [min, max]
  *
  * @see CSVReader
  */

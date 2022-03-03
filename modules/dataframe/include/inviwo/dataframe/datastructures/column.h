@@ -80,7 +80,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 /**
- * @brief pure interface for representing a data column, i.e. a Buffer with a name
+ * @brief Pure interface for representing a data column, i.e. a Buffer with a name
  * @ingroup datastructures
  */
 class IVW_MODULE_DATAFRAME_API Column : public MetaDataOwner {
@@ -122,7 +122,7 @@ public:
 
     virtual void add(std::string_view value) = 0;
     /**
-     * @brief appends all rows from column \p col
+     * Appends all rows from column \p col
      * @param col
      */
     virtual void append(const Column& col) = 0;
@@ -191,7 +191,7 @@ public:
 
     virtual void add(const T& value);
     /**
-     * \brief converts given value to type T, which is added to the column
+     * \brief Converts given value to type T, which is added to the column
      *
      * @param value
      * @throws InvalidConversion if the value cannot be converted to T
@@ -209,7 +209,7 @@ public:
     T get(size_t idx) const;
     T operator[](size_t idx) const;
     /**
-     * \brief returns the data value for the given index.
+     * \brief Returns the data value for the given index.
      *
      * @param idx    index
      * @param getStringsAsStrings   if true, strings will be returned for categorical values
@@ -303,7 +303,7 @@ public:
     virtual std::string getAsString(size_t idx) const override;
 
     /**
-     * \brief returns either the categorical value, i.e. a number representation, or
+     * \brief Returns either the categorical value, i.e. a number representation, or
      * the actual string for the given index.
      *
      * @param idx    index
@@ -348,7 +348,7 @@ public:
     virtual void append(const Column& col) override;
 
     /**
-     * \brief append the categorical values given in \p data
+     * \brief Append the categorical values given in \p data
      *
      * @param data    categorical values
      */
@@ -360,7 +360,7 @@ public:
     const std::vector<std::string>& getCategories() const { return lookUpTable_; }
 
     /**
-     * \brief returns column contents as list of categorical values
+     * \brief Returns column contents as list of categorical values
      *
      * @return all categorical values stored in the column
      * @see values
@@ -368,7 +368,19 @@ public:
     std::vector<std::string> getValues() const;
 
     /**
-     * returns column contents as iterator range of const std::string&
+     * Returns a const iterator range over all rows of the column holding the corresponding
+     * categorical values as <tt>const std::string&</tt>.
+     *
+     * Example:
+     * \code{.cpp}
+     * CategoricalColumn col("example", {"first", "second"});
+     * for (auto v : col.values()) {
+     *     std::cout << "value: " << v;
+     * }
+     * for (auto&& [row, v] : util::enumerate<std::uint32_t>(col.values())) {
+     *     std::cout << fmt::format("Row: {}, value: {}", row, v);
+     * }
+     * \endcode
      *
      * @return iterator range over all categorical values stored in the column
      * @see getValues
@@ -376,7 +388,7 @@ public:
     auto values() const;
 
     /**
-     * \brief add a category \p cat. It will not be added if the category already exists.
+     * \brief Add a category \p cat. It will not be added if the category already exists.
      *
      * @return index of the category
      */

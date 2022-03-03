@@ -557,7 +557,7 @@ std::vector<std::uint32_t> selectedRows(const Column& col, dataframefilters::Fil
                     for (auto&& [row, value] :
                          util::enumerate<std::uint32_t>(typedBuf->getDataContainer())) {
                         auto test = util::overloaded{
-                            [v = value](const std::function<bool(std::int64_t)>& func) {
+                            [&v = value](const std::function<bool(std::int64_t)>& func) {
                                 if constexpr (std::is_integral_v<ValueType>) {
                                     return func(static_cast<std::int64_t>(v));
                                 }
