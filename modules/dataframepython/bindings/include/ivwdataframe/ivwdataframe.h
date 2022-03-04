@@ -37,6 +37,4 @@
 
 namespace pybind11 {
 
-PYBIND11_RUNTIME_EXCEPTION(attribute_error, PyExc_AttributeError)
-
 }  // namespace pybind11
