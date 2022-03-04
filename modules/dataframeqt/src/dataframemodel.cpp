@@ -115,7 +115,7 @@ void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
             case ColumnType::Categorical:
                 if (!categoryIndices) {
                     return [cc = static_cast<const CategoricalColumn*>(col)](int row) -> QVariant {
-                        return QString("Key: %1").arg(cc->TemplateColumn<std::uint32_t>::get(row));
+                        return QString("Key: %1").arg(cc->getId(row));
                     };
                 } else {
                     return [](int) { return QVariant(); };

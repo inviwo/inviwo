@@ -279,19 +279,22 @@ public:
  *    by 0, 0, 1, 2.
  *    The original string values can be accessed using CategoricalColumn::get(index, true)
  *
- * \see TemplateColumn, \see CategoricalColumn::get()
+ * \see CategoricalColumn::get()
  * @ingroup datastructures
  */
-class IVW_MODULE_DATAFRAME_API CategoricalColumn : public TemplateColumn<std::uint32_t> {
+class IVW_MODULE_DATAFRAME_API CategoricalColumn : public Column {
     class AddMany;
 
 public:
-    CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {});
-    CategoricalColumn(const CategoricalColumn& rhs) = default;
+    using type = std::uint32_t;
+
+    CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {},
+                      Unit unit = Unit{}, std::optional<dvec2> range = std::nullopt);
+    CategoricalColumn(const CategoricalColumn& rhs);
     CategoricalColumn(const CategoricalColumn& rhs, const std::vector<std::uint32_t>& rowSelection);
     CategoricalColumn(CategoricalColumn&& rhs) = default;
-    CategoricalColumn& operator=(const CategoricalColumn& rhs) = default;
-    CategoricalColumn& operator=(CategoricalColumn&& rhs) = default;
+    CategoricalColumn& operator=(const CategoricalColumn& rhs);
+    CategoricalColumn& operator=(CategoricalColumn&& rhs);
 
     virtual CategoricalColumn* clone() const override;
     virtual CategoricalColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
@@ -300,10 +303,47 @@ public:
 
     virtual ColumnType getColumnType() const override;
 
+    virtual const std::string& getHeader() const override;
+    void setHeader(std::string_view header) override;
+
+    virtual Unit getUnit() const override;
+    virtual void setUnit(Unit unit) override;
+
+    virtual void setCustomRange(std::optional<dvec2> range) override;
+    virtual std::optional<dvec2> getCustomRange() const override;
+    virtual dvec2 getDataRange() const override;
+    virtual dvec2 getRange() const override;
+
+    virtual size_t getSize() const override;
+
+    /**
+     * Set the value of row @p idx to @p str.
+     */
+    void set(size_t idx, std::string_view str);
+    /**
+     * Set the value of row @p idx by using the numerical @p id of a category.
+     * @throws RangeException if @p id does not correspond to a registered category
+     * @see addCategory
+     */
+    void set(size_t idx, std::uint32_t id);
+
+    const std::string& get(size_t idx) const;
+
+    ///@{
+    /**
+     * Return the numerical id of the category in row @idx.
+     */
+    std::uint32_t getId(size_t idx) const;
+    virtual double getAsDouble(size_t idx) const override;
+    virtual dvec2 getAsDVec2(size_t idx) const override;
+    virtual dvec3 getAsDVec3(size_t idx) const override;
+    virtual dvec4 getAsDVec4(size_t idx) const override;
+    ///@}
+
     virtual std::string getAsString(size_t idx) const override;
 
     /**
-     * \brief Returns either the categorical value, i.e. a number representation, or
+     * \brief Returns either the categorical value, that is a number representation, or
      * the actual string for the given index.
      *
      * @param idx    index
@@ -313,9 +353,6 @@ public:
      * \see TemplateColumn
      */
     virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const override;
-
-    using TemplateColumn<std::uint32_t>::set;
-    virtual void set(size_t idx, const std::string& str);
 
     virtual void add(std::string_view value) override;
 
@@ -365,7 +402,7 @@ public:
      * @return all categorical values stored in the column
      * @see values
      */
-    std::vector<std::string> getValues() const;
+    [[deprecated("use iterators or values() instead")]] std::vector<std::string> getValues() const;
 
     /**
      * Returns a const iterator range over all rows of the column holding the corresponding
@@ -394,6 +431,15 @@ public:
      */
     std::uint32_t addCategory(std::string_view cat);
 
+    auto begin() const;
+    auto end() const;
+
+    virtual std::shared_ptr<BufferBase> getBuffer() override;
+    virtual std::shared_ptr<const BufferBase> getBuffer() const override;
+
+    std::shared_ptr<Buffer<std::uint32_t>> getTypedBuffer();
+    std::shared_ptr<const Buffer<std::uint32_t>> getTypedBuffer() const;
+
 private:
     class IVW_MODULE_DATAFRAME_API AddMany {
     public:
@@ -413,6 +459,14 @@ private:
 
     virtual std::uint32_t addOrGetID(std::string_view str);
 
+    auto transform() const {
+        return [this](const std::uint32_t& idx) -> const std::string& { return lookUpTable_[idx]; };
+    }
+
+    std::string header_;
+    Unit unit_;
+    std::optional<dvec2> range_;
+    std::shared_ptr<Buffer<std::uint32_t>> buffer_;
     std::vector<std::string> lookUpTable_;
     std::map<std::string, std::uint32_t, std::less<>> lookupMap_;
 };
@@ -689,12 +743,17 @@ size_t TemplateColumn<T>::getSize() const {
     return buffer_->getSize();
 }
 
-inline auto CategoricalColumn::values() const {
-    auto transform = [&](std::uint32_t idx) -> const std::string& { return lookUpTable_[idx]; };
-
-    return util::as_range(util::makeTransformIterator(transform, begin()),
-                          util::makeTransformIterator(transform, end()));
+inline auto CategoricalColumn::begin() const {
+    return util::makeTransformIterator(transform(),
+                                       buffer_->getRAMRepresentation()->getDataContainer().begin());
 }
+
+inline auto CategoricalColumn::end() const {
+    return util::makeTransformIterator(transform(),
+                                       buffer_->getRAMRepresentation()->getDataContainer().end());
+}
+
+inline auto CategoricalColumn::values() const { return util::as_range(begin(), end()); }
 
 #endif
 

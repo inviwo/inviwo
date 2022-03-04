@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/exception.h>
 
 #include <unordered_map>
 
@@ -53,16 +54,62 @@ IndexColumn* IndexColumn::clone(const std::vector<std::uint32_t>& rowSelection) 
 ColumnType IndexColumn::getColumnType() const { return ColumnType::Index; }
 
 CategoricalColumn::CategoricalColumn(std::string_view header,
-                                     const std::vector<std::string>& values)
-    : TemplateColumn<std::uint32_t>(header) {
+                                     const std::vector<std::string>& values, Unit unit,
+                                     std::optional<dvec2> range)
+    : header_{header}
+    , unit_{unit}
+    , range_{range}
+    , buffer_{std::make_shared<Buffer<std::uint32_t>>(0)} {
     append(values);
 }
 
-CategoricalColumn::CategoricalColumn(const CategoricalColumn& rhs,
-                                     const std::vector<std::uint32_t>& rowSelection)
-    : TemplateColumn<std::uint32_t>(rhs, rowSelection)
+CategoricalColumn::CategoricalColumn(const CategoricalColumn& rhs)
+    : header_{rhs.header_}
+    , unit_{rhs.unit_}
+    , range_{rhs.range_}
+    , buffer_{std::shared_ptr<Buffer<std::uint32_t>>(rhs.buffer_->clone())}
     , lookUpTable_{rhs.lookUpTable_}
     , lookupMap_{rhs.lookupMap_} {}
+
+CategoricalColumn::CategoricalColumn(const CategoricalColumn& rhs,
+                                     const std::vector<std::uint32_t>& rowSelection)
+    : header_{rhs.header_}
+    , unit_{rhs.unit_}
+    , range_{rhs.range_}
+    , buffer_{std::make_shared<Buffer<std::uint32_t>>(rowSelection.size())}
+    , lookUpTable_{rhs.lookUpTable_}
+    , lookupMap_{rhs.lookupMap_} {
+
+    const auto& src = rhs.buffer_->getRAMRepresentation()->getDataContainer();
+    auto& dst = buffer_->getEditableRAMRepresentation()->getDataContainer();
+    for (size_t i = 0; i < rowSelection.size(); ++i) {
+        dst[i] = src[rowSelection[i]];
+    }
+}
+
+CategoricalColumn& CategoricalColumn::operator=(const CategoricalColumn& rhs) {
+    if (this != &rhs) {
+        header_ = rhs.getHeader();
+        unit_ = rhs.unit_;
+        range_ = rhs.range_;
+        buffer_ = std::shared_ptr<Buffer<std::uint32_t>>(rhs.buffer_->clone());
+        lookUpTable_ = rhs.lookUpTable_;
+        lookupMap_ = rhs.lookupMap_;
+    }
+    return *this;
+}
+
+CategoricalColumn& CategoricalColumn::operator=(CategoricalColumn&& rhs) {
+    if (this != &rhs) {
+        header_ = std::move(rhs.header_);
+        unit_ = rhs.unit_;
+        range_ = rhs.range_;
+        buffer_ = std::move(rhs.buffer_);
+        lookUpTable_ = std::move(rhs.lookUpTable_);
+        lookupMap_ = std::move(rhs.lookupMap_);
+    }
+    return *this;
+}
 
 CategoricalColumn* CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
 
@@ -72,33 +119,88 @@ CategoricalColumn* CategoricalColumn::clone(const std::vector<std::uint32_t>& ro
 
 ColumnType CategoricalColumn::getColumnType() const { return ColumnType::Categorical; }
 
-std::string CategoricalColumn::getAsString(size_t idx) const {
-    auto index = getTypedBuffer()->getRAMRepresentation()->getDataContainer()[idx];
-    return lookUpTable_[index];
+const std::string& CategoricalColumn::getHeader() const { return header_; }
+
+void CategoricalColumn::setHeader(std::string_view header) { header_ = header; }
+
+Unit CategoricalColumn::getUnit() const { return unit_; }
+
+void CategoricalColumn::setUnit(Unit unit) { unit_ = unit; }
+
+void CategoricalColumn::setCustomRange(std::optional<dvec2> range) { range_ = range; }
+
+std::optional<dvec2> CategoricalColumn::getCustomRange() const { return range_; }
+
+dvec2 CategoricalColumn::getDataRange() const {
+    const auto& cont = buffer_->getRAMRepresentation()->getDataContainer();
+    auto&& [minIt, maxIt] = std::minmax_element(cont.begin(), cont.end());
+    return {*minIt, *maxIt};
 }
 
-std::shared_ptr<DataPointBase> CategoricalColumn::get(size_t idx, bool getStringsAsStrings) const {
-    if (getStringsAsStrings) {
-        return std::make_shared<DataPoint<std::string>>(getAsString(idx));
+dvec2 CategoricalColumn::getRange() const {
+    if (range_) {
+        return *range_;
     } else {
-        return TemplateColumn<std::uint32_t>::get(idx, getStringsAsStrings);
+        return getDataRange();
     }
 }
 
-void CategoricalColumn::set(size_t idx, const std::string& str) {
+size_t CategoricalColumn::getSize() const { return buffer_->getSize(); }
+
+void CategoricalColumn::set(size_t idx, std::string_view str) {
     auto id = addOrGetID(str);
-    getTypedBuffer()->getEditableRAMRepresentation()->set(idx, id);
+    buffer_->getEditableRAMRepresentation()->set(idx, id);
+}
+
+void CategoricalColumn::set(size_t idx, std::uint32_t id) {
+    if (id >= lookUpTable_.size()) {
+        throw RangeException(IVW_CONTEXT, "Invalid categorical index: {}", id);
+    }
+    buffer_->getEditableRAMRepresentation()->set(idx, id);
+}
+
+const std::string& CategoricalColumn::get(size_t idx) const { return lookUpTable_[getId(idx)]; }
+
+std::uint32_t CategoricalColumn::getId(size_t idx) const {
+    return buffer_->getRAMRepresentation()->get(idx);
+}
+
+double CategoricalColumn::getAsDouble(size_t idx) const {
+    return util::glm_convert<double>(getId(idx));
+}
+
+dvec2 CategoricalColumn::getAsDVec2(size_t idx) const {
+    return util::glm_convert<dvec2>(getId(idx));
+}
+
+dvec3 CategoricalColumn::getAsDVec3(size_t idx) const {
+    return util::glm_convert<dvec3>(getId(idx));
+}
+
+dvec4 CategoricalColumn::getAsDVec4(size_t idx) const {
+    return util::glm_convert<dvec4>(getId(idx));
+}
+
+std::string CategoricalColumn::getAsString(size_t idx) const { return get(idx); }
+
+std::shared_ptr<DataPointBase> CategoricalColumn::get(size_t idx, bool getStringsAsStrings) const {
+    if (getStringsAsStrings) {
+        return std::make_shared<DataPoint<std::string>>(get(idx));
+    } else {
+        return std::make_shared<DataPoint<std::uint32_t>>(getId(idx));
+    }
 }
 
 std::vector<std::string> CategoricalColumn::getValues() const {
-    const auto& data = getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+    const auto& data = buffer_->getRAMRepresentation()->getDataContainer();
     return util::transform(data, [&](auto idx) { return lookUpTable_[idx]; });
 }
 
 void CategoricalColumn::add(std::string_view value) {
     auto id = addOrGetID(value);
-    getTypedBuffer()->getEditableRAMRepresentation()->add(id);
+    buffer_->getEditableRAMRepresentation()->add(id);
 }
+
 CategoricalColumn::AddMany CategoricalColumn::addMany() {
     auto rep = buffer_->getEditableRAMRepresentation();
     return AddMany{this, rep};
@@ -110,7 +212,7 @@ void CategoricalColumn::append(const Column& col) {
     if (auto srccol = dynamic_cast<const CategoricalColumn*>(&col)) {
         auto& values = buffer_->getEditableRAMRepresentation()->getDataContainer();
 
-        for (auto idx : srccol->getTypedBuffer()->getRAMRepresentation()->getDataContainer()) {
+        for (auto idx : srccol->buffer_->getRAMRepresentation()->getDataContainer()) {
             const auto& value = srccol->lookUpTable_[idx];
             values.push_back(addOrGetID(value));
         }
@@ -124,6 +226,7 @@ void CategoricalColumn::append(const std::vector<std::string>& data) {
     if (data.empty()) return;
 
     auto& values = buffer_->getEditableRAMRepresentation()->getDataContainer();
+    values.reserve(values.size() + data.size());
     for (const auto& elem : data) {
         values.push_back(addOrGetID(elem));
     }
@@ -140,6 +243,16 @@ glm::uint32_t CategoricalColumn::addOrGetID(std::string_view str) {
         lookupMap_.emplace(str, ind);
         return ind;
     }
+}
+
+std::shared_ptr<BufferBase> CategoricalColumn::getBuffer() { return buffer_; }
+
+std::shared_ptr<const BufferBase> CategoricalColumn::getBuffer() const { return buffer_; }
+
+std::shared_ptr<Buffer<std::uint32_t>> CategoricalColumn::getTypedBuffer() { return buffer_; }
+
+std::shared_ptr<const Buffer<std::uint32_t>> CategoricalColumn::getTypedBuffer() const {
+    return buffer_;
 }
 
 }  // namespace inviwo

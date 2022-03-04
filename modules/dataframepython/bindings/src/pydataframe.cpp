@@ -157,26 +157,28 @@ void exposeDataFrame(pybind11::module& m) {
     util::for_each_type<Scalars>{}(DataPointReg{}, m);
     util::for_each_type<Scalars>{}(TemplateColumnReg{}, m);
 
-    py::class_<CategoricalColumn, TemplateColumn<std::uint32_t>,
-               std::shared_ptr<CategoricalColumn>>(m, "CategoricalColumn")
+    py::class_<CategoricalColumn, Column, std::shared_ptr<CategoricalColumn>>(m,
+                                                                              "CategoricalColumn")
         .def(py::init<std::string_view>())
         .def_property_readonly("categories", &CategoricalColumn::getCategories,
                                py::return_value_policy::copy)
-        .def("add", [](CategoricalColumn& c, const std::string& str) { c.add(str); })
+        .def("add", &CategoricalColumn::add)
         .def("append", [](CategoricalColumn& c, CategoricalColumn& src) { c.append(src); })
-        .def("set", [](CategoricalColumn& c, size_t idx, const std::uint32_t& v) { c.set(idx, v); })
-        .def("set", py::overload_cast<size_t, const std::string&>(&CategoricalColumn::set))
+        .def("append",
+             py::overload_cast<const std::vector<std::string>&>(&CategoricalColumn::append))
+        .def("set", py::overload_cast<size_t, std::uint32_t>(&CategoricalColumn::set))
+        .def("set", py::overload_cast<size_t, std::string_view>(&CategoricalColumn::set))
+        .def("get", [](const CategoricalColumn& c, size_t idx) { return c.get(idx); })
+        .def("getId", &CategoricalColumn::getId)
+        .def("__repr__",
+             [](CategoricalColumn& c) {
+                 return fmt::format("<CategoricalColumn: '{}', {}, {} categories>", c.getHeader(),
+                                    c.getSize(), c.getCategories().size());
+             })
         .def(
-            "get",
-            [](const CategoricalColumn& c, size_t i, bool asString) {
-                if (i >= c.getSize()) throw py::index_error();
-                return c.get(i, asString);
-            },
-            py::arg("i"), py::arg("asString") = true)
-        .def("__repr__", [](CategoricalColumn& c) {
-            return fmt::format("<CategoricalColumn: '{}', {}, {} categories>", c.getHeader(),
-                               c.getSize(), c.getCategories().size());
-        });
+            "__iter__",
+            [](const CategoricalColumn& c) { return py::make_iterator(c.begin(), c.end()); },
+            py::keep_alive<0, 1>());
 
     py::class_<IndexColumn, TemplateColumn<std::uint32_t>, std::shared_ptr<IndexColumn>>(
         m, "IndexColumn")
