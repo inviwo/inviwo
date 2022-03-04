@@ -40,14 +40,12 @@
 #include <inviwo/core/metadata/metadataowner.h>
 
 #include <modules/base/algorithm/dataminmax.h>
-#include <inviwo/dataframe/datastructures/datapoint.h>
 
 #include <optional>
 #include <iostream>
 
 namespace inviwo {
 
-class DataPointBase;
 class BufferBase;
 
 class IVW_MODULE_DATAFRAME_API InvalidConversion : public Exception {
@@ -133,12 +131,8 @@ public:
     virtual size_t getSize() const = 0;
 
     virtual double getAsDouble(size_t idx) const = 0;
-    virtual dvec2 getAsDVec2(size_t idx) const = 0;
-    virtual dvec3 getAsDVec3(size_t idx) const = 0;
-    virtual dvec4 getAsDVec4(size_t idx) const = 0;
 
     virtual std::string getAsString(size_t idx) const = 0;
-    virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const = 0;
 
 protected:
     Column() = default;
@@ -208,24 +202,8 @@ public:
 
     T get(size_t idx) const;
     T operator[](size_t idx) const;
-    /**
-     * \brief Returns the data value for the given index.
-     *
-     * @param idx    index
-     * @param getStringsAsStrings   if true, strings will be returned for categorical values
-     *           instead of their internal representation. This will not affect other column types.
-     *
-     * \see CategoricalColumn
-     */
-    virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const override;
 
     virtual double getAsDouble(size_t idx) const override;
-
-    virtual dvec2 getAsDVec2(size_t idx) const override;
-
-    virtual dvec3 getAsDVec3(size_t idx) const override;
-
-    virtual dvec4 getAsDVec4(size_t idx) const override;
 
     void setBuffer(std::shared_ptr<Buffer<T>> buffer);
 
@@ -335,24 +313,9 @@ public:
      */
     std::uint32_t getId(size_t idx) const;
     virtual double getAsDouble(size_t idx) const override;
-    virtual dvec2 getAsDVec2(size_t idx) const override;
-    virtual dvec3 getAsDVec3(size_t idx) const override;
-    virtual dvec4 getAsDVec4(size_t idx) const override;
     ///@}
 
     virtual std::string getAsString(size_t idx) const override;
-
-    /**
-     * \brief Returns either the categorical value, that is a number representation, or
-     * the actual string for the given index.
-     *
-     * @param idx    index
-     * @param getStringsAsStrings   if true, a string will be returned instead of the
-     *             internal representation. This will not affect other column types.
-     *
-     * \see TemplateColumn
-     */
-    virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const override;
 
     virtual void add(std::string_view value) override;
 
@@ -679,24 +642,6 @@ double TemplateColumn<T>::getAsDouble(size_t idx) const {
 }
 
 template <typename T>
-dvec2 TemplateColumn<T>::getAsDVec2(size_t idx) const {
-    auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
-    return util::glm_convert<dvec2>(val);
-}
-
-template <typename T>
-dvec3 TemplateColumn<T>::getAsDVec3(size_t idx) const {
-    auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
-    return util::glm_convert<dvec3>(val);
-}
-
-template <typename T>
-dvec4 TemplateColumn<T>::getAsDVec4(size_t idx) const {
-    auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
-    return util::glm_convert<dvec4>(val);
-}
-
-template <typename T>
 void TemplateColumn<T>::setBuffer(std::shared_ptr<Buffer<T>> buffer) {
     buffer_ = buffer;
 }
@@ -706,11 +651,6 @@ std::string TemplateColumn<T>::getAsString(size_t idx) const {
     std::ostringstream ss;
     ss << buffer_->getRAMRepresentation()->get(idx);
     return ss.str();
-}
-
-template <typename T>
-std::shared_ptr<DataPointBase> TemplateColumn<T>::get(size_t idx, bool) const {
-    return std::make_shared<DataPoint<T>>(buffer_->getRAMRepresentation()->get(idx));
 }
 
 template <typename T>

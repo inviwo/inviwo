@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/util/dataframeutil.h>
@@ -150,40 +149,22 @@ TEST(DataFrameTests, RowAccess) {
 
     DataFrame dataframe;
     dataframe.addColumnFromBuffer("FloatCol", buffer);
-    auto col = dataframe.addColumn<int>("IntCol", 3);
-    col->set(0, 4);
-    col->set(1, 5);
-    col->set(2, 6);
+    dataframe.addColumn<int>("IntCol", std::vector<int>{4, 5, 6});
     dataframe.updateIndexBuffer();
 
-    const size_t numCols = dataframe.getNumberOfColumns();
+    EXPECT_EQ(3, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
     ASSERT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
-
-    auto rowValues = dataframe.getDataItem(rowIndex);
-    EXPECT_EQ(numCols, rowValues.size()) << "DataFrame::DataItem size incorrect";
 
     auto indexcol = dataframe.getIndexColumn();
     auto floatcol = std::dynamic_pointer_cast<TemplateColumn<float>>(dataframe.getColumn(1));
     auto intcol = std::dynamic_pointer_cast<const TemplateColumn<int>>(dataframe.getColumn(2));
 
-    ASSERT_TRUE(floatcol) << "column not found";
-    ASSERT_TRUE(intcol) << "column not found";
+    ASSERT_TRUE(floatcol) << "Column not found";
+    ASSERT_TRUE(intcol) << "Column not found";
 
-    {
-        uint32_t retval = std::static_pointer_cast<DataPoint<uint32_t>>(rowValues[0])->getData();
-        const uint32_t expected = indexcol->get(rowIndex);
-        EXPECT_EQ(expected, retval);
-    }
-    {
-        float retval = std::static_pointer_cast<DataPoint<float>>(rowValues[1])->getData();
-        const float expected = floatcol->get(rowIndex);
-        EXPECT_EQ(expected, retval);
-    }
-    {
-        int retval = std::static_pointer_cast<DataPoint<int>>(rowValues[2])->getData();
-        const int expected = intcol->get(rowIndex);
-        EXPECT_EQ(expected, retval);
-    }
+    EXPECT_EQ(rowIndex, indexcol->get(rowIndex)) << "Incorrect row index";
+    EXPECT_EQ(2.0f, floatcol->get(rowIndex));
+    EXPECT_EQ(5, intcol->get(rowIndex));
 }
 
 TEST(DataFrameFilter, NoFilter) {

@@ -169,27 +169,7 @@ double CategoricalColumn::getAsDouble(size_t idx) const {
     return util::glm_convert<double>(getId(idx));
 }
 
-dvec2 CategoricalColumn::getAsDVec2(size_t idx) const {
-    return util::glm_convert<dvec2>(getId(idx));
-}
-
-dvec3 CategoricalColumn::getAsDVec3(size_t idx) const {
-    return util::glm_convert<dvec3>(getId(idx));
-}
-
-dvec4 CategoricalColumn::getAsDVec4(size_t idx) const {
-    return util::glm_convert<dvec4>(getId(idx));
-}
-
 std::string CategoricalColumn::getAsString(size_t idx) const { return get(idx); }
-
-std::shared_ptr<DataPointBase> CategoricalColumn::get(size_t idx, bool getStringsAsStrings) const {
-    if (getStringsAsStrings) {
-        return std::make_shared<DataPoint<std::string>>(get(idx));
-    } else {
-        return std::make_shared<DataPoint<std::uint32_t>>(getId(idx));
-    }
-}
 
 std::vector<std::string> CategoricalColumn::getValues() const {
     const auto& data = buffer_->getRAMRepresentation()->getDataContainer();

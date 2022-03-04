@@ -9,7 +9,6 @@ set(HEADER_FILES
     include/inviwo/dataframe/dataframemoduledefine.h
     include/inviwo/dataframe/datastructures/column.h
     include/inviwo/dataframe/datastructures/dataframe.h
-    include/inviwo/dataframe/datastructures/datapoint.h
     include/inviwo/dataframe/io/csvreader.h
     include/inviwo/dataframe/io/csvwriter.h
     include/inviwo/dataframe/io/json/dataframepropertyjsonconverter.h

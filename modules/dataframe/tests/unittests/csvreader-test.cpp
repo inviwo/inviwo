@@ -127,11 +127,11 @@ TEST(CSVdata, emptyFields) {
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
 
-    auto value = dataframe->getColumn(3)->get(1, true)->toString();
+    auto value = dataframe->getColumn(3)->getAsString(1);
     EXPECT_EQ("", value) << "empty field at end of row";
-    value = dataframe->getColumn(1)->get(2, false)->toString();
+    value = dataframe->getColumn(1)->getAsString(2);
     EXPECT_EQ("0", value) << "empty numeric field at begin of row";
-    value = dataframe->getColumn(2)->get(2, true)->toString();
+    value = dataframe->getColumn(2)->getAsString(2);
     EXPECT_EQ("", value) << "empty field in middle of row";
 }
 
@@ -212,7 +212,7 @@ TEST(CSVdata, byteOrderMark) {
 
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto value = dataframe->getColumn(1)->get(0, true)->toString();
+    auto value = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("1", value) << "Column 1";
 }
 
@@ -270,14 +270,14 @@ TEST(CSVdelimiter, comma) {
     auto dataframe = reader.readData(ssComma);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    EXPECT_EQ("a", dataframe->getColumn(1)->get(0, true)->toString());
-    EXPECT_EQ("b", dataframe->getColumn(2)->get(0, true)->toString());
-    EXPECT_EQ("c", dataframe->getColumn(3)->get(0, true)->toString());
+    EXPECT_EQ("a", dataframe->getColumn(1)->getAsString(0));
+    EXPECT_EQ("b", dataframe->getColumn(2)->getAsString(0));
+    EXPECT_EQ("c", dataframe->getColumn(3)->getAsString(0));
 
     dataframe = reader.readData(ssSemicolon);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto value = dataframe->getColumn(1)->get(0, true)->toString();
+    auto value = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("a;b;c", value);
 }
 
@@ -293,14 +293,14 @@ TEST(CSVdelimiter, semicolon) {
     auto dataframe = reader.readData(ssSemicolon);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    EXPECT_EQ("a", dataframe->getColumn(1)->get(0, true)->toString());
-    EXPECT_EQ("b", dataframe->getColumn(2)->get(0, true)->toString());
-    EXPECT_EQ("c", dataframe->getColumn(3)->get(0, true)->toString());
+    EXPECT_EQ("a", dataframe->getColumn(1)->getAsString(0));
+    EXPECT_EQ("b", dataframe->getColumn(2)->getAsString(0));
+    EXPECT_EQ("c", dataframe->getColumn(3)->getAsString(0));
 
     dataframe = reader.readData(ssComma);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto value = dataframe->getColumn(1)->get(0, true)->toString();
+    auto value = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("a,b,c", value);
 }
 
@@ -316,17 +316,17 @@ TEST(CSVdelimiter, multiple) {
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(7, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    EXPECT_EQ("a", dataframe->getColumn(1)->get(0, true)->toString());
-    EXPECT_EQ("b", dataframe->getColumn(2)->get(0, true)->toString());
-    EXPECT_EQ("3", dataframe->getColumn(3)->get(0, false)->toString());
-    EXPECT_EQ("4", dataframe->getColumn(4)->get(0, false)->toString());
-    EXPECT_EQ("5", dataframe->getColumn(5)->get(0, false)->toString());
-    EXPECT_EQ("6", dataframe->getColumn(6)->get(0, false)->toString());
+    EXPECT_EQ("a", dataframe->getColumn(1)->getAsString(0));
+    EXPECT_EQ("b", dataframe->getColumn(2)->getAsString(0));
+    EXPECT_EQ("3", dataframe->getColumn(3)->getAsString(0));
+    EXPECT_EQ("4", dataframe->getColumn(4)->getAsString(0));
+    EXPECT_EQ("5", dataframe->getColumn(5)->getAsString(0));
+    EXPECT_EQ("6", dataframe->getColumn(6)->getAsString(0));
 
     dataframe = reader.readData(ssSemicolon);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    EXPECT_EQ("a;b;c", dataframe->getColumn(1)->get(0, true)->toString());
+    EXPECT_EQ("a;b;c", dataframe->getColumn(1)->getAsString(0));
 }
 
 TEST(CSVquotes, singlequotes) {
@@ -339,11 +339,11 @@ TEST(CSVquotes, singlequotes) {
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto col1 = dataframe->getColumn(1)->get(0, true)->toString();
+    auto col1 = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("\"first quote\"", col1);
-    auto col2 = dataframe->getColumn(2)->get(0, true)->toString();
+    auto col2 = dataframe->getColumn(2)->getAsString(0);
     EXPECT_EQ("not quoted", col2);
-    auto col3 = dataframe->getColumn(3)->get(0, true)->toString();
+    auto col3 = dataframe->getColumn(3)->getAsString(0);
     EXPECT_EQ("\"b\"", col3);
 }
 
@@ -356,11 +356,11 @@ TEST(CSVquotes, stripSingleQuotes) {
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto col1 = dataframe->getColumn(1)->get(0, true)->toString();
+    auto col1 = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("first quote", col1);
-    auto col2 = dataframe->getColumn(2)->get(0, true)->toString();
+    auto col2 = dataframe->getColumn(2)->getAsString(0);
     EXPECT_EQ("not quoted", col2);
-    auto col3 = dataframe->getColumn(3)->get(0, true)->toString();
+    auto col3 = dataframe->getColumn(3)->getAsString(0);
     EXPECT_EQ("b", col3);
 }
 
@@ -435,11 +435,11 @@ TEST(CSVquotes, multiline) {
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto value = dataframe->getColumn(1)->get(0, true)->toString();
+    auto value = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("\"multiline \n quote\"", value) << "Column 1";
-    value = dataframe->getColumn(2)->get(0, true)->toString();
+    value = dataframe->getColumn(2)->getAsString(0);
     EXPECT_EQ("2", value) << "Column 2";
-    value = dataframe->getColumn(3)->get(0, true)->toString();
+    value = dataframe->getColumn(3)->getAsString(0);
     EXPECT_EQ("3", value) << "Column 3";
 }
 
@@ -454,11 +454,11 @@ TEST(CSVquotes, stripMultiline) {
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto value = dataframe->getColumn(1)->get(0, true)->toString();
+    auto value = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("multiline \n quote", value) << "Column 1";
-    value = dataframe->getColumn(2)->get(0, true)->toString();
+    value = dataframe->getColumn(2)->getAsString(0);
     EXPECT_EQ("2", value) << "Column 2";
-    value = dataframe->getColumn(3)->get(0, true)->toString();
+    value = dataframe->getColumn(3)->getAsString(0);
     EXPECT_EQ("3", value) << "Column 3";
 }
 
@@ -521,8 +521,8 @@ TEST(CSVFilters, comments) {
     // columns will use first data row as header
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
-    EXPECT_EQ("1", dataframe->getColumn(1)->get(0, false)->toString());
-    EXPECT_EQ("7", dataframe->getColumn(1)->get(1, false)->toString());
+    EXPECT_EQ("1", dataframe->getColumn(1)->getAsString(0));
+    EXPECT_EQ("7", dataframe->getColumn(1)->getAsString(1));
 }
 
 TEST(CSVFilters, commentsBeforeHeaders) {
@@ -541,7 +541,7 @@ TEST(CSVFilters, commentsBeforeHeaders) {
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
     EXPECT_EQ("1", dataframe->getColumn(1)->getHeader());
-    EXPECT_EQ("7", dataframe->getColumn(1)->get(0, false)->toString());
+    EXPECT_EQ("7", dataframe->getColumn(1)->getAsString(0));
 }
 
 TEST(CSVFilters, keepLines) {
@@ -559,8 +559,8 @@ TEST(CSVFilters, keepLines) {
     // columns will use first data row as header
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
-    EXPECT_EQ("1", dataframe->getColumn(1)->get(0, false)->toString());
-    EXPECT_EQ("7", dataframe->getColumn(1)->get(1, false)->toString());
+    EXPECT_EQ("1", dataframe->getColumn(1)->getAsString(0));
+    EXPECT_EQ("7", dataframe->getColumn(1)->getAsString(1));
 }
 TEST(CSVFilters, emptyRows) {
     // test for empty rows in between
@@ -608,8 +608,8 @@ TEST(CSVItemFilters, stringMatchEqual) {
     ASSERT_EQ(3, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
-    EXPECT_EQ("a", dataframe->getColumn(1)->get(0, true)->toString());
-    EXPECT_EQ("a", dataframe->getColumn(1)->get(1, true)->toString());
+    EXPECT_EQ("a", dataframe->getColumn(1)->getAsString(0));
+    EXPECT_EQ("a", dataframe->getColumn(1)->getAsString(1));
 
     const std::vector<int> expected = {1, 4};
 
@@ -632,8 +632,8 @@ TEST(CSVItemFilters, stringMatchRegex) {
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
-    EXPECT_EQ("apple", dataframe->getColumn(1)->get(0, true)->toString());
-    EXPECT_EQ("apple", dataframe->getColumn(1)->get(1, true)->toString());
+    EXPECT_EQ("apple", dataframe->getColumn(1)->getAsString(0));
+    EXPECT_EQ("apple", dataframe->getColumn(1)->getAsString(1));
 }
 
 TEST(CSVItemFilters, stringMatchPartialRegex) {
@@ -651,9 +651,9 @@ TEST(CSVItemFilters, stringMatchPartialRegex) {
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
 
-    EXPECT_EQ("apple", dataframe->getColumn(1)->get(0, true)->toString());
-    EXPECT_EQ("apples", dataframe->getColumn(1)->get(1, true)->toString());
-    EXPECT_EQ("apple", dataframe->getColumn(1)->get(2, true)->toString());
+    EXPECT_EQ("apple", dataframe->getColumn(1)->getAsString(0));
+    EXPECT_EQ("apples", dataframe->getColumn(1)->getAsString(1));
+    EXPECT_EQ("apple", dataframe->getColumn(1)->getAsString(2));
 }
 
 TEST(CSVItemFilters, intMatch) {

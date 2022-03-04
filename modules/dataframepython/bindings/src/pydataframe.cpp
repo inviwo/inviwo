@@ -38,7 +38,6 @@
 
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/dataframe/util/dataframeutil.h>
 
 #include <inviwo/core/util/defaultvalues.h>
@@ -79,20 +78,6 @@ struct DataFrameAddColumnReg {
     }
 };
 
-struct DataPointReg {
-    template <typename T>
-    auto operator()(pybind11::module& m) {
-        using D = DataPoint<T>;
-        auto classname = Defaultvalues<T>::getName() + "DataPoint";
-
-        py::class_<D, DataPointBase, std::shared_ptr<D>> data(m, classname.c_str());
-        data.def_property_readonly("data", &D::getData)
-            .def_property_readonly("str", &D::toString)
-            .def("__repr__",
-                 [classname](D& p) { return fmt::format("<{}: '{}'>", classname, p.toString()); });
-    }
-};
-
 struct TemplateColumnReg {
     template <typename T>
     auto operator()(pybind11::module& m) {
@@ -114,12 +99,12 @@ struct TemplateColumnReg {
                 },
                 py::arg("i"))
             .def(
-                "get",
-                [](const C& c, size_t i, bool asString) {
+                "getAsString",
+                [](const C& c, size_t i) {
                     if (i >= c.getSize()) throw py::index_error();
-                    return c.get(i, asString);
+                    return c.getAsString(i);
                 },
-                py::arg("i"), py::arg("asString"))
+                py::arg("i"))
             .def("__repr__", [classname](C& c) {
                 return fmt::format("<{}: '{}', {}, {}>", classname, c.getHeader(), c.getSize(),
                                    c.getBuffer()->getDataFormat()->getString());
@@ -130,10 +115,6 @@ struct TemplateColumnReg {
 }  // namespace
 
 void exposeDataFrame(pybind11::module& m) {
-    py::class_<DataPointBase, std::shared_ptr<DataPointBase>>(m, "DataPointBase")
-        .def("__repr__",
-             [](DataPointBase& p) { return fmt::format("<DataPoint: '{}'>", p.toString()); });
-
     py::enum_<ColumnType>(m, "ColumnType")
         .value("Index", ColumnType::Index)
         .value("Ordinal", ColumnType::Ordinal)
@@ -154,7 +135,6 @@ void exposeDataFrame(pybind11::module& m) {
         });
 
     using Scalars = std::tuple<float, double, int, glm::i64, size_t, std::uint32_t>;
-    util::for_each_type<Scalars>{}(DataPointReg{}, m);
     util::for_each_type<Scalars>{}(TemplateColumnReg{}, m);
 
     py::class_<CategoricalColumn, Column, std::shared_ptr<CategoricalColumn>>(m,
@@ -168,7 +148,7 @@ void exposeDataFrame(pybind11::module& m) {
              py::overload_cast<const std::vector<std::string>&>(&CategoricalColumn::append))
         .def("set", py::overload_cast<size_t, std::uint32_t>(&CategoricalColumn::set))
         .def("set", py::overload_cast<size_t, std::string_view>(&CategoricalColumn::set))
-        .def("get", [](const CategoricalColumn& c, size_t idx) { return c.get(idx); })
+        .def("get", &CategoricalColumn::get)
         .def("getId", &CategoricalColumn::getId)
         .def("__repr__",
              [](CategoricalColumn& c) {
@@ -203,7 +183,6 @@ void exposeDataFrame(pybind11::module& m) {
              py::overload_cast<std::string_view, const std::vector<std::string>&>(
                  &DataFrame::addCategoricalColumn),
              py::arg("header"), py::arg("values"))
-        .def("getRow", &DataFrame::getDataItem, py::arg("index"), py::arg("asString") = false)
 
         .def("updateIndex", [](DataFrame& d) { d.updateIndexBuffer(); })
 

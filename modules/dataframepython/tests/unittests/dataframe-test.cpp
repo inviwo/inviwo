@@ -37,7 +37,6 @@
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
 
-#include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
@@ -235,17 +234,13 @@ d.updateIndex()
     py::eval<py::eval_statements>(source, dict);
 
     auto dataframe = dict["d"].cast<DataFrame>();
-    const size_t numCols = dataframe.getNumberOfColumns();
     ASSERT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
+    ASSERT_EQ(3, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
 
-    py::eval<py::eval_single_statement>(fmt::format("row = d.getRow({})", rowIndex), dict);
+    py::eval<py::eval_single_statement>(fmt::format("value = col.get({})", rowIndex), dict);
 
-    auto pyRow = dict["row"];
-    int rowLen = py::eval<py::eval_expr>("len(row)", dict).cast<int>();
-    ASSERT_EQ(numCols, rowLen) << "list returned by getRow() has incorrect length";
-
-    auto rowValues = dict["row"].cast<DataFrame::DataItem>();
-    EXPECT_EQ(numCols, rowValues.size()) << "DataFrame::DataItem size incorrect";
+    auto pyValue = dict["value"].cast<int>();
+    EXPECT_EQ(5, pyValue) << "Wrong data value in int column";
 
     auto indexcol = dataframe.getIndexColumn();
     auto floatcol = std::dynamic_pointer_cast<TemplateColumn<float>>(dataframe.getColumn(1));
@@ -254,21 +249,9 @@ d.updateIndex()
     ASSERT_TRUE(floatcol) << "column not found";
     ASSERT_TRUE(intcol) << "column not found";
 
-    {
-        uint32_t retval = std::static_pointer_cast<DataPoint<uint32_t>>(rowValues[0])->getData();
-        const uint32_t expected = indexcol->get(rowIndex);
-        EXPECT_EQ(expected, retval);
-    }
-    {
-        float retval = std::static_pointer_cast<DataPoint<float>>(rowValues[1])->getData();
-        const float expected = floatcol->get(rowIndex);
-        EXPECT_EQ(expected, retval);
-    }
-    {
-        int retval = std::static_pointer_cast<DataPoint<int>>(rowValues[2])->getData();
-        const int expected = intcol->get(rowIndex);
-        EXPECT_EQ(expected, retval);
-    }
+    EXPECT_EQ(rowIndex, indexcol->get(rowIndex)) << "Incorrect row index";
+    EXPECT_EQ(2.0f, floatcol->get(rowIndex));
+    EXPECT_EQ(5, intcol->get(rowIndex));
 }
 
 }  // namespace inviwo
