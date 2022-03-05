@@ -162,7 +162,7 @@ protected:
 
 private:
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
-    
+
     /*
      * Access the WelcomeWidget using this function as it does delayed initialization, i.e., creates
      * it if non-existing.
