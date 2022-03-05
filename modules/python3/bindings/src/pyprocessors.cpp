@@ -31,6 +31,7 @@
 
 #include <inviwopy/inviwopy.h>
 #include <inviwopy/vectoridentifierwrapper.h>
+#include <inviwopy/pyproperties.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
@@ -218,7 +219,7 @@ void exposeProcessors(pybind11::module& m) {
     using OutportVecWrapper = VectorIdentifierWrapper<std::vector<Outport*>>;
     exposeVectorIdentifierWrapper<std::vector<Outport*>>(m, "OutportVectorWrapper");
 
-    py::class_<Processor, ProcessorTrampoline, PropertyOwner, ProcessorPtr<Processor>>(
+    py::class_<Processor, ProcessorTrampoline, std::shared_ptr<Processor>>(
         m, "Processor", py::dynamic_attr{}, py::multiple_inheritance{})
         .def(py::init<const std::string&, const std::string&>())
         .def("__repr__", &Processor::getIdentifier)
@@ -288,7 +289,60 @@ void exposeProcessors(pybind11::module& m) {
             [](Processor* p) {
                 return p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference)
+        // From prop owner. can't inherit here since different holder types.
+        .def(
+            "__getattr__",
+            [](Processor& po, const std::string& key) {
+                if (auto prop = po.getPropertyByIdentifier(key)) {
+                    return prop;
+                } else {
+                    throw py::attribute_error{"PropertyOwner (" + po.getIdentifier() +
+                                              ") does not have a property with identifier: '" +
+                                              key + "'"};
+                }
+            },
+            py::return_value_policy::reference)
+        .def_property_readonly(
+            "properties",
+            [](Processor& po) {
+                return VectorIdentifierWrapper<std::vector<Property*>>(po.getProperties());
+            })
+        .def("getPropertiesRecursive", &Processor::getPropertiesRecursive)
+        .def(
+            "addProperty",
+            [](Processor& po, Property* prop, bool owner) { po.addProperty(prop, owner); },
+            py::arg("prop"), py::arg("owner") = true, py::keep_alive<1, 2>{})
+        .def(
+            "insertProperty",
+            [](Processor& po, size_t index, Property* prop, bool owner) {
+                po.insertProperty(index, prop, owner);
+            },
+            py::arg("index"), py::arg("prop"), py::arg("owner") = true, py::keep_alive<1, 2>{})
+        .def("removeProperty",
+             [](Processor& po, Property* prop) { return po.removeProperty(prop); })
+        .def("removeProperty", [](Processor& po, size_t index) { return po.removeProperty(index); })
+        .def("clear", &Processor::clear)
+        .def("getPropertyByIdentifier", &Processor::getPropertyByIdentifier,
+             py::return_value_policy::reference, py::arg("identifier"),
+             py::arg("recursiveSearch") = false)
+        .def("getPropertyByPath", &Processor::getPropertyByPath, py::return_value_policy::reference)
+        .def("getIdentifier", &Processor::getIdentifier)
+        .def(
+            "getOwner", [](Processor* po) { return po->getOwner(); },
+            py::return_value_policy::reference)
+        .def("empty", &Processor::empty)
+        .def("size", &Processor::size)
+        .def("isValid", &Processor::isValid)
+        .def("setValid", &Processor::setValid)
+        .def("getInvalidationLevel", &Processor::getInvalidationLevel)
+        .def("invalidate", [](Processor* po) { po->invalidate(InvalidationLevel::InvalidOutput); })
+        .def_property_readonly(
+            "processor", [](Processor& p) { return p.getProcessor(); },
+            py::return_value_policy::reference)
+        .def("setAllPropertiesCurrentStateAsDefault",
+             &Processor::setAllPropertiesCurrentStateAsDefault)
+        .def("resetAllPoperties", &Processor::resetAllPoperties);
 
     py::class_<CanvasProcessor, Processor, ProcessorPtr<CanvasProcessor>>(m, "CanvasProcessor")
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)

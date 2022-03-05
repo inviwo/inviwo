@@ -46,7 +46,7 @@ struct ProcessorDelete {
 }  // namespace detail
 
 template <typename P>
-using ProcessorPtr = std::unique_ptr<P, detail::ProcessorDelete<P>>;
+using ProcessorPtr = std::shared_ptr<P>;
 
 void exposeProcessors(pybind11::module& m);
 

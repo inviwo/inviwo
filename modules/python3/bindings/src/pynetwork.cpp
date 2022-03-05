@@ -76,7 +76,9 @@ void exposeNetwork(py::module& m) {
             },
             py::return_value_policy::reference)
         .def("addProcessor",
-             [](ProcessorNetwork* pn, Processor* processor) { pn->addProcessor(processor); })
+             [](ProcessorNetwork* pn, std::shared_ptr<Processor> processor) {
+                 pn->addProcessor(processor);
+             })
         .def("removeProcessor",
              [](ProcessorNetwork* pn, Processor* processor) { pn->removeProcessor(processor); })
 
