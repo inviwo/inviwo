@@ -34,6 +34,7 @@
 #include <inviwopy/inviwopy.h>
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pyimage.h>  // for the opaque swizzlemask
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
 
@@ -50,10 +51,10 @@
 #include <inviwo/core/ports/volumeport.h>
 
 #include <fmt/format.h>
-
+#include <fmt/ostream.h>
 #include <units/units.hpp>
 
-PYBIND11_MAKE_OPAQUE(VolumeSequence)
+PYBIND11_MAKE_OPAQUE(inviwo::VolumeSequence)
 
 namespace inviwo {
 
@@ -62,7 +63,10 @@ void exposeVolume(pybind11::module& m) {
     py::class_<Volume, std::shared_ptr<Volume>>(m, "Volume")
         .def(py::init<size3_t, const DataFormatBase*>())
         .def(py::init<size3_t, const DataFormatBase*, const SwizzleMask&, InterpolationType,
-                      const Wrapping3D&>())
+                      const Wrapping3D&>(),
+             py::arg("size"), py::arg("format"), py::arg("swizzleMask") = swizzlemasks::rgba,
+             py::arg("interpolation") = InterpolationType::Linear,
+             py::arg("wrapping") = wrapping3d::clampAll)
         .def(py::init([](py::array data) { return pyutil::createVolume(data).release(); }))
         .def("clone", [](Volume& self) { return self.clone(); })
         .def_property("modelMatrix", &Volume::getModelMatrix, &Volume::setModelMatrix)

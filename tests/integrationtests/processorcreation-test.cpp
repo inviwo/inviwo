@@ -107,7 +107,7 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     EXPECT_EQ(sizeBefore, network_->getProcessors().size())
         << "Could not remove processor " << GetParam();
 
-    s.reset(); // make sure the processor is deleted.
+    s.reset();  // make sure the processor is deleted.
 
     LGL_ERROR;
 }

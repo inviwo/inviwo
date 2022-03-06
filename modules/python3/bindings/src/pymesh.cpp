@@ -42,6 +42,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 
 #include <fmt/format.h>
 
@@ -89,7 +90,8 @@ void exposeMesh(pybind11::module& m) {
 
     py::class_<Mesh, std::shared_ptr<Mesh>>(m, "Mesh")
         .def(py::init<>())
-        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt"), py::arg("ct"))
+        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt") = DrawType::Points,
+             py::arg("ct") = ConnectivityType::None)
         .def(py::init<Mesh::MeshInfo>(), py::arg("meshInfo"))
         .def_property_readonly("defaultMeshInfo", &Mesh::getDefaultMeshInfo)
 

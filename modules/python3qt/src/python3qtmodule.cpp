@@ -102,6 +102,15 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
             }))
             .def("addProcessorProperties", &PropertyListWidget::addProcessorProperties)
             .def("removeProcessorProperties", &PropertyListWidget::removeProcessorProperties)
+            .def_property("visible", &PropertyListWidget::isVisible,
+                          &PropertyListWidget::setVisible)
+            .def_property(
+                "dimensions", [](const PropertyListWidget& w) { return utilqt::toGLM(w.size()); },
+                [](PropertyListWidget& w, ivec2 dim) { w.resize(dim.x, dim.y); })
+            .def_property(
+                "position", [](const PropertyListWidget& w) { return utilqt::toGLM(w.pos()); },
+                [](PropertyListWidget& w, ivec2 pos) { w.move(pos.x, pos.y); })
+
             .def("removeAndDeleteProcessorProperties",
                  &PropertyListWidget::removeAndDeleteProcessorProperties)
 

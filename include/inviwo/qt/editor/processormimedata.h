@@ -57,9 +57,8 @@ public:
     static const ProcessorMimeData* toProcessorMimeData(const QMimeData* data);
 
 private:
-   std::shared_ptr<Processor> processor_;
-   util::OnScopeExit activateContext_;
+    std::shared_ptr<Processor> processor_;
+    util::OnScopeExit activateContext_;
 };
 
 }  // namespace inviwo
-

@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
@@ -38,6 +39,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
+
+#include <inviwo/core/ports/imageport.h>
 
 #include <inviwopy/inviwopy.h>
 #include <inviwopy/pynetwork.h>
@@ -52,8 +55,6 @@
 #include <warn/pop>
 
 #include <fmt/format.h>
-
-PYBIND11_MAKE_OPAQUE(inviwo::SwizzleMask)
 
 namespace py = pybind11;
 

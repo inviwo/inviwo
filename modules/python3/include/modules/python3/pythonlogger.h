@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHONLOGGER_H
-#define IVW_PYTHONLOGGER_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
@@ -48,5 +47,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYTHONLOGGER_H

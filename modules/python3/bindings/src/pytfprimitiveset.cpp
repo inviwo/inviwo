@@ -131,8 +131,6 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def(py::self == py::self)
         .def(py::self != py::self);
 
-    // py::bind_vector<std::vector<TFPrimitiveData>>(m, " TFPrimitiveDataVector");
-
     py::class_<TFPrimitiveSet>(m, "TFPrimitiveSet")
         .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
                  return new TFPrimitiveSet(values, type);
