@@ -20,6 +20,7 @@ set(HEADER_FILES
     include/modules/python3/pythonprocessorfolderobserver.h
     include/modules/python3/pythonscript.h
     include/modules/python3/pyutils.h
+    include/modules/python3/volumepy.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -39,6 +40,7 @@ set(SOURCE_FILES
     src/pythonprocessorfolderobserver.cpp
     src/pythonscript.cpp
     src/pyutils.cpp
+    src/volumepy.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

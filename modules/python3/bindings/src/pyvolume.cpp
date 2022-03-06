@@ -37,6 +37,7 @@
 #include <inviwopy/pyimage.h>  // for the opaque swizzlemask
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
+#include <modules/python3/volumepy.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -82,6 +83,16 @@ void exposeVolume(pybind11::module& m) {
         .def_property("wrapping", &Volume::getWrapping, &Volume::setWrapping)
         .def_readwrite("dataMap", &Volume::dataMap_)
         .def_readwrite("axes", &Volume::axes)
+        .def("hasRepresentations", &Volume::hasRepresentations)
+        .def("addRepresentation", &Volume::addRepresentation)
+        .def("removeRepresentation", &Volume::removeRepresentation)
+        .def("removeOtherRepresentations", &Volume::removeOtherRepresentations)
+        .def("clearRepresentations", &Volume::clearRepresentations)
+        .def("invalidateAllOther", &Volume::invalidateAllOther)
+        .def("getVolumePyRepresentation",
+             [](Volume& self) { return self.getRepresentation<VolumePy>(); })
+        .def("getEditableVolumePyRepresentation",
+             [](Volume& self) { return self.getEditableRepresentation<VolumePy>(); })
         .def_property(
             "data",
             [&](Volume* volume) -> py::array {
@@ -116,6 +127,32 @@ void exposeVolume(pybind11::module& m) {
                 volume.dataMap_.valueAxis.name, volume.dataMap_.valueAxis.unit,
                 volume.getModelMatrix(), volume.getWorldMatrix());
         });
+
+    py::class_<VolumeRepresentation>(m, "VolumeRepresentation")
+        .def_property("dimensions", &VolumeRepresentation::getDimensions,
+                      &VolumeRepresentation::setDimensions)
+        .def_property("swizzleMask", &VolumeRepresentation::getSwizzleMask,
+                      &VolumeRepresentation::setSwizzleMask)
+        .def_property("interpolation", &VolumeRepresentation::getInterpolation,
+                      &VolumeRepresentation::setInterpolation)
+        .def_property("wrapping", &VolumeRepresentation::getWrapping,
+                      &VolumeRepresentation::setWrapping)
+        .def("isValid", &VolumeRepresentation::isValid)
+        .def("setValid", &VolumeRepresentation::setValid)
+        .def("getOwner", &VolumeRepresentation::getOwner)
+        .def_property_readonly("format", &VolumeRepresentation::getDataFormat);
+
+    py::class_<VolumePy, VolumeRepresentation>(m, "VolumePy")
+        .def(py::init<py::array, const SwizzleMask&, InterpolationType, const Wrapping3D&>(),
+             py::arg("data"), py::arg("swizzleMask") = swizzlemasks::rgba,
+             py::arg("interpolation") = InterpolationType::Linear,
+             py::arg("wrapping") = wrapping3d::clampAll)
+        .def(py::init<size3_t, const DataFormatBase*, const SwizzleMask&, InterpolationType,
+                      const Wrapping3D&>(),
+             py::arg("size"), py::arg("format"), py::arg("swizzleMask") = swizzlemasks::rgba,
+             py::arg("interpolation") = InterpolationType::Linear,
+             py::arg("wrapping") = wrapping3d::clampAll)
+        .def_property_readonly("data", static_cast<py::array& (VolumePy::*)()>(&VolumePy::data));
 
     py::bind_vector<VolumeSequence>(m, "VolumeSequence", py::module_local(false));
 
