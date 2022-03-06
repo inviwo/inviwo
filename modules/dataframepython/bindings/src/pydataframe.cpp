@@ -55,7 +55,7 @@ namespace {
 
 struct DataFrameAddColumnReg {
     template <typename T>
-    auto operator()(py::class_<DataFrame, std::shared_ptr<DataFrame>>& d) {
+    auto operator()(py::class_<DataFrame>& d) {
         auto classname = Defaultvalues<T>::getName();
 
         d.def(
@@ -84,7 +84,7 @@ struct TemplateColumnReg {
         using C = TemplateColumn<T>;
         auto classname = Defaultvalues<T>::getName() + "Column";
 
-        py::class_<C, Column, std::shared_ptr<C>> col(m, classname.c_str());
+        py::class_<C, Column> col(m, classname.c_str());
         col.def_property_readonly("buffer", [](C& c) { return c.getTypedBuffer(); })
             .def(py::init<std::string_view>())
             .def("add", py::overload_cast<const T&>(&C::add))
@@ -124,7 +124,7 @@ void exposeDataFrame(pybind11::module& m) {
         .value("Ordinal", ColumnType::Ordinal)
         .value("Categorical", ColumnType::Categorical);
 
-    py::class_<Column, std::shared_ptr<Column>>(m, "Column")
+    py::class_<Column>(m, "Column")
         .def_property("header", &Column::getHeader, &Column::setHeader)
         .def_property_readonly("buffer", [](Column& self) { return self.getBuffer(); })
         .def_property_readonly("size", &Column::getSize)
@@ -141,8 +141,7 @@ void exposeDataFrame(pybind11::module& m) {
     using Scalars = std::tuple<float, double, int, glm::i64, size_t, std::uint32_t>;
     util::for_each_type<Scalars>{}(TemplateColumnReg{}, m);
 
-    py::class_<CategoricalColumn, Column, std::shared_ptr<CategoricalColumn>>(m,
-                                                                              "CategoricalColumn")
+    py::class_<CategoricalColumn, Column>(m, "CategoricalColumn")
         .def(py::init<std::string_view>())
         .def_property_readonly("categories", &CategoricalColumn::getCategories,
                                py::return_value_policy::copy)
@@ -164,11 +163,10 @@ void exposeDataFrame(pybind11::module& m) {
             [](const CategoricalColumn& c) { return py::make_iterator(c.begin(), c.end()); },
             py::keep_alive<0, 1>());
 
-    py::class_<IndexColumn, TemplateColumn<std::uint32_t>, std::shared_ptr<IndexColumn>>(
-        m, "IndexColumn")
+    py::class_<IndexColumn, TemplateColumn<std::uint32_t>>(m, "IndexColumn")
         .def(py::init<std::string_view>());
 
-    py::class_<DataFrame, std::shared_ptr<DataFrame>> dataframe(m, "DataFrame");
+    py::class_<DataFrame> dataframe(m, "DataFrame");
     dataframe.def(py::init<std::uint32_t>(), py::arg("size") = 0)
         .def_property_readonly("cols", &DataFrame::getNumberOfColumns)
         .def_property_readonly("rows", &DataFrame::getNumberOfRows)

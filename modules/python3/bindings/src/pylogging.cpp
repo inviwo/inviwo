@@ -60,13 +60,13 @@ void exposeLogging(pybind11::module& m) {
         .value("Warn", MessageBreakLevel::Warn)
         .value("Info", MessageBreakLevel::Info);
 
-    py::class_<Logger, std::shared_ptr<Logger>>(m, "Logger")
+    py::class_<Logger>(m, "Logger")
         .def("log", &Logger::log)
         .def("logProcessor", &Logger::logProcessor)
         .def("logNetwork", &Logger::logNetwork)
         .def("logAssertion", &Logger::logAssertion);
 
-    py::class_<LogCentral, Logger, std::shared_ptr<LogCentral>>(m, "LogCentral")
+    py::class_<LogCentral, Logger>(m, "LogCentral")
         .def(py::init([]() {
             auto lc = std::make_unique<LogCentral>();
             if (!LogCentral::isInitialized()) {
@@ -82,11 +82,11 @@ void exposeLogging(pybind11::module& m) {
                       &LogCentral::setMessageBreakLevel)
         .def_static("get", &LogCentral::getPtr, py::return_value_policy::reference);
 
-    py::class_<ConsoleLogger, Logger, std::shared_ptr<ConsoleLogger>>(m, "ConsoleLogger")
+    py::class_<ConsoleLogger, Logger>(m, "ConsoleLogger")
         .def(py::init<>())
         .def("log", &ConsoleLogger::log);
 
-    py::class_<FileLogger, Logger, std::shared_ptr<FileLogger>>(m, "FileLogger")
+    py::class_<FileLogger, Logger>(m, "FileLogger")
         .def(py::init<std::string>())
         .def("log", &FileLogger::log);
 

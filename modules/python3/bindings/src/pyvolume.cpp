@@ -60,8 +60,9 @@ namespace inviwo {
 
 void exposeVolume(pybind11::module& m) {
     namespace py = pybind11;
-    py::class_<Volume, std::shared_ptr<Volume>>(m, "Volume")
-        .def(py::init<size3_t, const DataFormatBase*>())
+
+    py::class_<Volume>(m, "Volume")
+        .def(py::init<std::shared_ptr<VolumeRepresentation>>())
         .def(py::init<size3_t, const DataFormatBase*, const SwizzleMask&, InterpolationType,
                       const Wrapping3D&>(),
              py::arg("size"), py::arg("format"), py::arg("swizzleMask") = swizzlemasks::rgba,

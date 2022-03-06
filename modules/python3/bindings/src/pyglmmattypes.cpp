@@ -188,11 +188,11 @@ void mat(py::module& m, const std::string& prefix, const std::string& name = "ma
     matx<T, 4>(m, prefix, name, postfix);
 }
 
-void exposeGLMMatTypes(py::module& glmModule) {
-    mat<float>(glmModule, "");
-    mat<double>(glmModule, "d");
-    mat<int>(glmModule, "i");
-    mat<unsigned int>(glmModule, "u");
+void exposeGLMMatTypes(py::module& m) {
+    mat<float>(m, "");
+    mat<double>(m, "d");
+    mat<int>(m, "i");
+    mat<unsigned int>(m, "u");
 }
 }  // namespace inviwo
 

@@ -109,7 +109,7 @@ void exposeImage(py::module& m) {
         .value("Repeat", Wrapping::Repeat)
         .value("Mirror", Wrapping::Mirror);
 
-    py::class_<Image, std::shared_ptr<Image>>(m, "Image")
+    py::class_<Image>(m, "Image")
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<std::shared_ptr<Layer>>())
         .def(py::init<std::vector<std::shared_ptr<Layer>>>())
@@ -136,7 +136,7 @@ void exposeImage(py::module& m) {
                             : toString(static_cast<double>(dims.x) / static_cast<double>(dims.y)));
         });
 
-    py::class_<Layer, std::shared_ptr<Layer>>(m, "Layer")
+    py::class_<Layer>(m, "Layer")
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<size2_t, const DataFormatBase*, LayerType, const SwizzleMask&,
                       InterpolationType, const Wrapping2D&>())

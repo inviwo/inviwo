@@ -44,9 +44,6 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-template <typename P, typename... Extra>
-using PyPropertyClass = py::class_<P, Extra..., PropertyPtr<P>>;
-
 void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) {
 
     auto cameraModule = main.def_submodule("camerautil", "Camera utilities");
@@ -103,7 +100,7 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
         py::arg("fitRatio") = 1.05f, py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
         py::arg("updateLookRanges") = camerautil::UpdateLookRanges::No);
 
-    PyPropertyClass<CameraProperty, CompositeProperty>(properties, "CameraProperty")
+    py::class_<CameraProperty, CompositeProperty>(properties, "CameraProperty")
         .def(py::init([](const std::string& identifier, const std::string& displayName, vec3 eye,
                          vec3 center, vec3 lookUp, Inport* inport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {

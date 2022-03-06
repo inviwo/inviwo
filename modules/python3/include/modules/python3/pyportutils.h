@@ -48,18 +48,6 @@
 
 namespace inviwo {
 
-namespace detail {
-template <typename T>
-struct PortDeleter {
-    void operator()(T* p) {
-        if (p && p->getProcessor() == nullptr) delete p;
-    }
-};
-}  // namespace detail
-
-template <typename T>
-using PortPtr = std::unique_ptr<T, detail::PortDeleter<T>>;
-
 namespace util {
 
 template <typename Iter>
@@ -86,24 +74,22 @@ pybind11::class_<util::IterRangeGenerator<Iter>> exposeIterRangeGenerator(pybind
 }
 
 template <typename Port>
-pybind11::class_<Port, Outport, PortPtr<Port>> exposeOutport(pybind11::module& m,
-                                                             const std::string& name) {
+pybind11::class_<Port, Outport> exposeOutport(pybind11::module& m, const std::string& name) {
     namespace py = pybind11;
     using T = typename Port::type;
-    return pybind11::class_<Port, Outport, PortPtr<Port>>(m, (name + "Outport").c_str())
+    return pybind11::class_<Port, Outport>(m, (name + "Outport").c_str())
         .def(py::init<std::string>())
         .def("getData", &Port::getData)
         .def("detatchData", &Port::detachData)
-        .def("setData", static_cast<void (Port::*)(std::shared_ptr<const T>)>(&Port::setData));
+        .def("setData", [](Port* p, std::shared_ptr<const T> data) { p->setData(data); });
 }
 
 template <typename Port>
-pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
-                                                           const std::string& name) {
+pybind11::class_<Port, Inport> exposeInport(pybind11::module& m, const std::string& name) {
 
     namespace py = pybind11;
 
-    pybind11::class_<Port, Inport, PortPtr<Port>> pyInport{m, (name + "Inport").c_str()};
+    pybind11::class_<Port, Inport> pyInport{m, (name + "Inport").c_str()};
 
     exposeIterRangeGenerator<typename Port::const_iterator>(pyInport, "Data");
     exposeIterRangeGenerator<typename Port::const_iterator_port>(pyInport, "OutportAndData");
