@@ -82,21 +82,11 @@ QToolBar
 QToolBar {
     spacing: 0.1875em;
     padding: 0.0625em;
-    border: none;
-    border-bottom: 0.125em solid #2b2b2d;
-    padding-right: 0.5em;
     background-color: #323235;
-}
-QToolBar::handle {
-    background-image: url(:/icons/dense6pattern.png);
-    background-repeat: repeat-xy;
-    background-color: #404042;
-    border: 0.0625em solid #333;
-    width: 0.1875em;
-    margin: 0.0625em;
-    margin-right: 0.0625em;
-    padding: 0.0625em;
-    border-radius: 0.125em;
+    border-top:    none;
+    border-right:  0.06em dashed #707072;
+    border-bottom: 0.125em solid #2b2b2d;
+    border-left:   none;
 }
 /************************ 
 QToolButton

@@ -292,7 +292,7 @@ if(WIN32 AND MSVC)
     endif()
 endif()
 
-if(Python3_FOUND)
+if(Python3_Development_FOUND)
     option(IVW_USE_EXTERNAL_PYBIND11 "Pybind11 is provided externaly" OFF)
     if(NOT IVW_USE_EXTERNAL_PYBIND11)
         add_subdirectory(pybind11)

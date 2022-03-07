@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "cmakeMinimumRequired": { "major": 3, "minor": 19, "patch": 0 },
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
   "configurePresets": [
     {
       "name": "develop",
@@ -31,6 +31,7 @@
       "environment": {
         "VCPKG_OVERLAY_PORTS" : "${sourceDir}/tools/vcpkg"
       },
+      "toolchainFile": "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE" : "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "IVW_CFG_VCPKG_OVERLAYS": "${sourceDir}/tools/vcpkg",
@@ -67,18 +68,16 @@
 
     {
       "name": "msvc-dev",
-      "displayName": "MSVC Development",
-      "description": "MSVC Development configuration",
+      "displayName": "MSVC 2022",
+      "description": "MSVC 2022 Development configuration",
       "generator": "Visual Studio 17 2022",
       "architecture" : "x64",
-      "binaryDir": "${sourceParentDir}/builds/msvc-dev",
-      "inherits" : ["modules", "develop"]
+      "inherits" : ["develop"]
     },
     {
       "name": "msvc-dev-vcpkg",
-      "displayName": "MSVC Development VCPKG",
-      "description": "MSVC Development VCPKG configuration",
-      "binaryDir": "${sourceParentDir}/builds/msvc-dev-vcpkg",
+      "displayName": "MSVC 2022 Using vcpkg",
+      "description": "MSVC 2022 Development using vcpkg configuration",
       "inherits" : ["vcpkg", "msvc-dev"]
     }
   ]

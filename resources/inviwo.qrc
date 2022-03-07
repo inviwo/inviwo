@@ -118,9 +118,8 @@
         <file>svgicons/fullscreen.svg</file>
         <file>svgicons/canvas-hide.svg</file>
 
-        <file>icons/dense6pattern.png</file>
-        <file>icons/python-run.png</file>
-        <file>icons/python.png</file>
+        <file>svgicons/python.svg</file>
+        <file>svgicons/python-mono.svg</file>
 
         <file>inviwo/inviwo-logo.svg</file>
         <file>inviwo/inviwo-logo-light.svg</file>
