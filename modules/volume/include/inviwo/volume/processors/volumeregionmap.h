@@ -64,6 +64,7 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+    static void remap(std::shared_ptr<Volume>& volume, std::vector<unsigned int> src, std::vector<unsigned int> dst);
 
 private:
     DataFrameInport dataFrame_;

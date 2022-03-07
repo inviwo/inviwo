@@ -71,6 +71,8 @@ constexpr auto copyColumn = [](const Column& col, auto& dstContainer, auto assig
             }
         });
 };
+
+
 }
 
 void VolumeRegionMap::process() {
@@ -92,7 +94,15 @@ void VolumeRegionMap::process() {
     // Volume
     auto inVolume = inport_.getData();
     auto newVolume = std::shared_ptr<Volume>(inVolume->clone());
-    auto volRep = newVolume->getEditableRepresentation<VolumeRAM>();
+    remap(newVolume, sourceIndices, destinationIndices);
+
+    outport_.setData(newVolume);
+}
+
+
+void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigned int> src,
+           std::vector<unsigned int> dst) {
+    auto volRep = volume->getEditableRepresentation<VolumeRAM>();
 
     volRep->dispatch<void, dispatching::filter::Scalars>([&](auto volram) {
         using ValueType = util::PrecisionValueType<decltype(volram)>;
@@ -101,16 +111,14 @@ void VolumeRegionMap::process() {
         const auto& dim = volram->getDimensions();
 
         std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
-            for (size_t i = 0; i < sourceIndices.size(); ++i) {
-                if (static_cast<uint32_t>(v) == sourceIndices[i]) {
-                    return static_cast<ValueType>(destinationIndices[i]);
+            for (size_t i = 0; i < src.size(); ++i) {
+                if (static_cast<uint32_t>(v) == src[i]) {
+                    return static_cast<ValueType>(dst[i]);
                 }
             }
             return ValueType{0};
         });
     });
-
-    outport_.setData(newVolume);
 }
 
 }  // namespace inviwo
