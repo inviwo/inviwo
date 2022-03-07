@@ -72,7 +72,6 @@ constexpr auto copyColumn = [](const Column& col, auto& dstContainer, auto assig
         });
 };
 
-
 }
 
 void VolumeRegionMap::process() {
@@ -99,9 +98,8 @@ void VolumeRegionMap::process() {
     outport_.setData(newVolume);
 }
 
-
 void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigned int> src,
-           std::vector<unsigned int> dst) {
+                            std::vector<unsigned int> dst) {
     auto volRep = volume->getEditableRepresentation<VolumeRAM>();
 
     volRep->dispatch<void, dispatching::filter::Scalars>([&](auto volram) {
