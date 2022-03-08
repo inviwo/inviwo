@@ -89,6 +89,10 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
+if(IVW_TEST_BENCHMARKS)
+    add_subdirectory(tests/benchmarks)
+endif()
+
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
