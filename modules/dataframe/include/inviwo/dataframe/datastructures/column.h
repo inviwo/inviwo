@@ -78,7 +78,8 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 /**
- * @brief Pure interface for representing a data column, i.e. a Buffer with a name
+ * @brief Pure interface for representing a data column with a header, optional units, and data
+ * range.
  * @ingroup datastructures
  */
 class IVW_MODULE_DATAFRAME_API Column : public MetaDataOwner {
@@ -248,6 +249,13 @@ public:
     virtual ColumnType getColumnType() const override;
 };
 
+namespace detail {
+inline std::function<const std::string&(std::uint32_t)> categoricalTransform(
+    const std::vector<std::string>& table) {
+    return [&table](std::uint32_t idx) -> const std::string& { return table[idx]; };
+}
+}  // namespace detail
+
 /**
  * \brief Specialized data column representing categorical values, i.e. strings.
  * Categorical values are internally mapped to a number representation.
@@ -265,6 +273,9 @@ class IVW_MODULE_DATAFRAME_API CategoricalColumn : public Column {
 
 public:
     using type = std::uint32_t;
+    using ConstIterator =
+        util::TransformIterator<decltype(detail::categoricalTransform(std::vector<std::string>{})),
+                                std::vector<std::uint32_t>::const_iterator>;
 
     CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {},
                       Unit unit = Unit{}, std::optional<dvec2> range = std::nullopt);
@@ -305,7 +316,13 @@ public:
      */
     void set(size_t idx, std::uint32_t id);
 
+    ///@{
+    /**
+     * Return the categorical value in row @idx.
+     */
     const std::string& get(size_t idx) const;
+    virtual std::string getAsString(size_t idx) const override;
+    ///@}
 
     ///@{
     /**
@@ -314,8 +331,6 @@ public:
     std::uint32_t getId(size_t idx) const;
     virtual double getAsDouble(size_t idx) const override;
     ///@}
-
-    virtual std::string getAsString(size_t idx) const override;
 
     virtual void add(std::string_view value) override;
 
@@ -385,7 +400,7 @@ public:
      * @return iterator range over all categorical values stored in the column
      * @see getValues
      */
-    auto values() const;
+    util::iter_range<ConstIterator> values() const;
 
     /**
      * \brief Add a category \p cat. It will not be added if the category already exists.
@@ -394,14 +409,28 @@ public:
      */
     std::uint32_t addCategory(std::string_view cat);
 
-    auto begin() const;
-    auto end() const;
+    ///@{
+    /**
+     * Returns a const iterator over all rows of the column holding the corresponding
+     * categorical values as <tt>const std::string&</tt>.
+     * @return iterator over categorical values stored in the column
+     * @see values
+     */
+    ConstIterator begin() const;
+    ConstIterator end() const;
+    ///@}
 
+    ///@{
+    /**
+     * Return the buffer holding the internal representations (@c std::uint32_t) of the categorical
+     * values for the entire column.
+     */
     virtual std::shared_ptr<BufferBase> getBuffer() override;
     virtual std::shared_ptr<const BufferBase> getBuffer() const override;
 
     std::shared_ptr<Buffer<std::uint32_t>> getTypedBuffer();
     std::shared_ptr<const Buffer<std::uint32_t>> getTypedBuffer() const;
+    ///@}
 
 private:
     class IVW_MODULE_DATAFRAME_API AddMany {
@@ -683,17 +712,20 @@ size_t TemplateColumn<T>::getSize() const {
     return buffer_->getSize();
 }
 
-inline auto CategoricalColumn::begin() const {
-    return util::makeTransformIterator(transform(),
-                                       buffer_->getRAMRepresentation()->getDataContainer().begin());
+inline auto CategoricalColumn::begin() const -> ConstIterator {
+    auto trafo = detail::categoricalTransform(lookUpTable_);
+    return util::TransformIterator(trafo,
+                                   buffer_->getRAMRepresentation()->getDataContainer().begin());
 }
 
-inline auto CategoricalColumn::end() const {
-    return util::makeTransformIterator(transform(),
-                                       buffer_->getRAMRepresentation()->getDataContainer().end());
+inline auto CategoricalColumn::end() const -> ConstIterator {
+    return util::TransformIterator(detail::categoricalTransform(lookUpTable_),
+                                   buffer_->getRAMRepresentation()->getDataContainer().end());
 }
 
-inline auto CategoricalColumn::values() const { return util::as_range(begin(), end()); }
+inline auto CategoricalColumn::values() const -> util::iter_range<ConstIterator> {
+    return util::as_range(begin(), end());
+}
 
 #endif
 

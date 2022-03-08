@@ -105,10 +105,14 @@ struct TemplateColumnReg {
                     return c.getAsString(i);
                 },
                 py::arg("i"))
-            .def("__repr__", [classname](C& c) {
-                return fmt::format("<{}: '{}', {}, {}>", classname, c.getHeader(), c.getSize(),
-                                   c.getBuffer()->getDataFormat()->getString());
-            });
+            .def("__repr__",
+                 [classname](C& c) {
+                     return fmt::format("<{}: '{}', {}, {}>", classname, c.getHeader(), c.getSize(),
+                                        c.getBuffer()->getDataFormat()->getString());
+                 })
+            .def(
+                "__iter__", [](const C& c) { return py::make_iterator(c.begin(), c.end()); },
+                py::keep_alive<0, 1>());
     }
 };
 

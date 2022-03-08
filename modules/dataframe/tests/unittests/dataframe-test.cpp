@@ -176,7 +176,7 @@ TEST(DataFrameFilter, NoFilter) {
     EXPECT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
     EXPECT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
 
-    const auto result = dataframe::selectedRows(dataframe, {});
+    const auto result = dataframe::selectRows(dataframe, {});
 
     EXPECT_EQ(dataframe.getNumberOfRows(), result.size()) << "Incorrect number of filtered rows";
 }
@@ -194,7 +194,7 @@ TEST(DataFrameFilter, SingleColumn) {
     filters.include.push_back(
         dataframefilters::doubleMatch(1, filters::NumberComp::LessEqual, 2.0));
 
-    const auto result = dataframe::selectedRows(dataframe, filters);
+    const auto result = dataframe::selectRows(dataframe, filters);
     EXPECT_EQ(2, result.size()) << "Incorrect number of filtered rows";
 
     const std::vector<uint32_t> expected = {0, 1};
@@ -215,7 +215,7 @@ TEST(DataFrameFilter, MultiColumn) {
     dataframefilters::Filters filters;
     filters.include.push_back(dataframefilters::doubleMatch(2, filters::NumberComp::Less, 2.3));
 
-    const auto result = dataframe::selectedRows(dataframe, filters);
+    const auto result = dataframe::selectRows(dataframe, filters);
     EXPECT_EQ(2, result.size()) << "Incorrect number of filtered rows";
 
     const std::vector<uint32_t> expected = {1, 2};
@@ -238,10 +238,32 @@ TEST(DataFrameFilter, MultiColumnFilter) {
     filters.include.push_back(dataframefilters::intMatch(2, filters::NumberComp::Equal, 2));
     filters.include.push_back(dataframefilters::doubleMatch(3, filters::NumberComp::Less, 2.3));
 
-    const auto result = dataframe::selectedRows(dataframe, filters);
+    const auto result = dataframe::selectRows(dataframe, filters);
     EXPECT_EQ(2, result.size()) << "Incorrect number of filtered rows";
 
     const std::vector<uint32_t> expected = {1, 2};
+    EXPECT_EQ(expected, result) << "Filter result does not match";
+}
+
+TEST(DataFrameFilter, MultiColumnIncludeExclude) {
+    DataFrame dataframe;
+    dataframe.addColumnFromBuffer("FloatCol",
+                                  util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f}));
+    dataframe.addColumnFromBuffer("IntCol", util::makeBuffer(std::vector<int>{6, 2, 3}));
+    dataframe.addCategoricalColumn("CatCol", {"a", "a", "b"});
+    dataframe.updateIndexBuffer();
+
+    EXPECT_EQ(4, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
+    EXPECT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
+
+    dataframefilters::Filters filters;
+    filters.include.push_back(dataframefilters::intMatch(2, filters::NumberComp::GreaterEqual, 2));
+    filters.exclude.push_back(dataframefilters::stringMatch(3, filters::StringComp::Equal, "a"));
+
+    const auto result = dataframe::selectRows(dataframe, filters);
+    EXPECT_EQ(1, result.size()) << "Incorrect number of filtered rows";
+
+    const std::vector<uint32_t> expected = {2};
     EXPECT_EQ(expected, result) << "Filter result does not match";
 }
 

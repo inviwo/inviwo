@@ -166,7 +166,7 @@ std::uint32_t CategoricalColumn::getId(size_t idx) const {
 }
 
 double CategoricalColumn::getAsDouble(size_t idx) const {
-    return util::glm_convert<double>(getId(idx));
+    return static_cast<double>(getId(idx));
 }
 
 std::string CategoricalColumn::getAsString(size_t idx) const { return get(idx); }
