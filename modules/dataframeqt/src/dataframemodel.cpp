@@ -147,11 +147,14 @@ int DataFrameModel::columnCount(const QModelIndex&) const {
 QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) return QVariant();
 
+    const auto& indexCol =
+        data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
     const bool highlighted = manager_
-                                 ? (manager_->isHighlighted(index.row()) ||
+                                 ? (manager_->isHighlighted(indexCol[index.row()]) ||
                                     manager_->isHighlighted(index.column(), BrushingTarget::Column))
                                  : false;
-    const bool selected = manager_ ? manager_->isSelected(index.row()) : false;
+    const bool selected = manager_ ? manager_->isSelected(indexCol[index.row()]) : false;
 
     switch (role) {
         case Qt::DisplayRole: {
