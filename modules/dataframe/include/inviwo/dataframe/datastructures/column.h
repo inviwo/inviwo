@@ -250,8 +250,7 @@ public:
 };
 
 namespace detail {
-inline std::function<const std::string&(std::uint32_t)> categoricalTransform(
-    const std::vector<std::string>& table) {
+inline auto categoricalTransform(const std::vector<std::string>& table) {
     return [&table](std::uint32_t idx) -> const std::string& { return table[idx]; };
 }
 }  // namespace detail
@@ -274,7 +273,8 @@ class IVW_MODULE_DATAFRAME_API CategoricalColumn : public Column {
 public:
     using type = std::uint32_t;
     using ConstIterator =
-        util::TransformIterator<decltype(detail::categoricalTransform(std::vector<std::string>{})),
+        util::TransformIterator<decltype(detail::categoricalTransform(
+                                    std::declval<const std::vector<std::string>&>())),
                                 std::vector<std::uint32_t>::const_iterator>;
 
     CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {},
@@ -450,10 +450,6 @@ private:
     };
 
     virtual std::uint32_t addOrGetID(std::string_view str);
-
-    auto transform() const {
-        return [this](const std::uint32_t& idx) -> const std::string& { return lookUpTable_[idx]; };
-    }
 
     std::string header_;
     Unit unit_;
@@ -713,8 +709,7 @@ size_t TemplateColumn<T>::getSize() const {
 }
 
 inline auto CategoricalColumn::begin() const -> ConstIterator {
-    auto trafo = detail::categoricalTransform(lookUpTable_);
-    return util::TransformIterator(trafo,
+    return util::TransformIterator(detail::categoricalTransform(lookUpTable_),
                                    buffer_->getRAMRepresentation()->getDataContainer().begin());
 }
 
