@@ -56,7 +56,10 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Brushing Mode__ Determines how Brushing and Linking is considered when filtering.
- *   * __<Prop2>__ <description>
+ *      - @c None         no brushing and linking
+ *      - @c FilterOnly   filtered rows are propagated to B&L, B&L filter state is not considered
+ *      - @c ApplyOnly    apply B&L filter state to DataFrame, no brushing actions are sent
+ *      - @c FilterApply  propagate filtered rows and apply B&L filter state
  */
 class IVW_MODULE_DATAFRAME_API DataFrameFilter : public Processor {
 public:
