@@ -62,7 +62,7 @@ The following modules add a variety of functionalities to Inviwo. Please refer t
 - [Temporal Tree Maps](https://github.com/Wiebke/TemporalTreeMaps) Temporal treemaps for visualizing trees whose topology and data change over time.
 - [Developer tools](https://github.com/inviwo/modules/tree/master/misc/devtools) Log inviwo events, useful for debugging interaction.
 - 
-#### Applications 
+#### Applications
 - [Visual Neuro](https://github.com/SciVis/VisualNeuro) A visual analysis tool understanding cohorts of brain imaging and clinical data. Also includes algorithms for statistical computation.
 - [ENVISIoN](https://github.com/rartino/ENVISIoN) Visualization of electronic structure quantities from ab-initio calculations.
 

@@ -1,5 +1,18 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-03-09 DataFrame filtering and CSV filtering
+DataFrames can now be filtered with the `DataFrame Filter` processor or when loading a CSV file with the `CSV Source` processor. The `DataFrame Filter` also supports brushing & linking filtering. Filters exist for matching values (`int64` and `double` as well as categorical values), ranges, and commented lines.
+
+## 2022-03-04 DataFrame & CategoricalColumn clean-up
+The DataFrame interface was cleaned up. `getAsDVecn()` and `std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const` were removed from `Column`.
+`CategoricalColumn` no longer derives from `TemplateColumn<std::uint32_t>`. Its const iterators (`CategoricalColumn::begin()`, `CategoricalColumn::end()`) can be used to iterate over the entire column to access the categorical values directly. Alternatively, `CategoricalColumn::values()` provides an iterator range from `begin()` to `end()`.
+```c++
+CategoricalColumn col("example", {"first", "second"});
+for (auto v : col) {
+    std::cout << "value: " << v;
+}
+```
+
 ## 2022-02-01 Icon Grid View
 The welcome widget now has an icon grid view with previews of the first canvas in each network. 
 The workspace and processor search fields gained new features. One can for example search for all networks with a `Volume Raycaster` processor that was created by `Martin` like this: `processors:\"Volume Raycaster\" author:Martin"`. The tooltip for each search field has more details. 
