@@ -339,7 +339,7 @@ public:
     static BitSet fastUnion(util::span<const BitSet*> bitsets);
 
     /**
-     * Convert bitset to a std::vector holding only set elements
+     * Convert bitset to a std::vector holding only set elements. The output is ordered.
      */
     std::vector<uint32_t> toVector() const;
     /**
