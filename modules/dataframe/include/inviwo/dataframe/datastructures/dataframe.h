@@ -80,6 +80,7 @@ public:
 
     DataFrame(std::uint32_t size = 0);
     DataFrame(const DataFrame& df);
+    DataFrame(const DataFrame& df, const std::vector<std::uint32_t>& rowSelection);
     DataFrame& operator=(const DataFrame& df);
     DataFrame(DataFrame&& df);
     DataFrame& operator=(DataFrame&& df);
