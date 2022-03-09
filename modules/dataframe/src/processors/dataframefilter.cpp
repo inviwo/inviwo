@@ -50,7 +50,9 @@ const ProcessorInfo DataFrameFilter::getProcessorInfo() const { return processor
 DataFrameFilter::DataFrameFilter()
     : Processor()
     , inport_("inport")
-    , brushing_("brushing")
+    , brushing_("brushing", {{{BrushingTarget::Row},
+                              BrushingModification::Filtered,
+                              InvalidationLevel::InvalidOutput}})
     , outport_("outport")
     , enabled_("enabled", "Enabled", true)
     , brushingMode_("brushingMode", "Brushing and Linking",
