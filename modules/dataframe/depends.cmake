@@ -3,6 +3,7 @@
 set(dependencies
     InviwoBaseModule
     InviwoJSONModule
+    InviwoBrushingAndLinkingModule
 )
 
 set(EnableByDefault ON)

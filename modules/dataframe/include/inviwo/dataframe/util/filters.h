@@ -30,6 +30,8 @@
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 
+#include <inviwo/core/util/enumtraits.h>
+
 #include <string_view>
 #include <functional>
 #include <variant>
@@ -85,6 +87,15 @@ IVW_MODULE_DATAFRAME_API ItemFilter intRange(int column, std::int64_t min, std::
 IVW_MODULE_DATAFRAME_API ItemFilter doubleRange(int column, double min, double max);
 
 }  // namespace filters
+
+template <>
+struct EnumTraits<filters::StringComp> {
+    static std::string name() { return "StringComp"; }
+};
+template <>
+struct EnumTraits<filters::NumberComp> {
+    static std::string name() { return "NumberComp"; }
+};
 
 /**
  * DataFrame-specific filters

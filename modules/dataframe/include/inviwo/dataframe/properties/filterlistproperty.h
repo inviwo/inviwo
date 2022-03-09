@@ -39,10 +39,8 @@ enum class FilterType {
     Rows,
     StringItem,
     IntItem,
-    FloatItem,
     DoubleItem,
     IntRange,
-    FloatRange,
     DoubleRange
 };
 

@@ -34,6 +34,7 @@
 #include <inviwo/dataframe/processors/dataframejoin.h>
 #include <inviwo/dataframe/processors/dataframesource.h>
 #include <inviwo/dataframe/processors/dataframeexporter.h>
+#include <inviwo/dataframe/processors/dataframefilter.h>
 #include <inviwo/dataframe/processors/dataframemetadata.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>
 #include <inviwo/dataframe/processors/syntheticdataframe.h>
@@ -45,6 +46,7 @@
 #include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
 #include <inviwo/dataframe/properties/optionconverter.h>
 #include <inviwo/dataframe/properties/filterlistproperty.h>
+#include <inviwo/dataframe/util/filters.h>
 
 #include <inviwo/dataframe/io/csvreader.h>
 #include <inviwo/dataframe/io/jsonreader.h>
@@ -53,6 +55,7 @@
 #include <inviwo/dataframe/io/xmlwriter.h>
 
 #include <inviwo/core/properties/propertyconverter.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 #include <modules/json/jsonmodule.h>
 
@@ -80,6 +83,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
 
     // Processors
     registerProcessor<CSVSource>();
+    registerProcessor<DataFrameFilter>();
     registerProcessor<DataFrameJoin>();
     registerProcessor<DataFrameSource>();
     registerProcessor<DataFrameExporter>();
@@ -97,6 +101,8 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     registerProperty<ColumnMetaDataProperty>();
     registerProperty<ColumnMetaDataListProperty>();
     registerProperty<FilterListProperty>();
+    registerProperty<TemplateOptionProperty<filters::StringComp>>();
+    registerProperty<TemplateOptionProperty<filters::NumberComp>>();
 
     // Readers and writes
     registerDataReader(std::make_unique<CSVReader>());
