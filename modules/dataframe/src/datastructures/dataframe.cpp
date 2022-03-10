@@ -55,7 +55,8 @@ DataFrame::DataFrame(const DataFrame& rhs) : columns_{} {
         columns_.emplace_back(col->clone());
     }
 }
-DataFrame::DataFrame(const DataFrame& rhs,const std::vector<std::uint32_t>& rowSelection) : columns_{} {
+DataFrame::DataFrame(const DataFrame& rhs, const std::vector<std::uint32_t>& rowSelection)
+    : columns_{} {
     for (const auto& col : rhs.columns_) {
         columns_.emplace_back(col->clone(rowSelection));
     }

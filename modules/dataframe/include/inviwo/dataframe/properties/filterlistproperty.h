@@ -35,14 +35,7 @@
 
 namespace inviwo {
 
-enum class FilterType {
-    Rows,
-    StringItem,
-    IntItem,
-    DoubleItem,
-    IntRange,
-    DoubleRange
-};
+enum class FilterType { Rows, StringItem, IntItem, DoubleItem, IntRange, DoubleRange };
 
 ALLOW_FLAGS_FOR_ENUM(FilterType)
 using FilterTypes = flags::flags<FilterType>;

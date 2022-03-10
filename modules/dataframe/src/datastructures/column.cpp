@@ -165,9 +165,7 @@ std::uint32_t CategoricalColumn::getId(size_t idx) const {
     return buffer_->getRAMRepresentation()->get(idx);
 }
 
-double CategoricalColumn::getAsDouble(size_t idx) const {
-    return static_cast<double>(getId(idx));
-}
+double CategoricalColumn::getAsDouble(size_t idx) const { return static_cast<double>(getId(idx)); }
 
 std::string CategoricalColumn::getAsString(size_t idx) const { return get(idx); }
 
