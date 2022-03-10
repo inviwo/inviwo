@@ -254,6 +254,7 @@ void VolumeCombiner::updateProperties() {
 void VolumeCombiner::process() {
     if (inport_.isChanged()) {
         volume_ = std::make_shared<Volume>(*inport_.getData(), noData);
+        outport_.setData(volume_);
     }
 
     updateDataRange();
