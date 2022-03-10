@@ -115,7 +115,7 @@ void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
             case ColumnType::Categorical:
                 if (!categoryIndices) {
                     return [cc = static_cast<const CategoricalColumn*>(col)](int row) -> QVariant {
-                        return QString("Key: %1").arg(cc->TemplateColumn<std::uint32_t>::get(row));
+                        return QString("Key: %1").arg(cc->getId(row));
                     };
                 } else {
                     return [](int) { return QVariant(); };
@@ -147,11 +147,14 @@ int DataFrameModel::columnCount(const QModelIndex&) const {
 QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) return QVariant();
 
+    const auto& indexCol =
+        data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
     const bool highlighted = manager_
-                                 ? (manager_->isHighlighted(index.row()) ||
+                                 ? (manager_->isHighlighted(indexCol[index.row()]) ||
                                     manager_->isHighlighted(index.column(), BrushingTarget::Column))
                                  : false;
-    const bool selected = manager_ ? manager_->isSelected(index.row()) : false;
+    const bool selected = manager_ ? manager_->isSelected(indexCol[index.row()]) : false;
 
     switch (role) {
         case Qt::DisplayRole: {

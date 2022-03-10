@@ -26,6 +26,15 @@
 </style>
 </head>
 <body>
+<h2>2022-03-09 DataFrame filtering and CSV filtering</h2>
+<p>DataFrames can now be filtered with the <code>DataFrame Filter</code> processor or when loading a CSV file with the <code>CSV Source</code> processor. The <code>DataFrame Filter</code> also supports brushing &amp; linking filtering. Filters exist for matching values (<code>int64</code> and <code>double</code> as well as categorical values), ranges, and commented lines.</p>
+<h2>2022-03-04 DataFrame &amp; CategoricalColumn clean-up</h2>
+<p>The DataFrame interface was cleaned up. <code>getAsDVecn()</code> and <code>std::shared_ptr&lt;DataPointBase&gt; get(size_t idx, bool getStringsAsStrings) const</code> were removed from <code>Column</code>.<br>
+<code>CategoricalColumn</code> no longer derives from <code>TemplateColumn&lt;std::uint32_t&gt;</code>. Its const iterators (<code>CategoricalColumn::begin()</code>, <code>CategoricalColumn::end()</code>) can be used to iterate over the entire column to access the categorical values directly. Alternatively, <code>CategoricalColumn::values()</code> provides an iterator range from <code>begin()</code> to <code>end()</code>.</p>
+<div class="highlight highlight-source-c++"><pre>CategoricalColumn <span class="pl-en">col</span>(<span class="pl-s"><span class="pl-pds">"</span>example<span class="pl-pds">"</span></span>, {<span class="pl-s"><span class="pl-pds">"</span>first<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>second<span class="pl-pds">"</span></span>});
+<span class="pl-k">for</span> (<span class="pl-k">auto</span> v : col) {
+    std::cout &lt;&lt; <span class="pl-s"><span class="pl-pds">"</span>value: <span class="pl-pds">"</span></span> &lt;&lt; v;
+}</pre></div>
 <h2>2022-02-01 Icon Grid View</h2>
 <p>The welcome widget now has an icon grid view with previews of the first canvas in each network.<br>
 The workspace and processor search fields gained new features. One can for example search for all networks with a <code>Volume Raycaster</code> processor that was created by <code>Martin</code> like this: <code>processors:\"Volume Raycaster\" author:Martin"</code>. The tooltip for each search field has more details.</p>

@@ -284,7 +284,7 @@ TEST(InnerJoin, ByCategoricalColumn) {
     ASSERT_TRUE(catCol != nullptr) << "column 'cat' is not categorical after join";
 
     const std::vector<std::string> expected = {"a", "b", "c"};
-    const auto result = catCol->getValues();
+    const std::vector<std::string> result{catCol->begin(), catCol->end()};
     EXPECT_EQ(expected, result) << "column contents of categorical column differ";
 
     checkColumnContents<int>(*dataframe->getColumn("int"), {1, 3, 2});
@@ -378,7 +378,7 @@ TEST(LeftJoin, MultipleKeyColumns) {
 
     const std::vector<std::string> expected = {"world", "hello",     "undefined", "undefined",
                                                "test",  "undefined", "cat",       "dog"};
-    const auto result = catCol->getValues();
+    const std::vector<std::string> result{catCol->begin(), catCol->end()};
     EXPECT_EQ(expected, result) << "contents of categorical column 'cat2' differ";
 
     checkColumnContents<float>(*dataframe->getColumn("float"),

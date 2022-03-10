@@ -31,7 +31,6 @@
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
@@ -54,6 +53,12 @@ DataFrame::DataFrame(std::uint32_t size) : columns_{} {
 DataFrame::DataFrame(const DataFrame& rhs) : columns_{} {
     for (const auto& col : rhs.columns_) {
         columns_.emplace_back(col->clone());
+    }
+}
+DataFrame::DataFrame(const DataFrame& rhs, const std::vector<std::uint32_t>& rowSelection)
+    : columns_{} {
+    for (const auto& col : rhs.columns_) {
+        columns_.emplace_back(col->clone(rowSelection));
     }
 }
 DataFrame& DataFrame::operator=(const DataFrame& that) {
@@ -113,14 +118,6 @@ std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(
     auto col = std::make_shared<CategoricalColumn>(header, values);
     columns_.push_back(col);
     return col;
-}
-
-DataFrame::DataItem DataFrame::getDataItem(size_t index, bool getStringsAsStrings) const {
-    DataItem di;
-    for (auto column : columns_) {
-        di.push_back(column->get(index, getStringsAsStrings));
-    }
-    return di;
 }
 
 void DataFrame::updateIndexBuffer() {

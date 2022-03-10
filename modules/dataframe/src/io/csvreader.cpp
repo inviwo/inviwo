@@ -328,6 +328,18 @@ std::optional<T> toNumberLocale(std::string_view str) {
         } else {
             return std::nullopt;
         }
+    } else if constexpr (std::is_same_v<T, std::int64_t>) {
+        char* end = nullptr;
+        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        errno = 0;
+        std::int64_t val = strtoll(cstr.c_str(), &end, 10);
+        std::swap(errno, errno_save);
+
+        if (errno_save == 0 && static_cast<size_t>(end - cstr.c_str()) == str.size()) {
+            return val;
+        } else {
+            return std::nullopt;
+        }
     } else {
         static_assert(util::alwaysFalse<T>(), "Unsupported type");
     }
@@ -514,14 +526,8 @@ bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHe
             [&](std::string_view cell, size_t colIndex, [[maybe_unused]] size_t part) {
                 auto test = util::overloaded{
                     [&](const std::function<bool(std::string_view)>& func) { return func(cell); },
-                    [&](const std::function<bool(int)>& func) {
-                        if (auto val = util::toNumber<int>(cell, cLocale)) {
-                            return func(*val);
-                        }
-                        return neutralValue;
-                    },
-                    [&](const std::function<bool(float)>& func) {
-                        if (auto val = util::toNumber<float>(cell, cLocale)) {
+                    [&](const std::function<bool(std::int64_t)>& func) {
+                        if (auto val = util::toNumber<std::int64_t>(cell, cLocale)) {
                             return func(*val);
                         }
                         return neutralValue;

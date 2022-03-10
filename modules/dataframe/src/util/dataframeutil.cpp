@@ -32,10 +32,14 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/datastructures/bitset.h>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <tcb/span.hpp>
 #include <optional>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -187,34 +191,42 @@ void columnCheck(const DataFrame& left, const DataFrame& right,
     }
 }
 
+template <typename T, bool firstMatchOnly, typename Cont>
+std::vector<std::vector<std::uint32_t>> matchingRows(const Cont& left, const Cont& right) {
+    std::unordered_map<T, std::vector<std::uint32_t>> matches;
+    for (auto&& [r, value] : util::enumerate<std::uint32_t>(right)) {
+        if constexpr (firstMatchOnly) {
+            if (matches.find(value) == matches.end()) {
+                matches[value].push_back(r);
+            }
+        } else {
+            matches[value].push_back(r);
+        }
+    }
+    std::vector<std::vector<std::uint32_t>> rows(std::distance(left.begin(), left.end()));
+    for (auto&& [i, key] : util::enumerate<std::uint32_t>(left)) {
+        rows[i] = matches[key];
+    }
+    return rows;
+}
+
 /**
  * \brief for each row in leftCol return a list of matching row indices in rightCol
  */
 template <bool firstMatchOnly = false>
 std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Column> leftCol,
                                                         std::shared_ptr<const Column> rightCol) {
-    std::vector<std::vector<std::uint32_t>> rows(leftCol->getSize());
-
     if (auto catCol1 = dynamic_cast<const CategoricalColumn*>(leftCol.get())) {
         // need to match values of categorical columns instead of indices stored in buffer
         auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
         IVW_ASSERT(catCol2, "right column is not categorical");
 
-        auto valuesRight = catCol2->getValues();
-        for (auto&& [i, key] : util::enumerate(catCol1->getValues())) {
-            // find all matching rows in right column
-            std::vector<std::uint32_t> matches;
-            for (auto&& [r, value] : util::enumerate<std::uint32_t>(valuesRight)) {
-                if (key == value) {
-                    matches.emplace_back(r);
-                    if constexpr (firstMatchOnly) break;
-                }
-            }
-            rows[i] = std::move(matches);
-        }
+        return matchingRows<std::string_view, firstMatchOnly>(*catCol1, *catCol2);
     } else {
-        leftCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
-            [rightBuffer = rightCol->getBuffer(), &rows](auto typedBuf) {
+        using retval = std::vector<std::vector<std::uint32_t>>;
+
+        return leftCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<retval>(
+            [rightBuffer = rightCol->getBuffer()](auto typedBuf) {
                 using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
 
                 const auto& left = typedBuf->getDataContainer();
@@ -222,20 +234,9 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Co
                                         rightBuffer->getRepresentation<BufferRAM>())
                                         ->getDataContainer();
 
-                for (auto&& [i, key] : util::enumerate<std::uint32_t>(left)) {
-                    // find all matching rows in right
-                    std::vector<std::uint32_t> matches;
-                    for (auto&& [r, value] : util::enumerate<std::uint32_t>(right)) {
-                        if (key == value) {
-                            matches.emplace_back(r);
-                            if constexpr (firstMatchOnly) break;
-                        }
-                    }
-                    rows[i] = std::move(matches);
-                }
+                return matchingRows<ValueType, firstMatchOnly>(left, right);
             });
     }
-    return rows;
 }
 
 std::vector<std::vector<std::uint32_t>> getMatchingRows(
@@ -253,12 +254,13 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
             auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
             IVW_ASSERT(catCol2, "right column is not categorical");
 
-            auto valuesLeft = catCol1->getValues();
-            auto valuesRight = catCol2->getValues();
+            auto valuesLeftIt = catCol1->begin();
+            auto valuesRightIt = catCol2->begin();
             for (auto&& [i, rowMatches] : util::enumerate<std::uint32_t>(rows)) {
-                util::erase_remove_if(rowMatches, [key = valuesLeft[i], &valuesRight](auto row) {
-                    return key != valuesRight[row];
-                });
+                util::erase_remove_if(rowMatches,
+                                      [key = *(valuesLeftIt + i), valuesRightIt](auto row) {
+                                          return key != *(valuesRightIt + row);
+                                      });
             }
         } else {
             leftCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
@@ -310,8 +312,8 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
         if (auto c = dynamic_cast<CategoricalColumn*>(srcCol.get())) {
-            auto data = util::transform(rows, [src = c->getValues()](auto v) {
-                return v.has_value() ? src[v.value()] : "undefined";
+            auto data = util::transform(rows, [range = c->values()](auto v) {
+                return v.has_value() ? *(range.begin() + v.value()) : "undefined";
             });
             dst->addCategoricalColumn(c->getHeader(), data);
         } else {
@@ -522,6 +524,94 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
         }
     }
     return newDataFrame;
+}
+
+#include <warn/push>
+#include <warn/ignore/conversion>
+std::vector<std::uint32_t> selectRows(const Column& col,
+                                      const std::vector<dataframefilters::ItemFilter>& filters) {
+    if (filters.empty()) return {};
+
+    if (col.getColumnType() == ColumnType::Categorical) {
+        const auto& catCol = dynamic_cast<const CategoricalColumn&>(col);
+        std::vector<std::uint32_t> rows;
+        for (auto&& [row, value] : util::enumerate<std::uint32_t>(catCol.values())) {
+            auto test = util::overloaded{
+                [v = value](const std::function<bool(std::string_view)>& func) { return func(v); },
+                [](const std::function<bool(int64_t)>&) { return false; },
+                [](const std::function<bool(double)>&) { return false; }};
+            auto op = [&](const auto& f) { return std::visit(test, f.filter); };
+            if (std::any_of(filters.begin(), filters.end(), op)) {
+                rows.push_back(row);
+            }
+        }
+        return rows;
+    } else {
+        return col.getBuffer()
+            ->getRepresentation<BufferRAM>()
+            ->dispatch<std::vector<std::uint32_t>, dispatching::filter::Scalars>(
+                [filters](auto typedBuf) {
+                    using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
+                    std::vector<std::uint32_t> rows;
+                    for (auto&& [row, value] :
+                         util::enumerate<std::uint32_t>(typedBuf->getDataContainer())) {
+                        auto test = util::overloaded{
+                            [&v = value](const std::function<bool(std::int64_t)>& func) {
+                                if constexpr (std::is_integral_v<ValueType>) {
+                                    return func(static_cast<std::int64_t>(v));
+                                }
+                                (void)v;
+                                return false;
+                            },
+                            [v = value](const std::function<bool(double)>& func) {
+                                if constexpr (std::is_floating_point_v<ValueType>) {
+                                    return func(v);
+                                }
+                                (void)v;
+                                return false;
+                            },
+                            [](const std::function<bool(std::string_view)>&) { return false; }};
+                        auto op = [&](const auto& f) { return std::visit(test, f.filter); };
+                        if (std::any_of(filters.begin(), filters.end(), op)) {
+                            rows.push_back(row);
+                        }
+                    }
+                    return rows;
+                });
+    }
+}
+#include <warn/pop>
+
+std::vector<std::uint32_t> selectRows(const DataFrame& dataframe,
+                                      dataframefilters::Filters filters) {
+    const int colCount = static_cast<int>(dataframe.getNumberOfColumns());
+    std::unordered_map<int, dataframefilters::Filters> filterCols;
+    for (auto& f : filters.include) {
+        if (f.column >= 0 && f.column < colCount) filterCols[f.column].include.push_back(f);
+    }
+    for (auto& f : filters.exclude) {
+        if (f.column >= 0 && f.column < colCount) filterCols[f.column].exclude.push_back(f);
+    }
+    if (filterCols.empty()) {
+        auto seq = util::sequence<std::uint32_t>(
+            0, static_cast<std::uint32_t>(dataframe.getNumberOfRows()), 1);
+        return {seq.begin(), seq.end()};
+    }
+
+    if (filterCols.size() == 1) {
+        const auto& col = *dataframe.getColumn(filterCols.begin()->first).get();
+        return (BitSet(selectRows(col, filterCols.begin()->second.include)) -
+                BitSet(selectRows(col, filterCols.begin()->second.exclude)))
+            .toVector();
+    }
+    BitSet include;
+    BitSet exclude;
+    for (auto&& [colIndex, f] : filterCols) {
+        const auto& col = *dataframe.getColumn(colIndex).get();
+        include.add(selectRows(col, f.include));
+        exclude.add(selectRows(col, f.exclude));
+    }
+    return (include - exclude).toVector();
 }
 
 std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId) {

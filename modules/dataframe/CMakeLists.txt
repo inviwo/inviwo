@@ -9,7 +9,6 @@ set(HEADER_FILES
     include/inviwo/dataframe/dataframemoduledefine.h
     include/inviwo/dataframe/datastructures/column.h
     include/inviwo/dataframe/datastructures/dataframe.h
-    include/inviwo/dataframe/datastructures/datapoint.h
     include/inviwo/dataframe/io/csvreader.h
     include/inviwo/dataframe/io/csvwriter.h
     include/inviwo/dataframe/io/json/dataframepropertyjsonconverter.h
@@ -18,6 +17,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/jsondataframeconversion.h
     include/inviwo/dataframe/processors/csvsource.h
     include/inviwo/dataframe/processors/dataframeexporter.h
+    include/inviwo/dataframe/processors/dataframefilter.h
     include/inviwo/dataframe/processors/dataframefloat32converter.h
     include/inviwo/dataframe/processors/dataframejoin.h
     include/inviwo/dataframe/processors/dataframemetadata.h
@@ -52,6 +52,7 @@ set(SOURCE_FILES
     src/jsondataframeconversion.cpp
     src/processors/csvsource.cpp
     src/processors/dataframeexporter.cpp
+    src/processors/dataframefilter.cpp
     src/processors/dataframefloat32converter.cpp
     src/processors/dataframejoin.cpp
     src/processors/dataframemetadata.cpp
@@ -89,6 +90,10 @@ set(TEST_FILES
     tests/unittests/jsonreader-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
+
+if(IVW_TEST_BENCHMARKS)
+    add_subdirectory(tests/benchmarks)
+endif()
 
 #--------------------------------------------------------------------
 # Create module

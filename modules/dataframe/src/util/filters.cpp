@@ -35,25 +35,7 @@
 
 namespace inviwo {
 
-namespace csvfilters {
-
-RowFilter emptyLines(bool filterOnHeader) {
-    return RowFilter{[](std::string_view row, size_t) { return row.empty(); }, filterOnHeader};
-}
-
-RowFilter rowBegin(std::string_view begin, bool filterOnHeader) {
-    return RowFilter{[str = std::string{begin}](std::string_view row, size_t) {
-                         return row.substr(0, str.size()) == str;
-                     },
-                     filterOnHeader};
-}
-
-RowFilter lineRange(int min, int max, bool filterOnHeader) {
-    return RowFilter{
-        [min = static_cast<size_t>(std::max(min, 0)), max = static_cast<size_t>(std::max(max, 0))](
-            std::string_view, size_t line) { return (line >= min) && (line <= max); },
-        filterOnHeader};
-}
+namespace filters {
 
 ItemFilter stringMatch(int column, filters::StringComp op, std::string_view match) {
     switch (op) {
@@ -124,48 +106,63 @@ ItemFilter rangeComparison(int column, T min, T max) {
 
 }  // namespace detail
 
-ItemFilter intMatch(int column, filters::NumberComp op, int value) {
+ItemFilter intMatch(int column, filters::NumberComp op, std::int64_t value) {
     auto createFilter = [v = value, column](auto comp) {
-        return ItemFilter{std::function<bool(int)>([v, comp](int value) { return comp(value, v); }),
+        return ItemFilter{std::function<bool(std::int64_t)>(
+                              [v, comp](std::int64_t value) { return comp(value, v); }),
                           column, false};
     };
 
     switch (op) {
         case filters::NumberComp::Equal:
-            return createFilter(std::equal_to<int>());
+            return createFilter(std::equal_to<std::int64_t>());
         case filters::NumberComp::NotEqual:
-            return createFilter(std::not_equal_to<int>());
+            return createFilter(std::not_equal_to<std::int64_t>());
         case filters::NumberComp::Less:
-            return createFilter(std::less<int>());
+            return createFilter(std::less<std::int64_t>());
         case filters::NumberComp::LessEqual:
-            return createFilter(std::less_equal<int>());
+            return createFilter(std::less_equal<std::int64_t>());
         case filters::NumberComp::Greater:
-            return createFilter(std::greater<int>());
+            return createFilter(std::greater<std::int64_t>());
         case filters::NumberComp::GreaterEqual:
-            return createFilter(std::greater_equal<int>());
+            return createFilter(std::greater_equal<std::int64_t>());
         default:
-            return createFilter(std::equal_to<int>());
+            return createFilter(std::equal_to<std::int64_t>());
     }
-}
-
-ItemFilter floatMatch(int column, filters::NumberComp op, float value, float epsilon) {
-    return detail::epsilonComparison(column, op, value, epsilon);
 }
 
 ItemFilter doubleMatch(int column, filters::NumberComp op, double value, double epsilon) {
     return detail::epsilonComparison(column, op, value, epsilon);
 }
 
-ItemFilter intRange(int column, int min, int max) {
-    return detail::rangeComparison(column, min, max);
-}
-
-ItemFilter floatRange(int column, float min, float max) {
+ItemFilter intRange(int column, std::int64_t min, std::int64_t max) {
     return detail::rangeComparison(column, min, max);
 }
 
 ItemFilter doubleRange(int column, double min, double max) {
     return detail::rangeComparison(column, min, max);
+}
+
+}  // namespace filters
+
+namespace csvfilters {
+
+RowFilter emptyLines(bool filterOnHeader) {
+    return RowFilter{[](std::string_view row, size_t) { return row.empty(); }, filterOnHeader};
+}
+
+RowFilter rowBegin(std::string_view begin, bool filterOnHeader) {
+    return RowFilter{[str = std::string{begin}](std::string_view row, size_t) {
+                         return row.substr(0, str.size()) == str;
+                     },
+                     filterOnHeader};
+}
+
+RowFilter lineRange(int min, int max, bool filterOnHeader) {
+    return RowFilter{
+        [min = static_cast<size_t>(std::max(min, 0)), max = static_cast<size_t>(std::max(max, 0))](
+            std::string_view, size_t line) { return (line >= min) && (line <= max); },
+        filterOnHeader};
 }
 
 }  // namespace csvfilters

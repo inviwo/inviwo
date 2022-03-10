@@ -38,7 +38,6 @@
 #include <inviwo/core/util/exception.h>
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/dataframe/datastructures/column.h>
 
 #include <unordered_map>
@@ -46,7 +45,7 @@
 #include <fmt/format.h>
 
 namespace inviwo {
-class DataPointBase;
+
 class BufferBase;
 class BufferRAM;
 
@@ -69,19 +68,19 @@ public:
     virtual ~DataTypeMismatch() noexcept {}
 };
 /**
- * \class DataFrame
  * Table of data for plotting where each column can have a header (title).
  * Missing float/double data is stored as Not a Number (NaN)
  * All columns must have the same number of elements for the
  * DataFrame to be valid.
+ * @ingroup datastructures
  */
 class IVW_MODULE_DATAFRAME_API DataFrame : public MetaDataOwner {
 public:
-    using DataItem = std::vector<std::shared_ptr<DataPointBase>>;
     using LookupTable = std::unordered_map<glm::u64, std::string>;
 
     DataFrame(std::uint32_t size = 0);
     DataFrame(const DataFrame& df);
+    DataFrame(const DataFrame& df, const std::vector<std::uint32_t>& rowSelection);
     DataFrame& operator=(const DataFrame& df);
     DataFrame(DataFrame&& df);
     DataFrame& operator=(DataFrame&& df);
@@ -153,8 +152,6 @@ public:
                                                             size_t size = 0);
     std::shared_ptr<CategoricalColumn> addCategoricalColumn(std::string_view header,
                                                             const std::vector<std::string>& values);
-
-    DataItem getDataItem(size_t index, bool getStringsAsStrings = false) const;
 
     /**
      * \brief access individual columns
