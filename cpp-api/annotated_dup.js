@@ -124,8 +124,10 @@ var annotated_dup =
       ] ],
       [ "csvfilters", "namespaceinviwo_1_1csvfilters.html", [
         [ "Filters", "structinviwo_1_1csvfilters_1_1Filters.html", null ],
-        [ "ItemFilter", "structinviwo_1_1csvfilters_1_1ItemFilter.html", "structinviwo_1_1csvfilters_1_1ItemFilter" ],
         [ "RowFilter", "structinviwo_1_1csvfilters_1_1RowFilter.html", "structinviwo_1_1csvfilters_1_1RowFilter" ]
+      ] ],
+      [ "dataframefilters", "namespaceinviwo_1_1dataframefilters.html", [
+        [ "Filters", "structinviwo_1_1dataframefilters_1_1Filters.html", null ]
       ] ],
       [ "detail", null, [
         [ "BufferRamConstDispatcher", "structinviwo_1_1detail_1_1BufferRamConstDispatcher.html", null ],
@@ -190,6 +192,9 @@ var annotated_dup =
           [ "Vecs", "structinviwo_1_1dispatching_1_1filter_1_1Vecs.html", null ]
         ] ],
         [ "DispatchException", "classinviwo_1_1dispatching_1_1DispatchException.html", null ]
+      ] ],
+      [ "filters", null, [
+        [ "ItemFilter", "structinviwo_1_1filters_1_1ItemFilter.html", "structinviwo_1_1filters_1_1ItemFilter" ]
       ] ],
       [ "glui", null, [
         [ "AbstractButton", "classinviwo_1_1glui_1_1AbstractButton.html", null ],
@@ -679,6 +684,7 @@ var annotated_dup =
       [ "DataFrame", "classinviwo_1_1DataFrame.html", "classinviwo_1_1DataFrame" ],
       [ "DataFrameColormapProperty", "classinviwo_1_1DataFrameColormapProperty.html", null ],
       [ "DataFrameExporter", "classinviwo_1_1DataFrameExporter.html", "classinviwo_1_1DataFrameExporter" ],
+      [ "DataFrameFilter", "classinviwo_1_1DataFrameFilter.html", "classinviwo_1_1DataFrameFilter" ],
       [ "DataFrameFloat32Converter", "classinviwo_1_1DataFrameFloat32Converter.html", "classinviwo_1_1DataFrameFloat32Converter" ],
       [ "DataFrameJoin", "classinviwo_1_1DataFrameJoin.html", "classinviwo_1_1DataFrameJoin" ],
       [ "DataFrameMetaData", "classinviwo_1_1DataFrameMetaData.html", "classinviwo_1_1DataFrameMetaData" ],
@@ -697,8 +703,6 @@ var annotated_dup =
       [ "DataInport", "classinviwo_1_1DataInport.html", "classinviwo_1_1DataInport" ],
       [ "DataMapper", "classinviwo_1_1DataMapper.html", "classinviwo_1_1DataMapper" ],
       [ "DataOutport", "classinviwo_1_1DataOutport.html", "classinviwo_1_1DataOutport" ],
-      [ "DataPoint", "classinviwo_1_1DataPoint.html", null ],
-      [ "DataPointBase", "classinviwo_1_1DataPointBase.html", null ],
       [ "DataRangeProperty", "classinviwo_1_1DataRangeProperty.html", "classinviwo_1_1DataRangeProperty" ],
       [ "DataReader", "classinviwo_1_1DataReader.html", "classinviwo_1_1DataReader" ],
       [ "DataReaderException", "classinviwo_1_1DataReaderException.html", null ],
@@ -768,6 +772,8 @@ var annotated_dup =
       [ "EntryExitComponent", "classinviwo_1_1EntryExitComponent.html", "classinviwo_1_1EntryExitComponent" ],
       [ "EntryExitPoints", "classinviwo_1_1EntryExitPoints.html", "classinviwo_1_1EntryExitPoints" ],
       [ "EnumTraits", "structinviwo_1_1EnumTraits.html", null ],
+      [ "EnumTraits< filters::NumberComp >", "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html", null ],
+      [ "EnumTraits< filters::StringComp >", "structinviwo_1_1EnumTraits_3_01filters_1_1StringComp_01_4.html", null ],
       [ "equalPtr", "structinviwo_1_1equalPtr.html", null ],
       [ "Event", "classinviwo_1_1Event.html", "classinviwo_1_1Event" ],
       [ "EventHandler", "classinviwo_1_1EventHandler.html", null ],

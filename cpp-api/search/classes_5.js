@@ -111,7 +111,7 @@ var searchData=
   ['filter_3c_20predicate_2c_20head_2c_20tail_2e_2e_2e_20_3e_108',['Filter&lt; Predicate, Head, Tail... &gt;',['../structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Predicate_00_01Head_00_01Tail_8_8_8_01_4.html',1,'inviwo::dispatching::detail']]],
   ['filter_3c_20predicate_2c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e_109',['Filter&lt; Predicate, std::tuple&lt; Args... &gt; &gt;',['../structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Predicate_00_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html',1,'inviwo::dispatching::detail']]],
   ['filterlistproperty_110',['FilterListProperty',['../classinviwo_1_1FilterListProperty.html',1,'inviwo']]],
-  ['filters_111',['Filters',['../structinviwo_1_1csvfilters_1_1Filters.html',1,'inviwo::csvfilters']]],
+  ['filters_111',['Filters',['../structinviwo_1_1csvfilters_1_1Filters.html',1,'inviwo::csvfilters::Filters'],['../structinviwo_1_1dataframefilters_1_1Filters.html',1,'inviwo::dataframefilters::Filters']]],
   ['finddivisionsresult_112',['FindDivisionsResult',['../structinviwo_1_1animation_1_1FindDivisionsResult.html',1,'inviwo::animation']]],
   ['findedges_113',['FindEdges',['../classinviwo_1_1FindEdges.html',1,'inviwo']]],
   ['firstivwprocessor_114',['FirstIvwProcessor',['../classinviwo_1_1FirstIvwProcessor.html',1,'inviwo']]],

@@ -249,9 +249,6 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::DataMapper", "classinviwo_1_1DataMapper.html", null ],
-    [ "inviwo::DataPointBase", "classinviwo_1_1DataPointBase.html", [
-      [ "inviwo::DataPoint< T >", "classinviwo_1_1DataPoint.html", null ]
-    ] ],
     [ "inviwo::DataReader", "classinviwo_1_1DataReader.html", [
       [ "inviwo::DataReaderType< Mesh >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::AssimpReader", "classinviwo_1_1AssimpReader.html", null ]
@@ -459,6 +456,8 @@ var hierarchy =
     ] ],
     [ "inviwo::algorithm::EntryExitPointsHelper", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html", null ],
     [ "inviwo::EnumTraits< T >", "structinviwo_1_1EnumTraits.html", null ],
+    [ "inviwo::EnumTraits< filters::NumberComp >", "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html", null ],
+    [ "inviwo::EnumTraits< filters::StringComp >", "structinviwo_1_1EnumTraits_3_01filters_1_1StringComp_01_4.html", null ],
     [ "inviwo::util::detail::epsilon< T >", "structinviwo_1_1util_1_1detail_1_1epsilon.html", null ],
     [ "inviwo::equalPtr", "structinviwo_1_1equalPtr.html", null ],
     [ "inviwo::utilgl::BlendModeEquationState::Equation", "structinviwo_1_1utilgl_1_1BlendModeEquationState_1_1Equation.html", null ],
@@ -615,6 +614,7 @@ var hierarchy =
           [ "inviwo::CubeRenderer", "classinviwo_1_1CubeRenderer.html", null ],
           [ "inviwo::DataExport< DataType, PortType >", "classinviwo_1_1DataExport.html", null ],
           [ "inviwo::DataFrameExporter", "classinviwo_1_1DataFrameExporter.html", null ],
+          [ "inviwo::DataFrameFilter", "classinviwo_1_1DataFrameFilter.html", null ],
           [ "inviwo::DataFrameFloat32Converter", "classinviwo_1_1DataFrameFloat32Converter.html", null ],
           [ "inviwo::DataFrameJoin", "classinviwo_1_1DataFrameJoin.html", null ],
           [ "inviwo::DataFrameMetaData", "classinviwo_1_1DataFrameMetaData.html", null ],
@@ -1049,6 +1049,7 @@ var hierarchy =
     [ "inviwo::dispatching::detail::Filter< Predicate, Head, Tail... >", "structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Predicate_00_01Head_00_01Tail_8_8_8_01_4.html", null ],
     [ "inviwo::dispatching::detail::Filter< Predicate, std::tuple< Args... > >", "structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Predicate_00_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html", null ],
     [ "inviwo::csvfilters::Filters", "structinviwo_1_1csvfilters_1_1Filters.html", null ],
+    [ "inviwo::dataframefilters::Filters", "structinviwo_1_1dataframefilters_1_1Filters.html", null ],
     [ "inviwo::animation::FindDivisionsResult", "structinviwo_1_1animation_1_1FindDivisionsResult.html", null ],
     [ "inviwo::ViewEvent::FitData", "structinviwo_1_1ViewEvent_1_1FitData.html", null ],
     [ "inviwo::ViewEvent::FlipUp", "structinviwo_1_1ViewEvent_1_1FlipUp.html", null ],
@@ -1394,7 +1395,7 @@ var hierarchy =
     [ "inviwo::util::detail::is_unsigned_int< T >", "structinviwo_1_1util_1_1detail_1_1is__unsigned__int.html", null ],
     [ "inviwo::ContainerWrapper< T, K >::Item", "structinviwo_1_1ContainerWrapper_1_1Item.html", null ],
     [ "inviwo::SearchDSL< Ts >::Item", "structinviwo_1_1SearchDSL_1_1Item.html", null ],
-    [ "inviwo::csvfilters::ItemFilter", "structinviwo_1_1csvfilters_1_1ItemFilter.html", null ],
+    [ "inviwo::filters::ItemFilter", "structinviwo_1_1filters_1_1ItemFilter.html", null ],
     [ "inviwo::util::sequence< T >::iterator", "structinviwo_1_1util_1_1sequence_1_1iterator.html", null ],
     [ "inviwo::util::detailzip::iterator_tools< T >", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools.html", null ],
     [ "inviwo::util::detailzip::iterator_tools< Iterables >", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools.html", null ],
@@ -1472,10 +1473,10 @@ var hierarchy =
     [ "inviwo::MetaDataOwner", "classinviwo_1_1MetaDataOwner.html", [
       [ "inviwo::Column", "classinviwo_1_1Column.html", [
         [ "inviwo::TemplateColumn< std::uint32_t >", "classinviwo_1_1TemplateColumn.html", [
-          [ "inviwo::CategoricalColumn", "classinviwo_1_1CategoricalColumn.html", null ],
           [ "inviwo::IndexColumn", "classinviwo_1_1IndexColumn.html", null ]
         ] ],
         [ "inviwo::TemplateColumn< uint32_t >", "classinviwo_1_1TemplateColumn.html", null ],
+        [ "inviwo::CategoricalColumn", "classinviwo_1_1CategoricalColumn.html", null ],
         [ "inviwo::TemplateColumn< T >", "classinviwo_1_1TemplateColumn.html", null ]
       ] ],
       [ "inviwo::DataFrame", "classinviwo_1_1DataFrame.html", null ],
@@ -1539,6 +1540,7 @@ var hierarchy =
           [ "inviwo::TemplateOptionProperty< meshutil::CalculateMeshNormalsMode >", "classinviwo_1_1TemplateOptionProperty.html", null ],
           [ "inviwo::TemplateOptionProperty< LayerType >", "classinviwo_1_1TemplateOptionProperty.html", null ],
           [ "inviwo::TemplateOptionProperty< ColormapType >", "classinviwo_1_1TemplateOptionProperty.html", null ],
+          [ "inviwo::TemplateOptionProperty< BrushingMode >", "classinviwo_1_1TemplateOptionProperty.html", null ],
           [ "inviwo::TemplateOptionProperty< JoinType >", "classinviwo_1_1TemplateOptionProperty.html", null ],
           [ "inviwo::TemplateOptionProperty< ColumnMatch >", "classinviwo_1_1TemplateOptionProperty.html", null ],
           [ "inviwo::TemplateOptionProperty< DataRangeMode >", "classinviwo_1_1TemplateOptionProperty.html", null ],
@@ -2800,6 +2802,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< meshutil::CalculateMeshNormalsMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< LayerType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ColormapType >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< BrushingMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< JoinType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ColumnMatch >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< DataRangeMode >", "classinviwo_1_1OptionPropertyOption.html", null ],

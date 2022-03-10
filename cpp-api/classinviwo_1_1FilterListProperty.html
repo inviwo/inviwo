@@ -828,19 +828,17 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 <div class="textblock"><p >A list property with different sub-properties for defining row and item filters. </p>
 <p >This property has a number of prefab objects for adding row and item filter properties (<a class="el" href="classinviwo_1_1BoolCompositeProperty.html" title="A CompositeProperty with an additional check box.">BoolCompositeProperty</a>). A row filter is applied to the entire row of a dataset. Item filters, in contrast, are applied to the individual data items. The distinction between row and item filters is based on the property identifiers.</p>
 <p >Identifiers of the properties for row filters begin with the following names and hold the listed sub-properties:</p><ul>
-<li><code>"emptyLines"</code>: Matches empty lines</li>
-<li><code>"rowBegin"</code>: <a class="el" href="classinviwo_1_1StringProperty.html" title="The StringProperty holds a string as value.">StringProperty</a> <code>match</code> for matching the beginning of a row</li>
-<li><code>"lineRange"</code>: IntMinMaxProperty <code>range</code> for a line range (inclusive)</li>
+<li><code>emptyLines:</code> Matches empty lines</li>
+<li><code>rowBegin:</code> <a class="el" href="classinviwo_1_1StringProperty.html" title="The StringProperty holds a string as value.">StringProperty</a> <code>match</code> for matching the beginning of a row</li>
+<li><code>lineRange:</code> IntMinMaxProperty <code>range</code> for a line range (inclusive)</li>
 </ul>
 <p >Row filter properties also own a <a class="el" href="classinviwo_1_1BoolProperty.html" title="The BoolProperty class provides a property holding boolean values.">BoolProperty</a> <code>filterOnHeader</code>. If true, the filter should be applied to all rows including headers where applicable (for example in the <a class="el" href="classinviwo_1_1CSVReader.html" title="A reader for comma separated value (CSV) files with customizable delimiters and filters....">CSVReader</a>).</p>
-<p >Item filters own an IntProperty @column defining the target column. Identifiers begin with:</p><ul>
-<li><code>"stringItem"</code>: <a class="el" href="classinviwo_1_1StringProperty.html" title="The StringProperty holds a string as value.">StringProperty</a> @match for matching strings and a TemplateOptionProperty&lt;filters::StringComp&gt; @comp for the comparison</li>
-<li><code>"intItem"</code>: IntProperty @value, TemplateOptionProperty&lt;filters::NumberComp&gt; @comp for the comparison</li>
-<li><code>"floatItem"</code>: FloatProperty @value and FloatProperty @epsilon, TemplateOptionProperty&lt;filters::NumberComp&gt; @comp for the comparison</li>
-<li><code>"doubleItem"</code>: DoubleProperty @value and DoubleProperty @epsilon, TemplateOptionProperty&lt;filters::NumberComp&gt; @comp for the comparison</li>
-<li><code>"intRangeItem"</code>: IntMinMaxProperty @range for an inclusive range [min, max]</li>
-<li><code>"floatRangeItem"</code>: FloatMinMaxProperty @range for an inclusive range [min, max]</li>
-<li><code>"doubleRangeItem"</code>: DoubleMinMaxProperty @range for an inclusive range [min, max]</li>
+<p >Item filters own an IntProperty <code>column</code> defining the target column. Identifiers begin with:</p><ul>
+<li><code>stringItem:</code> <a class="el" href="classinviwo_1_1StringProperty.html" title="The StringProperty holds a string as value.">StringProperty</a> <code>match</code> for matching strings and a TemplateOptionProperty&lt;filters::StringComp&gt; <code>comp</code> for the comparison</li>
+<li><code>intItem:</code> Int64Property <code>value</code>, TemplateOptionProperty&lt;filters::NumberComp&gt; <code>comp</code> for the comparison</li>
+<li><code>doubleItem:</code> DoubleProperty <code>value</code> and DoubleProperty @epsilon, TemplateOptionProperty&lt;filters::NumberComp&gt; <code>comp</code> for the comparison</li>
+<li><code>intRangeItem:</code> Int64MinMaxProperty <code>range</code> for an inclusive range [min, max]</li>
+<li><code>doubleRangeItem:</code> DoubleMinMaxProperty <code>range</code> for an inclusive range [min, max]</li>
 </ul>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1CSVReader.html" title="A reader for comma separated value (CSV) files with customizable delimiters and filters....">CSVReader</a> </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>

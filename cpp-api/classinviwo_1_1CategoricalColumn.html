@@ -86,9 +86,10 @@ $(document).ready(function(){initNavTree('classinviwo_1_1CategoricalColumn.html'
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classinviwo_1_1CategoricalColumn-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::CategoricalColumn Class Reference</div></div>
+  <div class="headertitle"><div class="title">inviwo::CategoricalColumn Class Reference<div class="ingroups"><a class="el" href="group__datastructures.html">Datastructures</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -104,171 +105,116 @@ $(document).ready(function(){initNavTree('classinviwo_1_1CategoricalColumn.html'
  <div class="center">
   <img src="classinviwo_1_1CategoricalColumn.png" usemap="#inviwo::CategoricalColumn_map" alt=""/>
   <map id="inviwo::CategoricalColumn_map" name="inviwo::CategoricalColumn_map">
-<area href="classinviwo_1_1TemplateColumn.html" alt="inviwo::TemplateColumn&lt; std::uint32_t &gt;" shape="rect" coords="0,112,236,136"/>
-<area href="classinviwo_1_1Column.html" title="pure interface for representing a data column, i.e. a Buffer with a name" alt="inviwo::Column" shape="rect" coords="0,56,236,80"/>
-<area href="classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get." alt="inviwo::MetaDataOwner" shape="rect" coords="0,0,236,24"/>
+<area href="classinviwo_1_1Column.html" title="Pure interface for representing a data column with a header, optional units, and data range." alt="inviwo::Column" shape="rect" coords="0,56,161,80"/>
+<area href="classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get." alt="inviwo::MetaDataOwner" shape="rect" coords="0,0,161,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a470acc5dd537f04b923f5ea76e69fef2"><td class="memItemLeft" align="right" valign="top"><a id="a470acc5dd537f04b923f5ea76e69fef2" name="a470acc5dd537f04b923f5ea76e69fef2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> = std::uint32_t</td></tr>
+<tr class="separator:a470acc5dd537f04b923f5ea76e69fef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14f6376dadd238a758fb09be87978a8d"><td class="memItemLeft" align="right" valign="top"><a id="a14f6376dadd238a758fb09be87978a8d" name="a14f6376dadd238a758fb09be87978a8d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ConstIterator</b> = <a class="el" href="structinviwo_1_1util_1_1TransformIterator.html">util::TransformIterator</a>&lt; decltype(detail::categoricalTransform(std::declval&lt; const std::vector&lt; std::string &gt; &amp; &gt;())), std::vector&lt; std::uint32_t &gt;::const_iterator &gt;</td></tr>
+<tr class="separator:a14f6376dadd238a758fb09be87978a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aae2a5922f48a7ba11818cfd3c52fc7c0"><td class="memItemLeft" align="right" valign="top"><a id="aae2a5922f48a7ba11818cfd3c52fc7c0" name="aae2a5922f48a7ba11818cfd3c52fc7c0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CategoricalColumn</b> (std::string_view header, const std::vector&lt; std::string &gt; &amp;values={})</td></tr>
-<tr class="separator:aae2a5922f48a7ba11818cfd3c52fc7c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae3e77902bad828accc3f7dfe8731396"><td class="memItemLeft" align="right" valign="top"><a id="aae3e77902bad828accc3f7dfe8731396" name="aae3e77902bad828accc3f7dfe8731396"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CategoricalColumn</b> (const <a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;rhs)=default</td></tr>
-<tr class="separator:aae3e77902bad828accc3f7dfe8731396"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fe04272491ed973ea1d26dbc643417f"><td class="memItemLeft" align="right" valign="top"><a id="a1fe04272491ed973ea1d26dbc643417f" name="a1fe04272491ed973ea1d26dbc643417f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CategoricalColumn</b> (std::string_view header, const std::vector&lt; std::string &gt; &amp;<a class="el" href="classinviwo_1_1CategoricalColumn.html#a9c6063d482146eef8664a4e1f58c90f4">values</a>={}, Unit unit=Unit{}, std::optional&lt; dvec2 &gt; range=std::nullopt)</td></tr>
+<tr class="separator:a1fe04272491ed973ea1d26dbc643417f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26ee4d910c8265294e1c1a363ff162b4"><td class="memItemLeft" align="right" valign="top"><a id="a26ee4d910c8265294e1c1a363ff162b4" name="a26ee4d910c8265294e1c1a363ff162b4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CategoricalColumn</b> (const <a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;rhs)</td></tr>
+<tr class="separator:a26ee4d910c8265294e1c1a363ff162b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a594ba8d16f3b6c2e2d55380661ff7e9d"><td class="memItemLeft" align="right" valign="top"><a id="a594ba8d16f3b6c2e2d55380661ff7e9d" name="a594ba8d16f3b6c2e2d55380661ff7e9d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>CategoricalColumn</b> (const <a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;rhs, const std::vector&lt; std::uint32_t &gt; &amp;rowSelection)</td></tr>
 <tr class="separator:a594ba8d16f3b6c2e2d55380661ff7e9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae111d2371e918bc6c12af452a0d7763c"><td class="memItemLeft" align="right" valign="top"><a id="ae111d2371e918bc6c12af452a0d7763c" name="ae111d2371e918bc6c12af452a0d7763c"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>CategoricalColumn</b> (<a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;&amp;rhs)=default</td></tr>
 <tr class="separator:ae111d2371e918bc6c12af452a0d7763c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a856d339f8a82060e436520d48e466665"><td class="memItemLeft" align="right" valign="top"><a id="a856d339f8a82060e436520d48e466665" name="a856d339f8a82060e436520d48e466665"></a>
-<a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;rhs)=default</td></tr>
-<tr class="separator:a856d339f8a82060e436520d48e466665"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c2b5f0a1bf25416293edbc137e2c6c2"><td class="memItemLeft" align="right" valign="top"><a id="a8c2b5f0a1bf25416293edbc137e2c6c2" name="a8c2b5f0a1bf25416293edbc137e2c6c2"></a>
-<a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;&amp;rhs)=default</td></tr>
-<tr class="separator:a8c2b5f0a1bf25416293edbc137e2c6c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a806b895aefd56f081f8edf358dd35bca"><td class="memItemLeft" align="right" valign="top"><a id="a806b895aefd56f081f8edf358dd35bca" name="a806b895aefd56f081f8edf358dd35bca"></a>
+<a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;rhs)</td></tr>
+<tr class="separator:a806b895aefd56f081f8edf358dd35bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe363d02f04bbbab2f32df65f34d298b"><td class="memItemLeft" align="right" valign="top"><a id="afe363d02f04bbbab2f32df65f34d298b" name="afe363d02f04bbbab2f32df65f34d298b"></a>
+<a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &amp;&amp;rhs)</td></tr>
+<tr class="separator:afe363d02f04bbbab2f32df65f34d298b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad388c7d1c238fc61d7f9c2df80efa0fd"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#ad388c7d1c238fc61d7f9c2df80efa0fd">clone</a> () const override</td></tr>
 <tr class="separator:ad388c7d1c238fc61d7f9c2df80efa0fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67f14cc918a7154f35ef4c59f9db2314"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a67f14cc918a7154f35ef4c59f9db2314">clone</a> (const std::vector&lt; std::uint32_t &gt; &amp;rowSelection) const override</td></tr>
 <tr class="separator:a67f14cc918a7154f35ef4c59f9db2314"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e26b0665a2770dad155bc6bd897fe65"><td class="memItemLeft" align="right" valign="top">virtual ColumnType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a9e26b0665a2770dad155bc6bd897fe65">getColumnType</a> () const override</td></tr>
 <tr class="separator:a9e26b0665a2770dad155bc6bd897fe65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1ef360a4eb5297b719b6b2b680d14af"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#ad1ef360a4eb5297b719b6b2b680d14af">getAsString</a> (size_t idx) const override</td></tr>
-<tr class="separator:ad1ef360a4eb5297b719b6b2b680d14af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9ecf1d5fc7a4eba900f822728ee5e8e"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataPointBase.html">DataPointBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#aa9ecf1d5fc7a4eba900f822728ee5e8e">get</a> (size_t idx, bool getStringsAsStrings) const override</td></tr>
-<tr class="memdesc:aa9ecf1d5fc7a4eba900f822728ee5e8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns either the categorical value, i.e. a number representation, or the actual string for the given index.  <a href="classinviwo_1_1CategoricalColumn.html#aa9ecf1d5fc7a4eba900f822728ee5e8e">More...</a><br /></td></tr>
-<tr class="separator:aa9ecf1d5fc7a4eba900f822728ee5e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41c33b6a705d97916354c7baa78ff816"><td class="memItemLeft" align="right" valign="top"><a id="a41c33b6a705d97916354c7baa78ff816" name="a41c33b6a705d97916354c7baa78ff816"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set</b> (size_t idx, const std::string &amp;str)</td></tr>
-<tr class="separator:a41c33b6a705d97916354c7baa78ff816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad00882b2ef1ca7b83899800b67f8bd24"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#ad00882b2ef1ca7b83899800b67f8bd24">getHeader</a> () const override</td></tr>
+<tr class="separator:ad00882b2ef1ca7b83899800b67f8bd24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea999db69cd6db477ab4c0276a39b95e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#aea999db69cd6db477ab4c0276a39b95e">setHeader</a> (std::string_view header) override</td></tr>
+<tr class="separator:aea999db69cd6db477ab4c0276a39b95e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab59c299cd36bc3faa534e3af2d8b8d0c"><td class="memItemLeft" align="right" valign="top">virtual Unit&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#ab59c299cd36bc3faa534e3af2d8b8d0c">getUnit</a> () const override</td></tr>
+<tr class="separator:ab59c299cd36bc3faa534e3af2d8b8d0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5af14bfe64522207736fc6ffbf6067da"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a5af14bfe64522207736fc6ffbf6067da">setUnit</a> (Unit unit) override</td></tr>
+<tr class="separator:a5af14bfe64522207736fc6ffbf6067da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a399ed32c8453256a62e5613170cdfd94"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a399ed32c8453256a62e5613170cdfd94">setCustomRange</a> (std::optional&lt; dvec2 &gt; range) override</td></tr>
+<tr class="separator:a399ed32c8453256a62e5613170cdfd94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebe1e00c8459030f834e2dac92c3fb1a"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; dvec2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#aebe1e00c8459030f834e2dac92c3fb1a">getCustomRange</a> () const override</td></tr>
+<tr class="separator:aebe1e00c8459030f834e2dac92c3fb1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2dcb27831990811ae9f331a790a896a"><td class="memItemLeft" align="right" valign="top">virtual dvec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#af2dcb27831990811ae9f331a790a896a">getDataRange</a> () const override</td></tr>
+<tr class="separator:af2dcb27831990811ae9f331a790a896a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a894cef3ba21a09914c9c48cbc16d8c5c"><td class="memItemLeft" align="right" valign="top">virtual dvec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a894cef3ba21a09914c9c48cbc16d8c5c">getRange</a> () const override</td></tr>
+<tr class="separator:a894cef3ba21a09914c9c48cbc16d8c5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a3c88c9e337cad58502c45bc45946f"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#ae4a3c88c9e337cad58502c45bc45946f">getSize</a> () const override</td></tr>
+<tr class="separator:ae4a3c88c9e337cad58502c45bc45946f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a680331e6964a6081b5bb8aaa2e85ab2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a680331e6964a6081b5bb8aaa2e85ab2c">set</a> (size_t idx, std::string_view str)</td></tr>
+<tr class="separator:a680331e6964a6081b5bb8aaa2e85ab2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe35d8889678fd0fe798a3ecda3db541"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#abe35d8889678fd0fe798a3ecda3db541">set</a> (size_t idx, std::uint32_t id)</td></tr>
+<tr class="separator:abe35d8889678fd0fe798a3ecda3db541"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61627f292a618cfe507b1eafb7af3f17"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a61627f292a618cfe507b1eafb7af3f17">add</a> (std::string_view value) override</td></tr>
-<tr class="memdesc:a61627f292a618cfe507b1eafb7af3f17"><td class="mdescLeft">&#160;</td><td class="mdescRight">converts given value to type T, which is added to the column  <a href="classinviwo_1_1CategoricalColumn.html#a61627f292a618cfe507b1eafb7af3f17">More...</a><br /></td></tr>
 <tr class="separator:a61627f292a618cfe507b1eafb7af3f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90bf08445b6759a98de05412d9813924"><td class="memItemLeft" align="right" valign="top"><a id="a90bf08445b6759a98de05412d9813924" name="a90bf08445b6759a98de05412d9813924"></a>
 AddMany&#160;</td><td class="memItemRight" valign="bottom"><b>addMany</b> ()</td></tr>
 <tr class="separator:a90bf08445b6759a98de05412d9813924"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f027b4e64a1e090b42e06587c335d7b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a7f027b4e64a1e090b42e06587c335d7b">append</a> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;col) override</td></tr>
-<tr class="memdesc:a7f027b4e64a1e090b42e06587c335d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">appends all rows from column <code>col</code> and builds a union of all categorical values  <a href="classinviwo_1_1CategoricalColumn.html#a7f027b4e64a1e090b42e06587c335d7b">More...</a><br /></td></tr>
+<tr class="memdesc:a7f027b4e64a1e090b42e06587c335d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">and builds a union of all categorical values  <a href="classinviwo_1_1CategoricalColumn.html#a7f027b4e64a1e090b42e06587c335d7b">More...</a><br /></td></tr>
 <tr class="separator:a7f027b4e64a1e090b42e06587c335d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a387def2663af6d9ec8b8007d512d729d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a387def2663af6d9ec8b8007d512d729d">append</a> (const std::vector&lt; std::string &gt; &amp;data)</td></tr>
-<tr class="memdesc:a387def2663af6d9ec8b8007d512d729d"><td class="mdescLeft">&#160;</td><td class="mdescRight">append the categorical values given in <code>data</code>  <a href="classinviwo_1_1CategoricalColumn.html#a387def2663af6d9ec8b8007d512d729d">More...</a><br /></td></tr>
+<tr class="memdesc:a387def2663af6d9ec8b8007d512d729d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append the categorical values given in <code>data</code>.  <a href="classinviwo_1_1CategoricalColumn.html#a387def2663af6d9ec8b8007d512d729d">More...</a><br /></td></tr>
 <tr class="separator:a387def2663af6d9ec8b8007d512d729d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a129393fc45d27ee56da2341124d8c3cb"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a129393fc45d27ee56da2341124d8c3cb">getCategories</a> () const</td></tr>
 <tr class="separator:a129393fc45d27ee56da2341124d8c3cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:accdcb8ddd4d5fc91dbd3b7afd735addc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#accdcb8ddd4d5fc91dbd3b7afd735addc">getValues</a> () const</td></tr>
-<tr class="memdesc:accdcb8ddd4d5fc91dbd3b7afd735addc"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns column contents as list of categorical values  <a href="classinviwo_1_1CategoricalColumn.html#accdcb8ddd4d5fc91dbd3b7afd735addc">More...</a><br /></td></tr>
+<tr class="memdesc:accdcb8ddd4d5fc91dbd3b7afd735addc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns column contents as list of categorical values.  <a href="classinviwo_1_1CategoricalColumn.html#accdcb8ddd4d5fc91dbd3b7afd735addc">More...</a><br /></td></tr>
 <tr class="separator:accdcb8ddd4d5fc91dbd3b7afd735addc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c6063d482146eef8664a4e1f58c90f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structinviwo_1_1util_1_1iter__range.html">util::iter_range</a>&lt; <a class="el" href="structinviwo_1_1util_1_1TransformIterator.html">ConstIterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a9c6063d482146eef8664a4e1f58c90f4">values</a> () const</td></tr>
+<tr class="separator:a9c6063d482146eef8664a4e1f58c90f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb53092033c650af6c5ba82ac2f5de0c"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#afb53092033c650af6c5ba82ac2f5de0c">addCategory</a> (std::string_view cat)</td></tr>
-<tr class="memdesc:afb53092033c650af6c5ba82ac2f5de0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">add a category <code>cat</code>. It will not be added if the category already exists.  <a href="classinviwo_1_1CategoricalColumn.html#afb53092033c650af6c5ba82ac2f5de0c">More...</a><br /></td></tr>
+<tr class="memdesc:afb53092033c650af6c5ba82ac2f5de0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a category <code>cat</code>. It will not be added if the category already exists.  <a href="classinviwo_1_1CategoricalColumn.html#afb53092033c650af6c5ba82ac2f5de0c">More...</a><br /></td></tr>
 <tr class="separator:afb53092033c650af6c5ba82ac2f5de0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1TemplateColumn"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1TemplateColumn')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1TemplateColumn.html">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a></td></tr>
-<tr class="memitem:ac2793662e6702036c347c4a3ad701e31 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="ac2793662e6702036c347c4a3ad701e31" name="ac2793662e6702036c347c4a3ad701e31"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (std::string_view header, std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&lt; std::uint32_t &gt; &gt; buffer=std::make_shared&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&lt; std::uint32_t &gt; &gt;(), Unit unit=Unit{}, std::optional&lt; dvec2 &gt; range=std::nullopt)</td></tr>
-<tr class="separator:ac2793662e6702036c347c4a3ad701e31 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a09950c0c30f39547603b2a37ebbe6f inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a6a09950c0c30f39547603b2a37ebbe6f" name="a6a09950c0c30f39547603b2a37ebbe6f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (std::string_view header, std::vector&lt; std::uint32_t &gt; data, Unit unit=Unit{}, std::optional&lt; dvec2 &gt; range=std::nullopt)</td></tr>
-<tr class="separator:a6a09950c0c30f39547603b2a37ebbe6f inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b98aab56b240b86bb785c24fad8d922 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a5b98aab56b240b86bb785c24fad8d922" name="a5b98aab56b240b86bb785c24fad8d922"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (std::string_view header, size_t size, Unit unit=Unit{}, std::optional&lt; dvec2 &gt; range=std::nullopt)</td></tr>
-<tr class="separator:a5b98aab56b240b86bb785c24fad8d922 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3292b6653a01f1de5c3f6adcb8ddc739 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a3292b6653a01f1de5c3f6adcb8ddc739" name="a3292b6653a01f1de5c3f6adcb8ddc739"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (const <a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;rhs)</td></tr>
-<tr class="separator:a3292b6653a01f1de5c3f6adcb8ddc739 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe731c791915264d34a243e16cc16897 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="afe731c791915264d34a243e16cc16897" name="afe731c791915264d34a243e16cc16897"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (const <a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;rhs, const std::vector&lt; std::uint32_t &gt; &amp;rowSelection)</td></tr>
-<tr class="separator:afe731c791915264d34a243e16cc16897 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96b3d9268eeddc5f7de7ad86ba331656 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a96b3d9268eeddc5f7de7ad86ba331656" name="a96b3d9268eeddc5f7de7ad86ba331656"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (<a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;&amp;rhs)</td></tr>
-<tr class="separator:a96b3d9268eeddc5f7de7ad86ba331656 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb052cb28e03dfbf93e2e3c51c5e1b4f inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="acb052cb28e03dfbf93e2e3c51c5e1b4f" name="acb052cb28e03dfbf93e2e3c51c5e1b4f"></a>
-<a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;rhs)</td></tr>
-<tr class="separator:acb052cb28e03dfbf93e2e3c51c5e1b4f inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb3db8a8067d5f7a2cf8d9aebaeeff5c inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="adb3db8a8067d5f7a2cf8d9aebaeeff5c" name="adb3db8a8067d5f7a2cf8d9aebaeeff5c"></a>
-<a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;&amp;rhs)</td></tr>
-<tr class="separator:adb3db8a8067d5f7a2cf8d9aebaeeff5c inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af217e05ee092e922fdab12ef768f7664 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#af217e05ee092e922fdab12ef768f7664">clone</a> () const override</td></tr>
-<tr class="separator:af217e05ee092e922fdab12ef768f7664 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53b7b88af40ca4db7f317d831c3d44d2 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a53b7b88af40ca4db7f317d831c3d44d2">clone</a> (const std::vector&lt; std::uint32_t &gt; &amp;rowSelection) const override</td></tr>
-<tr class="separator:a53b7b88af40ca4db7f317d831c3d44d2 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5acfeabbbb2d8db4dc44b5a10e292e88 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual ColumnType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a5acfeabbbb2d8db4dc44b5a10e292e88">getColumnType</a> () const override</td></tr>
-<tr class="separator:a5acfeabbbb2d8db4dc44b5a10e292e88 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6208b6b5bb3b2b317fe8346f5ba34f88 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a6208b6b5bb3b2b317fe8346f5ba34f88">getHeader</a> () const override</td></tr>
-<tr class="separator:a6208b6b5bb3b2b317fe8346f5ba34f88 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a370d673b5316301a934290fe392aafe5 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a370d673b5316301a934290fe392aafe5">setHeader</a> (std::string_view header) override</td></tr>
-<tr class="separator:a370d673b5316301a934290fe392aafe5 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae847c6782305f834c78a28c641e5dc87 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual Unit&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#ae847c6782305f834c78a28c641e5dc87">getUnit</a> () const override</td></tr>
-<tr class="separator:ae847c6782305f834c78a28c641e5dc87 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b9a83a48c9ec79c4b8183e22defcfbe inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a9b9a83a48c9ec79c4b8183e22defcfbe">setUnit</a> (Unit unit) override</td></tr>
-<tr class="separator:a9b9a83a48c9ec79c4b8183e22defcfbe inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40e1bec2db11cd8c28e7044216a6058b inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a40e1bec2db11cd8c28e7044216a6058b">setCustomRange</a> (std::optional&lt; dvec2 &gt; range) override</td></tr>
-<tr class="separator:a40e1bec2db11cd8c28e7044216a6058b inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af69f60d076b92c7aa355c4ae02d72258 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; dvec2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#af69f60d076b92c7aa355c4ae02d72258">getCustomRange</a> () const override</td></tr>
-<tr class="separator:af69f60d076b92c7aa355c4ae02d72258 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac964effc12c71abc4b4cc418beaf4410 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual dvec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#ac964effc12c71abc4b4cc418beaf4410">getDataRange</a> () const override</td></tr>
-<tr class="separator:ac964effc12c71abc4b4cc418beaf4410 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bb0739dc40a2718ee53ff2eb4b195e5 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual dvec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a0bb0739dc40a2718ee53ff2eb4b195e5">getRange</a> () const override</td></tr>
-<tr class="separator:a0bb0739dc40a2718ee53ff2eb4b195e5 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1611f355fe5d223b03dc02deeb28152d inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a1611f355fe5d223b03dc02deeb28152d" name="a1611f355fe5d223b03dc02deeb28152d"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (const std::uint32_t &amp;value)</td></tr>
-<tr class="separator:a1611f355fe5d223b03dc02deeb28152d inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34d52d630091b79b103bf29d37f948e2 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2">add</a> (std::string_view value) override</td></tr>
-<tr class="memdesc:a34d52d630091b79b103bf29d37f948e2 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="mdescLeft">&#160;</td><td class="mdescRight">converts given value to type T, which is added to the column  <a href="classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2">More...</a><br /></td></tr>
-<tr class="separator:a34d52d630091b79b103bf29d37f948e2 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1f1eb4cd62c486e82295c74d2187245 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#ae1f1eb4cd62c486e82295c74d2187245">append</a> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;col) override</td></tr>
-<tr class="memdesc:ae1f1eb4cd62c486e82295c74d2187245 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="mdescLeft">&#160;</td><td class="mdescRight">appends all rows from column <code>col</code>  <a href="classinviwo_1_1TemplateColumn.html#ae1f1eb4cd62c486e82295c74d2187245">More...</a><br /></td></tr>
-<tr class="separator:ae1f1eb4cd62c486e82295c74d2187245 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a302afbbc0d342488a6f61261e74ea7bf inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a302afbbc0d342488a6f61261e74ea7bf" name="a302afbbc0d342488a6f61261e74ea7bf"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set</b> (size_t idx, const std::uint32_t &amp;value)</td></tr>
-<tr class="separator:a302afbbc0d342488a6f61261e74ea7bf inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a808f55cf60cd9c49f14d688d488bac7f inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a808f55cf60cd9c49f14d688d488bac7f" name="a808f55cf60cd9c49f14d688d488bac7f"></a>
-std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> (size_t idx) const</td></tr>
-<tr class="separator:a808f55cf60cd9c49f14d688d488bac7f inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6eac726b5eeabc1f56bf76e5bb72ffa inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataPointBase.html">DataPointBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#ab6eac726b5eeabc1f56bf76e5bb72ffa">get</a> (size_t idx, bool getStringsAsStrings) const override</td></tr>
-<tr class="memdesc:ab6eac726b5eeabc1f56bf76e5bb72ffa inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the data value for the given index.  <a href="classinviwo_1_1TemplateColumn.html#ab6eac726b5eeabc1f56bf76e5bb72ffa">More...</a><br /></td></tr>
-<tr class="separator:ab6eac726b5eeabc1f56bf76e5bb72ffa inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebca7044fd3902656f755666d581e6a0 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="aebca7044fd3902656f755666d581e6a0" name="aebca7044fd3902656f755666d581e6a0"></a>
-std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_t idx) const</td></tr>
-<tr class="separator:aebca7044fd3902656f755666d581e6a0 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b88914b75eec9ca0a0b393476280457 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a9b88914b75eec9ca0a0b393476280457">getAsDouble</a> (size_t idx) const override</td></tr>
-<tr class="separator:a9b88914b75eec9ca0a0b393476280457 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ec6a62123705ff0b371cae60fba920f inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual dvec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a3ec6a62123705ff0b371cae60fba920f">getAsDVec2</a> (size_t idx) const override</td></tr>
-<tr class="separator:a3ec6a62123705ff0b371cae60fba920f inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae486511a4234ba68f8d5226d748a2220 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual dvec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#ae486511a4234ba68f8d5226d748a2220">getAsDVec3</a> (size_t idx) const override</td></tr>
-<tr class="separator:ae486511a4234ba68f8d5226d748a2220 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f3ab6be24e828e902ac55f561b52fc0 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual dvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a3f3ab6be24e828e902ac55f561b52fc0">getAsDVec4</a> (size_t idx) const override</td></tr>
-<tr class="separator:a3f3ab6be24e828e902ac55f561b52fc0 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2129d6a5de2ca37183d0687039da0dfd inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a2129d6a5de2ca37183d0687039da0dfd" name="a2129d6a5de2ca37183d0687039da0dfd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setBuffer</b> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&lt; std::uint32_t &gt; &gt; buffer)</td></tr>
-<tr class="separator:a2129d6a5de2ca37183d0687039da0dfd inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96c4dcf82a4431721ee22a4b28b0beeb inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a96c4dcf82a4431721ee22a4b28b0beeb">getAsString</a> (size_t idx) const override</td></tr>
-<tr class="separator:a96c4dcf82a4431721ee22a4b28b0beeb inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe82aae9f8c460133a0d78adac82eb56 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#afe82aae9f8c460133a0d78adac82eb56">getBuffer</a> () override</td></tr>
-<tr class="separator:afe82aae9f8c460133a0d78adac82eb56 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adab51a63c3ee7b6a8263b94011c5a85c inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#adab51a63c3ee7b6a8263b94011c5a85c">getBuffer</a> () const override</td></tr>
-<tr class="separator:adab51a63c3ee7b6a8263b94011c5a85c inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74da32cea44472472dc05c6cd48978c8 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a74da32cea44472472dc05c6cd48978c8" name="a74da32cea44472472dc05c6cd48978c8"></a>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:a1da72e44b28f4ccc158c54d8dac66bf9"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a1da72e44b28f4ccc158c54d8dac66bf9">get</a> (size_t idx) const</td></tr>
+<tr class="separator:a1da72e44b28f4ccc158c54d8dac66bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1ef360a4eb5297b719b6b2b680d14af"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#ad1ef360a4eb5297b719b6b2b680d14af">getAsString</a> (size_t idx) const override</td></tr>
+<tr class="separator:ad1ef360a4eb5297b719b6b2b680d14af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:ab2b3cda238816945d04b6e035e971747"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#ab2b3cda238816945d04b6e035e971747">getId</a> (size_t idx) const</td></tr>
+<tr class="separator:ab2b3cda238816945d04b6e035e971747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68ede7fcb771bd07d23ba14dc2e6dcbc"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a68ede7fcb771bd07d23ba14dc2e6dcbc">getAsDouble</a> (size_t idx) const override</td></tr>
+<tr class="separator:a68ede7fcb771bd07d23ba14dc2e6dcbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:a19bfadf741f8bf965890f2879c0e4642"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structinviwo_1_1util_1_1TransformIterator.html">ConstIterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#a19bfadf741f8bf965890f2879c0e4642">begin</a> () const</td></tr>
+<tr class="separator:a19bfadf741f8bf965890f2879c0e4642"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1021b52656d93e8344717d7bf327503"><td class="memItemLeft" align="right" valign="top"><a id="ad1021b52656d93e8344717d7bf327503" name="ad1021b52656d93e8344717d7bf327503"></a>
+<a class="el" href="structinviwo_1_1util_1_1TransformIterator.html">ConstIterator</a>&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const</td></tr>
+<tr class="separator:ad1021b52656d93e8344717d7bf327503"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:af538de72574ec9a5d7e5fb4c76ec94d8"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#af538de72574ec9a5d7e5fb4c76ec94d8">getBuffer</a> () override</td></tr>
+<tr class="separator:af538de72574ec9a5d7e5fb4c76ec94d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ce6e97355f135168748690671562c0"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CategoricalColumn.html#ae6ce6e97355f135168748690671562c0">getBuffer</a> () const override</td></tr>
+<tr class="separator:ae6ce6e97355f135168748690671562c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d87eee367ef9e8e61cc0fc9853e8f03"><td class="memItemLeft" align="right" valign="top"><a id="a4d87eee367ef9e8e61cc0fc9853e8f03" name="a4d87eee367ef9e8e61cc0fc9853e8f03"></a>
 std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&lt; std::uint32_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getTypedBuffer</b> ()</td></tr>
-<tr class="separator:a74da32cea44472472dc05c6cd48978c8 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6925ecc68e40847371fb34ceaae22ec1 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a6925ecc68e40847371fb34ceaae22ec1" name="a6925ecc68e40847371fb34ceaae22ec1"></a>
+<tr class="separator:a4d87eee367ef9e8e61cc0fc9853e8f03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a916274b6db846dbc86229312b8e866ab"><td class="memItemLeft" align="right" valign="top"><a id="a916274b6db846dbc86229312b8e866ab" name="a916274b6db846dbc86229312b8e866ab"></a>
 std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&lt; std::uint32_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getTypedBuffer</b> () const</td></tr>
-<tr class="separator:a6925ecc68e40847371fb34ceaae22ec1 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e624472d628d8dffe12ccfb19642c55 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateColumn.html#a1e624472d628d8dffe12ccfb19642c55">getSize</a> () const override</td></tr>
-<tr class="separator:a1e624472d628d8dffe12ccfb19642c55 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5a47d866e561a38e4f9aeaca526a552 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="ab5a47d866e561a38e4f9aeaca526a552" name="ab5a47d866e561a38e4f9aeaca526a552"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> ()</td></tr>
-<tr class="separator:ab5a47d866e561a38e4f9aeaca526a552 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad04068375526e54189aea867d59a87de inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="ad04068375526e54189aea867d59a87de" name="ad04068375526e54189aea867d59a87de"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const</td></tr>
-<tr class="separator:ad04068375526e54189aea867d59a87de inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba526aad5c4c114db13637983731966e inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="aba526aad5c4c114db13637983731966e" name="aba526aad5c4c114db13637983731966e"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> ()</td></tr>
-<tr class="separator:aba526aad5c4c114db13637983731966e inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0dcbe69a16bc55f05bb0e3a7952e419d inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a0dcbe69a16bc55f05bb0e3a7952e419d" name="a0dcbe69a16bc55f05bb0e3a7952e419d"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const</td></tr>
-<tr class="separator:a0dcbe69a16bc55f05bb0e3a7952e419d inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a916274b6db846dbc86229312b8e866ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fb4527145c62b0b080e958bc6002466"><td class="memItemLeft" align="right" valign="top"><a id="a7fb4527145c62b0b080e958bc6002466" name="a7fb4527145c62b0b080e958bc6002466"></a>
 virtual <a class="el" href="classinviwo_1_1Column.html">Column</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const =0</td></tr>
 <tr class="separator:a7fb4527145c62b0b080e958bc6002466"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -301,10 +247,8 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setUnit</b> (
 <tr class="memitem:a55601805f2ba451aac716fd4062898d4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Column.html#a55601805f2ba451aac716fd4062898d4">add</a> (std::string_view value)=0</td></tr>
 <tr class="separator:a55601805f2ba451aac716fd4062898d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5aef9c57fade6598d41d0320bdd4a363"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Column.html#a5aef9c57fade6598d41d0320bdd4a363">append</a> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;col)=0</td></tr>
-<tr class="memdesc:a5aef9c57fade6598d41d0320bdd4a363"><td class="mdescLeft">&#160;</td><td class="mdescRight">appends all rows from column <code>col</code>  <a href="classinviwo_1_1Column.html#a5aef9c57fade6598d41d0320bdd4a363">More...</a><br /></td></tr>
 <tr class="separator:a5aef9c57fade6598d41d0320bdd4a363"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad60590aa5efc9c79fe94c4a5dd9f191d"><td class="memItemLeft" align="right" valign="top"><a id="ad60590aa5efc9c79fe94c4a5dd9f191d" name="ad60590aa5efc9c79fe94c4a5dd9f191d"></a>
-virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getBuffer</b> ()=0</td></tr>
+<tr class="memitem:ad60590aa5efc9c79fe94c4a5dd9f191d"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Column.html#ad60590aa5efc9c79fe94c4a5dd9f191d">getBuffer</a> ()=0</td></tr>
 <tr class="separator:ad60590aa5efc9c79fe94c4a5dd9f191d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56175ba64a3edb7f8f3f54582bbf6c17"><td class="memItemLeft" align="right" valign="top"><a id="a56175ba64a3edb7f8f3f54582bbf6c17" name="a56175ba64a3edb7f8f3f54582bbf6c17"></a>
 virtual std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getBuffer</b> () const =0</td></tr>
@@ -315,20 +259,9 @@ virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b>
 <tr class="memitem:ad8a1f6ad45e03a1c227594a13b3a2b93"><td class="memItemLeft" align="right" valign="top"><a id="ad8a1f6ad45e03a1c227594a13b3a2b93" name="ad8a1f6ad45e03a1c227594a13b3a2b93"></a>
 virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDouble</b> (size_t idx) const =0</td></tr>
 <tr class="separator:ad8a1f6ad45e03a1c227594a13b3a2b93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add4f7df35d6fc2096b944121dbea4c51"><td class="memItemLeft" align="right" valign="top"><a id="add4f7df35d6fc2096b944121dbea4c51" name="add4f7df35d6fc2096b944121dbea4c51"></a>
-virtual dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDVec2</b> (size_t idx) const =0</td></tr>
-<tr class="separator:add4f7df35d6fc2096b944121dbea4c51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9eb4cd0edfa39d02a5a1b643eae1b95"><td class="memItemLeft" align="right" valign="top"><a id="ad9eb4cd0edfa39d02a5a1b643eae1b95" name="ad9eb4cd0edfa39d02a5a1b643eae1b95"></a>
-virtual dvec3&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDVec3</b> (size_t idx) const =0</td></tr>
-<tr class="separator:ad9eb4cd0edfa39d02a5a1b643eae1b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3430df7eb8c315a70bd093e6db6fa4e5"><td class="memItemLeft" align="right" valign="top"><a id="a3430df7eb8c315a70bd093e6db6fa4e5" name="a3430df7eb8c315a70bd093e6db6fa4e5"></a>
-virtual dvec4&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDVec4</b> (size_t idx) const =0</td></tr>
-<tr class="separator:a3430df7eb8c315a70bd093e6db6fa4e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46322e9c6441cbe1de7953a2753266b3"><td class="memItemLeft" align="right" valign="top"><a id="a46322e9c6441cbe1de7953a2753266b3" name="a46322e9c6441cbe1de7953a2753266b3"></a>
 virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getAsString</b> (size_t idx) const =0</td></tr>
 <tr class="separator:a46322e9c6441cbe1de7953a2753266b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad944ff6c94efca79f35ec390b561bf08"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataPointBase.html">DataPointBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Column.html#ad944ff6c94efca79f35ec390b561bf08">get</a> (size_t idx, bool getStringsAsStrings) const =0</td></tr>
-<tr class="separator:ad944ff6c94efca79f35ec390b561bf08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1MetaDataOwner"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1MetaDataOwner')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1MetaDataOwner.html">inviwo::MetaDataOwner</a></td></tr>
 <tr class="memitem:a4f12e6cd72de9cd307f35224b2554744 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memItemLeft" align="right" valign="top"><a id="a4f12e6cd72de9cd307f35224b2554744" name="a4f12e6cd72de9cd307f35224b2554744"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (const <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;rhs)=default</td></tr>
@@ -385,23 +318,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_types_classinviwo_1_1TemplateColumn"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classinviwo_1_1TemplateColumn')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classinviwo_1_1TemplateColumn.html">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a></td></tr>
-<tr class="memitem:a9c06b2042eeaa5298f001fd3ce7fb62e inherit pub_types_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a9c06b2042eeaa5298f001fd3ce7fb62e" name="a9c06b2042eeaa5298f001fd3ce7fb62e"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> = std::uint32_t</td></tr>
-<tr class="separator:a9c06b2042eeaa5298f001fd3ce7fb62e inherit pub_types_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classinviwo_1_1TemplateColumn"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classinviwo_1_1TemplateColumn')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1TemplateColumn.html">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a></td></tr>
-<tr class="memitem:a6fc1ca4c60a8ba8c9ed2590783fbfdac inherit pro_attribs_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="a6fc1ca4c60a8ba8c9ed2590783fbfdac" name="a6fc1ca4c60a8ba8c9ed2590783fbfdac"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>header_</b></td></tr>
-<tr class="separator:a6fc1ca4c60a8ba8c9ed2590783fbfdac inherit pro_attribs_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcf7e63bbfbf31fae222d05babc0a6f2 inherit pro_attribs_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="abcf7e63bbfbf31fae222d05babc0a6f2" name="abcf7e63bbfbf31fae222d05babc0a6f2"></a>
-Unit&#160;</td><td class="memItemRight" valign="bottom"><b>unit_</b></td></tr>
-<tr class="separator:abcf7e63bbfbf31fae222d05babc0a6f2 inherit pro_attribs_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5e165440ef3cfb1b05c1d6685ef4aad inherit pro_attribs_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="ab5e165440ef3cfb1b05c1d6685ef4aad" name="ab5e165440ef3cfb1b05c1d6685ef4aad"></a>
-std::optional&lt; dvec2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>range_</b></td></tr>
-<tr class="separator:ab5e165440ef3cfb1b05c1d6685ef4aad inherit pro_attribs_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accd2a2a955eaf259d30c9344fda77f5d inherit pro_attribs_classinviwo_1_1TemplateColumn"><td class="memItemLeft" align="right" valign="top"><a id="accd2a2a955eaf259d30c9344fda77f5d" name="accd2a2a955eaf259d30c9344fda77f5d"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&lt; std::uint32_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>buffer_</b></td></tr>
-<tr class="separator:accd2a2a955eaf259d30c9344fda77f5d inherit pro_attribs_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1MetaDataOwner"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classinviwo_1_1MetaDataOwner')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1MetaDataOwner.html">inviwo::MetaDataOwner</a></td></tr>
 <tr class="memitem:a7b331cee0264fea40c3649b9a4ba1815 inherit pro_attribs_classinviwo_1_1MetaDataOwner"><td class="memItemLeft" align="right" valign="top"><a id="a7b331cee0264fea40c3649b9a4ba1815" name="a7b331cee0264fea40c3649b9a4ba1815"></a>
 <a class="el" href="classinviwo_1_1MetaDataMap.html">MetaDataMap</a>&#160;</td><td class="memItemRight" valign="bottom"><b>metaData_</b></td></tr>
@@ -410,9 +326,7 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Specialized data column representing categorical values, i.e. strings. Categorical values are internally mapped to a number representation. </p>
 <p >For example: The data column "blue", "blue", "red", "yellow" might internally be represented by 0, 0, 1, 2. The original string values can be accessed using CategoricalColumn::get(index, true)</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1TemplateColumn.html" title="Data column used for plotting which represents a named buffer of type T. The name is used as column h...">TemplateColumn</a>, </dd>
-<dd>
-<a class="el" href="classinviwo_1_1CategoricalColumn.html#aa9ecf1d5fc7a4eba900f822728ee5e8e" title="returns either the categorical value, i.e. a number representation, or the actual string for the give...">CategoricalColumn::get()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1CategoricalColumn.html#a1da72e44b28f4ccc158c54d8dac66bf9">CategoricalColumn::get()</a> </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a61627f292a618cfe507b1eafb7af3f17" name="a61627f292a618cfe507b1eafb7af3f17"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a61627f292a618cfe507b1eafb7af3f17">&#9670;&nbsp;</a></span>add()</h2>
@@ -438,21 +352,7 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
 </table>
 </div><div class="memdoc">
 
-<p>converts given value to type T, which is added to the column </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">value</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classinviwo_1_1InvalidConversion.html">InvalidConversion</a></td><td>if the value cannot be converted to T </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
 
 </div>
 </div>
@@ -472,7 +372,7 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
       </table>
 </div><div class="memdoc">
 
-<p>add a category <code>cat</code>. It will not be added if the category already exists. </p>
+<p>Add a category <code>cat</code>. It will not be added if the category already exists. </p>
 <dl class="section return"><dt>Returns</dt><dd>index of the category </dd></dl>
 
 </div>
@@ -501,7 +401,7 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
 </table>
 </div><div class="memdoc">
 
-<p>appends all rows from column <code>col</code> and builds a union of all categorical values </p>
+<p>and builds a union of all categorical values </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">col</td><td></td></tr>
@@ -515,7 +415,7 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1TemplateColumn.html#ae1f1eb4cd62c486e82295c74d2187245">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Column.html#a5aef9c57fade6598d41d0320bdd4a363">inviwo::Column</a>.</p>
 
 </div>
 </div>
@@ -535,13 +435,32 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
       </table>
 </div><div class="memdoc">
 
-<p>append the categorical values given in <code>data</code> </p>
+<p>Append the categorical values given in <code>data</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>categorical values </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a19bfadf741f8bf965890f2879c0e4642" name="a19bfadf741f8bf965890f2879c0e4642"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19bfadf741f8bf965890f2879c0e4642">&#9670;&nbsp;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structinviwo_1_1util_1_1TransformIterator.html">ConstIterator</a> inviwo::CategoricalColumn::begin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Returns a const iterator over all rows of the column holding the corresponding categorical values as <code>const std::string&amp;</code>. </p><dl class="section return"><dt>Returns</dt><dd>iterator over categorical values stored in the column </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1CategoricalColumn.html#a9c6063d482146eef8664a4e1f58c90f4">values</a> </dd></dl>
 
 </div>
 </div>
@@ -568,7 +487,7 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1TemplateColumn.html">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
 
 </div>
 </div>
@@ -596,12 +515,31 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1TemplateColumn.html">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
 
 </div>
 </div>
-<a id="aa9ecf1d5fc7a4eba900f822728ee5e8e" name="aa9ecf1d5fc7a4eba900f822728ee5e8e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa9ecf1d5fc7a4eba900f822728ee5e8e">&#9670;&nbsp;</a></span>get()</h2>
+<a id="a1da72e44b28f4ccc158c54d8dac66bf9" name="a1da72e44b28f4ccc158c54d8dac66bf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1da72e44b28f4ccc158c54d8dac66bf9">&#9670;&nbsp;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; inviwo::CategoricalColumn::get </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Return the categorical value in row @idx. </p>
+
+</div>
+</div>
+<a id="a68ede7fcb771bd07d23ba14dc2e6dcbc" name="a68ede7fcb771bd07d23ba14dc2e6dcbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68ede7fcb771bd07d23ba14dc2e6dcbc">&#9670;&nbsp;</a></span>getAsDouble()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -610,21 +548,11 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataPointBase.html">DataPointBase</a> &gt; inviwo::CategoricalColumn::get </td>
+          <td class="memname">virtual double inviwo::CategoricalColumn::getAsDouble </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>idx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>getStringsAsStrings</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -634,17 +562,7 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
 </table>
 </div><div class="memdoc">
 
-<p>returns either the categorical value, i.e. a number representation, or the actual string for the given index. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">idx</td><td>index </td></tr>
-    <tr><td class="paramname">getStringsAsStrings</td><td>if true, a string will be returned instead of the internal representation. This will not affect other column types.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1TemplateColumn.html" title="Data column used for plotting which represents a named buffer of type T. The name is used as column h...">TemplateColumn</a> </dd></dl>
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1TemplateColumn.html#ab6eac726b5eeabc1f56bf76e5bb72ffa">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
 
 </div>
 </div>
@@ -672,7 +590,62 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1TemplateColumn.html">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="ae6ce6e97355f135168748690671562c0" name="ae6ce6e97355f135168748690671562c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6ce6e97355f135168748690671562c0">&#9670;&nbsp;</a></span>getBuffer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt; inviwo::CategoricalColumn::getBuffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="af538de72574ec9a5d7e5fb4c76ec94d8" name="af538de72574ec9a5d7e5fb4c76ec94d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af538de72574ec9a5d7e5fb4c76ec94d8">&#9670;&nbsp;</a></span>getBuffer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt; inviwo::CategoricalColumn::getBuffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Return the buffer holding the internal representations (<code>std::uint32_t</code>) of the categorical values for the entire column. </p>
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
 
 </div>
 </div>
@@ -725,7 +698,191 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1TemplateColumn.html">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="aebe1e00c8459030f834e2dac92c3fb1a" name="aebe1e00c8459030f834e2dac92c3fb1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebe1e00c8459030f834e2dac92c3fb1a">&#9670;&nbsp;</a></span>getCustomRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; dvec2 &gt; inviwo::CategoricalColumn::getCustomRange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Returns the custom column range. If no range has been set previously, the return value will be std::nullopt. </p>
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html#a3784569381ac9e28f94d093f9271177a">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="af2dcb27831990811ae9f331a790a896a" name="af2dcb27831990811ae9f331a790a896a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2dcb27831990811ae9f331a790a896a">&#9670;&nbsp;</a></span>getDataRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual dvec2 inviwo::CategoricalColumn::getDataRange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Returns the range (i.e. the min/max) of the data, ignoring any custom range </p>
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html#a1891b8940139a94b36555d3d50c7e5e3">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="ad00882b2ef1ca7b83899800b67f8bd24" name="ad00882b2ef1ca7b83899800b67f8bd24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad00882b2ef1ca7b83899800b67f8bd24">&#9670;&nbsp;</a></span>getHeader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const std::string &amp; inviwo::CategoricalColumn::getHeader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="ab2b3cda238816945d04b6e035e971747" name="ab2b3cda238816945d04b6e035e971747"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2b3cda238816945d04b6e035e971747">&#9670;&nbsp;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t inviwo::CategoricalColumn::getId </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Return the numerical id of the category in row @idx. </p>
+
+</div>
+</div>
+<a id="a894cef3ba21a09914c9c48cbc16d8c5c" name="a894cef3ba21a09914c9c48cbc16d8c5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a894cef3ba21a09914c9c48cbc16d8c5c">&#9670;&nbsp;</a></span>getRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual dvec2 inviwo::CategoricalColumn::getRange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Returns the custom range if set or else the range (i.e. the min/max) of the data </p>
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html#aa953c4ce798dd8942bf5667154a67b1d">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="ae4a3c88c9e337cad58502c45bc45946f" name="ae4a3c88c9e337cad58502c45bc45946f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a3c88c9e337cad58502c45bc45946f">&#9670;&nbsp;</a></span>getSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t inviwo::CategoricalColumn::getSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="ab59c299cd36bc3faa534e3af2d8b8d0c" name="ab59c299cd36bc3faa534e3af2d8b8d0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab59c299cd36bc3faa534e3af2d8b8d0c">&#9670;&nbsp;</a></span>getUnit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Unit inviwo::CategoricalColumn::getUnit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
 
 </div>
 </div>
@@ -744,8 +901,185 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
       </table>
 </div><div class="memdoc">
 
-<p>returns column contents as list of categorical values </p>
-<dl class="section return"><dt>Returns</dt><dd>all categorical values stored in column </dd></dl>
+<p>Returns column contents as list of categorical values. </p>
+<dl class="section return"><dt>Returns</dt><dd>all categorical values stored in the column </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1CategoricalColumn.html#a9c6063d482146eef8664a4e1f58c90f4">values</a> </dd></dl>
+
+</div>
+</div>
+<a id="a680331e6964a6081b5bb8aaa2e85ab2c" name="a680331e6964a6081b5bb8aaa2e85ab2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a680331e6964a6081b5bb8aaa2e85ab2c">&#9670;&nbsp;</a></span>set() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::CategoricalColumn::set </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Set the value of row <code>idx</code> to <code>str</code>. </p>
+
+</div>
+</div>
+<a id="abe35d8889678fd0fe798a3ecda3db541" name="abe35d8889678fd0fe798a3ecda3db541"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe35d8889678fd0fe798a3ecda3db541">&#9670;&nbsp;</a></span>set() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::CategoricalColumn::set </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Set the value of row <code>idx</code> by using the numerical <code>id</code> of a category. </p><dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classinviwo_1_1RangeException.html">RangeException</a></td><td>if <code>id</code> does not correspond to a registered category </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1CategoricalColumn.html#afb53092033c650af6c5ba82ac2f5de0c" title="Add a category cat. It will not be added if the category already exists.">addCategory</a> </dd></dl>
+
+</div>
+</div>
+<a id="a399ed32c8453256a62e5613170cdfd94" name="a399ed32c8453256a62e5613170cdfd94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a399ed32c8453256a62e5613170cdfd94">&#9670;&nbsp;</a></span>setCustomRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CategoricalColumn::setCustomRange </td>
+          <td>(</td>
+          <td class="paramtype">std::optional&lt; dvec2 &gt;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Set a custom range for the column which can be used for normalization, plotting, color mapping, etc. </p>
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html#a11cfd96282f974bfb57301f05c8db309">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="aea999db69cd6db477ab4c0276a39b95e" name="aea999db69cd6db477ab4c0276a39b95e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea999db69cd6db477ab4c0276a39b95e">&#9670;&nbsp;</a></span>setHeader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::CategoricalColumn::setHeader </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>header</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="a5af14bfe64522207736fc6ffbf6067da" name="a5af14bfe64522207736fc6ffbf6067da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5af14bfe64522207736fc6ffbf6067da">&#9670;&nbsp;</a></span>setUnit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CategoricalColumn::setUnit </td>
+          <td>(</td>
+          <td class="paramtype">Unit&#160;</td>
+          <td class="paramname"><em>unit</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a>.</p>
+
+</div>
+</div>
+<a id="a9c6063d482146eef8664a4e1f58c90f4" name="a9c6063d482146eef8664a4e1f58c90f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c6063d482146eef8664a4e1f58c90f4">&#9670;&nbsp;</a></span>values()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structinviwo_1_1util_1_1iter__range.html">util::iter_range</a>&lt; <a class="el" href="structinviwo_1_1util_1_1TransformIterator.html">ConstIterator</a> &gt; inviwo::CategoricalColumn::values </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Returns a const iterator range over all rows of the column holding the corresponding categorical values as <code>const std::string&amp;</code>.</p>
+<p >Example: </p><div class="fragment"><div class="line">CategoricalColumn col(<span class="stringliteral">&quot;example&quot;</span>, {<span class="stringliteral">&quot;first&quot;</span>, <span class="stringliteral">&quot;second&quot;</span>});</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keyword">auto</span> v : col.values()) {</div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;value: &quot;</span> &lt;&lt; v;</div>
+<div class="line">}</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp;&amp; [row, v] : util::enumerate&lt;std::uint32_t&gt;(col.values())) {</div>
+<div class="line">    std::cout &lt;&lt; fmt::format(<span class="stringliteral">&quot;Row: {}, value: {}&quot;</span>, row, v);</div>
+<div class="line">}</div>
+</div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>iterator range over all categorical values stored in the column </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1CategoricalColumn.html#accdcb8ddd4d5fc91dbd3b7afd735addc" title="Returns column contents as list of categorical values.">getValues</a> </dd></dl>
 
 </div>
 </div>

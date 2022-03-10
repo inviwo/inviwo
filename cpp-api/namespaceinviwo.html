@@ -111,6 +111,8 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceinviwo_1_1dataframe"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1dataframe.html">dataframe</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceinviwo_1_1dataframefilters"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1dataframefilters.html">dataframefilters</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceinviwo_1_1dispatching"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1dispatching.html">dispatching</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceinviwo_1_1eigenutil"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1eigenutil.html">eigenutil</a></td></tr>
@@ -379,7 +381,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ColorWheel.html">ColorWheel</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Column.html">Column</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">pure interface for representing a data column, i.e. a <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a> with a name  <a href="classinviwo_1_1Column.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure interface for representing a data column with a header, optional units, and data range.  <a href="classinviwo_1_1Column.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ColumnLayout.html">ColumnLayout</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -484,6 +486,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataFrameExporter.html">DataFrameExporter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataFrameFilter.html">DataFrameFilter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataFrameFloat32Converter.html">DataFrameFloat32Converter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataFrameJoin.html">DataFrameJoin</a></td></tr>
@@ -524,10 +528,6 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map values into data or value ranges. <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> range refers to the range of the data type, i.e. [0 4095] for 12-bit unsigned integer data. Value range refers to the physical meaning of the value, i.e. Hounsfield value range is from [-1000 3000]. It is important that the data range is specified for data types with a large range (for example 32/64-bit float and integer) since the data is often normalized to [0 1], when for example performing color mapping, i.e. applying a transfer function.  <a href="classinviwo_1_1DataMapper.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataOutport.html">DataOutport</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataPoint.html">DataPoint</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataPointBase.html">DataPointBase</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataRangeProperty.html">DataRangeProperty</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -678,6 +678,10 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1EntryExitPoints.html">EntryExitPoints</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1EnumTraits.html">EnumTraits</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html">EnumTraits&lt; filters::NumberComp &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1EnumTraits_3_01filters_1_1StringComp_01_4.html">EnumTraits&lt; filters::StringComp &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1equalPtr.html">equalPtr</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -4262,11 +4266,9 @@ Enumerations</h2></td></tr>
 &#160;&#160;<b>Rows</b>
 , <b>StringItem</b>
 , <b>IntItem</b>
-, <b>FloatItem</b>
+, <b>DoubleItem</b>
 , <br />
-&#160;&#160;<b>DoubleItem</b>
-, <b>IntRange</b>
-, <b>FloatRange</b>
+&#160;&#160;<b>IntRange</b>
 , <b>DoubleRange</b>
 <br />
  }</td></tr>
@@ -5883,11 +5885,11 @@ template&lt;class Rep , class Period  = std::ratio&lt;1&gt;&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Converts a JSON object to a <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a>. <a class="el" href="classinviwo_1_1Column.html" title="pure interface for representing a data column, i.e. a Buffer with a name">Column</a> types will be derived from json types. In case a column only holds null values, the inferred data type will be float. Expects object layout: </p><div class="fragment"><div class="line">[ {&quot;Col1&quot;: val11, &quot;Col2&quot;: val12 },</div>
+<p >Converts a JSON object to a <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a>. <a class="el" href="classinviwo_1_1Column.html" title="Pure interface for representing a data column with a header, optional units, and data range.">Column</a> types will be derived from json types. In case a column only holds null values, the inferred data type will be float. Expects object layout: </p><div class="fragment"><div class="line">[ {&quot;Col1&quot;: val11, &quot;Col2&quot;: val12 },</div>
 <div class="line">  {&quot;Col1&quot;: val21, &quot;Col2&quot;: val22 } ]</div>
 </div><!-- fragment --><p> The example above contains two rows and two columns.</p>
 <p >Usage example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> df = j.get&lt;<a class="code hl_class" href="classinviwo_1_1DataFrame.html">DataFrame</a>&gt;();</div>
-<div class="ttc" id="aclassinviwo_1_1DataFrame_html"><div class="ttname"><a href="classinviwo_1_1DataFrame.html">inviwo::DataFrame</a></div><div class="ttdef"><b>Definition:</b> dataframe.h:78</div></div>
+<div class="ttc" id="aclassinviwo_1_1DataFrame_html"><div class="ttname"><a href="classinviwo_1_1DataFrame.html">inviwo::DataFrame</a></div><div class="ttdef"><b>Definition:</b> dataframe.h:77</div></div>
 </div><!-- fragment --> 
 </div>
 </div>

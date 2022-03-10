@@ -42,10 +42,13 @@ var namespaceinviwo =
     [ "dataframe", "namespaceinviwo_1_1dataframe.html", [
       [ "appendColumns", "namespaceinviwo_1_1dataframe.html#a48908047b7f77639e8bb3929f3a3056e", null ],
       [ "appendRows", "namespaceinviwo_1_1dataframe.html#a6d016364ffdd05323da9d17e6d25ce84", null ],
-      [ "filteredRows", "namespaceinviwo_1_1dataframe.html#a36342d9db1bb2e056e8f645701e24abe", null ],
       [ "innerJoin", "namespaceinviwo_1_1dataframe.html#a7e55832fd97c53786889a9f166a11419", null ],
-      [ "leftJoin", "namespaceinviwo_1_1dataframe.html#a3fd4b9b29091b6af32b25fa9a88af296", null ]
+      [ "leftJoin", "namespaceinviwo_1_1dataframe.html#a3fd4b9b29091b6af32b25fa9a88af296", null ],
+      [ "selectRows", "namespaceinviwo_1_1dataframe.html#a7946d48188011059eb30a7874afe4efa", null ],
+      [ "selectRows", "namespaceinviwo_1_1dataframe.html#af82405960c1e2f52a4c4ce48e25eb953", null ],
+      [ "selectRows", "namespaceinviwo_1_1dataframe.html#a8f1952fc5ac34c7d41ab9f7ea6307eaa", null ]
     ] ],
+    [ "dataframefilters", "namespaceinviwo_1_1dataframefilters.html", "namespaceinviwo_1_1dataframefilters" ],
     [ "detail", null, [
       [ "BufferRamConstDispatcher", "structinviwo_1_1detail_1_1BufferRamConstDispatcher.html", null ],
       [ "BufferRamDispatcher", "structinviwo_1_1detail_1_1BufferRamDispatcher.html", null ],
@@ -103,6 +106,9 @@ var namespaceinviwo =
       [ "skipByteOrderMark", "namespaceinviwo_1_1filesystem.html#a5a16aa05cabc3a84330617c3c4bddb90", null ],
       [ "wildcardStringMatch", "namespaceinviwo_1_1filesystem.html#ab9f6a24d34556172da645232e3920f4c", null ],
       [ "wildcardStringMatchDigits", "namespaceinviwo_1_1filesystem.html#aea08a44a49a90d298bc2808c72c51861", null ]
+    ] ],
+    [ "filters", null, [
+      [ "ItemFilter", "structinviwo_1_1filters_1_1ItemFilter.html", "structinviwo_1_1filters_1_1ItemFilter" ]
     ] ],
     [ "glui", null, [
       [ "AbstractButton", "classinviwo_1_1glui_1_1AbstractButton.html", null ],
@@ -375,6 +381,7 @@ var namespaceinviwo =
     [ "DataFrame", "classinviwo_1_1DataFrame.html", "classinviwo_1_1DataFrame" ],
     [ "DataFrameColormapProperty", "classinviwo_1_1DataFrameColormapProperty.html", null ],
     [ "DataFrameExporter", "classinviwo_1_1DataFrameExporter.html", "classinviwo_1_1DataFrameExporter" ],
+    [ "DataFrameFilter", "classinviwo_1_1DataFrameFilter.html", "classinviwo_1_1DataFrameFilter" ],
     [ "DataFrameFloat32Converter", "classinviwo_1_1DataFrameFloat32Converter.html", "classinviwo_1_1DataFrameFloat32Converter" ],
     [ "DataFrameJoin", "classinviwo_1_1DataFrameJoin.html", "classinviwo_1_1DataFrameJoin" ],
     [ "DataFrameMetaData", "classinviwo_1_1DataFrameMetaData.html", "classinviwo_1_1DataFrameMetaData" ],
@@ -393,8 +400,6 @@ var namespaceinviwo =
     [ "DataInport", "classinviwo_1_1DataInport.html", "classinviwo_1_1DataInport" ],
     [ "DataMapper", "classinviwo_1_1DataMapper.html", "classinviwo_1_1DataMapper" ],
     [ "DataOutport", "classinviwo_1_1DataOutport.html", "classinviwo_1_1DataOutport" ],
-    [ "DataPoint", "classinviwo_1_1DataPoint.html", null ],
-    [ "DataPointBase", "classinviwo_1_1DataPointBase.html", null ],
     [ "DataRangeProperty", "classinviwo_1_1DataRangeProperty.html", "classinviwo_1_1DataRangeProperty" ],
     [ "DataReader", "classinviwo_1_1DataReader.html", "classinviwo_1_1DataReader" ],
     [ "DataReaderException", "classinviwo_1_1DataReaderException.html", null ],
@@ -464,6 +469,8 @@ var namespaceinviwo =
     [ "EntryExitComponent", "classinviwo_1_1EntryExitComponent.html", "classinviwo_1_1EntryExitComponent" ],
     [ "EntryExitPoints", "classinviwo_1_1EntryExitPoints.html", "classinviwo_1_1EntryExitPoints" ],
     [ "EnumTraits", "structinviwo_1_1EnumTraits.html", null ],
+    [ "EnumTraits< filters::NumberComp >", "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html", null ],
+    [ "EnumTraits< filters::StringComp >", "structinviwo_1_1EnumTraits_3_01filters_1_1StringComp_01_4.html", null ],
     [ "equalPtr", "structinviwo_1_1equalPtr.html", null ],
     [ "Event", "classinviwo_1_1Event.html", "classinviwo_1_1Event" ],
     [ "EventHandler", "classinviwo_1_1EventHandler.html", null ],

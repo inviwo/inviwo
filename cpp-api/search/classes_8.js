@@ -195,7 +195,7 @@ var searchData=
   ['isovaluepropertywidgetqt_192',['IsoValuePropertyWidgetQt',['../classinviwo_1_1IsoValuePropertyWidgetQt.html',1,'inviwo']]],
   ['isovaluetoisotfconverter_193',['IsovalueToIsoTFConverter',['../classinviwo_1_1IsovalueToIsoTFConverter.html',1,'inviwo']]],
   ['item_194',['Item',['../structinviwo_1_1ContainerWrapper_1_1Item.html',1,'inviwo::ContainerWrapper&lt; T, K &gt;::Item'],['../structinviwo_1_1SearchDSL_1_1Item.html',1,'inviwo::SearchDSL&lt; Ts &gt;::Item']]],
-  ['itemfilter_195',['ItemFilter',['../structinviwo_1_1csvfilters_1_1ItemFilter.html',1,'inviwo::csvfilters']]],
+  ['itemfilter_195',['ItemFilter',['../structinviwo_1_1filters_1_1ItemFilter.html',1,'inviwo::filters']]],
   ['iter_5frange_196',['iter_range',['../structinviwo_1_1util_1_1iter__range.html',1,'inviwo::util']]],
   ['iterator_197',['iterator',['../structinviwo_1_1util_1_1sequence_1_1iterator.html',1,'inviwo::util::sequence']]],
   ['iterator_5ftools_198',['iterator_tools',['../structinviwo_1_1util_1_1detailzip_1_1iterator__tools.html',1,'inviwo::util::detailzip']]],

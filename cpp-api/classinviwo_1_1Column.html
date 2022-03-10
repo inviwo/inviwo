@@ -87,11 +87,11 @@ $(document).ready(function(){initNavTree('classinviwo_1_1Column.html',''); initR
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classinviwo_1_1Column-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::Column Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+  <div class="headertitle"><div class="title">inviwo::Column Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span><div class="ingroups"><a class="el" href="group__datastructures.html">Datastructures</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>pure interface for representing a data column, i.e. a <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a> with a name  
+<p>Pure interface for representing a data column with a header, optional units, and data range.  
  <a href="classinviwo_1_1Column.html#details">More...</a></p>
 
 <p><code>#include &lt;column.h&gt;</code></p>
@@ -104,11 +104,11 @@ $(document).ready(function(){initNavTree('classinviwo_1_1Column.html',''); initR
   <img src="classinviwo_1_1Column.png" usemap="#inviwo::Column_map" alt=""/>
   <map id="inviwo::Column_map" name="inviwo::Column_map">
 <area href="classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get." alt="inviwo::MetaDataOwner" shape="rect" coords="369,0,605,24"/>
-<area href="classinviwo_1_1TemplateColumn.html" alt="inviwo::TemplateColumn&lt; std::uint32_t &gt;" shape="rect" coords="123,112,359,136"/>
-<area href="classinviwo_1_1TemplateColumn.html" alt="inviwo::TemplateColumn&lt; uint32_t &gt;" shape="rect" coords="369,112,605,136"/>
-<area href="classinviwo_1_1TemplateColumn.html" title="Data column used for plotting which represents a named buffer of type T. The name is used as column h..." alt="inviwo::TemplateColumn&lt; T &gt;" shape="rect" coords="615,112,851,136"/>
-<area href="classinviwo_1_1CategoricalColumn.html" title="Specialized data column representing categorical values, i.e. strings. Categorical values are interna..." alt="inviwo::CategoricalColumn" shape="rect" coords="0,168,236,192"/>
-<area href="classinviwo_1_1IndexColumn.html" alt="inviwo::IndexColumn" shape="rect" coords="246,168,482,192"/>
+<area href="classinviwo_1_1TemplateColumn.html" alt="inviwo::TemplateColumn&lt; std::uint32_t &gt;" shape="rect" coords="0,112,236,136"/>
+<area href="classinviwo_1_1TemplateColumn.html" alt="inviwo::TemplateColumn&lt; uint32_t &gt;" shape="rect" coords="246,112,482,136"/>
+<area href="classinviwo_1_1CategoricalColumn.html" title="Specialized data column representing categorical values, i.e. strings. Categorical values are interna..." alt="inviwo::CategoricalColumn" shape="rect" coords="492,112,728,136"/>
+<area href="classinviwo_1_1TemplateColumn.html" title="Data column used for plotting which represents a named buffer of type T. The name is used as column h..." alt="inviwo::TemplateColumn&lt; T &gt;" shape="rect" coords="738,112,974,136"/>
+<area href="classinviwo_1_1IndexColumn.html" alt="inviwo::IndexColumn" shape="rect" coords="0,168,236,192"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -146,10 +146,8 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setUnit</b> (
 <tr class="memitem:a55601805f2ba451aac716fd4062898d4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Column.html#a55601805f2ba451aac716fd4062898d4">add</a> (std::string_view value)=0</td></tr>
 <tr class="separator:a55601805f2ba451aac716fd4062898d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5aef9c57fade6598d41d0320bdd4a363"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Column.html#a5aef9c57fade6598d41d0320bdd4a363">append</a> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;col)=0</td></tr>
-<tr class="memdesc:a5aef9c57fade6598d41d0320bdd4a363"><td class="mdescLeft">&#160;</td><td class="mdescRight">appends all rows from column <code>col</code>  <a href="classinviwo_1_1Column.html#a5aef9c57fade6598d41d0320bdd4a363">More...</a><br /></td></tr>
 <tr class="separator:a5aef9c57fade6598d41d0320bdd4a363"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad60590aa5efc9c79fe94c4a5dd9f191d"><td class="memItemLeft" align="right" valign="top"><a id="ad60590aa5efc9c79fe94c4a5dd9f191d" name="ad60590aa5efc9c79fe94c4a5dd9f191d"></a>
-virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getBuffer</b> ()=0</td></tr>
+<tr class="memitem:ad60590aa5efc9c79fe94c4a5dd9f191d"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Column.html#ad60590aa5efc9c79fe94c4a5dd9f191d">getBuffer</a> ()=0</td></tr>
 <tr class="separator:ad60590aa5efc9c79fe94c4a5dd9f191d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56175ba64a3edb7f8f3f54582bbf6c17"><td class="memItemLeft" align="right" valign="top"><a id="a56175ba64a3edb7f8f3f54582bbf6c17" name="a56175ba64a3edb7f8f3f54582bbf6c17"></a>
 virtual std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getBuffer</b> () const =0</td></tr>
@@ -160,20 +158,9 @@ virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b>
 <tr class="memitem:ad8a1f6ad45e03a1c227594a13b3a2b93"><td class="memItemLeft" align="right" valign="top"><a id="ad8a1f6ad45e03a1c227594a13b3a2b93" name="ad8a1f6ad45e03a1c227594a13b3a2b93"></a>
 virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDouble</b> (size_t idx) const =0</td></tr>
 <tr class="separator:ad8a1f6ad45e03a1c227594a13b3a2b93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add4f7df35d6fc2096b944121dbea4c51"><td class="memItemLeft" align="right" valign="top"><a id="add4f7df35d6fc2096b944121dbea4c51" name="add4f7df35d6fc2096b944121dbea4c51"></a>
-virtual dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDVec2</b> (size_t idx) const =0</td></tr>
-<tr class="separator:add4f7df35d6fc2096b944121dbea4c51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9eb4cd0edfa39d02a5a1b643eae1b95"><td class="memItemLeft" align="right" valign="top"><a id="ad9eb4cd0edfa39d02a5a1b643eae1b95" name="ad9eb4cd0edfa39d02a5a1b643eae1b95"></a>
-virtual dvec3&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDVec3</b> (size_t idx) const =0</td></tr>
-<tr class="separator:ad9eb4cd0edfa39d02a5a1b643eae1b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3430df7eb8c315a70bd093e6db6fa4e5"><td class="memItemLeft" align="right" valign="top"><a id="a3430df7eb8c315a70bd093e6db6fa4e5" name="a3430df7eb8c315a70bd093e6db6fa4e5"></a>
-virtual dvec4&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDVec4</b> (size_t idx) const =0</td></tr>
-<tr class="separator:a3430df7eb8c315a70bd093e6db6fa4e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46322e9c6441cbe1de7953a2753266b3"><td class="memItemLeft" align="right" valign="top"><a id="a46322e9c6441cbe1de7953a2753266b3" name="a46322e9c6441cbe1de7953a2753266b3"></a>
 virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getAsString</b> (size_t idx) const =0</td></tr>
 <tr class="separator:a46322e9c6441cbe1de7953a2753266b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad944ff6c94efca79f35ec390b561bf08"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataPointBase.html">DataPointBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Column.html#ad944ff6c94efca79f35ec390b561bf08">get</a> (size_t idx, bool getStringsAsStrings) const =0</td></tr>
-<tr class="separator:ad944ff6c94efca79f35ec390b561bf08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1MetaDataOwner"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1MetaDataOwner')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1MetaDataOwner.html">inviwo::MetaDataOwner</a></td></tr>
 <tr class="memitem:a4f12e6cd72de9cd307f35224b2554744 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memItemLeft" align="right" valign="top"><a id="a4f12e6cd72de9cd307f35224b2554744" name="a4f12e6cd72de9cd307f35224b2554744"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (const <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;rhs)=default</td></tr>
@@ -236,7 +223,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a7b331cee0264fea40c3649b9a4ba1815 inherit pro_attribs_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >pure interface for representing a data column, i.e. a <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a> with a name </p>
+<div class="textblock"><p >Pure interface for representing a data column with a header, optional units, and data range. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a55601805f2ba451aac716fd4062898d4" name="a55601805f2ba451aac716fd4062898d4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a55601805f2ba451aac716fd4062898d4">&#9670;&nbsp;</a></span>add()</h2>
@@ -262,7 +249,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2">inviwo::TemplateColumn&lt; uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1CategoricalColumn.html#a61627f292a618cfe507b1eafb7af3f17">inviwo::CategoricalColumn</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2">inviwo::TemplateColumn&lt; uint32_t &gt;</a>.</p>
 
 </div>
 </div>
@@ -289,9 +276,7 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>appends all rows from column <code>col</code> </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >Appends all rows from column <code>col</code> </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">col</td><td></td></tr>
   </table>
@@ -302,8 +287,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="ad944ff6c94efca79f35ec390b561bf08" name="ad944ff6c94efca79f35ec390b561bf08"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad944ff6c94efca79f35ec390b561bf08">&#9670;&nbsp;</a></span>get()</h2>
+<a id="ad60590aa5efc9c79fe94c4a5dd9f191d" name="ad60590aa5efc9c79fe94c4a5dd9f191d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad60590aa5efc9c79fe94c4a5dd9f191d">&#9670;&nbsp;</a></span>getBuffer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -312,21 +297,10 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataPointBase.html">DataPointBase</a> &gt; inviwo::Column::get </td>
+          <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &gt; inviwo::Column::getBuffer </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>idx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>getStringsAsStrings</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -336,7 +310,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#ab6eac726b5eeabc1f56bf76e5bb72ffa">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#ab6eac726b5eeabc1f56bf76e5bb72ffa">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#ab6eac726b5eeabc1f56bf76e5bb72ffa">inviwo::TemplateColumn&lt; uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1CategoricalColumn.html#aa9ecf1d5fc7a4eba900f822728ee5e8e">inviwo::CategoricalColumn</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1CategoricalColumn.html#af538de72574ec9a5d7e5fb4c76ec94d8">inviwo::CategoricalColumn</a>.</p>
 
 </div>
 </div>
@@ -364,7 +338,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p >Returns the custom column range. If no range has been set previously, the return value will be std::nullopt. </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#af69f60d076b92c7aa355c4ae02d72258">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#af69f60d076b92c7aa355c4ae02d72258">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1TemplateColumn.html#af69f60d076b92c7aa355c4ae02d72258">inviwo::TemplateColumn&lt; uint32_t &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#af69f60d076b92c7aa355c4ae02d72258">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#af69f60d076b92c7aa355c4ae02d72258">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#af69f60d076b92c7aa355c4ae02d72258">inviwo::TemplateColumn&lt; uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1CategoricalColumn.html#aebe1e00c8459030f834e2dac92c3fb1a">inviwo::CategoricalColumn</a>.</p>
 
 </div>
 </div>
@@ -392,7 +366,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p >Returns the range (i.e. the min/max) of the data, ignoring any custom range </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#ac964effc12c71abc4b4cc418beaf4410">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#ac964effc12c71abc4b4cc418beaf4410">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1TemplateColumn.html#ac964effc12c71abc4b4cc418beaf4410">inviwo::TemplateColumn&lt; uint32_t &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#ac964effc12c71abc4b4cc418beaf4410">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#ac964effc12c71abc4b4cc418beaf4410">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#ac964effc12c71abc4b4cc418beaf4410">inviwo::TemplateColumn&lt; uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1CategoricalColumn.html#af2dcb27831990811ae9f331a790a896a">inviwo::CategoricalColumn</a>.</p>
 
 </div>
 </div>
@@ -420,7 +394,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p >Returns the custom range if set or else the range (i.e. the min/max) of the data </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#a0bb0739dc40a2718ee53ff2eb4b195e5">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#a0bb0739dc40a2718ee53ff2eb4b195e5">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1TemplateColumn.html#a0bb0739dc40a2718ee53ff2eb4b195e5">inviwo::TemplateColumn&lt; uint32_t &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#a0bb0739dc40a2718ee53ff2eb4b195e5">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#a0bb0739dc40a2718ee53ff2eb4b195e5">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#a0bb0739dc40a2718ee53ff2eb4b195e5">inviwo::TemplateColumn&lt; uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1CategoricalColumn.html#a894cef3ba21a09914c9c48cbc16d8c5c">inviwo::CategoricalColumn</a>.</p>
 
 </div>
 </div>
@@ -449,7 +423,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p >Set a custom range for the column which can be used for normalization, plotting, color mapping, etc. </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#a40e1bec2db11cd8c28e7044216a6058b">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#a40e1bec2db11cd8c28e7044216a6058b">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1TemplateColumn.html#a40e1bec2db11cd8c28e7044216a6058b">inviwo::TemplateColumn&lt; uint32_t &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1TemplateColumn.html#a40e1bec2db11cd8c28e7044216a6058b">inviwo::TemplateColumn&lt; T &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#a40e1bec2db11cd8c28e7044216a6058b">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a>, <a class="el" href="classinviwo_1_1TemplateColumn.html#a40e1bec2db11cd8c28e7044216a6058b">inviwo::TemplateColumn&lt; uint32_t &gt;</a>, and <a class="el" href="classinviwo_1_1CategoricalColumn.html#a399ed32c8453256a62e5613170cdfd94">inviwo::CategoricalColumn</a>.</p>
 
 </div>
 </div>

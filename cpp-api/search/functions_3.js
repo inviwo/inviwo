@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['darker_0',['darker',['../namespaceinviwo_1_1color.html#ad16249430aa9aa51263a618066cf97d8',1,'inviwo::color::darker(const vec3 &amp;rgb, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#abe8ada10e8e8aa5eda6459e63554b9b0',1,'inviwo::color::darker(const vec4 &amp;rgba, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#a4dffeaf0ac165586f0371d23ee3d5e25',1,'inviwo::color::darker(const uvec3 &amp;rgb, float factor=2.0f)']]],
+  ['darker_0',['darker',['../namespaceinviwo_1_1color.html#a4dffeaf0ac165586f0371d23ee3d5e25',1,'inviwo::color::darker(const uvec3 &amp;rgb, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#ad16249430aa9aa51263a618066cf97d8',1,'inviwo::color::darker(const vec3 &amp;rgb, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#abe8ada10e8e8aa5eda6459e63554b9b0',1,'inviwo::color::darker(const vec4 &amp;rgba, float factor=2.0f)']]],
   ['dataminmax_1',['dataMinMax',['../namespaceinviwo_1_1util.html#ae49e61ebf3b11c94b3497f88bb454634',1,'inviwo::util']]],
   ['dataname_2',['dataName',['../structinviwo_1_1DataTraits.html#a95325f12e7d96e9c5397268ba40de40f',1,'inviwo::DataTraits']]],
   ['datasource_3',['DataSource',['../classinviwo_1_1DataSource.html#a72ef9fbd629c17644481ee023494934a',1,'inviwo::DataSource']]],
@@ -25,10 +25,8 @@ var searchData=
   ['dispatchone_22',['dispatchOne',['../classinviwo_1_1PoolProcessor.html#a57b22eff57e5ac373bd0c671507cb4d7',1,'inviwo::PoolProcessor']]],
   ['distance_23',['distance',['../classinviwo_1_1Plane.html#a7eb7a91f38219050230b666c86398e87',1,'inviwo::Plane']]],
   ['doifnotready_24',['doIfNotReady',['../classinviwo_1_1Processor.html#a6d86ad3f64ff3cdadaad473036809a1d',1,'inviwo::Processor::doIfNotReady()'],['../classinviwo_1_1CanvasWithPropertiesProcessor.html#a2129f183a2d3044f1241c172906bb053',1,'inviwo::CanvasWithPropertiesProcessor::doIfNotReady()'],['../classinviwo_1_1CanvasProcessor.html#aeb460fab7a4145a9232182ff45b34e31',1,'inviwo::CanvasProcessor::doIfNotReady()']]],
-  ['doublematch_25',['doubleMatch',['../namespaceinviwo_1_1csvfilters.html#aab66ad13d4a8bed34d92770b4c95d1de',1,'inviwo::csvfilters']]],
-  ['doublerange_26',['doubleRange',['../namespaceinviwo_1_1csvfilters.html#a3e741c8afe28c2d7f1bf83cd2a1176f1',1,'inviwo::csvfilters']]],
-  ['dragrectchanged_27',['dragRectChanged',['../classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#af200b31e441a7032b9d0c2c84cf6fe60',1,'inviwo::plot::BoxSelectionInteractionHandler']]],
-  ['draw_28',['draw',['../classinviwo_1_1MeshDrawer.html#a75bb14e125cfe966519211d6f8e43caf',1,'inviwo::MeshDrawer::draw()'],['../classinviwo_1_1MeshDrawerGL.html#a05883f6787a51554aa11b04c094df048',1,'inviwo::MeshDrawerGL::draw() override'],['../classinviwo_1_1MeshDrawerGL.html#af9ee868adf285db2a5b20131d54904de',1,'inviwo::MeshDrawerGL::draw(DrawMode drawMode)']]],
-  ['dropcolumn_29',['dropColumn',['../classinviwo_1_1DataFrame.html#a5c737ea646c78f9a975a5025eaad5323',1,'inviwo::DataFrame::dropColumn(size_t index)'],['../classinviwo_1_1DataFrame.html#a44c13224a45cd943fad2ced479f2a970',1,'inviwo::DataFrame::dropColumn(std::string_view header)']]],
-  ['durationtostring_30',['durationToString',['../namespaceinviwo.html#a7f4cb99e275fa3b26314080624a3fe0f',1,'inviwo']]]
+  ['dragrectchanged_25',['dragRectChanged',['../classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#af200b31e441a7032b9d0c2c84cf6fe60',1,'inviwo::plot::BoxSelectionInteractionHandler']]],
+  ['draw_26',['draw',['../classinviwo_1_1MeshDrawer.html#a75bb14e125cfe966519211d6f8e43caf',1,'inviwo::MeshDrawer::draw()'],['../classinviwo_1_1MeshDrawerGL.html#af9ee868adf285db2a5b20131d54904de',1,'inviwo::MeshDrawerGL::draw(DrawMode drawMode)'],['../classinviwo_1_1MeshDrawerGL.html#a05883f6787a51554aa11b04c094df048',1,'inviwo::MeshDrawerGL::draw() override']]],
+  ['dropcolumn_27',['dropColumn',['../classinviwo_1_1DataFrame.html#a44c13224a45cd943fad2ced479f2a970',1,'inviwo::DataFrame::dropColumn(std::string_view header)'],['../classinviwo_1_1DataFrame.html#a5c737ea646c78f9a975a5025eaad5323',1,'inviwo::DataFrame::dropColumn(size_t index)']]],
+  ['durationtostring_28',['durationToString',['../namespaceinviwo.html#a7f4cb99e275fa3b26314080624a3fe0f',1,'inviwo']]]
 ];

@@ -299,6 +299,15 @@ var group__processors =
     [ "inviwo::DataFrameExporter", "classinviwo_1_1DataFrameExporter.html", [
       [ "process", "classinviwo_1_1DataFrameExporter.html#a6f5f22a4d7642acdbc0d3268689d79be", null ]
     ] ],
+    [ "inviwo::DataFrameFilter", "classinviwo_1_1DataFrameFilter.html", [
+      [ "BrushingMode", "classinviwo_1_1DataFrameFilter.html#a66ae865385f2b9af28be8e8320a7cb8d", [
+        [ "None", "classinviwo_1_1DataFrameFilter.html#a66ae865385f2b9af28be8e8320a7cb8da6adf97f83acf6453d4a6a4b1070f3754", null ],
+        [ "FilterOnly", "classinviwo_1_1DataFrameFilter.html#a66ae865385f2b9af28be8e8320a7cb8dac7b7ad27f113c915b2026466c7bbda2c", null ],
+        [ "ApplyOnly", "classinviwo_1_1DataFrameFilter.html#a66ae865385f2b9af28be8e8320a7cb8dad0d5546f7aa233839869aa83d91d3b28", null ],
+        [ "FilterApply", "classinviwo_1_1DataFrameFilter.html#a66ae865385f2b9af28be8e8320a7cb8da0eb1e58cff7d4680c3ed1b8118313f25", null ]
+      ] ],
+      [ "process", "classinviwo_1_1DataFrameFilter.html#a9d4e45df0e2e47265c9a320c69f90ee4", null ]
+    ] ],
     [ "inviwo::DataFrameFloat32Converter", "classinviwo_1_1DataFrameFloat32Converter.html", [
       [ "process", "classinviwo_1_1DataFrameFloat32Converter.html#ab5ec7b14faaa6e50fc418f92a3bce676", null ]
     ] ],

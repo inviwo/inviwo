@@ -113,7 +113,7 @@ var searchData=
   ['colorsbuffer_110',['ColorsBuffer',['../classinviwo_1_1buffertraits_1_1ColorsBuffer.html',1,'inviwo::buffertraits']]],
   ['colorscalelegend_111',['ColorScaleLegend',['../classinviwo_1_1plot_1_1ColorScaleLegend.html',1,'inviwo::plot']]],
   ['colorwheel_112',['ColorWheel',['../classinviwo_1_1ColorWheel.html',1,'inviwo']]],
-  ['column_113',['column',['../structinviwo_1_1csvfilters_1_1ItemFilter.html#acbf5c72a3aefd769b0d490c802474ae5',1,'inviwo::csvfilters::ItemFilter']]],
+  ['column_113',['column',['../structinviwo_1_1filters_1_1ItemFilter.html#a5bc29c92ccbdd35feb9168fa5e8e3a0e',1,'inviwo::filters::ItemFilter']]],
   ['column_114',['Column',['../classinviwo_1_1Column.html',1,'inviwo']]],
   ['columnlayout_115',['ColumnLayout',['../classinviwo_1_1ColumnLayout.html',1,'inviwo']]],
   ['columnmetadatalistproperty_116',['ColumnMetaDataListProperty',['../classinviwo_1_1ColumnMetaDataListProperty.html',1,'inviwo']]],

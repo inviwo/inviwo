@@ -155,6 +155,52 @@ var group__datastructures =
     [ "inviwo::VolumeGL", "classinviwo_1_1VolumeGL.html", [
       [ "setSwizzleMask", "classinviwo_1_1VolumeGL.html#abb500fe800856982c8a2bc64d9608af4", null ]
     ] ],
+    [ "inviwo::Column", "classinviwo_1_1Column.html", [
+      [ "append", "classinviwo_1_1Column.html#a5aef9c57fade6598d41d0320bdd4a363", null ],
+      [ "getCustomRange", "classinviwo_1_1Column.html#a3784569381ac9e28f94d093f9271177a", null ],
+      [ "getDataRange", "classinviwo_1_1Column.html#a1891b8940139a94b36555d3d50c7e5e3", null ],
+      [ "getRange", "classinviwo_1_1Column.html#aa953c4ce798dd8942bf5667154a67b1d", null ],
+      [ "setCustomRange", "classinviwo_1_1Column.html#a11cfd96282f974bfb57301f05c8db309", null ]
+    ] ],
+    [ "inviwo::TemplateColumn< T >", "classinviwo_1_1TemplateColumn.html", [
+      [ "add", "classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2", null ],
+      [ "append", "classinviwo_1_1TemplateColumn.html#ae1f1eb4cd62c486e82295c74d2187245", null ],
+      [ "getCustomRange", "classinviwo_1_1TemplateColumn.html#af69f60d076b92c7aa355c4ae02d72258", null ],
+      [ "getDataRange", "classinviwo_1_1TemplateColumn.html#ac964effc12c71abc4b4cc418beaf4410", null ],
+      [ "getRange", "classinviwo_1_1TemplateColumn.html#a0bb0739dc40a2718ee53ff2eb4b195e5", null ],
+      [ "setCustomRange", "classinviwo_1_1TemplateColumn.html#a40e1bec2db11cd8c28e7044216a6058b", null ]
+    ] ],
+    [ "inviwo::CategoricalColumn", "classinviwo_1_1CategoricalColumn.html", [
+      [ "addCategory", "classinviwo_1_1CategoricalColumn.html#afb53092033c650af6c5ba82ac2f5de0c", null ],
+      [ "append", "classinviwo_1_1CategoricalColumn.html#a7f027b4e64a1e090b42e06587c335d7b", null ],
+      [ "append", "classinviwo_1_1CategoricalColumn.html#a387def2663af6d9ec8b8007d512d729d", null ],
+      [ "begin", "classinviwo_1_1CategoricalColumn.html#a19bfadf741f8bf965890f2879c0e4642", null ],
+      [ "get", "classinviwo_1_1CategoricalColumn.html#a1da72e44b28f4ccc158c54d8dac66bf9", null ],
+      [ "getBuffer", "classinviwo_1_1CategoricalColumn.html#af538de72574ec9a5d7e5fb4c76ec94d8", null ],
+      [ "getCategories", "classinviwo_1_1CategoricalColumn.html#a129393fc45d27ee56da2341124d8c3cb", null ],
+      [ "getCustomRange", "classinviwo_1_1CategoricalColumn.html#aebe1e00c8459030f834e2dac92c3fb1a", null ],
+      [ "getDataRange", "classinviwo_1_1CategoricalColumn.html#af2dcb27831990811ae9f331a790a896a", null ],
+      [ "getId", "classinviwo_1_1CategoricalColumn.html#ab2b3cda238816945d04b6e035e971747", null ],
+      [ "getRange", "classinviwo_1_1CategoricalColumn.html#a894cef3ba21a09914c9c48cbc16d8c5c", null ],
+      [ "getValues", "classinviwo_1_1CategoricalColumn.html#accdcb8ddd4d5fc91dbd3b7afd735addc", null ],
+      [ "set", "classinviwo_1_1CategoricalColumn.html#a680331e6964a6081b5bb8aaa2e85ab2c", null ],
+      [ "set", "classinviwo_1_1CategoricalColumn.html#abe35d8889678fd0fe798a3ecda3db541", null ],
+      [ "setCustomRange", "classinviwo_1_1CategoricalColumn.html#a399ed32c8453256a62e5613170cdfd94", null ],
+      [ "values", "classinviwo_1_1CategoricalColumn.html#a9c6063d482146eef8664a4e1f58c90f4", null ]
+    ] ],
+    [ "inviwo::DataFrame", "classinviwo_1_1DataFrame.html", [
+      [ "addCategoricalColumn", "classinviwo_1_1DataFrame.html#a7f63eebf6581faa5d3ebb65fe48eb82d", null ],
+      [ "addColumn", "classinviwo_1_1DataFrame.html#ad7084b0aa5426c43b093064dd9b47497", null ],
+      [ "addColumn", "classinviwo_1_1DataFrame.html#a73f0b17b928043b41cabf32f8e5a558b", null ],
+      [ "addColumn", "classinviwo_1_1DataFrame.html#ae4c8a9369a2dfe01c8b609eadecfdcf3", null ],
+      [ "addColumnFromBuffer", "classinviwo_1_1DataFrame.html#abe0614b5532fc89403ba436f6947251a", null ],
+      [ "dropColumn", "classinviwo_1_1DataFrame.html#a5c737ea646c78f9a975a5025eaad5323", null ],
+      [ "dropColumn", "classinviwo_1_1DataFrame.html#a44c13224a45cd943fad2ced479f2a970", null ],
+      [ "getColumn", "classinviwo_1_1DataFrame.html#adcacb5957c14ba02158d1ddd18a89441", null ],
+      [ "getColumn", "classinviwo_1_1DataFrame.html#a2aa6d3243e3b3601178ab6577eef6d98", null ],
+      [ "getNumberOfRows", "classinviwo_1_1DataFrame.html#a12a02c14e6332d8349918fa7567e7c2b", null ],
+      [ "updateIndexBuffer", "classinviwo_1_1DataFrame.html#aead3ace85e0c7e161f0d45b8372fa186", null ]
+    ] ],
     [ "inviwo::TypedMesh< BufferTraits >", "classinviwo_1_1TypedMesh.html", [
       [ "addVertex", "classinviwo_1_1TypedMesh.html#a827a74be2582dbde141ec2a2c1cbd05b", null ],
       [ "addVertices", "classinviwo_1_1TypedMesh.html#a50d621b6246bf8320aa072fb964e669a", null ],

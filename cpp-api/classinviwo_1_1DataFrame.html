@@ -88,7 +88,7 @@ $(document).ready(function(){initNavTree('classinviwo_1_1DataFrame.html',''); in
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classinviwo_1_1DataFrame-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::DataFrame Class Reference</div></div>
+  <div class="headertitle"><div class="title">inviwo::DataFrame Class Reference<div class="ingroups"><a class="el" href="group__datastructures.html">Datastructures</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -107,9 +107,6 @@ $(document).ready(function(){initNavTree('classinviwo_1_1DataFrame.html',''); in
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a410a11db39b4f784a147928a61f1234f"><td class="memItemLeft" align="right" valign="top"><a id="a410a11db39b4f784a147928a61f1234f" name="a410a11db39b4f784a147928a61f1234f"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>DataItem</b> = std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataPointBase.html">DataPointBase</a> &gt; &gt;</td></tr>
-<tr class="separator:a410a11db39b4f784a147928a61f1234f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad35fe4a417d80f0a261dc3b1c4573e16"><td class="memItemLeft" align="right" valign="top"><a id="ad35fe4a417d80f0a261dc3b1c4573e16" name="ad35fe4a417d80f0a261dc3b1c4573e16"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>LookupTable</b> = std::unordered_map&lt; glm::u64, std::string &gt;</td></tr>
 <tr class="separator:ad35fe4a417d80f0a261dc3b1c4573e16"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -122,6 +119,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae8a7d046d89415d08bed4e6c44f6bcef"><td class="memItemLeft" align="right" valign="top"><a id="ae8a7d046d89415d08bed4e6c44f6bcef" name="ae8a7d046d89415d08bed4e6c44f6bcef"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataFrame</b> (const <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &amp;df)</td></tr>
 <tr class="separator:ae8a7d046d89415d08bed4e6c44f6bcef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ae6abf9bd58046a3d13e38eaa202aac"><td class="memItemLeft" align="right" valign="top"><a id="a1ae6abf9bd58046a3d13e38eaa202aac" name="a1ae6abf9bd58046a3d13e38eaa202aac"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DataFrame</b> (const <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &amp;df, const std::vector&lt; std::uint32_t &gt; &amp;rowSelection)</td></tr>
+<tr class="separator:a1ae6abf9bd58046a3d13e38eaa202aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb565334516f13c912f130cf434d5b91"><td class="memItemLeft" align="right" valign="top"><a id="afb565334516f13c912f130cf434d5b91" name="afb565334516f13c912f130cf434d5b91"></a>
 <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &amp;df)</td></tr>
 <tr class="separator:afb565334516f13c912f130cf434d5b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,9 +162,6 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1CategoricalColumn.html">C
 <tr class="memitem:ad86a403113f2bdc57e042391c179d379"><td class="memItemLeft" align="right" valign="top"><a id="ad86a403113f2bdc57e042391c179d379" name="ad86a403113f2bdc57e042391c179d379"></a>
 std::shared_ptr&lt; <a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>addCategoricalColumn</b> (std::string_view header, const std::vector&lt; std::string &gt; &amp;values)</td></tr>
 <tr class="separator:ad86a403113f2bdc57e042391c179d379"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab4852f513743043341deacf89e038e6"><td class="memItemLeft" align="right" valign="top"><a id="aab4852f513743043341deacf89e038e6" name="aab4852f513743043341deacf89e038e6"></a>
-DataItem&#160;</td><td class="memItemRight" valign="bottom"><b>getDataItem</b> (size_t index, bool getStringsAsStrings=false) const</td></tr>
-<tr class="separator:aab4852f513743043341deacf89e038e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcacb5957c14ba02158d1ddd18a89441"><td class="memItemLeft" align="right" valign="top"><a id="adcacb5957c14ba02158d1ddd18a89441" name="adcacb5957c14ba02158d1ddd18a89441"></a>
 std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Column.html">Column</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getColumn</b> (size_t index)</td></tr>
 <tr class="memdesc:adcacb5957c14ba02158d1ddd18a89441"><td class="mdescLeft">&#160;</td><td class="mdescRight">access individual columns <a class="el" href="classinviwo_1_1DataFrame.html#aead3ace85e0c7e161f0d45b8372fa186" title="update row indices. Needs to be called if the row count has changed, i.e. after adding rows from the ...">updateIndexBuffer()</a> needs to be called if the size of the column, i.e. the row count, was changed <br /></td></tr>

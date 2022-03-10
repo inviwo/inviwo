@@ -107,10 +107,16 @@ IVW_MODULE_DATAFRAME_API void&#160;</td><td class="memItemRight" valign="bottom"
 <tr class="memitem:a095002dfeb594e68f3659f5d157c11df"><td class="memItemLeft" align="right" valign="top"><a id="a095002dfeb594e68f3659f5d157c11df" name="a095002dfeb594e68f3659f5d157c11df"></a>
 IVW_MODULE_DATAFRAME_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>combineDataFrames</b> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &gt; &gt; dataframes, bool skipIndexColumn=false, std::string skipcol=&quot;index&quot;)</td></tr>
 <tr class="separator:a095002dfeb594e68f3659f5d157c11df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36342d9db1bb2e056e8f645701e24abe"><td class="memTemplParams" colspan="2">template&lt;typename Pred &gt; </td></tr>
-<tr class="memitem:a36342d9db1bb2e056e8f645701e24abe"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::uint32_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1dataframe.html#a36342d9db1bb2e056e8f645701e24abe">filteredRows</a> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Column.html">Column</a> &gt; col, Pred pred)</td></tr>
-<tr class="memdesc:a36342d9db1bb2e056e8f645701e24abe"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply predicate <code>pred</code> to each value of column <code>col</code> and return the row indices where the predicate evaluates to true.  <a href="namespaceinviwo_1_1dataframe.html#a36342d9db1bb2e056e8f645701e24abe">More...</a><br /></td></tr>
-<tr class="separator:a36342d9db1bb2e056e8f645701e24abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f1952fc5ac34c7d41ab9f7ea6307eaa"><td class="memTemplParams" colspan="2">template&lt;typename Pred &gt; </td></tr>
+<tr class="memitem:a8f1952fc5ac34c7d41ab9f7ea6307eaa"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::uint32_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1dataframe.html#a8f1952fc5ac34c7d41ab9f7ea6307eaa">selectRows</a> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Column.html">Column</a> &gt; col, Pred pred)</td></tr>
+<tr class="memdesc:a8f1952fc5ac34c7d41ab9f7ea6307eaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply predicate <code>pred</code> to each value of column <code>col</code> and return the row indices where the predicate evaluates to true.  <a href="namespaceinviwo_1_1dataframe.html#a8f1952fc5ac34c7d41ab9f7ea6307eaa">More...</a><br /></td></tr>
+<tr class="separator:a8f1952fc5ac34c7d41ab9f7ea6307eaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7946d48188011059eb30a7874afe4efa"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API std::vector&lt; std::uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1dataframe.html#a7946d48188011059eb30a7874afe4efa">selectRows</a> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;col, const std::vector&lt; <a class="el" href="structinviwo_1_1filters_1_1ItemFilter.html">dataframefilters::ItemFilter</a> &gt; &amp;filters)</td></tr>
+<tr class="memdesc:a7946d48188011059eb30a7874afe4efa"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply the <code>filters</code> to each row of column <code>col</code> and return the row indices where any of the filters evaluates to true.  <a href="namespaceinviwo_1_1dataframe.html#a7946d48188011059eb30a7874afe4efa">More...</a><br /></td></tr>
+<tr class="separator:a7946d48188011059eb30a7874afe4efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af82405960c1e2f52a4c4ce48e25eb953"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API std::vector&lt; std::uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1dataframe.html#af82405960c1e2f52a4c4ce48e25eb953">selectRows</a> (const <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &amp;dataframe, <a class="el" href="structinviwo_1_1dataframefilters_1_1Filters.html">dataframefilters::Filters</a> filters)</td></tr>
+<tr class="memdesc:af82405960c1e2f52a4c4ce48e25eb953"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply the <code>filters</code> to each row of <code>dataframe</code> and return the row indices where any of the include filters and no exclude filter evaluates to true.  <a href="namespaceinviwo_1_1dataframe.html#af82405960c1e2f52a4c4ce48e25eb953">More...</a><br /></td></tr>
+<tr class="separator:af82405960c1e2f52a4c4ce48e25eb953"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bd2933af644c87c6769d726731aca2c"><td class="memItemLeft" align="right" valign="top"><a id="a0bd2933af644c87c6769d726731aca2c" name="a0bd2933af644c87c6769d726731aca2c"></a>
 IVW_MODULE_DATAFRAME_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>createToolTipForRow</b> (const <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &amp;dataframe, size_t rowId)</td></tr>
 <tr class="separator:a0bd2933af644c87c6769d726731aca2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -241,58 +247,6 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1
 
 </div>
 </div>
-<a id="a36342d9db1bb2e056e8f645701e24abe" name="a36342d9db1bb2e056e8f645701e24abe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36342d9db1bb2e056e8f645701e24abe">&#9670;&nbsp;</a></span>filteredRows()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Pred &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; std::uint32_t &gt; inviwo::dataframe::filteredRows </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Column.html">Column</a> &gt;&#160;</td>
-          <td class="paramname"><em>col</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Pred&#160;</td>
-          <td class="paramname"><em>pred</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>apply predicate <code>pred</code> to each value of column <code>col</code> and return the row indices where the predicate evaluates to true. </p>
-<p >Note: the predicate function needs to take care of the different column datatypes </p><div class="fragment"><div class="line"><span class="keyword">auto</span> pred = [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; arg) {</div>
-<div class="line">                <span class="keywordflow">if</span>  <span class="keyword">constexpr</span>(std::is_same_v&lt;<span class="keyword">decltype</span>(arg), <span class="keywordtype">float</span>&gt;) {</div>
-<div class="line">                    <span class="keywordflow">return</span>  arg == 4.5f</div>
-<div class="line">                } <span class="keywordflow">else</span> {</div>
-<div class="line">                    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line">                }};</div>
-</div><!-- fragment --><p >Alternatively, predicate overloads can be used. </p><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;inviwo/core/util/stdextensions.h&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">auto</span> pred = <a class="code hl_struct" href="structinviwo_1_1util_1_1overloaded.html">util::overloaded</a>{[](<span class="keyword">const</span> std::string&amp; arg) { <span class="keywordflow">return</span> arg == <span class="stringliteral">&quot;bla&quot;</span>; },</div>
-<div class="line">                             [](<span class="keyword">const</span> <span class="keywordtype">int</span>&amp; arg) { <span class="keywordflow">return</span> arg == 5;  },</div>
-<div class="line">                             [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp;) { <span class="keywordflow">return</span> <span class="keyword">true</span>; });</div>
-<div class="ttc" id="astructinviwo_1_1util_1_1overloaded_html"><div class="ttname"><a href="structinviwo_1_1util_1_1overloaded.html">inviwo::util::overloaded</a></div><div class="ttdef"><b>Definition:</b> stdextensions.h:146</div></div>
-</div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">col</td><td>column containing data for filtering </td></tr>
-    <tr><td class="paramname">pred</td><td>predicate to check values from <code>col</code> </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>list of row indices where rows fulfill the predicate </dd></dl>
-
-</div>
-</div>
 <a id="a7e55832fd97c53786889a9f166a11419" name="a7e55832fd97c53786889a9f166a11419"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7e55832fd97c53786889a9f166a11419">&#9670;&nbsp;</a></span>innerJoin()</h2>
 
@@ -393,6 +347,137 @@ template&lt;typename Pred &gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a7946d48188011059eb30a7874afe4efa" name="a7946d48188011059eb30a7874afe4efa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7946d48188011059eb30a7874afe4efa">&#9670;&nbsp;</a></span>selectRows() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_DATAFRAME_API std::vector&lt; std::uint32_t &gt; inviwo::dataframe::selectRows </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structinviwo_1_1filters_1_1ItemFilter.html">dataframefilters::ItemFilter</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>filters</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>apply the <code>filters</code> to each row of column <code>col</code> and return the row indices where any of the filters evaluates to true. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dataframe</td><td>column containing data for filtering </td></tr>
+    <tr><td class="paramname">filters</td><td>predicate to check values from <code>col</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>list of row indices where rows satisfy all <code>filters</code> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceinviwo_1_1dataframe.html#af82405960c1e2f52a4c4ce48e25eb953" title="apply the filters to each row of dataframe and return the row indices where any of the include filter...">selectRows(const DataFrame&amp;, dataframefilters::Filters)</a> </dd></dl>
+
+</div>
+</div>
+<a id="af82405960c1e2f52a4c4ce48e25eb953" name="af82405960c1e2f52a4c4ce48e25eb953"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af82405960c1e2f52a4c4ce48e25eb953">&#9670;&nbsp;</a></span>selectRows() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_DATAFRAME_API std::vector&lt; std::uint32_t &gt; inviwo::dataframe::selectRows </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>dataframe</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structinviwo_1_1dataframefilters_1_1Filters.html">dataframefilters::Filters</a>&#160;</td>
+          <td class="paramname"><em>filters</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>apply the <code>filters</code> to each row of <code>dataframe</code> and return the row indices where any of the include filters and no exclude filter evaluates to true. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dataframe</td><td>column containing data for filtering </td></tr>
+    <tr><td class="paramname">filters</td><td>predicate to check values from <code>col</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>list of row indices where rows satisfy all <code>filters</code> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>selectRows(const Column&amp;, dataframefilters::Filters) </dd></dl>
+
+</div>
+</div>
+<a id="a8f1952fc5ac34c7d41ab9f7ea6307eaa" name="a8f1952fc5ac34c7d41ab9f7ea6307eaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f1952fc5ac34c7d41ab9f7ea6307eaa">&#9670;&nbsp;</a></span>selectRows() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Pred &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::uint32_t &gt; inviwo::dataframe::selectRows </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Column.html">Column</a> &gt;&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Pred&#160;</td>
+          <td class="paramname"><em>pred</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>apply predicate <code>pred</code> to each value of column <code>col</code> and return the row indices where the predicate evaluates to true. </p>
+<p >Note: the predicate function needs to take care of the different column datatypes </p><div class="fragment"><div class="line"><span class="keyword">auto</span> pred = [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; arg) {</div>
+<div class="line">                <span class="keywordflow">if</span>  <span class="keyword">constexpr</span>(std::is_same_v&lt;<span class="keyword">decltype</span>(arg), <span class="keywordtype">float</span>&gt;) {</div>
+<div class="line">                    <span class="keywordflow">return</span>  arg == 4.5f</div>
+<div class="line">                } <span class="keywordflow">else</span> {</div>
+<div class="line">                    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">                }};</div>
+</div><!-- fragment --><p >Alternatively, predicate overloads can be used. </p><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;inviwo/core/util/stdextensions.h&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">auto</span> pred = <a class="code hl_struct" href="structinviwo_1_1util_1_1overloaded.html">util::overloaded</a>{[](<span class="keyword">const</span> std::string&amp; arg) { <span class="keywordflow">return</span> arg == <span class="stringliteral">&quot;bla&quot;</span>; },</div>
+<div class="line">                             [](<span class="keyword">const</span> <span class="keywordtype">int</span>&amp; arg) { <span class="keywordflow">return</span> arg == 5;  },</div>
+<div class="line">                             [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp;) { <span class="keywordflow">return</span> <span class="keyword">true</span>; });</div>
+<div class="ttc" id="astructinviwo_1_1util_1_1overloaded_html"><div class="ttname"><a href="structinviwo_1_1util_1_1overloaded.html">inviwo::util::overloaded</a></div><div class="ttdef"><b>Definition:</b> stdextensions.h:146</div></div>
+</div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">col</td><td>column containing data for filtering </td></tr>
+    <tr><td class="paramname">pred</td><td>predicate to check values from <code>col</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>list of row indices where rows fulfill the predicate </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceinviwo_1_1dataframe.html#af82405960c1e2f52a4c4ce48e25eb953" title="apply the filters to each row of dataframe and return the row indices where any of the include filter...">selectRows(const DataFrame&amp;, dataframefilters::Filters)</a> </dd></dl>
 
 </div>
 </div>

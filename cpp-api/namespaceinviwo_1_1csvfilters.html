@@ -95,8 +95,6 @@ $(document).ready(function(){initNavTree('namespaceinviwo_1_1csvfilters.html',''
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1csvfilters_1_1Filters.html">Filters</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1csvfilters_1_1RowFilter.html">RowFilter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -114,117 +112,10 @@ IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1RowFi
 IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1RowFilter.html">RowFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lineRange</b> (int min, int max, bool filterOnHeader)</td></tr>
 <tr class="memdesc:abd4190195b3e63213d342bab837c8325"><td class="mdescLeft">&#160;</td><td class="mdescRight">create a filter matching an inclusive line range [<code>min</code>, <code>max</code>] <br /></td></tr>
 <tr class="separator:abd4190195b3e63213d342bab837c8325"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ab67e8e0c0a2d4bb848bd34b93e47c8"><td class="memItemLeft" align="right" valign="top"><a id="a4ab67e8e0c0a2d4bb848bd34b93e47c8" name="a4ab67e8e0c0a2d4bb848bd34b93e47c8"></a>
-IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>stringMatch</b> (int column, filters::StringComp op, std::string_view match)</td></tr>
-<tr class="memdesc:a4ab67e8e0c0a2d4bb848bd34b93e47c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">create an item filter matching strings with <code>match</code> based on <code>op</code> <br /></td></tr>
-<tr class="separator:a4ab67e8e0c0a2d4bb848bd34b93e47c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a997f9372e5c6c20deb417e425abc4c59"><td class="memItemLeft" align="right" valign="top"><a id="a997f9372e5c6c20deb417e425abc4c59" name="a997f9372e5c6c20deb417e425abc4c59"></a>
-IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>intMatch</b> (int column, filters::NumberComp op, int value)</td></tr>
-<tr class="memdesc:a997f9372e5c6c20deb417e425abc4c59"><td class="mdescLeft">&#160;</td><td class="mdescRight">create an item filter matching integers with <code>value</code> using <code>op</code> <br /></td></tr>
-<tr class="separator:a997f9372e5c6c20deb417e425abc4c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6308da4755ed91686477ef8c200452ef"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1csvfilters.html#a6308da4755ed91686477ef8c200452ef">floatMatch</a> (int column, filters::NumberComp op, float value, float epsilon)</td></tr>
-<tr class="separator:a6308da4755ed91686477ef8c200452ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab66ad13d4a8bed34d92770b4c95d1de"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1csvfilters.html#aab66ad13d4a8bed34d92770b4c95d1de">doubleMatch</a> (int column, filters::NumberComp op, double value, double epsilon)</td></tr>
-<tr class="separator:aab66ad13d4a8bed34d92770b4c95d1de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d038129525b5275b30b36ae8841860a"><td class="memItemLeft" align="right" valign="top"><a id="a3d038129525b5275b30b36ae8841860a" name="a3d038129525b5275b30b36ae8841860a"></a>
-IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>intRange</b> (int column, int min, int max)</td></tr>
-<tr class="memdesc:a3d038129525b5275b30b36ae8841860a"><td class="mdescLeft">&#160;</td><td class="mdescRight">create an item filter matching an inclusive integer range [<code>min</code>, <code>max</code>] <br /></td></tr>
-<tr class="separator:a3d038129525b5275b30b36ae8841860a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f20880827144a338de52f31fff3f6cd"><td class="memItemLeft" align="right" valign="top"><a id="a4f20880827144a338de52f31fff3f6cd" name="a4f20880827144a338de52f31fff3f6cd"></a>
-IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>floatRange</b> (int column, float min, float max)</td></tr>
-<tr class="memdesc:a4f20880827144a338de52f31fff3f6cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">create an item filter matching an inclusive float range [<code>min</code>, <code>max</code>] <br /></td></tr>
-<tr class="separator:a4f20880827144a338de52f31fff3f6cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e741c8afe28c2d7f1bf83cd2a1176f1"><td class="memItemLeft" align="right" valign="top"><a id="a3e741c8afe28c2d7f1bf83cd2a1176f1" name="a3e741c8afe28c2d7f1bf83cd2a1176f1"></a>
-IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>doubleRange</b> (int column, double min, double max)</td></tr>
-<tr class="memdesc:a3e741c8afe28c2d7f1bf83cd2a1176f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">create an item filter matching an inclusive double range [<code>min</code>, <code>max</code>] <br /></td></tr>
-<tr class="separator:a3e741c8afe28c2d7f1bf83cd2a1176f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >CSV-specific filters when parsing CSV files </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="aab66ad13d4a8bed34d92770b4c95d1de" name="aab66ad13d4a8bed34d92770b4c95d1de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab66ad13d4a8bed34d92770b4c95d1de">&#9670;&nbsp;</a></span>doubleMatch()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a> inviwo::csvfilters::doubleMatch </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>column</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">filters::NumberComp&#160;</td>
-          <td class="paramname"><em>op</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>value</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>epsilon</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >create an item filter matching doubles with <code>value</code> using <code>op</code>, @epsilon is used for equal and not equal comparisons </p>
-
-</div>
-</div>
-<a id="a6308da4755ed91686477ef8c200452ef" name="a6308da4755ed91686477ef8c200452ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6308da4755ed91686477ef8c200452ef">&#9670;&nbsp;</a></span>floatMatch()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">IVW_MODULE_DATAFRAME_API <a class="el" href="structinviwo_1_1csvfilters_1_1ItemFilter.html">ItemFilter</a> inviwo::csvfilters::floatMatch </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>column</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">filters::NumberComp&#160;</td>
-          <td class="paramname"><em>op</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>value</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>epsilon</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >create an item filter matching floats with <code>value</code> using <code>op</code>, @epsilon is used for equal and not equal comparisons </p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
