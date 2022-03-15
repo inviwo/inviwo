@@ -108,6 +108,42 @@ public:
     bool operator!=(const OptionPropertyOption<T>& rhs) const;
 };
 
+/**
+ * OptionProperty with a custom type @p T.
+ *
+ * For dynamic template option properties, @p T needs to have some traits defining the class
+ * identifier. Default identifiers are provided for the standard types defined in defaultvalues.h.
+ * If the template parameter @p T is a custom enum class, there needs to be a <tt>EnumTraits<T></tt>
+ * struct defining the name of the enum. This enum name then becomes part of the property
+ * identifier.
+ *
+ * @code
+ * #include <inviwo/core/util/enumtraits.h>
+ *
+ * enum class MyEnum { Value1, Value2, Value3 };
+ *
+ * template <>
+ * struct EnumTraits<MyEnum> {
+ *     static std::string name() { return "MyEnum"; }
+ * };
+ *
+ * registerProperty<TemplateOptionProperty<MyEnum>>();
+ * @endcode
+ *
+ * For other data types, the class identifier must be provided using @c PropertyTraits.
+ * @code
+ * template <>
+ * struct PropertyTraits<TemplateOptionProperty<MyType>>
+ *     static const std::string& classIdentifier() {
+ *         static const std::string identifier = "org.inviwo.OptionPropertyMyType";
+ *         return identifier;
+ *     }
+ * };
+ * @endcode
+ *
+ * @tparam T  internal value type of the option property
+ * @see defaultvalues.h enumtraits.h propertytraits.h
+ */
 template <typename T>
 class TemplateOptionProperty : public BaseOptionProperty {
 

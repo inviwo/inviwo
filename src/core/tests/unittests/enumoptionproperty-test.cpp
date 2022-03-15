@@ -45,6 +45,10 @@ enum class MyEnumA { a, b };
 
 enum class MyEnumB { a, b };
 
+enum class MyEnumShort : short { a, b };
+
+enum class MyEnumUShort : unsigned short { a, b };
+
 }  // namespace
 
 template <>
@@ -52,7 +56,17 @@ struct EnumTraits<MyEnumB> {
     static std::string name() { return "MyEnumB"; }
 };
 
-TEST(EnumOptionProperty, Test1) {
+template <>
+struct EnumTraits<MyEnumShort> {
+    static std::string name() { return "MyEnumShort"; }
+};
+
+template <>
+struct EnumTraits<MyEnumUShort> {
+    static std::string name() { return "MyEnumUShort"; }
+};
+
+TEST(EnumOptionProperty, ClassIdentifier) {
     TemplateOptionProperty<MyEnumA> pA("test", "test");
     TemplateOptionProperty<MyEnumB> pB("test", "test");
 
@@ -60,7 +74,19 @@ TEST(EnumOptionProperty, Test1) {
     auto idB = pB.getClassIdentifier();
 
     EXPECT_NE(idA, idB);
+}
 
+TEST(EnumOptionProperty, ClassIdentifierShort) {
+    TemplateOptionProperty<MyEnumShort> pShort("test", "test");
+    TemplateOptionProperty<MyEnumUShort> pUShort("test", "test");
+
+    auto idShort = pShort.getClassIdentifier();
+    auto idUShort = pUShort.getClassIdentifier();
+
+    EXPECT_NE(idShort, idUShort);
+}
+
+TEST(EnumOptionProperty, Serialization) {
     PropertyFactory factory;
     PropertyFactoryObjectTemplate<TemplateOptionProperty<MyEnumB>> factoryObj;
     factory.registerObject(&factoryObj);
