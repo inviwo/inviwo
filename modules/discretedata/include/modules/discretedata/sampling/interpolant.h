@@ -85,6 +85,25 @@ struct IVW_MODULE_DISCRETEDATA_API SkewedBoxInterpolant : public Interpolant<Dim
     Interpolant<Dim>* copy() const override;
 };
 
+template <unsigned int Dim>
+struct IVW_MODULE_DISCRETEDATA_API ExtendedInterpolant : public Interpolant<Dim> {
+
+    ExtendedInterpolant(const Interpolant<Dim - 1>& baseInterpolant);
+    ExtendedInterpolant(const ExtendedInterpolant<Dim>& other);
+    ExtendedInterpolant(ExtendedInterpolant<Dim>&& other);
+    ExtendedInterpolant<Dim>& operator=(const ExtendedInterpolant<Dim>& other);
+    ExtendedInterpolant<Dim>& operator=(ExtendedInterpolant<Dim>&& other);
+    virtual ~ExtendedInterpolant();
+    virtual bool supportsInterpolationType(InterpolationType type) const override;
+    virtual bool getWeights(InterpolationType type,
+                            const std::vector<std::array<float, Dim>>& coordinates,
+                            std::vector<double>& weights,
+                            const std::array<float, Dim>& position) const override;
+    Interpolant<Dim>* copy() const override;
+
+    Interpolant<Dim - 1>* baseInterpolant_;
+};
+
 }  // namespace discretedata
 }  // namespace inviwo
 

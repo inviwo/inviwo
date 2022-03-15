@@ -44,23 +44,13 @@ public:
                           InterpolationType interpolationType,
                           std::shared_ptr<const DataChannel<T, DataDims>> data);
     virtual ~DataSetSpatialSampler() = default;
-    // virtual SpatialEntity<SpatialDims>* clone() const override;
 
     virtual Vector<DataDims, T> sampleDataSpace(
         const Vector<SpatialDims, double>& pos) const override;
     virtual bool withinBoundsDataSpace(const Vector<SpatialDims, double>& pos) const override;
-    // const SpatialCoordinateTransformer<SpatialDims>& getCoordinateTransformer() const override {
-    //     std::cout << "Spatial entity in DATASET spatial sampler? "
-    //               << &SpatialSampler<SpatialDims, DataDims, T>::spatialEntity_ << std::endl;
-    //     return SpatialSampler<SpatialDims, DataDims,
-    //     T>::spatialEntity_.getCoordinateTransformer();
-    // }
     InterpolationType interpolationType_;
 
 protected:
-    // Vector<DataDims, double> getVoxel(const size3_t& pos) const;
-
-    // SpatialEntityChannel<T, SpatialDims> spatialChannel_;
     std::shared_ptr<const DataSetSampler<SpatialDims>> sampler_;
     std::shared_ptr<const DataChannel<T, DataDims>> data_;
 };

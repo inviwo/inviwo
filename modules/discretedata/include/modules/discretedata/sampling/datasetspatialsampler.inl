@@ -54,8 +54,8 @@ DataSetSpatialSampler<SpatialDims, DataDims, T>::DataSetSpatialSampler(
     // std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(sampler->coordinates_);
     if (interpolationType == InterpolationType::Ignore) {
         interpolationType = InterpolationType::Nearest;
-        LogWarn(
-            "Interpolation type was set to Ignore - changed to nearest neighbor interpolation.");
+        // LogWarn(
+        //     "Interpolation type was set to Ignore - changed to nearest neighbor interpolation.");
     }
 }
 
@@ -86,7 +86,6 @@ Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataS
 
     // If the cell does not exist, return zero vector.
     if (cell < 0 || cell > data_->size()) return result;
-    // std::cout << "Found a cell!" << std::endl;
 
     // Add up weighted samples
     Vector<DataDims, T> sample;

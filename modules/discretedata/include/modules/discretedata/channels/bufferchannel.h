@@ -64,6 +64,21 @@ public:
         : DataChannel<T, N>(name, definedOn), buffer_(numElements * N) {}
 
     /**
+     * \brief Direct construction, empty data
+     * @param other BufferChannel to copy data from
+     */
+    BufferChannel(const BufferChannel<T, N>& other)
+        : DataChannel<T, N>(*this), buffer_(other.buffer_) {}
+
+    /**
+     * \brief Direct construction, empty data
+     * @param other BufferChannel to move data from
+     */
+    BufferChannel(BufferChannel<T, N>&& other)
+        : DataChannel<T, N>(std::move(other.name_), other.grid_)
+        , buffer_(std::move(other.buffer_)) {}
+
+    /**
      * \brief Direct construction
      * @param rawData Raw data, copy values
      * @param name Name associated with the channel
@@ -102,7 +117,7 @@ public:
         : DataChannel<T, N>(channel.getName(), channel.getGridPrimitiveType())
         , buffer_(channel.size() * N) {
         channel.fillRaw(buffer_.data(), 0, channel.size());
-        setInvalidValue(channel.getInvalidValue);
+        this->setInvalidValue(channel.getInvalidValue());
     }
 
     virtual Channel* clone() const override { return new BufferChannel<T, N>(*this); }

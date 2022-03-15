@@ -104,13 +104,11 @@ ChannelOpPropertyBase::ChannelOpPropertyBase(const std::string& identifier,
     , baseChannel_("baseChannel", "Base Channel", dataInport, filter)
     , channelName_("channelName", "Name", defaultName) {
     addProperties(baseChannel_, channelName_);
-    std::cout << "========= Added props" << std::endl;
 }
 
 ChannelOpPropertyBase::ChannelOpPropertyBase(const ChannelOpPropertyBase& prop)
     : CompositeProperty(prop), baseChannel_(prop.baseChannel_), channelName_(prop.channelName_) {
     addProperties(baseChannel_, channelName_);
-    std::cout << "========= Added props FIRST" << std::endl;
 }
 
 void ChannelOperations::deserialize(Deserializer& d) {

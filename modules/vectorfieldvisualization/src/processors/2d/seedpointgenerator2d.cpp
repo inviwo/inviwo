@@ -58,19 +58,24 @@ SeedPointGenerator2D::SeedPointGenerator2D()
     , randomness_("randomness", "Randomness")
     , useSameSeed_("useSameSeed", "Use same seed", true)
     , seed_("seed", "Seed", 1, 0, 1000)
+
+    , sampleRegion_("sampleRegion", "Sample Region")
+    , regionMin_("regionMin", "Min", {0, 0},
+                 std::make_pair<vec2, ConstraintBehavior>({0, 0}, ConstraintBehavior::Ignore),
+                 std::make_pair<vec2, ConstraintBehavior>({1, 1}, ConstraintBehavior::Ignore))
+    , regionMax_("regionMax", "Max", {1, 1},
+                 std::make_pair<vec2, ConstraintBehavior>({0, 0}, ConstraintBehavior::Ignore),
+                 std::make_pair<vec2, ConstraintBehavior>({1, 1}, ConstraintBehavior::Ignore))
     , rd_()
     , mt_(rd_())
 
 {
     addPort(seeds_);
 
-    addProperty(generator_);
-    addProperty(numPoints_);
-    addProperty(haltonXBase_);
-    addProperty(haltonYBase_);
-    addProperty(randomness_);
-    randomness_.addProperty(useSameSeed_);
-    randomness_.addProperty(seed_);
+    addProperties(generator_, numPoints_, haltonXBase_, haltonYBase_, randomness_, sampleRegion_);
+    randomness_.addProperties(useSameSeed_, seed_);
+    sampleRegion_.addProperties(regionMin_, regionMax_);
+    sampleRegion_.setCollapsed(true);
     useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
 
     auto typeOnChange = [&]() {
@@ -110,6 +115,11 @@ void SeedPointGenerator2D::process() {
 
         default:
             break;
+    }
+
+    vec2 extent = regionMax_.get() - regionMin_.get();
+    for (auto& v : *seeds) {
+        v = regionMin_.get() + vec2(v.x * extent.x, v.y * extent.y);
     }
 
     seeds_.setData(seeds);

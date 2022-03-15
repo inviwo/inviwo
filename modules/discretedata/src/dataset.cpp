@@ -100,24 +100,23 @@ std::vector<std::pair<std::string, GridPrimitive>> DataSet::getChannelNames() co
 const SamplerMap& DataSet::getSamplers() const { return samplers_; }
 
 bool DataSet::addSampler(std::shared_ptr<const DataSetSamplerBase> sampler) {
-    if (!sampler) LogError("Sampler null");
-    if (sampler->getDimension() != static_cast<unsigned int>(grid_->getDimension()))
-        LogError("Sampler and Grid not same dimension.");
-
-    if (!hasChannel(sampler->coordinates_)) LogError("That channel is not in this dataset");
-    util::validateIdentifier(sampler->coordinates_->getName(), "DataSetSampler", IVW_CONTEXT);
     if (!sampler || sampler->getDimension() != static_cast<unsigned int>(grid_->getDimension()) ||
-        !hasChannel(sampler->coordinates_)) {
-        LogError("Could not add sampler.");
-        if (!sampler) LogError("  Sampler is null");
-        if (sampler && sampler->getDimension() != static_cast<unsigned int>(grid_->getDimension()))
-            LogError(fmt::format("  Wrong format: {} != {}", sampler->getDimension(),
-                                 static_cast<unsigned int>(grid_->getDimension())));
+        !hasChannel(sampler->coordinates_))
         return false;
-    }
+
+    util::validateIdentifier(sampler->coordinates_->getName(), "DataSetSampler", IVW_CONTEXT);
+    // if (!sampler || sampler->getDimension() != static_cast<unsigned int>(grid_->getDimension())
+    // ||
+    //     !hasChannel(sampler->coordinates_)) {
+    //     if (!sampler) LogError("  Sampler is null");
+    //     if (sampler && sampler->getDimension() != static_cast<unsigned
+    //     int>(grid_->getDimension()))
+    //         LogError(fmt::format("  Wrong format: {} != {}", sampler->getDimension(),
+    //                              static_cast<unsigned int>(grid_->getDimension())));
+    //     return false;
+    // }
 
     samplers_.insert({sampler->getIdentifier(), sampler});
-    LogInfo("Added new sampler: " << sampler->getIdentifier());
     return true;
 }
 

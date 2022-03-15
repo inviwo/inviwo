@@ -112,42 +112,31 @@ public:
     virtual ~DataChannel() = default;
 
     /**
-     * \brief Indexed point access, copy dataerror
+     * \brief Indexed point access, copy data
      * Thread safe.
      * @param dest Vector to write to, expect T[NumComponents]
      * @param index Linear point index
      * @returns Is the result valid, i.e. not starting with the invalid value?
      */
     template <typename VecNT>
-    void fill(VecNT& dest, ind index, ind numElements = 1) const {
-        static_assert(sizeof(VecNT) == sizeof(T) * N,
-                      "Size and type do not agree with the vector type.");
-        T* rawPtr = reinterpret_cast<T*>(&dest);
-        this->fillRaw(rawPtr, index, numElements);
-    }
+    void fill(VecNT& dest, ind index, ind numElements = 1) const;
 
     template <typename VecNT>
-    void operator()(VecNT& dest, ind index) const {
-        fill(dest, index);
-    }
+    void operator()(VecNT& dest, ind index) const;
+
+    virtual std::shared_ptr<Channel> toBufferChannel() const override;
 
     template <typename VecNT = DefaultVec>
-    iterator<VecNT> begin() {
-        return iterator<VecNT>(this->newIterator(), 0);
-    }
-    template <typename VecNT = DefaultVec>
-    iterator<VecNT> end() {
-        return iterator<VecNT>(this->newIterator(), this->size());
-    }
+    iterator<VecNT> begin();
 
     template <typename VecNT = DefaultVec>
-    const_iterator<VecNT> begin() const {
-        return const_iterator<VecNT>(this, 0);
-    }
+    iterator<VecNT> end();
+
     template <typename VecNT = DefaultVec>
-    const_iterator<VecNT> end() const {
-        return const_iterator<VecNT>(this, this->size());
-    }
+    const_iterator<VecNT> begin() const;
+
+    template <typename VecNT = DefaultVec>
+    const_iterator<VecNT> end() const;
 
     template <typename VecNT>
     struct ChannelRange {
@@ -226,107 +215,7 @@ private:
     mutable bool validMinMax_ = false;
 };
 
-template <typename T, ind N>
-DataChannel<T, N>::DataChannel(const std::string& name, GridPrimitive definedOn)
-    : BaseChannel<T, N>(name, DataFormat<T>::id(), definedOn) {}
-
-template <typename T, ind N>
-template <typename VecNT>
-void DataChannel<T, N>::getMin(VecNT& dest) const {
-    static_assert(sizeof(VecNT) == sizeof(T) * N,
-                  "Size and type do not agree with the vector type.");
-
-    if (!validMinMax_) {
-        computeMinMax();
-    }
-
-    T* rawVec = reinterpret_cast<T*>(&dest);
-    for (ind i = 0; i < N; ++i) {
-        rawVec[i] = min_[i];
-    }
-}
-
-template <typename T, ind N>
-template <typename VecNT>
-void DataChannel<T, N>::getMax(VecNT& dest) const {
-    static_assert(sizeof(VecNT) == sizeof(T) * N,
-                  "Size and type do not agree with the vector type.");
-
-    if (!validMinMax_) {
-        computeMinMax();
-    }
-
-    T* rawVec = reinterpret_cast<T*>(&dest);
-    for (ind i = 0; i < N; ++i) {
-        rawVec[i] = max_[i];
-    }
-}
-
-template <typename T, ind N>
-template <typename VecNT>
-void DataChannel<T, N>::getMinMax(VecNT& minDest, VecNT& maxDest) const {
-    static_assert(sizeof(VecNT) == sizeof(T) * N,
-                  "Size and type do not agree with the vector type.");
-    getMin(minDest);
-    getMax(maxDest);
-}
-
-template <typename T, ind N>
-void DataChannel<T, N>::computeMinMax() const {
-    using Vec = std::array<T, N>;
-
-    Vec minT;
-    Vec maxT;
-
-    bool initialized = false;
-
-    for (const Vec& val : this->all<Vec>()) {
-        if (!isValid(val[0])) continue;
-        if (!initialized) {
-            minT = val;
-            maxT = val;
-            initialized = true;
-            continue;
-        }
-
-        for (ind dim = 0; dim < N; ++dim) {
-            minT[dim] = std::min(minT[dim], val[dim]);
-            maxT[dim] = std::max(maxT[dim], val[dim]);
-        }
-    }
-
-    for (ind dim = 0; dim < N; ++dim) {
-        min_[dim] = static_cast<double>(minT[dim]);
-        max_[dim] = static_cast<double>(maxT[dim]);
-    }
-
-    validMinMax_ = true;
-}
-
-template <typename T, ind N>
-bool DataChannel<T, N>::isValid(T val) const {
-    return !std::isnan(val) && val != invalidValue_;
-}
-
-template <typename T, ind N>
-T DataChannel<T, N>::getInvalidValue() const {
-    return invalidValue_;
-}
-
-template <typename T, ind N>
-void DataChannel<T, N>::setInvalidValue(T val) {
-    invalidValue_ = val;
-}
-
-template <typename T, ind N>
-double DataChannel<T, N>::getInvalidValueDouble() const {
-    return static_cast<double>(invalidValue_);
-}
-
-template <typename T, ind N>
-void DataChannel<T, N>::setInvalidValueDouble(double val) {
-    invalidValue_ = static_cast<T>(val);
-}
-
 }  // namespace discretedata
 }  // namespace inviwo
+
+#include "datachannel.inl"

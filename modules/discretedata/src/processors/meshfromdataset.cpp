@@ -214,7 +214,7 @@ void MeshFromDataSet::process() {
                         indexData, element.getIndex(), GridPrimitive::Face, GridPrimitive::Vertex,
                         cutAtBorder_.get());
 
-                    // Add triagnle "fans".
+                    // Add triangle "fans".
                     ind tri = 0;
                     for (; tri < static_cast<ind>(indexData.size()) - 3; tri += 2) {
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));

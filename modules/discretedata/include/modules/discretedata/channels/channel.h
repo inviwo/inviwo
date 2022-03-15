@@ -144,6 +144,8 @@ public:
     static auto dispatchSharedPointer(std::shared_ptr<const Channel> channel, Callable&& callable,
                                       Args&&... args) -> Result;
 
+    virtual std::shared_ptr<Channel> toBufferChannel() const = 0;
+
 private:
     std::string name_;
     const DataFormatBase* format_;

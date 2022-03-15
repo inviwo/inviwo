@@ -163,7 +163,6 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
 
     switch (type) {
         case InterpolationType::Ignore:
-            std::cout << "Ignored interpolation" << std::endl;
             return true;
         case InterpolationType::Nearest:
             [[fallthrough]];
@@ -192,11 +191,89 @@ Interpolant<Dim>* SkewedBoxInterpolant<Dim>::copy() const {
     return new SkewedBoxInterpolant<Dim>();
 }
 
-// template <GridPrimitive Dim>
-// bool SkewedBoxInterpolant<Dim>::isInside(const std::vector<std::array<float, Dim>>& coordinates,
-//                                          const std::array<float, Dim>& position) const {
-//     return false;
-// }
+template <unsigned int Dim>
+ExtendedInterpolant<Dim>::ExtendedInterpolant(const Interpolant<Dim - 1>& baseInterpolant)
+    : baseInterpolant_(baseInterpolant.copy()) {}
+
+template <unsigned int Dim>
+ExtendedInterpolant<Dim>::~ExtendedInterpolant() {
+    delete baseInterpolant_;
+}
+
+template <unsigned int Dim>
+ExtendedInterpolant<Dim>::ExtendedInterpolant(const ExtendedInterpolant<Dim>& other)
+    : baseInterpolant_(other.baseInterpolant_->copy()) {}
+
+template <unsigned int Dim>
+ExtendedInterpolant<Dim>::ExtendedInterpolant(ExtendedInterpolant<Dim>&& other)
+    : baseInterpolant_(std::move(other.baseInterpolant_)) {}
+
+template <unsigned int Dim>
+ExtendedInterpolant<Dim>& ExtendedInterpolant<Dim>::operator=(
+    const ExtendedInterpolant<Dim>& other) {
+    baseInterpolant_ = other.baseInterpolant_->copy();
+}
+template <unsigned int Dim>
+ExtendedInterpolant<Dim>& ExtendedInterpolant<Dim>::operator=(ExtendedInterpolant<Dim>&& other) {
+    baseInterpolant_ = std::move(other.baseInterpolant_);
+}
+
+template <unsigned int Dim>
+bool ExtendedInterpolant<Dim>::supportsInterpolationType(InterpolationType type) const {
+    return baseInterpolant_->supportsInterpolationType(type);
+}
+
+template <unsigned int Dim>
+bool ExtendedInterpolant<Dim>::getWeights(InterpolationType type,
+                                          const std::vector<std::array<float, Dim>>& coordinates,
+                                          std::vector<double>& weights,
+                                          const std::array<float, Dim>& pos) const {
+
+    float minExtendedDim, maxExtendedDim, weightExtendedDim;
+    std::vector<std::array<float, Dim - 1>> baseCoords;
+    std::array<float, Dim - 1> basePos;
+    switch (type) {
+        case InterpolationType::Ignore:
+            return true;
+        case InterpolationType::Nearest:
+            [[fallthrough]];
+        case InterpolationType::SquaredDistance:
+            return Interpolant<Dim>::getWeights(type, coordinates, weights, pos);
+
+        case InterpolationType::Linear:
+            // Remove last dimension to plug into the base interpolator.
+            std::copy(pos.begin(), pos.end() - 1, basePos.begin());
+
+            for (size_t idx = 0; idx < coordinates.size() / 2; ++idx) {
+                baseCoords.emplace_back();
+                std::copy(coordinates[idx].begin(), coordinates[idx].end() - 1,
+                          baseCoords.back().begin());
+            }
+
+            if (!baseInterpolant_->getWeights(type, baseCoords, weights, basePos)) return false;
+
+            // Linear interpolation in last dimension.
+            minExtendedDim = coordinates[0][Dim - 1];
+            maxExtendedDim = coordinates[coordinates.size() / 2][Dim - 1];
+            weightExtendedDim = (pos[Dim - 1] - minExtendedDim) / (maxExtendedDim - minExtendedDim);
+
+            // Multiply weights from base and extended dimension together.
+            weights.reserve(weights.size() * 2);
+            for (size_t i = 0; i < baseCoords.size(); ++i) {
+                weights.push_back(weights[i] * weightExtendedDim);
+                weights[i] *= 1.0 - weightExtendedDim;
+            }
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+template <unsigned int Dim>
+Interpolant<Dim>* ExtendedInterpolant<Dim>::copy() const {
+    return new ExtendedInterpolant<Dim>(*this);
+}
 
 }  // namespace discretedata
 }  // namespace inviwo

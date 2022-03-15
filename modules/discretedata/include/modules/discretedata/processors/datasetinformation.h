@@ -78,7 +78,6 @@ private:
     DataSetInport dataIn_;
 
     StringProperty overview_;
-    // GridInformationProperty gridInformation_;
     CompositeProperty channelInformation_;
     CompositeProperty samplerInformation_;
 };

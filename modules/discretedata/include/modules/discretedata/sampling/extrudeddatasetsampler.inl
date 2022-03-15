@@ -37,55 +37,58 @@
 
 namespace inviwo {
 namespace discretedata {
-template <unsigned int SpatialDims, unsigned int BaseDims>
-ExtrudedDataSetSampler<SpatialDims, BaseDims>::ExtrudedDataSetSampler(
-    std::shared_ptr<const Connectivity> grid,
-    std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
-    const Interpolant<SpatialDims, BaseDims>& interpolant, const std::array<float, SpatialDims>& coordsMin,
-    const std::array<float, SpatialDims>& coordsMax)
-    : ExtrudedDataSetSamplerBase(grid, std::static_pointer_cast<const Channel>(coordinates))
-    , interpolant_(interpolant.copy())
-    , coordsMin_(coordsMin)
-    , coordsMax_(coordsMax) {
-    if (!coordinates_) std::cout << "Oopsie doo coordinates!" << std::endl;
-    if (!grid_) std::cout << "Oopsie doo grid!" << std::endl;
-    // if (coordinates_->getGridPrimitiveType() != GridPrimitive::Vertex ||
-    //     coordinates_->getNumComponents() != SpatialDims ||
-    //     coordinates_->size() != grid->getNumElements()) {
-    //     LogError("Incompatible grid and coordinate channel given, aborting.");
-    //     return;
-    // }
-    // }
+// template <unsigned int SpatialDims, unsigned int BaseDims>
+// ExtrudedDataSetSampler<SpatialDims>::ExtrudedDataSetSampler(
+//     std::shared_ptr<const Connectivity> grid,
+//     std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
+//     const Interpolant<SpatialDims>& interpolant,
+//     const std::array<float, SpatialDims>& coordsMin,
+//     const std::array<float, SpatialDims>& coordsMax)
+//     : ExtrudedDataSetSamplerBase(grid, std::static_pointer_cast<const Channel>(coordinates))
+//     , interpolant_(interpolant.copy())
+//     , coordsMin_(coordsMin)
+//     , coordsMax_(coordsMax) {
+//     if (!coordinates_) std::cout << "Oopsie doo coordinates!" << std::endl;
+//     if (!grid_) std::cout << "Oopsie doo grid!" << std::endl;
+//     // if (coordinates_->getGridPrimitiveType() != GridPrimitive::Vertex ||
+//     //     coordinates_->getNumComponents() != SpatialDims ||
+//     //     coordinates_->size() != grid->getNumElements()) {
+//     //     LogError("Incompatible grid and coordinate channel given, aborting.");
+//     //     return;
+//     // }
+//     // }
 
-    Matrix<SpatialDims + 1, float> modelMat;
-    for (unsigned dim = 0; dim < SpatialDims; ++dim) {
-        modelMat[dim][dim] = coordsMax[dim] - coordsMin[dim];
-        modelMat[SpatialDims][dim] = coordsMin[dim];
-        // std::cout << "# " << coordsMin[dim] << " - " << coordsMax[dim] << std::endl;
-    }
-    modelMat[SpatialDims][SpatialDims] = 1;
-    this->setModelMatrix(modelMat);
-}
+//     Matrix<SpatialDims + 1, float> modelMat;
+//     for (unsigned dim = 0; dim < SpatialDims; ++dim) {
+//         modelMat[dim][dim] = coordsMax[dim] - coordsMin[dim];
+//         modelMat[SpatialDims][dim] = coordsMin[dim];
+//         // std::cout << "# " << coordsMin[dim] << " - " << coordsMax[dim] << std::endl;
+//     }
+//     modelMat[SpatialDims][SpatialDims] = 1;
+//     this->setModelMatrix(modelMat);
+// }
 
-template <unsigned int SpatialDims, unsigned int BaseDims>
-ExtrudedDataSetSampler<SpatialDims, BaseDims>::~ExtrudedDataSetSampler() {
-    delete interpolant_;
-}
+// template <unsigned int SpatialDims, unsigned int BaseDims>
+// ExtrudedDataSetSampler<SpatialDims, BaseDims>::~ExtrudedDataSetSampler() {
+//     delete interpolant_;
+// }
 
-template <unsigned int SpatialDims, unsigned int BaseDims>
-ExtrudedDataSetSampler<SpatialDims, BaseDims>::ExtrudedDataSetSampler(ExtrudedDataSetSampler&& tree)
-    : ExtrudedDataSetSampler(tree.grid_, tree.coordinates_) {}
+// template <unsigned int SpatialDims, unsigned int BaseDims>
+// ExtrudedDataSetSampler<SpatialDims, BaseDims>::ExtrudedDataSetSampler(ExtrudedDataSetSampler&&
+// tree)
+//     : ExtrudedDataSetSampler(tree.grid_, tree.coordinates_) {}
 
-template <unsigned int SpatialDims, unsigned int BaseDims>
-void ExtrudedDataSetSampler<SpatialDims, BaseDims>::setInterpolant(
-    const Interpolant<SpatialDims, BaseDims>& interpolant) {
-    interpolant_ = interpolant.copy();
-}
+// template <unsigned int SpatialDims, unsigned int BaseDims>
+// void ExtrudedDataSetSampler<SpatialDims, BaseDims>::setInterpolant(
+//     const Interpolant<SpatialDims, BaseDims>& interpolant) {
+//     interpolant_ = interpolant.copy();
+// }
 
-template <unsigned int SpatialDims, unsigned int BaseDims>
-const Interpolant<SpatialDims, BaseDims>& ExtrudedDataSetSampler<SpatialDims, BaseDims>::getInterpolant() const {
-    return *interpolant_;
-}
+// template <unsigned int SpatialDims, unsigned int BaseDims>
+// const Interpolant<SpatialDims, BaseDims>&
+// ExtrudedDataSetSampler<SpatialDims, BaseDims>::getInterpolant() const {
+//     return *interpolant_;
+// }
 
 }  // namespace discretedata
 }  // namespace inviwo

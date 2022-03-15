@@ -16,13 +16,16 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/processors/3d/pathlines.h
     include/modules/vectorfieldvisualization/processors/3d/streamlines.h
     include/modules/vectorfieldvisualization/processors/3d/streamribbons.h
+    include/modules/vectorfieldvisualization/processors/addvalueperline.h
     include/modules/vectorfieldvisualization/processors/arrowglyphs.h
+    include/modules/vectorfieldvisualization/processors/datageneration/holgersthreelines.h
     include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h
     include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h
     include/modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h
     include/modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h
     include/modules/vectorfieldvisualization/processors/discardshortlines.h
     include/modules/vectorfieldvisualization/processors/flowfieldprocessor.h
+    include/modules/vectorfieldvisualization/processors/integrallinestocomets.h
     include/modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h
     include/modules/vectorfieldvisualization/processors/integrallinevectortomesh.h
     include/modules/vectorfieldvisualization/processors/linesfromdataframe.h
@@ -53,13 +56,16 @@ set(SOURCE_FILES
     src/processors/3d/pathlines.cpp
     src/processors/3d/streamlines.cpp
     src/processors/3d/streamribbons.cpp
+    src/processors/addvalueperline.cpp
     src/processors/arrowglyphs.cpp
+    src/processors/datageneration/holgersthreelines.cpp
     src/processors/datageneration/rbfvectorfieldgenerator2d.cpp
     src/processors/datageneration/rbfvectorfieldgenerator3d.cpp
     src/processors/datageneration/seedpointgenerator.cpp
     src/processors/datageneration/seedpointsfrommask.cpp
     src/processors/discardshortlines.cpp
     src/processors/flowfieldprocessor.cpp
+    src/processors/integrallinestocomets.cpp
     src/processors/integrallinevectortomesh.cpp
     src/processors/linesfromdataframe.cpp
     src/processors/linesourceascii.cpp

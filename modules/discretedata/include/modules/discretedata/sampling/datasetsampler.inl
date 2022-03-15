@@ -48,24 +48,16 @@ DataSetSampler<SpatialDims>::DataSetSampler(
     , interpolant_(interpolant.copy())
     , coordsMin_(coordsMin)
     , coordsMax_(coordsMax) {
-    if (!coordinates_) std::cout << "Oopsie doo coordinates!" << std::endl;
-    if (!grid_) std::cout << "Oopsie doo grid!" << std::endl;
-    // if (coordinates_->getGridPrimitiveType() != GridPrimitive::Vertex ||
-    //     coordinates_->getNumComponents() != SpatialDims ||
-    //     coordinates_->size() != grid->getNumElements()) {
-    //     LogError("Incompatible grid and coordinate channel given, aborting.");
-    //     return;
-    // }
-    // }
+    ivwAssert(coordinates_ && grid_, "Need a valid grid and coordinates.");
 
-    Matrix<SpatialDims + 1, float> modelMat;
+    Matrix<SpatialDims + 1, float> modelMat(0.0);
     for (unsigned dim = 0; dim < SpatialDims; ++dim) {
         modelMat[dim][dim] = coordsMax[dim] - coordsMin[dim];
         modelMat[SpatialDims][dim] = coordsMin[dim];
-        // std::cout << "# " << coordsMin[dim] << " - " << coordsMax[dim] << std::endl;
     }
     modelMat[SpatialDims][SpatialDims] = 1;
     this->setModelMatrix(modelMat);
+    this->setWorldMatrix(modelMat);
 }
 
 template <unsigned int SpatialDims>
@@ -75,7 +67,22 @@ DataSetSampler<SpatialDims>::~DataSetSampler() {
 
 template <unsigned int SpatialDims>
 DataSetSampler<SpatialDims>::DataSetSampler(DataSetSampler&& tree)
-    : DataSetSampler(tree.grid_, tree.coordinates_) {}
+    : DataSetSamplerBase(std::move(tree.grid_),
+                         std::move(std::static_pointer_cast<const Channel>(tree.coordinates_)))
+    , interpolant_(tree.getInterpolant())
+    , coordsMin_(tree.coordsMin_)
+    , coordsMax_(tree.coordsMax_) {
+    tree.interpolant_ = nullptr;
+    ivwAssert(coordinates_ && grid_, "Need a valid grid and coordinates.");
+
+    Matrix<SpatialDims + 1, float> modelMat;
+    for (unsigned dim = 0; dim < SpatialDims; ++dim) {
+        modelMat[dim][dim] = coordsMax_[dim] - coordsMin_[dim];
+        modelMat[SpatialDims][dim] = coordsMin_[dim];
+    }
+    modelMat[SpatialDims][SpatialDims] = 1;
+    this->setModelMatrix(modelMat);
+}
 
 template <unsigned int SpatialDims>
 void DataSetSampler<SpatialDims>::setInterpolant(const Interpolant<SpatialDims>& interpolant) {

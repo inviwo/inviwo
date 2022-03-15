@@ -50,6 +50,7 @@
 #include <modules/discretedata/processors/createindexchannel.h>
 #include <modules/discretedata/processors/exampledataset.h>
 #include <modules/discretedata/processors/extendspatialsampler.h>
+#include <modules/discretedata/processors/extrudedataset.h>
 #include <modules/discretedata/processors/sphericalcoordinates.h>
 
 #include <modules/discretedata/sampling/interpolant.h>
@@ -76,6 +77,7 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     registerProcessor<DataSetFromVolume>();
     registerProcessor<ComputeGridMeasure>();
     registerProcessor<ExtendSpatialSampler>();
+    registerProcessor<ExtrudeDataSet>();
     registerProcessor<MeshFromDataSet>();
     registerProcessor<ImageFromDataSet>();
     registerProcessor<VolumeFromDataSet>();
@@ -94,17 +96,6 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     registerProperty<ChannelOpProperty<MagnitudeOperation>>();
     registerProperty<ChannelOpProperty<NormalizedMagnitudeOperation>>();
     registerProperty<ChannelOpProperty<AppendOperation>>();
-    // Property* prop = new DataChannelProperty("Anke", "Anke");
-    // // new ChannelOpProperty<NormalizedMagnitudeOperation>("Anke", "Anke");
-    // std::cout << fmt::format("@@@ IDENTIFIER {}", prop->getClassIdentifier())
-    //           // std::make_unique<ChannelOpProperty<NormalizedMagnitudeOperation>>
-    //           //    ("Anke", "Anke")->getClassIdentifier())
-    //           << std::endl;
-    // std::cout << fmt::format("@@@ IDENTIFIER {}",
-    //                          std::make_unique<DataChannelProperty>("Anke", "Anke")
-    //                              ->getClassIdentifier())
-    //           << std::endl;
-
     AddDataSetSampler::addInterpolantType<SkewedBoxInterpolant>("skewedBox", "Skewed Box");
     AddDataSetSampler::addSamplerType<CellTree>("celltree", "CellTree");
 }

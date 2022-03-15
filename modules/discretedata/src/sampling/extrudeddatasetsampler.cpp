@@ -28,3 +28,22 @@
  *********************************************************************************/
 
 #include <modules/discretedata/sampling/extrudeddatasetsampler.h>
+
+namespace inviwo {
+namespace discretedata {
+
+std::shared_ptr<DataSetSamplerBase> createExtrudedDataSetSampler(
+    std::shared_ptr<const DataSetSamplerBase> baseSampler,
+    const std::shared_ptr<const DataChannel<double, 1>>& extraDimension,
+    const std::shared_ptr<const ExtrudedGrid>& grid) {
+    detail::CreateExtrudedDataSetSamplerHelper dispatcher;
+    return channeldispatching::dispatchNumber<std::shared_ptr<DataSetSamplerBase>, 1, 2>(
+        baseSampler->getDimension(), dispatcher, baseSampler, extraDimension, grid);
+}
+
+using ExtrudedDataSetSampler2D = ExtrudedDataSetSampler<2>;
+using ExtrudedDataSetSampler3D = ExtrudedDataSetSampler<3>;
+// using ExtrudedDataSetSampler4D = ExtrudedDataSetSampler<4>;
+
+}  // namespace discretedata
+}  // namespace inviwo

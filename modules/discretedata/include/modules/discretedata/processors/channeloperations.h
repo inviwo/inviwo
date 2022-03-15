@@ -72,7 +72,6 @@ struct ChannelOpPropertyBase : public CompositeProperty {
         const std::string& defaultName,
         DataChannelProperty::ChannelFilter filter = &DataChannelProperty::FilterPassAll);
     ChannelOpPropertyBase(const ChannelOpPropertyBase& prop);
-    // ChannelOpPropertyBase& operator=(const ChannelOpPropertyBase& prop) = delete;
     virtual std::shared_ptr<Channel> applyOperation() = 0;
 
     DataChannelProperty baseChannel_;
@@ -89,7 +88,6 @@ struct ChannelOpProperty : public ChannelOpPropertyBase {
         DataSetInport* dataInport = nullptr, const std::string& defaultName = "NONE",
         DataChannelProperty::ChannelFilter filter = &DataChannelProperty::FilterPassAll);
     ChannelOpProperty& operator=(const ChannelOpProperty<ChannelOp>& prop);
-    // ChannelOpProperty(const ChannelOpProperty<ChannelOp>& prop);
     virtual std::shared_ptr<Channel> applyOperation() override;
     virtual ChannelOpProperty<ChannelOp>* clone() const override {
         return new ChannelOpProperty<ChannelOp>(*this);

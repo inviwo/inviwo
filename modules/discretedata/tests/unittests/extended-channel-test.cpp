@@ -81,8 +81,8 @@ TEST(DataSet, ExtendedChannel) {
     // Compare to lookup table.
     IArr5* sampledValues = new IArr5[12];
 
-    constexpr std::array<ivec2, 5> testCasesAsIndexAndSize = {
-        ivec2{0, 4}, ivec2{0, 12}, ivec2{5, 7}, ivec2{5, 5}, ivec2{1, 9}};
+    constexpr std::array<ivec2, 6> testCasesAsIndexAndSize = {
+        ivec2{0, 4}, ivec2{0, 12}, ivec2{5, 7}, ivec2{5, 5}, ivec2{1, 9}, ivec2{1, 1}};
 
     for (auto& testCase : testCasesAsIndexAndSize) {
         int startIndex = testCase.x;

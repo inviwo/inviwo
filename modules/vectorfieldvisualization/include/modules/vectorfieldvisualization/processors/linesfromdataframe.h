@@ -57,8 +57,8 @@ public:
     virtual void process() override;
     void updateColumns();
 
-    void deserialize(Deserializer& d) override;
-    void serialize(Serializer& s) const override;
+    // void deserialize(Deserializer& d) override;
+    // void serialize(Serializer& s) const override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -69,13 +69,14 @@ private:
 
     OptionPropertyString timeColumn_;
     DoubleProperty startTime_;
+    BoolProperty maximizeStartTime_;
     CompositeProperty columnsForPosition_;
     BoolCompositeProperty columnsForVelocity_, columnsForAcceleration_;
     BoolProperty updateOutput_;
 
-    enum PointData : char { None = 0, Position = 1, Velocity = 2, Acceleration = 4 };
-    // Maps from the DataFrame column name to a flag of the line data it is assigned to.
-    std::unordered_map<std::string, char> columnDataMap_;
+    // enum PointData : char { None = 0, Position = 1, Velocity = 2, Acceleration = 4 };
+    // // Maps from the DataFrame column name to a flag of the line data it is assigned to.
+    // std::unordered_map<std::string, char> columnDataMap_;
 };
 
 }  // namespace inviwo

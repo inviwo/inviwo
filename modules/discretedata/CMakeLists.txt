@@ -54,17 +54,20 @@ set(HEADER_FILES
     include/modules/discretedata/processors/datasettospatialsampler.h
     include/modules/discretedata/processors/exampledataset.h
     include/modules/discretedata/processors/extendspatialsampler.h
+    include/modules/discretedata/processors/extrudedataset.h
     include/modules/discretedata/processors/imagefromdataset.h
     include/modules/discretedata/processors/meshfromdataset.h
     include/modules/discretedata/processors/segmentationvoxelizer.h
     include/modules/discretedata/processors/sphericalcoordinates.h
     include/modules/discretedata/processors/volumefromdataset.h
     include/modules/discretedata/properties/datachannelproperty.h
+    include/modules/discretedata/properties/datasamplerproperty.h
     include/modules/discretedata/sampling/celltree.h
     include/modules/discretedata/sampling/datasetsampler.h
     include/modules/discretedata/sampling/datasetsampler.inl
     include/modules/discretedata/sampling/datasetspatialsampler.h
-    include/modules/discretedata/sampling/extendedspatialsampler.h
+    include/modules/discretedata/sampling/extrudeddatasetsampler.h
+    include/modules/discretedata/sampling/extrudeddatasetsampler.inl
     include/modules/discretedata/sampling/interpolant.h
     include/modules/discretedata/util/arrayutil.h
     include/modules/discretedata/util/prefixsumvector.h
@@ -112,14 +115,16 @@ set(SOURCE_FILES
     src/processors/datasetsource.cpp
     src/processors/exampledataset.cpp
     src/processors/extendspatialsampler.cpp
+    src/processors/extrudedataset.cpp
     src/processors/imagefromdataset.cpp
     src/processors/meshfromdataset.cpp
     src/processors/segmentationvoxelizer.cpp
     src/processors/sphericalcoordinates.cpp
     src/processors/volumefromdataset.cpp
     src/properties/datachannelproperty.cpp
+    src/properties/datasamplerproperty.cpp
     src/sampling/datasetsampler.cpp
-    src/sampling/extendedspatialsampler.cpp
+    src/sampling/extrudeddatasetsampler.cpp
     src/sampling/interpolant.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
@@ -133,9 +138,11 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/data-access-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/example-code.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/extended-channel-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/extruded-sampler-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/interpolation-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/lineset-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/structured-grid-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/extruded-tripolar-grid-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/tripolar-grid-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})

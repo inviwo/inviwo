@@ -54,7 +54,6 @@ TEST(DataSet, Interpolation) {
     for (const vec3& p : points) {
         vec3 transformedPoint = baseMat * p;
         coords.push_back(arr2{transformedPoint.x, transformedPoint.y});
-        std::cerr << "point " << transformedPoint.x << ", " << transformedPoint.y << std::endl;
     }
     EXPECT_NO_THROW(inside = interpolant.getWeights(discretedata::InterpolationType::Linear,
                                                     {coords[0], coords[1], coords[2], coords[3]},

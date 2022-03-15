@@ -146,7 +146,6 @@ void DataChannelProperty::updateChannelList() {
     // Remove this function as callback from itself.
     // std::weak_ptr<std::function<void()>> sanityCheck = gridPrimitiveOnChange_;
     // gridPrimitiveOnChange_ = nullptr;  // gridPrimitive_.onChangeScoped([]() {});
-    // LogWarn(sanityCheck.expired());
 
     // Assemble all present primitives.
     std::set<GridPrimitive> usedPrimitives;

@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/discretedata/discretedatatypes.h>
 #include <modules/discretedata/channels/channelgetter.h>
+#include <iterator>
 
 namespace inviwo {
 namespace discretedata {
@@ -47,6 +48,12 @@ class ChannelIterator {
                   "Size and type do not agree with the vector type.");
 
 public:
+    using value_type = VecNT;
+    using difference_type = ind;
+    using pointer = VecNT*;
+    using reference = VecNT&;
+    using iterator_category = std::random_access_iterator_tag;
+
     ChannelIterator(ChannelGetter<T, N>* parent, ind index) : getter(parent), index(index) {}
     ChannelIterator() : getter(nullptr), index(-1) {}
     ~ChannelIterator() = default;
@@ -84,17 +91,29 @@ public:
     ChannelIterator<VecNT, T, N> operator+(ind offset) {
         return ChannelIterator<VecNT, T, N>(getter, index + offset);
     }
-    ChannelIterator<VecNT, T, N> operator+=(ind offset) { index += offset; }
+    ChannelIterator<VecNT, T, N>& operator+=(ind offset) {
+        index += offset;
+        return *this;
+    }
     ChannelIterator<VecNT, T, N> operator-(ind offset) {
         return ChannelIterator<VecNT, T, N>(getter, index - offset);
     }
-    ChannelIterator<VecNT, T, N> operator-=(ind offset) { index -= offset; }
+    ChannelIterator<VecNT, T, N>& operator-=(ind offset) {
+        index -= offset;
+        return *this;
+    }
 
     // compare
     bool operator==(const ChannelIterator<VecNT, T, N>& other) const {
         return *other.getter == *getter && other.index == index;
     }
-    bool operator!=(const ChannelIterator<VecNT, T, N>& other) const { return !(other == *this); }
+    bool operator!=(const ChannelIterator<VecNT, T, N>& other) const {
+        return !(this->operator==(other));
+    }
+
+    difference_type operator-(const ChannelIterator<VecNT, T, N>& other) {
+        return index - other.index;
+    }
 
 protected:
     /** Abstract struct handling the dereferencing **/
@@ -128,6 +147,12 @@ template <typename Parent, typename VecNT>
 class ConstChannelIterator {
 public:
     using T = typename Parent::value_type;
+    using value_type = VecNT;
+    using difference_type = ind;
+    using pointer = VecNT*;
+    using reference = VecNT&;
+    using iterator_category = std::random_access_iterator_tag;
+
     static constexpr ind num_comp = Parent::num_comp;
     static_assert(sizeof(VecNT) == sizeof(T) * num_comp,
                   "Size and type do not agree with the vector type.");
@@ -152,7 +177,6 @@ public:
         return *this;
     }
     ConstChannelIterator& operator--(int) {
-        auto i = *this;
         index--;
         return *this;
     }
@@ -161,17 +185,28 @@ public:
     ConstChannelIterator operator+(ind offset) {
         return ConstChannelIterator(parent, index + offset);
     }
-    ConstChannelIterator operator+=(ind offset) { index += offset; }
+    ConstChannelIterator& operator+=(ind offset) {
+        index += offset;
+        return *this;
+    }
     ConstChannelIterator operator-(ind offset) {
         return ConstChannelIterator(parent, index - offset);
     }
-    ConstChannelIterator operator-=(ind offset) { index -= offset; }
+    ConstChannelIterator& operator-=(ind offset) {
+        index -= offset;
+        return *this;
+    }
 
     // compare
-    bool operator==(ConstChannelIterator& other) {
+    bool operator==(const ConstChannelIterator<Parent, VecNT>& other) {
         return other.parent == parent && other.index == index;
     }
-    bool operator!=(ConstChannelIterator& other) { return !(other == *this); }
+    bool operator!=(const ConstChannelIterator<Parent, VecNT>& other) {
+        return !(this->operator==(other));
+    }
+    difference_type operator-(const ConstChannelIterator<Parent, VecNT>& other) {
+        return index - other.index;
+    }
 
 protected:
     //! Constant DataChannel

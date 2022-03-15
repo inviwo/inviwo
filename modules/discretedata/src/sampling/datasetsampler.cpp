@@ -34,8 +34,7 @@ namespace discretedata {
 DataSetSamplerBase::DataSetSamplerBase(std::shared_ptr<const Connectivity> grid,
                                        std::shared_ptr<const Channel> coordinates)
     : grid_(grid), coordinates_(coordinates) {
-    if (!coordinates_) std::cout << "Base Oopsie doo coordinates!" << std::endl;
-    if (!grid_) std::cout << "BaseOopsie doo grid!" << std::endl;
+    ivwAssert(coordinates_ && grid_, "Grid and coordinates need to be valid.");
 }
 
 namespace dd_detail {

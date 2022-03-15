@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/processors/2d/seedstomesh2d.h>
+#include <modules/vectorfieldvisualization/processors/datageneration/holgersthreelines.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
@@ -40,6 +41,7 @@
 #include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
 #include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
 #include <modules/vectorfieldvisualization/processors/integrallinevectortomesh.h>
+#include <modules/vectorfieldvisualization/processors/integrallinestocomets.h>
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
@@ -54,6 +56,7 @@
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
 #include <modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h>
 #include <modules/base/processors/volumetospatialsampler.h>
+#include <modules/vectorfieldvisualization/processors/addvalueperline.h>
 #include <modules/vectorfieldvisualization/processors/arrowglyphs.h>
 #include <modules/vectorfieldvisualization/processors/flowfieldprocessor.h>
 #include <modules/vectorfieldvisualization/processors/linesfromdataframe.h>
@@ -77,9 +80,11 @@ struct ProcessorTraits<LineSetSelector> {
 
 VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
     : InviwoModule(app, "VectorFieldVisualization") {
+    registerProcessor<AddValuePerLine>();
     registerProcessor<ArrowGlyphs2D>();
     registerProcessor<ArrowGlyphs3D>();
     registerProcessor<FlowField2DProcessor>();
+    registerProcessor<HolgersThreeLines>();
     registerProcessor<LineSourceASCII>();
     registerProcessor<RBFVectorFieldGenerator2D>();
     registerProcessor<RBFVectorFieldGenerator3D>();
@@ -93,6 +98,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<StreamRibbonsDeprecated>();
 
     registerProcessor<IntegralLineVectorToMesh>();
+    registerProcessor<IntegralLinesToComets>();
     registerProcessor<Seed3Dto4D>();
     registerProcessor<StreamLines2D>();
     registerProcessor<StreamLines3D>();

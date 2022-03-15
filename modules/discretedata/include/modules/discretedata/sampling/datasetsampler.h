@@ -78,8 +78,8 @@ public:
         InterpolationType interpolationType = InterpolationType::Ignore) const = 0;
     void setInterpolant(const Interpolant<SpatialDims>& interpolant);
     const Interpolant<SpatialDims>& getInterpolant() const;
-    virtual std::array<float, SpatialDims> getMin() const { return coordsMin_; };
-    virtual std::array<float, SpatialDims> getMax() const { return coordsMax_; };
+    virtual const std::array<float, SpatialDims>& getMin() const { return coordsMin_; };
+    virtual const std::array<float, SpatialDims>& getMax() const { return coordsMax_; };
 
 protected:
     Interpolant<SpatialDims>* interpolant_;

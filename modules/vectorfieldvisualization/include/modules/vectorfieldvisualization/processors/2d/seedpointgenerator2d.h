@@ -67,6 +67,9 @@ private:
     BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
     IntProperty seed_;          ///<  The seed used to initialize the random sequence
 
+    CompositeProperty sampleRegion_;
+    FloatVec2Property regionMin_, regionMax_;
+
 private:
     std::random_device rd_;
     std::mt19937 mt_;

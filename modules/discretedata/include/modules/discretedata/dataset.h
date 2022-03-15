@@ -45,6 +45,7 @@ struct DataSetInitializer {
     std::string name_;
     std::shared_ptr<const Connectivity> grid_;
     std::vector<std::shared_ptr<Channel>> channels_;
+    std::vector<std::shared_ptr<const DataSetSamplerBase>> samplers_;
 };
 
 // Map used for storing and querying channels by name and GridPrimitive type.
@@ -53,7 +54,7 @@ using DataChannelMap =
     std::map<std::pair<std::string, GridPrimitive>,
              std::shared_ptr<const Channel>,                     // Shared base channels pointers
              dd_util::PairCompare<std::string, GridPrimitive>>;  // Lesser operator on
-                                                                 // String-Primitve pairs
+                                                                 // String-Primitive pairs
 
 using SamplerMap = std::map<std::string, std::shared_ptr<const DataSetSamplerBase>>;
 
@@ -95,8 +96,9 @@ public:
      * @param data Existing grid and channels to base the DataSet on
      */
     DataSet(const DataSetInitializer& data) : grid_(data.grid_), name_(data.name_) {
-        for (auto channel : data.channels_)
+        for (auto& channel : data.channels_)
             addChannel(std::const_pointer_cast<const Channel, Channel>(channel));
+        for (auto& sampler : data.samplers_) addSampler(sampler);
     }
 
     virtual ~DataSet() = default;

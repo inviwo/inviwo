@@ -46,29 +46,41 @@ LinesFromDataFrame::LinesFromDataFrame()
     : Processor()
     , dataIn_("dataFrameIn")
     , linesOut_("linesOut")
+    , timeColumn_("timeColumn", "Time Column")
+    , startTime_("startTime", "Start Time", 0.06, {0.0, ConstraintBehavior::Ignore},
+                 {3.0, ConstraintBehavior::Ignore})
+    , maximizeStartTime_("maximizeStartTime", "Maximize Line Output", true)
     , columnsForPosition_("positionData", "Position Columns")
-    , columnsForVelocity_("VelocityData", "Velocity Columns")
-    , columnsForAcceleration_("AccelerationData", "Acceleration Columns")
-    , updateOutput_("updateOutput", "Update Output", true)
-    , timeColumn_("timeColumn", "Time Column") {
+    , columnsForVelocity_("VelocityData", "Velocity Columns", true)
+    , columnsForAcceleration_("AccelerationData", "Acceleration Columns", true)
+    , updateOutput_("updateOutput", "Update Output", true) {
 
     addPort(dataIn_);
     addPort(linesOut_);
-    addProperties(timeColumn_, columnsForPosition_, columnsForVelocity_, columnsForAcceleration_,
-                  updateOutput_);
+    addProperties(timeColumn_, startTime_, maximizeStartTime_, columnsForPosition_,
+                  columnsForVelocity_, columnsForAcceleration_, updateOutput_);
 }
 void LinesFromDataFrame::updateColumns() {
-    columnsForPosition_.clearProperties();
-    columnsForVelocity_.clearProperties();
-    columnsForAcceleration_.clearProperties();
     if (!dataIn_.hasData()) {
-        columnDataMap_.clear();
+        columnsForPosition_.clearProperties();
+        columnsForVelocity_.clearProperties();
+        columnsForAcceleration_.clearProperties();
         return;
     }
 
+    // If this column was here before, keep it.
+    std::vector<std::string> selectedPositions, selectedVelocities, selectedAccelerations;
+    for (auto prop : columnsForPosition_.getPropertiesByType<BoolProperty>())
+        if (prop->get()) selectedPositions.push_back(prop->getIdentifier());
+    for (auto prop : columnsForVelocity_.getPropertiesByType<BoolProperty>())
+        if (prop->get()) selectedVelocities.push_back(prop->getIdentifier());
+    for (auto prop : columnsForAcceleration_.getPropertiesByType<BoolProperty>())
+        if (prop->get()) selectedAccelerations.push_back(prop->getIdentifier());
+    columnsForPosition_.clearProperties();
+    columnsForVelocity_.clearProperties();
+    columnsForAcceleration_.clearProperties();
+
     auto data = dataIn_.getData();
-    auto prevColumnDataMap = columnDataMap_;
-    columnDataMap_.clear();
     std::vector<std::string> allNames, allIdentifiers;
 
     for (size_t i = 1; i < data->getNumberOfColumns(); i++) {
@@ -78,52 +90,25 @@ void LinesFromDataFrame::updateColumns() {
         allNames.push_back(displayName);
         allIdentifiers.push_back(identifier);
 
-        // If this column was here before, keep it.
-        auto& columnElement = columnDataMap_[displayName];
-        columnElement = PointData::None;
-        auto prevColumnElement = prevColumnDataMap.find(displayName);
-        if (prevColumnElement != prevColumnDataMap.end()) {
-            columnElement = prevColumnElement->second;
-        }
-
-        // BoolProperty* posProp =
-        //     new BoolProperty(identifier, displayName, columnElement == PointData::Position);
-        // posProp->onChange([posProp, this]() {
-        //     if (posProp->get()) columnDataMap_[posProp] = PointData::Position;
-        // });
-        auto updateColumn = [this, identifier, displayName]() {
-            char flag = 0;
-            if (dynamic_cast<BoolProperty*>(columnsForPosition_.getPropertyByIdentifier(identifier))
-                    ->get())
-                flag |= PointData::Position;
-            if (dynamic_cast<BoolProperty*>(columnsForVelocity_.getPropertyByIdentifier(identifier))
-                    ->get())
-                flag |= PointData::Velocity;
-            if (dynamic_cast<BoolProperty*>(
-                    columnsForAcceleration_.getPropertyByIdentifier(identifier))
-                    ->get())
-                flag |= PointData::Acceleration;
-
-            columnDataMap_[displayName] = flag;
-        };
-
         // Create new properties.
         BoolProperty* posProp =
-            new BoolProperty(identifier, displayName, columnElement & (char)PointData::Position);
+            new BoolProperty(identifier, displayName,
+                             std::find(selectedPositions.begin(), selectedPositions.end(),
+                                       identifier) != selectedPositions.end());
         BoolProperty* velProp =
-            new BoolProperty(identifier, displayName, columnElement & (char)PointData::Velocity);
-        BoolProperty* accProp = new BoolProperty(identifier, displayName,
-                                                 columnElement & (char)PointData::Acceleration);
-
-        posProp->onChange(updateColumn);
-        velProp->onChange(updateColumn);
-        accProp->onChange(updateColumn);
+            new BoolProperty(identifier, displayName,
+                             std::find(selectedVelocities.begin(), selectedVelocities.end(),
+                                       identifier) != selectedVelocities.end());
+        BoolProperty* accProp =
+            new BoolProperty(identifier, displayName,
+                             std::find(selectedAccelerations.begin(), selectedAccelerations.end(),
+                                       identifier) != selectedAccelerations.end());
 
         columnsForPosition_.addProperty(posProp);
         columnsForVelocity_.addProperty(velProp);
         columnsForAcceleration_.addProperty(accProp);
-        timeColumn_.replaceOptions(allIdentifiers, allNames, allNames);
     }
+    timeColumn_.replaceOptions(allIdentifiers, allNames, allNames);
 }
 
 void LinesFromDataFrame::process() {
@@ -141,16 +126,30 @@ void LinesFromDataFrame::process() {
     using ColumnVector = std::vector<std::shared_ptr<const Column>>;
     ColumnVector positionColumns, velocityColumns, accelerationColumns;
 
-    for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
+    for (size_t i = 1; i < data->getNumberOfColumns(); i++) {
         auto c = data->getColumn(i);
         std::string displayName = c->getHeader();
-        char& columnFlag = columnDataMap_[displayName];
-        std::cout << fmt::format("Column '{}' has flag {}", displayName, int(columnFlag))
-                  << std::endl;
-        if (columnFlag & PointData::Position) positionColumns.push_back(c);
-        if (hasVelocity && (columnFlag & PointData::Velocity)) velocityColumns.push_back(c);
-        if (hasAcceleration && (columnFlag & PointData::Acceleration))
+        std::string identifier = util::stripIdentifier(displayName);
+        if (dynamic_cast<BoolProperty*>(columnsForPosition_.getPropertyByIdentifier(identifier))
+                ->get())
+            positionColumns.push_back(c);
+        if (hasVelocity &&
+            dynamic_cast<BoolProperty*>(columnsForVelocity_.getPropertyByIdentifier(identifier))
+                ->get())
+            velocityColumns.push_back(c);
+        if (hasAcceleration &&
+            dynamic_cast<BoolProperty*>(columnsForAcceleration_.getPropertyByIdentifier(identifier))
+                ->get())
             accelerationColumns.push_back(c);
+    }
+
+    if (hasVelocity && !velocityColumns.size()) {
+        columnsForVelocity_.setChecked(false);
+        hasVelocity = false;
+    }
+    if (hasAcceleration && !accelerationColumns.size()) {
+        columnsForAcceleration_.setChecked(false);
+        hasAcceleration = false;
     }
 
     auto idColumn = data->getColumn(1);
@@ -165,19 +164,60 @@ void LinesFromDataFrame::process() {
     std::cout << "Start time: " << startTime << std::endl;
     std::vector<size_t> dataPerFrame(30000, 0);
 
+    // std::vector<size_t> linesAtMaxTime;
+
+    if (maximizeStartTime_.get()) {
+        for (size_t p = 0; p < timeCol->getSize(); ++p) {
+            double time = timeCol->getAsDouble(p);
+            size_t timeIdx = std::max(0.0, time / timeStep + 0.5);
+            if (timeIdx > dataPerFrame.size()) {
+                for (size_t app = dataPerFrame.size(); app <= timeIdx; ++app) {
+                    dataPerFrame.push_back(0);
+                }
+            }
+            dataPerFrame[timeIdx]++;
+        }
+        auto maxMidge = std::max_element(dataPerFrame.begin(), dataPerFrame.end());
+        startTime = timeStep * (maxMidge - dataPerFrame.begin());
+        std::cout << fmt::format("Max {} midges at time {}", *maxMidge, startTime) << std::endl;
+        startTime_.set(startTime);
+
+        // linesAtMaxTime.reserve(*maxMidge);
+        // for (size_t p = 0; p < timeCol->getSize(); ++p) {
+        //     double time = timeCol->getAsDouble(p);
+        //     // size_t timeIdx = std::max(0.0, time / timeStep + 0.5);
+        //     if (std::abs(time - startTime) < timeStep * 0.1) {
+        //         linesAtMaxTime.push_back(idColumn->getAsDouble(p));
+        //     }
+        // }
+    }
+
     auto lines = std::make_shared<IntegralLineSet>(mat4(1.0));
     std::vector<dvec3>*veloVec, *accVec, *posVec = nullptr;
     double currentId = -1;  // idColumn->getAsDouble(0);
     bool skipLine = false;
-    size_t numSkipped = 0;
+    size_t numTraversed = 0;
     IntegralLine currentLine;
 
-    for (size_t p = 0; p < idColumn->getSize(); ++p) {
+    for (size_t p = 1; p < idColumn->getSize(); ++p) {
         double id = idColumn->getAsDouble(p);
         bool newLine = (currentId != id);
         double time = timeCol->getAsDouble(p);
         if (newLine) {
+            numTraversed++;
+
+            // bool shouldBeIn = std::find(linesAtMaxTime.begin(), linesAtMaxTime.end(), currentId)
+            // !=
+            //                   linesAtMaxTime.end();
+            // if (shouldBeIn) {
+            //     std::cout << "Finished " << currentId << std::endl;
+            //     if (skipLine) std::cout << "!  Skipped line?!?!?!?" << std::endl;
+            //     if (posVec && posVec->size() <= 3)
+            //         std::cout << "!  Too short: " << posVec->size() << std::endl;
+            // }
             if (!skipLine && posVec && posVec->size() > 3) {
+                std::cout << fmt::format("Added line, size {}", posVec->size()) << std::endl;
+                // std::cout << "!  Hallelujah!" << std::endl;
                 lines->push_back(std::move(currentLine), currentId);
             }
             skipLine = false;
@@ -188,26 +228,26 @@ void LinesFromDataFrame::process() {
             if (hasVelocity) veloVec = &currentLine.getMetaData<dvec3>("velocity", true);
             if (hasAcceleration) accVec = &currentLine.getMetaData<dvec3>("acceleration", true);
 
-            if (time != startTime) {
+            if (time - startTime > timeStep * 0.1) {
                 // std::cout << "Line starting at " << time << " instead of " << startTime;
                 skipLine = true;
-                numSkipped++;
                 continue;
             }
         }
-        dataPerFrame[(time - startTime) / 0.01]++;
+        newLine = posVec->size() == 0;
+        // dataPerFrame[(time - startTime) / 0.01]++;
         if (skipLine) continue;
 
-        if (time < startTime) continue;
-        if (newLine && time > startTime) {
+        if (startTime - time > timeStep * 0.1) continue;
+        if (newLine && time - startTime > timeStep * 0.1) {
             skipLine = true;
             continue;
         }
 
-        if (std::abs(time - startTime - posVec->size() * 0.01) > 0.0001)
-            std::cout << fmt::format("!!! Line at index {} at time {}, not {}", p, time,
-                                     startTime + (posVec->size() * 0.01))
-                      << std::endl;
+        // if (std::abs(time - startTime - posVec->size() * 0.01) > 0.0001)
+        //     std::cout << fmt::format("!!! Line at index {} at time {}, not {}", p, time,
+        //                              startTime + (posVec->size() * 0.01))
+        //               << std::endl;
 
         dvec3 pos(0), vel(0), acc(0);
         for (size_t comp = 0; comp < std::min(size_t(3), positionColumns.size()); ++comp) {
@@ -232,46 +272,10 @@ void LinesFromDataFrame::process() {
     if (posVec && posVec->size()) {
         lines->push_back(std::move(currentLine), currentId);
     }
+    numTraversed++;
 
     linesOut_.setData(lines);
-    std::cout << fmt::format("Skipped {} and kept {}", numSkipped, lines->size()) << std::endl;
-    auto maxMidge = std::max_element(dataPerFrame.begin(), dataPerFrame.end());
-    std::cout << fmt::format("Max {} midges at time {}", *maxMidge,
-                             startTime + timeStep * (maxMidge - dataPerFrame.begin()))
-              << std::endl;
-}
-
-void LinesFromDataFrame::deserialize(Deserializer& d) {
-    Processor::deserialize(d);
-    if (!dataIn_.hasData()) return;
-
-    auto data = dataIn_.getData();
-    for (size_t i = 1; i < data->getNumberOfColumns(); i++) {
-        auto c = data->getColumn(i);
-        std::string displayName = c->getHeader();
-        std::string identifier = util::stripIdentifier(displayName);
-        char flag = 0;
-
-        if (dynamic_cast<BoolProperty*>(columnsForPosition_.getPropertyByIdentifier(identifier))
-                ->get())
-            flag |= PointData::Position;
-        if (dynamic_cast<BoolProperty*>(columnsForVelocity_.getPropertyByIdentifier(identifier))
-                ->get())
-            flag |= PointData::Velocity;
-        if (dynamic_cast<BoolProperty*>(columnsForAcceleration_.getPropertyByIdentifier(identifier))
-                ->get())
-            flag |= PointData::Acceleration;
-        columnDataMap_[displayName] = flag;
-        // for (auto prop : columnsForPosition_.getPropertiesByType<BoolProperty>()) {
-        //     prop->propertyModified();
-        // }
-    }
-    // d.deserialize("selectedChannels", deserializedChannels_);
-}
-
-void LinesFromDataFrame::serialize(Serializer& s) const {
-    Processor::serialize(s);
-    // s.serialize("selectedChannels", channelString);
+    std::cout << fmt::format("Traversed {} and kept {}", numTraversed, lines->size()) << std::endl;
 }
 
 }  // namespace inviwo

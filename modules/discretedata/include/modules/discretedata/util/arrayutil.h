@@ -69,6 +69,21 @@ bool arrParallel(const std::array<T, N>& a, const std::array<T, N>& b, double ep
     return true;
 }
 
+template <typename T, size_t N>
+std::array<T, N + 1> arrAppend(const std::array<T, N>& a, const T& b) {
+    std::array<T, N + 1> result;
+    std::copy(a.begin(), a.end(), result.begin());
+    result[N] = b;
+    return result;
+}
+
+template <typename T, size_t N>
+std::array<T, N - 1> arrRemoveLast(const std::array<T, N>& a) {
+    std::array<T, N - 1> result;
+    std::copy(a.begin(), a.end() - 1, result.begin());
+    return result;
+}
+
 }  // namespace dd_util
 }  // namespace discretedata
 }  // namespace inviwo

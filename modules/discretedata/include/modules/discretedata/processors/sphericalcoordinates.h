@@ -63,6 +63,7 @@ private:
     StringProperty name_;
     BoolProperty autoName_;
     DoubleProperty radius_, verticalScale_;
+    BoolProperty bufferChannel_;
 
     // ListProperty velocities_;
 };
@@ -79,7 +80,8 @@ struct SphericalCoordinateDispatcher {
     template <typename Result, typename T, ind N, typename... Args>
     Result operator()(std::shared_ptr<const Channel> channel, const std::string& name,
                       double radius, double verticalScale,
-                      std::shared_ptr<const DataChannel<float, 2>>& velocityChannel) {
+                      std::shared_ptr<const DataChannel<float, 2>>& velocityChannel,
+                      bool convertToBuffer) {
         std::array<std::shared_ptr<const Channel>, 2> results{nullptr, nullptr};
 
         auto dataChannel =
@@ -107,6 +109,9 @@ struct SphericalCoordinateDispatcher {
                 }
             },
             channel->size(), name, channel->getGridPrimitiveType());
+        if (convertToBuffer) {
+            results[0] = results[0]->toBufferChannel();
+        }
 
         // Convert velocity channel from m/s to latlon/s (if any is given).
         if (velocityChannel) {
@@ -143,20 +148,15 @@ struct SphericalCoordinateDispatcher {
                 },
                 velocityChannel->size(),
                 fmt::format("{}_in_lat_lon_per_day", velocityChannel->getName()));
+
+            if (convertToBuffer) {
+                results[1] = results[1]->toBufferChannel();
+            }
         }
 
         return results;
     }
 };
-
-// struct SphericalVelocityDispatcher {
-
-//     template <typename Result, typename T, ind N, typename... Args>
-//     Result operator()(std::shared_ptr<const Channel> positionChannel, std::shared_ptr<const
-//     DataChannel<float, 2>> velocityChannel) {
-
-//                       }
-// };
 
 }  // namespace detail
 

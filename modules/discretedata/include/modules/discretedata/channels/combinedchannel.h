@@ -34,6 +34,7 @@
 #include <modules/discretedata/channels/datachannel.h>
 #include <modules/discretedata/channels/channelgetter.h>
 #include <modules/discretedata/channels/cachedgetter.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -71,7 +72,7 @@ public:
               name, channels.size() ? channels[0]->getGridPrimitiveType() : GridPrimitive::Vertex)
         , channels_(channels) {
         if (channels_.size() < 2) {
-            LogError("Not enough channels to combine.");
+            // ivwAssert(false, "Not enough channels to combine.");
             channels_.clear();
             return;
         }
@@ -86,9 +87,11 @@ public:
                                      channel->getInvalidValueDouble());
 
             if (scalarType != firstScalarType) {
-                LogError(fmt::format(
-                    "Scalar type of channel {} does not match first type encountered: {}.",
-                    channel->getName(), DataFormatBase::get(firstScalarType)->getString()));
+                // ivwAssert(
+                // false,
+                // fmt::format(
+                //     "Scalar type of channel {} does not match first type encountered: {}.",
+                //     channel->getName(), DataFormatBase::get(firstScalarType)->getString()));
                 channels_.clear();
             }
             numTotalComponents += channel->getNumComponents();
@@ -96,10 +99,11 @@ public:
 
         // Check the number of components.
         if (numTotalComponents != N) {
-            LogError(
-                fmt::format("Total number of components in channels ({}) does not match the size "
-                            "provided to template ({}).",
-                            numTotalComponents, N));
+            // ivwAssert(
+            // false,
+            // fmt::format("Total number of components in channels ({}) does not match the size "
+            //             "provided to template ({}).",
+            //             numTotalComponents, N));
             channels_.clear();
         }
     }

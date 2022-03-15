@@ -82,7 +82,7 @@ struct GetConnectionsFromHelper {
 template <ind N>
 void CurvilinearGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
                                         GridPrimitive to, bool render) const {
-
+    if (int(from) > N || int(to) > N) return;
     dd_detail::GetConnectionsFromHelper<N> dispatcher;
 
     channeldispatching::dispatchNumber<void, 0, N>(ind(from), dispatcher, *this, result, idxLin, to,
@@ -133,19 +133,24 @@ void CurvilinearGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind 
         auto dirSelection = dd_util::initNchooseK<size_t(To)>();
         bool validDirSelection = true;
         while (validDirSelection) {
-            for (size_t idx = 0; idx < size_t(To); ++idx) {
-                neighDirs[idx] = fromPrim.getDirections()[dirSelection[idx]];
+            if constexpr (To != 0) {
+                for (size_t idx = 0; idx < size_t(To); ++idx) {
+                    neighDirs[idx] = fromPrim.getDirections()[dirSelection[idx]];
+                }
             }
 
             // Assemble the directions the primitive will not point to, but be offset by.
             auto itOffsetDirs = offsetDirections.begin();
             auto itDirSelection = dirSelection.begin();
-            for (size_t dirIdx = 0; dirIdx < size_t(From); ++dirIdx) {
-                if (itDirSelection != dirSelection.end() && *itDirSelection == dirIdx) {
-                    itDirSelection++;
-                } else {
-                    *itOffsetDirs = fromPrim.getDirections()[dirIdx];
-                    itOffsetDirs++;
+
+            if constexpr (From != 0) {
+                for (size_t dirIdx = 0; dirIdx < size_t(From); ++dirIdx) {
+                    if (itDirSelection != dirSelection.end() && *itDirSelection == dirIdx) {
+                        itDirSelection++;
+                    } else {
+                        *itOffsetDirs = fromPrim.getDirections()[dirIdx];
+                        itOffsetDirs++;
+                    }
                 }
             }
 
@@ -178,7 +183,7 @@ void CurvilinearGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind 
 
 template <ind N>
 ind CurvilinearGrid<N>::getNumVerticesInDimension(ind dim) const {
-    IVW_ASSERT(numPrimitives_[dim] >= 2, "Number of elements not known yet.");
+    ivwAssert(numPrimitives_[dim] >= 2, "Number of elements not known yet.");
     return numPrimitives_[dim];
 }
 

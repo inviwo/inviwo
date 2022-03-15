@@ -48,7 +48,6 @@ DataSetInformation::DataSetInformation()
     , dataIn_("dataset")
     , overview_("overview", "Overview", "empty", InvalidationLevel::Valid,
                 PropertySemantics::Multiline)
-    // , gridInformation_("grid", "Grid", )
     , channelInformation_("channels", "Channels")
     , samplerInformation_("samplers", "Samplers") {
 
@@ -70,11 +69,19 @@ void DataSetInformation::process() {
     addProperty(new GridInformationProperty("grid", "Grid", *(dataIn_.getData()->getGrid())));
     addProperties(channelInformation_, samplerInformation_);
     channelInformation_.clearProperties();
+    samplerInformation_.clearProperties();
 
     size_t channelID = 0;
     for (auto channel : data.getChannels()) {
         channelInformation_.addProperty(new ChannelInformationProperty{
             fmt::format("Channel{}", channelID++), channel.second->getName(), *channel.second});
+    }
+
+    size_t samplerID = 0;
+    for (auto sampler : data.getSamplers()) {
+        auto samplerName =
+            new StringProperty{fmt::format("Sampler{}", samplerID++), "Sampler", sampler.first};
+        samplerInformation_.addProperty(samplerName, true);
     }
 }
 

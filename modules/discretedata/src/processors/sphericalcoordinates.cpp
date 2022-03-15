@@ -58,6 +58,7 @@ SphericalCoordinates::SphericalCoordinates()
                       return channel->getNumComponents() == 2 &&
                              channel->getDataFormatId() == DataFormatId::Float32;
                   })
+    , bufferChannel_("bufferChannel", "To Buffer Channel?", false)
 // , velocities_("velocitiesToTransform", "Velocities to Scale", [&]() {
 //     std::vector<std::unique_ptr<Property>> v;
 //     v.emplace_back(std::make_unique<DataChannelProperty>(
@@ -76,7 +77,8 @@ SphericalCoordinates::SphericalCoordinates()
 
     addPort(dataIn_);
     addPort(dataOut_);
-    addProperties(positions_, name_, autoName_, radius_, verticalScale_, velocities_);
+    addProperties(positions_, name_, autoName_, radius_, verticalScale_, velocities_,
+                  bufferChannel_);
 }
 
 void SphericalCoordinates::process() {
@@ -104,7 +106,7 @@ void SphericalCoordinates::process() {
                                                    dispatching::filter::Scalars, 2,
                                                    DISCRETEDATA_MAX_NUM_DIMENSIONS>(
         channel->getDataFormatId(), channel->getNumComponents(), dispatcher, channel, name_.get(),
-        radius_.get(), verticalScale_.get(), velocityChannel);
+        radius_.get(), verticalScale_.get(), velocityChannel, bufferChannel_.get());
     outData->addChannel(sphericals[0]);
     if (sphericals[1]) outData->addChannel(sphericals[1]);
 

@@ -34,22 +34,10 @@
 #include <modules/discretedata/channels/datachannel.h>
 #include <modules/discretedata/channels/channelgetter.h>
 #include <modules/discretedata/channels/cachedgetter.h>
+// #include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 namespace discretedata {
-
-// namespace detail {
-// template <typename T, ind ParentComponents>
-// struct FillRawDispatcher {
-//     template <typename Result, ind N>
-//     Result operator()(const Channel& ch, T* const dest, ind index, ind numElements) {
-//         const DataChannel<T, N>& chTN = dynamic_cast<const DataChannel<T, N>&>(ch);
-//         for (ind el = 0; el < numElements; ++el) {
-//             chTN.fillRaw(dest + el * ParentComponents, index + el, 1);
-//         }
-//     }
-// };
-// }  // namespace detail
 
 /**
  * \brief Data channel extending values of two separate channels
@@ -69,37 +57,34 @@ public:
      * @param extendChannel The channel to extend by
      * @param name Name for the extended channel
      */
-    ExtendedChannel(const std::shared_ptr<const Channel>& baseChannel,
-                    const std::shared_ptr<const Channel>& extendChannel, const std::string& name)
+    ExtendedChannel(const std::shared_ptr<const BaseTypedChannel<T>>& baseChannel,
+                    const std::shared_ptr<const BaseTypedChannel<T>>& extendChannel,
+                    const std::string& name)
         : DataChannel<T, N>(
               name, baseChannel ? baseChannel->getGridPrimitiveType() : GridPrimitive::Vertex)
-        , baseChannel_(std::dynamic_pointer_cast<const BaseTypedChannel<T>>(baseChannel))
-        , extendChannel_(std::dynamic_pointer_cast<const BaseTypedChannel<T>>(extendChannel)) {
+        , baseChannel_(baseChannel)
+        , extendChannel_(extendChannel) {
         if (!baseChannel_ || !extendChannel_) {
-            LogError("Not two channels of correct type given.");
+            // ivwAssert(false, "Not two channels of correct type given.");
             return;
         }
 
-        auto firstScalarType = this->getDataFormatId();
-
-        if (baseChannel_->getDataFormatId() != extendChannel_->getDataFormatId())
-            LogError(
-                fmt::format("Scalar type \'{}\' of channels {} does not match \'{}\' of {}.",
-                            DataFormatBase::get(baseChannel_->getDataFormatId())->getString(),
-                            baseChannel_->getName(),
-                            DataFormatBase::get(extendChannel_->getDataFormatId())->getString(),
-                            extendChannel_->getName()));
+        // ivwAssert(baseChannel_->getDataFormatId() == extendChannel_->getDataFormatId(),
+        //           fmt::format("Scalar type \'{}\' of channels {} does not match \'{}\' of {}.",
+        //                       DataFormatBase::get(baseChannel_->getDataFormatId())->getString(),
+        //                       baseChannel_->getName(),
+        //                       DataFormatBase::get(extendChannel_->getDataFormatId())->getString(),
+        //                       extendChannel_->getName()));
 
         ind numTotalComponents =
             baseChannel_->getNumComponents() + extendChannel_->getNumComponents();
 
         // Check the number of components.
-        if (numTotalComponents != N) {
-            LogError(
-                fmt::format("Total number of components in channels ({}) does not match the size "
-                            "provided to template ({}).",
-                            numTotalComponents, N));
-        }
+        // ivwAssert(numTotalComponents == N,
+        //           fmt::format("Total number of components in channels ({}) does not match the
+        //           size "
+        //                       "provided to template ({}).",
+        //                       numTotalComponents, N));
     }
 
     virtual ~ExtendedChannel() = default;
@@ -115,20 +100,22 @@ protected:
      * @param dest Position to write to, expect write of NumComponents many T
      * @param index Linear point index
      */
-    void fillRaw(T* dest, ind index, ind numElements = 1) const override {
-        if (index < 0 || index + numElements >= baseChannel_->size() * extendChannel_->size())
+    void fillRaw(T* dest, const ind index, const ind numElements = 1) const override {
+        if (index < 0 || index + numElements > baseChannel_->size() * extendChannel_->size()) {
             return;
-        T* initialDest = dest;
-
-        if (index + numElements > size()) numElements = size() - index;
+        }
         const ind baseSize = baseChannel_->size();
 
-        ind startIndexInBase = index % baseSize;
-        ind numBaseElements = std::min(numElements, baseSize);
-        bool wrapsAround = startIndexInBase + numBaseElements > baseSize;
-        bool fullBaseChannel = numElements >= baseSize;
+        const ind startIndexInBase = index % baseSize;
+        const ind numBaseElements = std::min(numElements, baseSize);
 
-        ind startIndexInExtend = index / baseSize;
+        const bool wrapsAround = (startIndexInBase + numElements > baseSize);
+        const bool fullBaseChannel = numElements >= baseSize;
+
+        ind indexInExtend = index / baseSize;
+        const ind startIndexInBaseElements = fullBaseChannel ? startIndexInBase
+                                             : wrapsAround   ? (index + numElements) % baseSize
+                                                             : 0;
 
         // clang-format off
         /**
@@ -136,38 +123,48 @@ protected:
          * We start with the first elements needed, possibly wrapping back to the first base channel element.
          * At maximum, all base channel elements are contained.
          * Examples for base channel containing A to F
-         *   [A B C D E F]  all elements in order (only if `index` was a multiple of the base channel size and num element at least the base channel size)
+         *   [A B C D E F]  all elements in order (iff num element is at least the base channel size)
          *   [D E]          subset in middle of base channel
-         *   [D E F A]      elements from beginning and end of base channel
-         *   [D E F A B C]  all elements of the base channel, but offset
+         *   [A B C F]      elements from beginning and end of base channel (iff [F A B C] are needed in this order)
          */
         // clang-format on
-        T* baseChannelElements = new T[numBaseElements * baseChannel_->getNumComponents()];
-        T* currentExtendElement = new T[extendChannel_->getNumComponents()];
-        T* baseChannelEnd =
-            baseChannelElements + (numBaseElements * baseChannel_->getNumComponents());
+        T* const baseChannelElements = new T[numBaseElements * baseChannel_->getNumComponents()];
+        T* const currentExtendElement = new T[extendChannel_->getNumComponents()];
 
-        ind numElementsHead = wrapsAround ? baseSize - startIndexInBase : numElements;
-        baseChannel_->fillRaw(baseChannelElements, startIndexInBase, numElementsHead);
-        if (wrapsAround) {
-            baseChannel_->fillRaw(
-                baseChannelElements + numElementsHead, 0,
-                fullBaseChannel ? startIndexInBase : (startIndexInBase + numElements) - baseSize);
+        const ind numElementsHead = wrapsAround ? baseSize - startIndexInBase : numElements;
+
+        if (fullBaseChannel) {
+            baseChannel_->fillRaw(baseChannelElements, 0, baseSize);
+        } else {
+            baseChannel_->fillRaw(baseChannelElements + startIndexInBaseElements, startIndexInBase,
+                                  numElementsHead);
+            if (wrapsAround) {
+                baseChannel_->fillRaw(baseChannelElements, 0, startIndexInBaseElements);
+            }
         }
 
-        std::cerr << "Base elements: [";
-        for (T* t = baseChannelElements; t != baseChannelEnd; ++t) {
-            std::cerr << *t << ", ";
-        }
-        std::cerr << "]" << std::endl;
+        extendChannel_->fillRaw(currentExtendElement, indexInExtend, 1);
 
-        extendChannel_->fillRaw(currentExtendElement, startIndexInExtend, 1);
+        // // DEBUG!
+        // std::cout << "Base elements:" << std::endl;
+        // for (size_t b = 0; b < numBaseElements * baseChannel_->getNumComponents(); ++b) {
+        //     std::cout << " " << baseChannelElements[b] << std::endl;
+        // }
 
-        T* baseChannelHead = baseChannelElements;
+        // std::cout << "Extend elements:" << std::endl;
+        // for (size_t e = 0; e < extendChannel_->getNumComponents(); ++e) {
+        //     std::cout << " " << currentExtendElement[e] << std::endl;
+        // }
+        // // !DEBUG
+
+        T* baseChannelHead =
+            baseChannelElements + startIndexInBaseElements * baseChannel_->getNumComponents();
+
         for (ind e = 0; e < numElementsHead; ++e) {
             memcpy(dest, baseChannelHead, sizeof(T) * baseChannel_->getNumComponents());
             baseChannelHead += baseChannel_->getNumComponents();
             dest += baseChannel_->getNumComponents();
+
             memcpy(dest, currentExtendElement, sizeof(T) * extendChannel_->getNumComponents());
             dest += extendChannel_->getNumComponents();
         }
@@ -180,17 +177,13 @@ protected:
 
         ind numRemainingElements = numElements - numElementsHead;
 
-        while (numRemainingElements > baseSize) {
-            startIndexInExtend++;
-            extendChannel_->fillRaw(currentExtendElement, startIndexInExtend, 1);
+        while (numRemainingElements >= baseSize) {
+            indexInExtend++;
+            extendChannel_->fillRaw(currentExtendElement, indexInExtend, 1);
+
+            baseChannelHead = baseChannelElements;
 
             for (ind e = 0; e < baseSize; ++e) {
-                // Wrapping around the end of the loaded data, going back to beginning.
-                if (baseChannelHead >= baseChannelEnd) {
-                    std::cerr << baseChannelHead << " >= " << baseChannelEnd << std::endl;
-                    baseChannelHead = baseChannelElements;
-                    std::cerr << "wrap around at " << (dest - initialDest) / N << std::endl;
-                }
                 memcpy(dest, baseChannelHead, sizeof(T) * baseChannel_->getNumComponents());
                 baseChannelHead += baseChannel_->getNumComponents();
 
@@ -201,19 +194,23 @@ protected:
 
             numRemainingElements -= baseSize;
         }
-        startIndexInExtend++;
-        extendChannel_->fillRaw(currentExtendElement, startIndexInExtend, 1);
 
-        // Wrapping around the end of the loaded data, going back to beginning.
-        if (baseChannelHead == baseChannelEnd) baseChannelHead = baseChannelElements;
+        if (numRemainingElements > 0) {
+            indexInExtend++;
+            extendChannel_->fillRaw(currentExtendElement, indexInExtend, 1);
 
-        while (numRemainingElements >= 0) {
-            memcpy(dest, baseChannelHead, sizeof(T) * baseChannel_->getNumComponents());
-            baseChannelHead += baseChannel_->getNumComponents();
+            // Wrapping around the end of the loaded data, going back to beginning.
+            // if (baseChannelHead == baseChannelEnd)
+            baseChannelHead = baseChannelElements;
 
-            dest += baseChannel_->getNumComponents();
-            memcpy(dest, currentExtendElement, sizeof(T) * extendChannel_->getNumComponents());
-            dest += extendChannel_->getNumComponents();
+            for (; numRemainingElements >= 0; numRemainingElements--) {
+                memcpy(dest, baseChannelHead, sizeof(T) * baseChannel_->getNumComponents());
+                baseChannelHead += baseChannel_->getNumComponents();
+
+                dest += baseChannel_->getNumComponents();
+                memcpy(dest, currentExtendElement, sizeof(T) * extendChannel_->getNumComponents());
+                dest += extendChannel_->getNumComponents();
+            }
         }
         delete[] baseChannelElements;
         delete[] currentExtendElement;
@@ -234,16 +231,18 @@ struct CreateExtendedChannelHelper {
     Result operator()(const std::shared_ptr<const Channel>& baseChannel,
                       const std::shared_ptr<const Channel>& extendChannel,
                       const std::string& name) {
-        return std::make_shared<ExtendedChannel<typename T::type, N>>(baseChannel, extendChannel,
-                                                                      name);
+        return std::make_shared<ExtendedChannel<typename T::type, N>>(
+            std::dynamic_pointer_cast<const BaseTypedChannel<typename T::type>>(baseChannel),
+            std::dynamic_pointer_cast<const BaseTypedChannel<typename T::type>>(extendChannel),
+            name);
     }
 };
 
 }  // namespace detail
 
-std::shared_ptr<Channel> createExtendedChannel(const std::shared_ptr<const Channel>& baseChannel,
-                                               const std::shared_ptr<const Channel>& extendChannel,
-                                               const std::string& name);
+std::shared_ptr<Channel> IVW_MODULE_DISCRETEDATA_API
+createExtendedChannel(const std::shared_ptr<const Channel>& baseChannel,
+                      const std::shared_ptr<const Channel>& extendChannel, const std::string& name);
 
 }  // namespace discretedata
 }  // namespace inviwo
