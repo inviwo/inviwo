@@ -1,9 +1,11 @@
 Fixes #...
 
 Changes proposed in this PR:
-- 
-- 
-- 
+ * ...
+ * ...
+ * ...
+
+This has been tested on: ...
 
 > Thank you for contributing to the Inviwo repository! Please ensure the following: 
 > - Code is error and warning free
@@ -14,7 +16,5 @@ Changes proposed in this PR:
 > - New Code / processors are tested in a unittest and/or regresion tests: 
 >   https://github.com/inviwo/inviwo/wiki/Manual#testing
 > 
-> What evineroment has the code been compiled and tested on?
+> Please remember to specify the environment this code been compiled and tested on:
 > Operating System / Compiler / IDE / QT / CMake / Python versions
-
-This has been tested on: ...
