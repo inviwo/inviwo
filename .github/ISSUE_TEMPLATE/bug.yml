@@ -1,0 +1,90 @@
+name: Bug Report
+description: File an issue about a bug
+title: "[BUG]: "
+labels: [T:Bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting your issue! 
+        Maintainers will make their best effort to triage issues.
+        Please do your best to make the issue as easy to act on as possible!
+
+  - type: checkboxes
+    id: steps
+    attributes:
+      label: Required prerequisites
+      description: Make sure you've completed the following steps before submitting your issue -- thank you!
+      options:
+        - label: Make sure you've read the [documentation](https://inviwo.org). Your issue may be addressed there.
+          required: true
+        - label: Search the [issue tracker](https://github.com/inviwo/inviwo/issues) and [Discussions](https://github.com/inviwo/inviwo/discussionss) to verify that this hasn't already been reported. +1 or comment there if it has.
+          required: true
+        - label: Consider asking first in [Slack](https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLTRiMWM1ZWJiYjljZjkwNWE3OTk3MzYxODZlMDUyMzRmZjUzMzBiZjVhNTM3NWUyNzU1MjI4OWJjMzdkODViMzM) or in a [Discussion](https://github.com/inviwo/inviwo/discussionss).
+          required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem description
+      placeholder: >-
+        Provide a short description, state the expected behavior and what
+        actually happens.
+    validations:
+      required: true
+
+  - type: input
+    id: inviwo
+    attributes:
+      label: Inviwo version
+      placeholder: Version Tag or GIT SHA
+    validations:
+      required: false
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system?
+      multiple: true
+      options:
+        - Windows
+        - Linux
+        - MacOS
+
+  - type: input
+    id: compiler
+    attributes:
+      label: Compiler / Version
+      placeholder: MSVC 2022
+    validations:
+      required: false
+
+  - type: input
+    id: qt
+    attributes:
+      label: Qt Version
+      placeholder: ?.?.?
+    validations:
+      required: false
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Reproducible example code
+      placeholder: >-
+        The code should be minimal, isolate the function(s) that cause breakage. 
+        Submit complete snippets that can be easily compiled and run to diagnose the
+        issue. If possible, make a PR with a new, failing test to give us a
+        starting point to work on!
+      render: text
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Inviwo log
+      placeholder: >-
+        If possible, copy/paste the Inviwo log into the issue. If Inviwo is crashing before
+        it is possible to attach a log you can start Inviwo with the -c flag to log to 
+        console or -l filename.html to log to a file.
+      render: text
+  
