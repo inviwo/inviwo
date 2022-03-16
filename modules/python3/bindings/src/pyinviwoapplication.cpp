@@ -28,11 +28,11 @@
  *********************************************************************************/
 
 #include <inviwopy/pyinviwoapplication.h>
+#include <inviwopy/vectoridentifierwrapper.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwopy/vectoridentifierwrapper.h>
 #include <inviwo/core/util/commandlineparser.h>
 
 namespace inviwo {

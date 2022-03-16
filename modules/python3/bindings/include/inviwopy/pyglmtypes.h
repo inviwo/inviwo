@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <inviwo/core/util/glm.h>
-
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <warn/pop>
+
+#include <inviwo/core/util/glm.h>
 
 #include <vector>
 

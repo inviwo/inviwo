@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwopy/pypickingmapper.h>
+#include <inviwopy/pycamera.h>
 
 #include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>

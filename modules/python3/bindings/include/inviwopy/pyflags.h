@@ -29,6 +29,13 @@
 
 #pragma once
 
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+#include <pybind11/operators.h>
+#include <warn/pop>
+
 #include <inviwo/core/interaction/pickingstate.h>
 #include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/util/typetraits.h>
@@ -36,13 +43,6 @@
 #include <flags/flags.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/operators.h>
-#include <warn/pop>
 
 namespace inviwo {
 

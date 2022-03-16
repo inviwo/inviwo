@@ -28,29 +28,23 @@
  *********************************************************************************/
 
 #include <inviwopy/pyevent.h>
+#include <inviwopy/pyflags.h>
 
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
-
 #include <inviwo/core/interaction/events/mousebuttons.h>
 #include <inviwo/core/interaction/events/mouseinteractionevent.h>
-
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
-
 #include <inviwo/core/interaction/events/touchstate.h>
 #include <inviwo/core/interaction/events/touchevent.h>
-
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/interaction/events/viewevent.h>
-
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
-
-#include <inviwopy/pyflags.h>
 
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>

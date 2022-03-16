@@ -28,19 +28,15 @@
  *********************************************************************************/
 
 #include <inviwopy/pymesh.h>
-
-#include <inviwo/core/util/formatdispatching.h>
-
-#include <inviwopy/inviwopy.h>
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
 
-#include <modules/python3/pyportutils.h>
+#include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/ports/meshport.h>
+#include <modules/python3/pyportutils.h>
 
-#include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 

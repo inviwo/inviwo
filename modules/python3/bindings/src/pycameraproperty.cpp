@@ -28,16 +28,13 @@
  *********************************************************************************/
 
 #include <inviwopy/pycameraproperty.h>
-#include <inviwopy/pyproperties.h>
-
-#include <inviwopy/inviwopy.h>
+#include <inviwopy/pypropertytypehook.h>
 
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/algorithm/camerautils.h>
 #include <inviwo/core/ports/inport.h>
 
 #include <pybind11/functional.h>
-
 #include <fmt/format.h>
 
 namespace py = pybind11;

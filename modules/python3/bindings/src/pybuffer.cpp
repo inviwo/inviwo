@@ -28,9 +28,10 @@
  *********************************************************************************/
 
 #include <inviwopy/pybuffer.h>
+#include <inviwopy/pynetwork.h>
+#include <inviwopy/pyglmtypes.h>
 
 #include <inviwo/core/util/formatdispatching.h>
-
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
@@ -39,13 +40,9 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/stdextensions.h>
 
-#include <inviwopy/inviwopy.h>
-#include <inviwopy/pynetwork.h>
-#include <inviwopy/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
 
-#include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
 #include <fmt/format.h>

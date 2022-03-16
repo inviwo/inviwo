@@ -28,10 +28,8 @@
  *********************************************************************************/
 
 #include <inviwopy/pyprocessors.h>
-
-#include <inviwopy/inviwopy.h>
 #include <inviwopy/vectoridentifierwrapper.h>
-#include <inviwopy/pyproperties.h>
+#include <inviwopy/pypropertytypehook.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/canvasprocessor.h>
@@ -42,13 +40,11 @@
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwoapplication.h>
-
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
-
 #include <modules/python3/processors/pythonscriptprocessor.h>
 #include <modules/python3/processortrampoline.h>
 
@@ -200,8 +196,8 @@ void exposeProcessors(pybind11::module& m) {
     using OutportVecWrapper = VectorIdentifierWrapper<std::vector<Outport*>>;
     exposeVectorIdentifierWrapper<std::vector<Outport*>>(m, "OutportVectorWrapper");
 
-    py::class_<Processor, ProcessorTrampoline, PropertyOwner>(m, "Processor", py::dynamic_attr{},
-                                                              py::multiple_inheritance{})
+    py::class_<Processor, PropertyOwner, ProcessorTrampoline>(
+        m, "Processor", py::multiple_inheritance{}, py::dynamic_attr{})
         .def(py::init<const std::string&, const std::string&>())
         .def("__repr__", &Processor::getIdentifier)
         .def_property_readonly("classIdentifier", &Processor::getClassIdentifier)

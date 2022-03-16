@@ -29,6 +29,11 @@
 
 #include <inviwopy/inviwopy.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
+
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pythoninterpreter.h>
@@ -43,6 +48,7 @@
 #include <inviwopy/pyglmmattypes.h>
 #include <inviwopy/pyglmports.h>
 #include <inviwopy/pyport.h>
+#include <inviwopy/pycompositeproperties.h>
 #include <inviwopy/pyproperties.h>
 #include <inviwopy/pypropertyowner.h>
 #include <inviwopy/pyvolume.h>
@@ -62,6 +68,7 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace py = pybind11;
 
@@ -102,9 +109,11 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeLogging(m);
     exposeInviwoApplication(m);
     exposeDataFormat(formatsModule);
-    exposePropertyOwner(propertiesModule);
     exposeTFPrimitiveSet(dataModule);  // defines TFPrimitiveData used in exposeProperties
     exposeProperties(propertiesModule);
+    exposePropertyOwner(propertiesModule);
+    exposeCompositeProperties(propertiesModule);
+    
     exposePort(m);
 
     exposeProcessors(m);

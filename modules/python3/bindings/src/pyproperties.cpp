@@ -28,37 +28,227 @@
  *********************************************************************************/
 
 #include <inviwopy/pyproperties.h>
-#include <inviwo/core/properties/propertyfactory.h>
-
-#include <inviwopy/inviwopy.h>
 #include <inviwopy/pyflags.h>
-#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwopy/pypropertytypehook.h>
 
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/constraintbehavior.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/properties/filepatternproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/propertyeditorwidget.h>
-#include <inviwo/core/properties/listproperty.h>
-
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/datastructures/tfprimitive.h>
 
+#include <pybind11/stl.h>
 #include <pybind11/functional.h>
-
 #include <fmt/format.h>
 
 namespace py = pybind11;
 
 namespace inviwo {
+
+template <typename T, typename P, typename C>
+void pyTemplateProperty(C& prop) {
+    prop.def_property(
+            "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
+        .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
+}
+
+struct OrdinalPropertyHelper {
+    template <typename T>
+    auto operator()(pybind11::module& m) {
+        namespace py = pybind11;
+        using P = OrdinalProperty<T>;
+
+        auto classname = Defaultvalues<T>::getName() + "Property";
+
+        py::class_<P, Property> prop(m, classname.c_str());
+        prop.def(py::init([](std::string_view identifier, std::string_view name, const T& value,
+                             const T& min, const T& max, const T& increment,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, value, min, max, increment, invalidationLevel,
+                                  semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("value") = Defaultvalues<T>::getVal(),
+                 py::arg("min") = Defaultvalues<T>::getMin(),
+                 py::arg("max") = Defaultvalues<T>::getMax(),
+                 py::arg("increment") = Defaultvalues<T>::getInc(),
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+            .def(py::init([](std::string_view identifier, std::string_view name, const T& value,
+                             const std::pair<T, ConstraintBehavior>& min,
+                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, value, min, max, increment, invalidationLevel,
+                                  semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("value") = Defaultvalues<T>::getVal(),
+                 py::arg("min") =
+                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                 py::arg("max") =
+                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
+                 py::arg("increment") = Defaultvalues<T>::getInc(),
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+            .def_property(
+                "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
+            .def_property("minValue", &P::getMinValue, &P::setMinValue)
+            .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
+            .def_property("increment", &P::getIncrement, &P::setIncrement)
+            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
+
+        return prop;
+    }
+};
+
+struct OrdinalRefPropertyHelper {
+    template <typename T>
+    auto operator()(pybind11::module& m) {
+        namespace py = pybind11;
+        using P = OrdinalRefProperty<T>;
+
+        auto classname = Defaultvalues<T>::getName() + "RefProperty";
+
+        py::class_<P, Property> prop(m, classname.c_str());
+        prop.def(py::init([](std::string_view identifier, std::string_view name,
+                             std::function<T()> get, std::function<void(const T&)> set,
+                             const std::pair<T, ConstraintBehavior>& min,
+                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, std::move(get), std::move(set), min, max,
+                                  increment, invalidationLevel, semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"), py::arg("get"), py::arg("set"),
+                 py::arg("min") =
+                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                 py::arg("max") =
+                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
+                 py::arg("increment") = Defaultvalues<T>::getInc(),
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+
+            .def_property(
+                "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
+            .def_property("minValue", &P::getMinValue, &P::setMinValue)
+            .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
+            .def_property("increment", &P::getIncrement, &P::setIncrement)
+            .def("setGetAndSet", &P::setGetAndSet)
+            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
+
+        return prop;
+    }
+};
+
+struct MinMaxHelper {
+    template <typename T>
+    auto operator()(pybind11::module& m) {
+        namespace py = pybind11;
+        using P = MinMaxProperty<T>;
+        using range_type = glm::tvec2<T, glm::defaultp>;
+
+        auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
+
+        py::class_<P, Property> prop(m, classname.c_str());
+        prop.def(py::init([](std::string_view identifier, std::string_view name, const T& valueMin,
+                             const T& valueMax, const T& rangeMin, const T& rangeMax,
+                             const T& increment, const T& minSeperation,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
+                                  increment, minSeperation, invalidationLevel, semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("valueMin") = Defaultvalues<T>::getMin(),
+                 py::arg("valueMax") = Defaultvalues<T>::getMax(),
+                 py::arg("rangeMin") = Defaultvalues<T>::getMin(),
+                 py::arg("rangeMax") = Defaultvalues<T>::getMax(),
+                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeperation") = 0,
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+            .def_property("rangeMin", &P::getRangeMin, &P::setRangeMin)
+            .def_property("rangeMax", &P::getRangeMax, &P::setRangeMax)
+            .def_property("increment", &P::getIncrement, &P::setIncrement)
+            .def_property("minSeparation", &P::getMinSeparation, &P::setMinSeparation)
+            .def_property("range", &P::getRange, &P::setRange);
+
+        pyTemplateProperty<range_type, P>(prop);
+
+        return prop;
+    }
+};
+
+struct OptionPropertyHelper {
+    template <typename T>
+    auto operator()(pybind11::module& m) {
+        namespace py = pybind11;
+        using P = TemplateOptionProperty<T>;
+        using O = OptionPropertyOption<T>;
+
+        auto classname = "OptionProperty" + Defaultvalues<T>::getName();
+        auto optionclassname = Defaultvalues<T>::getName() + "Option";
+
+        py::class_<O>(m, optionclassname.c_str())
+            .def(py::init<>())
+            .def(py::init<std::string_view, std::string_view, const T&>())
+            .def_readwrite("id", &O::id_)
+            .def_readwrite("name", &O::name_)
+            .def_readwrite("value", &O::value_);
+
+        py::class_<P, BaseOptionProperty> prop(m, classname.c_str());
+        prop.def(py::init([](std::string_view identifier, std::string_view name,
+                             std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, options, selectedIndex, invalidationLevel,
+                                  semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("options") = std::vector<OptionPropertyOption<T>>{},
+                 py::arg("selectedIndex") = 0,
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+
+            .def("addOption", [](P* p, std::string_view id, std::string_view displayName,
+                                 const T& t) { p->addOption(id, displayName, t); })
+
+            .def_property_readonly("values", &P::getValues)
+            .def("removeOption", py::overload_cast<size_t>(&P::removeOption))
+            .def("removeOption", py::overload_cast<std::string_view>(&P::removeOption))
+
+            .def_property(
+                "value", [](P* p) { return p->get(); }, [](P* p, T& t) { p->set(t); })
+            .def_property("selectedValue", &P::getSelectedValue,
+                          [](P* p, const T& val) { p->setSelectedValue(val); })
+            .def_property("selectedIdentifier", &P::getSelectedIdentifier,
+                          &P::setSelectedIdentifier)
+            .def_property("selectedDisplayName", &P::getSelectedDisplayName,
+                          &P::setSelectedDisplayName)
+
+            .def("replaceOptions",
+                 [](P* p, const std::vector<std::string>& ids,
+                    const std::vector<std::string>& displayNames,
+                    const std::vector<T>& values) { p->replaceOptions(ids, displayNames, values); })
+
+            .def("replaceOptions", [](P* p, std::vector<OptionPropertyOption<T>> options) {
+                p->replaceOptions(options);
+            });
+
+        return prop;
+    }
+};
+
 
 void exposeProperties(py::module& m) {
 
@@ -143,71 +333,6 @@ void exposeProperties(py::module& m) {
              [](Property* p, Property* other, std::function<bool(Property&)> func) {
                  p->readonlyDependsOn(*other, func);
              });
-
-    py::class_<CompositeProperty, Property, PropertyOwner>(m, "CompositeProperty")
-        .def(py::init([](std::string_view identifier, std::string_view displayName,
-                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new CompositeProperty(identifier, displayName, invalidationLevel,
-                                              semantics);
-             }),
-             py::arg("identifier"), py::arg("displayName"),
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
-             py::arg("semantics") = PropertySemantics::Default)
-        .def("setCollapsed", py::overload_cast<bool>(&CompositeProperty::setCollapsed))
-        .def("isCollapsed", &CompositeProperty::isCollapsed)
-        .def_property("collapsed", &BoolCompositeProperty::isCollapsed,
-                      py::overload_cast<bool>(&CompositeProperty::setCollapsed))
-        .def(
-            "__getattr__",
-            [](CompositeProperty& po, std::string_view key) {
-                if (auto prop = po.getPropertyByIdentifier(key)) {
-                    return prop;
-                } else {
-                    throw py::attribute_error{fmt::format(
-                        "CompositeProperty ({}) does not have a property with identifier: '{}'",
-                        po.getPath(), key)};
-                }
-            },
-            py::return_value_policy::reference);
-
-    py::class_<BoolCompositeProperty, CompositeProperty, PropertyOwner>(m, "BoolCompositeProperty")
-        .def(py::init([](std::string_view identifier, std::string_view displayName, bool checked,
-                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new BoolCompositeProperty(identifier, displayName, checked,
-                                                  invalidationLevel, semantics);
-             }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("checked"),
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
-             py::arg("semantics") = PropertySemantics::Default)
-        .def("isChecked", &BoolCompositeProperty::isChecked)
-        .def("setChecked", &BoolCompositeProperty::setChecked)
-        .def_property("checked", &BoolCompositeProperty::isChecked,
-                      &BoolCompositeProperty::setChecked)
-        .def("__bool__", &BoolCompositeProperty::isChecked);
-
-    py::class_<ListProperty, CompositeProperty>(m, "ListProperty")
-        .def(py::init([](std::string_view identifier, std::string_view displayName,
-                         size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
-                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new ListProperty(identifier, displayName, maxNumberOfElements, uiFlags,
-                                         invalidationLevel, semantics);
-             }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("maxNumberOfElements") = 0,
-             py::arg("uiFlags") = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
-             py::arg("semantics") = PropertySemantics::Default)
-
-        .def_property("maxNumberOfElements", &ListProperty::getMaxNumberOfElements,
-                      &ListProperty::setMaxNumberOfElements)
-        .def("constructProperty", &ListProperty::constructProperty)
-        .def_property_readonly("prefabCount", &ListProperty::getPrefabCount)
-        .def("addPrefab",
-             [](ListProperty& list, const Property& prefab) {
-                 list.addPrefab(std::unique_ptr<Property>(prefab.clone()));
-             })
-        .def("getPrefab", [](ListProperty& list, size_t idx) -> Property* {
-            return list.getPrefabs()[idx].get();
-        });
 
     py::class_<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
@@ -336,39 +461,6 @@ void exposeProperties(py::module& m) {
             return oss.str();
         });
 
-    py::class_<IsoTFProperty, Property>(m, "IsoTFProperty")
-        .def(py::init([](std::string_view identifier, std::string_view displayName,
-                         const IsoValueCollection& isovalues, const TransferFunction& tf,
-                         VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
-                         PropertySemantics semantics) {
-                 return new IsoTFProperty(identifier, displayName, isovalues, tf, volumeInport,
-                                          invalidationLevel, semantics);
-             }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("isovalues"), py::arg("tf"),
-             py::arg("inport") = nullptr,
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
-             py::arg("semantics") = PropertySemantics::Default)
-        .def(py::init([](std::string_view identifier, std::string_view displayName,
-                         VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
-                         PropertySemantics semantics) {
-                 return new IsoTFProperty(identifier, displayName, volumeInport, invalidationLevel,
-                                          semantics);
-             }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("inport"),
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
-             py::arg("semantics") = PropertySemantics::Default)
-        .def_property_readonly(
-            "isovalues",
-            py::cpp_function([](IsoTFProperty& tp) -> IsoValueProperty& { return tp.isovalues_; },
-                             py::return_value_policy::reference_internal))
-        .def_property_readonly(
-            "tf",
-            py::cpp_function([](IsoTFProperty& tp) -> TransferFunctionProperty& { return tp.tf_; },
-                             py::return_value_policy::reference_internal))
-        .def_property("mask", &IsoTFProperty::getMask, &IsoTFProperty::setMask)
-        .def_property("zoomH", &IsoTFProperty::getZoomH, &IsoTFProperty::setZoomH)
-        .def_property("zoomV", &IsoTFProperty::getZoomV, &IsoTFProperty::setZoomV);
-
     py::class_<StringProperty, Property> strProperty(m, "StringProperty");
     strProperty.def(py::init([](std::string_view identifier, std::string_view displayName,
                                 std::string_view value, InvalidationLevel invalidationLevel,
@@ -442,35 +534,6 @@ void exposeProperties(py::module& m) {
                     py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                     py::arg("semantics") = PropertySemantics::Default);
     pyTemplateProperty<std::string, DirectoryProperty>(dirProperty);
-
-    py::class_<FilePatternProperty, CompositeProperty>(m, "FilePatternProperty")
-        .def(py::init([](std::string_view identifier, std::string_view displayName,
-                         std::string_view pattern, std::string_view directory,
-                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new FilePatternProperty(identifier, displayName, pattern, directory,
-                                                invalidationLevel, semantics);
-             }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("pattern") = "",
-             py::arg("directory") = "",
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-             py::arg("semantics") = PropertySemantics::Default)
-        .def_property_readonly("filePattern", &FilePatternProperty::getFilePattern)
-        .def_property_readonly("filePatternPath", &FilePatternProperty::getFilePatternPath)
-        .def_property_readonly("fileList", &FilePatternProperty::getFileList)
-        .def_property_readonly("fileIndices", &FilePatternProperty::getFileIndices)
-        .def_property_readonly("outOfRangeMatches", &FilePatternProperty::hasOutOfRangeMatches)
-        .def_property_readonly("rangeSelection", &FilePatternProperty::hasRangeSelection)
-        .def_property_readonly("range",
-                               [](FilePatternProperty* p) {
-                                   return std::make_tuple(p->getMinRange(), p->getMaxRange());
-                               })
-        .def_property("selectedExtension", &FilePatternProperty::getSelectedExtension,
-                      &FilePatternProperty::setSelectedExtension)
-        .def("addNameFilter", static_cast<void (FilePatternProperty::*)(std::string)>(
-                                  &FilePatternProperty::addNameFilter))
-        .def("addNameFilter", static_cast<void (FilePatternProperty::*)(FileExtension)>(
-                                  &FilePatternProperty::addNameFilter))
-        .def("clearNameFilters", &FilePatternProperty::clearNameFilters);
 
     py::class_<BoolProperty, Property> boolProperty(m, "BoolProperty");
     boolProperty

@@ -28,10 +28,9 @@
  *********************************************************************************/
 
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pyglmmattypes.h>
 
 #include <inviwo/core/util/ostreamjoiner.h>
-
-#include <inviwopy/pyglmmattypes.h>
 #include <modules/python3/pyportutils.h>
 
 #include <warn/push>
@@ -41,11 +40,11 @@
 #include <pybind11/stl_bind.h>
 #include <warn/pop>
 
-#include <fmt/format.h>
-
 #include <map>
 #include <string>
 #include <algorithm>
+
+#include <fmt/format.h>
 
 #include <warn/push>
 #include <warn/ignore/self-assign-overloaded>

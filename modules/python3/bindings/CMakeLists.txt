@@ -21,6 +21,8 @@ set(HEADER_FILES
     include/inviwopy/pyport.h
     include/inviwopy/pyprocessors.h
     include/inviwopy/pyproperties.h
+    include/inviwopy/pypropertytypehook.h
+    include/inviwopy/pycompositeproperties.h
     include/inviwopy/pypropertyowner.h
     include/inviwopy/pytfprimitiveset.h
     include/inviwopy/pyvolume.h
@@ -50,6 +52,8 @@ set(SOURCE_FILES
     src/pyport.cpp
     src/pyprocessors.cpp
     src/pyproperties.cpp
+    src/pypropertytypehook.cpp
+    src/pycompositeproperties.cpp
     src/pypropertyowner.cpp
     src/pytfprimitiveset.cpp
     src/pyvolume.cpp

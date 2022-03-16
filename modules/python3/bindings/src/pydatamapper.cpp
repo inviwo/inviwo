@@ -30,14 +30,11 @@
 #include <inviwopy/pydatamapper.h>
 
 #include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 
+#include <pybind11/numpy.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-
-#include <inviwo/core/datastructures/unitsystem.h>
 
 namespace py = pybind11;
 

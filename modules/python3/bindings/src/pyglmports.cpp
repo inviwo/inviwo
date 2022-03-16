@@ -29,6 +29,8 @@
 
 #include <inviwopy/pyglmtypes.h>
 
+#include <inviwo/core/util/glm.h>
+
 #include <modules/python3/pyportutils.h>
 
 #include <warn/push>

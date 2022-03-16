@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwopy/pypickingmapper.h>
+#include <inviwopy/pyflags.h>
 
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/interaction/pickingstate.h>
@@ -35,8 +36,6 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/properties/cameraproperty.h>
-
-#include <inviwopy/pyflags.h>
 
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
