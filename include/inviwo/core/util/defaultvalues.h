@@ -74,6 +74,21 @@ struct InviwoDefaults<unsigned char> {
     }
 };
 template <>
+struct InviwoDefaults<short> {
+    static constexpr auto get() {
+        return InviwoDefaultData{StaticString{"Short"}, uvec2(1, 1), short{0},
+                                 short{-100},           short{100},  short{1}};
+    }
+};
+template <>
+struct InviwoDefaults<unsigned short> {
+    static constexpr auto get() {
+        using ushort = unsigned short;
+        return InviwoDefaultData{
+            StaticString{"UShort"}, uvec2(1, 1), ushort{0}, ushort{0}, ushort{100}, ushort{1}};
+    }
+};
+template <>
 struct InviwoDefaults<int> {
     static constexpr auto get() {
         return InviwoDefaultData{StaticString{"Int"}, uvec2(1, 1), int{0},
