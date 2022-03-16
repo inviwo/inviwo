@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a Question 
+    url: https://github.com/inviwo/inviwo/discussions/new
+    about: Please ask and answer questions, or propose new ideas, in our Discussions.
+  - name: Join our Slack Channel
+    url: https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLTRiMWM1ZWJiYjljZjkwNWE3OTk3MzYxODZlMDUyMzRmZjUzMzBiZjVhNTM3NWUyNzU1MjI4OWJjMzdkODViMzM
+    about: A slack channel for discussing inviwo with an active community
