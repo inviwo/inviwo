@@ -149,7 +149,6 @@ void PathLinesDeprecated::process() {
 
     auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
     std::vector<BasicMesh::Vertex> vertices;
-    size_t startID = 0;
     for (const auto& seeds : seedPoints_) {
 
 #ifdef IVW_USE_OPENMP
@@ -164,11 +163,9 @@ void PathLinesDeprecated::process() {
 #ifdef IVW_USE_OPENMP
 #pragma omp critical
 #endif
-                // lines->push_back(line, startID + j);
                 lines->push_back(line, lines->size());
             };
         }
-        startID += seeds->size();
     }
 
     for (auto& line : *lines) {

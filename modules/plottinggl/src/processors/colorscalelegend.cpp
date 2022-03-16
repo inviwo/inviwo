@@ -212,7 +212,7 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
     const float ticsWidth = ceil(axis_.majorTicks_.tickWidth_.get());
     const auto borderWidth = borderWidth_.get();
 
-    const auto [position, rotation, legendSize] = [&]() {
+    const auto [position, legendSize] = [&]() {
         const std::array<vec2, 4> pos = {{{0.5f, 1.0f}, {1.0f, 0.5f}, {0.5f, 0.0f}, {0.0f, 0.5f}}};
         const auto initialPos = legendPlacement_ == 4 ? position_.get() : pos[legendPlacement_];
         const auto rotation = legendPlacement_ == 4 ? rotation_.get() : legendPlacement_.get();
@@ -222,7 +222,7 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
         auto lpos = 0.5f * vec2{size + 2 * ivec2{margin_}} +
                     initialPos * vec2{dimensions - size - 2 * ivec2{margin_}};
 
-        return std::make_tuple(lpos, rotation, size);
+        return std::make_tuple(lpos, size);
     }();
 
     // define the legend corners

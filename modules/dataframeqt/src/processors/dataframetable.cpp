@@ -92,10 +92,8 @@ DataFrameTable::~DataFrameTable() {
 
 void DataFrameTable::process() {
     if (auto w = getWidget()) {
-        bool dataUpdated = false;
         if (inport_.isChanged() || showCategoryIndices_.isModified()) {
             w->setDataFrame(inport_.getData(), showCategoryIndices_);
-            dataUpdated = true;
         }
         w->brushingUpdate();
     }
