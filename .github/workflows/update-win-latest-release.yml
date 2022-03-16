@@ -8,7 +8,7 @@ on:
       - completed
 
 jobs:
-  upload artifact:
+  upload_artifact:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/heads/master'}}
     runs-on: windows-latest
     
