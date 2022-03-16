@@ -1,0 +1,37 @@
+name: Update Win Latest Relase
+
+ on:
+   workflow_dispatch:
+   workflow_run:
+     workflows: [Test Win Installer]
+     types: 
+       - completed
+
+ jobs:
+   upload artifact:
+     if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/heads/master'}}
+     runs-on: windows-latest
+
+     steps:
+     - name: Download artifact
+       uses: dawidd6/action-download-artifact@v2
+       with:
+         name: inviwo-installer-win
+         workflow: inviwo.yml
+
+     - name: Upload binaries to release
+       uses: svenstaro/upload-release-action@v2
+       with:
+         repo_token: ${{ secrets.GITHUB_TOKEN }}
+         file: Inviwo-*
+         file_glob: true
+         tag: latest
+         overwrite: true
+         body: "The latest inviwo build, updated for every merged pull request."
+
+     - name: Tag Repo
+       uses: richardsimko/update-tag@v1
+       with:
+         tag_name: latest
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
