@@ -92,6 +92,8 @@ $(document).ready(function(){initNavTree('classinviwo_1_1TemplateOptionProperty.
   <div class="headertitle"><div class="title">inviwo::TemplateOptionProperty&lt; T &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;optionproperty.h&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::TemplateOptionProperty&lt; T &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -639,7 +641,36 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addObservationHelper<
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservationHelper</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> *observer)</td></tr>
 <tr class="separator:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
+class inviwo::TemplateOptionProperty&lt; T &gt;</div><p >OptionProperty with a custom type <code>T</code>.</p>
+<p >For dynamic template option properties, <code>T</code> needs to have some traits defining the class identifier. Default identifiers are provided for the standard types defined in defaultvalues.h. If the template parameter <code>T</code> is a custom enum class, there needs to be a <code>EnumTraits&lt;T&gt;</code> struct defining the name of the enum. This enum name then becomes part of the property identifier.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;inviwo/core/util/enumtraits.h&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">enum class</span> MyEnum { Value1, Value2, Value3 };</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">template</span> &lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>EnumTraits&lt;MyEnum&gt; {</div>
+<div class="line">    <span class="keyword">static</span> std::string name() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;MyEnum&quot;</span>; }</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">registerProperty&lt;TemplateOptionProperty&lt;MyEnum&gt;&gt;();</div>
+</div><!-- fragment --><p >For other data types, the class identifier must be provided using <code><a class="el" href="structinviwo_1_1PropertyTraits.html" title="A traits class for getting the class identifier from a Property. This provides a customization point ...">PropertyTraits</a></code>. </p><div class="fragment"><div class="line"><span class="keyword">template</span> &lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>PropertyTraits&lt;TemplateOptionProperty&lt;MyType&gt;&gt;</div>
+<div class="line">    static const <a class="code hl_namespace" href="namespacestd.html">std</a>::string&amp; classIdentifier() {</div>
+<div class="line">        <span class="keyword">static</span> <span class="keyword">const</span> std::string identifier = <span class="stringliteral">&quot;org.inviwo.OptionPropertyMyType&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> identifier;</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdoc">STL namespace.</div></div>
+</div><!-- fragment --><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>internal value type of the option property </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd>defaultvalues.h enumtraits.h propertytraits.h </dd></dl>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ab339e382a0d14cc0e34ebe9493947919" name="ab339e382a0d14cc0e34ebe9493947919"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab339e382a0d14cc0e34ebe9493947919">&#9670;&nbsp;</a></span>addOption()</h2>
 
