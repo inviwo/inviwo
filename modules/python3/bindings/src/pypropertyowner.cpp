@@ -29,6 +29,7 @@
 
 #include <inviwopy/pypropertyowner.h>
 #include <inviwopy/vectoridentifierwrapper.h>
+#include <inviwopy/pypropertytypehook.h>
 
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/processors/processor.h>
