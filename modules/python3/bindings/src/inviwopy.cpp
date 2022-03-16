@@ -113,7 +113,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeProperties(propertiesModule);
     exposePropertyOwner(propertiesModule);
     exposeCompositeProperties(propertiesModule);
-    
+
     exposePort(m);
 
     exposeProcessors(m);

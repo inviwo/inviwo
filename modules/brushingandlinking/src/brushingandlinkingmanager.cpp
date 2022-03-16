@@ -236,11 +236,13 @@ BrushingAndLinkingManager::getTargets() const {
     };
 
     for (auto&& [action, map] : util::zip(BrushingActions, selections_)) {
-        std::visit(
-            util::overloaded{
-                [&, action = action](const BitSetTargets& set) { extractTargets(action, set); },
-                [&, action = action](const IndexListTargets& list) { extractTargets(action, list); }},
-            map);
+        std::visit(util::overloaded{[&, action = action](const BitSetTargets& set) {
+                                        extractTargets(action, set);
+                                    },
+                                    [&, action = action](const IndexListTargets& list) {
+                                        extractTargets(action, list);
+                                    }},
+                   map);
     }
 
     return targets;

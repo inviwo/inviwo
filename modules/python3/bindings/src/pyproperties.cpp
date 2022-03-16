@@ -249,7 +249,6 @@ struct OptionPropertyHelper {
     }
 };
 
-
 void exposeProperties(py::module& m) {
 
     py::enum_<ConstraintBehavior>(m, "ConstraintBehavior")

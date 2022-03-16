@@ -35,7 +35,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-    
+
 void exposeCompositeProperties(pybind11::module& m);
 
 }  // namespace inviwo
