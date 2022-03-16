@@ -1,3 +1,3 @@
 # Python3GL Module
 
-Description of the Python3GL module
+Provides converters between numpy and OpenGL

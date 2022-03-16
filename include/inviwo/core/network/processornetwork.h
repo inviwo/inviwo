@@ -110,11 +110,12 @@ public:
      * Removes a Processor from the ProcessorNetwork. To ensure that the network does not end up
      * in a corrupt state, this method first removes and deletes all PortConnections and
      * ProcessorLinks, which are related to the Processor to be removed.
+     * The processors network and widget is also reset to nullptr.
      * @param[in] processor The Processor to be removed.
+     * @returns The removed processor
      * @see addProcessor()
      */
     std::shared_ptr<Processor> removeProcessor(Processor* processor);
-
     std::shared_ptr<Processor> removeProcessor(std::string_view identifier);
 
     /**
