@@ -88,15 +88,11 @@ ImageLayoutGL::ImageLayoutGL()
 
     addPort(multiinport_);
     multiinport_.setIsReadyUpdater([this]() {
-        // Ports with zero dimensions will not be active,
-        // so disregard them when considering ready status
+        const auto& outports = multiinport_.getConnectedOutports();
+        size_t minNum = std::min(outports.size(), viewManager_.size());
         return multiinport_.isConnected() &&
-               util::all_of(multiinport_.getConnectedOutports(), [](Outport* p) {
-                   auto ip = static_cast<ImageOutport*>(p);
-                   return (ip->hasData() && glm::any(glm::equal(ip->getDimensions(), size2_t(0))))
-                              ? true
-                              : p->isReady();
-               });
+               util::all_of(outports.begin(), outports.begin() + minNum,
+                            [](Outport* p) { return p->isReady(); });
     });
     // Ensure that viewports are up-to-date
     // before isConnectionActive is called
@@ -481,6 +477,8 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
 
     currentDim_ = dim;
     currentLayout_ = layout_.get();
+
+    isReady_.update();
 }
 
 }  // namespace inviwo
