@@ -45,7 +45,7 @@ void ImageCache::setMaster(std::shared_ptr<const Image> master) {
 }
 
 std::shared_ptr<const Image> ImageCache::getImage(const size2_t dimensions) const {
-    if (!master_) return std::shared_ptr<const Image>();
+    if (!master_ || (glm::compMul(dimensions) == 0)) return std::shared_ptr<const Image>();
 
     if (master_->getDimensions() == dimensions) return master_;
 
