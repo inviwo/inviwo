@@ -41,6 +41,21 @@ class IVW_MODULE_OPENGL_API BufferObjectArray {
 public:
     using BindingType = BufferObject::BindingType;
 
+    class IVW_MODULE_OPENGL_API Warn {
+        bool value_ = true;
+        Warn() = default;
+        Warn(std::nullptr_t) : value_{false} {}
+
+    public:
+        explicit constexpr operator bool() { return value_; }
+
+        static const Warn Yes;
+        static const Warn No;
+
+        friend constexpr bool operator==(Warn a, Warn b) { return b.value_ == a.value_; }
+        friend constexpr bool operator!=(Warn a, Warn b) { return b.value_ != a.value_; }
+    };
+
     BufferObjectArray();
     BufferObjectArray(const BufferObjectArray& rhs);
     BufferObjectArray& operator=(const BufferObjectArray& that);
@@ -53,9 +68,19 @@ public:
 
     void clear();  // Make sure the buffer is bound before calling clear.
 
-    // Attach buffer object to specific location
-    void attachBufferObject(const BufferObject*, GLuint,
-                            BindingType bindingType = BindingType::Native);
+    /**
+     * Attach buffer object @p obj to specific location @p location. If @p warn is equal to
+     * Warn::Yes, a warning is issued if another buffer object is alread attached to location @p
+     * loc.
+     */
+    void attachBufferObject(const BufferObject* obj, GLuint location,
+                            BindingType bindingType = BindingType::Native, Warn warn = Warn::Yes);
+
+    /**
+     * Detach the buffer object at location @p location, if attached, and disable that vertex
+     * attribute array. The BufferObjectArray must be active.
+     */
+    void detachBufferObject(GLuint location);
 
     BindingType getBindingType(size_t location) const;
     void setBindingType(size_t location, BindingType bindingType);

@@ -68,6 +68,8 @@ GLenum BufferGL::getFormatType() const { return buffer_->getFormatType(); }
 
 void BufferGL::bind() const { buffer_->bind(); }
 
+void BufferGL::unbind() const { buffer_->unbind(); }
+
 void BufferGL::upload(const void* data, GLsizeiptr sizeInBytes) {
     buffer_->upload(data, sizeInBytes);
 }
