@@ -602,7 +602,6 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("subtractiveBelnding", blendMode_.get() == BlendMode::Subtractive);
     lineShader_.setUniform("color", vec4{filterColor_.get(), filterAlpha_.get()});
     lineShader_.setUniform("selectColor", selectedLineColor_.get());
-    lineShader_.setUniform("filterIntensity", filterIntensity_.get());
 
     {
         auto meshGL = lines_.mesh.getRepresentation<MeshGL>();
