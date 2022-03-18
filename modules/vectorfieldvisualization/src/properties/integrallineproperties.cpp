@@ -38,7 +38,8 @@ IntegralLineProperties::IntegralLineProperties(std::string identifier, std::stri
     , normalizeSamples_("normalizeSamples", "Normalize Samples", true)
     , stepDirection_("stepDirection", "Step Direction")
     , integrationScheme_("integrationScheme", "Integration Scheme")
-    , seedPointsSpace_("seedPointsSpace", "Seed Points Space") {
+    , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
+    , integrationSpace_("integrationSpace", "Integration Space") {
     setUpProperties();
 }
 
@@ -49,7 +50,8 @@ IntegralLineProperties::IntegralLineProperties(const IntegralLineProperties& rhs
     , normalizeSamples_(rhs.normalizeSamples_)
     , stepDirection_(rhs.stepDirection_)
     , integrationScheme_(rhs.integrationScheme_)
-    , seedPointsSpace_(rhs.seedPointsSpace_) {
+    , seedPointsSpace_(rhs.seedPointsSpace_)
+    , integrationSpace_(rhs.integrationSpace_) {
     setUpProperties();
 }
 
@@ -75,6 +77,10 @@ CoordinateSpace IntegralLineProperties::getSeedPointsSpace() const {
     return seedPointsSpace_.get();
 }
 
+CoordinateSpace IntegralLineProperties::getIntegrationSpace() const {
+    return integrationSpace_.get();
+}
+
 bool IntegralLineProperties::getNormalizeSamples() const { return normalizeSamples_; }
 
 void IntegralLineProperties::setUpProperties() {
@@ -92,12 +98,12 @@ void IntegralLineProperties::setUpProperties() {
     seedPointsSpace_.addOption("model", "Model", CoordinateSpace::Model);
     seedPointsSpace_.addOption("world", "World", CoordinateSpace::World);
 
-    addProperty(numberOfSteps_);
-    addProperty(stepSize_);
-    addProperty(stepDirection_);
-    addProperty(integrationScheme_);
-    addProperty(seedPointsSpace_);
-    addProperty(normalizeSamples_);
+    integrationSpace_.addOption("data", "Data", CoordinateSpace::Data);
+    integrationSpace_.addOption("model", "Model", CoordinateSpace::Model);
+    integrationSpace_.addOption("world", "World", CoordinateSpace::World);
+
+    addProperties(numberOfSteps_, stepSize_, stepDirection_, integrationScheme_, seedPointsSpace_,
+                  integrationSpace_, normalizeSamples_);
 
     setAllPropertiesCurrentStateAsDefault();
 }

@@ -60,6 +60,7 @@ public:
     IntegralLineProperties::Direction getStepDirection() const;
     IntegralLineProperties::IntegrationScheme getIntegrationScheme() const;
     CoordinateSpace getSeedPointsSpace() const;
+    CoordinateSpace getIntegrationSpace() const;
     bool getNormalizeSamples() const;
 
 private:
@@ -72,7 +73,7 @@ public:
 
     TemplateOptionProperty<IntegralLineProperties::Direction> stepDirection_;
     TemplateOptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
-    TemplateOptionProperty<CoordinateSpace> seedPointsSpace_;
+    TemplateOptionProperty<CoordinateSpace> seedPointsSpace_, integrationSpace_;
 };
 
 template <unsigned int N>
