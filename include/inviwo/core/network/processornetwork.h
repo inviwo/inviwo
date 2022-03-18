@@ -123,7 +123,7 @@ public:
                 return std::make_shared<T>(std::forward<Args>(args)..., application_);
             }
         }();
-            
+
         auto name = ProcessorTraits<T>::getProcessorInfo().displayName;
         assignIdentifierAndName(*processor, name);
         if (addProcessor(processor)) {
@@ -197,7 +197,7 @@ public:
      */
     void addConnection(Outport* sourcePort, Inport* destPort);
 
-     /**
+    /**
      * @brief Add a PortConnection to the ProcessorNetwork.
      *
      * This involves creating the connection between the two specified ports, as well as adding this
@@ -235,7 +235,7 @@ public:
 
     /**
      * @brief Checks weather two port are connected.
-     * 
+     *
      * @param[in] sourcePort The outport.
      * @param[in] destPort The inport.
      * @return Weather the two port are connected
@@ -245,7 +245,7 @@ public:
 
     /**
      * @brief Checks weather two port are connected.
-     * 
+     *
      * @param[in] connection The connection to look for
      * @return Weather the two port are connected
      * @see addConnection()
@@ -256,8 +256,8 @@ public:
      * @brief Get all connections in the network
      */
     const std::vector<PortConnection>& getConnections() const;
- 
-     /**
+
+    /**
      * @brief Apply a function to each connection in the network
      *
      * @param callback A function that matched the signature `void(PortConnection&)`
@@ -267,15 +267,15 @@ public:
 
     /**
      * @brief Check if @p port is owned by a processor in this processornetwork
-     * 
-     * This will retrieve the identifier of the @p ports owner and see if this network has a processor
-     * with that identifier
+     *
+     * This will retrieve the identifier of the @p ports owner and see if this network has a
+     * processor with that identifier
      */
     bool isPortInNetwork(Port* port) const;
 
     /**
      * @brief  Create and add Property Link to the network.
-     * 
+     *
      * Adds a link between two properties, that are owned by processor network.
      * @param[in] source Property at which link starts
      * @param[in] destination Property at which link ends
@@ -285,7 +285,7 @@ public:
 
     /**
      * @brief Create and add Property Link to the network.
-     * 
+     *
      * Adds a link between two properties, that are owned by processor network.
      * @param[in] link The property link to add.
      */
@@ -325,7 +325,7 @@ public:
 
     /**
      * @brief Get all connections in the network
-     * 
+     *
      * @note This will have to allocate a new vector, consider using forEachLink instead.
      */
     std::vector<PropertyLink> getLinks() const;
@@ -416,7 +416,6 @@ public:
     int runningBackgroundJobs() const { return backgoundJobs_; }
 
 private:
-
     // Assign a identifier and display name, if none is set.
     void assignIdentifierAndName(Processor& p, std::string_view name);
     void removeProcessorHelper(Processor* processor);

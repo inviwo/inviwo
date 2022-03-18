@@ -242,9 +242,10 @@ struct OptionPropertyHelper {
                     const std::vector<std::string>& displayNames,
                     const std::vector<T>& values) { p->replaceOptions(ids, displayNames, values); })
 
-            .def("replaceOptions", [](P* p, std::vector<OptionPropertyOption<T>> options) {
-                p->replaceOptions(options);
-            })
+            .def("replaceOptions",
+                 [](P* p, std::vector<OptionPropertyOption<T>> options) {
+                     p->replaceOptions(options);
+                 })
             .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
 
         return prop;

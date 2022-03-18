@@ -61,7 +61,6 @@ IVW_MODULE_BASE_API std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2
                                                           size2_t extent,
                                                           bool clampBorderOutsideImage = false);
 
-
 namespace detail {
 
 template <typename T>
@@ -115,7 +114,6 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
 }
 
 }  // namespace detail
-
 
 /**
  * \brief extracts a subregion from a layer and converts it into a new layer

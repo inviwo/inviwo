@@ -109,8 +109,6 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
     const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
 
-
-
 /**
  * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
  * right. That is all rows of \p left are augmented with matching rows from \p right.  The row

@@ -48,7 +48,6 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/python3/processors/pythonscriptprocessor.h>
 
-
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/operators.h>
