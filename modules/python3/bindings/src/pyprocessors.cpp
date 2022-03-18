@@ -30,7 +30,6 @@
 #include <inviwopy/pyprocessors.h>
 #include <inviwopy/vectoridentifierwrapper.h>
 #include <inviwopy/pypropertytypehook.h>
-#include <inviwopy/processortrampoline.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/canvasprocessor.h>
@@ -47,6 +46,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/python3/processors/pythonscriptprocessor.h>
+#include <modules/python3/processortrampoline.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>

@@ -29,21 +29,25 @@
 
 #include <modules/python3/pythonprocessorfactoryobject.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/utilities.h>
-
-#include <inviwo/core/network/networkutils.h>
-
-#include <iostream>
-#include <sstream>
-
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/eval.h>
 #include <warn/pop>
+
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/utilities.h>
+#include <inviwo/core/network/networkutils.h>
+
+// We need to include this here for the proc.cast<std::unique_ptr<Processor>>
+// Below to work. Pybind11 needs to know that ProcessorPrampoline inherits from
+// pybind11::trampoline_self_life_support
+#include <modules/python3/processortrampoline.h>
+
+#include <iostream>
+#include <sstream>
 
 #include <fmt/format.h>
 

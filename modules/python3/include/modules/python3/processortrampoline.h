@@ -26,31 +26,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwopy/processortrampoline.h>
+#include <modules/python3/python3moduledefine.h>
+#include <inviwo/core/processors/processor.h>
+
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-/* Trampoline (need one for each virtual function) */
-void ProcessorTrampoline::initializeResources() {
-    PYBIND11_OVERLOAD(void, Processor, initializeResources, );
-}
-void ProcessorTrampoline::process() { PYBIND11_OVERLOAD(void, Processor, process, ); }
-void ProcessorTrampoline::doIfNotReady() { PYBIND11_OVERLOAD(void, Processor, doIfNotReady, ); }
-void ProcessorTrampoline::setValid() { PYBIND11_OVERLOAD(void, Processor, setValid, ); }
-void ProcessorTrampoline::invalidate(InvalidationLevel invalidationLevel,
-                                     Property* modifiedProperty) {
-    PYBIND11_OVERLOAD(void, Processor, invalidate, invalidationLevel, modifiedProperty);
-}
-const ProcessorInfo ProcessorTrampoline::getProcessorInfo() const {
-    PYBIND11_OVERLOAD_PURE(const ProcessorInfo, Processor, getProcessorInfo, );
-}
+class IVW_MODULE_PYTHON3_API ProcessorTrampoline : public Processor,
+                                                   public pybind11::trampoline_self_life_support {
+public:
+    /* Inherit the constructors */
+    using Processor::Processor;
 
-void ProcessorTrampoline::invokeEvent(Event* event) {
-    PYBIND11_OVERLOAD(void, Processor, invokeEvent, event);
-}
-void ProcessorTrampoline::propagateEvent(Event* event, Outport* source) {
-    PYBIND11_OVERLOAD(void, Processor, propagateEvent, event, source);
-}
-
+    /* Trampoline (need one for each virtual function) */
+    virtual void initializeResources() override;
+    virtual void process() override;
+    virtual void doIfNotReady() override;
+    virtual void setValid() override;
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* modifiedProperty = nullptr) override;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual void invokeEvent(Event* event) override;
+    virtual void propagateEvent(Event* event, Outport* source) override;
+};
 }  // namespace inviwo

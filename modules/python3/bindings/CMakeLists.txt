@@ -1,7 +1,6 @@
 # Create python module
 set(HEADER_FILES
     include/inviwopy/inviwopy.h
-    include/inviwopy/processortrampoline.h
     include/inviwopy/pybuffer.h
     include/inviwopy/pycamera.h
     include/inviwopy/pycameraproperty.h
@@ -33,7 +32,6 @@ ivw_group("Header Files" BASE ${CMAKE_CURRENT_SOURCE_DIR}/include/inviwopy ${HEA
 
 set(SOURCE_FILES
     src/inviwopy.cpp
-    src/processortrampoline.cpp
     src/pybuffer.cpp
     src/pycamera.cpp
     src/pycameraproperty.cpp
