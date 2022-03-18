@@ -93,6 +93,8 @@ BitSet::BitSet() : roaring_(std::make_unique<roaring::Roaring>()) {}
 
 BitSet::BitSet(util::span<const uint32_t> span) : BitSet() { addMany(span.size(), span.data()); }
 
+BitSet::BitSet(const std::vector<bool>& v) : BitSet() { add(v); }
+
 BitSet::BitSet(const roaring::Roaring& roaring)
     : roaring_(std::make_unique<roaring::Roaring>(roaring)) {}
 
@@ -142,6 +144,12 @@ bool BitSet::set(const BitSet& b) {
 }
 
 void BitSet::add(util::span<const uint32_t> span) { addMany(span.size(), span.data()); }
+
+void BitSet::add(const std::vector<bool>& v) {
+    for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(v.size()); ++i) {
+        if (v[i]) addSingle(i);
+    }
+}
 
 bool BitSet::addChecked(uint32_t v) { return roaring_->addChecked(v); }
 
