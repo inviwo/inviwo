@@ -32,7 +32,7 @@ in float lScalarMeta;
 in float lFalloffAlpha;
 
 uniform bool additiveBlend = true;
-uniform bool subtractiveBelnding = false;
+uniform bool subtractiveBlending = false;
 
 uniform vec4 color;
 uniform vec4 selectColor;
@@ -47,7 +47,7 @@ uniform sampler2D tf;
 void main() {
     vec4 res = texture(tf, vec2(lScalarMeta, 0.5f));
     
-    if (subtractiveBelnding) {
+    if (subtractiveBlending) {
         res.rgb = 1 - res.rgb;
     }
     
