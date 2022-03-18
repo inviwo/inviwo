@@ -72,6 +72,7 @@ public:
     virtual std::shared_ptr<BufferObject> getBufferObject() const { return buffer_; }
 
     void bind() const;
+    void unbind() const;
 
     void upload(const void* data, GLsizeiptr sizeInBytes);
     void download(void* data) const;

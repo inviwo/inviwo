@@ -68,6 +68,8 @@ GLenum BufferGL::getFormatType() const { return buffer_->getFormatType(); }
 
 void BufferGL::bind() const { buffer_->bind(); }
 
+void BufferGL::unbind() const { buffer_->unbind(); }
+
 void BufferGL::upload(const void* data, GLsizeiptr sizeInBytes) {
     buffer_->upload(data, sizeInBytes);
 }
@@ -77,13 +79,17 @@ void BufferGL::download(void* data) const { buffer_->download(data); }
 void BufferGL::enable() const {
     if (!bufferArray_) {
         bufferArray_ = std::make_unique<BufferObjectArray>();
+        bufferArray_->bind();
         bufferArray_->attachBufferObject(buffer_.get(), 0);
+    } else {
+        bufferArray_->bind();
     }
-    bufferArray_->bind();
 }
 
 void BufferGL::disable() const {
-    if (bufferArray_) bufferArray_->unbind();
+    if (bufferArray_) {
+        bufferArray_->unbind();
+    }
 }
 
 std::type_index BufferGL::getTypeIndex() const { return std::type_index(typeid(BufferGL)); }

@@ -30,7 +30,29 @@
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/buffer/bufferobject.h>
 
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/assertion.h>
+
+#include <fmt/format.h>
+#include <string_view>
+
 namespace inviwo {
+
+using namespace std::literals;
+
+inline void checkContext(std::string_view error, Canvas::ContextID org, SourceLocation loc) {
+    if constexpr (cfg::assertions) {
+        auto rc = RenderContext::getPtr();
+        Canvas::ContextID curr = rc->activeContext();
+        if (org != curr) {
+            const auto message =
+                fmt::format("{}: '{}' ({}) than it was created: '{}' ({})", error,
+                            rc->getContextName(curr), curr, rc->getContextName(org), org);
+
+            assertion(loc.getFile(), loc.getFunction(), loc.getLine(), message);
+        }
+    }
+}
 
 size_t BufferObjectArray::maxSize() const {
     static size_t size = []() {
@@ -44,75 +66,118 @@ size_t BufferObjectArray::maxSize() const {
 }
 
 BufferObjectArray::BufferObjectArray()
-    : attachedBuffers_(maxSize(), {BindingType::Native, nullptr}) {}
+    : id_(0u), attachedBuffers_(maxSize(), {BindingType::Native, nullptr}) {
+
+    creationContext_ = RenderContext::getPtr()->activeContext();
+    IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
+
+    glGenVertexArrays(1, &id_);
+}
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
-    : attachedBuffers_(rhs.attachedBuffers_) {}
+    : id_(0u), attachedBuffers_(rhs.attachedBuffers_) {
+
+    creationContext_ = RenderContext::getPtr()->activeContext();
+    IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
+
+    glGenVertexArrays(1, &id_);
+
+    bind();
+    for (GLuint location = 0; location < attachedBuffers_.size(); ++location) {
+        if (auto bufferObject = attachedBuffers_[location].second) {
+            glEnableVertexAttribArray(location);
+            bufferObject->bindAndSetAttribPointer(location, attachedBuffers_[location].first);
+        }
+    }
+    unbind();
+}
 
 BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
     if (this != &that) {
-        if (id_ != 0) {
-            // avoid creating the vertex array if is not already initialized
-            bind();
-            clear();
-            unbind();
-        }
+        bind();
+        clear();
         attachedBuffers_ = that.attachedBuffers_;
+        for (GLuint location = 0; location < attachedBuffers_.size(); ++location) {
+            if (auto bufferObject = attachedBuffers_[location].second) {
+                glEnableVertexAttribArray(location);
+                bufferObject->bindAndSetAttribPointer(location, attachedBuffers_[location].first);
+            }
+        }
+        unbind();
     }
     return *this;
 }
 
-BufferObjectArray::~BufferObjectArray() { glDeleteVertexArrays(1, &id_); }
+BufferObjectArray::~BufferObjectArray() {
+    if (id_ != 0) {
+        checkContext("VAO deleted in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+        glDeleteVertexArrays(1, &id_);
+    }
+}
 
 GLuint BufferObjectArray::getId() const { return id_; }
 
 void BufferObjectArray::clear() {
     for (GLuint i = 0; i < static_cast<GLuint>(attachedBuffers_.size()); ++i) {
         if (attachedBuffers_[i].second) {
-            glDisableVertexAttribArray(i);
+            glDisableVertexArrayAttrib(id_, i);
             attachedBuffers_[i].second = nullptr;
         }
     }
-    reattach_ = true;
 }
 
 void BufferObjectArray::bind() const {
-    if (id_ == 0) {
-        glGenVertexArrays(1, &id_);
-    }
+    checkContext("VAO bound in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
     glBindVertexArray(id_);
-    if (reattach_) {
-        for (GLuint location = 0; location < attachedBuffers_.size(); ++location) {
-            if (auto bufferObject = attachedBuffers_[location].second) {
-                glEnableVertexAttribArray(location);
-                bufferObject->bindAndSetAttribPointer(location, attachedBuffers_[location].first);
-            } else {
-                glDisableVertexAttribArray(location);
-            }
-        }
-        reattach_ = false;
-    }
 }
 
 void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
+bool BufferObjectArray::isActive() const {
+    checkContext("VAO used in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+    return glIsVertexArray(id_);
+}
+
 void BufferObjectArray::attachBufferObject(const BufferObject* bufferObject, GLuint location,
                                            BindingType bindingType) {
-    if (location < attachedBuffers_.size()) {
-#ifdef IVW_DEBUG
-        // print warning if a different buffer is already attached to this location
-        if (attachedBuffers_[location].second && bufferObject &&
-            (attachedBuffers_[location].second != bufferObject)) {
-            LogWarn("BufferObjectArray (" << id_ << "): location " << location
-                                          << " is already bound to different buffer object (id "
-                                          << attachedBuffers_[location].second->getId()
-                                          << "). Replacing with new buffer object (id "
-                                          << bufferObject->getId() << ").");
-        }
-#endif
-        attachedBuffers_[location] = {bindingType, bufferObject};
-    } else {
-        LogError("Error: VertexAttribArray location exceeds maximum allowed range");
+    if (location >= attachedBuffers_.size()) {
+        throw RangeException(IVW_CONTEXT,
+                             "VertexAttribArray location {} exceeds maximum allowed range ({})",
+                             location, attachedBuffers_.size());
+    }
+    if (attachedBuffers_[location].second && bufferObject &&
+        (attachedBuffers_[location].second != bufferObject)) {
+        throw Exception(IVW_CONTEXT,
+                        "BufferObjectArray ({}): Cannot bind buffer object (id {}). Location "
+                        "{} is already bound to different buffer object "
+                        "(id {}).",
+                        id_, bufferObject->getId(), location,
+                        attachedBuffers_[location].second->getId());
+    }
+    attachedBuffers_[location] = {bindingType, bufferObject};
+    glEnableVertexAttribArray(location);
+    bufferObject->bindAndSetAttribPointer(location, bindingType);
+}
+
+void BufferObjectArray::attachBufferObjectEnforce(const BufferObject* bufferObject, GLuint location,
+                                                  BindingType bindingType) {
+    if (location >= attachedBuffers_.size()) {
+        throw RangeException(IVW_CONTEXT,
+                             "VertexAttribArray location {} exceeds maximum allowed range ({})",
+                             location, attachedBuffers_.size());
+    }
+    attachedBuffers_[location] = {bindingType, bufferObject};
+    glEnableVertexAttribArray(location);
+    bufferObject->bindAndSetAttribPointer(location, bindingType);
+}
+
+void BufferObjectArray::detachBufferObject(GLuint location) {
+    if (location >= attachedBuffers_.size()) {
+        throw RangeException(IVW_CONTEXT, "Invalid buffer location {}", location);
+    }
+    if (attachedBuffers_[location].second) {
+        attachedBuffers_[location].second = nullptr;
+        glDisableVertexArrayAttrib(id_, location);
     }
 }
 
@@ -126,6 +191,7 @@ const BufferObject* BufferObjectArray::getBufferObject(size_t location) const {
 BufferObjectArray::BindingType BufferObjectArray::getBindingType(size_t location) const {
     return attachedBuffers_[location].first;
 }
+
 void BufferObjectArray::setBindingType(size_t location, BindingType bindingType) {
     attachedBuffers_[location].first = bindingType;
 }
