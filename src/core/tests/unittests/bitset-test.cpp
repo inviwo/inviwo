@@ -46,16 +46,16 @@
 
 namespace inviwo {
 
-std::vector<uint32_t> getIndices(const std::size_t count) {
+std::vector<std::uint32_t> getIndices(const std::size_t count) {
     std::mt19937 gen;
     gen.seed(1);
-    std::uniform_int_distribution<uint32_t> distrib(0, 4096);
+    std::uniform_int_distribution<std::uint32_t> distrib(0, 4096);
 
-    std::unordered_set<uint32_t> indices;
+    std::unordered_set<std::uint32_t> indices;
     while (indices.size() < count) {
         indices.insert(distrib(gen));
     }
-    std::vector<uint32_t> v(indices.begin(), indices.end());
+    std::vector<std::uint32_t> v(indices.begin(), indices.end());
     std::shuffle(v.begin(), v.end(), std::default_random_engine());
     return v;
 }
@@ -66,9 +66,9 @@ TEST(bitset, constructors) {
     BitSet(1, 2);
     BitSet(2, 3, 5);
 
-    std::vector<uint32_t> indices = getIndices(20);
+    std::vector<std::uint32_t> indices = getIndices(20);
     BitSet{indices};
-    BitSet(util::span<uint32_t>(indices));
+    BitSet(util::span<std::uint32_t>(indices));
     BitSet(indices.begin(), indices.end());
 
     EXPECT_TRUE(true);
@@ -113,12 +113,41 @@ TEST(bitset, add_singleElement) {
 }
 
 TEST(bitset, add_iterators) {
-    std::vector<uint32_t> indices = getIndices(20);
+    std::vector<std::uint32_t> indices = getIndices(20);
 
     BitSet b;
     b.add(indices.begin(), indices.end());
 
     EXPECT_EQ(20, b.cardinality());
+}
+
+TEST(bitset, add_boolVec) {
+    auto boolVec = [](const auto& indices) {
+        std::vector<bool> v(*std::max_element(indices.begin(), indices.end()) + 1, false);
+        for (auto i : indices) {
+            v[i] = true;
+        }
+        return v;
+    };
+
+    auto test = [&](const std::vector<std::uint32_t>& indices, bool pushFalse) {
+        std::vector<bool> v = boolVec(indices);
+        if (pushFalse) {
+            v.push_back(false);
+        }
+        BitSet b(v);
+        EXPECT_EQ(indices.size(), b.cardinality());
+        for (auto index : indices) {
+            EXPECT_TRUE(b.contains(index));
+        }
+    };
+
+    test({0}, false);
+    test({0, 2}, false);
+    test({0, 2}, true);
+    test({1, 2}, true);
+    test({1, 2, 4, 6, 7, 8}, false);
+    test({1, 2, 4, 6, 7, 8}, true);
 }
 
 TEST(bitset, contains) {
@@ -130,7 +159,7 @@ TEST(bitset, contains) {
     EXPECT_TRUE(b.contains(2));
     EXPECT_FALSE(b.contains(42));
 
-    std::vector<uint32_t> indices = getIndices(20);
+    std::vector<std::uint32_t> indices = getIndices(20);
     BitSet b1(indices);
     for (auto index : indices) {
         EXPECT_TRUE(b1.contains(index));
@@ -143,7 +172,7 @@ TEST(bitset, contains) {
 }
 
 TEST(bitset, minmax) {
-    std::vector<uint32_t> indices = getIndices(20);
+    std::vector<std::uint32_t> indices = getIndices(20);
 
     auto b = BitSet(indices.begin(), indices.end());
 
@@ -152,7 +181,7 @@ TEST(bitset, minmax) {
 }
 
 TEST(bitset, serialization) {
-    std::vector<uint32_t> indices = getIndices(20);
+    std::vector<std::uint32_t> indices = getIndices(20);
 
     std::stringstream ss;
     Serializer serializer("");
@@ -168,7 +197,7 @@ TEST(bitset, serialization) {
 }
 
 TEST(bitset, binarySerialization) {
-    std::vector<uint32_t> indices = getIndices(20);
+    std::vector<std::uint32_t> indices = getIndices(20);
 
     std::stringstream ss;
 
@@ -181,14 +210,14 @@ TEST(bitset, binarySerialization) {
 }
 
 TEST(bitset, iterators) {
-    std::vector<uint32_t> indices = getIndices(5);
+    std::vector<std::uint32_t> indices = getIndices(5);
     auto b = BitSet(indices.begin(), indices.end());
 
     for (auto index : b) {
         EXPECT_TRUE(util::contains(indices, index));
     }
 
-    std::vector<uint32_t> vec(b.begin(), b.end());
+    std::vector<std::uint32_t> vec(b.begin(), b.end());
     EXPECT_EQ(b.size(), vec.size());
     for (auto index : vec) {
         EXPECT_TRUE(util::contains(indices, index));
