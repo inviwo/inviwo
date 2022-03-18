@@ -59,6 +59,8 @@ public:
     void setSize(size_t size);
     size_t getSize() const;
 
+    bool empty() const;
+
     size_t getSizeInBytes() const;
     BufferUsage getBufferUsage() const;
     BufferTarget getBufferTarget() const;
