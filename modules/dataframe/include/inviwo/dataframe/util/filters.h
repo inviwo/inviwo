@@ -57,9 +57,9 @@ struct ItemFilter {
                                     std::function<bool(std::int64_t)>, std::function<bool(double)>>;
 
     /**
-     * Predicate function for filtering a column. The data item of @ItemFilter::column is
+     * Predicate function for filtering a column. The data item of @c ItemFilter::column is
      * converted from std::string to the corresponding type of the predicate function before
-     * @p filter is called, that is @p std::string_view, @p int, @p float, or @p double.
+     * @c filter is called, that is @c std::string_view, @c int, @c float, or @c double.
      * @see FilterFunc
      */
     FilterFunc filter;

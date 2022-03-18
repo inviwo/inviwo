@@ -318,7 +318,7 @@ public:
 
     ///@{
     /**
-     * Return the categorical value in row @idx.
+     * Return the categorical value in row @p idx.
      */
     const std::string& get(size_t idx) const;
     virtual std::string getAsString(size_t idx) const override;
@@ -326,7 +326,7 @@ public:
 
     ///@{
     /**
-     * Return the numerical id of the category in row @idx.
+     * Return the numerical id of the category in row @p idx.
      */
     std::uint32_t getId(size_t idx) const;
     virtual double getAsDouble(size_t idx) const override;

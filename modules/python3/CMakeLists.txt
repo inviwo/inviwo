@@ -8,7 +8,6 @@ set(HEADER_FILES
     include/modules/python3/processors/numpymeshcreatetest.h
     include/modules/python3/processors/numpyvolume.h
     include/modules/python3/processors/pythonscriptprocessor.h
-    include/modules/python3/processortrampoline.h
     include/modules/python3/pybindutils.h
     include/modules/python3/pyportutils.h
     include/modules/python3/python3module.h
@@ -29,7 +28,6 @@ set(SOURCE_FILES
     src/processors/numpymeshcreatetest.cpp
     src/processors/numpyvolume.cpp
     src/processors/pythonscriptprocessor.cpp
-    src/processortrampoline.cpp
     src/pybindutils.cpp
     src/pyportutils.cpp
     src/python3module.cpp

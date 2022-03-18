@@ -182,7 +182,8 @@ struct MinMaxHelper {
             .def_property("rangeMax", &P::getRangeMax, &P::setRangeMax)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
             .def_property("minSeparation", &P::getMinSeparation, &P::setMinSeparation)
-            .def_property("range", &P::getRange, &P::setRange);
+            .def_property("range", &P::getRange, &P::setRange)
+            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
 
         pyTemplateProperty<range_type, P>(prop);
 
@@ -243,7 +244,8 @@ struct OptionPropertyHelper {
 
             .def("replaceOptions", [](P* p, std::vector<OptionPropertyOption<T>> options) {
                 p->replaceOptions(options);
-            });
+            })
+            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
 
         return prop;
     }

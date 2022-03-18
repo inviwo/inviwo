@@ -59,8 +59,8 @@ public:
 private:
     std::shared_ptr<Processor> processor_;
 
-    // this guard will run on destruction before deleting the processor if we have the last
-    // reference to activate the default context
+    // This guard will run on destruction before potentially deleting the processor to make sure the
+    // default context is active.
     util::OnScopeExit activateContext_;
 };
 

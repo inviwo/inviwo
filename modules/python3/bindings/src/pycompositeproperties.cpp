@@ -92,6 +92,7 @@ void exposeCompositeProperties(py::module& m) {
                       &ListProperty::setMaxNumberOfElements)
         .def("constructProperty", &ListProperty::constructProperty)
         .def_property_readonly("prefabCount", &ListProperty::getPrefabCount)
+        .def("clear", &ListProperty::clear)
         .def("addPrefab",
              [](ListProperty& list, const Property& prefab) {
                  list.addPrefab(std::unique_ptr<Property>(prefab.clone()));

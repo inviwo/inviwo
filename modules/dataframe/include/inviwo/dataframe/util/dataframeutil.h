@@ -79,7 +79,7 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendColumns(const DataFram
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendRows(const DataFrame& top,
                                                                const DataFrame& bottom,
                                                                bool matchByName = false);
-///@{
+
 /**
  * \brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
  * That is only rows with matching keys are kept. The row indices of \p left will be reused.
@@ -94,11 +94,23 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendRows(const DataFrame& 
  */
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
     const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
+
+/**
+ * \brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
+ * That is only rows with matching keys are kept. The row indices of \p left will be reused.
+ *
+ * It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
+ * @param left
+ * @param right
+ * @param keyColumns   headers of the columns used as keys for the join operation
+ * @return inner join of \p left and \p right DataFrame
+ * @throws Exception if keyColumn does not exist in either \p left or \p right
+ */
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
     const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
-///@}
 
-///@{
+
+
 /**
  * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
  * right. That is all rows of \p left are augmented with matching rows from \p right.  The row
@@ -116,9 +128,23 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
  */
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> leftJoin(
     const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
+
+/**
+ * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
+ * right. That is all rows of \p left are augmented with matching rows from \p right.  The row
+ * indices of \p left will be reused.
+ *
+ * It is assumed that the entries in the key columns of \p right are unique. Otherwise results are
+ * undefined.
+ *
+ * @param left
+ * @param right
+ * @param keyColumns   headers of the columns used as keys for the join operation
+ * @return left join of \p left and \p right DataFrame
+ * @throws Exception if keyColumn does not exist in either \p left or \p right
+ */
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> leftJoin(
     const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
-///@}
 
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> combineDataFrames(
     std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipIndexColumn = false,
@@ -159,8 +185,8 @@ std::vector<std::uint32_t> selectRows(std::shared_ptr<const Column> col, Pred pr
  * \brief apply the \p filters to each row of column \p col and return the row indices where
  * any of the filters evaluates to true.
  *
- * @param dataframe   column containing data for filtering
- * @param filters     predicate to check values from \p col
+ * @param col     column containing data for filtering
+ * @param filters predicate to check values from \p col
  * @return list of row indices where rows satisfy all \p filters
  * @see selectRows(const DataFrame&, dataframefilters::Filters)
  */

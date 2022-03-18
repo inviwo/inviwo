@@ -72,20 +72,47 @@ class IVW_CORE_API ProcessorNetwork : public Serializable,
                                       public PropertyOwnerObserver,
                                       public ProcessorMetaDataObserver {
 public:
-    ProcessorNetwork(InviwoApplication* application);
+    explicit ProcessorNetwork(InviwoApplication* application);
+    ProcessorNetwork(const ProcessorNetwork&) = delete;
+    ProcessorNetwork(ProcessorNetwork&&) = delete;
+    ProcessorNetwork& operator=(const ProcessorNetwork&) = delete;
+    ProcessorNetwork& operator=(ProcessorNetwork&&) = delete;
     virtual ~ProcessorNetwork();
 
     /**
-     * Adds a Processor to the ProcessorNetwork. The identifiers of all processors in the
-     * ProcessorNetwork should be unique.
+     * @brief Adds a Processor to the ProcessorNetwork.
+     *
+     * The identifiers of all processors in the ProcessorNetwork should be unique, if the identifier
+     * is not unique, a replacement identifier will be set using util::findUniqueIdentifier. The
+     * processor's network will be set to this, and any registered widget will be consructed and
+     * added to the processor.
+     *
+     * @note A processor should only ever be added to one network at a time
      * @param[in] processor The Processor to be added.
+     * @returns A pointer to the added processor
      * @see removeProcessor(), Processor::setIdentifier()
      */
     Processor* addProcessor(std::shared_ptr<Processor> processor);
+
+    /**
+     * @brief Adds a Processor to the ProcessorNetwork.
+     * s
+     * @see ProcessorNetwork::addProcessor(std::shared_ptr<Processor>)
+     * @param[in] processor The Processor to be added.
+     * @returns A pointer to the added processor of type T
+     */
     template <typename T, class = typename std::enable_if_t<std::is_base_of_v<Processor, T>, void>>
     T* addProcessor(std::shared_ptr<T> processor) {
         return static_cast<T*>(addProcessor(std::shared_ptr<Processor>(std::move(processor))));
     }
+
+    /**
+     * @brief Emplace a Processor into the ProcessorNetwork
+     * @see ProcessorNetwork::addProcessor(std::shared_ptr<Processor>)
+     *
+     * @tparam T the processor type to add
+     * @param args  Additional arguments to pass to the processor constructor.
+     */
     template <typename T, class = typename std::enable_if_t<std::is_base_of_v<Processor, T>, void>,
               typename... Args>
     std::shared_ptr<T> emplaceProcessor(Args&&... args) {
@@ -96,7 +123,7 @@ public:
                 return std::make_shared<T>(std::forward<Args>(args)..., application_);
             }
         }();
-
+            
         auto name = ProcessorTraits<T>::getProcessorInfo().displayName;
         assignIdentifierAndName(*processor, name);
         if (addProcessor(processor)) {
@@ -106,47 +133,78 @@ public:
         }
     }
 
+    ///@{
     /**
-     * Removes a Processor from the ProcessorNetwork. To ensure that the network does not end up
-     * in a corrupt state, this method first removes and deletes all PortConnections and
-     * ProcessorLinks, which are related to the Processor to be removed.
-     * The processors network and widget is also reset to nullptr.
+     * @brief Removes a Processor from the ProcessorNetwork.
+     *
+     * To ensure that the network does not end up in a corrupt state, this method first removes and
+     * deletes all PortConnections and  ProcessorLinks, which are related to the Processor to be
+     * removed. The processor's network and widget is also reset to nullptr.
      * @param[in] processor The Processor to be removed.
-     * @returns The removed processor
+     * @returns The removed processor, or nullptr if the processor was not found
      * @see addProcessor()
      */
     std::shared_ptr<Processor> removeProcessor(Processor* processor);
-    std::shared_ptr<Processor> removeProcessor(std::string_view identifier);
+    std::shared_ptr<Processor> removeProcessor(std::string_view processor);
+    ///@}
 
     /**
-     * Returns the Processor from the ProcessorNetwork, which has the given identifier.
+     * @brief Returns the Processor from the ProcessorNetwork, which has the given identifier.
+     *
      * In case no Processor with the given identifier is contained in the network, a null
      * pointer is returned.
-     * @param identifier Identifier of the Processor to be accessed.
+     * @param identifier The identifier of the Processor to be accessed.
+     * @returns A pointer to the processor or nullptr if there were now processor with the given @p
+     *          identifier
      * @see getProcessorsByType(), Processor::setIdentifier(), Processor::getIdentifier()
      */
     Processor* getProcessorByIdentifier(std::string_view identifier) const;
 
     /**
-     * Returns a vector of Processors which are of type T. In case no Processors match T
-     * an empty vector is returned.
+     * @brief Returns a vector of Processors which are of type T.
+     *
+     * In case no Processors match T an empty vector is returned.
+     * @note This will have to allocate a new vector, consider using forEachProcessor instead.
+     * @tparam T The type of processors to look for.
      * @see getProcessorByIdentifier()
      */
     template <class T>
     std::vector<T*> getProcessorsByType() const;
 
+    /**
+     * @brief Get all processors in the network.
+     * @note This will have to allocate a new vector, consider using forEachProcessor instead.
+     * @returns a vector of pointers to vectors.
+     */
     std::vector<Processor*> getProcessors() const;
+
+    /**
+     * @brief Apply a function to each processor in the network
+     *
+     * @param callback A function that matched the signature `void(Processor*)`
+     */
     template <typename C>
     void forEachProcessor(C callback);
 
     /**
-     * Adds a PortConnection to the ProcessorNetwork. This involves creating the connection
-     * between the two specified ports, as well as adding this connection to the ProcessorNetwork.
+     * @brief Add a PortConnection to the ProcessorNetwork.
+     *
+     * This involves creating the connection between the two specified ports, as well as adding this
+     * connection to the ProcessorNetwork.
      * @param[in] sourcePort The outport.
      * @param[in] destPort The inport.
      * @see removeConnection()
      */
     void addConnection(Outport* sourcePort, Inport* destPort);
+
+     /**
+     * @brief Add a PortConnection to the ProcessorNetwork.
+     *
+     * This involves creating the connection between the two specified ports, as well as adding this
+     * connection to the ProcessorNetwork.
+     * @param[in] connection The connection to add
+     * @see removeConnection()
+     */
     void addConnection(const PortConnection& connection);
 
     /**
@@ -155,44 +213,86 @@ public:
     bool canConnect(const Outport* sourcePort, const Inport* destPort) const;
 
     /**
-     * Removes and deletes a PortConnection from the ProcessorNetwork. This involves resolving the
-     * connection between the two specified Ports, as well as removing this connection from the
-     * ProcessorNetwork.
+     * @brief Removes a PortConnection from the ProcessorNetwork.
+     *
+     * This involves resolving the  connection between the two specified Ports, as well as removing
+     * this connection from the ProcessorNetwork.
      * @param[in] sourcePort The outport.
      * @param[in] destPort The inport.
      * @see addConnection()
      */
     void removeConnection(Outport* sourcePort, Inport* destPort);
+
+    /**
+     * @brief Removes a PortConnection from the ProcessorNetwork.
+     *
+     * This involves resolving the  connection between the two specified Ports, as well as removing
+     * this connection from the ProcessorNetwork.
+     * @param[in] connection The connection to remove.
+     * @see addConnection()
+     */
     void removeConnection(const PortConnection& connection);
 
     /**
-     * Checks weather two port are connected
+     * @brief Checks weather two port are connected.
+     * 
      * @param[in] sourcePort The outport.
      * @param[in] destPort The inport.
      * @return Weather the two port are connected
      * @see addConnection()
      */
     bool isConnected(Outport* sourcePort, Inport* destPort) const;
+
+    /**
+     * @brief Checks weather two port are connected.
+     * 
+     * @param[in] connection The connection to look for
+     * @return Weather the two port are connected
+     * @see addConnection()
+     */
     bool isConnected(const PortConnection& connection) const;
 
+    /**
+     * @brief Get all connections in the network
+     */
     const std::vector<PortConnection>& getConnections() const;
+ 
+     /**
+     * @brief Apply a function to each connection in the network
+     *
+     * @param callback A function that matched the signature `void(PortConnection&)`
+     */
     template <typename C>
     void forEachConnection(C callback);
 
+    /**
+     * @brief Check if @p port is owned by a processor in this processornetwork
+     * 
+     * This will retrieve the identifier of the @p ports owner and see if this network has a processor
+     * with that identifier
+     */
     bool isPortInNetwork(Port* port) const;
 
     /**
-     * Create and add Property Link to the network
+     * @brief  Create and add Property Link to the network.
+     * 
      * Adds a link between two properties, that are owned by processor network.
      * @param[in] source Property at which link starts
      * @param[in] destination Property at which link ends
      * @return PropertyLink* Newly added link
      */
     void addLink(Property* source, Property* destination);
+
+    /**
+     * @brief Create and add Property Link to the network.
+     * 
+     * Adds a link between two properties, that are owned by processor network.
+     * @param[in] link The property link to add.
+     */
     void addLink(const PropertyLink& link);
 
     /**
-     * Check if source can be linked to destination
+     * @brief Check if source can be linked to destination
      */
     bool canLink(const Property* source, const Property* destination) const;
 
@@ -211,12 +311,30 @@ public:
      * Checks if there is a link between two properties, that are owned by processor network.
      * @param[in] source Property at which link starts
      * @param[in] destination Property at which link ends
-     * @return bool true if link exists otherwise returns false
+     * @return True if link exists otherwise returns false
      */
     bool isLinked(Property* source, Property* destination) const;
+
+    /**
+     * Check whether Property Link exists
+     * Checks if there is a link between two properties, that are owned by processor network.
+     * @param[in] link The property link to look for
+     * @return True if link exists otherwise returns false
+     */
     bool isLinked(const PropertyLink& link) const;
 
+    /**
+     * @brief Get all connections in the network
+     * 
+     * @note This will have to allocate a new vector, consider using forEachLink instead.
+     */
     std::vector<PropertyLink> getLinks() const;
+
+    /**
+     * @brief Apply a function to each property link in the network
+     *
+     * @param callback A function that matched the signature `void(PropertyLink&)`
+     */
     template <typename C>
     void forEachLink(C callback);
 
@@ -298,6 +416,8 @@ public:
     int runningBackgroundJobs() const { return backgoundJobs_; }
 
 private:
+
+    // Assign a identifier and display name, if none is set.
     void assignIdentifierAndName(Processor& p, std::string_view name);
     void removeProcessorHelper(Processor* processor);
 

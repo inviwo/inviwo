@@ -39,8 +39,6 @@
 #include <iostream>
 #include <sstream>
 
-#include <modules/python3/processortrampoline.h>
-
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>

@@ -39,7 +39,7 @@
 #include <vector>
 
 // Need to declare vectors of glm types as opaque otherwise they will be copied back and
-// forth to python
+// forth between c++ and python
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<2, 2, float>>)
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<2, 3, float>>)
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<2, 4, float>>)

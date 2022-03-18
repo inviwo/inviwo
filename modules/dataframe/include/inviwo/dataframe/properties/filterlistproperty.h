@@ -62,7 +62,7 @@ using FilterTypes = flags::flags<FilterType>;
  *                        TemplateOptionProperty<filters::StringComp> @c comp for the comparison
  *  - @c intItem:         Int64Property @c value, TemplateOptionProperty<filters::NumberComp>
  *                        @c comp for the comparison
- *  - @c doubleItem:      DoubleProperty @c value and DoubleProperty @epsilon,
+ *  - @c doubleItem:      DoubleProperty @c value and DoubleProperty @c epsilon,
  *                        TemplateOptionProperty<filters::NumberComp> @c comp for the comparison
  *  - @c intRangeItem:    Int64MinMaxProperty @c range for an inclusive range [min, max]
  *  - @c doubleRangeItem: DoubleMinMaxProperty @c range for an inclusive range [min, max]

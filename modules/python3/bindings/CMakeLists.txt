@@ -1,16 +1,18 @@
 # Create python module
 set(HEADER_FILES
     include/inviwopy/inviwopy.h
+    include/inviwopy/processortrampoline.h
     include/inviwopy/pybuffer.h
     include/inviwopy/pycamera.h
     include/inviwopy/pycameraproperty.h
+    include/inviwopy/pycompositeproperties.h
     include/inviwopy/pydataformat.h
     include/inviwopy/pydatamapper.h
     include/inviwopy/pyevent.h
     include/inviwopy/pyflags.h
     include/inviwopy/pyglmmattypes.h
-    include/inviwopy/pyglmtypes.h
     include/inviwopy/pyglmports.h
+    include/inviwopy/pyglmtypes.h
     include/inviwopy/pyimage.h
     include/inviwopy/pyinviwoapplication.h
     include/inviwopy/pyinviwomodule.h
@@ -21,9 +23,8 @@ set(HEADER_FILES
     include/inviwopy/pyport.h
     include/inviwopy/pyprocessors.h
     include/inviwopy/pyproperties.h
-    include/inviwopy/pypropertytypehook.h
-    include/inviwopy/pycompositeproperties.h
     include/inviwopy/pypropertyowner.h
+    include/inviwopy/pypropertytypehook.h
     include/inviwopy/pytfprimitiveset.h
     include/inviwopy/pyvolume.h
     include/inviwopy/vectoridentifierwrapper.h
@@ -32,16 +33,18 @@ ivw_group("Header Files" BASE ${CMAKE_CURRENT_SOURCE_DIR}/include/inviwopy ${HEA
 
 set(SOURCE_FILES
     src/inviwopy.cpp
+    src/processortrampoline.cpp
     src/pybuffer.cpp
     src/pycamera.cpp
     src/pycameraproperty.cpp
+    src/pycompositeproperties.cpp
     src/pydataformat.cpp
     src/pydatamapper.cpp
     src/pyevent.cpp
     src/pyflags.cpp
     src/pyglmmattypes.cpp
-    src/pyglmtypes.cpp
     src/pyglmports.cpp
+    src/pyglmtypes.cpp
     src/pyimage.cpp
     src/pyinviwoapplication.cpp
     src/pyinviwomodule.cpp
@@ -52,9 +55,8 @@ set(SOURCE_FILES
     src/pyport.cpp
     src/pyprocessors.cpp
     src/pyproperties.cpp
-    src/pypropertytypehook.cpp
-    src/pycompositeproperties.cpp
     src/pypropertyowner.cpp
+    src/pypropertytypehook.cpp
     src/pytfprimitiveset.cpp
     src/pyvolume.cpp
     src/vectoridentifierwrapper.cpp
