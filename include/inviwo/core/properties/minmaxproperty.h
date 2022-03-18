@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/exception.h>
 
 #include <algorithm>
 #include <limits>
@@ -442,24 +443,38 @@ auto MinMaxProperty<T>::clamp(const value_type& v) const -> value_type {
     if (val.x > val.y) std::swap(val.x, val.y);
 
     // check whether updated min/max values are separated properly, i.e. > minSeparation_
-    if (glm::abs(val.y - val.x) < minSeparation_ - std::numeric_limits<T>::epsilon()) {
-        // adjust max value if possible, i.e. less equal than max range
-        if (val.x + minSeparation_ < range_.value.y + std::numeric_limits<T>::epsilon()) {
-            val.y = glm::max(val.x + minSeparation_.value, val.y);
+    if (val.x + minSeparation_ > val.y) {
+        if (val.x < range_.value.y - minSeparation_) {
+            val.y = val.x + minSeparation_;
         } else {
             // otherwise adjust min value (min separation is at most rangeMax - rangeMin)
             val.y = range_.value.y;
             val.x = range_.value.y - minSeparation_;
         }
     }
-
     return val;
 }
 
 template <typename T>
 T MinMaxProperty<T>::limitSeparation(T sep) const {
+    const auto& min = range_.value.x;
+    const auto& max = range_.value.y;
+    if (min > max) {
+        throw Exception(IVW_CONTEXT, "Invalid value range, min > max [{}, {}]", min, max);
+    }
+
     // ensure that min separation is not larger than the entire range
-    return sep < range_.value.y - range_.value.x ? sep : range_.value.y - range_.value.x;
+    T maxsep{0};
+    if ((min >= 0 && max > 0) || (min < 0 && max <= 0)) {
+        maxsep = max - min;
+    } else {
+        if (std::numeric_limits<T>::max() - max > min) {
+            maxsep = std::numeric_limits<T>::max();
+        } else {
+            maxsep = max - min;
+        }
+    }
+    return std::clamp<T>(sep, 0, maxsep);
 }
 
 template <typename T>
