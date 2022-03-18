@@ -89,11 +89,10 @@ private:
     void buildShader(const std::string& eqn);
     void updateProperties();
 
-    void updateDataRange();
+    void updateDataRange(std::shared_ptr<Volume> volume);
 
     DataInport<Volume, 0> inport_;
     VolumeOutport outport_;
-    std::shared_ptr<Volume> volume_;
     StringProperty description_;
     StringProperty eqn_;
     TemplateOptionProperty<NormalizationMode> normalizationMode_;

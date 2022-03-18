@@ -252,11 +252,9 @@ void VolumeCombiner::updateProperties() {
 }
 
 void VolumeCombiner::process() {
-    if (inport_.isChanged()) {
-        volume_ = std::make_shared<Volume>(*inport_.getData(), noData);
-    }
+    const auto volume = std::make_shared<Volume>(*inport_.getData(), noData);
 
-    updateDataRange();
+    updateDataRange(volume);
 
     if (dirty_) {
         dirty_ = false;
@@ -290,7 +288,7 @@ void VolumeCombiner::process() {
 
     // We always need to ask for a editable representation
     // this will invalidate any other representations
-    VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
+    VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
     if (inport_.isChanged()) {
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }
@@ -300,9 +298,11 @@ void VolumeCombiner::process() {
     shader_.deactivate();
     fbo_.deactivate();
     isReady_.update();
+
+    outport_.setData(volume);
 }
 
-void VolumeCombiner::updateDataRange() {
+void VolumeCombiner::updateDataRange(std::shared_ptr<Volume> volume) {
     dvec2 dataRange = inport_.getData()->dataMap_.dataRange;
     dvec2 valueRange = inport_.getData()->dataMap_.valueRange;
 
@@ -327,8 +327,8 @@ void VolumeCombiner::updateDataRange() {
         valueRange = customValueRange_;
     }
 
-    volume_->dataMap_.dataRange = dataRange;
-    volume_->dataMap_.valueRange = valueRange;
+    volume->dataMap_.dataRange = dataRange;
+    volume->dataMap_.valueRange = valueRange;
 }
 
 }  // namespace inviwo
