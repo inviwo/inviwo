@@ -118,7 +118,7 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
 /**
  * \brief extracts a subregion from a layer and converts it into a new layer
  *
- * This function extracts a subregion given by offset and extent from the input layer. The values
+ * This function extracts a subregion given by @p offset and @p extent from the input layer. The values
  * will be converted to type T using util::glm_convert_normalized.
  * If border clamping is enabled, the output region will be clamped to lie completely within the
  * source layer. Otherwise (default), the areas outside the source layer will be filled with

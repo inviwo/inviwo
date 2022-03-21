@@ -154,7 +154,7 @@ public:
      * In case no Processor with the given identifier is contained in the network, a null
      * pointer is returned.
      * @param identifier The identifier of the Processor to be accessed.
-     * @returns A pointer to the processor or nullptr if there were now processor with the given @p
+     * @returns A pointer to the processor or nullptr if there was no processor with the given @p
      *          identifier
      * @see getProcessorsByType(), Processor::setIdentifier(), Processor::getIdentifier()
      */
@@ -181,7 +181,7 @@ public:
     /**
      * @brief Apply a function to each processor in the network
      *
-     * @param callback A function that matched the signature `void(Processor*)`
+     * @param callback A function that matches the signature `void(Processor*)`
      */
     template <typename C>
     void forEachProcessor(C callback);
@@ -215,7 +215,7 @@ public:
     /**
      * @brief Removes a PortConnection from the ProcessorNetwork.
      *
-     * This involves resolving the  connection between the two specified Ports, as well as removing
+     * This involves breaking the connection between the two specified Ports, as well as removing
      * this connection from the ProcessorNetwork.
      * @param[in] sourcePort The outport.
      * @param[in] destPort The inport.
@@ -226,7 +226,7 @@ public:
     /**
      * @brief Removes a PortConnection from the ProcessorNetwork.
      *
-     * This involves resolving the  connection between the two specified Ports, as well as removing
+     * This involves breaking the connection between the two specified Ports, as well as removing
      * this connection from the ProcessorNetwork.
      * @param[in] connection The connection to remove.
      * @see addConnection()
@@ -234,7 +234,7 @@ public:
     void removeConnection(const PortConnection& connection);
 
     /**
-     * @brief Checks weather two port are connected.
+     * @brief Checks whether two port are connected.
      *
      * @param[in] sourcePort The outport.
      * @param[in] destPort The inport.
@@ -244,10 +244,10 @@ public:
     bool isConnected(Outport* sourcePort, Inport* destPort) const;
 
     /**
-     * @brief Checks weather two port are connected.
+     * @brief Checks whether two port are connected.
      *
      * @param[in] connection The connection to look for
-     * @return Weather the two port are connected
+     * @return True if the two ports are connected
      * @see addConnection()
      */
     bool isConnected(const PortConnection& connection) const;
@@ -260,7 +260,7 @@ public:
     /**
      * @brief Apply a function to each connection in the network
      *
-     * @param callback A function that matched the signature `void(PortConnection&)`
+     * @param callback A function that matches the signature `void(PortConnection&)`
      */
     template <typename C>
     void forEachConnection(C callback);
