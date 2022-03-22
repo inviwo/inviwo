@@ -599,7 +599,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
 
     // pcp_lines.frag
     lineShader_.setUniform("additiveBlend", enableBlending);
-    lineShader_.setUniform("subtractiveBelnding", blendMode_.get() == BlendMode::Subtractive);
+    lineShader_.setUniform("subtractiveBlending", blendMode_.get() == BlendMode::Subtractive);
     lineShader_.setUniform("color", vec4{filterColor_.get(), filterAlpha_.get()});
     lineShader_.setUniform("selectColor", selectedLineColor_.get());
 
