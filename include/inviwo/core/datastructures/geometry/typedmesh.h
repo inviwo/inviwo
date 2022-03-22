@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -71,17 +70,9 @@ template <typename T, unsigned DIM, int attrib, int location = attrib>
 class TypedMeshBufferBase {
 public:
     using type = Vector<DIM, T>;
-    static inviwo::Mesh::BufferInfo bi() {
-        return {static_cast<inviwo::BufferType>(attrib), location};
-    }
+    static Mesh::BufferInfo bi() { return {static_cast<BufferType>(attrib), location}; }
 
-#if defined(_MSC_VER) && _MSC_VER <= 1900
-    TypedMeshBufferBase(type t) : t(t) {}
-    type t;
-    operator type() const { return t; }
-#endif
-
-    TypedMeshBufferBase() {}
+    TypedMeshBufferBase() = default;
     virtual ~TypedMeshBufferBase() = default;
 
     TypedMeshBufferBase(Mesh& mesh) { mesh.addBuffer(bi(), buffer_); }
@@ -348,24 +339,8 @@ public:
 template <typename... BufferTraits>
 class TypedMesh : public Mesh, public BufferTraits... {
 public:
-    template <typename T>
-    using TypeAlias = typename T::type;
-    using VertexTuple = std::tuple<typename BufferTraits::type...>;
+    using Vertex = std::tuple<typename BufferTraits::type...>;
     using Traits = std::tuple<BufferTraits...>;
-
-#if defined(__GNUC__) && __GNUC__ < 6
-    // TODO: check minimal compiler version for GCC
-
-    // On GCC 5.4 Vertex x = {...} does not compile. Used when for example creating a vector of
-    // vertices from initializer lists.
-    class Vertex : public VertexTuple {
-    public:
-        Vertex() = default;
-        Vertex(TypeAlias<BufferTraits>... vals) : VertexTuple(vals...) {}
-    };
-#else
-    using Vertex = VertexTuple;
-#endif
 
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh*>(this))... {}
@@ -376,6 +351,14 @@ public:
 
         addVertices(vertices);
         this->addIndices(MeshInfo{dt, ct}, util::makeIndexBuffer(std::move(indices)));
+    }
+    TypedMesh(DrawType dt, ConnectivityType ct, const std::vector<Vertex>& vertices,
+              const std::vector<std::uint32_t>& indices)
+        : Mesh(dt, ct), BufferTraits(*static_cast<Mesh*>(this))... {
+
+        addVertices(vertices);
+        this->addIndices(MeshInfo{dt, ct},
+                         util::makeIndexBuffer(std::vector<std::uint32_t>{indices}));
     }
 
     TypedMesh(const TypedMesh& rhs) : Mesh(rhs), BufferTraits()... {

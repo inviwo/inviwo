@@ -75,17 +75,19 @@ void ProcessorTree::mousePressEvent(QMouseEvent* e) {
 }
 
 void ProcessorTree::mouseMoveEvent(QMouseEvent* e) {
-    if (e->buttons() & Qt::LeftButton) {
-        if ((e->pos() - dragStartPosition_).manhattanLength() < QApplication::startDragDistance())
+    if ((e->buttons() & Qt::LeftButton) && dragStartPosition_) {
+        if ((e->pos() - *dragStartPosition_).manhattanLength() < QApplication::startDragDistance())
             return;
 
-        auto item = itemAt(dragStartPosition_);
+        auto item = itemAt(*dragStartPosition_);
         if (item &&
             item->data(0, ProcessorTree::typeRole).toInt() == ProcessorTree::ProcessoorType) {
+            dragStartPosition_.reset();
             auto id = item->data(0, identifierRole).toString();
             try {
                 if (auto p = processorTreeWidget_->createProcessor(id)) {
-                    new ProcessorDragObject(this, std::move(p));
+                    auto drag = new ProcessorDragObject(this, std::move(p));
+                    drag->exec(Qt::MoveAction);
                 }
             } catch (const std::exception& e) {
                 LogError("Error trying to create processor: " << utilqt::fromQString(id)
@@ -94,6 +96,11 @@ void ProcessorTree::mouseMoveEvent(QMouseEvent* e) {
             }
         }
     }
+}
+
+void ProcessorTree::mouseReleaseEvent(QMouseEvent* e) {
+    dragStartPosition_.reset();
+    QTreeWidget::mouseReleaseEvent(e);
 }
 
 ProcessorTree::ProcessorTree(ProcessorTreeWidget* parent)
@@ -337,7 +344,7 @@ void ProcessorTreeWidget::addSelectedProcessor() {
     }
 }
 
-std::unique_ptr<Processor> ProcessorTreeWidget::createProcessor(QString cid) {
+std::shared_ptr<Processor> ProcessorTreeWidget::createProcessor(QString cid) {
     // Make sure the default render context is active to make sure any FBOs etc created in
     // the processor belong to the default context.
     RenderContext::getPtr()->activateDefaultRenderContext();
@@ -629,14 +636,13 @@ void ProcessorTreeWidget::currentItemChanged(QTreeWidgetItem* current,
 
 static QString mimeType = "inviwo/ProcessorDragObject";
 
-ProcessorDragObject::ProcessorDragObject(QWidget* source, std::unique_ptr<Processor> processor)
+ProcessorDragObject::ProcessorDragObject(QWidget* source, std::shared_ptr<Processor> processor)
     : QDrag(source) {
     auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(processor.get(), 1.0));
     setPixmap(img);
     auto mime = new ProcessorMimeData(std::move(processor));
     setMimeData(mime);
     setHotSpot(QPoint(img.width() / 2, img.height() / 2));
-    exec(Qt::MoveAction);
 }
 
 bool ProcessorTreeItem::operator<(const QTreeWidgetItem& other) const {

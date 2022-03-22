@@ -29,6 +29,7 @@
 
 #include <inviwopy/pytfprimitiveset.h>
 
+#include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/isovaluecollection.h>
@@ -130,8 +131,6 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         /// Comparisons
         .def(py::self == py::self)
         .def(py::self != py::self);
-
-    // py::bind_vector<std::vector<TFPrimitiveData>>(m, " TFPrimitiveDataVector");
 
     py::class_<TFPrimitiveSet>(m, "TFPrimitiveSet")
         .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {

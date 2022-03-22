@@ -28,29 +28,23 @@
  *********************************************************************************/
 
 #include <inviwopy/pyevent.h>
+#include <inviwopy/pyflags.h>
 
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
-
 #include <inviwo/core/interaction/events/mousebuttons.h>
 #include <inviwo/core/interaction/events/mouseinteractionevent.h>
-
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
-
 #include <inviwo/core/interaction/events/touchstate.h>
 #include <inviwo/core/interaction/events/touchevent.h>
-
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/interaction/events/viewevent.h>
-
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
-
-#include <inviwopy/pyflags.h>
 
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
@@ -283,7 +277,7 @@ void exposeEvents(pybind11::module& m) {
     py::class_<KeyboardEvent, InteractionEvent>(m, "KeyboardEvent")
         .def(py::init<IvwKey, KeyState, KeyModifiers, uint32_t, const std::string&>(),
              py::arg("key") = IvwKey::Unknown, py::arg("state") = KeyState::Press,
-             py::arg("modifiers") = KeyModifiers(flags::empty), py::arg("nativeVirtualKey") = 0,
+             py::arg("modifiers") = KeyModifier::None, py::arg("nativeVirtualKey") = 0,
              py::arg("utfText") = u8"")
         .def(py::init<KeyboardEvent>())
         .def_property("state", &KeyboardEvent::state, &KeyboardEvent::setState)
@@ -310,8 +304,7 @@ void exposeEvents(pybind11::module& m) {
     py::class_<MouseEvent, MouseInteractionEvent>(m, "MouseEvent")
         .def(py::init<MouseButton, MouseState, MouseButtons, KeyModifiers, dvec2, uvec2, double>(),
              py::arg("button") = MouseButton::Left, py::arg("state") = MouseState::Press,
-             py::arg("buttonState") = MouseButtons(flags::empty),
-             py::arg("modifiers") = KeyModifiers(flags::empty),
+             py::arg("buttonState") = MouseButton::None, py::arg("modifiers") = KeyModifier::None,
              py::arg("normalizedPosition") = dvec2(0), py::arg("canvasSize") = uvec2(0),
              py::arg("depth") = 1.0)
         .def_property("button", &MouseEvent::button, &MouseEvent::setButton)
@@ -320,10 +313,9 @@ void exposeEvents(pybind11::module& m) {
 
     py::class_<WheelEvent, MouseInteractionEvent>(m, "WheelEvent")
         .def(py::init<MouseButtons, KeyModifiers, dvec2, dvec2, uvec2, double>(),
-             py::arg("buttonState") = MouseButtons(flags::empty),
-             py::arg("modifiers") = KeyModifiers(flags::empty), py::arg("delta") = dvec2(0),
-             py::arg("normalizedPosition") = dvec2(0), py::arg("canvasSize") = uvec2(0),
-             py::arg("depth") = 1.0)
+             py::arg("buttonState") = MouseButton::None, py::arg("modifiers") = KeyModifier::None,
+             py::arg("delta") = dvec2(0), py::arg("normalizedPosition") = dvec2(0),
+             py::arg("canvasSize") = uvec2(0), py::arg("depth") = 1.0)
         .def_property("delta", &WheelEvent::delta, &WheelEvent::setDelta)
         .def_property_readonly_static("chash", &WheelEvent::chash);
 

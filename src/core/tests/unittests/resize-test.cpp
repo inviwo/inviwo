@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -93,17 +93,9 @@ TEST(ResizeEvent, basic) {
      *     └───────────┘
      */
 
-    auto proc0 = std::make_unique<TestProcessor>("p0");
-    auto proc1 = std::make_unique<TestProcessor>("p1");
-    auto proc2 = std::make_unique<TestProcessor>("p2");
-
-    auto& p0 = *proc0;
-    auto& p1 = *proc1;
-    auto& p2 = *proc2;
-
-    network.addProcessor(std::move(proc0));
-    network.addProcessor(std::move(proc1));
-    network.addProcessor(std::move(proc2));
+    auto& p0 = *network.emplaceProcessor<TestProcessor>("p0");
+    auto& p1 = *network.emplaceProcessor<TestProcessor>("p1");
+    auto& p2 = *network.emplaceProcessor<TestProcessor>("p2");
 
     network.addConnection(&p0.outport, &p1.inport);
     network.addConnection(&p1.outport, &p2.inport);
@@ -140,20 +132,10 @@ TEST(ResizeEvent, twoSinks) {
      *     └───────────┘   └───────────┘
      */
 
-    auto proc0 = std::make_unique<TestProcessor>("p0");
-    auto proc1 = std::make_unique<TestProcessor>("p1");
-    auto proc2a = std::make_unique<TestProcessor>("p2a");
-    auto proc2b = std::make_unique<TestProcessor>("p2b");
-
-    auto& p0 = *proc0;
-    auto& p1 = *proc1;
-    auto& p2a = *proc2a;
-    auto& p2b = *proc2b;
-
-    network.addProcessor(std::move(proc0));
-    network.addProcessor(std::move(proc1));
-    network.addProcessor(std::move(proc2a));
-    network.addProcessor(std::move(proc2b));
+    auto& p0 = *network.emplaceProcessor<TestProcessor>("p0");
+    auto& p1 = *network.emplaceProcessor<TestProcessor>("p1");
+    auto& p2a = *network.emplaceProcessor<TestProcessor>("p2a");
+    auto& p2b = *network.emplaceProcessor<TestProcessor>("p2b");
 
     network.addConnection(&p0.outport, &p1.inport);
     network.addConnection(&p1.outport, &p2a.inport);
@@ -204,20 +186,10 @@ TEST(ResizeEvent, dontHandleResizeEvents) {
      *     └───────────┘   └───────────┘
      */
 
-    auto proc0 = std::make_unique<TestProcessor>("p0");
-    auto proc1 = std::make_unique<TestProcessor>("p1");
-    auto proc2a = std::make_unique<TestProcessor>("p2a");
-    auto proc2b = std::make_unique<TestProcessor>("p2b");
-
-    auto& p0 = *proc0;
-    auto& p1 = *proc1;
-    auto& p2a = *proc2a;
-    auto& p2b = *proc2b;
-
-    network.addProcessor(std::move(proc0));
-    network.addProcessor(std::move(proc1));
-    network.addProcessor(std::move(proc2a));
-    network.addProcessor(std::move(proc2b));
+    auto& p0 = *network.emplaceProcessor<TestProcessor>("p0");
+    auto& p1 = *network.emplaceProcessor<TestProcessor>("p1");
+    auto& p2a = *network.emplaceProcessor<TestProcessor>("p2a");
+    auto& p2b = *network.emplaceProcessor<TestProcessor>("p2b");
 
     network.addConnection(&p0.outport, &p1.inport);
     network.addConnection(&p1.outport, &p2a.inport);
@@ -270,20 +242,10 @@ TEST(ResizeEvent, twoSinksDisconnect) {
      *     └───────────┘   └───────────┘
      */
 
-    auto proc0 = std::make_unique<TestProcessor>("p0");
-    auto proc1 = std::make_unique<TestProcessor>("p1");
-    auto proc2a = std::make_unique<TestProcessor>("p2a");
-    auto proc2b = std::make_unique<TestProcessor>("p2b");
-
-    auto& p0 = *proc0;
-    auto& p1 = *proc1;
-    auto& p2a = *proc2a;
-    auto& p2b = *proc2b;
-
-    network.addProcessor(std::move(proc0));
-    network.addProcessor(std::move(proc1));
-    network.addProcessor(std::move(proc2a));
-    network.addProcessor(std::move(proc2b));
+    auto& p0 = *network.emplaceProcessor<TestProcessor>("p0");
+    auto& p1 = *network.emplaceProcessor<TestProcessor>("p1");
+    auto& p2a = *network.emplaceProcessor<TestProcessor>("p2a");
+    auto& p2b = *network.emplaceProcessor<TestProcessor>("p2b");
 
     network.addConnection(&p0.outport, &p1.inport);
     network.addConnection(&p1.outport, &p2a.inport);

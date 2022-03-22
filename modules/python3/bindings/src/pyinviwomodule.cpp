@@ -29,17 +29,16 @@
 
 #include <inviwopy/pyinviwomodule.h>
 
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
-
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
-
 #include <inviwo/core/common/version.h>
 #include <inviwo/core/util/licenseinfo.h>
 #include <inviwo/core/util/stringconversion.h>
+
+#include <pybind11/operators.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 
 namespace inviwo {
 
@@ -56,7 +55,8 @@ public:
     pybind11::object pfo_;
 };
 
-class InviwoModuleFactoryObjectTrampoline : public InviwoModuleFactoryObject {
+class InviwoModuleFactoryObjectTrampoline : public InviwoModuleFactoryObject,
+                                            public pybind11::trampoline_self_life_support {
 public:
     using InviwoModuleFactoryObject::InviwoModuleFactoryObject;
 

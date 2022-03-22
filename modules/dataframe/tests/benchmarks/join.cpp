@@ -110,7 +110,7 @@ std::vector<std::vector<std::uint32_t>> matchingRowsVector(const Cont1& left, co
     return rows;
 }
 
-static void MatchingRowsPrev(benchmark::State& st) {
+[[maybe_unused]] void MatchingRowsPrev(benchmark::State& st) {
     auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
     for (auto _ : st) {
@@ -119,7 +119,7 @@ static void MatchingRowsPrev(benchmark::State& st) {
     }
 }
 
-static void MatchingRows(benchmark::State& st) {
+[[maybe_unused]] void MatchingRows(benchmark::State& st) {
     auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
     for (auto _ : st) {
@@ -128,7 +128,7 @@ static void MatchingRows(benchmark::State& st) {
     }
 }
 
-static void MatchingRowsVector(benchmark::State& st) {
+[[maybe_unused]] void MatchingRowsVector(benchmark::State& st) {
     auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
     for (auto _ : st) {
@@ -137,7 +137,7 @@ static void MatchingRowsVector(benchmark::State& st) {
     }
 }
 
-static void MatchingRowsFirstPrev(benchmark::State& st) {
+[[maybe_unused]] void MatchingRowsFirstPrev(benchmark::State& st) {
     auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
     for (auto _ : st) {
@@ -146,7 +146,7 @@ static void MatchingRowsFirstPrev(benchmark::State& st) {
     }
 }
 
-static void MatchingRowsFirstVector(benchmark::State& st) {
+[[maybe_unused]] void MatchingRowsFirstVector(benchmark::State& st) {
     auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
     for (auto _ : st) {
@@ -185,7 +185,7 @@ std::vector<std::uint32_t> selectRows(const Cont& cont, dataframefilters::Filter
     return rows;
 }
 
-static void SelectRows(benchmark::State& st) {
+[[maybe_unused]] void SelectRows(benchmark::State& st) {
     auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
     dataframefilters::Filters filters;

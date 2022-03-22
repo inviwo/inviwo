@@ -61,26 +61,6 @@ IVW_MODULE_BASE_API std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2
                                                           size2_t extent,
                                                           bool clampBorderOutsideImage = false);
 
-/**
- * \brief extracts a subregion from a layer and converts it into a new layer
- *
- * This function extracts a subregion given by offset and extent from the input layer. The values
- * will be converted to type T using util::glm_convert_normalized.
- * If border clamping is enabled, the output region will be clamped to lie completely within the
- * source layer. Otherwise (default), the areas outside the source layer will be filled with
- * zeros.
- *
- * @param in       input layer
- * @param offset   subregion offset in input layer
- * @param extent   extent (width and height) of subregion
- * @param clampBorderOutsideImage    if true, the output region is clamped to the layer boundaries
- *
- * @return std::shared_ptr<LayerRAMPrecision<T>>
- */
-template <typename T>
-std::shared_ptr<LayerRAMPrecision<T>> layerSubSet(const Layer* in, ivec2 offset, size2_t extent,
-                                                  bool clampBorderOutsideImage = false);
-
 namespace detail {
 
 template <typename T>
@@ -135,13 +115,24 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
 
 }  // namespace detail
 
-}  // namespace util
-
+/**
+ * \brief extracts a subregion from a layer and converts it into a new layer
+ *
+ * This function extracts a subregion given by @p offset and @p extent from the input layer. The
+ * values will be converted to type T using util::glm_convert_normalized. If border clamping is
+ * enabled, the output region will be clamped to lie completely within the source layer. Otherwise
+ * (default), the areas outside the source layer will be filled with zeros.
+ *
+ * @param in       input layer
+ * @param offset   subregion offset in input layer
+ * @param extent   extent (width and height) of subregion
+ * @param clampBorderOutsideImage    if true, the output region is clamped to the layer boundaries
+ *
+ * @return std::shared_ptr<LayerRAMPrecision<T>>
+ */
 template <typename T>
-std::shared_ptr<LayerRAMPrecision<T>> util::layerSubSet(const Layer* in, ivec2 offset,
-                                                        size2_t extent,
-                                                        bool clampBorderOutsideImage) {
-
+std::shared_ptr<LayerRAMPrecision<T>> layerSubSet(const Layer* in, ivec2 offset, size2_t extent,
+                                                  bool clampBorderOutsideImage = false) {
     return in->getRepresentation<LayerRAM>()->dispatch<std::shared_ptr<LayerRAMPrecision<T>>>(
         [offset, extent, clampBorderOutsideImage](auto layerpr) {
             using ValueType = util::PrecisionValueType<decltype(layerpr)>;
@@ -150,5 +141,7 @@ std::shared_ptr<LayerRAMPrecision<T>> util::layerSubSet(const Layer* in, ivec2 o
                                                                   clampBorderOutsideImage);
         });
 }
+
+}  // namespace util
 
 }  // namespace inviwo

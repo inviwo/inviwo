@@ -28,10 +28,10 @@
  *********************************************************************************/
 
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pyglmmattypes.h>
 
 #include <inviwo/core/util/ostreamjoiner.h>
-
-#include <inviwopy/pyglmmattypes.h>
+#include <modules/python3/pyportutils.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -40,11 +40,11 @@
 #include <pybind11/stl_bind.h>
 #include <warn/pop>
 
-#include <fmt/format.h>
-
 #include <map>
 #include <string>
 #include <algorithm>
+
+#include <fmt/format.h>
 
 #include <warn/push>
 #include <warn/ignore/self-assign-overloaded>
@@ -67,27 +67,6 @@ template <typename T, typename V, unsigned C, typename Indices = std::make_index
 void addInit(py::class_<V>& pyv) {
     addInitImpl<V, T>(pyv, Indices{});
 }
-
-template <typename T, size_t N>
-struct dtype {};
-
-template <typename Vec>
-struct dtype<Vec, 1> {
-    static void init() { PYBIND11_NUMPY_DTYPE(Vec, x); }
-};
-template <typename Vec>
-struct dtype<Vec, 2> {
-    static void init() { PYBIND11_NUMPY_DTYPE(Vec, x, y); }
-};
-template <typename Vec>
-struct dtype<Vec, 3> {
-    static void init() { PYBIND11_NUMPY_DTYPE(Vec, x, y, z); }
-};
-template <typename Vec>
-struct dtype<Vec, 4> {
-    static void init() { PYBIND11_NUMPY_DTYPE(Vec, x, y, z, w); }
-};
-
 }  // namespace
 
 template <typename T, int Dim>
@@ -253,8 +232,15 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
         }
     }
 
-    dtype<Vec, Dim>::init();
-    py::bind_vector<std::vector<Vec>>(m, classname + "Vector", py::buffer_protocol{});
+    if constexpr (Dim == 1) {
+        PYBIND11_NUMPY_DTYPE(Vec, x);
+    } else if constexpr (Dim == 2) {
+        PYBIND11_NUMPY_DTYPE(Vec, x, y);
+    } else if constexpr (Dim == 3) {
+        PYBIND11_NUMPY_DTYPE(Vec, x, y, z);
+    } else if constexpr (Dim == 4) {
+        PYBIND11_NUMPY_DTYPE(Vec, x, y, z, w);
+    }
 
     switch (Dim) {
         case 4:
@@ -304,17 +290,12 @@ void vec(py::module& m, const std::string& prefix, const std::string& name = "ve
 }
 
 void exposeGLMTypes(py::module& m) {
-    auto glmModule = m.def_submodule("glm", "Exposing glm vec and mat types");
-
-    vec<bool>(glmModule, "b");
-
-    vec<float>(glmModule, "");
-    vec<double>(glmModule, "d");
-    vec<int>(glmModule, "i");
-    vec<unsigned int>(glmModule, "u");
-    vec<size_t>(glmModule, "", "size", "_t");
-
-    exposeGLMMatTypes(glmModule);
+    vec<bool>(m, "b");
+    vec<float>(m, "");
+    vec<double>(m, "d");
+    vec<int>(m, "i");
+    vec<unsigned int>(m, "u");
+    vec<size_t>(m, "", "size", "_t");
 }
 }  // namespace inviwo
 

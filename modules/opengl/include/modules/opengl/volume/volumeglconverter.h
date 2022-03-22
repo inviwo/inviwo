@@ -34,7 +34,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramconverter.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
-#include "volumegl.h"
+#include <modules/opengl/volume/volumegl.h>
 
 namespace inviwo {
 

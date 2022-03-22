@@ -29,6 +29,11 @@
 
 #include <inviwopy/inviwopy.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
+
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pythoninterpreter.h>
@@ -40,7 +45,10 @@
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyprocessors.h>
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pyglmmattypes.h>
+#include <inviwopy/pyglmports.h>
 #include <inviwopy/pyport.h>
+#include <inviwopy/pycompositeproperties.h>
 #include <inviwopy/pyproperties.h>
 #include <inviwopy/pypropertyowner.h>
 #include <inviwopy/pyvolume.h>
@@ -60,12 +68,9 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace py = pybind11;
-
-PYBIND11_MAKE_OPAQUE(std::vector<int>)
-PYBIND11_MAKE_OPAQUE(std::vector<float>)
-PYBIND11_MAKE_OPAQUE(std::vector<double>)
 
 PYBIND11_MODULE(inviwopy, m) {
 
@@ -92,24 +97,31 @@ PYBIND11_MODULE(inviwopy, m) {
             
         )doc";
 
-    exposeGLMTypes(m);
-
+    auto glmModule = m.def_submodule("glm", "GML vec and mat types");
     auto propertiesModule = m.def_submodule("properties", "Inviwo Properties");
     auto dataModule = m.def_submodule("data", "Inviwo Data Structures");
     auto formatsModule = dataModule.def_submodule("formats", "Inviwo Data Formats");
 
+    // Note the order is important here, we need to load all base classes before any derived clases
+    exposeGLMTypes(glmModule);
+    exposeGLMMatTypes(glmModule);
+
     exposeLogging(m);
     exposeInviwoApplication(m);
     exposeDataFormat(formatsModule);
-    exposePropertyOwner(propertiesModule);
     exposeTFPrimitiveSet(dataModule);  // defines TFPrimitiveData used in exposeProperties
     exposeProperties(propertiesModule);
+    exposePropertyOwner(propertiesModule);
+    exposeCompositeProperties(propertiesModule);
+
     exposePort(m);
+
     exposeProcessors(m);
     exposeNetwork(m);
     exposeEvents(m);
     exposePickingMapper(m);
 
+    exposeGLMPorts(m);
     exposeDataMapper(dataModule);
     exposeImage(dataModule);
     exposeVolume(dataModule);
@@ -119,7 +131,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeInviwoModule(m);
     exposeCameraProperty(m, propertiesModule);
 
-    py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
+    py::class_<Settings, PropertyOwner>(m, "Settings");
 
     m.def("debugBreak", []() { util::debugBreak(); });
 

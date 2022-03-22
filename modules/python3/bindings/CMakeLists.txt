@@ -4,11 +4,13 @@ set(HEADER_FILES
     include/inviwopy/pybuffer.h
     include/inviwopy/pycamera.h
     include/inviwopy/pycameraproperty.h
+    include/inviwopy/pycompositeproperties.h
     include/inviwopy/pydataformat.h
     include/inviwopy/pydatamapper.h
     include/inviwopy/pyevent.h
     include/inviwopy/pyflags.h
     include/inviwopy/pyglmmattypes.h
+    include/inviwopy/pyglmports.h
     include/inviwopy/pyglmtypes.h
     include/inviwopy/pyimage.h
     include/inviwopy/pyinviwoapplication.h
@@ -21,6 +23,7 @@ set(HEADER_FILES
     include/inviwopy/pyprocessors.h
     include/inviwopy/pyproperties.h
     include/inviwopy/pypropertyowner.h
+    include/inviwopy/pypropertytypehook.h
     include/inviwopy/pytfprimitiveset.h
     include/inviwopy/pyvolume.h
     include/inviwopy/vectoridentifierwrapper.h
@@ -32,11 +35,13 @@ set(SOURCE_FILES
     src/pybuffer.cpp
     src/pycamera.cpp
     src/pycameraproperty.cpp
+    src/pycompositeproperties.cpp
     src/pydataformat.cpp
     src/pydatamapper.cpp
     src/pyevent.cpp
     src/pyflags.cpp
     src/pyglmmattypes.cpp
+    src/pyglmports.cpp
     src/pyglmtypes.cpp
     src/pyimage.cpp
     src/pyinviwoapplication.cpp
@@ -49,6 +54,7 @@ set(SOURCE_FILES
     src/pyprocessors.cpp
     src/pyproperties.cpp
     src/pypropertyowner.cpp
+    src/pypropertytypehook.cpp
     src/pytfprimitiveset.cpp
     src/pyvolume.cpp
     src/vectoridentifierwrapper.cpp

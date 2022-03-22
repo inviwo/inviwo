@@ -28,31 +28,22 @@
  *********************************************************************************/
 
 #include <inviwopy/pyport.h>
-#include <modules/python3/pyportutils.h>
 
-#include <inviwopy/pyglmtypes.h>
+#include <inviwo/core/ports/port.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/processors/processor.h>
 
-#include <vector>
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-namespace {
-
-struct ExposePortsFunctor {
-    template <typename T>
-    void operator()(pybind11::module& m, const std::vector<std::string>& typenames) {
-        exposeStandardDataPorts<T>(m, typenames[index]);
-        exposeStandardDataPorts<std::vector<T>>(m, typenames[index] + std::string("Vector"));
-        ++index;
-    }
-    size_t index = 0;
-};
-
-}  // namespace
-
 void exposePort(pybind11::module& m) {
     namespace py = pybind11;
-    py::class_<Port, PortPtr<Port>>(m, "Port")
+    py::class_<Port>(m, "Port")
         .def_property_readonly("identifier", &Port::getIdentifier)
         .def_property_readonly("processor", &Port::getProcessor, py::return_value_policy::reference)
         .def_property_readonly("classIdentifier", &Port::getClassIdentifier)
@@ -60,7 +51,7 @@ void exposePort(pybind11::module& m) {
         .def("isConnected", &Port::isConnected)
         .def("isReady", &Port::isReady);
 
-    py::class_<Inport, Port, PortPtr<Inport>>(m, "Inport")
+    py::class_<Inport, Port>(m, "Inport")
         .def_property("optional", &Inport::isOptional, &Inport::setOptional)
         .def("canConnectTo", &Inport::canConnectTo)
         .def("connectTo", &Inport::connectTo)
@@ -74,34 +65,12 @@ void exposePort(pybind11::module& m) {
         .def("getNumberOfConnections", &Inport::getNumberOfConnections)
         .def("getChangedOutports", &Inport::getChangedOutports, py::return_value_policy::reference);
 
-    py::class_<Outport, Port, PortPtr<Outport>>(m, "Outport")
+    py::class_<Outport, Port>(m, "Outport")
         .def("isConnectedTo", &Outport::isConnectedTo)
         .def("getConnectedInports", &Outport::getConnectedInports,
              py::return_value_policy::reference)
         .def("hasData", &Outport::hasData)
         .def("clear", &Outport::clear);
-
-    // the datatypes for exposed ports should match those in inviwocore.cpp
-    //
-    // TODO: types for 'float', 'double', 'int32_t', 'uint32_t', and 64bit int are not exposed
-    //       since 'float' and 'double' cause some pybind11 issue with clang/gcc and the compiler
-    //       runs out of heap space due to the number of types.
-    //
-    // clang-format off
-    using types = std::tuple<
-        vec2, vec3, vec4,
-        dvec2, dvec3, dvec4,
-        ivec2, ivec3, ivec4,
-        uvec2, uvec3, uvec4
-    >;
-    const std::vector<std::string> typeNames = {
-        "vec2", "vec3", "vec4",
-        "dvec2", "dvec3", "dvec4",
-        "ivec2", "ivec3", "ivec4",
-        "uvec2", "uvec3", "uvec4"
-    };
-    // clang-format on
-    util::for_each_type<types>{}(ExposePortsFunctor{}, m, typeNames);
 }
 
 }  // namespace inviwo

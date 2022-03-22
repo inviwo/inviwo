@@ -390,7 +390,7 @@ auto map_find_or_null(T& cont, const V& elem) -> typename T::mapped_type {
 
 template <typename T, typename V, typename Callable>
 auto map_find_or_null(T& cont, const V& elem, Callable f) ->
-    typename std::result_of<Callable(typename T::mapped_type)>::type {
+    typename std::invoke_result_t<Callable, typename T::mapped_type> {
     auto it = cont.find(elem);
     if (it != end(cont)) {
         return f(it->second);

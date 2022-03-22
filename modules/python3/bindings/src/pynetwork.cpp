@@ -28,18 +28,18 @@
  *********************************************************************************/
 
 #include <inviwopy/pynetwork.h>
-
-#include <inviwopy/inviwopy.h>
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pypropertytypehook.h>
+#include <inviwopy/vectoridentifierwrapper.h>
 
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
 #include <inviwo/core/common/inviwoapplication.h>
-
-#include <inviwopy/vectoridentifierwrapper.h>
+#include <inviwo/core/processors/canvasprocessor.h>
 
 namespace py = pybind11;
 
@@ -68,15 +68,21 @@ void exposeNetwork(py::module& m) {
         .def(
             "__getattr__",
             [](ProcessorNetwork& po, std::string key) {
-                auto p = po.getProcessorByIdentifier(key);
-                if (auto cp = dynamic_cast<CanvasProcessor*>(p)) {
-                    return py::cast(cp);
+                if (auto p = po.getProcessorByIdentifier(key)) {
+                    if (auto cp = dynamic_cast<CanvasProcessor*>(p)) {
+                        return py::cast(cp);
+                    }
+                    return py::cast(p);
+                } else {
+                    throw py::attribute_error{fmt::format(
+                        "ProcessorNetwork does not have a processor with identifier: '{}'", key)};
                 }
-                return py::cast(p);
             },
             py::return_value_policy::reference)
         .def("addProcessor",
-             [](ProcessorNetwork* pn, Processor* processor) { pn->addProcessor(processor); })
+             [](ProcessorNetwork* pn, std::shared_ptr<Processor> processor) {
+                 pn->addProcessor(processor);
+             })
         .def("removeProcessor",
              [](ProcessorNetwork* pn, Processor* processor) { pn->removeProcessor(processor); })
 

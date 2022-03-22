@@ -236,11 +236,13 @@ BrushingAndLinkingManager::getTargets() const {
     };
 
     for (auto&& [action, map] : util::zip(BrushingActions, selections_)) {
-        std::visit(
-            util::overloaded{
-                [&, action = action](const BitSetTargets& map) { extractTargets(action, map); },
-                [&, action = action](const IndexListTargets& map) { extractTargets(action, map); }},
-            map);
+        std::visit(util::overloaded{[&, action = action](const BitSetTargets& set) {
+                                        extractTargets(action, set);
+                                    },
+                                    [&, action = action](const IndexListTargets& list) {
+                                        extractTargets(action, list);
+                                    }},
+                   map);
     }
 
     return targets;
@@ -351,11 +353,11 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
 
         // propagate all selections of the manager to the parent
         for (auto&& [action, map] : util::zip(BrushingActions, selections_)) {
-            std::visit(util::overloaded{[&, action = action](const BitSetTargets& map) {
-                                            propagateTargets(action, map);
+            std::visit(util::overloaded{[&, action = action](const BitSetTargets& set) {
+                                            propagateTargets(action, set);
                                         },
-                                        [&, action = action](const IndexListTargets& map) {
-                                            propagateTargets(action, map);
+                                        [&, action = action](const IndexListTargets& list) {
+                                            propagateTargets(action, list);
                                         }},
                        map);
         }
