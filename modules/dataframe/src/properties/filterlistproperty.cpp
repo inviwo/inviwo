@@ -44,6 +44,28 @@
 
 namespace inviwo {
 
+namespace detail {
+
+template <typename Prop, typename... Args>
+void addProperty(PropertyOwner& owner, std::string_view identifier, std::string_view displayName,
+                 Args&&... args) {
+    auto prop = std::make_unique<Prop>(identifier, displayName);
+    prop->set(std::forward<Args>(args)...);
+    prop->setSemantics(PropertySemantics::Text);
+    owner.addProperty(std::move(prop));
+}
+
+template <typename Prop>
+void addOptionProperty(PropertyOwner& owner, std::string_view identifier,
+                       std::string_view displayName,
+                       std::vector<OptionPropertyOption<typename Prop::value_type>> options) {
+    auto prop = std::make_unique<Prop>(identifier, displayName);
+    prop->replaceOptions(options);
+    owner.addProperty(std::move(prop));
+}
+
+}  // namespace detail
+
 const std::string FilterListProperty::classIdentifier = "org.inviwo.FilterListProperty";
 std::string FilterListProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -61,8 +83,8 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
         return p;
     };
     auto createBoolComposite = [](std::string_view identifier, std::string_view displayName) {
-        auto p = std::make_unique<BoolCompositeProperty>(identifier, displayName, true);
-        p->getBoolProperty()->setSerializationMode(PropertySerializationMode::All);
+        auto p = std::make_unique<BoolCompositeProperty>(identifier, displayName);
+        p->getBoolProperty()->set(true);
         return p;
     };
 
@@ -83,95 +105,90 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
         {
             auto lineRange = createBoolComposite("lineRange", "Line Range");
             lineRange->addProperty(onHeaderProp());
-            lineRange->addProperty(std::make_unique<IntMinMaxProperty>(
-                "range", "Line Range", 0, 100, 0, std::numeric_limits<int>::max(), 1, 0,
-                InvalidationLevel::InvalidOutput, PropertySemantics::Text));
+            detail::addProperty<IntMinMaxProperty>(*lineRange, "range", "Line Range", 0, 100, 0,
+                                                   std::numeric_limits<int>::max(), 1, 0);
 
             addPrefab(std::move(lineRange));
         }
     }
 
-    auto columnProp = []() {
-        return std::make_unique<IntProperty>(
-            "column", "Column", 0, 0, std::numeric_limits<int>::max(), 1,
-            InvalidationLevel::InvalidOutput, PropertySemantics::Text);
-    };
-
     if (supportedFilters.contains(FilterType::StringItem)) {
         auto stringItem = createBoolComposite("stringItem", "String Match");
-        stringItem->addProperty(columnProp());
-        stringItem->addProperty(std::make_unique<TemplateOptionProperty<filters::StringComp>>(
-            "comp", "Comparison",
+        detail::addProperty<IntProperty>(*stringItem, "column", "Column", 0, 0,
+                                         std::numeric_limits<int>::max(), 1);
+
+        detail::addOptionProperty<TemplateOptionProperty<filters::StringComp>>(
+            *stringItem, "comp", "Comparison",
             std::vector<OptionPropertyOption<filters::StringComp>>{
                 {"equal", "equal (==)", filters::StringComp::Equal},
                 {"notEqual", "Not Equal (!=)", filters::StringComp::NotEqual},
                 {"regex", "Regex", filters::StringComp::Regex},
-                {"regexPartial", "Regex (Partial)", filters::StringComp::RegexPartial}},
-            0));
+                {"regexPartial", "Regex (Partial)", filters::StringComp::RegexPartial}});
         stringItem->addProperty(std::make_unique<StringProperty>("match", "Matching String", ""));
 
         addPrefab(std::move(stringItem));
     }
     if (supportedFilters.contains(FilterType::IntItem)) {
         auto intItem = createBoolComposite("intItem", "Integer Comparison");
-        intItem->addProperty(columnProp());
-        intItem->addProperty(std::make_unique<TemplateOptionProperty<filters::NumberComp>>(
-            "comp", "Comparison",
+        detail::addProperty<IntProperty>(*intItem, "column", "Column", 0, 0,
+                                         std::numeric_limits<int>::max(), 1);
+
+        detail::addOptionProperty<TemplateOptionProperty<filters::NumberComp>>(
+            *intItem, "comp", "Comparison",
             std::vector<OptionPropertyOption<filters::NumberComp>>{
                 {"equal", "equal (==)", filters::NumberComp::Equal},
                 {"notEqual", "Not Equal (!=)", filters::NumberComp::NotEqual},
                 {"less", "Less (<)", filters::NumberComp::Less},
                 {"lessEqual", "Less Equal (<=)", filters::NumberComp::LessEqual},
                 {"greater", "greater (>)", filters::NumberComp::Greater},
-                {"greaterEqual", "Greater Equal (>=)", filters::NumberComp::GreaterEqual}},
-            0));
-        intItem->addProperty(std::make_unique<Int64Property>(
-            "value", "Value", 0, std::numeric_limits<int64_t>::min(),
-            std::numeric_limits<int64_t>::max(), 1, InvalidationLevel::InvalidOutput,
-            PropertySemantics::Text));
+                {"greaterEqual", "Greater Equal (>=)", filters::NumberComp::GreaterEqual}});
+        detail::addProperty<Int64Property>(*intItem, "value", "Value", 0,
+                                           std::numeric_limits<int64_t>::min(),
+                                           std::numeric_limits<int64_t>::max(), 1);
 
         addPrefab(std::move(intItem));
     }
     if (supportedFilters.contains(FilterType::DoubleItem)) {
         auto doubleItem = createBoolComposite("doubleItem", "Double Comparison");
-        doubleItem->addProperty(columnProp());
-        doubleItem->addProperty(std::make_unique<TemplateOptionProperty<filters::NumberComp>>(
-            "comp", "Comparison",
+        detail::addProperty<IntProperty>(*doubleItem, "column", "Column", 0, 0,
+                                         std::numeric_limits<int>::max(), 1);
+
+        detail::addOptionProperty<TemplateOptionProperty<filters::NumberComp>>(
+            *doubleItem, "comp", "Comparison",
             std::vector<OptionPropertyOption<filters::NumberComp>>{
                 {"equal", "equal (==)", filters::NumberComp::Equal},
                 {"notEqual", "Not Equal (!=)", filters::NumberComp::NotEqual},
                 {"less", "Less (<)", filters::NumberComp::Less},
                 {"lessEqual", "Less Equal (<=)", filters::NumberComp::LessEqual},
                 {"greater", "greater (>)", filters::NumberComp::Greater},
-                {"greaterEqual", "Greater Equal (>=)", filters::NumberComp::GreaterEqual}},
-            0));
-        doubleItem->addProperty(std::make_unique<DoubleProperty>(
-            "value", "Value", 0.0, std::numeric_limits<double>::lowest(),
-            std::numeric_limits<double>::max(), 0.1, InvalidationLevel::InvalidOutput,
-            PropertySemantics::Text));
-        doubleItem->addProperty(std::make_unique<DoubleProperty>(
-            "epsilon", "Epsilon", 0.0, 0.0, std::numeric_limits<double>::max(), 0.1,
-            InvalidationLevel::InvalidOutput, PropertySemantics::Text));
+                {"greaterEqual", "Greater Equal (>=)", filters::NumberComp::GreaterEqual}});
+        detail::addProperty<DoubleProperty>(*doubleItem, "value", "Value", 0.0,
+                                            std::numeric_limits<double>::lowest(),
+                                            std::numeric_limits<double>::max(), 0.1);
+        detail::addProperty<DoubleProperty>(*doubleItem, "epsilon", "Epsilon", 0.0, 0.0,
+                                            std::numeric_limits<double>::max(), 0.1);
 
         addPrefab(std::move(doubleItem));
     }
     if (supportedFilters.contains(FilterType::IntRange)) {
         auto intRange = createBoolComposite("intRangeItem", "Int Range");
-        intRange->addProperty(columnProp());
-        intRange->addProperty(std::make_unique<Int64MinMaxProperty>(
-            "range", "Integer Range", 0, 100, std::numeric_limits<int64_t>::min(),
-            std::numeric_limits<int64_t>::max(), 1, 0, InvalidationLevel::InvalidOutput,
-            PropertySemantics::Text));
+        detail::addProperty<IntProperty>(*intRange, "column", "Column", 0, 0,
+                                         std::numeric_limits<int>::max(), 1);
+
+        detail::addProperty<Int64MinMaxProperty>(*intRange, "range", "Integer Range", 0, 100,
+                                                 std::numeric_limits<int64_t>::min(),
+                                                 std::numeric_limits<int64_t>::max(), 1, 0);
 
         addPrefab(std::move(intRange));
     }
     if (supportedFilters.contains(FilterType::DoubleRange)) {
         auto doubleRange = createBoolComposite("doubleRangeItem", "Double Range");
-        doubleRange->addProperty(columnProp());
-        doubleRange->addProperty(std::make_unique<DoubleMinMaxProperty>(
-            "range", "Double Range", 0.0, 100.0, std::numeric_limits<double>::lowest(),
-            std::numeric_limits<double>::max(), 0.1, 0.0, InvalidationLevel::InvalidOutput,
-            PropertySemantics::Text));
+        detail::addProperty<IntProperty>(*doubleRange, "column", "Column", 0, 0,
+                                         std::numeric_limits<int>::max(), 1);
+
+        detail::addProperty<DoubleMinMaxProperty>(*doubleRange, "range", "Double Range", 0.0, 100.0,
+                                                  std::numeric_limits<double>::lowest(),
+                                                  std::numeric_limits<double>::max(), 0.1, 0.0);
 
         addPrefab(std::move(doubleRange));
     }
