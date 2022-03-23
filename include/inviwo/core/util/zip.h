@@ -469,12 +469,12 @@ struct sequence {
         }
 
         iterator& operator+=(difference_type rhs) {
-            val_ += rhs * inc_;
+            val_ += static_cast<value_type>(rhs) * inc_;
             clamp();
             return *this;
         }
         iterator& operator-=(difference_type rhs) {
-            val_ -= rhs * inc_;
+            val_ -= static_cast<value_type>(rhs) * inc_;
             clamp();
             return *this;
         }
@@ -482,15 +482,17 @@ struct sequence {
         difference_type operator-(const iterator& rhs) const { return ((val_ - rhs.val_) / inc_); }
         iterator operator+(difference_type rhs) const {
             auto i = *this;
-            return i += rhs;
+            return i += static_cast<value_type>(rhs);
         }
         iterator operator-(difference_type rhs) const {
             auto i = *this;
-            return i -= rhs;
+            return i -= static_cast<value_type>(rhs);
         }
         friend iterator operator+(difference_type lhs, const iterator& rhs) { return rhs + lhs; }
 
-        value_type operator[](difference_type rhs) const { return val_ + rhs * inc_; }
+        value_type operator[](difference_type rhs) const {
+            return val_ + static_cast<value_type>(rhs) * inc_;
+        }
 
         reference operator*() const { return val_; }
 
