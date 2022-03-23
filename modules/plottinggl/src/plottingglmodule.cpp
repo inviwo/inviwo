@@ -68,7 +68,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerDataVisualizer(std::make_unique<ScatterPlotDataFrameVisualizer>(app));
 }
 
-int PlottingGLModule::getVersion() const { return 2; }
+int PlottingGLModule::getVersion() const { return 3; }
 
 std::unique_ptr<VersionConverter> PlottingGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -145,7 +145,102 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                 return true;
             }};
             res |= conv.convert(root);
+            [[fallthrough]];
+        }
+        case 2: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                std::string key;
+                node->GetValue(&key);
+                if (key != "Processor") return true;
+                const auto type = node->GetAttributeOrDefault("type", "");
+                if ((type != "org.inviwo.ScatterPlotProcessor") &&
+                    (type != "org.inviwo.ScatterPlotMatrixProcessor")) {
+                    return true;
+                }
 
+                std::string_view identifier = (type == "org.inviwo.ScatterPlotProcessor")
+                                                  ? "scatterplot"
+                                                  : "scatterPlotproperties";
+
+                if (auto plot = xml::getElement(
+                        node,
+                        fmt::format("Properties/Property&identifier={}/Properties", identifier))) {
+                    // Rename color property
+                    if (auto color = xml::getElement(plot, "Property&identifier=color")) {
+                        color->SetAttribute("identifier", "defaultColor");
+                    }
+
+                    // Move hovering bool property to checked state of a BoolComposite
+                    {
+                        TxElement compNode{"Property"};
+                        compNode.SetAttribute("type", "org.inviwo.BoolCompositeProperty");
+                        compNode.SetAttribute("identifier", "showHighlighted");
+
+                        TxElement propNode{"Properties"};
+                        if (auto hovered = xml::getElement(plot, "Property&identifier=hovering")) {
+                            hovered->SetAttribute("identifier", "checked");
+                            hovered->SetAttribute("displayName", "");
+                            propNode.InsertEndChild(*hovered);
+                        }
+                        // Change type of hover color to vec3, move to composite
+                        if (auto highlightColor =
+                                xml::getElement(plot, "Property&identifier=hoverColor")) {
+                            highlightColor->SetAttribute("type", "org.inviwo.FloatVec3Property");
+                            highlightColor->SetAttribute("identifier", "highlightColor");
+
+                            propNode.InsertEndChild(*highlightColor);
+
+                            if (auto value = xml::getElement(highlightColor, "value")) {
+                                auto str = value->GetAttributeOrDefault("w", "1.0");
+
+                                TxElement alphaNode{"Property"};
+                                alphaNode.SetAttribute("type", "org.inviwo.FloatProperty");
+                                alphaNode.SetAttribute("identifier", "highlightAlpha");
+                                TxElement valueNode("value");
+                                valueNode.SetAttribute("content", str);
+
+                                alphaNode.InsertEndChild(valueNode);
+                                propNode.InsertEndChild(alphaNode);
+                            }
+                        }
+                        compNode.InsertEndChild(propNode);
+                        plot->InsertEndChild(compNode);
+                    }
+
+                    // Change type of selection color to vec3, move to composite
+                    {
+                        TxElement compNode{"Property"};
+                        compNode.SetAttribute("type", "org.inviwo.BoolCompositeProperty");
+                        compNode.SetAttribute("identifier", "showSelected");
+
+                        TxElement propNode{"Properties"};
+                        if (auto highlightColor =
+                                xml::getElement(plot, "Property&identifier=selectionColor")) {
+                            highlightColor->SetAttribute("type", "org.inviwo.FloatVec3Property");
+                            highlightColor->SetAttribute("identifier", "highlightColor");
+
+                            propNode.InsertEndChild(*highlightColor);
+
+                            if (auto value = xml::getElement(highlightColor, "value")) {
+                                auto str = value->GetAttributeOrDefault("w", "1.0");
+
+                                TxElement alphaNode{"Property"};
+                                alphaNode.SetAttribute("type", "org.inviwo.FloatProperty");
+                                alphaNode.SetAttribute("identifier", "selectionAlpha");
+                                TxElement valueNode("value");
+                                valueNode.SetAttribute("content", str);
+
+                                alphaNode.InsertEndChild(valueNode);
+                                propNode.InsertEndChild(alphaNode);
+                            }
+                        }
+                        compNode.InsertEndChild(propNode);
+                        plot->InsertEndChild(compNode);
+                    }
+                }
+                return true;
+            }};
+            res |= conv.convert(root);
             return res;
         }
 
