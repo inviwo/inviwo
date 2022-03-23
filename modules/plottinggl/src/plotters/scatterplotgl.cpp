@@ -201,6 +201,8 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     boxSelectionChangedCallBack_ = boxSelectionHandler_.addSelectionChangedCallback(
         [this](const std::vector<bool>& selected, bool append) {
             BitSet b(selected);
+            // suppress selection of filtered indices
+            b -= filtered_;
             if (append) {
                 b &= selected_;
             }
