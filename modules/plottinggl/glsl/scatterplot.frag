@@ -42,7 +42,7 @@ struct SecondaryColor {
     float alphaMixIn;
 };
 
-uniform SecondaryColor secondaryColor = { vec4(0.0), 0.0, 0.0 };
+uniform SecondaryColor secondaryColor = SecondaryColor(vec4(0.0), 0.0, 0.0);
 
 uniform float antialiasing = 1.5; // [pixel]
 

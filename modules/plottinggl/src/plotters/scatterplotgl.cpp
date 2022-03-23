@@ -576,7 +576,6 @@ void ScatterPlotGL::partitionData() {
     if (const auto& sortingBuf = points_.sorting ? points_.sorting : points_.radius; sortingBuf) {
         sortingBuf->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](const auto brprecision) {
-                using T = util::PrecisionValueType<decltype(brprecision)>;
                 const auto& data = brprecision->getDataContainer();
                 auto comp =
                     [&]() -> std::function<bool(const std::uint32_t&, const std::uint32_t&)> {
