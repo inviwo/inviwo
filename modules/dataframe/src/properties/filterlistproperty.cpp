@@ -46,6 +46,11 @@ namespace inviwo {
 
 namespace detail {
 
+// As the FilterListProperty relies on dynamic properties, the deserialization of such properties
+// will use the default constructors of the corresponding properties (via the property factory) and
+// _not_ the arguments used for creating the ListProperty prefabs. This results in serialization
+// issues due to different default states (value, ranges, semantics, etc.). Therefore, the property
+// state has to be changed explicitly after construction in order to be serialized properly.
 template <typename Prop, typename... Args>
 void addProperty(PropertyOwner& owner, std::string_view identifier, std::string_view displayName,
                  Args&&... args) {
@@ -84,6 +89,8 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
     };
     auto createBoolComposite = [](std::string_view identifier, std::string_view displayName) {
         auto p = std::make_unique<BoolCompositeProperty>(identifier, displayName);
+        // need to explicitly set the bool property to true since this composite is a dynamically
+        // created property and the default value in BoolCompositeProperty is false
         p->getBoolProperty()->set(true);
         return p;
     };
