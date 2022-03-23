@@ -447,8 +447,8 @@ void ScatterPlotGL::attachVertexAttributes() {
                                 BufferObject::BindingType::ForceFloat) {
         if (buffer) {
             points_.boa.attachBufferObject(
-                buffer->getRepresentation<BufferGL>()->getBufferObject().get(), loc, bindingType,
-                BufferObjectArray::Warn::No);
+                buffer->template getRepresentation<BufferGL>()->getBufferObject().get(), loc,
+                bindingType, BufferObjectArray::Warn::No);
         } else {
             points_.boa.detachBufferObject(loc);
         }
