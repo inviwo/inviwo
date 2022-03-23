@@ -95,29 +95,29 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             }
         });
     selectionChangedCallBack_ =
-        scatterPlot_.addSelectionChangedCallback([this](const std::vector<bool>& selected) {
+        scatterPlot_.addSelectionChangedCallback([this](const BitSet& selected) {
             if (brushingPort_.isConnected()) {
-                BitSet selectedIndices;
+                BitSet indices;
                 auto iCol = dataFramePort_.getData()->getIndexColumn();
                 auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-                for (size_t i = 0; i < selected.size(); ++i) {
-                    if (selected[i]) selectedIndices.add(indexCol[i]);
+                for (auto idx : selected) {
+                    indices.add(indexCol[idx]);
                 }
-                brushingPort_.select(selectedIndices);
+                brushingPort_.select(indices);
             } else {
                 invalidate(InvalidationLevel::InvalidOutput);
             }
         });
     filteringChangedCallBack_ =
-        scatterPlot_.addFilteringChangedCallback([this](const std::vector<bool>& filtered) {
+        scatterPlot_.addFilteringChangedCallback([this](const BitSet& filtered) {
             if (brushingPort_.isConnected()) {
-                BitSet filteredIndices;
+                BitSet indices;
                 auto iCol = dataFramePort_.getData()->getIndexColumn();
                 auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-                for (size_t i = 0; i < filtered.size(); ++i) {
-                    if (filtered[i]) filteredIndices.add(indexCol[i]);
+                for (auto idx : filtered) {
+                    indices.add(indexCol[idx]);
                 }
-                brushingPort_.filter("scatterplot", filteredIndices);
+                brushingPort_.filter("scatterplot", indices);
             } else {
                 invalidate(InvalidationLevel::InvalidOutput);
             }
@@ -195,20 +195,14 @@ void ScatterPlotProcessor::process() {
         scatterPlot_.setHighlightedIndices(
             transformIdsToRows(brushingPort_.getHighlightedIndices()));
     }
-
-    BitSet b(brushingPort_.getFilteredIndices());
-    // invert the bitset to obtain the ids remaining after the filtering
-    b.flipRange(0, static_cast<uint32_t>(dataframe->getIndexColumn()->getRange().y + 1));
-    b = transformIdsToRows(b);
-
-    IndexBuffer indicies;
-    auto& vec = indicies.getEditableRAMRepresentation()->getDataContainer();
-    vec = b.toVector();
+    if (brushingPort_.isFilteringModified()) {
+        scatterPlot_.setFilteredIndices(transformIdsToRows(brushingPort_.getFilteredIndices()));
+    }
 
     if (backgroundPort_.isReady()) {
-        scatterPlot_.plot(outport_, backgroundPort_, &indicies, true);
+        scatterPlot_.plot(outport_, backgroundPort_, true);
     } else {
-        scatterPlot_.plot(outport_, &indicies, true);
+        scatterPlot_.plot(outport_, true);
     }
 }
 

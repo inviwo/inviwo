@@ -47,7 +47,7 @@ const ProcessorInfo ScatterPlotMatrixProcessor::processorInfo_{
     "org.inviwo.ScatterPlotMatrixProcessor",  // Class identifier
     "Scatter Plot Matrix",                    // Display name
     "Plotting",                               // Category
-    CodeState::Experimental,                  // Code state
+    CodeState::Stable,                        // Code state
     "GL, Plotting",                           // Tags
 };
 const ProcessorInfo ScatterPlotMatrixProcessor::getProcessorInfo() const { return processorInfo_; }
@@ -55,7 +55,9 @@ const ProcessorInfo ScatterPlotMatrixProcessor::getProcessorInfo() const { retur
 ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     : Processor()
     , dataFrame_("dataFrame")
-    , brushing_("brushing_")
+    , brushing_("brushing_", {{{BrushingTarget::Row},
+                               BrushingModification::Filtered,
+                               InvalidationLevel::InvalidOutput}})
     , outport_("outport")
     , numParams_(0)
     , scatterPlotproperties_("scatterPlotproperties", "Properties")
@@ -65,12 +67,15 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , labels_("labels", "Labels")
     , fontColor_("fontColor", "Font Color", vec4(0, 0, 0, 1))
     , fontFace_("fontFace", "Font Face")
-    , fontSize_("fontSize", "Font size", 20, 0, 144, 1)
+    , fontSize_("fontSize", "Font size", 20, 0, 144, 1, InvalidationLevel::Valid,
+                PropertySemantics("Fontsize"))
     , fontFaceStats_("fontFaceStats", "Font Face (stats)")
-    , statsFontSize_("statsFontSize", "Font size (stats)", 14, 0, 144, 1)
+    , statsFontSize_("statsFontSize", "Font size (stats)", 14, 0, 144, 1, InvalidationLevel::Valid,
+                     PropertySemantics("Fontsize"))
     , showCorrelationValues_("showStatistics", "Show correlation values", true)
     , parameters_("parameters", "Parameters")
-    , correlectionTF_("correlectionTF", "Correlation TF")
+    , correlectionTF_("correlectionTF", "Correlation TF",
+                      {{{0.0, vec4(1, 0, 0, 1)}, {0.5, vec4(1, 1, 1, 1)}, {1.0, vec4(0, 0, 1, 1)}}})
 
     , textRenderer_()
     , textureQuadRenderer_()
@@ -99,19 +104,10 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
 
     selectedX_.setVisible(false);
     selectedY_.setVisible(false);
-    scatterPlotproperties_.hoverColor_.setVisible(false);
-    scatterPlotproperties_.hovering_.setVisible(false);
+    scatterPlotproperties_.showHighlighted_.setVisible(false);
 
-    addProperty(scatterPlotproperties_);
-    addProperty(color_);
-    addProperty(selectedX_);
-    addProperty(selectedY_);
-    addProperty(labels_);
-    addProperty(correlectionTF_);
-    addProperty(showCorrelationValues_);
-    addProperty(parameters_);
-
-    addProperty(mouseEvent_);
+    addProperties(scatterPlotproperties_, color_, selectedX_, selectedY_, labels_, correlectionTF_,
+                  showCorrelationValues_, parameters_, mouseEvent_);
 
     color_.onChange([&]() {
         if (dataFrame_.hasData()) {
@@ -125,13 +121,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
         }
     });
 
-    correlectionTF_.get().clear();
-    correlectionTF_.get().add(0.0, vec4(1, 0, 0, 1));
-    correlectionTF_.get().add(0.5, vec4(1, 1, 1, 1));
-    correlectionTF_.get().add(1.0, vec4(0, 0, 1, 1));
-    correlectionTF_.setCurrentStateAsDefault();
-
-    for (auto font : font::getAvailableFonts()) {
+    for (auto& font : font::getAvailableFonts()) {
         auto name = filesystem::getFileNameWithoutExtension(font.second);
         // use the file name w/o extension as identifier
         fontFace_.addOption(name, font.first, font.second);
@@ -142,14 +132,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     fontFaceStats_.setSelectedIdentifier(font::getFont(font::FontType::Label));
     fontFaceStats_.setCurrentStateAsDefault();
 
-    fontSize_.setSemantics(PropertySemantics("Fontsize"));
-    statsFontSize_.setSemantics(PropertySemantics("Fontsize"));
-
-    labels_.addProperty(fontColor_);
-    labels_.addProperty(fontFace_);
-    labels_.addProperty(fontSize_);
-    labels_.addProperty(fontFaceStats_);
-    labels_.addProperty(statsFontSize_);
+    labels_.addProperties(fontColor_, fontFace_, fontSize_, fontFaceStats_, statsFontSize_);
     fontColor_.setSemantics(PropertySemantics::Color);
 
     auto updateLabels = [&]() { labelsTextures_.clear(); };
@@ -183,11 +166,13 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
 }
 
 void ScatterPlotMatrixProcessor::process() {
+    bool initialSetup = false;
     if (plots_.empty()) {
         createScatterPlots();
         for (auto& p : plots_) {
             p->properties_.set(&scatterPlotproperties_);
         }
+        initialSetup = true;
     }
     if (labelsTextures_.empty()) {
         createLabels();
@@ -197,52 +182,61 @@ void ScatterPlotMatrixProcessor::process() {
     }
 
     std::unique_ptr<IndexBuffer> indicies = nullptr;
-    if (brushing_.isConnected()) {
+    BitSet filtered;
+    if (brushing_.isConnected() && (brushing_.isFilteringModified() || initialSetup)) {
         auto dataframe = dataFrame_.getData();
-        auto dfSize = dataframe->getNumberOfRows();
 
-        auto iCol = dataframe->getIndexColumn();
-        auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        auto indexToRowMap = [&]() {
+            auto iCol = dataframe->getIndexColumn();
+            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            std::unordered_map<uint32_t, uint32_t> indexToRow;
+            for (auto&& [row, index] : util::enumerate(indexCol)) {
+                indexToRow.try_emplace(index, static_cast<uint32_t>(row));
+            }
+            return indexToRow;
+        }();
 
-        auto brushedIndicies = brushing_.getFilteredIndices();
-        indicies = std::make_unique<IndexBuffer>();
-        auto& vec = indicies->getEditableRAMRepresentation()->getDataContainer();
-        vec.reserve(dfSize - brushedIndicies.size());
-
-        auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
-        std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
-                     [&](const auto& id) { return !brushing_.isFiltered(indexCol[id]); });
+        auto transformIdsToRows = [&](const BitSet& b) {
+            BitSet rows;
+            for (const auto& id : b) {
+                auto it = indexToRowMap.find(id);
+                if (it != indexToRowMap.end()) {
+                    rows.add(it->second);
+                }
+            }
+            return rows;
+        };
+        filtered = transformIdsToRows(brushing_.getFilteredIndices());
+        initialSetup = false;
     }
 
     utilgl::activateAndClearTarget(outport_);
-
-    auto dims = outport_.getDimensions();
-    auto size = dims / numParams_;
-
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    size2_t pos;
+
+    const size2_t dims = outport_.getDimensions();
+    const size2_t extent = dims / numParams_;
+
     size_t idx = 0;
     for (size_t i = 0; i < numParams_; i++) {
-        pos.x = size.x * i;
+        size2_t pos{extent.x * i, 0};
         for (size_t j = i + 1; j < numParams_; j++) {
-            pos.y = size.y * j;
-            plots_[idx]->plot(pos, size, indicies.get());
+            pos.y = extent.y * j;
+            plots_[idx]->setFilteredIndices(filtered);
+            plots_[idx]->plot(pos, extent);
 
-            vec2 statstextPos = vec2(size) * vec2((j + 0.5f), i + 0.5f);
-            statstextPos -= vec2(statsTextures_[i]->getDimensions()) / 2.f;
-
-            ivec2 pos2(size.x * j, size.y * i);
-
-            textureQuadRenderer_.renderToRect(bgTextures_[idx], pos2, size, dims);
+            const ivec2 origin(extent.x * j, extent.y * i);
+            textureQuadRenderer_.renderToRect(bgTextures_[idx], origin, extent, dims);
 
             if (showCorrelationValues_) {
+                const vec2 statstextPos = vec2(extent) * vec2((j + 0.5f), i + 0.5f) -
+                                          vec2(statsTextures_[i]->getDimensions()) / 2.0f;
                 textureQuadRenderer_.render(statsTextures_[idx], ivec2(statstextPos), dims);
             }
 
-            idx++;
+            ++idx;
         }
 
-        vec2 textPos = vec2(size) * vec2(i + 0.5f, i + 0.5f);
+        vec2 textPos = vec2(extent) * vec2(i + 0.5f, i + 0.5f);
         textPos -= vec2(labelsTextures_[i]->getDimensions()) / 2.f;
 
         textureQuadRenderer_.render(labelsTextures_[i], ivec2(textPos), dims);

@@ -36,6 +36,14 @@ uniform int circle = 1;
 uniform float borderWidth = 1;
 uniform vec4 borderColor;
 
+struct SecondaryColor {
+    vec4 color;
+    float colorMixIn;
+    float alphaMixIn;
+};
+
+uniform SecondaryColor secondaryColor = { vec4(0.0), 0.0, 0.0 };
+
 uniform float antialiasing = 1.5; // [pixel]
 
 void main(void) {
@@ -56,7 +64,8 @@ void main(void) {
     vec4 color = gColor;
     if (borderWidth > 0.0) {
         float borderValue = clamp(mix(0.0, 1.0, (r - innerGlyphRadius) / 1.0), 0.0, 1.0);
-        color = mix(color, borderColor, borderValue);
+        float alpha = mix(borderColor.a, secondaryColor.color.a, secondaryColor.alphaMixIn);
+        color = mix(color, vec4(borderColor.rgb, alpha), borderValue);
     }
     float borderAlpha = clamp(mix(1.0, 0.0, (r - gR) / antialiasing), 0.0, 1.0);
 
