@@ -76,6 +76,14 @@ DataFrameFilter::DataFrameFilter()
 
     includeFilters_.setCollapsed(true);
     excludeFilters_.setCollapsed(true);
+
+    // Make this processor a sink if the brushing mode is set to filtering. Otherwise brushing
+    // actions will not be triggered as long as the outport of this processor is not connected.
+    isSink_.setUpdate([&]() {
+        return (brushingMode_ == BrushingMode::FilterOnly ||
+                brushingMode_ == BrushingMode::FilterApply);
+    });
+    brushingMode_.onChange([&]() { isSink_.update(); });
 }
 
 void DataFrameFilter::process() {
