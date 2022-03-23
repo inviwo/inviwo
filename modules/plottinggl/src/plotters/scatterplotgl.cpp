@@ -47,6 +47,8 @@
 #include <inviwo/core/util/zip.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 namespace plot {
@@ -64,25 +66,39 @@ ScatterPlotGL::Properties::Properties(std::string_view identifier, std::string_v
     , minRadius_("minRadius", "Min Radius", 0.1f, 0, 10, 0.01f)
     , tf_("transferFunction", "Transfer Function",
           TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
-    , color_("color", "Color", vec4(1, 0, 0, 1), vec4(0), vec4(1), vec4(0.1f),
-             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 0.906f, 0.612f, 1))
-    , selectionColor_("selectionColor", "Selection Color", vec4(1.0f, 0.769f, 0.247f, 1))
+    , color_("defaultColor", "Color", util::ordinalColor(1.0f, 0.0f, 0.0f, 1.0f))
+
+    , showHighlighted_("showHighlighted", "Show Highlighted", true)
+    , highlightColor_("highlightColor", "Color", util::ordinalColor(vec3(1.0f, 0.906f, 0.612f)))
+    , highlightAlpha_("highlightAlpha", "Alpha", 0.75f)
+    , highlightIntensity_("highlightIntensity", "Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
+
+    , showSelected_("showSelected", "Show Selected", true)
+    , selectionColor_("selectionColor", "Color", util::ordinalColor(vec3(1.0f, 0.769f, 0.247f)))
+    , selectionAlpha_("selectionAlpha", "Alpha", 0.75f)
+    , selectionIntensity_("selectionIntensity", "Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
+
+    , showFiltered_("showFiltered", "Show Filtered", false)
+    , filterColor_("filterColor", "Color", util::ordinalColor(vec3(0.5f, 0.5f, 0.5f)))
+    , filterAlpha_("filterAlpha", "Alpha", 0.75f)
+    , filterIntensity_("filterIntensity", "Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
+
+    , tooltip_("tooltip", "Show Tooltip", true)
+
     , boxSelectionSettings_("dragRectSettings", "Box Selection/Filtering")
     , margins_("margins", "Margins", 5, 5, 5, 5)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
 
     , borderWidth_("borderWidth", "Border Width", 2, 0, 20)
-    , borderColor_("borderColor", "Border Color", vec4(0, 0, 0, 1))
-    , hovering_("hovering", "Enable Hovering", true)
+    , borderColor_("borderColor", "Border Color", util::ordinalColor(0.0f, 0.0f, 0.0f, 1.0f))
 
     , axisStyle_("axisStyle", "Global Axis Style")
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical) {
-    hoverColor_.setSemantics(PropertySemantics::Color);
-    selectionColor_.setSemantics(PropertySemantics::Color);
-    borderColor_.setSemantics(PropertySemantics::Color);
 
+    showHighlighted_.addProperties(highlightColor_, highlightAlpha_, highlightIntensity_);
+    showSelected_.addProperties(selectionColor_, selectionAlpha_, selectionIntensity_);
+    showFiltered_.addProperties(filterColor_, filterAlpha_, filterIntensity_);
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
     axisStyle_.registerProperties(xAxis_, yAxis_);
@@ -103,17 +119,31 @@ ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties& rhs)
     , minRadius_(rhs.minRadius_)
     , tf_(rhs.tf_)
     , color_(rhs.color_)
-    , hoverColor_(rhs.hoverColor_)
+    , showHighlighted_(rhs.showHighlighted_)
+    , highlightColor_(rhs.highlightColor_)
+    , highlightAlpha_(rhs.highlightAlpha_)
+    , highlightIntensity_(rhs.highlightIntensity_)
+    , showSelected_(rhs.showSelected_)
     , selectionColor_(rhs.selectionColor_)
+    , selectionAlpha_(rhs.selectionAlpha_)
+    , selectionIntensity_(rhs.selectionIntensity_)
+    , showFiltered_(rhs.showFiltered_)
+    , filterColor_(rhs.filterColor_)
+    , filterAlpha_(rhs.filterAlpha_)
+    , filterIntensity_(rhs.filterIntensity_)
+    , tooltip_(rhs.tooltip_)
     , boxSelectionSettings_(rhs.boxSelectionSettings_)
     , margins_(rhs.margins_)
     , axisMargin_(rhs.axisMargin_)
     , borderWidth_(rhs.borderWidth_)
     , borderColor_(rhs.borderColor_)
-    , hovering_(rhs.hovering_)
     , axisStyle_(rhs.axisStyle_)
     , xAxis_(rhs.xAxis_)
     , yAxis_(rhs.yAxis_) {
+
+    showHighlighted_.addProperties(highlightColor_, highlightAlpha_, highlightIntensity_);
+    showSelected_.addProperties(selectionColor_, selectionAlpha_, selectionIntensity_);
+    showFiltered_.addProperties(filterColor_, filterAlpha_, filterIntensity_);
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     axisStyle_.unregisterAll();
     axisStyle_.registerProperties(xAxis_, yAxis_);
@@ -126,15 +156,11 @@ ScatterPlotGL::Properties* ScatterPlotGL::Properties::clone() const {
 ScatterPlotGL::ScatterPlotGL(Processor* processor)
     : properties_("scatterplot", "Scatterplot")
     , shader_("scatterplot.vert", "scatterplot.geom", "scatterplot.frag")
-    , xAxis_(nullptr)
-    , yAxis_(nullptr)
-    , color_(nullptr)
-    , radius_(nullptr)
-    , sorting_(nullptr)
     , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
+    , partitionDirty_(true)
     , processor_(processor)
-    , boxSelectionHandler_(properties_.boxSelectionSettings_, xAxis_, yAxis_,
+    , boxSelectionHandler_(properties_.boxSelectionSettings_, points_.xCoord, points_.yCoord,
                            [&](dvec2 p, const size2_t& dims) {
                                const dvec4 margins =
                                    properties_.margins_.getAsVec4() +
@@ -161,11 +187,12 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
                                return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
                            })
     , selectionRectRenderer_(properties_.boxSelectionSettings_) {
+
     if (processor_) {
         shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
     }
-    properties_.hovering_.onChange([this]() {
-        if (!properties_.hovering_.get()) {
+    properties_.showHighlighted_.onChange([this]() {
+        if (!properties_.showHighlighted_) {
             highlighted_.clear();
             highlightChangedCallback_.invoke(highlighted_);
         }
@@ -173,286 +200,50 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
 
     boxSelectionChangedCallBack_ = boxSelectionHandler_.addSelectionChangedCallback(
         [this](const std::vector<bool>& selected, bool append) {
-            ensureSelectAndFilterSizes();
-            for (auto&& [ind, elem] : util::enumerate(selected)) {
-                if (append && elem)
-                    selected_[ind] = elem;
-                else {
-                    selected_[ind] = elem;
-                }
+            BitSet b(selected);
+            if (append) {
+                b &= selected_;
             }
-
-            selectedIndicesGLDirty_ = true;
-            // selection changed, inform processor
-            selectionChangedCallback_.invoke(selected_);
+            selectionChangedCallback_.invoke(b);
         });
     boxFilteringChangedCallBack_ = boxSelectionHandler_.addFilteringChangedCallback(
         [this](const std::vector<bool>& filtered, bool append) {
-            ensureSelectAndFilterSizes();
-            for (auto&& [ind, elem] : util::enumerate(filtered)) {
-                if (append && elem)
-                    filtered_[ind] = elem;
-                else {
-                    filtered_[ind] = elem;
-                }
+            BitSet b(filtered);
+            if (append) {
+                b &= filtered_;
             }
-            filteringDirty_ = true;
-            // May filter selected points
-            selectedIndicesGLDirty_ = true;
-            filteringChangedCallback_.invoke(filtered_);
+            filteringChangedCallback_.invoke(b);
         });
 }
 
-void ScatterPlotGL::plot(Image& dest, IndexBuffer* indices, bool useAxisRanges) {
+void ScatterPlotGL::plot(Image& dest, bool useAxisRanges) {
     utilgl::activateAndClearTarget(dest);
-    plot(dest.getDimensions(), indices, useAxisRanges);
+    plot(dest.getDimensions(), useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(Image& dest, const Image& src, IndexBuffer* indices, bool useAxisRanges) {
+void ScatterPlotGL::plot(Image& dest, const Image& src, bool useAxisRanges) {
     utilgl::activateTargetAndCopySource(dest, src);
-    plot(dest.getDimensions(), indices, useAxisRanges);
+    plot(dest.getDimensions(), useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(ImageOutport& dest, IndexBuffer* indices, bool useAxisRanges) {
+void ScatterPlotGL::plot(ImageOutport& dest, bool useAxisRanges) {
     utilgl::activateAndClearTarget(dest);
-    plot(dest.getDimensions(), indices, useAxisRanges);
+    plot(dest.getDimensions(), useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(ImageOutport& dest, ImageInport& src, IndexBuffer* indices,
-                         bool useAxisRanges) {
+void ScatterPlotGL::plot(ImageOutport& dest, ImageInport& src, bool useAxisRanges) {
     utilgl::activateTargetAndCopySource(dest, src);
-    plot(dest.getDimensions(), indices, useAxisRanges);
+    plot(dest.getDimensions(), useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(const ivec2& start, const ivec2& size, IndexBuffer* indices,
-                         bool useAxisRanges) {
+void ScatterPlotGL::plot(const ivec2& start, const ivec2& size, bool useAxisRanges) {
     utilgl::ViewportState viewport(start.x, start.y, size.x, size.y);
-    plot(size, indices, useAxisRanges);
+    plot(size, useAxisRanges);
 }
-
-void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool useAxisRanges) {
-    ensureSelectAndFilterSizes();
-    // adjust all margins by axis margin
-    vec4 margins = properties_.margins_.getAsVec4() + properties_.axisMargin_.get();
-
-    shader_.activate();
-
-    vec2 pixelSize = vec2(1) / vec2(dims);
-
-    TextureUnitContainer cont;
-    if (useAxisRanges) {
-        shader_.setUniform("minmaxX", vec2(properties_.xAxis_.range_.get()));
-        shader_.setUniform("minmaxY", vec2(properties_.yAxis_.range_.get()));
-    } else {
-        shader_.setUniform("minmaxX", minmaxX_);
-        shader_.setUniform("minmaxY", minmaxY_);
-    }
-    shader_.setUniform("borderWidth", properties_.borderWidth_.get());
-    shader_.setUniform("borderColor", properties_.borderColor_.get());
-
-    shader_.setUniform("pixelSize", pixelSize);
-    shader_.setUniform("dims", ivec2(dims));
-    shader_.setUniform("circle", properties_.useCircle_.get() ? 1 : 0);
-
-    auto xbuf = xAxis_->getRepresentation<BufferGL>();
-    auto ybuf = yAxis_->getRepresentation<BufferGL>();
-    auto xbufObj = xbuf->getBufferObject();
-    auto ybufObj = ybuf->getBufferObject();
-
-    if (!boa_) {
-        boa_ = std::make_unique<BufferObjectArray>();
-    }
-    boa_->bind();
-    boa_->clear();
-
-    boa_->attachBufferObject(xbufObj.get(), 0, BufferObject::BindingType::ForceFloat);
-    boa_->attachBufferObject(ybufObj.get(), 1, BufferObject::BindingType::ForceFloat);
-
-    if (picking_.isEnabled() && pickIds_) {
-        // bind picking buffer
-        auto pickBuf = pickIds_->getRepresentation<BufferGL>();
-        auto pickBufObj = pickBuf->getBufferObject();
-        boa_->attachBufferObject(pickBufObj.get(), 4);
-    }
-    shader_.setUniform("pickingEnabled", picking_.isEnabled());
-
-    if (color_) {
-        utilgl::bindAndSetUniforms(shader_, cont, properties_.tf_);
-        shader_.setUniform("minmaxC", minmaxC_);
-        shader_.setUniform("has_color", 1);
-
-        auto cbuf = color_->getRepresentation<BufferGL>();
-        auto cbufObj = cbuf->getBufferObject();
-        boa_->attachBufferObject(cbufObj.get(), 2, BufferObject::BindingType::ForceFloat);
-
-    } else {
-        shader_.setUniform("has_color", 0);
-        shader_.setUniform("default_color", properties_.color_.get());
-    }
-
-    float minRadius = properties_.minRadius_.get();
-    float maxRadius = properties_.radiusRange_.get();
-
-    if (minRadius > maxRadius) {
-        minRadius = maxRadius;
-    }
-    if (maxRadius < minRadius) {
-        maxRadius = minRadius;
-    }
-
-    shader_.setUniform("minRadius", minRadius);
-    shader_.setUniform("maxRadius", maxRadius);
-    shader_.setUniform("margins", margins);
-
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
-
-    if (radius_) {
-        shader_.setUniform("minmaxR", minmaxR_);
-        shader_.setUniform("has_radius", (minmaxR_.x != minmaxR_.y ? 1 : 0));
-
-        auto rbuf = radius_->getRepresentation<BufferGL>();
-        auto rbufObj = rbuf->getBufferObject();
-        boa_->attachBufferObject(rbufObj.get(), 3, BufferObject::BindingType::ForceFloat);
-
-    } else {
-        shader_.setUniform("has_radius", 0);
-    }
-    // Will be called if no indexBuffer is specified.
-    // (assuming brushing & linking filters, so internal filters should not be applied)
-    auto setupInternalFiltering = [this, xbuf]() {
-        if (!filteringDirty_) return;
-
-        std::vector<uint32_t> selectedIndices;
-
-        // no indices given, draw all non-filtered data points
-        size_t nFiltered = std::count(filtered_.begin(), filtered_.end(), true);
-        // std::reduce<size_t>(filtered_.begin(), filtered_.end(), size_t(0), [);
-        auto nNotFiltered = xbuf->getSize() - nFiltered;
-
-        if (!indices_) indices_ = std::make_unique<IndexBuffer>(nNotFiltered);
-        auto& inds = indices_->getEditableRAMRepresentation()->getDataContainer();
-        inds.clear();
-        inds.reserve(nNotFiltered);
-
-        if (indexColumn_) {
-            auto& indexCol =
-                indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-            for (auto [ind, filtered] : util::enumerate(filtered_)) {
-                if (!filtered) {
-                    inds.push_back(indexCol[ind]);
-                }
-            }
-        } else {
-            auto indicesSeq =
-                util::make_sequence<unsigned int>(0, static_cast<unsigned int>(xbuf->getSize()), 1);
-            std::copy_if(indicesSeq.begin(), indicesSeq.end(), std::back_inserter(inds),
-                         [this](auto val) { return !filtered_[val]; });
-        }
-        filteringDirty_ = false;
-    };
-    IndexBuffer* indices;
-    if (sorting_ || radius_) {
-        // prefer sorting column over radius if defined
-        std::shared_ptr<const BufferBase>& buffer = sorting_ ? sorting_ : radius_;
-
-        if (indexBuffer) {
-            // copy selected indices
-            indices_ = std::unique_ptr<IndexBuffer>(indexBuffer->clone());
-        } else {
-            setupInternalFiltering();
-        }
-        indices = indices_.get();
-
-        // sort according to radii, larger first
-        auto& inds = indices->getEditableRAMRepresentation()->getDataContainer();
-
-        buffer->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
-            [&](auto bufferpr) {
-                const auto& data = bufferpr->getDataContainer();
-                if (sortOrder_ == SortingOrder::Ascending) {
-                    std::sort(inds.begin(), inds.end(),
-                              [&data](const uint32_t& a, const uint32_t& b) {
-                                  return data[a] < data[b];
-                              });
-                } else {
-                    std::sort(inds.begin(), inds.end(),
-                              [&data](const uint32_t& a, const uint32_t& b) {
-                                  return data[a] > data[b];
-                              });
-                }
-            });
-    } else {
-        if (indexBuffer) {
-            // copy selected indices
-            indices = indexBuffer;
-        } else {
-            setupInternalFiltering();
-            indices = indices_.get();
-        }
-    }
-
-    boa_->bind();
-    auto indicesGL = indices->getRepresentation<BufferGL>();
-    indicesGL->bind();
-    glDrawElements(GL_POINTS, static_cast<uint32_t>(indices->getSize()), indicesGL->getFormatType(),
-                   nullptr);
-    indicesGL->getBufferObject()->unbind();
-    // draw selected and hovered points on top
-
-    if (selectedIndicesGLDirty_ || nSelectedButNotFiltered_ > 0) {
-        shader_.setUniform("has_color", 0);
-        shader_.setUniform("default_color", properties_.selectionColor_.get());
-        if (selectedIndicesGLDirty_) {
-            nSelectedButNotFiltered_ = 0;
-            std::vector<uint32_t> selectedIndices;
-            for (auto [ind, selected, filtered] : util::enumerate(selected_, filtered_)) {
-                if (selected && !filtered) {
-                    selectedIndices.push_back(static_cast<uint32_t>(ind));
-                }
-            }
-
-            nSelectedButNotFiltered_ = selectedIndices.size();
-            selectedIndicesGL_.upload(selectedIndices.data(),
-                                      selectedIndices.size() * sizeof(uint32_t));
-            selectedIndicesGLDirty_ = false;
-        }
-        if (nSelectedButNotFiltered_ > 0) {
-            selectedIndicesGL_.bind();
-            glDrawElements(GL_POINTS, static_cast<uint32_t>(nSelectedButNotFiltered_),
-                           selectedIndicesGL_.getFormatType(), nullptr);
-            selectedIndicesGL_.unbind();
-        }
-    }
-    if (!highlighted_.empty()) {
-        shader_.setUniform("has_color", 0);
-        shader_.setUniform("default_color", properties_.hoverColor_.get());
-
-        if (highlightDirty_) {
-            // Will both bind and upload
-            highlightIndexGL_.upload(static_cast<const void*>(highlighted_.toVector().data()),
-                                     sizeof(uint32_t) * highlighted_.size());
-            highlightDirty_ = false;
-        } else {
-            highlightIndexGL_.bind();
-        }
-        glDrawElements(GL_POINTS, highlighted_.cardinality(), highlightIndexGL_.getFormatType(),
-                       nullptr);
-        highlightIndexGL_.unbind();
-    }
-
-    shader_.deactivate();
-    boa_->unbind();
-
-    // Render selection rectangle
-    selectionRectRenderer_.render(boxSelectionHandler_.getDragRectangle(), dims);
-
-    renderAxis(dims);
-}  // namespace plot
 
 void ScatterPlotGL::setXAxisLabel(const std::string& label) {
     properties_.xAxis_.setCaption(label);
@@ -474,86 +265,98 @@ void ScatterPlotGL::setYAxis(const Column* col) {
 
 void ScatterPlotGL::setXAxisData(const Column* col) {
     if (col) {
-        xAxis_ = col->getBuffer();
+        points_.xCoord = col->getBuffer();
         minmaxX_ = vec2(col->getRange());
         properties_.xAxis_.setRange(minmaxX_);
     } else {
-        xAxis_ = nullptr;
+        points_.xCoord = nullptr;
     }
-    boxSelectionHandler_.setXAxisData(xAxis_);
+    partitionDirty_ = true;
+    boxSelectionHandler_.setXAxisData(points_.xCoord);
 }
 
 void ScatterPlotGL::setYAxisData(const Column* col) {
     if (col) {
-        yAxis_ = col->getBuffer();
+        points_.yCoord = col->getBuffer();
         minmaxY_ = vec2(col->getRange());
         properties_.yAxis_.setRange(minmaxY_);
     } else {
-        yAxis_ = nullptr;
+        points_.yCoord = nullptr;
     }
-    boxSelectionHandler_.setYAxisData(yAxis_);
+    partitionDirty_ = true;
+    boxSelectionHandler_.setYAxisData(points_.yCoord);
 }
 
 void ScatterPlotGL::setColorData(const Column* col) {
     if (col) {
-        color_ = col->getBuffer();
+        points_.color = col->getBuffer();
         minmaxC_ = col->getRange();
     } else {
-        color_ = nullptr;
+        points_.color = nullptr;
     }
-    properties_.tf_.setVisible(color_ != nullptr);
-    properties_.color_.setVisible(color_ == nullptr);
+    partitionDirty_ = true;
+    properties_.tf_.setVisible(points_.color != nullptr);
+    properties_.color_.setVisible(points_.color == nullptr);
 }
 
 void ScatterPlotGL::setRadiusData(const Column* col) {
     if (col) {
-        radius_ = col->getBuffer();
+        points_.radius = col->getBuffer();
         minmaxR_ = vec2(col->getRange());
     } else {
-        radius_ = nullptr;
+        points_.radius = nullptr;
     }
-    properties_.minRadius_.setVisible(radius_ != nullptr);
+    partitionDirty_ = true;
+    properties_.minRadius_.setVisible(points_.radius != nullptr);
 }
 
 void ScatterPlotGL::setSortingData(const Column* col) {
     if (col) {
-        sorting_ = col->getBuffer();
+        points_.sorting = col->getBuffer();
     } else {
-        sorting_ = nullptr;
+        points_.sorting = nullptr;
     }
+    partitionDirty_ = true;
 }
 
 void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol) {
     indexColumn_ = indexcol;
 
     if (indexColumn_) {
-        picking_.resize(indexColumn_->getSize());
-
-        std::vector<uint32_t> ids(indexColumn_->getSize());
-        for (size_t i = 0; i < ids.size(); ++i) {
-            ids[i] = getGlobalPickId(static_cast<uint32_t>(i));
-        }
-        pickIds_ = util::makeBuffer<uint32_t>(std::move(ids));
+        const auto numValues = static_cast<std::uint32_t>(indexColumn_->getSize());
+        picking_.resize(numValues);
+        points_.pickIds.getEditableRAMRepresentation()->getDataContainer() =
+            util::transform(util::sequence<std::uint32_t>(0, numValues, 1),
+                            [&](auto i) { return getGlobalPickId(i); });
     } else {
-        pickIds_.reset();
+        points_.pickIds.getEditableRAMRepresentation()->getDataContainer().clear();
     }
 }
 
-void ScatterPlotGL::setSortingOrder(SortingOrder order) { sortOrder_ = order; }
+void ScatterPlotGL::setSortingOrder(SortingOrder order) {
+    if (sortOrder_ != order) {
+        sortOrder_ = order;
+        partitionDirty_ = true;
+    }
+}
 
-void ScatterPlotGL::setHighlightedIndices(const BitSet& indices) {
-    highlighted_ = indices;
-    highlightDirty_ = true;
+void ScatterPlotGL::setIndices(const BitSet& filtered, const BitSet& selected,
+                               const BitSet& highlighted) {
+    partitionDirty_ |= filtered_.set(filtered);
+    partitionDirty_ |= selected_.set(selected);
+    partitionDirty_ |= highlighted_.set(highlighted);
+}
+
+void ScatterPlotGL::setFilteredIndices(const BitSet& indices) {
+    partitionDirty_ |= filtered_.set(indices);
 }
 
 void ScatterPlotGL::setSelectedIndices(const BitSet& indices) {
-    ensureSelectAndFilterSizes();
-    std::fill(selected_.begin(), selected_.end(), false);
-    selected_.resize(xAxis_->getSize(), false);
-    for (auto i : indices) {
-        selected_[i] = true;
-    }
-    selectedIndicesGLDirty_ = true;
+    partitionDirty_ |= selected_.set(indices);
+}
+
+void ScatterPlotGL::setHighlightedIndices(const BitSet& indices) {
+    partitionDirty_ |= highlighted_.set(indices);
 }
 
 auto ScatterPlotGL::addToolTipCallback(std::function<ToolTipFunc> callback)
@@ -585,6 +388,110 @@ void ScatterPlotGL::invokeEvent(Event* event) {
     }
 }
 
+void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
+    if (partitionDirty_) {
+        partitionData();
+    }
+
+    if (!points_.indices.empty()) {
+        utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+
+        TextureUnitContainer cont;
+        shader_.activate();
+        setShaderUniforms(cont, dims, useAxisRanges);
+
+        points_.boa.bind();
+        attachVertexAttributes();
+
+        auto indicesGL = points_.indices.getRepresentation<BufferGL>();
+        indicesGL->bind();
+
+        // filtered, regular, selected, highlighted
+        std::array<vec4, 4> secondaryColor = {
+            vec4(properties_.filterColor_.get(), properties_.filterAlpha_),
+            properties_.color_.get(),
+            vec4(properties_.selectionColor_.get(), properties_.selectionAlpha_),
+            vec4(properties_.highlightColor_.get(), properties_.highlightAlpha_)};
+        std::array<float, 4> mixColor = {properties_.filterIntensity_, 0.0f,
+                                         properties_.selectionIntensity_,
+                                         properties_.highlightIntensity_};
+        std::array<float, 4> mixAlpha = {1.0, 0.0f, 1.0f, 1.0f};
+
+        for (size_t i = properties_.showFiltered_ ? 0 : 1; i < points_.offsets.size() - 1; ++i) {
+            auto begin = points_.offsets[i];
+            auto end = points_.offsets[i + 1];
+            if (end == begin) continue;
+
+            shader_.setUniform("secondaryColor.color", secondaryColor[i]);
+            shader_.setUniform("secondaryColor.colorMixIn", mixColor[i]);
+            shader_.setUniform("secondaryColor.alphaMixIn", mixAlpha[i]);
+
+            glDrawElements(GL_POINTS, static_cast<uint32_t>(end - begin),
+                           indicesGL->getFormatType(),
+                           reinterpret_cast<const GLvoid*>(begin * sizeof(std::uint32_t)));
+        }
+
+        indicesGL->unbind();
+        points_.boa.unbind();
+        shader_.deactivate();
+    }
+
+    selectionRectRenderer_.render(boxSelectionHandler_.getDragRectangle(), dims);
+    renderAxis(dims);
+}
+
+void ScatterPlotGL::attachVertexAttributes() {
+    auto attachAttrib = [&](auto buffer, GLuint loc,
+                            BufferObject::BindingType bindingType =
+                                BufferObject::BindingType::ForceFloat) {
+        if (buffer) {
+            points_.boa.attachBufferObjectEnforce(
+                buffer->template getRepresentation<BufferGL>()->getBufferObject().get(), loc,
+                bindingType);
+        } else {
+            points_.boa.detachBufferObject(loc);
+        }
+    };
+
+    attachAttrib(points_.xCoord, 0);
+    attachAttrib(points_.yCoord, 1);
+    attachAttrib(points_.color, 2);
+    attachAttrib(points_.radius, 3);
+
+    const bool picking = picking_.isEnabled() && !points_.pickIds.empty();
+    attachAttrib(picking ? &points_.pickIds : nullptr, 4, BufferObject::BindingType::Native);
+}
+
+void ScatterPlotGL::setShaderUniforms(TextureUnitContainer& cont, const size2_t& dims,
+                                      bool useAxisRanges) {
+    shader_.setUniform("pixelSize", vec2(1.0f) / vec2(dims));
+    shader_.setUniform("dims", ivec2(dims));
+    shader_.setUniform("circle", properties_.useCircle_.get() ? 1 : 0);
+    shader_.setUniform("borderWidth", properties_.borderWidth_.get());
+    shader_.setUniform("borderColor", properties_.borderColor_.get());
+    shader_.setUniform("pickingEnabled", picking_.isEnabled());
+
+    // adjust all margins by axis margin
+    shader_.setUniform("margins", properties_.margins_.getAsVec4() + properties_.axisMargin_.get());
+    shader_.setUniform("minmaxX", useAxisRanges ? vec2(properties_.xAxis_.range_.get()) : minmaxX_);
+    shader_.setUniform("minmaxY", useAxisRanges ? vec2(properties_.yAxis_.range_.get()) : minmaxY_);
+
+    shader_.setUniform("default_color", properties_.color_.get());
+    shader_.setUniform("has_color", static_cast<int>(points_.color != nullptr));
+    if (points_.color) {
+        utilgl::bindAndSetUniforms(shader_, cont, properties_.tf_);
+        shader_.setUniform("minmaxC", minmaxC_);
+    }
+    shader_.setUniform("has_radius", (points_.radius && (minmaxR_.x != minmaxR_.y)) ? 1 : 0);
+    shader_.setUniform("minRadius",
+                       std::min<float>(properties_.minRadius_, properties_.radiusRange_));
+    shader_.setUniform("maxRadius", properties_.radiusRange_.get());
+    if (points_.radius) {
+        shader_.setUniform("minmaxR", minmaxR_);
+    }
+}
+
 void ScatterPlotGL::renderAxis(const size2_t& dims) {
     const size2_t lowerLeft(properties_.margins_.getLeft(), properties_.margins_.getBottom());
     const size2_t upperRight(dims.x - 1 - properties_.margins_.getRight(),
@@ -604,34 +511,28 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
     const uint32_t id = static_cast<uint32_t>(p->getPickedId());
 
     // Show tooltip for current item
-    if (p->getHoverState() == PickingHoverState::Move ||
-        p->getHoverState() == PickingHoverState::Enter) {
-
+    if (properties_.tooltip_ && (p->getHoverState() == PickingHoverState::Move ||
+                                 p->getHoverState() == PickingHoverState::Enter)) {
         tooltipCallback_.invoke(p, id);
-
     } else if (p->getHoverState() == PickingHoverState::Exit) {
+        // unset tooltip at all times in case one was set prior disabling tooltips
         p->setToolTip("");
     }
 
-    if (properties_.hovering_.get()) {
+    if (properties_.showHighlighted_) {
         if (p->getHoverState() == PickingHoverState::Enter ||
             (p->getGlobalPickingId() != p->getPreviousGlobalPickingId())) {
-            highlighted_.clear();
-            highlighted_.add(id);
-            highlightChangedCallback_.invoke(highlighted_);
-            highlightDirty_ = true;
+            highlightChangedCallback_.invoke(BitSet(id));
         } else if (p->getHoverState() == PickingHoverState::Exit) {
-            highlighted_.clear();
-            highlightChangedCallback_.invoke(highlighted_);
+            highlightChangedCallback_.invoke(BitSet());
         }
     }
 
     if ((p->getPressState() == PickingPressState::Release) &&
         (p->getPressItem() == PickingPressItem::Primary) &&
         (p->getCurrentGlobalPickingId() == p->getPressedGlobalPickingId())) {
-        ensureSelectAndFilterSizes();
-        selected_[id] = !selected_[id];
-        selectedIndicesGLDirty_ = true;
+        selected_.flip(id);
+        partitionDirty_ = true;
 
         // selection changed, inform processor
         selectionChangedCallback_.invoke(selected_);
@@ -643,13 +544,58 @@ uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
     return static_cast<uint32_t>(picking_.getPickingId(localIndex));
 }
 
-void ScatterPlotGL::ensureSelectAndFilterSizes() {
-    if (xAxis_->getSize() != selected_.size() || xAxis_->getSize() != filtered_.size()) {
-        selected_.resize(xAxis_->getSize(), false);
-        filtered_.resize(xAxis_->getSize(), false);
-        selectedIndicesGLDirty_ = true;
-        filteringDirty_ = true;
+void ScatterPlotGL::partitionData() {
+    const auto numDataPoints = static_cast<std::uint32_t>(points_.xCoord->getSize());
+
+    auto& indices = points_.indices.getEditableRAMRepresentation()->getDataContainer();
+    if (indices.size() != numDataPoints) {
+        auto seq = util::make_sequence<std::uint32_t>(0, numDataPoints);
+        indices.assign(seq.begin(), seq.end());
     }
+
+    const auto lastFilteredIt = std::partition(indices.begin(), indices.end(),
+                                               [&](auto ind) { return filtered_.contains(ind); });
+    const auto lastRegularIt = std::partition(lastFilteredIt, indices.end(), [&](auto ind) {
+        return !selected_.contains(ind) && !highlighted_.contains(ind);
+    });
+    const auto lastSelectedIt = std::partition(lastRegularIt, indices.end(), [&](auto ind) {
+        return selected_.contains(ind) && !highlighted_.contains(ind);
+    });
+
+    points_.offsets[0] = 0;
+    points_.offsets[1] = static_cast<std::uint32_t>(std::distance(indices.begin(), lastFilteredIt));
+    points_.offsets[1] = static_cast<std::uint32_t>(std::distance(indices.begin(), lastFilteredIt));
+    points_.offsets[2] = static_cast<std::uint32_t>(std::distance(indices.begin(), lastRegularIt));
+    points_.offsets[3] = static_cast<std::uint32_t>(std::distance(indices.begin(), lastSelectedIt));
+    points_.offsets[4] = numDataPoints;
+
+    // Sort each partition to determine draw order. Prefer sorting buffer over radius for sorting.
+    if (const auto& sortingBuf = points_.sorting ? points_.sorting : points_.radius; sortingBuf) {
+        sortingBuf->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
+            [&](const auto brprecision) {
+                const auto& data = brprecision->getDataContainer();
+                auto comp =
+                    [&]() -> std::function<bool(const std::uint32_t&, const std::uint32_t&)> {
+                    if (sortOrder_ == SortingOrder::Ascending) {
+                        return [&data](const std::uint32_t& a, const std::uint32_t& b) {
+                            return data[a] < data[b];
+                        };
+                    } else {
+                        return [&data](const std::uint32_t& a, const std::uint32_t& b) {
+                            return data[a] > data[b];
+                        };
+                    }
+                }();
+
+                for (size_t i = 0; i < points_.offsets.size() - 1; ++i) {
+                    auto begin = points_.offsets[i];
+                    auto end = points_.offsets[i + 1];
+                    std::sort(indices.begin() + begin, indices.begin() + end, comp);
+                }
+            });
+    }
+
+    partitionDirty_ = false;
 }
 
 }  // namespace plot
