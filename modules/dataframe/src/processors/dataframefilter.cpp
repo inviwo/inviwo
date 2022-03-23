@@ -76,6 +76,13 @@ DataFrameFilter::DataFrameFilter()
 
     includeFilters_.setCollapsed(true);
     excludeFilters_.setCollapsed(true);
+
+    // make this processor a sink if brushing and linking filtering is selected
+    isSink_.setUpdate([&]() {
+        return (brushingMode_ == BrushingMode::FilterOnly ||
+                brushingMode_ == BrushingMode::FilterApply);
+    });
+    brushingMode_.onChange([&]() { isSink_.update(); });
 }
 
 void DataFrameFilter::process() {
