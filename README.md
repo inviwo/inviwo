@@ -28,11 +28,11 @@ Below follow some general information about the framework:
  - Python (> 3.2) scripting and computation is supported through provided modules.
 
 #### GUI
- - The primary GUI is based on Qt (Supported >= 5.12).
+ - The primary GUI is based on Qt (Supported >= 5.15, Qt 6+ recommended).
  - A minimal application is available, utilizing GLFW 3 for multiple window and context management.
 
 #### Build system
- - The project and module configuration/generation is performed through CMake (>= 3.12.0).
+ - The project and module configuration/generation is performed through CMake (>= 3.15.0).
  - Inviwo has been compiled in Visual Studio 2019, Clang 8, GCC 9, XCode 11
  - C++17 Required
 
