@@ -482,11 +482,11 @@ struct sequence {
         difference_type operator-(const iterator& rhs) const { return ((val_ - rhs.val_) / inc_); }
         iterator operator+(difference_type rhs) const {
             auto i = *this;
-            return i += static_cast<value_type>(rhs);
+            return i += rhs;
         }
         iterator operator-(difference_type rhs) const {
             auto i = *this;
-            return i -= static_cast<value_type>(rhs);
+            return i -= rhs;
         }
         friend iterator operator+(difference_type lhs, const iterator& rhs) { return rhs + lhs; }
 

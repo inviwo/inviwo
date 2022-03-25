@@ -44,9 +44,9 @@ public:
     class IVW_MODULE_OPENGL_API Warn {
         bool value_ = true;
         Warn() = default;
-        Warn(std::nullptr_t) : value_{false} {}
 
     public:
+        explicit Warn(bool enable) : value_{enable} {}
         explicit constexpr operator bool() { return value_; }
 
         static const Warn Yes;

@@ -35,7 +35,7 @@
 namespace inviwo {
 
 const BufferObjectArray::Warn BufferObjectArray::Warn::Yes{};
-const BufferObjectArray::Warn BufferObjectArray::Warn::No{nullptr};
+const BufferObjectArray::Warn BufferObjectArray::Warn::No{false};
 
 size_t BufferObjectArray::maxSize() const {
     static size_t size = []() {
