@@ -73,11 +73,11 @@ const BufferGL* MeshGL::getIndexBuffer(size_t idx) const {
 
 size_t MeshGL::getIndexBufferCount() const { return indexBuffers_.size(); }
 
-// save all buffers and to lazy attachment in enable.
 void MeshGL::update(bool editable) {
     bufferGLs_.clear();
     indexBuffers_.clear();
 
+    bufferArray_.bind();
     Mesh* owner = this->getOwner();
     // update all buffers except index buffers, i.e. position, color, normals, etc.)
     for (auto buf : owner->getBuffers()) {
@@ -87,6 +87,7 @@ void MeshGL::update(bool editable) {
         bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
                                         static_cast<GLuint>(buf.first.location));
     }
+    bufferArray_.unbind();
     // update index buffers
     for (auto buf : owner->getIndexBuffers()) {
         const BufferGL* bufGL = editable ? buf.second->getEditableRepresentation<BufferGL>()

@@ -32,11 +32,21 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/buffer/bufferobject.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <vector>
 
 namespace inviwo {
 
+/**
+ * @brief Inviwo wrapper for OpengL Vertex Array Objects (VAO)
+ *
+ * Handles the creation and deletion of OpenGL VAOs. Has functions for attaching and detaching
+ * buffer objects. It also keeps track of all attached buffers and corresponding attribute
+ * locations.
+ * @note An OpenGL Vertex Array Object is tied to a render context and only valid within the same
+ * render context that was active when creating it.
+ */
 class IVW_MODULE_OPENGL_API BufferObjectArray {
 public:
     using BindingType = BufferObject::BindingType;
@@ -61,24 +71,44 @@ public:
     BufferObjectArray& operator=(const BufferObjectArray& that);
     ~BufferObjectArray();
 
+    /**
+     * Return the OpenGL ID of the VAO
+     */
     GLuint getId() const;
 
+    /**
+     * Bind the VAO
+     */
     void bind() const;
+    /**
+     * Unbind the VAO by binding id 0
+     */
     void unbind() const;
 
-    void clear();  // Make sure the buffer is bound before calling clear.
+    /**
+     * @brief Check if this VAO is currently bound
+     */
+    bool isActive() const;
+
+    /**
+     * Removes all buffer attachments from the VAO
+     * @pre The BufferObjectArray must be bound
+     */
+    void clear();
 
     /**
      * Attach buffer object @p obj to specific location @p location. If @p warn is equal to
      * Warn::Yes, a warning is issued if another buffer object is alread attached to location @p
      * loc.
+     * @pre The BufferObjectArray must be bound
      */
     void attachBufferObject(const BufferObject* obj, GLuint location,
                             BindingType bindingType = BindingType::Native, Warn warn = Warn::Yes);
 
     /**
      * Detach the buffer object at location @p location, if attached, and disable that vertex
-     * attribute array. The BufferObjectArray must be active.
+     * attribute array.
+     * @pre The BufferObjectArray must be bound
      */
     void detachBufferObject(GLuint location);
 
@@ -90,9 +120,10 @@ public:
     size_t maxSize() const;
 
 private:
-    mutable bool reattach_ = true;
     mutable GLuint id_ = 0;
     std::vector<std::pair<BindingType, const BufferObject*>> attachedBuffers_;
+
+    Canvas::ContextID creationContext_ = nullptr;
 };
 
 }  // namespace inviwo

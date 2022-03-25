@@ -31,8 +31,28 @@
 #include <modules/opengl/buffer/bufferobject.h>
 
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/assertion.h>
+
+#include <fmt/format.h>
+#include <string_view>
 
 namespace inviwo {
+
+using namespace std::literals;
+
+inline void checkContext(std::string_view error, Canvas::ContextID org, SourceLocation loc) {
+    if constexpr (cfg::assertions) {
+        auto rc = RenderContext::getPtr();
+        Canvas::ContextID curr = rc->activeContext();
+        if (org != curr) {
+            const auto message =
+                fmt::format("{}: '{}' ({}) than it was created: '{}' ({})", error,
+                            rc->getContextName(curr), curr, rc->getContextName(org), org);
+
+            assertion(loc.getFile(), loc.getFunction(), loc.getLine(), message);
+        }
+    }
+}
 
 const BufferObjectArray::Warn BufferObjectArray::Warn::Yes{};
 const BufferObjectArray::Warn BufferObjectArray::Warn::No{false};
@@ -49,64 +69,85 @@ size_t BufferObjectArray::maxSize() const {
 }
 
 BufferObjectArray::BufferObjectArray()
-    : attachedBuffers_(maxSize(), {BindingType::Native, nullptr}) {}
+    : id_(0u), attachedBuffers_(maxSize(), {BindingType::Native, nullptr}) {
+
+    creationContext_ = RenderContext::getPtr()->activeContext();
+    IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
+
+    glGenVertexArrays(1, &id_);
+}
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
-    : attachedBuffers_(rhs.attachedBuffers_) {}
+    : id_(0u), attachedBuffers_(rhs.attachedBuffers_) {
+
+    creationContext_ = RenderContext::getPtr()->activeContext();
+    IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
+
+    glGenVertexArrays(1, &id_);
+
+    bind();
+    for (GLuint location = 0; location < attachedBuffers_.size(); ++location) {
+        if (auto bufferObject = attachedBuffers_[location].second) {
+            glEnableVertexAttribArray(location);
+            bufferObject->bindAndSetAttribPointer(location, attachedBuffers_[location].first);
+        }
+    }
+    unbind();
+}
 
 BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
+    LGL_ERROR_CLASS;
     if (this != &that) {
-        if (id_ != 0) {
-            // avoid creating the vertex array if is not already initialized
-            clear();
-            unbind();
-            reattach_ = true;
-        }
+        bind();
+        clear();
         attachedBuffers_ = that.attachedBuffers_;
-    }
-    return *this;
-}
-
-BufferObjectArray::~BufferObjectArray() { glDeleteVertexArrays(1, &id_); }
-
-GLuint BufferObjectArray::getId() const { return id_; }
-
-void BufferObjectArray::clear() {
-    if (id_ == 0) {
-        return;
-    }
-
-    glBindVertexArray(id_);
-    for (GLuint i = 0; i < static_cast<GLuint>(attachedBuffers_.size()); ++i) {
-        if (attachedBuffers_[i].second) {
-            glDisableVertexAttribArray(i);
-            attachedBuffers_[i].second = nullptr;
-        }
-    }
-}
-
-void BufferObjectArray::bind() const {
-    if (id_ == 0) {
-        glGenVertexArrays(1, &id_);
-    }
-    glBindVertexArray(id_);
-    if (reattach_) {
         for (GLuint location = 0; location < attachedBuffers_.size(); ++location) {
             if (auto bufferObject = attachedBuffers_[location].second) {
                 glEnableVertexAttribArray(location);
                 bufferObject->bindAndSetAttribPointer(location, attachedBuffers_[location].first);
-            } else {
-                glDisableVertexAttribArray(location);
             }
         }
-        reattach_ = false;
+        unbind();
     }
+    LGL_ERROR_CLASS;
+    return *this;
+}
+
+BufferObjectArray::~BufferObjectArray() {
+    if (id_ != 0) {
+        checkContext("VAO deleted in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+        glDeleteVertexArrays(1, &id_);
+    }
+}
+
+GLuint BufferObjectArray::getId() const { return id_; }
+
+void BufferObjectArray::clear() {
+    LGL_ERROR_CLASS;
+    for (GLuint i = 0; i < static_cast<GLuint>(attachedBuffers_.size()); ++i) {
+        if (attachedBuffers_[i].second) {
+            glDisableVertexArrayAttrib(id_, i);
+            attachedBuffers_[i].second = nullptr;
+        }
+    }
+    LGL_ERROR_CLASS;
+}
+
+void BufferObjectArray::bind() const {
+    checkContext("VAO bound in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+    glBindVertexArray(id_);
 }
 
 void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
+bool BufferObjectArray::isActive() const {
+    checkContext("VAO used in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+    return glIsVertexArray(id_);
+}
+
 void BufferObjectArray::attachBufferObject(const BufferObject* bufferObject, GLuint location,
                                            BindingType bindingType, Warn warn) {
+    LGL_ERROR_CLASS;
     if (location < attachedBuffers_.size()) {
         // print warning if a different buffer is already attached to this location
         if (warn && attachedBuffers_[location].second && bufferObject &&
@@ -117,18 +158,24 @@ void BufferObjectArray::attachBufferObject(const BufferObject* bufferObject, GLu
                 id_, location, attachedBuffers_[location].second->getId(), bufferObject->getId()));
         }
         attachedBuffers_[location] = {bindingType, bufferObject};
+        glEnableVertexAttribArray(location);
+        bufferObject->bindAndSetAttribPointer(location, bindingType);
     } else {
         LogError("Error: VertexAttribArray location exceeds maximum allowed range");
     }
-    reattach_ = true;
+    LGL_ERROR_CLASS;
 }
 
 void BufferObjectArray::detachBufferObject(GLuint location) {
+    LGL_ERROR_CLASS;
     if (location >= attachedBuffers_.size()) {
         throw RangeException(IVW_CONTEXT, "Invalid buffer location {}", location);
     }
-    attachedBuffers_[location].second = nullptr;
-    reattach_ = true;
+    if (attachedBuffers_[location].second) {
+        attachedBuffers_[location].second = nullptr;
+        glDisableVertexArrayAttrib(id_, location);
+    }
+    LGL_ERROR_CLASS;
 }
 
 const BufferObject* BufferObjectArray::getBufferObject(size_t location) const {
