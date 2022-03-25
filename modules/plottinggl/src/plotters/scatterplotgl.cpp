@@ -172,7 +172,7 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
         }
     });
 
-    boxSelectionChangedCallBack_ = boxSelectionHandler_.addSelectionChangedCallback(
+    boxSelectionChangedCallback_ = boxSelectionHandler_.addSelectionChangedCallback(
         [this](const std::vector<bool>& selected, bool append) {
             BitSet b(selected);
             // prevent selection of filtered indices
@@ -182,7 +182,7 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
             }
             selectionChangedCallback_.invoke(b);
         });
-    boxFilteringChangedCallBack_ = boxSelectionHandler_.addFilteringChangedCallback(
+    boxFilteringChangedCallback_ = boxSelectionHandler_.addFilteringChangedCallback(
         [this](const std::vector<bool>& filtered, bool append) {
             BitSet b(filtered);
             if (append) {
@@ -506,15 +506,19 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
     }
 
     if ((p->getPressState() == PickingPressState::Release) &&
-        (p->getPressItem() == PickingPressItem::Primary) &&
-        (p->getCurrentGlobalPickingId() == p->getPressedGlobalPickingId())) {
-        selected_.flip(id);
-        partitionDirty_ = true;
-
-        // selection changed, inform processor
-        selectionChangedCallback_.invoke(selected_);
+        (p->getPressItem() == PickingPressItem::Primary) && !p->getMovedSincePressed()) {
+        if (p->modifiers().contains(KeyModifier::Control)) {
+            // additive selection: add/remove current id
+            BitSet selected(selected_);
+            selected.flip(id);
+            selectionChangedCallback_.invoke(selected);
+        } else {
+            selectionChangedCallback_.invoke(BitSet(id));
+        }
+        // reset box selection handler since the data point was selected here
+        boxSelectionHandler_.reset();
+        p->setUsed(true);
     }
-    p->setUsed(true);
 }
 
 uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
