@@ -33,9 +33,9 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/pickingmapper.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/selectioncolorproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/dispatcher.h>
@@ -98,20 +98,9 @@ public:
         TransferFunctionProperty tf_;
         FloatVec4Property color_;
 
-        BoolCompositeProperty showHighlighted_;
-        FloatVec3Property highlightColor_;
-        FloatProperty highlightAlpha_;
-        FloatProperty highlightIntensity_;
-
-        BoolCompositeProperty showSelected_;
-        FloatVec3Property selectionColor_;
-        FloatProperty selectionAlpha_;
-        FloatProperty selectionIntensity_;
-
-        BoolCompositeProperty showFiltered_;
-        FloatVec3Property filterColor_;
-        FloatProperty filterAlpha_;
-        FloatProperty filterIntensity_;
+        SelectionColorProperty showHighlighted_;
+        SelectionColorProperty showSelected_;
+        SelectionColorProperty showFiltered_;
 
         BoolProperty tooltip_;
 

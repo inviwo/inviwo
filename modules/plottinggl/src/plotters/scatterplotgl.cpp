@@ -68,20 +68,9 @@ ScatterPlotGL::Properties::Properties(std::string_view identifier, std::string_v
           TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
     , color_("defaultColor", "Color", util::ordinalColor(1.0f, 0.0f, 0.0f, 1.0f))
 
-    , showHighlighted_("showHighlighted", "Show Highlighted", true)
-    , highlightColor_("highlightColor", "Color", util::ordinalColor(vec3(1.0f, 0.906f, 0.612f)))
-    , highlightAlpha_("highlightAlpha", "Alpha", 0.75f)
-    , highlightIntensity_("highlightIntensity", "Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
-
-    , showSelected_("showSelected", "Show Selected", true)
-    , selectionColor_("selectionColor", "Color", util::ordinalColor(vec3(1.0f, 0.769f, 0.247f)))
-    , selectionAlpha_("selectionAlpha", "Alpha", 0.75f)
-    , selectionIntensity_("selectionIntensity", "Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
-
-    , showFiltered_("showFiltered", "Show Filtered", false)
-    , filterColor_("filterColor", "Color", util::ordinalColor(vec3(0.5f, 0.5f, 0.5f)))
-    , filterAlpha_("filterAlpha", "Alpha", 0.75f)
-    , filterIntensity_("filterIntensity", "Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
+    , showHighlighted_("showHighlighted", "Show Highlighted", true, vec3(1.0f, 0.906f, 0.612f))
+    , showSelected_("showSelected", "Show Selected", true, vec3(1.0f, 0.769f, 0.247f))
+    , showFiltered_("showFiltered", "Show Filtered", false, vec3(0.5f, 0.5f, 0.5f))
 
     , tooltip_("tooltip", "Show Tooltip", true)
 
@@ -96,9 +85,6 @@ ScatterPlotGL::Properties::Properties(std::string_view identifier, std::string_v
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical) {
 
-    showHighlighted_.addProperties(highlightColor_, highlightAlpha_, highlightIntensity_);
-    showSelected_.addProperties(selectionColor_, selectionAlpha_, selectionIntensity_);
-    showFiltered_.addProperties(filterColor_, filterAlpha_, filterIntensity_);
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
     axisStyle_.registerProperties(xAxis_, yAxis_);
@@ -120,17 +106,8 @@ ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties& rhs)
     , tf_(rhs.tf_)
     , color_(rhs.color_)
     , showHighlighted_(rhs.showHighlighted_)
-    , highlightColor_(rhs.highlightColor_)
-    , highlightAlpha_(rhs.highlightAlpha_)
-    , highlightIntensity_(rhs.highlightIntensity_)
     , showSelected_(rhs.showSelected_)
-    , selectionColor_(rhs.selectionColor_)
-    , selectionAlpha_(rhs.selectionAlpha_)
-    , selectionIntensity_(rhs.selectionIntensity_)
     , showFiltered_(rhs.showFiltered_)
-    , filterColor_(rhs.filterColor_)
-    , filterAlpha_(rhs.filterAlpha_)
-    , filterIntensity_(rhs.filterIntensity_)
     , tooltip_(rhs.tooltip_)
     , boxSelectionSettings_(rhs.boxSelectionSettings_)
     , margins_(rhs.margins_)
@@ -141,9 +118,6 @@ ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties& rhs)
     , xAxis_(rhs.xAxis_)
     , yAxis_(rhs.yAxis_) {
 
-    showHighlighted_.addProperties(highlightColor_, highlightAlpha_, highlightIntensity_);
-    showSelected_.addProperties(selectionColor_, selectionAlpha_, selectionIntensity_);
-    showFiltered_.addProperties(filterColor_, filterAlpha_, filterIntensity_);
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     axisStyle_.unregisterAll();
     axisStyle_.registerProperties(xAxis_, yAxis_);
@@ -409,16 +383,17 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
 
         // filtered, regular, selected, highlighted
         std::array<vec4, 4> secondaryColor = {
-            vec4(properties_.filterColor_.get(), properties_.filterAlpha_),
-            properties_.color_.get(),
-            vec4(properties_.selectionColor_.get(), properties_.selectionAlpha_),
-            vec4(properties_.highlightColor_.get(), properties_.highlightAlpha_)};
-        std::array<float, 4> mixColor = {properties_.filterIntensity_, 0.0f,
-                                         properties_.selectionIntensity_,
-                                         properties_.highlightIntensity_};
+            properties_.showFiltered_.getColor(), properties_.color_.get(),
+            properties_.showSelected_.getColor(), properties_.showHighlighted_.getColor()};
+        std::array<float, 4> mixColor = {properties_.showFiltered_.getMixIntensity(), 0.0f,
+                                         properties_.showSelected_.getMixIntensity(),
+                                         properties_.showHighlighted_.getMixIntensity()};
         std::array<float, 4> mixAlpha = {1.0, 0.0f, 1.0f, 1.0f};
+        std::array<bool, 4> enabled = {properties_.showFiltered_, true, properties_.showSelected_,
+                                       properties_.showHighlighted_};
 
         for (size_t i = properties_.showFiltered_ ? 0 : 1; i < points_.offsets.size() - 1; ++i) {
+            if (!enabled[i]) continue;
             auto begin = points_.offsets[i];
             auto end = points_.offsets[i + 1];
             if (end == begin) continue;
