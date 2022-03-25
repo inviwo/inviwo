@@ -403,7 +403,9 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
         shader_.activate();
         setShaderUniforms(cont, dims, useAxisRanges);
 
+        points_.boa.bind();
         attachVertexAttributes();
+
         auto indicesGL = points_.indices.getRepresentation<BufferGL>();
         indicesGL->bind();
 
@@ -454,7 +456,6 @@ void ScatterPlotGL::attachVertexAttributes() {
         }
     };
 
-    points_.boa.bind();
     attachAttrib(points_.xCoord, 0);
     attachAttrib(points_.yCoord, 1);
     attachAttrib(points_.color, 2);
@@ -465,8 +466,6 @@ void ScatterPlotGL::attachVertexAttributes() {
     } else {
         points_.boa.detachBufferObject(4);
     }
-    // need to rebind buffer object array to reattach attributes
-    points_.boa.bind();
 }
 
 void ScatterPlotGL::setShaderUniforms(TextureUnitContainer& cont, const size2_t& dims,
