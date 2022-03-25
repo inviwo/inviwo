@@ -254,8 +254,8 @@ protected:
     Dispatcher<SelectionFunc> selectionChangedCallback_;
     Dispatcher<SelectionFunc> filteringChangedCallback_;
 
-    BoxSelectionInteractionHandler::SelectionCallbackHandle boxSelectionChangedCallBack_;
-    BoxSelectionInteractionHandler::SelectionCallbackHandle boxFilteringChangedCallBack_;
+    BoxSelectionInteractionHandler::SelectionCallbackHandle boxSelectionChangedCallback_;
+    BoxSelectionInteractionHandler::SelectionCallbackHandle boxFilteringChangedCallback_;
 
     BoxSelectionInteractionHandler boxSelectionHandler_;
     BoxSelectionRenderer selectionRectRenderer_;
