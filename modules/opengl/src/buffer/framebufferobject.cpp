@@ -64,7 +64,7 @@ FrameBufferObject::FrameBufferObject()
     : id_(0u), attachedDepthId_(0), attachedStencilId_(0), attachedColorIds_{} {
 
     creationContext_ = RenderContext::getPtr()->activeContext();
-    IVW_ASSERT(creationContext_, "A OpenGL Context has to be active");
+    IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
 
     glGenFramebuffers(1, &id_);
 
