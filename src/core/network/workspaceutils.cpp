@@ -48,7 +48,7 @@ void forEachWorkspaceInDirRecusive(std::string_view path,
     for (const auto& file : filesystem::getDirectoryContentsRecursively(
              std::string(path), filesystem::ListMode::Files)) {
         if (filesystem::wildcardStringMatch("*.inv", file)) {
-            callback(fmt::format("{}/{}", path, file));
+            callback(file);
         }
     }
 }
