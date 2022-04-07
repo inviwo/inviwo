@@ -23,14 +23,14 @@ jobs:
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
-         # - os: 'macos-latest'
-         #   triplet: 'x64-osx'
-         #   mono: 'mono'
-         #   cmake: '-DIVW_MODULE_HDF5=OFF'
-         #   generator: 'Ninja'
-         #   targets: 'ALL_BUILD package'
-         #   installer: 'inviwo-installer-macos'
-         #   artifact: 'build/inviwo-v*.dmg'
+         - os: 'macos-latest'
+           triplet: 'x64-osx'
+           mono: 'mono'
+           cmake: '-DIVW_MODULE_HDF5=OFF'
+           generator: 'Ninja'
+           targets: 'all package'
+           installer: 'inviwo-installer-macos'
+           artifact: 'build/inviwo-v*.dmg'
          # - os: 'ubuntu-20.04'
          #   triplet: 'x64-linux'
          #   mono: 'mono'
@@ -116,14 +116,25 @@ jobs:
         path: inviwo
         submodules: recursive
         
-    - name: Configure CMake
+    - name: Configure CMake [Windows]
       shell: bash
+      if: runner.os == 'Windows'
       run: >
-        cmake -S inviwo -B build --preset=msvc-dev-vcpkg
+        cmake -S inviwo -B build --preset='${{ matrix.triplet }}-dev-vcpkg'
         -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
         -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
         -DIVW_DOXYGEN_PROJECT=ON
         -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
+        ${{ matrix.cmake }}
+
+    - name: Configure CMake
+      shell: bash
+      if: runner.os != 'Windows'
+      run: >
+        cmake -S inviwo -B build --preset='${{ matrix.triplet }}-dev-vcpkg'
+        -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
+        -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        -DIVW_DOXYGEN_PROJECT=OFF
         ${{ matrix.cmake }}
 
     - name: Setup C++ Log matchers
