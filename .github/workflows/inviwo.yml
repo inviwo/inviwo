@@ -18,7 +18,8 @@ jobs:
           - os: 'windows-latest'
             triplet: 'x64-windows'
             mono: ''
-            cmake: '-DIVW_MODULE_HDF5=ON -DIVW_DOXYGEN_PROJECT=ON -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"'
+            cmake: '--preset msvc-dev-vcpkg -DIVW_MODULE_HDF5=ON -DIVW_DOXYGEN_PROJECT=ON 
+                    -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"'
             cmake_preset: 'msvc-dev-vcpkg'
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
             installer: 'inviwo-installer-win'
@@ -26,16 +27,14 @@ jobs:
           - os: 'macos-latest'
             triplet: 'x64-osx'
             mono: 'mono'
-            cmake: '-DIVW_MODULE_HDF5=OFF'
-            cmake_preset: 'ninja-dev-vcpkg'
+            cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF'
             targets: 'all package'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
           - os: 'ubuntu-20.04'
             triplet: 'x64-linux'
             mono: 'mono'
-            cmake: '-DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
-            cmake_preset: 'ninja-dev-vcpkg'
+            cmake: '--preset ninja-dev-vcpkg -DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
             targets: 'all package'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.zip'
@@ -113,11 +112,10 @@ jobs:
         path: inviwo
         submodules: recursive
         
-    - name: Configure CMake [Windows]
+    - name: Configure CMake
       shell: bash
-      if: runner.os == 'Windows'
       run: >
-        cmake -S inviwo -B build --preset='${{ matrix.cmake_preset }}'
+        cmake -S inviwo -B build
         -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
         -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
         ${{ matrix.cmake }}
