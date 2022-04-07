@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest] #, macos-latest, ubuntu-20.04]
+        os: [windows-latest, macos-latest] #, ubuntu-20.04]
         include:
           - os: 'windows-latest'
             triplet: 'x64-windows'
@@ -23,7 +23,7 @@ jobs:
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
-         - os: 'macos-latest'
+          - os: 'macos-latest'
            triplet: 'x64-osx'
            mono: 'mono'
            cmake: '-DIVW_MODULE_HDF5=OFF'
