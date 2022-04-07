@@ -100,7 +100,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew install ninja doxygen
-        brew cask install basictex
+        brew install basictex --cask
         eval "$(/usr/libexec/path_helper)"
         echo "$(dirname $(which latex))" >> $GITHUB_PATH
 
