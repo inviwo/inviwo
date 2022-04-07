@@ -283,9 +283,7 @@ public:
 
 private:
     struct Hash {
-        size_t operator()(const QModelIndex& idx, size_t seed = std::hash<int>{}(0)) const {
-            return qHash(idx, seed);
-        }
+        size_t operator()(const QModelIndex& idx) const { return qHash(idx, std::hash<int>{}(0)); }
     };
     struct Mapping {
         int sourceRow;
