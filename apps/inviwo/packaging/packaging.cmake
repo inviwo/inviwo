@@ -63,7 +63,7 @@ option(IVW_PACKAGE_INSTALLER "Use NSIS to create installer" OFF)
 
 if(WIN32)
     if(IVW_PACKAGE_INSTALLER)
-        set(CPACK_GENERATOR "ZIP;NSIS")
+        set(CPACK_GENERATOR "NSIS")
         # The icon to start the application.
         set(CPACK_NSIS_MUI_ICON "${IVW_ROOT_DIR}\\\\resources\\\\inviwo\\\\inviwo_light.ico")
         # Add a link to the application website in the startup menu.
@@ -87,7 +87,7 @@ if(WIN32)
 
 elseif(APPLE)
     if(IVW_PACKAGE_INSTALLER)
-        set(CPACK_GENERATOR           "TGZ;DragNDrop")
+        set(CPACK_GENERATOR           "DragNDrop")
         set(CPACK_DMG_DS_STORE        "${IVW_ROOT_DIR}/Resources/DS_mapp")
         set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
     else()
@@ -96,7 +96,7 @@ elseif(APPLE)
 
 else()
     if(IVW_PACKAGE_INSTALLER)
-        set(CPACK_GENERATOR "TGZ;DEB")
+        set(CPACK_GENERATOR "DEB")
     else()
         set(CPACK_GENERATOR "TGZ")
     endif()
