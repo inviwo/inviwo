@@ -100,8 +100,16 @@ jobs:
       run: |
         brew install ninja 
 
+    - name: Build Qt
+      shell: bash
+      if: runner.os == 'macOS'
+      run: |        
+        curl -s https://raw.githubusercontent.com/jcfr/qt-easy-build/5.15.1/Build-qt.sh -o Build-qt.sh && chmod u+x Build-qt.sh
+        ./Build-qt.sh -j 4
+
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
+      if: runner.os != 'macOS'
       with:
         version: 6.2.3
         dir: ${{ github.workspace }}
