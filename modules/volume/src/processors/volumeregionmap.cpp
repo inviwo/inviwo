@@ -34,6 +34,8 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
+#include <map>
+#include <unordered_map>
 
 namespace inviwo {
 
@@ -108,15 +110,120 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
 
         const auto& dim = volram->getDimensions();
 
-        std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
-            for (size_t i = 0; i < src.size(); ++i) {
-                if (static_cast<uint32_t>(v) == src[i]) {
-                    return static_cast<ValueType>(dst[i]);
+        // Check which state the dataframe input is in
+        size_t dataFrameState = 0;
+        if (isSortedSequence(src)) {  // Sorted + continuous
+            dataFrameState = 1;
+        } else if (isSorted(src)) {  // Sorted + non continuous
+            dataFrameState = 2;
+        } else {
+            dataFrameState = 4;  // Unsorted + non continuous
+        }
+
+        size_t index = 0;
+        std::map<unsigned int, unsigned int> orderedIndexMap;
+        std::unordered_map<unsigned int, unsigned int> unorderedIndexMap;
+        switch (dataFrameState) {
+            case 1:
+                std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
+                               [&](const ValueType& v) {
+                                   if (dst.size() < v) {
+                                       return ValueType{0};
+                                   }
+                                   return static_cast<ValueType>(dst[static_cast<uint32_t>(v)]);
+                               });
+                break;
+            case 2:
+                std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
+                               [&](const ValueType& v) {
+                                   index = binarySearch(src, static_cast<uint32_t>(v));
+                                   return static_cast<ValueType>(dst[index]);
+                               });
+                break;
+            case 3:
+                for (size_t i = 0; i < src.size(); ++i) {
+                    orderedIndexMap[src[i]] = dst[i];
                 }
-            }
-            return ValueType{0};
-        });
+                std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
+                               [&](const ValueType& v) {
+                                   if (orderedIndexMap.count(static_cast<uint32_t>(v)) == 1) {
+                                       return static_cast<ValueType>(
+                                           orderedIndexMap[static_cast<uint32_t>(v)]);
+                                   }
+                                   return ValueType{0};
+                               });
+                break;
+            case 4:
+                for (size_t i = 0; i < src.size(); ++i) {
+                    unorderedIndexMap[src[i]] = dst[i];
+                }
+                std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
+                               [&](const ValueType& v) {
+                                   if (unorderedIndexMap.count(static_cast<uint32_t>(v)) == 1) {
+                                       return static_cast<ValueType>(
+                                           unorderedIndexMap[static_cast<uint32_t>(v)]);
+                                   }
+                                   return ValueType{0};
+                               });
+                break;
+            default:
+                std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
+                               [&](const ValueType& v) {
+                                   for (size_t i = 0; i < src.size(); ++i) {
+                                       if (static_cast<uint32_t>(v) == src[i]) {
+                                           return static_cast<ValueType>(dst[i]);
+                                       }
+                                   }
+                                   return ValueType{0};
+                               });
+                break;
+        }
     });
+}
+
+/// <summary>
+/// Tests if a index vector contains sequential numbers without gaps.
+/// </summary>
+/// <param name="src">Index vecotr</param>
+/// <returns>True if sequential. False if not sequential.</returns>
+bool isSortedSequence(const std::vector<unsigned int>& src) {
+    unsigned int prev = src[0];
+    for (int i = 1; i < src.size(); ++i) {
+        if (!(src[i] == prev + 1)) {
+            return false;
+        }
+        prev = src[i];
+    }
+    return true;
+}
+
+bool isSorted(const std::vector<unsigned int>& src) {
+    unsigned int prev = src[0];
+    for (int i = 1; i < src.size(); ++i) {
+        if (src[i] <= prev) {
+            return false;
+        }
+        prev = src[i];
+    }
+    return true;
+}
+
+size_t binarySearch(const std::vector<unsigned int>& src, const unsigned int value) {
+    size_t low = 0;
+    size_t high = src.size();
+    while (low < high) {
+        size_t mid = (low + high) / 2;
+
+        if (src[mid] == value) {
+            return mid;
+        }
+        if (src[mid] < value) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return 0;
 }
 
 }  // namespace inviwo
