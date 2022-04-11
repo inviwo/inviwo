@@ -46,6 +46,8 @@ namespace inviwo {
  * Handles creation and deletion of OpenGL framebuffer objects. Has functions for attaching and
  * detaching of textures to the framebuffer. It also keeps track of all attached texture ids. The
  * wrapper is a move only type.
+ * @note An OpenGL framebuffer object is tied to a render context and only valid within the same
+ * render context that was active when creating it.
  */
 class IVW_MODULE_OPENGL_API FrameBufferObject {
 public:

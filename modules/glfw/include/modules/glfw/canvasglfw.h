@@ -40,17 +40,54 @@ typedef struct GLFWwindow GLFWwindow;
 
 namespace inviwo {
 
-class IVW_MODULE_GLFW_API CanvasGLFW : public CanvasGL {
+/**
+ * Helper class for handling the GLFW window and the associated rendering context. This class is
+ * required by CanvasGLFW to ensure that the rendering context is still active while CanvasGL is
+ * being destructed.
+ * @see CanvasGLFW
+ */
+class IVW_MODULE_GLFW_API GLFWWindowHandler {
+public:
+    GLFWWindowHandler(Canvas* canvas, const std::string& title, uvec2 dimensions);
+    ~GLFWWindowHandler();
+
+    /**
+     * Can be used to hand in an initial shared context if GLFW is already set up.
+     * Should be called before the GLFW module is registered.
+     */
+    static void provideExternalContext(GLFWwindow* sharedContext);
+    static GLFWwindow* sharedContext();
+
+    static GLFWwindow* createWindow(const std::string& title, uvec2 dimensions);
+
+    Canvas::ContextID getContextId() const { return static_cast<Canvas::ContextID>(glWindow_); }
+
+    GLFWwindow* glWindow_;
+
+private:
+    static GLFWwindow* sharedContext_;
+};
+
+class IVW_MODULE_GLFW_API CanvasGLFW : public GLFWWindowHandler, public CanvasGL {
     friend class CanvasProcessorWidgetGLFW;
 
 public:
     CanvasGLFW(const std::string& title = "", uvec2 dimensions = uvec2(128));
     virtual ~CanvasGLFW();
 
+    virtual void update() override;
     virtual void activate() override;
+
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
+    virtual ContextID activeContext() const override;
+    virtual ContextID contextId() const override;
+    virtual void releaseContext() override;
+
     virtual void glSwapBuffers() override;
+    virtual size2_t getCanvasDimensions() const override;
 
     void setVisible(bool visible);
+    static int getVisibleWindowCount();
 
     void setWindowSize(ivec2);
     ivec2 getWindowSize() const;
@@ -58,29 +95,11 @@ public:
     void setWindowPosition(ivec2);
     ivec2 getWindowPosition() const;
 
-    void setWindowTitle(std::string);
-
-    static int getVisibleWindowCount();
-
-    virtual void update() override;
+    void setWindowTitle(const std::string& windowTitle);
 
     void setOnTop(bool);
 
-    virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
-    virtual ContextID activeContext() const override;
-    virtual ContextID contextId() const override;
-
-    /**
-     * Can be used to hand in an initial shared context if GLFW is already setup.
-     * Should be called before the GLFW module is registered.
-     */
-    static void provideExternalContext(GLFWwindow* sharedContext);
-    static GLFWwindow* sharedContext();
-
     static ivec2 movePointOntoDesktop(ivec2 pos, ivec2 size);
-
-    // CanvasGL override
-    virtual size2_t getCanvasDimensions() const override;
 
     std::function<void(bool)> onVisibilityChange;
     std::function<void(ivec2)> onPositionChange;
@@ -90,15 +109,8 @@ public:
 protected:
     void setFullScreen(bool fullscreen);
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
-    static CanvasGLFW* getSharedContext();
-
-    virtual void releaseContext() override;
 
 private:
-    static GLFWwindow* createWindow(const std::string& title, uvec2 dimensions);
-
-    std::string windowTitle_;
-    GLFWwindow* glWindow_;
     GLFWUserData userdata_;
     GLFWWindowEventManager eventManager_;
 
@@ -106,7 +118,6 @@ private:
     ivec2 oldPos_{0};
     ivec2 oldSize_{256};
 
-    static GLFWwindow* sharedContext_;
     static int glfwWindowCount_;
     static bool alwaysOnTop_;
 };

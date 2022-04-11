@@ -62,8 +62,7 @@ private:
     virtual void updateFullScreen(bool) override;
     virtual void updateOnTop(bool) override;
 
-    using canvas_ptr = std::unique_ptr<CanvasGLFW, std::function<void(CanvasGLFW*)>>;
-    canvas_ptr canvas_;
+    std::unique_ptr<CanvasGLFW> canvas_;
     ivec2 screenDimensions_;
 };
 

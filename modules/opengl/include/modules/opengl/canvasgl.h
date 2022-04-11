@@ -83,8 +83,7 @@ protected:
     std::unique_ptr<Mesh> square_;
     /**
      * Each canvas must have its own MeshGL
-     * since QT uses a context per canvas
-     * and the vertex array in MeshGL cannot be shared.
+     * since the vertex array object in MeshGL cannot be shared.
      */
     const MeshGL* squareGL_ = nullptr;  ///< Non-owning reference.
 
