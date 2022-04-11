@@ -50,12 +50,6 @@ uniform vec2 minmaxC;
 uniform vec2 minmaxR;
 uniform vec4 default_color;
 
-struct SecondaryColor {
-    vec4 color;
-    float colorMixIn;
-    float alphaMixIn;
-};
-
 uniform SecondaryColor secondaryColor = SecondaryColor(vec4(0.0), 0.0, 0.0);
 
 uniform float minRadius;

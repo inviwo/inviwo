@@ -139,4 +139,10 @@ struct StipplingParameters {
     float worldScale;
 };
 
+struct SecondaryColor {
+    vec4 color;
+    float colorMixIn;
+    float alphaMixIn;
+};
+
 #endif // IVW_STRUCTS_GLSL

@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#include "utils/structs.glsl"
+
 in vec4 gColor;
 in vec2 gPos;
 in float gR;
@@ -35,12 +37,6 @@ flat in vec4 pickColor_;
 uniform int circle = 1;
 uniform float borderWidth = 1;
 uniform vec4 borderColor;
-
-struct SecondaryColor {
-    vec4 color;
-    float colorMixIn;
-    float alphaMixIn;
-};
 
 uniform SecondaryColor secondaryColor = SecondaryColor(vec4(0.0), 0.0, 0.0);
 
