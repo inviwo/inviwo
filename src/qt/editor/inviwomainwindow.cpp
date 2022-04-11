@@ -1028,7 +1028,7 @@ bool InviwoMainWindow::openExample(QString exampleFileName) {
 
 void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     QSettings settings;
-    const bool showWelcomePage = settings.value("WelcomeWidget/showWelcomePage", true).toBool();    
+    const bool showWelcomePage = settings.value("WelcomeWidget/showWelcomePage", true).toBool();
     settings.beginGroup(objectName());
     const bool loadlastWorkspace = settings.value("autoloadLastWorkspace", true).toBool();
 
