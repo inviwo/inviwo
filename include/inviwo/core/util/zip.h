@@ -469,12 +469,22 @@ struct sequence {
         }
 
         iterator& operator+=(difference_type rhs) {
-            val_ += rhs * inc_;
+            if constexpr (std::is_integral_v<T>) {
+                val_ = static_cast<value_type>(static_cast<difference_type>(val_) +
+                                               rhs * static_cast<difference_type>(inc_));
+            } else {
+                val_ += rhs * inc_;
+            }
             clamp();
             return *this;
         }
         iterator& operator-=(difference_type rhs) {
-            val_ -= rhs * inc_;
+            if constexpr (std::is_integral_v<T>) {
+                val_ = static_cast<value_type>(static_cast<difference_type>(val_) -
+                                               rhs * static_cast<difference_type>(inc_));
+            } else {
+                val_ -= rhs * inc_;
+            }
             clamp();
             return *this;
         }
@@ -490,7 +500,9 @@ struct sequence {
         }
         friend iterator operator+(difference_type lhs, const iterator& rhs) { return rhs + lhs; }
 
-        value_type operator[](difference_type rhs) const { return val_ + rhs * inc_; }
+        value_type operator[](difference_type rhs) const {
+            return val_ + static_cast<value_type>(rhs) * inc_;
+        }
 
         reference operator*() const { return val_; }
 

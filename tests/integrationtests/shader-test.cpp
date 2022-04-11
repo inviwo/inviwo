@@ -62,11 +62,4 @@ TEST(ShaderTests, implicitVertShader) {
     ASSERT_TRUE(shader.isReady());
 }
 
-TEST(ShaderTests, missingVertShader) {
-    auto res = utilgl::findShaderResource("img_texturequad.frag");
-    ASSERT_TRUE(res);
-    Shader shader{{{ShaderType::Fragment, res}}};
-    ASSERT_TRUE(!shader.isReady());
-}
-
 }  // namespace inviwo
