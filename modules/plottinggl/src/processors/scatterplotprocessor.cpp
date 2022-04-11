@@ -165,23 +165,24 @@ ScatterPlotProcessor::ScatterPlotProcessor()
 
 void ScatterPlotProcessor::process() {
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    auto dataframe = dataFramePort_.getData();
 
-    auto indexToRowMap = [&]() {
-        auto iCol = dataframe->getIndexColumn();
-        auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-        std::unordered_map<uint32_t, uint32_t> indexToRow;
-        for (auto&& [row, index] : util::enumerate(indexCol)) {
-            indexToRow.try_emplace(index, static_cast<uint32_t>(row));
-        }
-        return indexToRow;
-    }();
+    if (dataFramePort_.isChanged()) {
+        indexToRowMap_ = [&]() {
+            auto iCol = dataFramePort_.getData()->getIndexColumn();
+            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            std::unordered_map<uint32_t, uint32_t> indexToRow;
+            for (auto&& [row, index] : util::enumerate(indexCol)) {
+                indexToRow.try_emplace(index, static_cast<uint32_t>(row));
+            }
+            return indexToRow;
+        }();
+    }
 
     auto transformIdsToRows = [&](const BitSet& b) {
         BitSet rows;
         for (const auto& id : b) {
-            auto it = indexToRowMap.find(id);
-            if (it != indexToRowMap.end()) {
+            auto it = indexToRowMap_.find(id);
+            if (it != indexToRowMap_.end()) {
                 rows.add(it->second);
             }
         }

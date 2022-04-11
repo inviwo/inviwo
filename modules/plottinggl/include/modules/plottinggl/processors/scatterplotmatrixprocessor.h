@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/datastructures/bitset.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>
@@ -83,6 +84,12 @@ private:
     void createScatterPlots();
     void createLabels();
     void createStatsLabels();
+    /**
+     * Test wether a given column should be included in the rendering or not. Does this by looking
+     * up or creating a bool property in parameters_.
+     */
+    bool isIncluded(std::shared_ptr<Column> col);
+
     size_t numParams_;
 
     ScatterPlotGL::Properties scatterPlotproperties_;
@@ -117,11 +124,8 @@ private:
                                                            //! "matrix order" (as shown on screen)
                                                            //! to index of column in the dataframe.
 
-    /**
-     * Test wether a given column should be included in the rendering or not. Does this by looking
-     * up or creating a bool property in parameters_.
-     */
-    bool isIncluded(std::shared_ptr<Column> col);
+    BitSet filteredIndices_;
+    std::unordered_map<uint32_t, uint32_t> indexToRowMap_;
 };
 
 }  // namespace plot

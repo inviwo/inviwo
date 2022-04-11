@@ -172,6 +172,17 @@ void ScatterPlotMatrixProcessor::process() {
         for (auto& p : plots_) {
             p->properties_.set(&scatterPlotproperties_);
         }
+
+        indexToRowMap_ = [&]() {
+            auto iCol = dataFrame_.getData()->getIndexColumn();
+            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            std::unordered_map<uint32_t, uint32_t> indexToRow;
+            for (auto&& [row, index] : util::enumerate(indexCol)) {
+                indexToRow.try_emplace(index, static_cast<uint32_t>(row));
+            }
+            return indexToRow;
+        }();
+
         initialSetup = true;
     }
     if (labelsTextures_.empty()) {
@@ -182,31 +193,18 @@ void ScatterPlotMatrixProcessor::process() {
     }
 
     std::unique_ptr<IndexBuffer> indicies = nullptr;
-    BitSet filtered;
     if (brushing_.isConnected() && (brushing_.isFilteringModified() || initialSetup)) {
-        auto dataframe = dataFrame_.getData();
-
-        auto indexToRowMap = [&]() {
-            auto iCol = dataframe->getIndexColumn();
-            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-            std::unordered_map<uint32_t, uint32_t> indexToRow;
-            for (auto&& [row, index] : util::enumerate(indexCol)) {
-                indexToRow.try_emplace(index, static_cast<uint32_t>(row));
-            }
-            return indexToRow;
-        }();
-
         auto transformIdsToRows = [&](const BitSet& b) {
             BitSet rows;
             for (const auto& id : b) {
-                auto it = indexToRowMap.find(id);
-                if (it != indexToRowMap.end()) {
+                auto it = indexToRowMap_.find(id);
+                if (it != indexToRowMap_.end()) {
                     rows.add(it->second);
                 }
             }
             return rows;
         };
-        filtered = transformIdsToRows(brushing_.getFilteredIndices());
+        filteredIndices_ = transformIdsToRows(brushing_.getFilteredIndices());
         initialSetup = false;
     }
 
@@ -221,7 +219,7 @@ void ScatterPlotMatrixProcessor::process() {
         size2_t pos{extent.x * i, 0};
         for (size_t j = i + 1; j < numParams_; j++) {
             pos.y = extent.y * j;
-            plots_[idx]->setFilteredIndices(filtered);
+            plots_[idx]->setFilteredIndices(filteredIndices_);
             plots_[idx]->plot(pos, extent);
 
             const ivec2 origin(extent.x * j, extent.y * i);
