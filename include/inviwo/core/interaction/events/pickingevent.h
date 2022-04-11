@@ -167,6 +167,15 @@ public:
     dvec3 getWorldSpaceDeltaAtPressDepth(const Camera& camera) const;
 
     /**
+     * Returns true if the distance between the pressed position and current position in screen
+     * coordinates is larger than @p deltaDistance or the current picking ID is different to the
+     * pressed one.
+     *
+     * @see getCurrentGlobalPickingId, getPressedGlobalPickingId, getDeltaPressedPosition
+     */
+    bool getMovedSincePressed(double deltaDistance = 3.0) const;
+
+    /**
      *	The size of the canvas where the event occurred.
      */
     uvec2 getCanvasSize() const;
