@@ -46,11 +46,39 @@
 
 namespace inviwo {
 
-GLFWwindow* CanvasGLFW::sharedContext_ = nullptr;
+GLFWwindow* GLFWWindowHandler::sharedContext_ = nullptr;
 int CanvasGLFW::glfwWindowCount_ = 0;
 bool CanvasGLFW::alwaysOnTop_ = false;
 
-GLFWwindow* CanvasGLFW::createWindow(const std::string& title, uvec2 dimensions) {
+GLFWWindowHandler::GLFWWindowHandler(Canvas* canvas, const std::string& title, uvec2 dimensions)
+    : glWindow_(createWindow(title, dimensions)) {
+
+    if (!sharedContext_) {
+        sharedContext_ = glWindow_;
+    }
+
+    RenderContext::getPtr()->registerContext(getContextId(), title,
+                                             std::make_unique<CanvasContextHolder>(canvas));
+}
+
+GLFWWindowHandler::~GLFWWindowHandler() {
+    RenderContext::getPtr()->unRegisterContext(getContextId());
+    glfwDestroyWindow(glWindow_);
+    if (glWindow_ == sharedContext_) sharedContext_ = nullptr;
+    RenderContext::getPtr()->activateDefaultRenderContext();
+}
+
+void GLFWWindowHandler::provideExternalContext(GLFWwindow* sharedContext) {
+    if (!sharedContext_) {
+        sharedContext_ = sharedContext;
+    } else {
+        throw Exception("Shared context can only be set once!", IVW_CONTEXT_CUSTOM("GLFW"));
+    }
+}
+
+GLFWwindow* GLFWWindowHandler::sharedContext() { return sharedContext_; }
+
+GLFWwindow* GLFWWindowHandler::createWindow(const std::string& title, uvec2 dimensions) {
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
 #ifdef __APPLE__
@@ -64,18 +92,16 @@ GLFWwindow* CanvasGLFW::createWindow(const std::string& title, uvec2 dimensions)
 
     auto win = glfwCreateWindow(static_cast<int>(dimensions.x), static_cast<int>(dimensions.y),
                                 title.c_str(), nullptr, sharedContext_);
-
     if (!win) {
-        throw GLFWException("Could not create GLFW window.", IVW_CONTEXT_CUSTOM("CanvasGLFW"));
+        throw GLFWException("Could not create GLFW window.",
+                            IVW_CONTEXT_CUSTOM("GLFWContextHandler"));
     }
-
     return win;
 }
 
-CanvasGLFW::CanvasGLFW(const std::string& windowTitle, uvec2 dimensions)
-    : CanvasGL()
-    , windowTitle_(windowTitle)
-    , glWindow_(createWindow(windowTitle, dimensions))
+CanvasGLFW::CanvasGLFW(const std::string& title, uvec2 dimensions)
+    : GLFWWindowHandler(this, title, dimensions)
+    , CanvasGL()
     , userdata_{glWindow_}
     , eventManager_{glWindow_,
                     [this](Event* event) {
@@ -89,8 +115,6 @@ CanvasGLFW::CanvasGLFW(const std::string& windowTitle, uvec2 dimensions)
 
     userdata_.set(GLFWUserDataId::Window, this);
 
-    if (!sharedContext_) sharedContext_ = glWindow_;
-
     // register callbacks
     glfwSetWindowCloseCallback(glWindow_, [](GLFWwindow* window) {
         glfwSetWindowShouldClose(window, GL_FALSE);
@@ -98,33 +122,58 @@ CanvasGLFW::CanvasGLFW(const std::string& windowTitle, uvec2 dimensions)
     });
     glfwSetWindowSizeCallback(glWindow_, [](GLFWwindow* window, int width, int height) {
         auto canvas = getCanvasGLFW(window);
-        if (canvas->onWindowSizeChange) canvas->onWindowSizeChange(ivec2(width, height));
+        if (canvas->onWindowSizeChange) {
+            canvas->onWindowSizeChange(ivec2(width, height));
+        }
     });
     glfwSetFramebufferSizeCallback(glWindow_, [](GLFWwindow* window, int width, int height) {
         auto canvas = getCanvasGLFW(window);
         canvas->image_.reset();
         canvas->pickingController_.setPickingSource(nullptr);
 
-        if (canvas->onFramebufferSizeChange) canvas->onFramebufferSizeChange(ivec2(width, height));
+        if (canvas->onFramebufferSizeChange) {
+            canvas->onFramebufferSizeChange(ivec2(width, height));
+        }
     });
     glfwSetWindowPosCallback(glWindow_, [](GLFWwindow* window, int x, int y) {
         auto canvas = getCanvasGLFW(window);
-        if (canvas->onPositionChange) canvas->onPositionChange(ivec2(x, y));
+        if (canvas->onPositionChange) {
+            canvas->onPositionChange(ivec2(x, y));
+        }
     });
-
-    RenderContext::getPtr()->registerContext(contextId(), windowTitle,
-                                             std::make_unique<CanvasContextHolder>(this));
 }
 
 CanvasGLFW::~CanvasGLFW() {
-    RenderContext::getPtr()->unRegisterContext(contextId());
-    glfwDestroyWindow(glWindow_);
-    if (glWindow_ == sharedContext_) sharedContext_ = nullptr;
+    // activate current context before CanvasGL is deconstructed
+    activate();
+}
+
+void CanvasGLFW::update() {
+    activate();
+    CanvasGL::update();
+    RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
 void CanvasGLFW::activate() { glfwMakeContextCurrent(glWindow_); }
 
+std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
+    auto res = dispatchFront([&]() { return std::make_unique<CanvasGLFW>("Background"); });
+    return res.get();
+}
+
+Canvas::ContextID CanvasGLFW::activeContext() const {
+    return static_cast<ContextID>(glfwGetCurrentContext());
+}
+
+Canvas::ContextID CanvasGLFW::contextId() const { return getContextId(); }
+
+void CanvasGLFW::releaseContext() {}
+
 void CanvasGLFW::glSwapBuffers() { glfwSwapBuffers(glWindow_); }
+
+size2_t CanvasGLFW::getCanvasDimensions() const {
+    return static_cast<size2_t>(getFramebufferSize());
+}
 
 void CanvasGLFW::setVisible(bool visible) {
     if (visible) {
@@ -140,6 +189,8 @@ void CanvasGLFW::setVisible(bool visible) {
         }
     }
 }
+
+int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
 
 void CanvasGLFW::setWindowSize(ivec2 size) { glfwSetWindowSize(glWindow_, size.x, size.y); }
 
@@ -168,6 +219,13 @@ ivec2 CanvasGLFW::getWindowPosition() const {
     return {x, y};
 }
 
+void CanvasGLFW::setWindowTitle(const std::string& windowTitle) {
+    glfwSetWindowTitle(glWindow_, windowTitle.c_str());
+    RenderContext::getPtr()->setContextName(getContextId(), windowTitle);
+}
+
+void CanvasGLFW::setOnTop(bool onTop) { glfwSetWindowAttrib(glWindow_, GLFW_FLOATING, onTop); }
+
 void CanvasGLFW::setFullScreen(bool fullscreen) {
     if (fullscreen && !isFullScreen_) {
         isFullScreen_ = true;
@@ -195,56 +253,9 @@ void CanvasGLFW::setFullScreen(bool fullscreen) {
                              GLFW_DONT_CARE);
     }
 }
-
-void CanvasGLFW::setWindowTitle(std::string windowTitle) {
-    windowTitle_ = windowTitle;
-    glfwSetWindowTitle(glWindow_, windowTitle_.c_str());
-    RenderContext::getPtr()->setContextName(contextId(), windowTitle_);
-}
-
-int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
-
-void CanvasGLFW::update() {
-    activate();
-    CanvasGL::update();
-    RenderContext::getPtr()->activateDefaultRenderContext();
-}
-
-void CanvasGLFW::setOnTop(bool onTop) { glfwSetWindowAttrib(glWindow_, GLFW_FLOATING, onTop); }
-
 CanvasGLFW* CanvasGLFW::getCanvasGLFW(GLFWwindow* window) {
     return GLFWUserData::get<CanvasGLFW>(window, GLFWUserDataId::Window);
 }
-
-CanvasGLFW* CanvasGLFW::getSharedContext() {
-    if (sharedContext_)
-        return getCanvasGLFW(sharedContext_);
-    else
-        return nullptr;
-}
-
-void CanvasGLFW::releaseContext() {}
-
-std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
-    auto res = dispatchFront([&]() { return std::make_unique<CanvasGLFW>("Background"); });
-    return res.get();
-}
-
-Canvas::ContextID CanvasGLFW::activeContext() const {
-    return static_cast<ContextID>(glfwGetCurrentContext());
-}
-
-Canvas::ContextID CanvasGLFW::contextId() const { return static_cast<ContextID>(glWindow_); }
-
-void CanvasGLFW::provideExternalContext(GLFWwindow* sharedContext) {
-    if (!sharedContext_) {
-        sharedContext_ = sharedContext;
-    } else {
-        throw Exception("Shared context can only be set once!", IVW_CONTEXT_CUSTOM("GLFW"));
-    }
-}
-
-GLFWwindow* CanvasGLFW::sharedContext() { return sharedContext_; }
 
 ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
     auto check_error = []() {
@@ -301,10 +312,6 @@ ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
         LogErrorCustom("CanvasGLFW", "MovePointOntoDestop unknown exception");
         return pos;
     }
-}
-
-size2_t CanvasGLFW::getCanvasDimensions() const {
-    return static_cast<size2_t>(getFramebufferSize());
 }
 
 }  // namespace inviwo
