@@ -138,7 +138,7 @@ void BaseSliderWidgetQt::applyIncrement() {
     QSignalBlocker spinBlock(spinBox_);
     QSignalBlocker slideBlock(slider_);
 
-    spinBox_->setSingleStep(transformIncrementToSpinner());
+    spinBox_->setIncrement(transformIncrementToSpinner());
     spinBox_->setDecimals(transformIncrementToSpinnerDecimals());
     slider_->setSingleStep(transformIncrementToSlider());
 }

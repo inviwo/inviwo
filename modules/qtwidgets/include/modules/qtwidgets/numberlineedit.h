@@ -71,6 +71,12 @@ public:
     void setMinimum(double min);
     void setMaximum(double max);
     void setRange(double min, double max);
+    /**
+     * Sets the increment of a single step to @p inc.
+     * If @p inc is zero, the spinbox buttons will be hidden.
+     * @see QDoubleSpinBox::setSingleStep
+     */
+    void setIncrement(double inc);
 
     /**
      * \brief Overrides the timerEvent to prevent

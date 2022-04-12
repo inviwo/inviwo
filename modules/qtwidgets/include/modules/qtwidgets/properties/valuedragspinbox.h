@@ -73,6 +73,11 @@ public:
     void setMinimum(int min);
     void setPrefix(const QString& prefix);
     void setRange(int minimum, int maximum);
+    /**
+     * Sets the increment of a single step to @p inc.
+     * If @p inc is zero, the spinbox buttons will be hidden.
+     * @see QDoubleSpinBox::setSingleStep
+     */
     void setSingleStep(int val);
     void setSuffix(const QString& suffix);
     int singleStep() const;

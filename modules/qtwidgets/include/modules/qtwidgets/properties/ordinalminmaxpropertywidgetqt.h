@@ -179,12 +179,12 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromProperty() {
     const auto p = minMaxProperty_;
 
     spinBoxMin_->setRange(F::valueToSpinbox(p, range.x), F::valueToSpinbox(p, range.y - sep));
-    spinBoxMin_->setSingleStep(F::valueToSpinbox(p, inc));
+    spinBoxMin_->setIncrement(F::valueToSpinbox(p, inc));
     spinBoxMin_->setValue(F::valueToSpinbox(p, val.x));
     spinBoxMin_->setDecimals(transformIncrementToSpinnerDecimals());
 
     spinBoxMax_->setRange(F::valueToSpinbox(p, range.x + sep), F::valueToSpinbox(p, range.y));
-    spinBoxMax_->setSingleStep(F::valueToSpinbox(p, inc));
+    spinBoxMax_->setIncrement(F::valueToSpinbox(p, inc));
     spinBoxMax_->setValue(F::valueToSpinbox(p, val.y));
     spinBoxMax_->setDecimals(transformIncrementToSpinnerDecimals());
 
