@@ -257,6 +257,12 @@ void NumberLineEdit::setMaximum(double max) { QDoubleSpinBox::setMaximum(max); }
 
 void NumberLineEdit::setRange(double min, double max) { QDoubleSpinBox::setRange(min, max); }
 
+void NumberLineEdit::setIncrement(double inc) {
+    QDoubleSpinBox::setSingleStep(inc);
+    QDoubleSpinBox::setButtonSymbols(inc == 0.0 ? QAbstractSpinBox::NoButtons
+                                                : QAbstractSpinBox::UpDownArrows);
+}
+
 void NumberLineEdit::timerEvent(QTimerEvent* event) { event->accept(); }
 
 void NumberLineEdit::focusInEvent(QFocusEvent* e) {
