@@ -174,7 +174,7 @@ TransferFunction ColormapProperty::getTransferFunction() const {
                     (divergenceMidPoint.getMaxValue() - divergenceMidPoint.getMinValue());
     return colorbrewer::getTransferFunction(getCategory(), *colormap,
                                             static_cast<glm::uint8>(*nColors), *discrete, midPoint);
-}  // namespace inviwo
+}
 
 void ColormapProperty::updateColormaps() {
     colormap.replaceOptions(getFamiliesForCategory(getCategory()));

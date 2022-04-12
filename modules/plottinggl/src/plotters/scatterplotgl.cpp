@@ -557,23 +557,21 @@ void ScatterPlotGL::partitionData() {
         sortingBuf->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](const auto brprecision) {
                 const auto& data = brprecision->getDataContainer();
-                auto comp =
-                    [&]() -> std::function<bool(const std::uint32_t&, const std::uint32_t&)> {
-                    if (sortOrder_ == SortingOrder::Ascending) {
-                        return [&data](const std::uint32_t& a, const std::uint32_t& b) {
-                            return data[a] < data[b];
-                        };
-                    } else {
-                        return [&data](const std::uint32_t& a, const std::uint32_t& b) {
-                            return data[a] > data[b];
-                        };
-                    }
-                }();
 
+                auto ascending = [&data](std::uint32_t a, std::uint32_t b) {
+                    return data[a] < data[b];
+                };
+                auto descending = [&data](std::uint32_t a, std::uint32_t b) {
+                    return data[a] > data[b];
+                };
                 for (size_t i = 0; i < points_.offsets.size() - 1; ++i) {
-                    auto begin = points_.offsets[i];
-                    auto end = points_.offsets[i + 1];
-                    std::sort(indices.begin() + begin, indices.begin() + end, comp);
+                    const auto begin = points_.offsets[i];
+                    const auto end = points_.offsets[i + 1];
+                    if (sortOrder_ == SortingOrder::Ascending) {
+                        std::sort(indices.begin() + begin, indices.begin() + end, ascending);
+                    } else {
+                        std::sort(indices.begin() + begin, indices.begin() + end, descending);
+                    }
                 }
             });
     }

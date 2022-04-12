@@ -36,6 +36,7 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/colorbrewer.h>
 
 namespace inviwo {
 
@@ -73,8 +74,9 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
                      PropertySemantics("Fontsize"))
     , showCorrelationValues_("showStatistics", "Show correlation values", true)
     , parameters_("parameters", "Parameters")
-    , correlectionTF_("correlectionTF", "Correlation TF",
-                      {{{0.0, vec4(1, 0, 0, 1)}, {0.5, vec4(1, 1, 1, 1)}, {1.0, vec4(0, 0, 1, 1)}}})
+    , correlationTF_("correlectionTF", "Correlation TF",
+                     colorbrewer::getTransferFunction(colorbrewer::Category::Diverging,
+                                                      colorbrewer::Family::RdBu, 9, false))
 
     , textRenderer_()
     , textureQuadRenderer_()
@@ -105,7 +107,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     selectedY_.setVisible(false);
     scatterPlotproperties_.showHighlighted_.setVisible(false);
 
-    addProperties(scatterPlotproperties_, color_, selectedX_, selectedY_, labels_, correlectionTF_,
+    addProperties(scatterPlotproperties_, color_, selectedX_, selectedY_, labels_, correlationTF_,
                   showCorrelationValues_, parameters_, mouseEvent_);
 
     color_.onChange([&]() {
@@ -132,7 +134,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     fontColor_.onChange(updateStatsLabels);
     fontFaceStats_.onChange(updateStatsLabels);
     statsFontSize_.onChange(updateStatsLabels);
-    correlectionTF_.onChange(updateStatsLabels);
+    correlationTF_.onChange(updateStatsLabels);
 
     scatterPlotproperties_.onChange([&]() {
         for (auto& p : plots_) {
@@ -165,6 +167,7 @@ void ScatterPlotMatrixProcessor::process() {
             auto iCol = dataFrame_.getData()->getIndexColumn();
             auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
             std::unordered_map<uint32_t, uint32_t> indexToRow;
+            indexToRow.reserve(indexCol.size());
             for (auto&& [row, index] : util::enumerate(indexCol)) {
                 indexToRow.try_emplace(index, static_cast<uint32_t>(row));
             }
@@ -184,7 +187,7 @@ void ScatterPlotMatrixProcessor::process() {
     if (brushing_.isConnected() && (brushing_.isFilteringModified() || initialSetup)) {
         auto transformIdsToRows = [&](const BitSet& b) {
             BitSet rows;
-            for (const auto& id : b) {
+            for (auto id : b) {
                 auto it = indexToRowMap_.find(id);
                 if (it != indexToRowMap_.end()) {
                     rows.add(it->second);
@@ -300,7 +303,7 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
                 v += 1;
                 v /= 2;
 
-                auto c = correlectionTF_.get().sample(v);
+                auto c = correlationTF_.get().sample(v);
                 tex2->initialize(&c);
 
                 bgTextures_.push_back(tex2);

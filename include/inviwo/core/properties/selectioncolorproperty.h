@@ -60,7 +60,6 @@ public:
      */
     float getMixIntensity() const;
 
-private:
     FloatVec3Property color_;
     FloatProperty alpha_;
     FloatProperty intensity_;

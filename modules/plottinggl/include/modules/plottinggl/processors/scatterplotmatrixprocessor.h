@@ -109,7 +109,7 @@ private:
 
     CompositeProperty parameters_;
 
-    TransferFunctionProperty correlectionTF_;
+    TransferFunctionProperty correlationTF_;
 
     std::vector<std::shared_ptr<Texture2D>> labelsTextures_;
     std::vector<std::shared_ptr<Texture2D>> statsTextures_;

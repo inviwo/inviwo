@@ -82,45 +82,33 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     });
     highlightChangedCallBack_ =
         scatterPlot_.addHighlightChangedCallback([this](const BitSet& highlighted) {
-            if (brushingPort_.isConnected()) {
-                BitSet indices;
-                auto iCol = dataFramePort_.getData()->getIndexColumn();
-                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-                for (auto idx : highlighted) {
-                    indices.add(indexCol[idx]);
-                }
-                brushingPort_.highlight(indices);
-            } else {
-                invalidate(InvalidationLevel::InvalidOutput);
+            BitSet indices;
+            auto iCol = dataFramePort_.getData()->getIndexColumn();
+            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            for (auto idx : highlighted) {
+                indices.add(indexCol[idx]);
             }
+            brushingPort_.highlight(indices);
         });
     selectionChangedCallBack_ =
         scatterPlot_.addSelectionChangedCallback([this](const BitSet& selected) {
-            if (brushingPort_.isConnected()) {
-                BitSet indices;
-                auto iCol = dataFramePort_.getData()->getIndexColumn();
-                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-                for (auto idx : selected) {
-                    indices.add(indexCol[idx]);
-                }
-                brushingPort_.select(indices);
-            } else {
-                invalidate(InvalidationLevel::InvalidOutput);
+            BitSet indices;
+            auto iCol = dataFramePort_.getData()->getIndexColumn();
+            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            for (auto idx : selected) {
+                indices.add(indexCol[idx]);
             }
+            brushingPort_.select(indices);
         });
     filteringChangedCallBack_ =
         scatterPlot_.addFilteringChangedCallback([this](const BitSet& filtered) {
-            if (brushingPort_.isConnected()) {
-                BitSet indices;
-                auto iCol = dataFramePort_.getData()->getIndexColumn();
-                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-                for (auto idx : filtered) {
-                    indices.add(indexCol[idx]);
-                }
-                brushingPort_.filter("scatterplot", indices);
-            } else {
-                invalidate(InvalidationLevel::InvalidOutput);
+            BitSet indices;
+            auto iCol = dataFramePort_.getData()->getIndexColumn();
+            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            for (auto idx : filtered) {
+                indices.add(indexCol[idx]);
             }
+            brushingPort_.filter("scatterplot", indices);
         });
     addInteractionHandler(&scatterPlot_);
     scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});
@@ -171,6 +159,7 @@ void ScatterPlotProcessor::process() {
             auto iCol = dataFramePort_.getData()->getIndexColumn();
             auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
             std::unordered_map<uint32_t, uint32_t> indexToRow;
+            indexToRow.reserve(indexCol.size());
             for (auto&& [row, index] : util::enumerate(indexCol)) {
                 indexToRow.try_emplace(index, static_cast<uint32_t>(row));
             }
@@ -180,7 +169,7 @@ void ScatterPlotProcessor::process() {
 
     auto transformIdsToRows = [&](const BitSet& b) {
         BitSet rows;
-        for (const auto& id : b) {
+        for (auto id : b) {
             auto it = indexToRowMap_.find(id);
             if (it != indexToRowMap_.end()) {
                 rows.add(it->second);

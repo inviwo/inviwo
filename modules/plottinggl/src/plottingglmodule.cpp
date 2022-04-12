@@ -174,6 +174,11 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                         xml::getElement(node, "Properties/Property&identifier=fontFaceStats")) {
                     elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
                 }
+                if (auto elem =
+                        xml::getElement(node, "Properties/Property&identifier=correlectionTF")) {
+                    elem->SetAttribute("identifier", "correlationTF");
+                    res = true;
+                }
 
                 if (auto plot = xml::getElement(
                         node,
