@@ -89,7 +89,12 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
         },
         props(*this));
 
-    util::for_each_in_tuple([&](auto& p) { addProperty(p); }, meta(*this));
+    util::for_each_in_tuple(
+        [&](auto& p) {
+            p.setCurrentStateAsDefault();
+            addProperty(p);
+        },
+        meta(*this));
 }
 
 VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProperty& rhs)
@@ -122,8 +127,8 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume,
     numVoxels_.set(dim.x * dim.y * dim.z);
     util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, props(*this));
 
-    overwrite = (overwrite == util::OverwriteState::No || isChecked()) ? util::OverwriteState::No
-                                                                       : util::OverwriteState::Yes;
+    overwrite = (overwrite == util::OverwriteState::Yes && !isChecked()) ? util::OverwriteState::Yes
+                                                                         : util::OverwriteState::No;
 
     util::updateDefaultState(dataRange_, volume.dataMap_.dataRange, overwrite);
     util::updateDefaultState(valueRange_, volume.dataMap_.valueRange, overwrite);
