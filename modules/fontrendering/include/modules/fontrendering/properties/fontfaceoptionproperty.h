@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,54 +26,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 
-#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
-#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
+#include <modules/fontrendering/util/fontutils.h>
 
 namespace inviwo {
 
 /**
  * \ingroup properties
- * A composite property with the necessary parameters for font rendering like font face, font size,
- * and line spacing.
+ * This option property lists all available font faces which can be used for font rendering.
  */
-class IVW_MODULE_FONTRENDERING_API FontProperty : public FontSettings, public CompositeProperty {
+class IVW_MODULE_FONTRENDERING_API FontFaceOptionProperty : public OptionPropertyString {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    FontProperty(std::string_view identifier, std::string_view displayName,
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                 PropertySemantics semantics = PropertySemantics::Default);
-
-    FontProperty(std::string_view identifier, std::string_view displayName,
-                 std::string_view fontFace, int size = 14, float lineSpacing = 0.0f,
-                 vec2 anchorPos = vec2{-1.0f},
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                 PropertySemantics semantics = PropertySemantics::Default);
-
-    FontProperty(const FontProperty& rhs);
-    virtual FontProperty* clone() const override;
-    virtual ~FontProperty() = default;
-
-    FontFaceOptionProperty fontFace_;
-    IntProperty fontSize_;
-    FloatProperty lineSpacing_;
-    FloatVec2Property anchorPos_;
-
-    // Inherited via FontSettings
-    virtual std::string getFontFace() const override;
-    virtual int getFontSize() const override;
-    virtual float getLineSpacing() const override;
-    virtual vec2 getAnchorPos() const override;
+    FontFaceOptionProperty(std::string_view identifier, std::string_view displayName,
+                           font::FontType fontType = font::FontType::Default,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
+    FontFaceOptionProperty(std::string_view identifier, std::string_view displayName,
+                           std::string_view fontFaceName,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
+    FontFaceOptionProperty(const FontFaceOptionProperty& rhs);
+    virtual FontFaceOptionProperty* clone() const override;
+    virtual ~FontFaceOptionProperty() = default;
 };
 
 }  // namespace inviwo

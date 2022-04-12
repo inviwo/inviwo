@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/modules/fontrendering/fontrenderingmodule.h
     include/modules/fontrendering/fontrenderingmoduledefine.h
     include/modules/fontrendering/processors/textoverlaygl.h
+    include/modules/fontrendering/properties/fontfaceoptionproperty.h
     include/modules/fontrendering/properties/fontproperty.h
     include/modules/fontrendering/textrenderer.h
     include/modules/fontrendering/util/fontutils.h
@@ -23,6 +24,7 @@ set(SOURCE_FILES
     src/datastructures/textboundingbox.cpp
     src/fontrenderingmodule.cpp
     src/processors/textoverlaygl.cpp
+    src/properties/fontfaceoptionproperty.cpp
     src/properties/fontproperty.cpp
     src/textrenderer.cpp
     src/util/fontutils.cpp
