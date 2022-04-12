@@ -45,7 +45,7 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , fontFace_("fontFace", "Font Face")
+    , fontFace_("fontFace", "Font Face", font::FontType::Label)
     , fontSize_("fontSize", "Font Size", 14, 0, 144, 1)
     , color_("defaultcolor", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))
     , lineWidth_("lineWidth", "Line Width", 2.5f, 0.0f, 20.0f)
@@ -54,13 +54,6 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
-    for (auto font : font::getAvailableFonts()) {
-        auto name = filesystem::getFileNameWithoutExtension(font.second);
-        // use the file name w/o extension as identifier
-        fontFace_.addOption(name, font.first, font.second);
-    }
-    fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Label));
-    fontFace_.setCurrentStateAsDefault();
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
     color_.setSemantics(PropertySemantics::Color);
 

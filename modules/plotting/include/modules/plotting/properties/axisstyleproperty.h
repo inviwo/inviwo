@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 
 namespace inviwo {
 
@@ -63,7 +64,7 @@ public:
     void unregisterProperty(AxisProperty& p);
     void unregisterAll();
 
-    OptionPropertyString fontFace_;
+    FontFaceOptionProperty fontFace_;
     IntProperty fontSize_;
     FloatVec4Property color_;
     FloatProperty lineWidth_;

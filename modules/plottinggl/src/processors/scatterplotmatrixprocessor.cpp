@@ -36,7 +36,6 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <modules/fontrendering/util/fontutils.h>
 
 namespace inviwo {
 
@@ -66,10 +65,10 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , selectedY_("selectedY", "Select Y", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes)
     , labels_("labels", "Labels")
     , fontColor_("fontColor", "Font Color", vec4(0, 0, 0, 1))
-    , fontFace_("fontFace", "Font Face")
+    , fontFace_("fontFace", "Font Face", font::FontType::Caption)
     , fontSize_("fontSize", "Font size", 20, 0, 144, 1, InvalidationLevel::Valid,
                 PropertySemantics("Fontsize"))
-    , fontFaceStats_("fontFaceStats", "Font Face (stats)")
+    , fontFaceStats_("fontFaceStats", "Font Face (stats)", font::FontType::Label)
     , statsFontSize_("statsFontSize", "Font size (stats)", 14, 0, 144, 1, InvalidationLevel::Valid,
                      PropertySemantics("Fontsize"))
     , showCorrelationValues_("showStatistics", "Show correlation values", true)
@@ -120,17 +119,6 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
             scatterPlotproperties_.color_.setVisible(colorCol == nullptr);
         }
     });
-
-    for (auto& font : font::getAvailableFonts()) {
-        auto name = filesystem::getFileNameWithoutExtension(font.second);
-        // use the file name w/o extension as identifier
-        fontFace_.addOption(name, font.first, font.second);
-        fontFaceStats_.addOption(name, font.first, font.second);
-    }
-    fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Caption));
-    fontFace_.setCurrentStateAsDefault();
-    fontFaceStats_.setSelectedIdentifier(font::getFont(font::FontType::Label));
-    fontFaceStats_.setCurrentStateAsDefault();
 
     labels_.addProperties(fontColor_, fontFace_, fontSize_, fontFaceStats_, statsFontSize_);
     fontColor_.setSemantics(PropertySemantics::Color);

@@ -32,11 +32,10 @@
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/datastructures/bitset.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
@@ -46,6 +45,7 @@
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 
 namespace inviwo {
 
@@ -101,9 +101,9 @@ private:
     CompositeProperty labels_;
     FloatVec4Property fontColor_;
 
-    OptionPropertyString fontFace_;
+    FontFaceOptionProperty fontFace_;
     IntProperty fontSize_;
-    OptionPropertyString fontFaceStats_;
+    FontFaceOptionProperty fontFaceStats_;
     IntProperty statsFontSize_;
     BoolProperty showCorrelationValues_;  // Show numerical correlation values
 

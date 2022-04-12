@@ -162,9 +162,18 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                     return true;
                 }
 
-                std::string_view identifier = (type == "org.inviwo.ScatterPlotProcessor")
-                                                  ? "scatterplot"
-                                                  : "scatterPlotproperties";
+                const bool isScatterPlotProc = (type == "org.inviwo.ScatterPlotProcessor");
+
+                std::string_view identifier =
+                    isScatterPlotProc ? "scatterplot" : "scatterPlotproperties";
+
+                if (auto elem = xml::getElement(node, "Properties/Property&identifier=fontFace")) {
+                    elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
+                }
+                if (auto elem =
+                        xml::getElement(node, "Properties/Property&identifier=fontFaceStats")) {
+                    elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
+                }
 
                 if (auto plot = xml::getElement(
                         node,
