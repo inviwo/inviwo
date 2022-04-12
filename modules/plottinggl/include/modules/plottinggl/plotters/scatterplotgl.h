@@ -222,10 +222,10 @@ protected:
 
     SortingOrder sortOrder_ = SortingOrder::Ascending;
 
-    vec2 minmaxX_;
-    vec2 minmaxY_;
-    vec2 minmaxC_;
-    vec2 minmaxR_;
+    vec2 minmaxX_ = vec2(0.0f, 1.0f);
+    vec2 minmaxY_ = vec2(0.0f, 1.0f);
+    vec2 minmaxC_ = vec2(0.0f, 1.0f);
+    vec2 minmaxR_ = vec2(0.0f, 1.0f);
 
     std::array<AxisRenderer, 2> axisRenderers_;
 
