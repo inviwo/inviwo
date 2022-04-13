@@ -411,6 +411,8 @@ void InviwoApplication::setProgressCallback(std::function<void(std::string)> pro
 
 ThreadPool& InviwoApplication::getThreadPool() { return pool_; }
 
+bool InviwoApplication::isPoolThread() const { return pool_.isPoolThread(); }
+
 void InviwoApplication::waitForPool() {
     size_t old_size = pool_.getSize();
     resizePool(0);  // This will wait until all tasks are done;

@@ -98,6 +98,12 @@ public:
 
     size_t getQueueSize();
 
+    /**
+     * Check whether the active thread is managed by this thread pool.
+     * @return true if current thread is a pool thread
+     */
+    bool isPoolThread() const;
+
 private:
     enum class State {
         Free,     //< Worker is waiting for tasks.

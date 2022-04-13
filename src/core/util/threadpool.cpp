@@ -51,10 +51,10 @@ size_t ThreadPool::trySetSize(size_t size) {
     if (workers.size() > size) {
         auto active = workers.size();
         for (auto& worker : workers) {
-            auto exprected = State::Free;
-            if (worker->state.compare_exchange_strong(exprected, State::Stop)) {
+            auto expected = State::Free;
+            if (worker->state.compare_exchange_strong(expected, State::Stop)) {
                 --active;
-            } else if (exprected == State::Stop || exprected == State::Done) {
+            } else if (expected == State::Stop || expected == State::Done) {
                 --active;
             }
             if (active <= size) break;
@@ -73,6 +73,16 @@ size_t ThreadPool::getSize() const { return workers.size(); }
 size_t ThreadPool::getQueueSize() {
     std::unique_lock<std::mutex> lock(queue_mutex);
     return tasks.size();
+}
+
+bool ThreadPool::isPoolThread() const {
+    auto id = std::this_thread::get_id();
+    for (auto& worker : workers) {
+        if (worker->thread.get_id() == id) {
+            return true;
+        }
+    }
+    return false;
 }
 
 ThreadPool::~ThreadPool() {
