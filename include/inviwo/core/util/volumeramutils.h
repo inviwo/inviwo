@@ -56,10 +56,17 @@ void forEachVoxel(const VolumeRAM& v, C callback) {
 
 template <typename C>
 void forEachVoxelParallel(const size3_t dims, C callback, size_t jobs = 0) {
-    if (InviwoApplication::isInitialized() && jobs == 0) {
-        jobs = 4 * InviwoApplication::getPtr()->getPoolSize();
-    }
+    if (InviwoApplication::isInitialized()) {
+        auto app = InviwoApplication::getPtr();
+        if (jobs == 0) {
+            jobs = 4 * app->getPoolSize();
+        }
 
+        // prevent spawning jobs if running already within the pool and insufficient threads
+        if (app->isPoolThread() && app->getPoolSize() <= 1) {
+            jobs = 0;
+        }
+    }
     if (jobs == 0 || !InviwoApplication::isInitialized()) {
         // fallback to serial version
         forEachVoxel(dims, callback);
