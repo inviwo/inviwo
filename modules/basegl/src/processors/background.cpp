@@ -63,8 +63,8 @@ Background::Background()
                         {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
                         {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard}},
                        0, InvalidationLevel::InvalidResources)
-    , bgColor1_("bgColor1", "Color 1", vec4(0.0f, 0.0f, 0.0f, 1.0f))
-    , bgColor2_("bgColor2", "Color 2", vec4(1.0f))
+    , bgColor1_("bgColor1", "Color 1", util::ordinalColor(0.0f, 0.0f, 0.0f, 1.0f))
+    , bgColor2_("bgColor2", "Color 2", util::ordinalColor(1.0f, 1.0f, 1.0f, 1.0f))
     , checkerBoardSize_("checkerBoardSize", "Checker Board Size", ivec2(10, 10), ivec2(1, 1),
                         ivec2(256, 256))
     , switchColors_("switchColors", "Switch Colors", InvalidationLevel::Valid)
@@ -78,9 +78,7 @@ Background::Background()
     inport_.setOptional(true);
 
     addProperty(backgroundStyle_);
-    bgColor1_.setSemantics(PropertySemantics::Color);
     addProperty(bgColor1_);
-    bgColor2_.setSemantics(PropertySemantics::Color);
     addProperty(bgColor2_);
     addProperty(checkerBoardSize_);
     addProperty(switchColors_);
