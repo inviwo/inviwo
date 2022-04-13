@@ -46,11 +46,12 @@ TraversingVersionConverter::TraversingVersionConverter(std::function<bool(TxElem
 bool TraversingVersionConverter::convert(TxElement* root) { return traverseNodes(root); }
 
 bool TraversingVersionConverter::traverseNodes(TxElement* node) {
-    bool res = true;
-    res = res && fun_(node);
-    ticpp::Iterator<ticpp::Element> child;
-    for (child = child.begin(node); child != child.end(); child++) {
-        res = res && traverseNodes(child.Get());
+    bool res = fun_(node);
+    if (res) {
+        ticpp::Iterator<ticpp::Element> child;
+        for (child = child.begin(node); child != child.end(); child++) {
+            res = res && traverseNodes(child.Get());
+        }
     }
     return res;
 }
