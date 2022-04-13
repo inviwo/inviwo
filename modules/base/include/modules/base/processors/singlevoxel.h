@@ -40,17 +40,15 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.SingleVoxel, Single Voxel}
  * ![](org.inviwo.SingleVoxel.png?classIdentifier=org.inviwo.SingleVoxel)
- * Explanation of how to use the processor.
+ * Sample a volume at a given position and output the result in a property.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __volume__    Input volume
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Space__        domain of sample position (model, world, or data)
+ *   * __Position__     sampling position
+ *   * __Voxel value__  resulting sample (number of channels depending on input volume)
  */
 class IVW_MODULE_BASE_API SingleVoxel : public Processor {
 public:

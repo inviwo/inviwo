@@ -37,8 +37,8 @@ const ProcessorInfo SingleVoxel::processorInfo_{
     "org.inviwo.SingleVoxel",  // Class identifier
     "Single Voxel",            // Display name
     "Information",             // Category
-    CodeState::Experimental,   // Code state
-    Tags::None,                // Tags
+    CodeState::Stable,         // Code state
+    Tags::CPU,                 // Tags
 };
 
 const ProcessorInfo SingleVoxel::getProcessorInfo() const { return processorInfo_; }
