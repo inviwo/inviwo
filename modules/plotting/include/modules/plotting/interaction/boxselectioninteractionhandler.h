@@ -89,6 +89,11 @@ public:
      * active.
      */
     std::optional<std::array<dvec2, 2>> getDragRectangle() const { return dragRect_; }
+    /**
+     * \brief Reset the drag rectangle
+     * @see getDragRectangle
+     */
+    void reset();
 
 protected:
     /**

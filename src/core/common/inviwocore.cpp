@@ -92,6 +92,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/advancedmaterialproperty.h>
 #include <inviwo/core/properties/raycastingproperty.h>
+#include <inviwo/core/properties/selectioncolorproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
@@ -370,6 +371,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<PositionProperty>();
     registerProperty<AdvancedMaterialProperty>();
     registerProperty<RaycastingProperty>();
+    registerProperty<SelectionColorProperty>();
     registerProperty<SimpleLightingProperty>();
     registerProperty<SimpleRaycastingProperty>();
     registerProperty<VolumeIndicatorProperty>();

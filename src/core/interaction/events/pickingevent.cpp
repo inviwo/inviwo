@@ -252,6 +252,12 @@ dvec3 PickingEvent::getWorldSpaceDeltaAtPressDepth(const Camera& camera) const {
     return (corrWorld - prevWorld);
 }
 
+bool PickingEvent::getMovedSincePressed(double deltaDistance) const {
+    const double movedDistance = glm::length2(getDeltaPressedPosition() * dvec2(getCanvasSize()));
+    return (movedDistance > deltaDistance * deltaDistance) ||
+           (getCurrentGlobalPickingId() != getPressedGlobalPickingId());
+}
+
 PickingState PickingEvent::getState() const { return state_; }
 PickingPressState PickingEvent::getPressState() const { return pressState_; }
 PickingPressItem PickingEvent::getPressItem() const { return pressItem_; }

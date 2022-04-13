@@ -51,7 +51,7 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::TickProperty>();
 }
 
-int PlottingModule::getVersion() const { return 1; }
+int PlottingModule::getVersion() const { return 2; }
 
 std::unique_ptr<VersionConverter> PlottingModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -66,6 +66,26 @@ bool PlottingModule::Converter::convert(TxElement* root) {
             res |= xml::changeAttribute(
                 root, {{xml::Kind::processor("org.inviwo.VolumToDataFrame")}}, "type",
                 "org.inviwo.VolumeToDataFrame", "org.inviwo.VolumeSequenceToDataFrame");
+
+            [[fallthrough]];
+        }
+        case 1: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                std::string key;
+                node->GetValue(&key);
+                if (key != "Property") return true;
+                const auto type = node->GetAttributeOrDefault("type", "");
+                if (type != "org.inviwo.AxisStyleProperty") {
+                    return true;
+                }
+
+                if (auto elem = xml::getElement(node, "Properties/Property&identifier=fontFace")) {
+                    elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
+                    res = true;
+                }
+                return true;
+            }};
+            conv.convert(root);
 
             return res;
         }

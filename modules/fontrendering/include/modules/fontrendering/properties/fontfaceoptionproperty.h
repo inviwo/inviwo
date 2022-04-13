@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include "utils/structs.glsl"
+#include <modules/fontrendering/fontrenderingmoduledefine.h>
 
-in vec4 gColor;
-in vec2 gPos;
-in float gR;
-flat in vec4 pickColor_;
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/fontrendering/util/fontutils.h>
 
-uniform int circle = 1;
-uniform float borderWidth = 1;
-uniform vec4 borderColor;
+namespace inviwo {
 
-uniform SecondaryColor secondaryColor = SecondaryColor(vec4(0.0), 0.0, 0.0);
+/**
+ * \ingroup properties
+ * This option property lists all available font faces which can be used for font rendering.
+ */
+class IVW_MODULE_FONTRENDERING_API FontFaceOptionProperty : public OptionPropertyString {
+public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
-uniform float antialiasing = 1.5; // [pixel]
+    FontFaceOptionProperty(std::string_view identifier, std::string_view displayName,
+                           font::FontType fontType = font::FontType::Default,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
+    FontFaceOptionProperty(std::string_view identifier, std::string_view displayName,
+                           std::string_view fontFaceName,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
+    FontFaceOptionProperty(const FontFaceOptionProperty& rhs);
+    virtual FontFaceOptionProperty* clone() const override;
+    virtual ~FontFaceOptionProperty() = default;
+};
 
-void main(void) {
-    float r = 0;
-    if (circle == 1) {
-        r = length(gPos);
-    } else {
-        r = max(abs(gPos.x), abs(gPos.y));
-    }
-    if (r > gR + antialiasing) {
-        discard;
-    }
-
-    float innerGlyphRadius = gR - borderWidth;
-
-    // pseudo antialiasing with the help of the alpha channel
-    // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
-    vec4 color = gColor;
-    if (borderWidth > 0.0) {
-        float borderValue = clamp(mix(0.0, 1.0, (r - innerGlyphRadius) / 1.0), 0.0, 1.0);
-        float alpha = mix(borderColor.a, secondaryColor.color.a, secondaryColor.alphaMixIn);
-        color = mix(color, vec4(borderColor.rgb, alpha), borderValue);
-    }
-    float borderAlpha = clamp(mix(1.0, 0.0, (r - gR) / antialiasing), 0.0, 1.0);
-
-    color.rgb *= color.a;
-    FragData0 = color * borderAlpha;
-    //FragData0 = pickColor_;
-    PickingData = pickColor_;
-}
+}  // namespace inviwo

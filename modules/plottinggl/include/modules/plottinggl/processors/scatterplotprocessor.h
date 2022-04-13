@@ -86,6 +86,8 @@ private:
     ScatterPlotGL::HighlightCallbackHandle highlightChangedCallBack_;
     ScatterPlotGL::SelectionCallbackHandle selectionChangedCallBack_;
     ScatterPlotGL::SelectionCallbackHandle filteringChangedCallBack_;
+
+    std::unordered_map<uint32_t, uint32_t> indexToRowMap_;
 };
 
 }  // namespace plot

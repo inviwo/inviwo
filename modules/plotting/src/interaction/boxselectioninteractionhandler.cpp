@@ -110,6 +110,8 @@ void BoxSelectionInteractionHandler::setYAxisData(std::shared_ptr<const BufferBa
     yAxis_ = buffer;
 }
 
+void BoxSelectionInteractionHandler::reset() { dragRect_.reset(); }
+
 void BoxSelectionInteractionHandler::dragRectChanged(const dvec2& start, const dvec2& end,
                                                      bool append) {
     switch (dragRectSettings_.getMode()) {

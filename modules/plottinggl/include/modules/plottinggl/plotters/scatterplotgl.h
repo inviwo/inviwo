@@ -33,6 +33,9 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/selectioncolorproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/dispatcher.h>
@@ -71,7 +74,7 @@ public:
     using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
     using HighlightFunc = void(const BitSet&);
     using HighlightCallbackHandle = std::shared_ptr<std::function<HighlightFunc>>;
-    using SelectionFunc = void(const std::vector<bool>&);
+    using SelectionFunc = void(const BitSet&);
     using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
 
     enum class SortingOrder { Ascending, Descending };
@@ -94,8 +97,13 @@ public:
         FloatProperty minRadius_;
         TransferFunctionProperty tf_;
         FloatVec4Property color_;
-        FloatVec4Property hoverColor_;
-        FloatVec4Property selectionColor_;
+
+        SelectionColorProperty showHighlighted_;
+        SelectionColorProperty showSelected_;
+        SelectionColorProperty showFiltered_;
+
+        BoolProperty tooltip_;
+
         BoxSelectionProperty boxSelectionSettings_;  ///! (Mouse) Drag selection/filtering
         MarginProperty margins_;
         FloatProperty axisMargin_;
@@ -103,36 +111,31 @@ public:
         FloatProperty borderWidth_;
         FloatVec4Property borderColor_;
 
-        BoolProperty hovering_;
-
         AxisStyleProperty axisStyle_;
         AxisProperty xAxis_;
         AxisProperty yAxis_;
 
     private:
         auto props() {
-            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, boxSelectionSettings_, margins_, axisMargin_,
-                            borderWidth_, borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
+            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, showHighlighted_,
+                            showSelected_, showFiltered_, tooltip_, boxSelectionSettings_, margins_,
+                            axisMargin_, borderWidth_, borderColor_, axisStyle_, xAxis_, yAxis_);
         }
         auto props() const {
-            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, boxSelectionSettings_, margins_, axisMargin_,
-                            borderWidth_, borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
+            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, showHighlighted_,
+                            showSelected_, showFiltered_, tooltip_, boxSelectionSettings_, margins_,
+                            axisMargin_, borderWidth_, borderColor_, axisStyle_, xAxis_, yAxis_);
         }
     };
 
     explicit ScatterPlotGL(Processor* processor = nullptr);
     virtual ~ScatterPlotGL() = default;
 
-    void plot(Image& dest, IndexBuffer* indices = nullptr, bool useAxisRanges = false);
-    void plot(Image& dest, const Image& src, IndexBuffer* indices = nullptr,
-              bool useAxisRanges = false);
-    void plot(ImageOutport& dest, IndexBuffer* indices = nullptr, bool useAxisRanges = false);
-    void plot(ImageOutport& dest, ImageInport& src, IndexBuffer* indices = nullptr,
-              bool useAxisRanges = false);
-    void plot(const ivec2& start, const ivec2& size, IndexBuffer* indices = nullptr,
-              bool useAxisRanges = false);
+    void plot(Image& dest, bool useAxisRanges = false);
+    void plot(Image& dest, const Image& src, bool useAxisRanges = false);
+    void plot(ImageOutport& dest, bool useAxisRanges = false);
+    void plot(ImageOutport& dest, ImageInport& src, bool useAxisRanges = false);
+    void plot(const ivec2& start, const ivec2& size, bool useAxisRanges = false);
 
     void setXAxisLabel(const std::string& label);
 
@@ -151,7 +154,29 @@ public:
 
     void setSortingOrder(SortingOrder order);
 
+    /**
+     * Set the brushed indices for filtered, selected, and highlighted data points.
+     * @pre Indices must be zero-based, that is idx in [0, numDataPoints).
+     * @see setFilteredIndices setSelectedIndices setHighlightedIndices
+     */
+    void setIndices(const BitSet& filtered, const BitSet& selected, const BitSet& highlighted);
+    /**
+     * Set indices of data points that should be hidden.
+     * @pre Indices must be zero-based, that is idx in [0, numDataPoints).
+     * @see setIndices setSelectedIndices setHighlightedIndices
+     */
+    void setFilteredIndices(const BitSet& indices);
+    /**
+     * Set indices of data points that are selected.
+     * @pre Indices must be zero-based, that is idx in [0, numDataPoints).
+     * @see setIndices setFilteredIndices setHighlightedIndices
+     */
     void setSelectedIndices(const BitSet& indices);
+    /**
+     * Set indices of data points that should be highlighted.
+     * @pre Indices must be zero-based, that is idx in [0, numDataPoints).
+     * @see setIndices setFilteredIndices setSelectedIndices
+     */
     void setHighlightedIndices(const BitSet& indices);
 
     ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
@@ -167,50 +192,50 @@ public:
     Shader shader_;
 
 protected:
-    void plot(const size2_t& dims, IndexBuffer* indices, bool useAxisRanges);
+    void plot(const size2_t& dims, bool useAxisRanges);
+    void attachVertexAttributes();
+    void setShaderUniforms(TextureUnitContainer& cont, const size2_t& dims, bool useAxisRanges);
     void renderAxis(const size2_t& dims);
 
     void objectPicked(PickingEvent* p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
-    /*
-     * Resizes selected_ and filtered_ according to currently set axes buffer size.
-     */
-    void ensureSelectAndFilterSizes();
 
-    std::shared_ptr<const BufferBase> xAxis_;
-    std::shared_ptr<const BufferBase> yAxis_;
-    std::shared_ptr<const BufferBase> color_;
-    std::shared_ptr<const BufferBase> radius_;
-    std::shared_ptr<const BufferBase> sorting_;
+    void partitionData();
+
+    struct Points {
+        BufferObjectArray boa;
+        IndexBuffer indices;
+
+        // startFilter, startRegular, startSelected, startHighlighted, end
+        std::array<std::uint32_t, 5> offsets;
+
+        std::shared_ptr<const BufferBase> xCoord;
+        std::shared_ptr<const BufferBase> yCoord;
+        std::shared_ptr<const BufferBase> color;
+        std::shared_ptr<const BufferBase> radius;
+        std::shared_ptr<const BufferBase> sorting;
+        Buffer<std::uint32_t> pickIds;
+    };
+    Points points_;
+
     std::shared_ptr<const TemplateColumn<uint32_t>> indexColumn_;
-
-    std::shared_ptr<BufferBase> pickIds_;
 
     SortingOrder sortOrder_ = SortingOrder::Ascending;
 
-    vec2 minmaxX_;
-    vec2 minmaxY_;
-    vec2 minmaxC_;
-    vec2 minmaxR_;
+    vec2 minmaxX_ = vec2(0.0f, 1.0f);
+    vec2 minmaxY_ = vec2(0.0f, 1.0f);
+    vec2 minmaxC_ = vec2(0.0f, 1.0f);
+    vec2 minmaxR_ = vec2(0.0f, 1.0f);
 
     std::array<AxisRenderer, 2> axisRenderers_;
 
     PickingMapper picking_;
-    std::vector<bool> filtered_;
-    std::vector<bool> selected_;
+
+    BitSet filtered_;
+    BitSet selected_;
     BitSet highlighted_;
-    size_t nSelectedButNotFiltered_ = 0;
-    bool filteringDirty_ = true;
-    bool selectedIndicesGLDirty_ = true;
-    bool highlightDirty_ = true;
-    BufferObject selectedIndicesGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
-                                                   BufferUsage::Dynamic, BufferTarget::Index);
-    BufferObject highlightIndexGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
-                                                  BufferUsage::Dynamic, BufferTarget::Index);
 
-    std::unique_ptr<IndexBuffer> indices_;
-    std::unique_ptr<BufferObjectArray> boa_;
-
+    bool partitionDirty_;
     Processor* processor_;
 
     Dispatcher<ToolTipFunc> tooltipCallback_;
@@ -218,8 +243,8 @@ protected:
     Dispatcher<SelectionFunc> selectionChangedCallback_;
     Dispatcher<SelectionFunc> filteringChangedCallback_;
 
-    BoxSelectionInteractionHandler::SelectionCallbackHandle boxSelectionChangedCallBack_;
-    BoxSelectionInteractionHandler::SelectionCallbackHandle boxFilteringChangedCallBack_;
+    BoxSelectionInteractionHandler::SelectionCallbackHandle boxSelectionChangedCallback_;
+    BoxSelectionInteractionHandler::SelectionCallbackHandle boxFilteringChangedCallback_;
 
     BoxSelectionInteractionHandler boxSelectionHandler_;
     BoxSelectionRenderer selectionRectRenderer_;

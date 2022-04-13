@@ -50,6 +50,8 @@ uniform vec2 minmaxC;
 uniform vec2 minmaxR;
 uniform vec4 default_color;
 
+uniform SecondaryColor secondaryColor = SecondaryColor(vec4(0.0), 0.0, 0.0);
+
 uniform float minRadius;
 uniform float maxRadius;
 
@@ -69,6 +71,7 @@ void main(void) {
     } else {
         vColor = default_color;
     }
+    vColor = mix(vColor, secondaryColor.color, vec4(vec3(secondaryColor.colorMixIn), secondaryColor.alphaMixIn));
 
     if (has_radius == 1) {
         float r = norm(R, minmaxR);

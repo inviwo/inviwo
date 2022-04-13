@@ -41,19 +41,11 @@ FontProperty::FontProperty(std::string_view identifier, std::string_view display
                            std::string_view fontFace, int size, float lineSpacing, vec2 anchorPos,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , fontFace_("fontFace", "Font Face")
+    , fontFace_("fontFace", "Font Face", fontFace)
     , fontSize_("fontSize", "Font Size", size, 0, 144, 1)
     , lineSpacing_("lineSpacing", "Line Spacing", lineSpacing, -1.0f, 2.0f)
     , anchorPos_("anchor", "Anchor", anchorPos, vec2(-1.5f), vec2(1.5f), vec2(0.01f)) {
-    auto fonts = font::getAvailableFonts();
 
-    for (auto font : fonts) {
-        auto name = filesystem::getFileNameWithoutExtension(font.second);
-        // use the file name w/o extension as identifier
-        fontFace_.addOption(name, font.first, font.second);
-    }
-    fontFace_.setSelectedIdentifier(fontFace);
-    fontFace_.setCurrentStateAsDefault();
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
 
     addProperty(fontFace_);

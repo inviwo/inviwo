@@ -64,6 +64,8 @@ size_t BufferBase::getSize() const {
     return getLastOr(&BufferRepresentation::getSize, defaultSize_);
 }
 
+bool BufferBase::empty() const { return getSize() == 0; }
+
 void BufferBase::setDataFormat(const DataFormatBase* format) { defaultDataFormat_ = format; }
 
 const DataFormatBase* BufferBase::getDataFormat() const {

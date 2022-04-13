@@ -97,6 +97,8 @@ public:
 
     BitSet(util::span<const uint32_t> span);
 
+    BitSet(const std::vector<bool>& v);
+
     template <typename InputIt, class = std::enable_if_t<is_iterator<InputIt>::value>>
     BitSet(InputIt begin, InputIt end) : BitSet() {
         add(begin, end);
@@ -151,6 +153,7 @@ public:
     bool set(const BitSet& b);
 
     void add(util::span<const uint32_t> span);
+    void add(const std::vector<bool>& v);
 
     template <typename InputIt, class = typename std::enable_if_t<is_iterator<InputIt>::value>>
     void add(InputIt begin, InputIt end) {

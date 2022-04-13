@@ -32,11 +32,11 @@
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/datastructures/bitset.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>
@@ -45,6 +45,7 @@
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 
 namespace inviwo {
 
@@ -83,6 +84,12 @@ private:
     void createScatterPlots();
     void createLabels();
     void createStatsLabels();
+    /**
+     * Test wether a given column should be included in the rendering or not. Does this by looking
+     * up or creating a bool property in parameters_.
+     */
+    bool isIncluded(std::shared_ptr<Column> col);
+
     size_t numParams_;
 
     ScatterPlotGL::Properties scatterPlotproperties_;
@@ -94,15 +101,15 @@ private:
     CompositeProperty labels_;
     FloatVec4Property fontColor_;
 
-    OptionPropertyString fontFace_;
+    FontFaceOptionProperty fontFace_;
     IntProperty fontSize_;
-    OptionPropertyString fontFaceStats_;
+    FontFaceOptionProperty fontFaceStats_;
     IntProperty statsFontSize_;
     BoolProperty showCorrelationValues_;  // Show numerical correlation values
 
     CompositeProperty parameters_;
 
-    TransferFunctionProperty correlectionTF_;
+    TransferFunctionProperty correlationTF_;
 
     std::vector<std::shared_ptr<Texture2D>> labelsTextures_;
     std::vector<std::shared_ptr<Texture2D>> statsTextures_;
@@ -117,11 +124,8 @@ private:
                                                            //! "matrix order" (as shown on screen)
                                                            //! to index of column in the dataframe.
 
-    /**
-     * Test wether a given column should be included in the rendering or not. Does this by looking
-     * up or creating a bool property in parameters_.
-     */
-    bool isIncluded(std::shared_ptr<Column> col);
+    BitSet filteredIndices_;
+    std::unordered_map<uint32_t, uint32_t> indexToRowMap_;
 };
 
 }  // namespace plot

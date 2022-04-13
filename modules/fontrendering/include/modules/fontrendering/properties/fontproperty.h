@@ -36,9 +36,15 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <modules/fontrendering/datastructures/fontsettings.h>
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 
 namespace inviwo {
 
+/**
+ * \ingroup properties
+ * A composite property with the necessary parameters for font rendering like font face, font size,
+ * and line spacing.
+ */
 class IVW_MODULE_FONTRENDERING_API FontProperty : public FontSettings, public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
@@ -58,7 +64,7 @@ public:
     virtual FontProperty* clone() const override;
     virtual ~FontProperty() = default;
 
-    OptionPropertyString fontFace_;
+    FontFaceOptionProperty fontFace_;
     IntProperty fontSize_;
     FloatProperty lineSpacing_;
     FloatVec2Property anchorPos_;

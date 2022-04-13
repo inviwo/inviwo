@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include "utils/structs.glsl"
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
-in vec4 gColor;
-in vec2 gPos;
-in float gR;
-flat in vec4 pickColor_;
+namespace inviwo {
 
-uniform int circle = 1;
-uniform float borderWidth = 1;
-uniform vec4 borderColor;
+/**
+ * @ingroup properties
+ * @brief composite property holding parameters for highlighted and selected data points.
+ */
+class IVW_CORE_API SelectionColorProperty : public BoolCompositeProperty {
+public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
-uniform SecondaryColor secondaryColor = SecondaryColor(vec4(0.0), 0.0, 0.0);
+    SelectionColorProperty(
+        std::string_view identifier, std::string_view displayName, bool checked = false,
+        vec3 color = vec3(1.0f, 0.906f, 0.612f), float alpha = 0.75f,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+        PropertySemantics semantics = PropertySemantics::Default);
+    SelectionColorProperty(const SelectionColorProperty& rhs);
+    virtual ~SelectionColorProperty() = default;
 
-uniform float antialiasing = 1.5; // [pixel]
+    virtual SelectionColorProperty* clone() const override;
 
-void main(void) {
-    float r = 0;
-    if (circle == 1) {
-        r = length(gPos);
-    } else {
-        r = max(abs(gPos.x), abs(gPos.y));
-    }
-    if (r > gR + antialiasing) {
-        discard;
-    }
+    vec4 getColor() const;
+    /**
+     * Return the blending factor for mixing the selection color with the item's original color.
+     * @return blending factor in [0,1]
+     */
+    float getMixIntensity() const;
 
-    float innerGlyphRadius = gR - borderWidth;
+    FloatVec3Property color_;
+    FloatProperty alpha_;
+    FloatProperty intensity_;
+};
 
-    // pseudo antialiasing with the help of the alpha channel
-    // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
-    vec4 color = gColor;
-    if (borderWidth > 0.0) {
-        float borderValue = clamp(mix(0.0, 1.0, (r - innerGlyphRadius) / 1.0), 0.0, 1.0);
-        float alpha = mix(borderColor.a, secondaryColor.color.a, secondaryColor.alphaMixIn);
-        color = mix(color, vec4(borderColor.rgb, alpha), borderValue);
-    }
-    float borderAlpha = clamp(mix(1.0, 0.0, (r - gR) / antialiasing), 0.0, 1.0);
-
-    color.rgb *= color.a;
-    FragData0 = color * borderAlpha;
-    //FragData0 = pickColor_;
-    PickingData = pickColor_;
-}
+}  // namespace inviwo
