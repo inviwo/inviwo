@@ -69,7 +69,7 @@ class ReportImageTest(ReportTest):
                      "Test: {test_size} vs Reference:{ref_size}").format(**img)
             elif img["difference"] > tol:
                 self.message[img['image']] = \
-                    ("Image {image} has difference greater then the allowed  "
+                    ("Image {image} has difference greater than the allowed "
                      "tolerance ({difference}% &gt; {tol})  "
                      "difference, {different_pixels} different pixels, "
                      "largest difference {max_difference}").format(tol=tol, **img)

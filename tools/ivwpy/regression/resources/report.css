@@ -53,6 +53,9 @@ ol li {
 .fail {
     background-color : @color-primary-1;
 }
+.warning {
+    background-color: @color-secondary-1-2;
+}
 .disabled {
     background-color : @color-secondary-1-1;
 }

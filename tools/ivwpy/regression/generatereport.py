@@ -450,10 +450,21 @@ class TestRun:
         def path(type, img):
             return os.path.relpath(toPath(testdir, type, img), self.basedir)
 
-        def imgstatus(key):
+        def imgstatus(img, warnPercentage=10):
+            # Return the status of the image. Either "fail", "ok", or "warning".
+            # Warn if within warnPercentage % of the difference tolerance
             failures = safeget(self.report, 'failures', failure={})
-            fail = next((x for x in failures if x[0] == "images"), None)
-            return "ok" if fail is None else "fail"
+            failedImgs = next((x for x in failures if x[0] == "images"), None)
+            failed = (failedImgs is not None and img["image"] in failedImgs[1])
+            diffTolerance = safeget(self.report, "config", "image_test", "differenceTolerance", 
+                                    img["image"], failure=0.0)
+
+            if failed:
+                return "fail"
+            elif img["difference"] > diffTolerance * (1.0 - warnPercentage/100.0):
+                return "warning"
+            else:
+                return "ok"
 
         with tag('ol'):
             for img in imgs:
@@ -462,7 +473,7 @@ class TestRun:
                                              path("imgref", img["image"]),
                                              path("imgdiff", img["image"]),
                                              path("imgmask", img["image"])),
-                                  status=imgstatus(img['image']), hide=False))
+                                  status=imgstatus(img), hide=False))
         return doc.getvalue()
 
     def txtsItem(self, tests, regdir, testdir):
