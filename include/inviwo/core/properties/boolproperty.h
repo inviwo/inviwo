@@ -47,6 +47,11 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
+    BoolProperty(std::string_view identifier, std::string_view displayName, Document help,
+                 bool value = false,
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                 PropertySemantics semantics = PropertySemantics::Default);
+
     BoolProperty(std::string_view identifier, std::string_view displayName, bool value = false,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);

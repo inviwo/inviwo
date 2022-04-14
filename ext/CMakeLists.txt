@@ -270,6 +270,13 @@ else()
     ivw_vcpkg_install(units MODULE Core EXT)
 endif()
 
+# Markdown
+add_subdirectory(md4c)
+ivw_register_license_file(NAME "MD4C" VERSION 0.4.8 TARGET inviwo::md4c MODULE Core EXT
+    URL "http://github.com/mity/md4c"
+    TYPE "MIT License"
+    FILES ${IVW_EXTENSIONS_DIR}/md4c/LICENSE.md
+)
 
 if(WIN32) # Stackwalker for windows for stack traces in the log
     add_subdirectory(stackwalker) 

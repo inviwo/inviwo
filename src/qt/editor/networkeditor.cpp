@@ -414,7 +414,7 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
         KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
                                     utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                     utilqt::fromQString(keyEvent->text()));
-        progagateEventToSelecedProcessors(pressKeyEvent);
+        propagateEventToSelectedProcessors(pressKeyEvent);
     }
 }
 
@@ -425,7 +425,7 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
         KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
                                       utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                       utilqt::fromQString(keyEvent->text()));
-        progagateEventToSelecedProcessors(releaseKeyEvent);
+        propagateEventToSelectedProcessors(releaseKeyEvent);
     }
 }
 
@@ -757,7 +757,7 @@ void NetworkEditor::showProcessorHelp(const std::string& classIdentifier, bool r
     }
 }
 
-void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent) {
+void NetworkEditor::propagateEventToSelectedProcessors(KeyboardEvent& pressKeyEvent) {
     try {
         for (auto& item : selectedItems()) {
             if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {

@@ -7,6 +7,8 @@ set(HEADER_FILES
 	${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8.h
     ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/checked.h
     ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/core.h
+    ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/cpp11.h
+    ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/cpp17.h
     ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/unchecked.h
 )
 set(DOC_FILES

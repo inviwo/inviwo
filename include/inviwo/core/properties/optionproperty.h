@@ -47,7 +47,7 @@ namespace inviwo {
  */
 class IVW_CORE_API BaseOptionProperty : public Property {
 public:
-    BaseOptionProperty(std::string_view identifier, std::string_view displayName,
+    BaseOptionProperty(std::string_view identifier, std::string_view displayName, Document help,
                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                        PropertySemantics semantics = PropertySemantics::Default);
 
@@ -110,6 +110,18 @@ public:
 };
 
 /**
+ * A helper struct to construct ordinal properties @see OrdinalProperty
+ */
+template <typename T>
+struct OptionPropertyState {
+    std::vector<OptionPropertyOption<T>> options = {};
+    size_t selectedIndex = 0;
+    InvalidationLevel invalidation = InvalidationLevel::InvalidOutput;
+    PropertySemantics semantics = PropertySemantics::Default;
+    Document help = {};
+};
+
+/**
  * OptionProperty with a custom type @p T.
  *
  * For dynamic template option properties, @p T needs to have some traits defining the class
@@ -155,14 +167,33 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
+    OptionProperty(std::string_view identifier, std::string_view displayName, Document help,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                   PropertySemantics semantics = PropertySemantics::Default);
+
     OptionProperty(std::string_view identifier, std::string_view displayName,
                    const std::vector<OptionPropertyOption<T>>& options, size_t selectedIndex = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
+    OptionProperty(std::string_view identifier, std::string_view displayName, Document help,
+                   const std::vector<OptionPropertyOption<T>>& options, size_t selectedIndex = 0,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                   PropertySemantics semantics = PropertySemantics::Default);
+
+    OptionProperty(std::string_view identifier, std::string_view displayName,
+                   OptionPropertyState<T> state);
+
     template <typename U = T,
               class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
     OptionProperty(std::string_view identifier, std::string_view displayName,
+                   const std::vector<T>& options, size_t selectedIndex = 0,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                   PropertySemantics semantics = PropertySemantics::Default);
+
+    template <typename U = T,
+              class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
+    OptionProperty(std::string_view identifier, std::string_view displayName, Document help,
                    const std::vector<T>& options, size_t selectedIndex = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
@@ -422,28 +453,53 @@ bool OptionPropertyOption<T>::operator!=(const OptionPropertyOption<T>& rhs) con
 
 template <typename T>
 OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
-                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
-    , selectedIndex_(0)
-    , defaultSelectedIndex_(0) {}
-
-template <typename T>
-OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
+                                  Document help,
                                   const std::vector<OptionPropertyOption<T>>& options,
                                   size_t selectedIndex, InvalidationLevel invalidationLevel,
                                   PropertySemantics semantics)
-    : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
+    : BaseOptionProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , selectedIndex_(std::min(selectedIndex, options.size() - 1))
     , options_(options)
     , defaultSelectedIndex_(selectedIndex_)
     , defaultOptions_(options_) {}
 
 template <typename T>
+OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
+                                  OptionPropertyState<T> state)
+    : BaseOptionProperty(identifier, displayName, std::move(state.help), state.invalidation,
+                         state.semantics)
+    , selectedIndex_(state.selectedIndex)
+    , options_(std::move(state.options))
+    , defaultSelectedIndex_(selectedIndex_)
+    , defaultOptions_(options_) {}
+
+template <typename T>
+OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
+                                  Document help, InvalidationLevel invalidationLevel,
+                                  PropertySemantics semantics)
+    : OptionProperty(identifier, displayName, std::move(help), {}, 0, invalidationLevel,
+                     semantics) {}
+
+template <typename T>
+OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
+                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : OptionProperty(identifier, displayName, {}, invalidationLevel, semantics) {}
+
+template <typename T>
+OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
+                                  const std::vector<OptionPropertyOption<T>>& options,
+                                  size_t selectedIndex, InvalidationLevel invalidationLevel,
+                                  PropertySemantics semantics)
+    : OptionProperty(identifier, displayName, {}, options, selectedIndex, invalidationLevel,
+                     semantics) {}
+
+template <typename T>
 template <typename U, class>
 OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
-                                  const std::vector<T>& options, size_t selectedIndex,
-                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
+                                  Document help, const std::vector<T>& options,
+                                  size_t selectedIndex, InvalidationLevel invalidationLevel,
+                                  PropertySemantics semantics)
+    : BaseOptionProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , selectedIndex_(std::min(selectedIndex, options.size() - 1))
     , options_()
     , defaultSelectedIndex_(selectedIndex_)
@@ -454,6 +510,14 @@ OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view 
         defaultOptions_.emplace_back(option);
     }
 }
+
+template <typename T>
+template <typename U, class>
+OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
+                                  const std::vector<T>& options, size_t selectedIndex,
+                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : OptionProperty(identifier, displayName, {}, options, selectedIndex, invalidationLevel,
+                     semantics) {}
 
 template <typename T>
 OptionProperty<T>::OptionProperty(const OptionProperty<T>& rhs) = default;

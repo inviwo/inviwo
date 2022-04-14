@@ -40,12 +40,17 @@ const std::string CompositeProperty::classIdentifier = "org.inviwo.CompositeProp
 std::string CompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
 CompositeProperty::CompositeProperty(std::string_view identifier, std::string_view displayName,
-                                     InvalidationLevel invalidationLevel,
+                                     Document help, InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , PropertyOwner()
     , collapsed_("collapsed", false)
     , subPropertyInvalidationLevel_(InvalidationLevel::Valid) {}
+
+CompositeProperty::CompositeProperty(std::string_view identifier, std::string_view displayName,
+                                     InvalidationLevel invalidationLevel,
+                                     PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, {}, invalidationLevel, semantics) {}
 
 CompositeProperty* CompositeProperty::clone() const { return new CompositeProperty(*this); }
 
@@ -161,10 +166,11 @@ const PropertyOwner* CompositeProperty::getOwner() const { return Property::getO
 PropertyOwner* CompositeProperty::getOwner() { return Property::getOwner(); }
 
 void CompositeProperty::accept(NetworkVisitor& visitor) {
-    if (visitor.visit(*this)) {
+    if (visitor.enter(*this)) {
         for (auto* elem : properties_) {
             elem->accept(visitor);
         }
+        visitor.exit(*this);
     }
 }
 

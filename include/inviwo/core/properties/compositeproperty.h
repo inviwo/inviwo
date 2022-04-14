@@ -56,6 +56,10 @@ public:
     enum class CollapseAction { Collapse, Expand };
     enum class CollapseTarget { Current, Recursive, Children, Siblings };
 
+    CompositeProperty(std::string_view identifier, std::string_view displayName, Document help,
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                      PropertySemantics semantics = PropertySemantics::Default);
+
     CompositeProperty(std::string_view identifier, std::string_view displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);

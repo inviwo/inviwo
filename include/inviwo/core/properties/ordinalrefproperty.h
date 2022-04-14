@@ -55,6 +55,7 @@ struct OrdinalRefPropertyState {
     T increment = Defaultvalues<T>::getInc();
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
     PropertySemantics semantics = defaultSemantics();
+    Document help = {};
 
     auto setMin(T newMin) -> OrdinalRefPropertyState {
         min = newMin;
@@ -84,6 +85,10 @@ struct OrdinalRefPropertyState {
         semantics = newSemantics;
         return *this;
     }
+    auto setHelp(Document newHelp) -> OrdinalRefPropertyState {
+        help = newHelp;
+        return *this;
+    }
 
     static PropertySemantics defaultSemantics() {
         if constexpr (util::extent<T, 1>::value > 1) {
@@ -105,6 +110,17 @@ class OrdinalRefProperty : public Property {
 public:
     using value_type = T;
     using component_type = typename util::value_type<T>::type;
+
+    OrdinalRefProperty(
+        std::string_view identifier, std::string_view displayName, Document help,
+        std::function<T()> get, std::function<void(const T&)> set,
+        const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
+                                                                     ConstraintBehavior::Editable},
+        const std::pair<T, ConstraintBehavior>& maxValue = std::pair{Defaultvalues<T>::getMax(),
+                                                                     ConstraintBehavior::Editable},
+        const T& increment = Defaultvalues<T>::getInc(),
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        PropertySemantics semantics = OrdinalRefPropertyState<T>::defaultSemantics());
 
     OrdinalRefProperty(
         std::string_view identifier, std::string_view displayName, std::function<T()> get,
@@ -292,12 +308,13 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 
 template <typename T>
 OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
-                                          std::function<T()> get, std::function<void(const T&)> set,
+                                          Document help, std::function<T()> get,
+                                          std::function<void(const T&)> set,
                                           const std::pair<T, ConstraintBehavior>& minValue,
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
                                           PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , get_{std::move(get)}
     , set_{std::move(set)}
     , minValue_("minvalue", minValue.first)
@@ -320,11 +337,22 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
 
 template <typename T>
 OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
+                                          std::function<T()> get, std::function<void(const T&)> set,
+                                          const std::pair<T, ConstraintBehavior>& minValue,
+                                          const std::pair<T, ConstraintBehavior>& maxValue,
+                                          const T& increment, InvalidationLevel invalidationLevel,
+                                          PropertySemantics semantics)
+    : OrdinalRefProperty{identifier, displayName, {},        std::move(get),    std::move(set),
+                         minValue,   maxValue,    increment, invalidationLevel, semantics} {}
+
+template <typename T>
+OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
                                           std::function<const T&()> get,
                                           std::function<void(const T&)> set,
                                           OrdinalRefPropertyState<T> state)
     : OrdinalRefProperty{identifier,
                          displayName,
+                         std::move(state.help),
                          std::move(get),
                          std::move(set),
                          std::pair{state.min, state.minConstraint},

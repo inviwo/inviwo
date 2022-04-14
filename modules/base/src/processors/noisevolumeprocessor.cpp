@@ -42,8 +42,19 @@ const ProcessorInfo NoiseVolumeProcessor::processorInfo_{
     "Noise Generator 3D",               // Display name
     "Data Creation",                    // Category
     CodeState::Experimental,            // Code state
-    Tags::None,                         // Tags
-};
+    Tag::CPU | Tag("Volume"),           // Tags
+    R"(
+    A processor to generate noise volumes.
+    Using the Mersenne Twister 19937 generator to generate random numbers.
+    
+    ![Image Of Noise Types](noise_types.png)
+    
+    ### Available Methods
+    * __Random__ Generates a uniform, random value in the range [min,max] for each voxel
+    * __Halton Sequence__  Create a binary image of based on semi-random pairs (deterministic)
+      constructed using two [Halton Sequence](https://en.wikipedia.org/wiki/Halton_sequence)
+      of different bases (base 2 and base 3 gives good results)
+)"_unindent};
 
 const ProcessorInfo NoiseVolumeProcessor::getProcessorInfo() const { return processorInfo_; }
 

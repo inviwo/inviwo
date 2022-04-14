@@ -30,8 +30,8 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/io/serialization/ticpp.h>
+#include <inviwo/core/util/safecstr.h>
 
 namespace inviwo {
 

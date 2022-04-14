@@ -151,7 +151,7 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
-    void progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent);
+    void propagateEventToSelectedProcessors(KeyboardEvent& pressKeyEvent);
 
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;

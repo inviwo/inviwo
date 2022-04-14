@@ -61,6 +61,13 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
+    CameraProperty(std::string_view identifier, std::string_view displayName, Document help,
+                   std::function<std::optional<mat4>()> getBoundingBox,
+                   vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
+                   vec3 lookUp = vec3(0.0f, 1.0f, 0.0f),
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                   PropertySemantics semantics = PropertySemantics::Default);
+
     CameraProperty(std::string_view identifier, std::string_view displayName,
                    std::function<std::optional<mat4>()> getBoundingBox,
                    vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
@@ -99,6 +106,7 @@ public:
 
     CameraProperty& setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
+    
     /**
      * Sets given camera properties while respecting their min/max ranges.
      * Locks and unlocks processor network before and after changing property values.
@@ -111,6 +119,7 @@ public:
 
     CameraProperty& setNearPlaneDist(float v);
     CameraProperty& setFarPlaneDist(float v);
+    
     /**
      * Set near and far plane distance values and adjust their min/max ranges.
      * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value.

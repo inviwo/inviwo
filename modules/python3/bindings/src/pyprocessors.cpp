@@ -129,10 +129,10 @@ void exposeProcessors(pybind11::module& m) {
         .def_readonly_static("PY", &Tags::PY);
 
     py::class_<ProcessorInfo>(m, "ProcessorInfo")
-        .def(py::init<std::string, std::string, std::string, CodeState, Tags, bool>(),
+        .def(py::init<std::string, std::string, std::string, CodeState, Tags, std::string_view>(),
              py::arg("classIdentifier"), py::arg("displayName"), py::arg("category") = "Python",
              py::arg("codeState") = CodeState::Stable, py::arg("tags") = Tags::PY,
-             py::arg("visible") = true)
+             py::arg("help") = "")
         .def_readonly("classIdentifier", &ProcessorInfo::classIdentifier)
         .def_readonly("displayName", &ProcessorInfo::displayName)
         .def_readonly("category", &ProcessorInfo::category)

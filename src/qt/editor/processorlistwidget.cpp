@@ -630,6 +630,7 @@ void ProcessorTreeWidget::currentItemChanged(QTreeWidgetItem* current,
     auto classname =
         utilqt::fromQString(current->data(0, ProcessorTree::identifierRole).toString());
     if (!classname.empty()) {
+        helpWidget_->raise();
         helpWidget_->showDocForClassName(classname);
     }
 }
@@ -638,7 +639,7 @@ static QString mimeType = "inviwo/ProcessorDragObject";
 
 ProcessorDragObject::ProcessorDragObject(QWidget* source, std::shared_ptr<Processor> processor)
     : QDrag(source) {
-    auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(processor.get(), 1.0));
+    auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(*processor, 1.0));
     setPixmap(img);
     auto mime = new ProcessorMimeData(std::move(processor));
     setMimeData(mime);

@@ -302,6 +302,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dispatcher.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/docbuilder.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/document.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/enumtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
@@ -633,6 +634,7 @@ set(SOURCE_FILES
     util/detected.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
+    util/docbuilder.cpp
     util/document.cpp
     util/enumtraits.cpp
     util/exception.cpp
@@ -835,6 +837,8 @@ target_link_libraries(inviwo-core
         units::units
     PRIVATE
         roaring::roaring
+        inviwo::md4c
+        utf8::cpp
 )
 
 #Optimize compiliation with PCH etc

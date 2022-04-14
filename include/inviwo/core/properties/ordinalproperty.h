@@ -55,6 +55,7 @@ struct OrdinalPropertyState {
     T increment = Defaultvalues<T>::getInc();
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
     PropertySemantics semantics = defaultSemantics();
+    Document help = {};
 
     auto setValue(T newValue) -> OrdinalPropertyState {
         value = newValue;
@@ -88,6 +89,11 @@ struct OrdinalPropertyState {
         semantics = newSemantics;
         return *this;
     }
+   auto setHelp(Document newHelp) -> OrdinalPropertyState {
+        help = newHelp;
+        return *this;
+    }
+
 
     static PropertySemantics defaultSemantics() {
         if constexpr (util::extent<T, 1>::value > 1) {
@@ -108,11 +114,16 @@ public:
     using value_type = T;
     using component_type = typename util::value_type<T>::type;
 
-    OrdinalProperty(std::string_view identifier, std::string_view displayName, const T& value,
-                    const T& minValue, const T& maxValue = Defaultvalues<T>::getMax(),
-                    const T& increment = Defaultvalues<T>::getInc(),
-                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                    PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
+    OrdinalProperty(
+        std::string_view identifier, std::string_view displayName, Document help,
+        const T& value = Defaultvalues<T>::getVal(),
+        const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
+                                                                     ConstraintBehavior::Editable},
+        const std::pair<T, ConstraintBehavior>& maxValue = std::pair{Defaultvalues<T>::getMax(),
+                                                                     ConstraintBehavior::Editable},
+        const T& increment = Defaultvalues<T>::getInc(),
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
 
     OrdinalProperty(
         std::string_view identifier, std::string_view displayName,
@@ -124,6 +135,12 @@ public:
         const T& increment = Defaultvalues<T>::getInc(),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
+
+    OrdinalProperty(std::string_view identifier, std::string_view displayName, const T& value,
+                    const T& minValue, const T& maxValue = Defaultvalues<T>::getMax(),
+                    const T& increment = Defaultvalues<T>::getInc(),
+                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                    PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
 
     OrdinalProperty(std::string_view identifier, std::string_view displayName,
                     OrdinalPropertyState<T> state);
@@ -386,12 +403,12 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
-                                    const T& value,
+                                    Document help, const T& value,
                                     const std::pair<T, ConstraintBehavior>& minValue,
                                     const std::pair<T, ConstraintBehavior>& maxValue,
                                     const T& increment, InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , value_("value", value)
     , minValue_("minvalue", minValue.first)
     , maxValue_("maxvalue", maxValue.first)
@@ -413,15 +430,27 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
+                                    const T& value,
+                                    const std::pair<T, ConstraintBehavior>& minValue,
+                                    const std::pair<T, ConstraintBehavior>& maxValue,
+                                    const T& increment, InvalidationLevel invalidationLevel,
+                                    PropertySemantics semantics)
+    : OrdinalProperty{identifier, displayName,       {},       value, minValue, maxValue,
+                      increment,  invalidationLevel, semantics} {}
+
+template <typename T>
+OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
                                     OrdinalPropertyState<T> state)
     : OrdinalProperty{identifier,
                       displayName,
+                      state.help,
                       state.value,
                       std::pair{state.min, state.minConstraint},
                       std::pair{state.max, state.maxConstraint},
                       state.increment,
                       state.invalidationLevel,
-                      state.semantics} {}
+                      state.semantics
+    } {}
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
@@ -430,6 +459,7 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
                                     PropertySemantics semantics)
     : OrdinalProperty{identifier,
                       displayName,
+                      {},
                       value,
                       std::pair{minValue, ConstraintBehavior::Editable},
                       std::pair{maxValue, ConstraintBehavior::Editable},

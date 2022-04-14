@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/util/document.h>
 
 #include <glm/fwd.hpp>
 #include <string>
@@ -75,6 +76,9 @@ public:
     virtual bool isConnected() const = 0;
     virtual bool isReady() const = 0;
 
+    const Document& getHelp() const;
+    Document& getHelp();
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -87,12 +91,13 @@ protected:
      *                   characters, "-" and "_".
      * @see Processor::addPort()
      */
-    Port(std::string_view identifier);
+    Port(std::string_view identifier, Document help);
 
     void setProcessor(Processor* processor);
 
     std::string identifier_;
     Processor* processor_;  //< non-owning reference
+    Document help_;
 };
 
 }  // namespace inviwo

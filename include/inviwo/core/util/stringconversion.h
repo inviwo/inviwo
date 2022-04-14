@@ -288,6 +288,12 @@ constexpr auto fmtHelp = IVW_UNINDENT(R"(
     or "breakpoint set -M fmt::v7::detail::error_handler::on_error".
     )");
 
+
+IVW_CORE_API void urlEncodeTo(std::string_view text, StrBuffer& strBuffer);
+IVW_CORE_API void htmlEncodeTo(std::string_view data, StrBuffer& strBuffer);
+IVW_CORE_API std::string urlEncode(std::string_view text);
+IVW_CORE_API std::string htmlEncode(std::string_view data);
+
 }  // namespace util
 
 // Keep this here to avoid breaking old code
@@ -306,8 +312,6 @@ std::string joinString(Iterator begin, Iterator end, std::string_view delimiter 
     std::copy(begin, end, util::make_ostream_joiner(ss, delimiter));
     return ss.str();
 }
-
-IVW_CORE_API std::string htmlEncode(std::string_view data);
 
 IVW_CORE_API std::vector<std::string> splitStringWithMultipleDelimiters(
     std::string_view str, std::vector<char> delimiters = {'_', '+', '-', '.', ' '});

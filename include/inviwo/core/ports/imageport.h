@@ -192,6 +192,9 @@ class IVW_CORE_API ImageOutport : public DataOutport<Image> {
     friend class BaseImageInport;
 
 public:
+    ImageOutport(std::string_view identifier, Document help,
+                 const DataFormatBase* format = DataVec4UInt8::get(),
+                 bool handleResizeEvents = true);
     ImageOutport(std::string_view identifier, const DataFormatBase* format = DataVec4UInt8::get(),
                  bool handleResizeEvents = true);
     ImageOutport(std::string_view identifier, bool handleResizeEvents);
@@ -352,7 +355,7 @@ Document BaseImageInport<N>::getInfo() const {
     auto doc = DataInport<Image, N>::getInfo();
 
     auto b = doc.get({P{"html"}, P{"body"}});
-    auto t = b.get({P{"p"}, P{"table"}});
+    auto t = b.get({P{"table"}});
 
     utildoc::TableBuilder tb(t);
     tb(H("Outport Determining Size"), isOutportDeterminingSize());

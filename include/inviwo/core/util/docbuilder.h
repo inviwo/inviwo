@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,45 +29,66 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/document.h>
 
-#include <utility>
+#include <inviwo/core/network/lambdanetworkvisitor.h>
+
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/property.h>
+
+#include <inviwo/core/io/serialization/serialization.h>
+
+#include <string_view>
+#include <string>
 
 namespace inviwo {
 
-class Processor;
-class PropertyOwner;
-class Property;
-class CompositeProperty;
-class CanvasProcessor;
+namespace help {
 
-/**
- * @brief Visitor pattern base for visiting an Inviwo ProcessorNetwork
- */
-class IVW_CORE_API NetworkVisitor {
-public:
-    virtual ~NetworkVisitor() = default;
+struct IVW_CORE_API HelpInport {
+    std::string classIdentifier;
+    std::string displayName;
+    Document help;
 
-    /**
-     * @brief Visit a Processor
-     * Adding and removing processors while visiting are not supported
-     * @return visit all child properties if true else go to next processor
-     */
-    virtual bool enter(Processor&) { return true; }
-    virtual void exit(Processor&) {}
-
-    /**
-     * @brief Visit a CompositeProperty
-     * Adding and removing properties while visiting are not supported
-     * @return visit all child properties if true else go to next CompositeProperty
-     */
-    virtual bool enter(CompositeProperty&) { return true; }
-    virtual void exit(CompositeProperty&) {}
-
-    /**
-     * @brief Visit a Property
-     * Adding and removing properties while visiting are not supported
-     */
-    virtual void visit(Property&) {}
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
 };
+
+struct IVW_CORE_API HelpOutport {
+    std::string classIdentifier;
+    std::string displayName;
+    Document help;
+
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
+};
+
+struct IVW_CORE_API HelpProperty {
+    std::string classIdentifier;
+    std::string displayName;
+    Document help;
+    std::vector<HelpProperty> properties;
+
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
+};
+
+struct IVW_CORE_API HelpProcessor {
+    std::string classIdentifier;
+    std::string displayName;
+    Document help;
+    std::vector<HelpInport> inports;
+    std::vector<HelpOutport> outports;
+    std::vector<HelpProperty> properties;
+
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
+};
+
+IVW_CORE_API HelpProcessor buildProcessorHelp(Processor& processor);
+
+IVW_CORE_API Document md2doc(std::string_view markdown);
+
+}  // namespace help
 
 }  // namespace inviwo

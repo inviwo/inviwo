@@ -40,6 +40,9 @@
 
 namespace inviwo {
 
+class NetworkVisitorEnter {};
+class NetworkVisitorExit {};
+
 /**
  * @brief A Helper class to construct a NetworkVisitor from a set of lambda functions
  *
@@ -61,49 +64,55 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     using Funcs::operator()...;
 
     template <typename T>
-    using ProcessorOverload = decltype(std::declval<T>()(std::declval<Processor&>()));
-
+    using ProcessorEnter = decltype(
+        std::declval<T>()(std::declval<Processor&>(), std::declval<NetworkVisitorEnter>()));
     template <typename T>
-    using CanvasProcessorOverload = decltype(std::declval<T>()(std::declval<CanvasProcessor&>()));
+    using ProcessorExit =
+        decltype(std::declval<T>()(std::declval<Processor&>(), std::declval<NetworkVisitorExit>()));
 
     template <typename T>
     using PropertyOverload = decltype(std::declval<T>()(std::declval<Property&>()));
 
     template <typename T>
-    using CompositePropertyOverload =
-        decltype(std::declval<T>()(std::declval<CompositeProperty&>()));
+    using CompositeEnter = decltype(
+        std::declval<T>()(std::declval<CompositeProperty&>(), std::declval<NetworkVisitorEnter>()));
 
-    virtual bool visit([[maybe_unused]] Processor& processor) override {
-        if constexpr (util::is_detected_exact_v<bool, ProcessorOverload, decltype(*this)>) {
-            return this->operator()(processor);
+    template <typename T>
+    using CompositeExit = decltype(
+        std::declval<T>()(std::declval<CompositeProperty&>(), std::declval<NetworkVisitorExit>()));
+
+    virtual bool enter([[maybe_unused]] Processor& processor) override {
+        if constexpr (util::is_detected_exact_v<bool, ProcessorEnter, decltype(*this)>) {
+            return this->operator()(processor, NetworkVisitorEnter{});
         } else {
             return true;
         }
     }
-    virtual bool visit([[maybe_unused]] CanvasProcessor& processor) override {
-        if constexpr (util::is_detected_exact_v<bool, CanvasProcessorOverload, decltype(*this)>) {
-            return this->operator()(processor);
-        } else if constexpr (util::is_detected_exact_v<bool, ProcessorOverload, decltype(*this)>) {
-            return this->operator()(processor);
-        } else {
-            return true;
+    virtual void exit([[maybe_unused]] Processor& processor) override {
+        if constexpr (util::is_detected_exact_v<void, ProcessorExit, decltype(*this)>) {
+            this->operator()(processor, NetworkVisitorExit{});
         }
     }
 
-    virtual bool visit([[maybe_unused]] Property& property) override {
-        if constexpr (util::is_detected_exact_v<bool, PropertyOverload, decltype(*this)>) {
-            return this->operator()(property);
-        } else {
-            return true;
-        }
-    }
-    virtual bool visit([[maybe_unused]] CompositeProperty& compositeProperty) override {
-        if constexpr (util::is_detected_exact_v<bool, CompositePropertyOverload, decltype(*this)>) {
-            return this->operator()(compositeProperty);
+    virtual bool enter([[maybe_unused]] CompositeProperty& compositeProperty) override {
+        if constexpr (util::is_detected_exact_v<bool, CompositeEnter, decltype(*this)>) {
+            return this->operator()(compositeProperty, NetworkVisitorEnter{});
         } else if constexpr (util::is_detected_exact_v<bool, PropertyOverload, decltype(*this)>) {
             return this->operator()(compositeProperty);
         } else {
             return true;
+        }
+    }
+
+    virtual void exit([[maybe_unused]] CompositeProperty& compositeProperty) override {
+        if constexpr (util::is_detected_exact_v<void, CompositeExit, decltype(*this)>) {
+            this->operator()(compositeProperty, NetworkVisitorExit{});
+        }
+    }
+
+    virtual void visit([[maybe_unused]] Property& property) override {
+        if constexpr (util::is_detected_exact_v<void, PropertyOverload, decltype(*this)>) {
+            this->operator()(property);
         }
     }
 };

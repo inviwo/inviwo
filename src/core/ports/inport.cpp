@@ -34,8 +34,8 @@
 
 namespace inviwo {
 
-Inport::Inport(std::string_view identifier)
-    : Port(identifier)
+Inport::Inport(std::string_view identifier, Document help)
+    : Port(identifier, std::move(help))
     , isReady_{false, [](const bool& /*isReady*/) {},
                [this]() {
                    return (isConnected() && util::all_of(connectedOutports_,

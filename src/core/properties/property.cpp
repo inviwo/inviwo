@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-Property::Property(std::string_view identifier, std::string_view displayName,
+Property::Property(std::string_view identifier, std::string_view displayName, Document help,
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : PropertyObservable()
     , MetaDataOwner()
@@ -52,10 +52,15 @@ Property::Property(std::string_view identifier, std::string_view displayName,
     , propertyModified_(true)
     , invalidationLevel_(invalidationLevel)
     , owner_(nullptr)
-    , initiatingWidget_(nullptr) {
+    , initiatingWidget_(nullptr)
+    , help_{std::move(help)} {
 
     util::validateIdentifier(identifier, "Property", IVW_CONTEXT);
 }
+
+Property::Property(std::string_view identifier, std::string_view displayName,
+                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : Property(identifier, displayName, Document{}, invalidationLevel, semantics) {}
 
 Property::Property(const Property& rhs)
     : PropertyObservable(rhs)
@@ -70,7 +75,8 @@ Property::Property(const Property& rhs)
     , propertyModified_(rhs.propertyModified_)
     , invalidationLevel_(rhs.invalidationLevel_)
     , owner_(nullptr)
-    , initiatingWidget_(rhs.initiatingWidget_) {}
+    , initiatingWidget_(rhs.initiatingWidget_)
+    , help_{rhs.help_} {}
 
 Property::~Property() {
     if (auto owner = getOwner()) {
@@ -274,12 +280,19 @@ Property& Property::setVisible(bool visible) {
     return *this;
 }
 
+const Document& Property::getHelp() const { return help_; }
+Document& Property::getHelp() { return help_; }
+
 Document Property::getDescription() const {
     Document doc;
     using P = Document::PathComponent;
     auto b = doc.append("html").append("body");
 
     b.append("b", displayName_.value, {{"style", "color:white;"}});
+
+    if (!help_.empty()) {
+        b.append("div").append(help_);
+    }
 
     using H = utildoc::TableBuilder::Header;
 

@@ -28,17 +28,41 @@
  *********************************************************************************/
 
 #include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/util/docbuilder.h>
 
 namespace inviwo {
 
 ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
-                             std::string aCategory, CodeState aCodeState, Tags someTags,
-                             bool isVisible)
-    : classIdentifier(aClassIdentifier)
-    , displayName(aDisplayName)
-    , category(aCategory)
+                             std::string aCategory, CodeState aCodeState, Tags someTags)
+    : classIdentifier{std::move(aClassIdentifier)}
+    , displayName{std::move(aDisplayName)}
+    , category{std::move(aCategory)}
     , codeState(aCodeState)
-    , tags(someTags)
-    , visible(isVisible) {}
+    , tags{std::move(someTags)}
+    , help{}
+    , visible{true} {}
+
+ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
+                             std::string aCategory, CodeState aCodeState, Tags someTags,
+                             Document help, bool isVisible)
+    : classIdentifier{std::move(aClassIdentifier)}
+    , displayName{std::move(aDisplayName)}
+    , category{std::move(aCategory)}
+    , codeState(aCodeState)
+    , tags{std::move(someTags)}
+    , help{std::move(help)}
+    , visible{isVisible} {}
+
+ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
+                             std::string aCategory, CodeState aCodeState, Tags someTags,
+                             std::string_view help, bool isVisible)
+
+    : classIdentifier{std::move(aClassIdentifier)}
+    , displayName{std::move(aDisplayName)}
+    , category{std::move(aCategory)}
+    , codeState(aCodeState)
+    , tags{std::move(someTags)}
+    , help{help::md2doc(help)}
+    , visible{isVisible} {}
 
 }  // namespace inviwo

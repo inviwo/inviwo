@@ -44,7 +44,7 @@ const ProcessorInfo VolumeLowPass::processorInfo_{
     "Volume Operation",          // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
-};
+    Document{"Applies a low pass filter on the input volume."}};
 const ProcessorInfo VolumeLowPass::getProcessorInfo() const { return processorInfo_; }
 
 VolumeLowPass::VolumeLowPass()
@@ -53,6 +53,12 @@ VolumeLowPass::VolumeLowPass()
     , useGaussianWeights_("useGaussianWeights", "Use Gaussian Weights")
     , sigma_("sigma", "Sigma", 1.f, 0.001f, 2.f, 0.001f)
     , updateDataRange_("updateDataRange", "Update Data Range", false) {
+
+    kernelSize_.getHelp() = Document{"Size of the applied low pass filter."};
+    useGaussianWeights_.getHelp() = Document{"Toggles between a Gaussian kernel and a box filter."};
+    sigma_.getHelp() = Document{"Sigma used by the Gaussian kernel."};
+    updateDataRange_.getHelp() =
+        Document{"Calculate and assign a new data range for the smoothed volume."};
 
     addProperty(kernelSize_);
     addProperty(useGaussianWeights_);

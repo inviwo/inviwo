@@ -178,14 +178,6 @@ void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> proces
     isReady_.update();
 }
 
-void CanvasProcessor::accept(NetworkVisitor& visitor) {
-    if (visitor.visit(*this)) {
-        for (auto* elem : properties_) {
-            elem->accept(visitor);
-        }
-    }
-}
-
 void CanvasProcessor::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getPosition() != position_.get()) {
         Property::OnChangeBlocker blocker{position_};

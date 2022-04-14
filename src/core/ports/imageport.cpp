@@ -34,15 +34,21 @@
 
 namespace inviwo {
 
-ImageOutport::ImageOutport(std::string_view identifier, const DataFormatBase* format,
+ImageOutport::ImageOutport(std::string_view identifier, Document help, const DataFormatBase* format,
                            bool handleResizeEvents)
-    : DataOutport<Image>(identifier), format_(format), handleResizeEvents_(handleResizeEvents) {
+    : DataOutport<Image>(identifier, std::move(help))
+    , format_(format)
+    , handleResizeEvents_(handleResizeEvents) {
 
     // create a default image
     if (handleResizeEvents) {
         setData(std::make_shared<Image>(size2_t{1, 1}, format));
     }
 }
+
+ImageOutport::ImageOutport(std::string_view identifier, const DataFormatBase* format,
+                           bool handleResizeEvents)
+    : ImageOutport(identifier, {}, format, handleResizeEvents) {}
 
 ImageOutport::ImageOutport(std::string_view identifier, bool handleResizeEvents)
     : ImageOutport(identifier, DataVec4UInt8::get(), handleResizeEvents) {}
@@ -230,7 +236,7 @@ Document ImageOutport::getInfo() const {
     auto doc = DataOutport<Image>::getInfo();
     auto b = doc.get({P{"html"}, P{"body"}});
     {
-        auto t = b.get({P{"p"}, P{"table"}});
+        auto t = b.get({P{"table"}});
         utildoc::TableBuilder tb(t);
         tb(H("Has Editable Data"), hasEditableData());
         tb(H("Handle Resize Events"), handleResizeEvents_);

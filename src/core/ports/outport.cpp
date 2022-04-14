@@ -33,8 +33,8 @@
 
 namespace inviwo {
 
-Outport::Outport(std::string_view identifier)
-    : Port(identifier)
+Outport::Outport(std::string_view identifier, Document help)
+    : Port(identifier, std::move(help))
     , isReady_{false,
                [this](const bool&) {
                    for (auto inport : connectedInports_) {

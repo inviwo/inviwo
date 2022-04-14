@@ -51,7 +51,7 @@ template <typename T>
 class DataOutport : public Outport, public OutportIterableImpl<DataOutport<T>, T> {
 public:
     using type = T;
-    DataOutport(std::string_view identifier);
+    DataOutport(std::string_view identifier, Document help = {});
     virtual ~DataOutport() = default;
 
     virtual std::string getClassIdentifier() const override;
@@ -101,8 +101,8 @@ struct PortTraits<DataOutport<T>> {
 };
 
 template <typename T>
-DataOutport<T>::DataOutport(std::string_view identifier)
-    : Outport(identifier), OutportIterableImpl<DataOutport<T>, T>{}, data_() {
+DataOutport<T>::DataOutport(std::string_view identifier, Document help)
+    : Outport(identifier, std::move(help)), OutportIterableImpl<DataOutport<T>, T>{}, data_() {
 
     isReady_.setUpdate([this]() {
         return invalidationLevel_ == InvalidationLevel::Valid && data_.get() != nullptr;
@@ -167,9 +167,15 @@ Document DataOutport<T>::getInfo() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
     auto b = doc.append("html").append("body");
-    auto p = b.append("p");
-    p.append("b", htmlEncode(DataTraits<T>::dataName()) + " Outport", {{"style", "color:white;"}});
-    utildoc::TableBuilder tb(p, P::end());
+    
+    b.append("b", util::htmlEncode(DataTraits<T>::dataName()) + " Outport",
+             {{"style", "color:white;"}});
+             
+    if (!help_.empty()) {
+        b.append(help_);
+    }
+             
+    utildoc::TableBuilder tb(b, P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());
     tb(H("Ready"), isReady());

@@ -63,7 +63,7 @@ public:
     static constexpr bool flattenData = Flat;
     static constexpr size_t maxConnections = N;
 
-    DataInport(std::string_view identifier);
+    DataInport(std::string_view identifier, Document help = {});
     virtual ~DataInport() = default;
 
     virtual std::string getClassIdentifier() const override;
@@ -109,8 +109,8 @@ struct PortTraits<DataInport<T, N, Flat>> {
 };
 
 template <typename T, size_t N, bool Flat>
-DataInport<T, N, Flat>::DataInport(std::string_view identifier)
-    : Inport(identifier), InportIterable<DataInport<T, N, Flat>, T, Flat>{} {}
+DataInport<T, N, Flat>::DataInport(std::string_view identifier, Document help)
+    : Inport(identifier, std::move(help)), InportIterable<DataInport<T, N, Flat>, T, Flat>{} {}
 
 template <typename T, size_t N, bool Flat>
 std::string DataInport<T, N, Flat>::getClassIdentifier() const {
@@ -253,9 +253,13 @@ Document DataInport<T, N, Flat>::getInfo() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
     auto b = doc.append("html").append("body");
-    auto p = b.append("p");
-    p.append("b", DataTraits<T>::dataName() + name(), {{"style", "color:white;"}});
-    utildoc::TableBuilder tb(p, P::end());
+    b.append("b", DataTraits<T>::dataName() + name(), {{"style", "color:white;"}});
+
+    if (!help_.empty()) {
+        b.append(help_);
+    }
+
+    utildoc::TableBuilder tb(b, P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());
     tb(H("Ready"), isReady());

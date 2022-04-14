@@ -60,6 +60,7 @@ public:
 
     bool removeSources(const std::vector<std::string>& sources);
 
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 

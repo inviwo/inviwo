@@ -134,7 +134,12 @@ public:
     virtual std::string getClassIdentifier() const = 0;
 
     Property(std::string_view identifier = "", std::string_view displayName = "",
+             Document help = {},
              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+             PropertySemantics semantics = PropertySemantics::Default);
+
+    Property(std::string_view identifier, std::string_view displayName,
+             InvalidationLevel invalidationLevel,
              PropertySemantics semantics = PropertySemantics::Default);
 
     /**
@@ -365,6 +370,9 @@ public:
         return *this;
     }
 
+    const Document& getHelp() const;
+    Document& getHelp();
+
     virtual Document getDescription() const;
 
     template <typename T, typename U>
@@ -432,6 +440,7 @@ private:
     PropertyWidget* initiatingWidget_;
 
     std::vector<std::pair<std::string, std::string>> autoLinkTo_;
+    Document help_;
 };
 
 namespace util {

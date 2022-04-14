@@ -40,12 +40,20 @@ namespace inviwo {
 
 class InviwoApplication;
 class Processor;
+class ProcessorFactory;
 
 namespace utilqt {
+
 /**
  * Generate an image of a processor including port connections and port names
  */
-IVW_QTEDITOR_API QImage generatePreview(const QString& classIdentifier);
+IVW_QTEDITOR_API QImage generatePreview(Processor& processor);
+
+/**
+ * Generate an image of a processor including port connections and port names
+ */
+IVW_QTEDITOR_API QImage generatePreview(std::string_view classIdentifier,
+                                        ProcessorFactory* factory);
 
 /**
  * Generate an image of a processor
@@ -57,7 +65,7 @@ IVW_QTEDITOR_API QImage generatePreview(const QString& classIdentifier);
 IVW_QTEDITOR_API QImage generateProcessorPreview(const QString& classIdentifier,
                                                  double opacity = 1.0);
 
-IVW_QTEDITOR_API QImage generateProcessorPreview(Processor* processor, double opacity = 1.0);
+IVW_QTEDITOR_API QImage generateProcessorPreview(Processor& processor, double opacity = 1.0);
 
 IVW_QTEDITOR_API void saveProcessorPreviews(InviwoApplication* app, std::string& path);
 

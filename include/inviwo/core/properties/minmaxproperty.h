@@ -52,6 +52,13 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
+    MinMaxProperty(std::string_view identifier, std::string_view displayName, Document help,
+                   T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
+                   T rangeMin = Defaultvalues<T>::getMin(), T rangeMax = Defaultvalues<T>::getMax(),
+                   T increment = Defaultvalues<T>::getInc(), T minSeperation = 0,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                   PropertySemantics semantics = PropertySemantics::Default);
+
     MinMaxProperty(std::string_view identifier, std::string_view displayName,
                    T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
                    T rangeMin = Defaultvalues<T>::getMin(), T rangeMax = Defaultvalues<T>::getMax(),
@@ -67,7 +74,7 @@ public:
 
     const value_type& get() const;
     MinMaxProperty<T>& set(const value_type& value);
-    operator const value_type&() const;
+    operator const value_type &() const;
     const value_type& operator*() const;
     const value_type* operator->() const;
 
@@ -161,10 +168,10 @@ struct PropertyTraits<MinMaxProperty<T>> {
 
 template <typename T>
 MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
-                                  T valueMin, T valueMax, T rangeMin, T rangeMax, T increment,
-                                  T minSeparation, InvalidationLevel invalidationLevel,
+                                  Document help, T valueMin, T valueMax, T rangeMin, T rangeMax,
+                                  T increment, T minSeparation, InvalidationLevel invalidationLevel,
                                   PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , value_("value", value_type(valueMin, valueMax))
     , range_("range", value_type(rangeMin, rangeMax))
     , increment_("increment", increment)
@@ -175,6 +182,14 @@ MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view 
     value_.value.y = std::max(value_.value.y, value_.value.x + minSeparation_.value);
     range_.value.y = std::max(range_.value.y, value_.value.y);
 }
+
+template <typename T>
+MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
+                                  T valueMin, T valueMax, T rangeMin, T rangeMax, T increment,
+                                  T minSeparation, InvalidationLevel invalidationLevel,
+                                  PropertySemantics semantics)
+    : MinMaxProperty(identifier, displayName, {}, valueMin, valueMax, rangeMin, rangeMax, increment,
+                     minSeparation, invalidationLevel, semantics) {}
 
 template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::operator=(const value_type& value) {
@@ -239,7 +254,7 @@ MinMaxProperty<T>& MinMaxProperty<T>::set(const value_type& value) {
 }
 
 template <typename T>
-MinMaxProperty<T>::operator const value_type&() const {
+MinMaxProperty<T>::operator const value_type &() const {
     return value_.value;
 }
 

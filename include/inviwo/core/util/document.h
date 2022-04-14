@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/typetraits.h>
 
+#include <inviwo/core/io/serialization/serializable.h>
+
 #include <functional>
 #include <sstream>
 #include <type_traits>
@@ -43,10 +45,8 @@
 namespace inviwo {
 
 /**
- * \class Document
- * \brief A helper class to represent a document
+ * @brief A class to represent a structured document, usually some html
  */
-
 class IVW_CORE_API Document {
 public:
     class DocumentHandle;
@@ -58,8 +58,8 @@ public:
         friend Document;
         friend DocumentHandle;
 
-        Element(const Element&) = delete;
-        Element& operator=(const Element&) = delete;
+        Element(const Element&);
+        Element& operator=(const Element&);
         Element(Element&&) noexcept = default;
         Element& operator=(Element&&) = default;
 
@@ -68,19 +68,30 @@ public:
                 const std::unordered_map<std::string, std::string>& attributes = {});
 
         const std::string& name() const;
+        std::string& name();
+
         const std::unordered_map<std::string, std::string>& attributes() const;
+        std::unordered_map<std::string, std::string>& attributes();
+
         const std::string& content() const;
+        std::string& content();
 
         ElementType type() const;
         bool isText() const;
         bool isNode() const;
 
-        std::string& name();
-        std::unordered_map<std::string, std::string>& attributes();
-        std::string& content();
-
         bool emptyTag() const;
         bool noIndent() const;
+
+        friend void swap(Element& lhs, Element& rhs) {
+            std::swap(lhs.type_, rhs.type_);
+            std::swap(lhs.children_, rhs.children_);
+            std::swap(lhs.data_, rhs.data_);
+            std::swap(lhs.attributes_, rhs.attributes_);
+        }
+
+        void serialize(Serializer& s) const;
+        void deserialize(Deserializer& d);
 
     private:
         ElementType type_;
@@ -141,8 +152,11 @@ public:
 
         DocumentHandle append(std::string_view name, std::string_view content = "",
                               const std::unordered_map<std::string, std::string>& attributes = {});
-
         DocumentHandle insert(PathComponent pos, Document doc);
+
+        DocumentHandle insertText(PathComponent pos, std::string_view text);
+        DocumentHandle appendText(std::string_view text);
+
         DocumentHandle append(Document doc);
 
         const Element& element() const;
@@ -159,10 +173,12 @@ public:
     };
 
     Document();
-    Document(const Document&) = delete;
-    Document& operator=(const Document&) = delete;
+    Document(std::string_view text);
+    Document(const Document&);
+    Document& operator=(const Document&);
     Document(Document&&) = default;
     Document& operator=(Document&&) = default;
+    virtual ~Document() = default;
 
     bool empty() const { return root_->children_.empty(); };
 
@@ -174,6 +190,9 @@ public:
 
     DocumentHandle append(std::string_view name, std::string_view content = "",
                           const std::unordered_map<std::string, std::string>& attributes = {});
+
+    DocumentHandle insertText(PathComponent pos, std::string_view text);
+    DocumentHandle appendText(std::string_view text);
 
     DocumentHandle insert(PathComponent pos, Document doc);
     DocumentHandle append(Document doc);
@@ -221,7 +240,13 @@ public:
         return ss;
     }
 
+    std::string str() const;
     operator std::string() const;
+
+    friend void swap(Document& lhs, Document& rhs) { std::swap(lhs.root_, rhs.root_); }
+
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
 
 private:
     std::unique_ptr<Element> root_;

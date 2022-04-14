@@ -183,6 +183,8 @@ protected:
     void forEachProperty(std::function<void(Property&)> callback,
                          bool recursiveSearch = false) const;
 
+    static Document md(std::string_view markdown);
+
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);
     bool findPropsForComposites(TxElement*);

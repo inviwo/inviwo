@@ -54,19 +54,29 @@
 
 namespace inviwo {
 
-QImage utilqt::generatePreview(const QString& classIdentifier) {
-    std::string cid = classIdentifier.toLocal8Bit().constData();
-
+QImage utilqt::generatePreview(std::string_view classIdentifier, ProcessorFactory* factory) {
     try {
-        auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid);
-        auto item = new ProcessorGraphicsItem(processor.get());
+        if (auto processor = factory->create(classIdentifier)) {
+            return utilqt::generatePreview(*processor);
+        } else {
+            return QImage();
+        }
+    } catch (Exception&) {
+        // We will just ignore this...
+        return QImage();
+    }
+}
+
+QImage utilqt::generatePreview(Processor& processor) {
+    try {
+        auto item = new ProcessorGraphicsItem(&processor);
         auto scene = std::make_unique<QGraphicsScene>(nullptr);
         scene->addItem(item);
 
         double yshift = 20.0;
-        double offset = processor->getInports().size() * yshift;
+        double offset = processor.getInports().size() * yshift;
 
-        for (auto inport : processor->getInports()) {
+        for (auto inport : processor.getInports()) {
             QFont classFont("Segoe", 8, QFont::Bold, true);
             classFont.setPixelSize(14);
             auto pl = new QGraphicsTextItem(QString::fromStdString(inport->getIdentifier()));
@@ -90,8 +100,8 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
             offset -= yshift;
         }
 
-        offset = processor->getOutports().size() * yshift;
-        for (auto outport : processor->getOutports()) {
+        offset = processor.getOutports().size() * yshift;
+        for (auto outport : processor.getOutports()) {
             QFont classFont("Segoe", 8, QFont::Bold, true);
             classFont.setPixelSize(14);
             auto pl = new QGraphicsTextItem(QString::fromStdString(outport->getIdentifier()));
@@ -115,8 +125,8 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
             offset -= yshift;
         }
 
-        float padBelow = processor->getOutports().empty() ? 10.0f : 0.0f;
-        float padAbove = processor->getInports().empty() ? 10.0f : 0.0f;
+        float padBelow = processor.getOutports().empty() ? 10.0f : 0.0f;
+        float padAbove = processor.getInports().empty() ? 10.0f : 0.0f;
 
         scene->clearSelection();  // Selections would also render to the file
                                   // Re-shrink the scene to it's bounding contents
@@ -141,13 +151,16 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
 
 QImage utilqt::generateProcessorPreview(const QString& classIdentifier, double opacity) {
     std::string cid = utilqt::fromQString(classIdentifier);
-    auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid);
-    return generateProcessorPreview(processor.get(), opacity);
+    if (auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid)) {
+        return generateProcessorPreview(*processor, opacity);
+    } else {
+        return QImage{};
+    }
 }
 
-QImage utilqt::generateProcessorPreview(Processor* processor, double opacity) {
+QImage utilqt::generateProcessorPreview(Processor& processor, double opacity) {
     try {
-        auto item = new ProcessorGraphicsItem(processor);
+        auto item = new ProcessorGraphicsItem(&processor);
         auto scene = std::make_unique<QGraphicsScene>(nullptr);
         scene->addItem(item);
 
@@ -184,8 +197,8 @@ void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
 
     auto save = [&](const std::string& classIdentifier) {
         filesystem::createDirectoryRecursively(path);
-        QString imgname(QString::fromStdString(path + "/" + classIdentifier + ".png"));
-        QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));
+        QString imgname = utilqt::toQString(fmt::format("{}/{}.png", path, classIdentifier));
+        QImage img = utilqt::generatePreview(classIdentifier, app->getProcessorFactory());
         if (!img.isNull()) {
             QByteArray data;
             QBuffer buffer(&data);

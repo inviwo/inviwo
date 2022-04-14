@@ -32,9 +32,11 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/util/document.h>
 
 #include <tuple>
 #include <string>
+#include <string_view>
 #include <utility>
 
 namespace inviwo {
@@ -46,14 +48,20 @@ namespace inviwo {
 struct IVW_CORE_API ProcessorInfo {
 public:
     ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
-                  CodeState aCodeState, Tags someTags, bool visible = true);
+                  CodeState aCodeState, Tags someTags);
+    ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
+                  CodeState aCodeState, Tags someTags, Document help, bool visible = true);
+    ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
+                  CodeState aCodeState, Tags someTags, std::string_view markdownHelp,
+                  bool visible = true);
     /// Identifier must be unique for all processors, example org.inviwo.yourprocessor
-    const std::string classIdentifier;
-    const std::string displayName;  ///< Processor::getDisplayName
-    const std::string category;     ///< Used for grouping processors in ProcessorTreeWidget
-    const CodeState codeState;
-    const Tags tags;     ///< Searchable tags, platform tags are shown in ProcessorTreeWidget
-    const bool visible;  ///< Show in processor list (ProcessorTreeWidget), enabling drag&drop
+    std::string classIdentifier;
+    std::string displayName;  ///< Processor::getDisplayName
+    std::string category;     ///< Used for grouping processors in ProcessorTreeWidget
+    CodeState codeState;
+    Tags tags;      ///< Searchable tags, platform tags are shown in ProcessorTreeWidget
+    Document help;  ///< Help text for the processor
+    bool visible;   ///< Show in processor list (ProcessorTreeWidget), enabling drag&drop
 
     friend inline bool operator==(const ProcessorInfo& a, const ProcessorInfo& b) {
         return std::tie(a.classIdentifier, a.displayName, a.category, a.codeState, a.tags,
