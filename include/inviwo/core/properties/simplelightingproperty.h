@@ -64,7 +64,7 @@ public:
     LightingState getState() const;
 
     // Light properties
-    TemplateOptionProperty<ShadingMode> shadingMode_;
+    OptionProperty<ShadingMode> shadingMode_;
     OptionPropertyInt referenceFrame_;
     FloatVec3Property lightPosition_;
 

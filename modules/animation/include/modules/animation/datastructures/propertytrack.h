@@ -67,7 +67,7 @@ void setPropertyFromKeyframeHelper(Prop* property, const Key* keyframe) {
  * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
 template <typename T>
-void setPropertyFromKeyframeHelper(TemplateOptionProperty<T>* property,
+void setPropertyFromKeyframeHelper(OptionProperty<T>* property,
                                    const ValueKeyframe<T>* keyframe) {
     property->setSelectedValue(keyframe->getValue());
 }
@@ -86,7 +86,7 @@ void setKeyframeFromPropertyHelper(const Prop* property, Key* keyframe) {
  * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
 template <typename T>
-void setKeyframeFromPropertyHelper(const TemplateOptionProperty<T>* property,
+void setKeyframeFromPropertyHelper(const OptionProperty<T>* property,
                                    ValueKeyframe<T>* keyframe) {
     keyframe->setValue(property->getSelectedValue());
 }

@@ -111,8 +111,8 @@ public:
      */
     TransferFunction getTransferFunction() const;
 
-    TemplateOptionProperty<ColormapType> type;
-    TemplateOptionProperty<colorbrewer::Family> colormap;
+    OptionProperty<ColormapType> type;
+    OptionProperty<colorbrewer::Family> colormap;
     BoolProperty diverging;
     DoubleProperty divergenceMidPoint;
     BoolProperty discrete;

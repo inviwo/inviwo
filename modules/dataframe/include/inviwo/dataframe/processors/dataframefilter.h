@@ -86,7 +86,7 @@ private:
     DataFrameOutport outport_;
 
     BoolProperty enabled_;
-    TemplateOptionProperty<BrushingMode> brushingMode_;
+    OptionProperty<BrushingMode> brushingMode_;
     FilterListProperty includeFilters_;
     FilterListProperty excludeFilters_;
 };

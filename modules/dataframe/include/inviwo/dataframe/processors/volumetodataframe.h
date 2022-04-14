@@ -78,7 +78,7 @@ private:
     DataInport<Volume> inport_;
     DataOutport<DataFrame> outport_;
 
-    TemplateOptionProperty<Mode> mode_;
+    OptionProperty<Mode> mode_;
     IntSizeTMinMaxProperty rangeX_;
     IntSizeTMinMaxProperty rangeY_;
     IntSizeTMinMaxProperty rangeZ_;

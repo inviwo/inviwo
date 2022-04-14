@@ -109,7 +109,7 @@ private:
     FloatVec4Property uiTextColor_;
     FloatVec4Property hoverColor_;
 
-    TemplateOptionProperty<glui::BoxLayout::LayoutDirection> layoutDirection_;
+    OptionProperty<glui::BoxLayout::LayoutDirection> layoutDirection_;
 
     BoolProperty intPropertyVertical_;
 

@@ -195,7 +195,7 @@ struct OptionPropertyHelper {
     template <typename T>
     auto operator()(pybind11::module& m) {
         namespace py = pybind11;
-        using P = TemplateOptionProperty<T>;
+        using P = OptionProperty<T>;
         using O = OptionPropertyOption<T>;
 
         auto classname = "OptionProperty" + Defaultvalues<T>::getName();

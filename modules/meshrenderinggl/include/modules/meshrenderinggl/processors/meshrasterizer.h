@@ -172,8 +172,8 @@ protected:
     FloatVec4Property silhouetteColor_;
 
     enum class NormalSource : int { InputVertex, GenerateVertex, GenerateTriangle };
-    TemplateOptionProperty<NormalSource> normalSource_;
-    TemplateOptionProperty<meshutil::CalculateMeshNormalsMode> normalComputationMode_;
+    OptionProperty<NormalSource> normalSource_;
+    OptionProperty<meshutil::CalculateMeshNormalsMode> normalComputationMode_;
 
     /**
      * \brief Settings to assemble the equation for the alpha values.
@@ -226,18 +226,18 @@ protected:
         HatchingSettings();
         BoolCompositeProperty hatching_;
 
-        TemplateOptionProperty<HatchingMode> mode_;
+        OptionProperty<HatchingMode> mode_;
         IntProperty steepness_;
         IntProperty baseFrequencyU_;
         IntProperty baseFrequencyV_;
 
         BoolCompositeProperty modulation_;
-        TemplateOptionProperty<HatchingMode> modulationMode_;
+        OptionProperty<HatchingMode> modulationMode_;
         FloatProperty modulationAnisotropy_;
         FloatProperty modulationOffset_;
         FloatVec3Property color_;
         FloatProperty strength_;
-        TemplateOptionProperty<HatchingBlendingMode> blendingMode_;
+        OptionProperty<HatchingBlendingMode> blendingMode_;
     };
     /**
      * \brief The render settings per face.
@@ -253,11 +253,11 @@ protected:
 
         TransferFunctionProperty transferFunction_;
         FloatVec3Property externalColor_;
-        TemplateOptionProperty<ColorSource> colorSource_;
+        OptionProperty<ColorSource> colorSource_;
 
         BoolProperty separateUniformAlpha_;
         FloatProperty uniformAlpha_;
-        TemplateOptionProperty<ShadingMode> shadingMode_;
+        OptionProperty<ShadingMode> shadingMode_;
 
         BoolProperty showEdges_;
         FloatVec3Property edgeColor_;

@@ -78,7 +78,7 @@ private:
     ColumnOptionProperty colorCol_;
     ColumnOptionProperty radiusCol_;
     ColumnOptionProperty sortCol_;
-    TemplateOptionProperty<ScatterPlotGL::SortingOrder> sortOrder_;
+    OptionProperty<ScatterPlotGL::SortingOrder> sortOrder_;
 
     using CallbackHandle = std::shared_ptr<std::function<void(PickingEvent*, size_t)>>;
     CallbackHandle tooltipCallBack_;

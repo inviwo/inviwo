@@ -117,7 +117,7 @@ public:
     OptionPropertyInt playWindowMode;
     DoubleMinMaxProperty playWindow;
     DoubleRefProperty framesPerSecond;
-    TemplateOptionProperty<PlaybackMode> playMode;
+    OptionProperty<PlaybackMode> playMode;
 
     CompositeProperty renderOptions;
     OptionPropertyInt renderWindowMode;

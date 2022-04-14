@@ -107,7 +107,7 @@ private:
     DataInport<std::vector<vec4>> colors_;
     MeshOutport mesh_;
 
-    TemplateOptionProperty<BrushBy> brushBy_;
+    OptionProperty<BrushBy> brushBy_;
 
     OptionPropertyString colorBy_;
 
@@ -117,7 +117,7 @@ private:
     DoubleMinMaxProperty minMaxT_;
     ButtonProperty setFromData_;
 
-    TemplateOptionProperty<Output> output_;
+    OptionProperty<Output> output_;
 
     FloatProperty ribbonWidth_;
 

@@ -105,9 +105,9 @@ public:
 protected:
     ImageOutport noise_;
 
-    IntSize2Property size_;                   ///< Size of the output image.
-    TemplateOptionProperty<NoiseType> type_;  ///< Witch type of noise to generate.
-    FloatMinMaxProperty range_;  ///< The min/max values of the output values (default: [0 1]).
+    IntSize2Property size_;           ///< Size of the output image.
+    OptionProperty<NoiseType> type_;  ///< Witch type of noise to generate.
+    FloatMinMaxProperty range_;       ///< The min/max values of the output values (default: [0 1]).
     IntMinMaxProperty levels_;   ///< Numbers of levels used in the generation of the Perlin noise
     FloatProperty persistence_;  ///< Controls the sharpnes in Perlin noise
 

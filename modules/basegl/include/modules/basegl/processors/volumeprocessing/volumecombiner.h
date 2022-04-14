@@ -96,7 +96,7 @@ private:
     std::shared_ptr<Volume> volume_;
     StringProperty description_;
     StringProperty eqn_;
-    TemplateOptionProperty<NormalizationMode> normalizationMode_;
+    OptionProperty<NormalizationMode> normalizationMode_;
     CompositeProperty scales_;
     ButtonProperty addScale_;
     ButtonProperty removeScale_;

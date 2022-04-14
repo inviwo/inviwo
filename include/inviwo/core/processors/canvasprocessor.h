@@ -117,9 +117,9 @@ public:
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
     IntVec2Property position_;
-    TemplateOptionProperty<LayerType> visibleLayer_;
+    OptionProperty<LayerType> visibleLayer_;
     IntProperty colorLayer_;
-    TemplateOptionProperty<FileExtension> imageTypeExt_;
+    OptionProperty<FileExtension> imageTypeExt_;
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
     ButtonProperty saveLayerToFileButton_;

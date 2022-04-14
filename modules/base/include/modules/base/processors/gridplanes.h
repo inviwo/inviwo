@@ -97,7 +97,7 @@ public:
 
     virtual ~ListOrSingleValueProperty() = default;
 
-    TemplateOptionProperty<State> state_;
+    OptionProperty<State> state_;
     Prop single_;
     std::array<Prop, N> list_;
 

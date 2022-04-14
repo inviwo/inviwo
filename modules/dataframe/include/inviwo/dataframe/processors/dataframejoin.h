@@ -85,10 +85,10 @@ private:
     DataFrameInport inportRight_;
     DataFrameOutport outport_;
 
-    TemplateOptionProperty<JoinType> join_;
+    OptionProperty<JoinType> join_;
     BoolProperty ignoreDuplicateCols_;
     BoolProperty fillMissingRows_;
-    TemplateOptionProperty<ColumnMatch> columnMatching_;
+    OptionProperty<ColumnMatch> columnMatching_;
     ColumnOptionProperty key_;
     ListProperty secondaryKeys_;
 };

@@ -76,7 +76,7 @@ private:
 
     VolumeOutport outport_;
     FileProperty file_;
-    TemplateOptionProperty<FileExtension> reader_;
+    OptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
 
     BasisProperty basis_;

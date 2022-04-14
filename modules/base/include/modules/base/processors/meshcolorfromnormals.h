@@ -57,7 +57,7 @@ private:
     MeshInport inport_;
     MeshOutport outport_;
 
-    TemplateOptionProperty<Transform> transform_;
+    OptionProperty<Transform> transform_;
 };
 
 }  // namespace inviwo

@@ -87,7 +87,7 @@ private:
     FloatProperty radius_;
 
     CompositeProperty location_;
-    TemplateOptionProperty<Location> locationType_;
+    OptionProperty<Location> locationType_;
     FloatVec2Property viewCoords_;
     CameraProperty cam_;
 

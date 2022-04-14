@@ -103,10 +103,10 @@ public:
 
     DataFrameColormapProperty colormap_;
 
-    TemplateOptionProperty<AxisSelection> axisSelection_;
+    OptionProperty<AxisSelection> axisSelection_;
 
     CompositeProperty lineSettings_;
-    TemplateOptionProperty<BlendMode> blendMode_;
+    OptionProperty<BlendMode> blendMode_;
     FloatProperty falloffPower_;
     FloatProperty lineWidth_;
     CompositeProperty selectedLine_;
@@ -119,7 +119,7 @@ public:
     FloatProperty filterIntensity_;
 
     FontProperty captionSettings_;
-    TemplateOptionProperty<LabelPosition> captionPosition_;
+    OptionProperty<LabelPosition> captionPosition_;
     FloatProperty captionOffset_;
     FloatVec4Property captionColor_;
 

@@ -84,7 +84,7 @@ protected:
     DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
     std::vector<std::shared_ptr<Mesh>> meshes_;
 
-    TemplateOptionProperty<Method> method_;
+    OptionProperty<Method> method_;
     FloatProperty isoValue_;
     BoolProperty invertIso_;
     BoolProperty encloseSurface_;

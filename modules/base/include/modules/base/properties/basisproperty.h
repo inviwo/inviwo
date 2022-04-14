@@ -77,8 +77,8 @@ public:
     virtual BasisProperty& setCurrentStateAsDefault() override;
     virtual BasisProperty& resetToDefaultState() override;
 
-    TemplateOptionProperty<BasisPropertyMode> mode_;
-    TemplateOptionProperty<BasisPropertyReference> reference_;
+    OptionProperty<BasisPropertyMode> mode_;
+    OptionProperty<BasisPropertyReference> reference_;
 
     BoolProperty overRideDefaults_;
     BoolProperty updateForNewEntiry_;

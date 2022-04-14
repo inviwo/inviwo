@@ -94,7 +94,7 @@ private:
 
     FloatProperty axisOffset_;
 
-    TemplateOptionProperty<AxisRangeMode> rangeMode_;
+    OptionProperty<AxisRangeMode> rangeMode_;
 
     CompositeProperty customRanges_;
     DoubleMinMaxProperty rangeXaxis_;

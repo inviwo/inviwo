@@ -87,7 +87,7 @@ private:
     FilterListProperty includeFilters_;
     FilterListProperty excludeFilters_;
     StringProperty locale_;
-    TemplateOptionProperty<CSVReader::EmptyField> emptyField_;
+    OptionProperty<CSVReader::EmptyField> emptyField_;
     ButtonProperty reloadData_;
 
     ColumnMetaDataListProperty columns_;

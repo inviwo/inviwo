@@ -132,7 +132,7 @@ struct MinMaxReghelper {
 struct OptionReghelper {
     template <typename T>
     auto operator()(InviwoModule& qm) {
-        using PropertyType = TemplateOptionProperty<T>;
+        using PropertyType = OptionProperty<T>;
         qm.registerProperty<PropertyType>();
     }
 };
@@ -187,7 +187,7 @@ struct OptionStringConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
-            std::make_unique<OptionToStringConverter<TemplateOptionProperty<T>>>());
+            std::make_unique<OptionToStringConverter<OptionProperty<T>>>());
     }
 };
 
@@ -195,7 +195,7 @@ struct OptionIntConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
-            std::make_unique<OptionToIntConverter<TemplateOptionProperty<T>>>());
+            std::make_unique<OptionToIntConverter<OptionProperty<T>>>());
     }
 };
 
@@ -203,7 +203,7 @@ struct IntOptionConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
-            std::make_unique<IntToOptionConverter<TemplateOptionProperty<T>>>());
+            std::make_unique<IntToOptionConverter<OptionProperty<T>>>());
     }
 };
 
@@ -218,8 +218,8 @@ struct DataTypeRegFunctor {
 
 }  // namespace
 
-template class TemplateOptionProperty<OptionRegEnumInt>;
-template class TemplateOptionProperty<OptionRegEnumUInt>;
+template class OptionProperty<OptionRegEnumInt>;
+template class OptionProperty<OptionRegEnumUInt>;
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}

@@ -90,7 +90,7 @@ struct MinMaxCEFWidgetReghelper {
 struct OptionCEFWidgetReghelper {
     template <typename T>
     auto operator()(WebBrowserModule& m) {
-        using PropertyType = TemplateOptionProperty<T>;
+        using PropertyType = OptionProperty<T>;
         m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
     }
 };
@@ -99,11 +99,11 @@ struct OptionEnumCEFWidgetReghelper {
     template <typename T>
     auto operator()(WebBrowserModule& m) {
         enum class e : T;
-        using PropertyType = TemplateOptionProperty<e>;
+        using PropertyType = OptionProperty<e>;
         m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
 
         enum class eU : std::make_unsigned_t<T>;
-        using PropertyTypeU = TemplateOptionProperty<eU>;
+        using PropertyTypeU = OptionProperty<eU>;
         m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyTypeU>();
     }
 };

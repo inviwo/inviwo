@@ -138,7 +138,7 @@ protected:
 
     enum class SourceType { LocalFile, WebAddress };
 
-    TemplateOptionProperty<SourceType> sourceType_;
+    OptionProperty<SourceType> sourceType_;
     BoolProperty isLoading_;
 
     CEFInteractionHandler cefInteractionHandler_;
