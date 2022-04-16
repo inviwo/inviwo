@@ -122,7 +122,7 @@ function(ivw_append_install_list)
 endfunction()
 
 # Filter the given INTERFACE_IVW_INSTALL_LIST for specified components
-# List should be creted by calls to ivw_append_install_list
+# List should be created by calls to ivw_append_install_list
 # see apps/inviwo/packaging.cmake for an example use
 # Params:
 #  * LIST an instace of INTERFACE_IVW_INSTALL_LIST to filter

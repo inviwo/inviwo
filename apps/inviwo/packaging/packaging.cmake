@@ -93,7 +93,20 @@ elseif(APPLE)
     else()
         set(CPACK_GENERATOR "TGZ")
     endif()
-
+    
+    get_target_property(_qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+    find_program(MACDEPLOYQT macdeployqt HINTS "${_qt_bin_dir}")
+    
+    # In summary, macdeloyqt will find and copy all used qt libraries and qt plugins
+    # to the Contents/Frameworks directory. Then, it will change the RPATH of all 
+    # libraries such that they point to the copied files. More details here:
+    # https://doc.qt.io/qt-6/macos-deployment.html#macdeploy
+    #
+    # This must be done after copying all binaries to the staging package folder,
+    # but before those files are packaged into an installer (CPACK_PRE_BUILD_SCRIPTS).
+    configure_file("../../cmake/deploy-osx.cmake.in" "${PROJECT_BINARY_DIR}/deploy-osx.cmake" @ONLY)
+    set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-osx.cmake")
 else()
     if(IVW_PACKAGE_INSTALLER)
         set(CPACK_GENERATOR "DEB")
@@ -106,4 +119,3 @@ install(DIRECTORY ${IVW_ROOT_DIR}/data/  DESTINATION ${IVW_RESOURCE_INSTALL_PREF
 install(DIRECTORY ${IVW_ROOT_DIR}/tests/ DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}tests COMPONENT Testing)
 
 include(CPack)
-

@@ -4,8 +4,8 @@ project(RoaringBitmap
   LANGUAGES CXX C
 )
 include(GNUInstallDirs)
-
-set(CMAKE_MACOSX_RPATH OFF)
+# Inviwo: Library will not be found after packaging if RPATH is not set.
+#set(CMAKE_MACOSX_RPATH OFF)
 if (NOT CMAKE_BUILD_TYPE)
                 message(STATUS "No build type selected, default to Release")
                 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
