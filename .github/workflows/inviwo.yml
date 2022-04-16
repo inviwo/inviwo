@@ -102,7 +102,6 @@ jobs:
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
-      if: runner.os != 'macOS'
       with:
         version: 6.2.3
         dir: ${{ github.workspace }}
