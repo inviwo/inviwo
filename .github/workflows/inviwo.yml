@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-20.04]
+        os: [windows-latest, macos-latest] #, ubuntu-20.04]
         include:
           - os: 'windows-latest'
             triplet: 'x64-windows'
@@ -30,14 +30,14 @@ jobs:
             cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF'
             targets: 'all package'
             installer: 'inviwo-installer-macos'
-            artifact: 'build/inviwo-v*.dmg'
-          - os: 'ubuntu-20.04'
-            triplet: 'x64-linux'
-            mono: 'mono'
-            cmake: '--preset ninja-dev-vcpkg -DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
-            targets: 'all package'
-            installer: 'inviwo-installer-ubuntu'
-            artifact: 'build/inviwo-v*.zip'
+            artifact: 'build/Inviwo-v*.dmg'
+          # - os: 'ubuntu-20.04'
+          #   triplet: 'x64-linux'
+          #   mono: 'mono'
+          #   cmake: '--preset ninja-dev-vcpkg -DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
+          #   targets: 'all package'
+          #   installer: 'inviwo-installer-ubuntu'
+          #   artifact: 'build/inviwo-v*.zip'
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
