@@ -3,7 +3,7 @@ name: Update Win Latest Relase
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [Test Win Installer]
+    workflows: [Test Installer]
     types: 
       - completed
 

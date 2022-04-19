@@ -52,6 +52,7 @@ jobs:
       run: |
         $ver = (Get-ChildItem -Name C:/"Program Files"/Inviwo/*)
         Invoke-expression "C:/'Program Files'/Inviwo/$ver/bin/Inviwo-cli.exe --logconsole --quit"
+    
     ###############################################################################
     # Macos
     ###############################################################################
