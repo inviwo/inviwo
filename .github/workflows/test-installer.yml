@@ -71,6 +71,6 @@ jobs:
     - name: Run Inviwo
       if: runner.os == 'macOS'
       shell: bash
-        run: |
-          cd /Applications/Inviwo.app/Contents/MacOS/
-          ./Inviwo --logconsole --quit
+      run: |
+        cd /Applications/Inviwo.app/Contents/MacOS/
+        ./Inviwo --logconsole --quit
