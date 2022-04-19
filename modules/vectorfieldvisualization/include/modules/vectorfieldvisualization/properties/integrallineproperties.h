@@ -53,6 +53,9 @@ public:
     template <unsigned int N>
     Matrix<N + 1, float> getSeedPointTransformationMatrix(
         const SpatialCoordinateTransformer<N>& T) const;
+    template <unsigned int N>
+    Matrix<N + 1, float> getVelocityTransformationMatrix(
+        const SpatialCoordinateTransformer<N>& T) const;
 
     int getNumberOfSteps() const;
     float getStepSize() const;
@@ -60,7 +63,7 @@ public:
     IntegralLineProperties::Direction getStepDirection() const;
     IntegralLineProperties::IntegrationScheme getIntegrationScheme() const;
     CoordinateSpace getSeedPointsSpace() const;
-    CoordinateSpace getIntegrationSpace() const;
+    CoordinateSpace getVelocitySpace() const;
     bool getNormalizeSamples() const;
 
 private:
@@ -73,13 +76,19 @@ public:
 
     TemplateOptionProperty<IntegralLineProperties::Direction> stepDirection_;
     TemplateOptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
-    TemplateOptionProperty<CoordinateSpace> seedPointsSpace_, integrationSpace_;
+    TemplateOptionProperty<CoordinateSpace> seedPointsSpace_, velocitySpace_;
 };
 
 template <unsigned int N>
 Matrix<N + 1, float> IntegralLineProperties::getSeedPointTransformationMatrix(
     const SpatialCoordinateTransformer<N>& T) const {
     return T.getMatrix(seedPointsSpace_.get(), CoordinateSpace::Data);
+}
+
+template <unsigned int N>
+Matrix<N + 1, float> IntegralLineProperties::getVelocityTransformationMatrix(
+    const SpatialCoordinateTransformer<N>& T) const {
+    return T.getMatrix(velocitySpace_.get(), CoordinateSpace::Data);
 }
 
 }  // namespace inviwo

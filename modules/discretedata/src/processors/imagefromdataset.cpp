@@ -92,15 +92,6 @@ void ImageFromDataSet::process() {
 
     // Refresh the sampler options.
     if (dataIn_.isChanged() && dataIn_.hasData()) {
-
-        // std::string selected =
-        //     datasetSamplerName_.size() ? datasetSamplerName_.getSelectedIdentifier() : "";
-
-        // datasetSamplerName_.clearOptions();
-        // for (auto& sampler : samplerMap) {
-        //     datasetSamplerName_.addOption(sampler.first, sampler.first);
-        // }
-        // datasetSamplerName_.setSelectedValue(selected);
         std::vector<std::string> samplerOptions;
         for (auto& sampler : samplerMap) {
             samplerOptions.push_back(sampler.first);
@@ -131,13 +122,10 @@ void ImageFromDataSet::process() {
     imageOut_.setData(image);
 }
 
-// template <typename T, ind N>
 std::shared_ptr<inviwo::Image> ImageFromDataSet::sampleImage(
     const std::shared_ptr<const Channel>& channel,
     const std::shared_ptr<const DataSetSamplerBase>& samplerBase) const {
 
-    // using VecType = Vector<N, T>;
-    // using CoordVec = Vector<2, double>;
     std::cout << "! Made it to function" << std::endl;
 
     auto sampler = std::dynamic_pointer_cast<const DataSetSampler<2>>(samplerBase);
@@ -155,38 +143,25 @@ std::shared_ptr<inviwo::Image> ImageFromDataSet::sampleImage(
         return nullptr;
     }
 
-    std::cout << "! Input can be cast" << std::endl;
     ivec2 imageSize = imageSize_.get();
 
-    // vec4* data = new vec4[imageSize[0] * imageSize[1]];
     auto image =
         std::make_shared<Image>(size2_t(imageSize.x, imageSize.y), DataFormat<vec4>::get());
-    std::cout << "! Got image" << std::endl;
 
     auto layer = image->getColorLayer();
     if (!layer) return nullptr;
-    std::cout << "! Got layer" << std::endl;
 
     auto layerRam =
         dynamic_cast<LayerRAMPrecision<vec4>*>(layer->getEditableRepresentation<LayerRAM>());
     if (!layerRam) return nullptr;
-    std::cout << "! Got layer ram" << std::endl;
 
     auto data = layerRam->getDataTyped();
-    // auto data = reinterpret_cast<vec4*>(dataVoid);
     if (!data) return nullptr;
-    std::cout << "! Got vec4 data" << std::endl;
-
-    // const auto minBound = sampler->getMin();
-    // const auto maxBound = sampler->getMax();
-    // dvec2 extent = {maxBound[0] - minBound[0], maxBound[1] - minBound[1]};
 
     auto spatialSampler = DataSetSpatialSampler2D(sampler, interpolationType_.get(), dataChannel);
 
     for (size_t y = 0; y < imageSize.y; ++y)
         for (size_t x = 0; x < imageSize.x; ++x)
-        // for (size_t y = 0.2 * imageSize[1]; y < 0.8 * imageSize[1]; ++y)
-        //     for (size_t x = 0.2 * imageSize[0]; x < 0.8 * imageSize[0]; ++x)
 
         {
             // size_t x = 40;  // 204;
@@ -213,15 +188,12 @@ std::shared_ptr<inviwo::Image> ImageFromDataSet::sampleImage(
             // data[x + y * imageSize.x] = {1, 128.0, 0.1, 1.0};
         }
 
-    std::cout << "! Let's create the image" << std::endl;
-
     // auto ramData = std::make_shared<LayerRAMPrecision<vec4>>(
     //     data, size2_t(imageSize.x, imageSize.y), LayerType::Color);
 
     // auto layer = std::make_shared<Layer>(ramData);
     // auto image = std::make_shared<inviwo::Image>(layer);
 
-    std::cout << "! Made image!" << std::endl;
     LogWarn(image->getDataFormat()->getString());
 
     std::cout << "! Data format: " << image->getDataFormat()->getString() << std::endl;

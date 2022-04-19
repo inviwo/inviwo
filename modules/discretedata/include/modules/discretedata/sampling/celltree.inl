@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/discretedata/sampling/celltree.h>
+#include <modules/discretedata/connectivity/connectioniterator.h>
 #include <inviwo/core/util/zip.h>
 #include <fmt/format.h>
 
@@ -220,54 +221,44 @@ void CellTree<SpatialDims>::buildCellTree(
     using Coord = std::array<double, SpatialDims>;
     using FloatCoord = std::array<float, SpatialDims>;
 
-    // TEMP DEBUG!!!!!!!!
-    bool debugOutput = false;
-    if (debugOutput) {
-        std::cout << "Making a cell tree!" << std::endl;
-        Coord tmpPos;
-        std::array<double, 2> refPos = {-47.13058, -135.27252};
-        ind closestVert;
-        double closestDist = std::numeric_limits<double>::max();
-        for (auto vertex : grid_->all(GridPrimitive::Vertex)) {
-            coordinates->fill(tmpPos, vertex.getIndex());
-            double dist = std::pow(tmpPos[0] - refPos[0], 2) + std::pow(tmpPos[1] - refPos[1], 2);
-            if (dist < closestDist) {
-                closestDist = dist;
-                closestVert = vertex.getIndex();
-            }
-        }
-        std::cout << "$ Vertex: " << closestVert << std::endl;
-        coordinates->fill(tmpPos, closestVert);
-        std::cout << fmt::format("$     Position: ({}, {})", tmpPos[0], tmpPos[1]) << std::endl;
-        std::vector<ind> tmpConns;
-
-        for (auto cell : grid_->all(GridPrimitive::Face)) {
-            tmpConns.clear();
-            grid_->getConnections(tmpConns, cell, GridPrimitive::Face, GridPrimitive::Vertex,
-                                  false);
-            if (std::find(tmpConns.begin(), tmpConns.end(), closestVert) != tmpConns.end()) {
-                std::cout << "$   Cell: " << cell.getIndex() << std::endl;
-                for (auto v : tmpConns) {
-                    coordinates->fill(tmpPos, v);
-                    std::cout << fmt::format("$     Vertex {}: ({}, {})", v, tmpPos[0], tmpPos[1])
-                              << std::endl;
-                }
-            }
-        }
-    }
-
     // Initialize data structures.
     // We assume approximately as many inner nodes as leaves, and leaves half full on average.
-    ind numTotalCells = grid_->getNumElements(grid_->getDimension());
-    ind numNodesEstimate = numTotalCells / MAX_CELLS_PER_NODE * 4;
-    nodes_.reserve(numNodesEstimate);
+    const ind numTotalCells = grid_->getNumElements(grid_->getDimension());
+    ind numActualCells = numTotalCells;
     cells_.resize(numTotalCells);
     std::iota(cells_.begin(), cells_.end(), 0);
+    bool debugOutput = false;
     if (debugOutput) std::cout << "Cells to begin with: " << numTotalCells << std::endl;
+
+    // Filter out all cells that do not fit within the given coordinate range.
+    std::vector<ind> vertices;
+    Coord pos;
+    Coord* allCoords = new Coord[coordinates->size()];
+    coordinates->fill(*allCoords, 0, coordinates->size());
+    for (auto cellIt : grid_->all(grid_->getDimension())) {
+        for (auto vertexIt : cellIt.connection(GridPrimitive::Vertex)) {
+            for (size_t dim = 0; dim < SpatialDims; ++dim)
+                if (allCoords[vertexIt.getIndex()][dim] < coordsMin_[dim] ||
+                    allCoords[vertexIt.getIndex()][dim] > coordsMax_[dim]) {
+                    cells_[cellIt.getIndex()] = -1;
+                }
+        }
+    }
+    for (size_t c = 0; c < numActualCells;) {
+        if (cells_[c] == -1) {
+            std::swap(cells_[c], cells_[numActualCells - 1]);
+            numActualCells--;
+        } else
+            c++;
+    }
+    cells_.resize(numActualCells);
+    std::cout << fmt::format("Dropped {} cells", numTotalCells - numActualCells) << std::endl;
+    const ind numNodesEstimate = numActualCells / MAX_CELLS_PER_NODE * 4;
+    nodes_.reserve(numNodesEstimate);
 
     Node rootNode;
     rootNode.leaf.start = 0;
-    rootNode.leaf.size = numTotalCells;
+    rootNode.leaf.size = numActualCells;
     nodes_.push_back(std::move(rootNode));
 
     struct NodeInfo {
@@ -278,8 +269,6 @@ void CellTree<SpatialDims>::buildCellTree(
     todoNodes.push({0, this->coordsMin_, this->coordsMax_});
 
     std::array<ind, SpatialDims * NUM_SPLIT_BUCKETS> bucketsPerSplitDimension;
-    std::vector<ind> vertices;
-    Coord pos;
 
     while (todoNodes.size() > 0) {
         // Get the next node to work on.
@@ -291,13 +280,6 @@ void CellTree<SpatialDims>::buildCellTree(
         // Should be leaf?
         if (numCells <= MAX_CELLS_PER_NODE) {
             node.child = 0;
-            for (unsigned cellIdx = node.leaf.start; cellIdx < node.leaf.start + node.leaf.size;
-                 ++cellIdx) {
-                if (debugOutput && cells_[cellIdx] == 12384) {
-                    std::cout << fmt::format("$ Node {}\n$   Final child node!", nodeInfo.Index)
-                              << std::endl;
-                }
-            }
             continue;
         }
 
@@ -317,9 +299,11 @@ void CellTree<SpatialDims>::buildCellTree(
                 cells_.resize(numCells);
                 continue;
             }
+
             ivwAssert(vertices.size() > 0, "Encountered cell without vertices.");
 
-            coordinates->fill(pos, vertices[0]);
+            // coordinates->fill(pos, vertices[0]);
+            pos = allCoords[vertices[0]];
 
             for (unsigned dim = 0; dim < SpatialDims; ++dim) {
                 ind bucketIdx = (((float(pos[dim]) - nodeInfo.Min[dim]) * NUM_SPLIT_BUCKETS) /
@@ -337,8 +321,8 @@ void CellTree<SpatialDims>::buildCellTree(
         }
 
         // Find best dimension to split in, and between which two buckets.
-        // Tuple: bucket to split after, num elements in lower half, is it larger than half
-        // the elements.
+        // Tuple: bucket to split after, num elements in lower half, is it larger than
+        // half the elements.
         struct SplitBucket {
             unsigned splitFromBucket = 0, numCellsLeft = 0;
         };
@@ -347,7 +331,8 @@ void CellTree<SpatialDims>::buildCellTree(
         for (unsigned dim = 0; dim < SpatialDims; ++dim) {
             unsigned sum = bucketsPerSplitDimension[NUM_SPLIT_BUCKETS * dim];
 
-            // First bucket containing more than half the cells? Split after first bucket.
+            // First bucket containing more than half the cells? Split after first
+            // bucket.
             if (sum > numCells / 2) {
                 optimalSplitPerDimensions[dim] = SplitBucket{1, sum};
                 continue;
@@ -409,7 +394,8 @@ void CellTree<SpatialDims>::buildCellTree(
             // Decide which side it's on by the first vertex position of a cell.
             vertices.clear();
             grid_->getConnections(vertices, *it, GridPrimitive(SpatialDims), GridPrimitive::Vertex);
-            coordinates->fill(pos, vertices[0]);
+            // coordinates->fill(pos, vertices[0]);
+            pos = allCoords[vertices[0]];
 
             // If necessary, swap to the right:
             // Move this cell to the end, and make sure we don't process it twice.
@@ -469,7 +455,8 @@ void CellTree<SpatialDims>::buildCellTree(
             vertices.clear();
             grid_->getConnections(vertices, cells_[cellIdx], GridPrimitive(SpatialDims),
                                   GridPrimitive::Vertex);
-            coordinates->fill(pos, vertices[0]);
+            // coordinates->fill(pos, vertices[0]);
+            pos = allCoords[vertices[0]];
 
             if (!rightSide && (pos[bestDimIdx] < children[0].Min[bestDimIdx] ||
                                pos[bestDimIdx] > children[0].Max[bestDimIdx])) {
@@ -497,6 +484,7 @@ void CellTree<SpatialDims>::buildCellTree(
         todoNodes.push(children[0]);
         todoNodes.push(children[1]);
     }
+    delete[] allCoords;
     std::cout << "\t= made a cell tree!" << std::endl;
 }
 

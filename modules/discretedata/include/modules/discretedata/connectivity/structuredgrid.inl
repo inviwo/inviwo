@@ -81,12 +81,12 @@ struct GetConnectionsFromHelper {
 
 template <ind N>
 void CurvilinearGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
-                                        GridPrimitive to, bool render) const {
+                                        GridPrimitive to, bool cutAtBorder) const {
     if (int(from) > N || int(to) > N) return;
     dd_detail::GetConnectionsFromHelper<N> dispatcher;
 
     channeldispatching::dispatchNumber<void, 0, N>(ind(from), dispatcher, *this, result, idxLin, to,
-                                                   render);
+                                                   cutAtBorder);
 }
 
 template <ind N>

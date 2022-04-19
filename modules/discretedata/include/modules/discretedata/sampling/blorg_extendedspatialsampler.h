@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2012-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,38 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/connectivity/connectioniterator.h>
-#include <modules/discretedata/connectivity/connectivity.h>
+#pragma once
+
+#include <modules/discretedata/sampling/datasetspatialsampler.h>
 
 namespace inviwo {
 namespace discretedata {
 
-ConnectionRange::ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimitive toDim,
-                                 const Connectivity* parent, bool cutAtBorder)
-    : parent_(parent), toDimension_(toDim) {
-    std::vector<ind> neigh;
-    parent_->getConnections(neigh, fromIndex, fromDim, toDim, cutAtBorder);
-    connections_ = std::make_shared<const std::vector<ind>>(std::move(neigh));
-}
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+class ExtendedSpatialSampler : public SpatialSampler<SpatialDims, DataDims, T> {
+public:
+    ExtendedSpatialSampler(std::shared_ptr<const DataSetSamplerBase> sampler,
+                           InterpolationType interpolationType,
+                           std::shared_ptr<const Channel> dataChannel,
+                           std::shared_ptr<const Channel> data);
+    virtual ~ExtendedSpatialSampler() = default;
+    // virtual SpatialEntity<SpatialDims>* clone() const override;
 
-ConnectionIterator operator+(ind offset, ConnectionIterator& iter) {
-    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
-                              iter.toIndex_ + offset);
-}
+    virtual Vector<DataDims, T> sampleDataSpace(
+        const Vector<SpatialDims, double>& pos) const override;
+    virtual bool withinBoundsDataSpace(const Vector<SpatialDims, double>& pos) const override;
+    InterpolationType interpolationType_;
 
-ConnectionIterator operator-(ind offset, ConnectionIterator& iter) {
-    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
-                              iter.toIndex_ - offset);
-}
+protected:
+    std::shared_ptr<const DataSetSampler<SpatialDims>> sampler_;
+    std::shared_ptr<const DataChannel<T, DataDims>> data_;
+};
 
-ElementIterator ConnectionIterator::operator*() const {
-    return ElementIterator(parent_, toDimension_, connection_->at(toIndex_));
-}
-
-ConnectionRange ConnectionIterator::connection(GridPrimitive toType, bool cutAtBorder) const {
-    return ConnectionRange(this->getIndex(), toDimension_, toType, parent_, cutAtBorder);
-}
+using ExtendedSpatialSampler2D = ExtendedSpatialSampler<2, 2, double>;
+using ExtendedSpatialSampler3D = ExtendedSpatialSampler<3, 3, double>;
+using ExtendedSpatialSampler4D = ExtendedSpatialSampler<4, 4, double>;
 
 }  // namespace discretedata
 }  // namespace inviwo
+
+#include "datasetspatialsampler.inl"

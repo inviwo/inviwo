@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,12 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/connectivity/connectioniterator.h>
-#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/sampling/extendedspatialsampler.h>
 
 namespace inviwo {
-namespace discretedata {
 
-ConnectionRange::ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimitive toDim,
-                                 const Connectivity* parent, bool cutAtBorder)
-    : parent_(parent), toDimension_(toDim) {
-    std::vector<ind> neigh;
-    parent_->getConnections(neigh, fromIndex, fromDim, toDim, cutAtBorder);
-    connections_ = std::make_shared<const std::vector<ind>>(std::move(neigh));
+ExtendedSpatialSampler::ExtendedSpatialSampler() {
+
 }
 
-ConnectionIterator operator+(ind offset, ConnectionIterator& iter) {
-    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
-                              iter.toIndex_ + offset);
-}
-
-ConnectionIterator operator-(ind offset, ConnectionIterator& iter) {
-    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
-                              iter.toIndex_ - offset);
-}
-
-ElementIterator ConnectionIterator::operator*() const {
-    return ElementIterator(parent_, toDimension_, connection_->at(toIndex_));
-}
-
-ConnectionRange ConnectionIterator::connection(GridPrimitive toType, bool cutAtBorder) const {
-    return ConnectionRange(this->getIndex(), toDimension_, toType, parent_, cutAtBorder);
-}
-
-}  // namespace discretedata
 }  // namespace inviwo

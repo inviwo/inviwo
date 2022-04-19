@@ -36,6 +36,7 @@
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
 
 #include <modules/vectorfieldvisualization/processors/linesourceascii.h>
+#include <modules/vectorfieldvisualization/processors/perpendicularsimilarity.h>
 #include <modules/vectorfieldvisualization/processors/unsteadyvolumetospatialsampler.h>
 #include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
 #include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
@@ -45,6 +46,8 @@
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
+#include <modules/vectorfieldvisualization/processors/scalarconvolutionprocessor.h>
+#include <modules/vectorfieldvisualization/processors/streamlinepathways.h>
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 #include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 #include <modules/vectorfieldvisualization/processors/seed3dto4d.h>
@@ -99,6 +102,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
 
     registerProcessor<IntegralLineVectorToMesh>();
     registerProcessor<IntegralLinesToComets>();
+    registerProcessor<PerpendicularSimilarity>();
     registerProcessor<Seed3Dto4D>();
     registerProcessor<StreamLines2D>();
     registerProcessor<StreamLines3D>();
@@ -109,8 +113,10 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<SeedPointGenerator2D>();
     registerProcessor<LineSetSelector>();
     registerProcessor<LinesFromDataFrame>();
+    registerProcessor<ScalarConvolutionProcessor>();
     registerProcessor<SeedsFromMesh>();
     registerProcessor<SeedsToMesh2D>();
+    registerProcessor<StreamlinePathways>();
 
     registerProperty<StreamLineProperties>();
     registerProperty<PathLineProperties>();

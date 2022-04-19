@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,40 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/connectivity/connectioniterator.h>
-#include <modules/discretedata/connectivity/connectivity.h>
+#pragma once
+
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
-namespace discretedata {
 
-ConnectionRange::ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimitive toDim,
-                                 const Connectivity* parent, bool cutAtBorder)
-    : parent_(parent), toDimension_(toDim) {
-    std::vector<ind> neigh;
-    parent_->getConnections(neigh, fromIndex, fromDim, toDim, cutAtBorder);
-    connections_ = std::make_shared<const std::vector<ind>>(std::move(neigh));
-}
+/** \docpage{org.inviwo.HolgersThreeLines, HolgersThreeLines}
+ * ![](org.inviwo.HolgersThreeLines.png?classIdentifier=org.inviwo.HolgersThreeLines)
+ * Create the thee lines lines that Holger want's to see ;)
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API HolgersThreeLines : public Processor {
+public:
+    HolgersThreeLines();
+    virtual ~HolgersThreeLines() = default;
 
-ConnectionIterator operator+(ind offset, ConnectionIterator& iter) {
-    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
-                              iter.toIndex_ + offset);
-}
+    virtual void process() override;
 
-ConnectionIterator operator-(ind offset, ConnectionIterator& iter) {
-    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
-                              iter.toIndex_ - offset);
-}
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-ElementIterator ConnectionIterator::operator*() const {
-    return ElementIterator(parent_, toDimension_, connection_->at(toIndex_));
-}
+private:
+    IntegralLineSetOutport linesOut_, referenceFrameLine_;
+    DoubleProperty integrationLength_;
+    IntSizeTProperty integrationSteps_;
 
-ConnectionRange ConnectionIterator::connection(GridPrimitive toType, bool cutAtBorder) const {
-    return ConnectionRange(this->getIndex(), toDimension_, toType, parent_, cutAtBorder);
-}
+    // ListProperty parameters_;
 
-}  // namespace discretedata
+    DoubleProperty paramP_, paramQ_;
+    BoolProperty optimalParam_;
+};
+
 }  // namespace inviwo

@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -109,14 +110,6 @@ void MeshFromDataSet::process() {
         return;
     }
 
-    auto posChannel = positionChannel_.getCurrentChannel();
-    auto colorChannel = colorChannel_.getCurrentChannel();
-    auto textureChannel = textureChannel_.getCurrentChannel();
-    if (!posChannel) {
-        invalidate(InvalidationLevel::InvalidOutput);
-        return;
-    }
-
     if (portInDataSet_.isChanged()) {
         ind maxDim = std::min((ind)pInDataSet->getGrid()->getDimension(), ind(2));
         GridPrimitive former = GridPrimitive::Vertex;
@@ -129,8 +122,15 @@ void MeshFromDataSet::process() {
         }
         primitive_.set(GridPrimitive((former == GridPrimitive::Vertex) ? maxDim : (ind)former));
     }
-
-    DrawType primType = (DrawType)(std::max((int)primitive_.get() + 1, (int)DrawType::Triangles));
+    auto posChannel = positionChannel_.getCurrentChannel();
+    auto colorChannel = colorChannel_.getCurrentChannel();
+    auto textureChannel = textureChannel_.getCurrentChannel();
+    if (!posChannel) {
+        // invalidate(InvalidationLevel::InvalidOutput);
+        portOutMesh_.clear();
+        return;
+    }
+    DrawType primType = (DrawType)(std::min((int)primitive_.get() + 1, (int)DrawType::Triangles));
     inviwo::Mesh* result = new Mesh(primType, ConnectivityType::None);
 
     // Add positions.
@@ -153,8 +153,8 @@ void MeshFromDataSet::process() {
             invalidColor = {0, 0, 0, 0};
             break;
     }
+    std::shared_ptr<BufferBase> colors;
     if (colorChannel) {
-        std::shared_ptr<BufferBase> colors;
         if (colorChannel->getNumComponents() == 4) {
             colors =
                 colorChannel
@@ -166,9 +166,12 @@ void MeshFromDataSet::process() {
                     ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 3>(
                         dd_util::ChannelToBufferDispatcher<vec3>(invalidColor));
         }
-
-        result->addBuffer(BufferType::ColorAttrib, colors);
+    } else {
+        std::vector<vec4> nothing;
+        std::fill(nothing.begin(), nothing.end(), invalidColor);
+        colors = util::makeBuffer(std::move(nothing));
     }
+    result->addBuffer(BufferType::ColorAttrib, colors);
 
     // Add texture coordinates.
     if (textureChannel) {
@@ -202,6 +205,7 @@ void MeshFromDataSet::process() {
         result->addBuffer(BufferType::TexcoordAttrib, texCoords);
     }
 
+    // Add indices.
     if (primitive_.get() != GridPrimitive::Vertex) {
         std::vector<ind> indexData;
         std::vector<std::uint32_t> indexMeshData;
@@ -254,6 +258,7 @@ void MeshFromDataSet::process() {
     }
 
     portOutMesh_.setData(result);
+    std::cout << "Made a grid!" << std::endl;
 }
 
 }  // namespace discretedata

@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <modules/discretedata/ports/datasetport.h>
 #include <modules/discretedata/properties/datachannelproperty.h>
+#include <modules/discretedata/properties/datasamplerproperty.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -49,11 +50,13 @@ namespace discretedata {
  * with time stamps as a data series.
  */
 class IVW_MODULE_DISCRETEDATA_API ExtrudeDataSet : public Processor {
+
 public:
     ExtrudeDataSet();
     virtual ~ExtrudeDataSet() = default;
 
     virtual void process() override;
+    virtual void deserialize(Deserializer&) override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -65,8 +68,12 @@ private:
     IntSizeTProperty numExtrudeElements_;
     ListProperty extrudeDataMembers_;
 
+public:
     template <typename Prop>
     class ExtendObjectProperty : public CompositeProperty {
+        // static std::string classIdentifier =
+        //     fmt::format("inviwo.discretedata.extendobject{}", Prop::classIdentifier);
+
     public:
         ExtendObjectProperty(const std::string& identifier, const std::string& displayName,
                              DataSetInport* baseData = nullptr,
@@ -88,19 +95,23 @@ private:
         }
 
         ExtendObjectProperty<Prop>& operator=(const ExtendObjectProperty<Prop>& prop) {
-            // if (prop.extrudingChannel_.channelName_.get().compare("NONE") != 0)
-            //     extrudingChannel_.channelName_.set(prop.extrudingChannel_.channelName_.get());
-            // if (prop.baseChannel_.datasetInput_)
-            //     baseChannel_.datasetInput_ = prop.baseChannel_.datasetInput_;
-            // CompositeProperty::operator=(prop);
+            if (prop.extrudingChannel_.channelName_.get().compare("NONE") != 0)
+                extrudingChannel_.channelName_.set(prop.extrudingChannel_.channelName_.get());
+            if (prop.extrudingChannel_.datasetInput_)
+                extrudingChannel_.datasetInput_ = prop.extrudingChannel_.datasetInput_;
+            dataObject_ = prop.dataObject_;
             setIdentifier(prop.getIdentifier());
             setDisplayName(prop.getDisplayName());
-            dataObject_ = prop.dataObject_;
-            extrudingChannel_ = prop.extrudingChannel_;
         }
 
         virtual ExtendObjectProperty<Prop>* clone() const override {
             return new ExtendObjectProperty<Prop>(*this);
+        }
+
+        std::string getClassIdentifier() const;
+        void setDatasetInputs(DataSetInport* baseData, DataSetInport* extrudeData) {
+            dataObject_.setDatasetInput(baseData);
+            extrudingChannel_.setDatasetInput(extrudeData);
         }
 
         Prop dataObject_;
@@ -109,4 +120,25 @@ private:
 };
 
 }  // namespace discretedata
+
+template <>
+struct PropertyTraits<
+    discretedata::ExtrudeDataSet::ExtendObjectProperty<discretedata::DataChannelProperty>> {
+    static const std::string ClassIdentifier;
+    static std::string classIdentifier() { return ClassIdentifier; }
+};
+
+template <>
+struct PropertyTraits<
+    discretedata::ExtrudeDataSet::ExtendObjectProperty<discretedata::DataSamplerProperty>> {
+    static const std::string ClassIdentifier;
+    static std::string classIdentifier() { return ClassIdentifier; }
+};
+
+template <typename Prop>
+std::string discretedata::ExtrudeDataSet::ExtendObjectProperty<Prop>::getClassIdentifier() const {
+    return PropertyTraits<
+        discretedata::ExtrudeDataSet::ExtendObjectProperty<Prop>>::classIdentifier();
+}
+
 }  // namespace inviwo

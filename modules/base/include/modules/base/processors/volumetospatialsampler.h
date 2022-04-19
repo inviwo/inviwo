@@ -37,23 +37,15 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeToSpatialSampler, Volume To Spatial Sampler}
  * ![](org.inviwo.VolumeToSpatialSampler.png?classIdentifier=org.inviwo.VolumeToSpatialSampler)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ * Create a SpatialSampler from a volume, for example for stream line integration.
  */
+template <unsigned int DataDims>
 class IVW_MODULE_BASE_API VolumeToSpatialSampler : public Processor {
 public:
     VolumeToSpatialSampler();
@@ -66,8 +58,40 @@ public:
 
 private:
     VolumeInport volume_;
-    DataOutport<SpatialSampler<3, 3, double>> sampler_;
+    DataOutport<SpatialSampler<3, DataDims, double>> sampler_;
 };
+
+template <unsigned int DataDims>
+const ProcessorInfo VolumeToSpatialSampler<DataDims>::processorInfo_{
+    fmt::format("org.inviwo.VolumeToSpatialSampler{}", DataDims),  // Class identifier
+    fmt::format("Volume To Spatial Sampler (dvec{})", DataDims),   // Display name
+    "Spatial Sampler",                                             // Category
+    CodeState::Experimental,                                       // Code state
+    Tags::None,                                                    // Tags
+};
+
+template <unsigned int DataDims>
+const ProcessorInfo VolumeToSpatialSampler<DataDims>::getProcessorInfo() const {
+    return processorInfo_;
+}
+
+template <unsigned int DataDims>
+VolumeToSpatialSampler<DataDims>::VolumeToSpatialSampler()
+    : Processor(), volume_("volume"), sampler_("sampler") {
+    addPort(volume_);
+    addPort(sampler_);
+}
+
+template <unsigned int DataDims>
+void VolumeToSpatialSampler<DataDims>::process() {
+    auto sampler = std::make_shared<VolumeDoubleSampler<DataDims>>(volume_.getData());
+    sampler_.setData(sampler);
+}
+
+using VolumeToSpatialSampler1D = VolumeToSpatialSampler<1>;
+using VolumeToSpatialSampler2D = VolumeToSpatialSampler<2>;
+using VolumeToSpatialSampler3D = VolumeToSpatialSampler<3>;  // Most useful for integration.
+using VolumeToSpatialSampler4D = VolumeToSpatialSampler<4>;
 
 }  // namespace inviwo
 

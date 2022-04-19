@@ -67,6 +67,7 @@
 #include <modules/base/processors/randommeshgenerator.h>
 #include <modules/base/processors/randomspheregenerator.h>
 #include <modules/base/processors/singlevoxel.h>
+// #include <modules/base/processors/spatialsamplertovolume.h>
 #include <modules/base/processors/spotlightsourceprocessor.h>
 #include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/surfaceextractionprocessor.h>
@@ -160,6 +161,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<PixelToBufferProcessor>();
     registerProcessor<PointLightSourceProcessor>();
     registerProcessor<OrdinalPropertyAnimator>();
+    // registerProcessor<SpatialSamplerToVolume>();
     registerProcessor<SpotLightSourceProcessor>();
     registerProcessor<SurfaceExtraction>();
     registerProcessor<VolumeBoundaryPlanes>();
@@ -186,7 +188,10 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<SingleVoxel>();
     registerProcessor<StereoCameraSyncer>();
 
-    registerProcessor<VolumeToSpatialSampler>();
+    registerProcessor<VolumeToSpatialSampler1D>();
+    registerProcessor<VolumeToSpatialSampler2D>();
+    registerProcessor<VolumeToSpatialSampler3D>();
+    registerProcessor<VolumeToSpatialSampler4D>();
     registerProcessor<OrientationIndicator>();
     registerProcessor<PixelValue>();
     registerProcessor<VolumeSequenceToSpatial4DSampler>();

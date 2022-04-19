@@ -94,7 +94,7 @@ void DataSamplerProperty::updateSamplerList() {
     if (ongoingChange_) return;
 
     // If no dataset is given, keep names for now.
-    if (!datasetInput_->hasData()) return;
+    if (!datasetInput_ || !datasetInput_->hasData()) return;
 
     // Get the current name to select same name if possible.
     std::string lastName = samplerName_.get();

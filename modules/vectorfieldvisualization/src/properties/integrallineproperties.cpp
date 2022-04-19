@@ -39,7 +39,7 @@ IntegralLineProperties::IntegralLineProperties(std::string identifier, std::stri
     , stepDirection_("stepDirection", "Step Direction")
     , integrationScheme_("integrationScheme", "Integration Scheme")
     , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
-    , integrationSpace_("integrationSpace", "Integration Space") {
+    , velocitySpace_("velocitySpace", "Velocity Space") {
     setUpProperties();
 }
 
@@ -51,7 +51,7 @@ IntegralLineProperties::IntegralLineProperties(const IntegralLineProperties& rhs
     , stepDirection_(rhs.stepDirection_)
     , integrationScheme_(rhs.integrationScheme_)
     , seedPointsSpace_(rhs.seedPointsSpace_)
-    , integrationSpace_(rhs.integrationSpace_) {
+    , velocitySpace_(rhs.velocitySpace_) {
     setUpProperties();
 }
 
@@ -77,9 +77,7 @@ CoordinateSpace IntegralLineProperties::getSeedPointsSpace() const {
     return seedPointsSpace_.get();
 }
 
-CoordinateSpace IntegralLineProperties::getIntegrationSpace() const {
-    return integrationSpace_.get();
-}
+CoordinateSpace IntegralLineProperties::getVelocitySpace() const { return velocitySpace_.get(); }
 
 bool IntegralLineProperties::getNormalizeSamples() const { return normalizeSamples_; }
 
@@ -98,12 +96,12 @@ void IntegralLineProperties::setUpProperties() {
     seedPointsSpace_.addOption("model", "Model", CoordinateSpace::Model);
     seedPointsSpace_.addOption("world", "World", CoordinateSpace::World);
 
-    integrationSpace_.addOption("data", "Data", CoordinateSpace::Data);
-    integrationSpace_.addOption("model", "Model", CoordinateSpace::Model);
-    integrationSpace_.addOption("world", "World", CoordinateSpace::World);
+    velocitySpace_.addOption("data", "Data", CoordinateSpace::Data);
+    velocitySpace_.addOption("model", "Model", CoordinateSpace::Model);
+    velocitySpace_.addOption("world", "World", CoordinateSpace::World);
 
     addProperties(numberOfSteps_, stepSize_, stepDirection_, integrationScheme_, seedPointsSpace_,
-                  integrationSpace_, normalizeSamples_);
+                  velocitySpace_, normalizeSamples_);
 
     setAllPropertiesCurrentStateAsDefault();
 }

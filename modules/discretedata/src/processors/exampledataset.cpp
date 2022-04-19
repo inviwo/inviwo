@@ -51,14 +51,23 @@ ExampleDataSet::ExampleDataSet()
     : Processor()
     , dataOutport("ExampleData")
     , selectedData_("selectedData", "Data Set",
-                    {{"curvilinear", "Curvilinear"}, {"sphere", "Sphere"}}) {
+                    {{"curvilinear", "Curvilinear", Example::Curvilinear},
+                     {"sphere", "Sphere", Example::Sphere}}) {
     addPort(dataOutport);
     addProperty(selectedData_);
 }
 
 void ExampleDataSet::process() {
-    if (selectedData_.getIdentifier().compare("curvilinear")) makeCurvilinearDataSet();
-    if (selectedData_.getIdentifier().compare("sphere")) makeSphereDataSet();
+    // if (selectedData_.getIdentifier().compare("curvilinear") == 0) makeCurvilinearDataSet();
+    // if (selectedData_.getIdentifier().compare("sphere") == 0) makeSphereDataSet();
+    switch (selectedData_.getSelectedValue()) {
+        case Example::Curvilinear:
+            makeCurvilinearDataSet();
+            break;
+        case Example::Sphere:
+            makeSphereDataSet();
+            break;
+    }
 }
 
 void ExampleDataSet::makeCurvilinearDataSet() {

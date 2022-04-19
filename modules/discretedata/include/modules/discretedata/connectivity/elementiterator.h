@@ -104,7 +104,7 @@ public:
     operator ind() const { return index_; }
 
     //! Iterate over connected GridPrimitives (neighbors etc)
-    ConnectionRange connection(GridPrimitive toType) const;
+    ConnectionRange connection(GridPrimitive toType, bool cutAtBorder = false) const;
 
     const Connectivity* getGrid() const { return parent_; }
 

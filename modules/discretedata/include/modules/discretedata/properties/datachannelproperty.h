@@ -78,9 +78,8 @@ public:
     template <class T, ind N>
     std::shared_ptr<const DataChannel<T, N>> getCurrentChannelTyped() const;
     bool hasSelectableChannels() const { return channelName_.size() > 1; }
-    DataSetInport* getDatasetInput() { return datasetInput_; }
+    DataSetInport* getDatasetInput() const { return datasetInput_; }
     void setDatasetInput(DataSetInport* port);
-    // void set(const DataChannelProperty& other);
 
 protected:
     DataSetInport* datasetInput_;

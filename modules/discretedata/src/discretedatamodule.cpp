@@ -92,10 +92,14 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     // Properties
     registerProperty<DimensionProperty>();
     registerProperty<DataChannelProperty>();
+    registerProperty<DataSamplerProperty>();
     registerProperty<ChannelOpProperty<NormalizeChannelOperation>>();
     registerProperty<ChannelOpProperty<MagnitudeOperation>>();
     registerProperty<ChannelOpProperty<NormalizedMagnitudeOperation>>();
     registerProperty<ChannelOpProperty<AppendOperation>>();
+    registerProperty<ExtrudeDataSet::ExtendObjectProperty<DataChannelProperty>>();
+    registerProperty<ExtrudeDataSet::ExtendObjectProperty<DataSamplerProperty>>();
+
     AddDataSetSampler::addInterpolantType<SkewedBoxInterpolant>("skewedBox", "Skewed Box");
     AddDataSetSampler::addSamplerType<CellTree>("celltree", "CellTree");
 }

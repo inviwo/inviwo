@@ -36,7 +36,6 @@
 #include <modules/discretedata/properties/datachannelproperty.h>
 #include <modules/discretedata/sampling/datasetspatialsampler.h>
 #include <type_traits>
-// #include <inviwo/core/datastructures/image/imageramprecision.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
 #include <modules/discretedata/ports/datasetport.h>

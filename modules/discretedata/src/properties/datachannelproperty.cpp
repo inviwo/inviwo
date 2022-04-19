@@ -123,7 +123,7 @@ void DataChannelProperty::updateChannelList() {
 
     convertedChannels_.clear();
     // If no dataset is given, keep names for now.
-    if (!datasetInput_->hasData()) return;
+    if (!datasetInput_ || !datasetInput_->hasData()) return;
 
     // Get the current name to select same name if possible.
     std::string lastName = channelName_.get();  // channelName_.size() ? channelName_.get() : "";

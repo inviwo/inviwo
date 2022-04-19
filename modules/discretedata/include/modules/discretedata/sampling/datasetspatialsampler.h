@@ -42,7 +42,7 @@ class DataSetSpatialSampler : public SpatialSampler<SpatialDims, DataDims, T> {
 public:
     DataSetSpatialSampler(std::shared_ptr<const DataSetSampler<SpatialDims>> sampler,
                           InterpolationType interpolationType,
-                          std::shared_ptr<const DataChannel<T, DataDims>> data);
+                          std::shared_ptr<const DataChannel<T, DataDims>> data, T invalidValue = T{0});
     virtual ~DataSetSpatialSampler() = default;
 
     virtual Vector<DataDims, T> sampleDataSpace(
@@ -53,6 +53,7 @@ public:
 protected:
     std::shared_ptr<const DataSetSampler<SpatialDims>> sampler_;
     std::shared_ptr<const DataChannel<T, DataDims>> data_;
+    T invalidValue_;
 };
 
 using DataSetSpatialSampler2D = DataSetSpatialSampler<2, 2, double>;

@@ -52,8 +52,8 @@ ElementIterator& ElementIterator::operator*() {
     return *this;
 }
 
-ConnectionRange ElementIterator::connection(GridPrimitive toType) const {
-    return ConnectionRange(index_, dimension_, toType, parent_);
+ConnectionRange ElementIterator::connection(GridPrimitive toType, bool cutAtBorder) const {
+    return ConnectionRange(index_, dimension_, toType, parent_, cutAtBorder);
 }
 
 ElementIterator ElementRange::begin() { return ElementIterator(parent_, dimension_, 0); }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,67 +31,66 @@
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/foreach.h>
+#include <inviwo/core/ports/meshport.h>
 #include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
 
-class FlowField2DProcessor : public Processor {
+/** \docpage{org.inviwo.StreamlinePathways, Streamline Pathways}
+ * ![](org.inviwo.StreamlinePathways.png?classIdentifier=org.inviwo.StreamlinePathways)
+ * Given two areas, find streamliens that connect them.
+ *
+ * ### Inports
+ *   * __sampler__ SpatialSampler to integrate in.
+ *
+ * ### Outports
+ *   * __startMesh__ Cuboid mesh marking the start volume.
+ *   * __endMesh__ Cuboid mesh marking the start volume.
+ *
+ * ### Properties
+ *   * __startRegion__ The cuboid that integrations are started from.
+ *   * __endRegion__ The end region that is tested against.
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamlinePathways : public Processor {
+public:
     using Sampler = SpatialSampler<3, 3, double>;
     using Tracer = IntegralLineTracer<Sampler>;
 
-public:
-    FlowField2DProcessor();
-    virtual ~FlowField2DProcessor();
+    StreamlinePathways();
+    virtual ~StreamlinePathways() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    enum MeasureType : int {
-        UV = 0,
-        FTLE = 1,
-        RelativeDispersion = 2,
-        FlowMap = 3,
-        TSE = 4,
-        TSE_line = 5,
-
-        PARAM_TYPES,
-        paramRelativeDispersion,
-        paramTSE,
-        paramTSE_line
-    };
-
 private:
     DataInport<Sampler> sampler_;
-    // DataOutport<Sampler> flowSampler_;
-    ImageOutport imageOut_;  //, dispersionOut_;  //  hallerField_,
-    IntegralLineSetOutport linesOut_;
+    SeedPointsInport<3> seeds_;
+    BrushingAndLinkingInport lineSelection_;
+    MeshOutport startMesh_, endMesh_;
+    IntegralLineSetOutport integralLines_;
 
-    TemplateOptionProperty<MeasureType> measureType_;
+    struct VolumeRegion : public CompositeProperty {
 
-    IntegralLineProperties properties_;
-    IntSize2Property fieldSize_;
-    DoubleProperty fieldSubSize_;
-    FloatProperty seedAngle_;
-    FloatProperty seedEpsilon_;
-    DoubleProperty v0_;
-    DoubleVec2Property dataRange_;
-    BoolProperty normalize_;
-    // DoubleProperty maxAbs_;
-    BoolProperty logScale_;
+        VolumeRegion(const std::string& identifier, const std::string& displayName,
+                     const vec4& defaultColor);
+        void updateSamplerRegion(const dvec3& min, const dvec3& max);
+        std::shared_ptr<Mesh> toMesh(const mat4& worldToModelMat) const;
+        mat4 getAsMatrix(const dmat4& worldToModelMat) const;
+
+        DoubleVec3Property min_, max_;
+        FloatVec4Property color_;
+    } startRegion_, endRegion_;
+
+    IntegralLineProperties integrationProperties_;
 
     std::shared_ptr<IntegralLineSet> lines_;
+    bool integrationRequired_;
 };
 
 }  // namespace inviwo

@@ -66,20 +66,9 @@ public:
                             std::vector<double>& returnWeights, std::vector<ind>& returnVertices,
                             InterpolationType interpolationType = InterpolationType::Ignore) const;
 
-    // template <typename T, ind N>
-    // ind locateAndSampleCell(const std::array<float, SpatialDims>& pos,
-    //                         std::vector<double>& returnWeights, std::vector<ind>& returnVertices,
-    //                         InterpolationType interpolationType = InterpolationType::Ignore)
-    //                         const;
-
     virtual std::string getIdentifier() const override;
 
     virtual Mesh* getDebugMesh() const override;
-
-    // static CellTree* createSampler(
-    //     std::shared_ptr<const Connectivity> grid,
-    //     std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
-    //     const Interpolant<SpatialDims>& interpolant);
 
 protected:
     void buildCellTree(std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates);
@@ -98,17 +87,8 @@ protected:
         };
     };
 
-    // struct CellTreeBuilder {
-    //     template <typename T, ind N>
-    //     void operator()(const DataChannel<T, N>* positions, CellTree<SpatialDims>* tree);
-    // };
-
     std::vector<Node> nodes_;
     std::vector<ind> cells_;
-    // const Interpolant<SpatialDims>* interpolant;
-    // ind (CellTree<SpatialDims>::*locateCellFunction)(const std::array<float, SpatialDims>&,
-    //                                                  std::vector<double>&, std::vector<ind>&,
-    //                                                  InterpolationType) const;
 
     // Fixed values taken from the paper.
     static constexpr unsigned MAX_CELLS_PER_NODE = 32;
@@ -118,9 +98,6 @@ protected:
     using DataSetSamplerBase::grid_;
     using DataSetSampler<SpatialDims>::coordsMin_;
     using DataSetSampler<SpatialDims>::coordsMax_;
-
-    // virtual std::array<float, SpatialDims> getMin() const override { return coordsMin_; }
-    // virtual std::array<float, SpatialDims> getMax() const override { return coordsMax_; }
 };
 
 }  // namespace discretedata

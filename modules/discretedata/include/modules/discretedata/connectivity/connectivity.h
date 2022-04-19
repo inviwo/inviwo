@@ -86,10 +86,10 @@ public:
      * @param index Index of element in dimension 'from'
      * @param from Dimension the index lives in
      * @param to Dimension the result lives in
-     * @param isPosition
+     * @param cutAtBorder Ignore certain connections, e.g. for periodic grids
      */
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
-                                GridPrimitive to, bool isPosition = false) const = 0;
+                                GridPrimitive to, bool cutAtBorder = false) const = 0;
 
     /**
      * \brief Range of all elements to iterate over

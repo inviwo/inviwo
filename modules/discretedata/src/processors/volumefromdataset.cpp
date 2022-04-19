@@ -47,103 +47,93 @@ const ProcessorInfo VolumeFromDataSet::processorInfo_{
 const ProcessorInfo VolumeFromDataSet::getProcessorInfo() const { return processorInfo_; }
 
 VolumeFromDataSet::VolumeFromDataSet()
-    : portInDataSet("InDataSet")
-    , portOutVolume("OutVolume")
-    , channelName("channelName", "Data Channel", &portInDataSet)
-    //, useVoxelData("useVoxelData", "Use Voxel Data", false)
-    , floatVolumeOutput("floatVolumeOutput", "Convert Data to Float 32") {
-    addPort(portInDataSet);
-    addPort(portOutVolume);
-    addProperty(channelName);
-    // addProperty(useVoxelData);
-    addProperty(floatVolumeOutput);
+    : portInDataSet_("InDataSet")
+    , portOutVolume_("OutVolume")
+    , conversionMethod_("conversionMethod", "Conversion method",
+                        std::vector<OptionPropertyOption<ConversionMethod>>{
+                            {"direct", "UniformGrid", ConversionMethod::UniformGrid},
+                            {"sampling", "Sampling", ConversionMethod::Sample}})
+    , channelToConvert_("channelName", "Data Channel", &portInDataSet_)
+    , sampler_("sampler", "Sampler", &portInDataSet_)
+    , volumeSize_("volumeSize", "Volume size", {128, 128, 128},
+                  {{32, 32, 32}, ConstraintBehavior::Immutable},
+                  {{512, 512, 512}, ConstraintBehavior::Immutable})
+    , invalidValue_("invalidValue", "Invalid value", 0, {-1, ConstraintBehavior::Ignore},
+                    {1, ConstraintBehavior::Ignore}, 0.1, InvalidationLevel::InvalidOutput,
+                    PropertySemantics::Text)
+    , floatVolumeOutput_("floatVolumeOutput", "Convert Data to Float 32") {
+    addPorts(portInDataSet_, portOutVolume_);
+    addProperties(conversionMethod_, channelToConvert_, sampler_, volumeSize_, invalidValue_,
+                  floatVolumeOutput_);
+
+    sampler_.visibilityDependsOn(conversionMethod_,
+                                 [](auto& prop) { return prop.get() == ConversionMethod::Sample; });
+    volumeSize_.visibilityDependsOn(
+        conversionMethod_, [](auto& prop) { return prop.get() != ConversionMethod::UniformGrid; });
+
+    floatVolumeOutput_.visibilityDependsOn(
+        conversionMethod_, [](auto& prop) { return prop.get() == ConversionMethod::UniformGrid; });
 }
 
 void VolumeFromDataSet::process() {
+
     // Get data
-    auto pInDataSet = portInDataSet.getData();
+    auto pInDataSet = portInDataSet_.getData();
     if (!pInDataSet) {
         invalidate(InvalidationLevel::InvalidOutput);
         return;
     }
 
-    auto pStructuredGrid = pInDataSet->getGrid<StructuredGrid<3>>();
-    if (!pStructuredGrid) {
+    auto pGrid = pInDataSet->getGrid();
+    if (conversionMethod_.get() == ConversionMethod::UniformGrid && !pGrid) {
         invalidate(InvalidationLevel::InvalidOutput);
         return;
     }
 
-    auto channel = channelName.getCurrentChannel();
+    auto channel = channelToConvert_.getCurrentChannel();
     if (!channel) {
         invalidate(InvalidationLevel::InvalidOutput);
         return;
     }
 
-    inviwo::Volume* result = nullptr;
-    switch (channel->getDataFormatId()) {
-        case DataFormatId::Float16:
-            result = convert<f16>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::Float32:
-            result = convert<glm::f32>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::Float64:
-            result = convert<glm::f64>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::Int8:
-            result = convert<glm::i8>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::Int16:
-            result = convert<glm::i16>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::Int32:
-            result = convert<glm::i32>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::Int64:
-            result = convert<glm::i64>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::UInt8:
-            result = convert<glm::u8>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::UInt16:
-            result = convert<glm::u16>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::UInt32:
-            result = convert<glm::u32>(*channel, *pStructuredGrid);
-            break;
-        case DataFormatId::UInt64:
-            result = convert<glm::u64>(*channel, *pStructuredGrid);
-            break;
-        default:
-            LogWarn("Could not resolve DataFormat");
-            break;
+    auto sampler = sampler_.getCurrentSampler();
+    if (conversionMethod_.get() == ConversionMethod::Sample && !sampler) {
+        invalidate(InvalidationLevel::InvalidOutput);
+        return;
     }
 
-    portOutVolume.setData(result);
+    // inviwo::Volume* result = nullptr;
+    detail::VolumeDispatcher dispatcher;
+    inviwo::Volume* result = Channel::dispatchSharedPointer<Volume*>(
+        channel, dispatcher,  //*this);
+        sampler, pGrid.get(), volumeSize_.get(), invalidValue_.get(), conversionMethod_.get(),
+        floatVolumeOutput_.get());
+
+    portOutVolume_.setData(result);
 }
 
 // void VolumeFromDataSet::updateChannelList() {
-//     auto dataset = portInDataSet.getData();
+//     auto dataset = portInDataSet_.getData();
 //     LogWarn("Hej!");
 //     std::string lastName = "";
-//     if (channelName.size()) lastName = channelName.get();
+//     if (channelToConvert_.size()) lastName = channelToConvert_.get();
 //     LogWarn(lastName);
-//     channelName.clearOptions();
+//     channelToConvert_.clearOptions();
 
 //     if (!dataset) {
 //         return;
 //     }
 
-//     auto dataSetNames = dataset->getChannelNames();
+//     auto dataSetNames = dataset->getChannelToConvert_s();
 //     GridPrimitive filter = useVoxelData.get() ? GridPrimitive::Volume : GridPrimitive::Vertex;
 //     for (auto& name : dataSetNames) {
 //         if (!(name.second == filter)) continue;
 //         auto chann = dataset->getChannel(name.first, filter);
 //         if (chann->getNumComponents() != 1) continue;
-//         channelName.addOption(name.first, name.first);
+//         channelToConvert_.addOption(name.first, name.first);
 //     }
 
-//     channelName.setSelectedIdentifier(lastName);
+//     channelToConvert_.setSelectedIdentifier(lastName);
 // }
 
 }  // namespace discretedata

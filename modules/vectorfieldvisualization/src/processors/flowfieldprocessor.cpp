@@ -56,13 +56,14 @@ FlowField2DProcessor::FlowField2DProcessor()
     , fieldSize_("fieldSize", "Field Size", {64, 64}, {32, 32}, {1024, 1024})
     , fieldSubSize_("fieldSubSize", "Sample Size", 0.5, 0, 1)
     , seedAngle_("seedAngle", "Seed Angle", 0, 0, 360)
-    , seedEpsilon_("seedEpsilon", "Seed Offset in \% cell", 0.1, 0.001, 0.5)
+    , seedEpsilon_("seedEpsilon", "Seed Offset in percent of cell", 0.1, 0.001, 0.5)
     , v0_("v0", "v0", 1.0, {0.0, ConstraintBehavior::Ignore}, {10.0, ConstraintBehavior::Ignore})
     , dataRange_("dataRange", "Data Range", dvec2(0.1, 0.1),
                  std::pair<dvec2, ConstraintBehavior>{dvec2(0.0), ConstraintBehavior::Ignore},
                  std::pair<dvec2, ConstraintBehavior>{dvec2(1.0), ConstraintBehavior::Ignore},
                  dvec2(0.1), InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , normalize_("normalize", "Normalize?", false)
+    // , maxAbs_("maxAbs", "| Maximum Value |", 0.1, 0.0001, 10.0)
     , logScale_("logScale", "Log Scale?", false) {
 
     addPort(sampler_);
@@ -75,6 +76,8 @@ FlowField2DProcessor::FlowField2DProcessor()
 
     properties_.normalizeSamples_.set(true);  //! Tracer::IsTimeDependent);
     properties_.normalizeSamples_.setCurrentStateAsDefault();
+
+    // maxAbs_.visibilityDependsOn(normalize_, [](auto* prop){return prop.get();})
     // dataRange_.setReadOnly(true);
 }
 

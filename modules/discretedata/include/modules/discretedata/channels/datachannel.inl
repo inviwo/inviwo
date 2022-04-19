@@ -140,8 +140,8 @@ template <typename T, ind N>
 void DataChannel<T, N>::computeMinMax() const {
     using Vec = std::array<T, N>;
 
-    Vec minT;
-    Vec maxT;
+    Vec minT{0};
+    Vec maxT{0};
 
     bool initialized = false;
 

@@ -73,6 +73,7 @@ struct ChannelOpPropertyBase : public CompositeProperty {
         DataChannelProperty::ChannelFilter filter = &DataChannelProperty::FilterPassAll);
     ChannelOpPropertyBase(const ChannelOpPropertyBase& prop);
     virtual std::shared_ptr<Channel> applyOperation() = 0;
+    void updateDataSet(DataSetInport* dataInport) { baseChannel_.setDatasetInput(dataInport); }
 
     DataChannelProperty baseChannel_;
     StringProperty channelName_;
@@ -80,13 +81,12 @@ struct ChannelOpPropertyBase : public CompositeProperty {
 
 template <typename ChannelOp>
 struct ChannelOpProperty : public ChannelOpPropertyBase {
-    // static const std::string classIdentifier = ChannelOp::getIdentifier();
-    // fmt::format("inviwo.discretedata.channeloperation{}", ChannelOp::getIdentifier());
 
     ChannelOpProperty(
         const std::string& identifier, const std::string& displayName,
         DataSetInport* dataInport = nullptr, const std::string& defaultName = "NONE",
         DataChannelProperty::ChannelFilter filter = &DataChannelProperty::FilterPassAll);
+    ChannelOpProperty(const ChannelOpProperty<ChannelOp>&);
     ChannelOpProperty& operator=(const ChannelOpProperty<ChannelOp>& prop);
     virtual std::shared_ptr<Channel> applyOperation() override;
     virtual ChannelOpProperty<ChannelOp>* clone() const override {
@@ -263,10 +263,16 @@ ChannelOpProperty<ChannelOp>& ChannelOpProperty<ChannelOp>::operator=(
     if (prop.channelName_.get().compare("NONE") != 0) channelName_.set(prop.channelName_.get());
     if (prop.baseChannel_.datasetInput_)
         baseChannel_.datasetInput_ = prop.baseChannel_.datasetInput_;
-    // CompositeProperty::operator=(prop);
     setIdentifier(prop.getIdentifier());
     setDisplayName(prop.getDisplayName());
 }
+
+template <typename ChannelOp>
+ChannelOpProperty<ChannelOp>::ChannelOpProperty(const ChannelOpProperty<ChannelOp>& prop)
+    : ChannelOpPropertyBase(prop.getIdentifier(), prop.getDisplayName(),
+                            prop.baseChannel_.getDatasetInput(),
+                            prop.baseChannel_.channelName_.get(), prop.baseChannel_.channelFilter_)
+    , channelOperation_(this) {}
 
 template <typename ChannelOp>
 std::shared_ptr<Channel> ChannelOpProperty<ChannelOp>::applyOperation() {
@@ -289,7 +295,6 @@ struct PropertyTraits<discretedata::ChannelOpProperty<ChannelOp>> {
 
 template <typename ChannelOp>
 std::string discretedata::ChannelOpProperty<ChannelOp>::getClassIdentifier() const {
-    // return "inviwo.discretedata.channeloperation" + ChannelOp::getIdentifier();
     return PropertyTraits<ChannelOpProperty<ChannelOp>>::classIdentifier();
 }
 

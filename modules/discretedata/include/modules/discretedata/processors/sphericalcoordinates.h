@@ -119,6 +119,7 @@ struct SphericalCoordinateDispatcher {
                 [velocityChannel, dataChannel](std::array<double, 2>& velocityDegrees, ind idx) {
                     static const double AVG_EARTH_RADIUS = 6371000.0f;
                     static const double DEGREE_TO_RAD = M_PI / 180.0;
+                    static const int SEC_TO_DAY = 60 * 60 * 24;
                     // static const double DEGREE_TO_METER_MULT = 180.0 / (M_PI * AVG_EARTH_RADIUS);
                     std::array<typename T::type, N> latLon;
                     dataChannel->fill(latLon, idx);
@@ -134,10 +135,9 @@ struct SphericalCoordinateDispatcher {
                         return;
                     }
 
-                    velocityDegrees[1] =
-                        uv[0] / (DEGREE_TO_RAD * AVG_EARTH_RADIUS);  // * SEC_TO_DAY;
+                    velocityDegrees[1] = uv[0] / (DEGREE_TO_RAD * AVG_EARTH_RADIUS) * SEC_TO_DAY;
                     double latRadius = std::cos(latLon[0] * DEGREE_TO_RAD) * AVG_EARTH_RADIUS;
-                    velocityDegrees[0] = uv[1] / (DEGREE_TO_RAD * latRadius);  // * SEC_TO_DAY;
+                    velocityDegrees[0] = uv[1] / (DEGREE_TO_RAD * latRadius) * SEC_TO_DAY;
                     // double mag = std::sqrt(velocityDegrees[0] * velocityDegrees[0] +
                     //                        velocityDegrees[1] * velocityDegrees[1]);
                     // velocityDegrees[0] /= mag;

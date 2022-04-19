@@ -29,9 +29,7 @@
 
 #pragma once
 
-#include <modules/discretedata/sampling/datasetspatialsampler.h>
-#include <inviwo/core/util/interpolation.h>
-#include <inviwo/core/util/spatialsampler.h>
+#include <modules/discretedata/sampling/extendedspatialsampler.h>
 
 // #include <modules/base
 
@@ -39,26 +37,33 @@ namespace inviwo {
 namespace discretedata {
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-DataSetSpatialSampler<SpatialDims, DataDims, T>::DataSetSpatialSampler(
-    std::shared_ptr<const DataSetSampler<SpatialDims>> sampler, InterpolationType interpolationType,
-    std::shared_ptr<const DataChannel<T, DataDims>> data, T invalidValue)
+ExtendedSpatialSampler<SpatialDims, DataDims, T>::ExtendedSpatialSampler(
+    std::shared_ptr<const DataSetSamplerBase> sampler, InterpolationType interpolationType,
+    std::shared_ptr<const DataChannel<T, DataDims>> data)
     : SpatialSampler<SpatialDims, DataDims, T>(*sampler)
     , interpolationType_(interpolationType)
     , sampler_(sampler)
-    , data_(data)
-    , invalidValue_(invalidValue) {
+    , data_(data) {
+    std::cout << "Creating Spatial Sampler, interpolation type " << interpolationType_ << std::endl;
+    // Dispatch to DataSetSampler<BaseSpatialDims>
 
     if (interpolationType == InterpolationType::Ignore) {
         interpolationType = InterpolationType::Nearest;
+        LogWarn(
+            "Interpolation type was set to Ignore - changed to nearest neighbor interpolation.");
     }
 }
 
-template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataSpace(
-    const Vector<SpatialDims, double>& posData) const {
+// template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+// SpatialEntity<N>* ExtendedSpatialSampler<SpatialDims, DataDims, T>::clone() const {
+//     std::cout << "Cloned Entity Channel" << std::endl;
+//     return new SpatialEntityChannel<T, N>(*this);
+// }
 
-    using VecT = glm::vec<DataDims, T>;
-    using TypeNT = inviwo::Vector<DataDims, T>;
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+Vector<DataDims, T> ExtendedSpatialSampler<SpatialDims, DataDims, T>::sampleDataSpace(
+    const Vector<SpatialDims, double>& posData) const {
+    // std::cout << "Sample!" << std::endl;
     // Sample weights by position.
     const auto min = sampler_->getMin();
     const auto max = sampler_->getMax();
@@ -72,18 +77,21 @@ Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataS
     ind cell =
         sampler_->locateAndSampleCell(arrayPos, returnWeights, returnVertices, interpolationType_);
 
-    VecT result{invalidValue_};
+    Vector<DataDims, T> result{0};
 
     // If the cell does not exist, return zero vector.
-    if (cell < 0 || cell > data_->size()) return util::glm_convert<TypeNT>(result);
+    if (cell < 0 || cell > data_->size()) return result;
+    // std::cout << "Found a cell!" << std::endl;
 
     // Add up weighted samples
-    VecT sample;
-    bool hasValidSample = false;
-    result = VecT{0};
+    Vector<DataDims, T> sample;
+    // std::cout << "Num weights: " << returnVertices.size() << " = " << returnWeights.size()
+    //           << std::endl;
     for (auto&& [weight, index] : util::zip(returnWeights, returnVertices)) {
-        if (weight == 0) continue;
-
+        if (weight == 0) {
+            // std::cout << "Weight of 0" << std::endl;
+            continue;
+        }
         data_->fill(sample, index, 1);
 
         /////////////// removing this for now!!!!!!! ///////////////
@@ -94,17 +102,18 @@ Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataS
         // }
         // result += sample * weight;
         if (data_->isValid(sample[0])) {
-            hasValidSample = true;
-            result += (glm::vec<DataDims, double>)sample *
-                      weight;  // util::glm_convert<Vector<DataDims, T>>(sample) * weight;
+            result += sample * weight;
         }
+        // std::cout << fmt::format("\tWeighting ({}, {}) by {}", sample[0],
+        //                          DataDims > 1 ? sample[1] : sample[0], weight)
+        //           << std::endl;
     }
-    if (!hasValidSample) return TypeNT{invalidValue_};
-    return util::glm_convert<TypeNT>(result);
+    // std::cout << "=  Stepped " << result << std::endl;
+    return result;
 }
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-bool DataSetSpatialSampler<SpatialDims, DataDims, T>::withinBoundsDataSpace(
+bool ExtendedSpatialSampler<SpatialDims, DataDims, T>::withinBoundsDataSpace(
     const Vector<SpatialDims, double>& pos) const {
 
     // Sample weights by position.

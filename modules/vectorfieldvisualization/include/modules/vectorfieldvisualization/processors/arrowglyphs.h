@@ -54,6 +54,7 @@ private:
 
     OrdinalProperty<IVec> seedGridSize_;
     OrdinalProperty<FVec> seedGridOffset_, seedGridExtent_;
+    TemplateOptionProperty<CoordinateSpace> sampleSpace_;
     DoubleProperty arrowScale_, colorScale_;
     TransferFunctionProperty transferFunction_;
     BoolProperty normalizeLength_;
@@ -84,6 +85,7 @@ ArrowGlyphs<SpatialDims>::ArrowGlyphs()
           "seedGridExtent", "Seed Grid Extent", FVec(1),
           std::make_pair<FVec, ConstraintBehavior>(FVec(0.0001), ConstraintBehavior::Ignore),
           std::make_pair<FVec, ConstraintBehavior>(FVec(1024), ConstraintBehavior::Ignore))
+    , sampleSpace_("sampleSpace", "Sample Space")
     , arrowScale_("arrowScale", "ArrowScale", 1.0, 0, 10.0)
     , colorScale_("colorScale", "Color Map Max", 1.0,
                   std::make_pair<double, ConstraintBehavior>(0, ConstraintBehavior::Ignore),
@@ -91,10 +93,15 @@ ArrowGlyphs<SpatialDims>::ArrowGlyphs()
     , transferFunction_("transferFunction", "Transfer Function")
     , normalizeLength_("normalizeLength", "Normalize length?", false) {
 
+    sampleSpace_.addOption("data", "Data", CoordinateSpace::Data);
+    sampleSpace_.addOption("model", "Model", CoordinateSpace::Model);
+    sampleSpace_.addOption("world", "World", CoordinateSpace::World);
+    sampleSpace_.setCurrentStateAsDefault();
+
     addPorts(samplerIn_, meshOut_);
-    addProperties(seedGridSize_, seedGridOffset_, seedGridExtent_, arrowScale_, colorScale_,
-                  transferFunction_, normalizeLength_);
-};
+    addProperties(seedGridSize_, seedGridOffset_, seedGridExtent_, sampleSpace_, arrowScale_,
+                  colorScale_, transferFunction_, normalizeLength_);
+}
 
 template <unsigned int SpatialDims>
 void ArrowGlyphs<SpatialDims>::process() {
@@ -133,12 +140,16 @@ void ArrowGlyphs<SpatialDims>::process() {
     using NormalMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::NormalBuffer,
                                  buffertraits::ColorsBuffer>;
     auto arrowMesh = std::make_shared<NormalMesh>(DrawType::Triangles, ConnectivityType::None);
+    // arrowMesh->setModelMatrix(sampler->getModelMatrix());
+    // arrowMesh->setWorldMatrix(sampler->getWorldMatrix());
     std::vector<NormalMesh::Vertex> vertices;
     vertices.reserve(numSeeds * basicArrowIndices.size());
 
     const FVec& offset = seedGridOffset_.get();
     const FVec& extent = seedGridExtent_.get();
     float scale = arrowScale_.get();  // / minDim;
+    mat4 sampleToWorldMat =
+        sampler->getCoordinateTransformer().getMatrix(sampleSpace_.get(), CoordinateSpace::World);
 
     for (size_t z = 0; z < seedDims.z; ++z) {
         for (size_t y = 0; y < seedDims.y; ++y) {
@@ -150,9 +161,14 @@ void ArrowGlyphs<SpatialDims>::process() {
                 vec3 origin(originND.x, originND.y, 0);
                 if constexpr (SpatialDims >= 3) origin.z = originND.z;
 
-                if (!sampler->withinBounds(originND)) continue;
-                auto velocity = sampler->sample(originND, CoordinateSpace::World);
+                if (!sampler->withinBounds(originND, sampleSpace_.get())) continue;
+                auto velocity = sampler->sample(originND, sampleSpace_.get());
 
+                // originND = FVec(sampleToWorldMat * glm::vec<4, float>(origin, 1.0));
+                // origin = {originND.x, originND.y, 0};
+                // if constexpr (SpatialDims >= 3) origin.z = originND.z;
+                origin = vec3(sampleToWorldMat * vec4(origin, 1.0));
+    
                 double velocityLength = glm::length(velocity);
                 vec4 color = transferFunction_.get().sample(velocityLength / colorScale_.get());
                 if (normalizeLength_.get()) velocityLength = 1.0;

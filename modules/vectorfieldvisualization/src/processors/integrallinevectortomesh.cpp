@@ -426,7 +426,7 @@ void IntegralLineVectorToMesh::process() {
 
                 vec4 color = coloring(sample, line.getIndex(), lineIdx);
 
-                auto N = glm::normalize(glm::cross(vor, vel));
+                // auto N = glm::normalize(glm::cross(vor, vel));
 
                 auto off = glm::normalize(vor) * (ribbonWidth_.get() / 2.0f);
                 auto pos1 = pos - off;

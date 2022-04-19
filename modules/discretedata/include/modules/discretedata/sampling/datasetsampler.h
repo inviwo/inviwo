@@ -42,7 +42,6 @@ public:
                        std::shared_ptr<const Channel> coordinates);
     virtual unsigned int getDimension() const = 0;
     bool setInterpolant(const InterpolantBase& interpolant);
-    // InterpolantBase* getInterpolantBase();
     const InterpolantBase& getInterpolantBase() const;
     virtual std::string getIdentifier() const = 0;
     virtual Mesh* getDebugMesh() const { return nullptr; }

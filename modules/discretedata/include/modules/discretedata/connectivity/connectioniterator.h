@@ -113,7 +113,7 @@ public:
     ind getIndex() const { return connection_->at(toIndex_); }
 
     //! Iterate over connected GridPrimitives (neighbors etc)
-    ConnectionRange connection(GridPrimitive type) const;
+    ConnectionRange connection(GridPrimitive type, bool cutAtBorder = false) const;
 
 protected:
     //! Index to the current element
@@ -132,9 +132,8 @@ protected:
 
 class ConnectionRange {
 public:
-
     ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimitive toDim,
-                    const Connectivity* parent);
+                    const Connectivity* parent, bool cutAtBorder = false);
 
     ConnectionIterator begin() const {
         return ConnectionIterator(parent_, toDimension_, connections_, 0);

@@ -71,6 +71,7 @@ ExtrudeDataSet::ExtrudeDataSet()
 }
 
 void ExtrudeDataSet::process() {
+    LogWarn("--> Extrude process");
     std::shared_ptr<const DataSet> extrudeDataset;
     if (extrudeDataSetIn_.hasData()) extrudeDataset = extrudeDataSetIn_.getData();
 
@@ -98,6 +99,7 @@ void ExtrudeDataSet::process() {
 
     for (auto* channelProp :
          extrudeDataMembers_.getPropertiesByType<ExtendObjectProperty<DataChannelProperty>>()) {
+        LogWarn("--> Processing a channel prop");
         auto baseChannel = channelProp->dataObject_.getCurrentChannel();
         if (!baseChannel || baseChannel->getGridPrimitiveType() != GridPrimitive::Vertex) continue;
 
@@ -115,16 +117,21 @@ void ExtrudeDataSet::process() {
 
     for (auto* samplerProp :
          extrudeDataMembers_.getPropertiesByType<ExtendObjectProperty<DataSamplerProperty>>()) {
+        LogWarn("--> Processing a sampler prop");
         auto baseSampler = samplerProp->dataObject_.getCurrentSampler();
         if (!baseSampler) continue;
+
+        LogWarn("---> Got sampler");
 
         auto extraChannel = samplerProp->extrudingChannel_.getCurrentChannelTyped<double, 1>();
         // std::dynamic_pointer_cast<const DataChannel<double, 1>>(
         // samplerProp->extrudingChannel_.getCurrentChannel());
         if (!extraChannel) continue;
+        LogWarn("---> Got channel");
 
         auto extrudedSampler = createExtrudedDataSetSampler(baseSampler, extraChannel, newGrid);
         if (!extrudedSampler) continue;
+        LogWarn("---> Got combined");
         newDataset->addChannel(extrudedSampler->coordinates_);
         newDataset->addSampler(extrudedSampler);
     }
@@ -132,5 +139,27 @@ void ExtrudeDataSet::process() {
     dataOut_.setData(std::move(newDataset));
 }
 
+void ExtrudeDataSet::deserialize(Deserializer& d) {
+    Processor::deserialize(d);
+
+    for (auto* channelProp :
+         extrudeDataMembers_.getPropertiesByType<ExtendObjectProperty<DataChannelProperty>>()) {
+        channelProp->setDatasetInputs(&baseDataSetIn_, &extrudeDataSetIn_);
+    }
+
+    for (auto* samplerProp :
+         extrudeDataMembers_.getPropertiesByType<ExtendObjectProperty<DataSamplerProperty>>()) {
+        samplerProp->setDatasetInputs(&baseDataSetIn_, &extrudeDataSetIn_);
+    }
+}
+
 }  // namespace discretedata
+
+const std::string PropertyTraits<discretedata::ExtrudeDataSet::ExtendObjectProperty<
+    discretedata::DataChannelProperty>>::ClassIdentifier =
+    "inviwo.discretedata.extrudechannelproperty";
+
+const std::string PropertyTraits<discretedata::ExtrudeDataSet::ExtendObjectProperty<
+    discretedata::DataSamplerProperty>>::ClassIdentifier =
+    "inviwo.discretedata.extrudesamplerproperty";
 }  // namespace inviwo

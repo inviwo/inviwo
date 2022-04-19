@@ -63,23 +63,26 @@ AddDataSetSampler::AddDataSetSampler()
           })
     , samplerCreator_("sampler", "Sampler Type")
     , interpolantCreator_("interpolation", "Cell Interpolant")
-    // , interpolationType_("interpolationType", "Interpolation Type",
-    //                      {{"nearest", "Nearest Neighbor", InterpolationType::Nearest},
-    //                       {"squared", "Squared Distance", InterpolationType::SquaredDistance},
-    //                       {"linear", "Linear", InterpolationType::Linear}},
-    //                      2)
+    , restrictRange_("restrictRange", "Restrict Range", false)
     , interpolant_(nullptr)
     , sampler_(nullptr)
     , interpolantChanged_(true)
     , interpolationChanged_(true)
-    , samplerChanged_(true) {
+    , samplerChanged_(true)
+    , rangeChanged_(true) {
 
     addPort(dataIn_);
     addPort(dataOut_);
     addPort(meshOut_);
-    addProperties(positionChannel_, samplerCreator_, interpolantCreator_);
+    addProperties(positionChannel_, samplerCreator_, interpolantCreator_, restrictRange_);
     positionChannel_.gridPrimitive_.setVisible(false);
-    // interpolationType_.setCurrentStateAsDefault();
+    restrictRange_.onChange([&]() {
+        for (FloatVec2Property* prop : restrictRange_.getPropertiesByType<FloatVec2Property>())
+            prop->setInvalidationLevel(restrictRange_ ? InvalidationLevel::InvalidOutput
+                                                      : InvalidationLevel::Valid);
+        rangeChanged_ = true;
+        std::cout << "Triggered range prop" << std::endl;
+    });
 
     for (auto& creator : samplerCreatorList_) {
         samplerCreator_.addOption(creator.first, creator.second.first, samplerCreator_.size());
@@ -95,11 +98,7 @@ AddDataSetSampler::AddDataSetSampler()
         invalidate(InvalidationLevel::InvalidOutput);
         std::cout << "Changed interpolant" << std::endl;
     });
-    // interpolationType_.onChange([this]() {
-    //     interpolationChanged_ = true;
-    //     invalidate(InvalidationLevel::InvalidOutput);
-    //     std::cout << "Changed interpolation" << std::endl;
-    // });
+
     samplerCreator_.onChange([this]() {
         samplerChanged_ = true;
         invalidate(InvalidationLevel::InvalidOutput);
@@ -108,9 +107,6 @@ AddDataSetSampler::AddDataSetSampler()
 }
 
 void AddDataSetSampler::process() {
-    // static bool firstTime = true;
-    // // if (!firstTime) return;
-    // firstTime = false;
 
     LogWarn("= Process!");
     std::cout << "X== Proccess! ==" << std::endl;
@@ -118,41 +114,40 @@ void AddDataSetSampler::process() {
         interpolantChanged_ = false;
         interpolationChanged_ = false;
         samplerChanged_ = false;
+        rangeChanged_ = false;
     };
 
     if (!dataIn_.hasData() || !positionChannel_.hasSelectableChannels() ||
         !positionChannel_.getCurrentChannel()) {
-        std::cout << "ASDf" << std::endl;
         dataOut_.setData(std::shared_ptr<DataSet>(nullptr));
         meshOut_.setData(nullptr);
         removeChangedFlags();
         return;
     }
-    std::cout << "# Okay, channel options:" << std::endl;
-    for (auto opt : positionChannel_.channelName_.getOptions())
-        std::cout << " #   " << opt.value_ << std::endl;
+    // std::cout << "# Okay, channel options:" << std::endl;
+    // for (auto opt : positionChannel_.channelName_.getOptions())
+    //     std::cout << " #   " << opt.value_ << std::endl;
 
     ind baseDim = static_cast<ind>(dataIn_.getData()->getGrid()->getDimension());
     if (interpolantChanged_) {
-        std::cout << "GHJK" << std::endl;
         delete interpolant_;
 
         interpolant_ =
             interpolantCreatorList_[interpolantCreator_.getSelectedIdentifier()].second(baseDim);
-        // fillInterpolationTypes();
         if (!samplerChanged_ && sampler_) sampler_->setInterpolant(*interpolant_);
     }
 
-    if (samplerChanged_ || dataIn_.isChanged()) {
+    if (samplerChanged_ || dataIn_.isChanged() || rangeChanged_) {
         std::cout << "X Getting new sampler of type " << samplerCreator_.getSelectedIdentifier()
                   << std::endl;
         removeChangedFlags();
+        updateRangeProperties();
         LogWarn("Getting new sampler of type " << samplerCreator_.getSelectedIdentifier());
         sampler_ = samplerCreatorList_[samplerCreator_.getSelectedIdentifier()].second(
             baseDim, dataIn_.getData()->getGrid(), positionChannel_.getCurrentChannel(),
-            interpolant_);
-        LogWarn("Sampler address: " << sampler_);
-        std::cout << "X Sampler address: " << sampler_ << std::endl;
+            interpolant_, restrictRange_);
+        // LogWarn("Sampler address: " << sampler_);
+        // std::cout << "X Sampler address: " << sampler_ << std::endl;
     }
 
     removeChangedFlags();
@@ -175,23 +170,17 @@ void AddDataSetSampler::process() {
     std::cout << "Ended process AddDataSetSampler" << std::endl;
 }
 
-// void AddDataSetSampler::fillInterpolationTypes() {
-//     if (!interpolant_) {
-//         interpolationType_.clearOptions();
-//         return;
-//     }
-//     if (interpolationType_.size() < 3)
-//         interpolationType_.replaceOptions(
-//             {{"nearest", "Nearest Neighbor", InterpolationType::Nearest},
-//              {"squared", "Squared Distance", InterpolationType::SquaredDistance},
-//              {"linear", "Linear", InterpolationType::Linear}});
+void AddDataSetSampler::updateRangeProperties() {
+    auto coords = positionChannel_.getCurrentChannel();
+    if (!dataIn_.hasData() || !dataIn_.getData() || !coords) {
+        restrictRange_.clearProperties();
+        return;
+    }
 
-//     // Remove interpolation options that are not supported by the selected interpolant.
-//     for (auto& opt : interpolationType_.getOptions()) {
-//         if (!interpolant_->supportsInterpolationType(opt.value_))
-//             interpolationType_.removeOption(opt.id_);
-//     }
-// }
+    UpdateRangePropertiesDispatcher dispatcher;
+    coords->dispatch<void, dispatching::filter::Scalars, 1, 3, UpdateRangePropertiesDispatcher&&,
+                     BoolCompositeProperty*>(std::move(dispatcher), &restrictRange_);
+}
 
 void AddDataSetSampler::addSamplerType(std::string identifier, std::string displayName,
                                        CreateSampler creator) {

@@ -162,15 +162,11 @@ void CombineDataSets::deserializeSelection() {
                 }
 
                 // Check all datasets.
-                while (!isDataSet()) {
+                if (!isDataSet()) {
                     std::cout << "Strign to pick up property from: " << *strIt << std::endl;
                     auto* channProp = dynamic_cast<ChannelPickingListProperty*>(
                         currentDataSetProp->getPropertyByIdentifier(*strIt));
-                    if (channProp) {
-                        channProp->set(true);
-
-                        break;
-                    }
+                    if (channProp) channProp->set(true);
                 }
                 strIt++;
             }
