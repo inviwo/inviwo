@@ -148,5 +148,3 @@ ivw_deploy_qt(inviwo)
 if(IVW_PACKAGE_SELECT_APP STREQUAL "inviwo")
     include(packaging/packaging.cmake) # Package creation
 endif()
-
-#add_subdirectory(post_install)
