@@ -456,13 +456,9 @@ class TestRun:
             failures = safeget(self.report, 'failures', failure={})
             failedImgs = next((x for x in failures if x[0] == "images"), None)
             failed = (failedImgs is not None and img["image"] in failedImgs[1])
-            diffTolerance = safeget(self.report, "config", "image_test", "differenceTolerance", 
-                                    img["image"], failure=0.0)
 
             if failed:
                 return "fail"
-            elif img["difference"] > diffTolerance * (1.0 - warnPercentage/100.0):
-                return "warning"
             else:
                 return "ok"
 
