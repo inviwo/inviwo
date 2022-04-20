@@ -94,9 +94,9 @@ elseif(APPLE)
         set(CPACK_GENERATOR "TGZ")
     endif()
     
-    get_target_property(_qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
-    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-    find_program(MACDEPLOYQT macdeployqt HINTS "${_qt_bin_dir}")
+    get_target_property(qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
+    get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
+    find_program(MACDEPLOYQT macdeployqt HINTS "${qt_bin_dir}")
     
     # In summary, macdeloyqt will find and copy all used qt libraries and qt plugins
     # to the Contents/Frameworks directory. Then, it will change the RPATH of all 
