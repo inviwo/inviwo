@@ -109,7 +109,7 @@ void ImageStackVolumeSource::process() {
         if (volume_) {
             basis_.updateForNewEntity(*volume_, deserialized_);
             const auto overwrite =
-                deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes;
+                deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No;
             information_.updateForNewVolume(*volume_, overwrite);
         }
         deserialized_ = false;
