@@ -44,7 +44,7 @@ jobs:
     timeout-minutes: 360
     
     steps:
-    - name: Install Chocolatey
+    - name: Chocolatey Install 
       if: runner.os == 'Windows'
       shell: bash
       run: |
@@ -76,7 +76,8 @@ jobs:
       with:
         repository: 'microsoft/vcpkg'
         path: 'vcpkg' # The cmake vcpkg present expects vcpkg to be next to the inviwo source folder
-            
+    
+    # Cache built dependencies for faster subsequent builds
     - name: 'Setup NuGet Credentials'
       shell: bash
       run: >
@@ -88,7 +89,7 @@ jobs:
         -username "inviwo"
         -password "${{ secrets.GITHUB_TOKEN }}"
 
-    - name: Install Apt, switch to gcc-11
+    - name: Apt Install, switch to gcc-11
       shell: bash
       if: runner.os == 'Linux'
       run: |
@@ -97,7 +98,7 @@ jobs:
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11
         sudo update-alternatives --set gcc /usr/bin/gcc-11
   
-    - name: Install Brew
+    - name: Brew Install
       shell: bash
       if: runner.os == 'macOS'
       run: |

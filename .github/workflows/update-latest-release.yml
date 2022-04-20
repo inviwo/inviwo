@@ -1,4 +1,4 @@
-name: Update Win Latest Relase
+name: Update Latest Relase
 
 on:
   workflow_dispatch:
@@ -13,10 +13,16 @@ jobs:
     runs-on: windows-latest
     
     steps:
-    - name: Download artifact
+    - name: Download Windows artifact
       uses: dawidd6/action-download-artifact@v2
       with:
         name: inviwo-installer-win
+        workflow: inviwo.yml
+
+    - name: Download MacOS artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        name: inviwo-installer-macos
         workflow: inviwo.yml
 
     - name: Upload binaries to release

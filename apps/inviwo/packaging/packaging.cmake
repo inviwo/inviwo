@@ -105,7 +105,7 @@ elseif(APPLE)
     #
     # This must be done after copying all binaries to the staging package folder,
     # but before those files are packaged into an installer (CPACK_PRE_BUILD_SCRIPTS).
-    configure_file("../../cmake/deploy-osx.cmake.in" "${PROJECT_BINARY_DIR}/deploy-osx.cmake" @ONLY)
+    configure_file("${IVW_ROOT_DIR}/cmake/deploy-osx.cmake.in" "${PROJECT_BINARY_DIR}/deploy-osx.cmake" @ONLY)
     set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-osx.cmake")
 else()
     if(IVW_PACKAGE_INSTALLER)
