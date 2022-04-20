@@ -107,7 +107,8 @@ void VolumeCreator::process() {
 
         basis_.updateForNewEntity(*loadedData_, deserialized_);
         information_.updateForNewVolume(
-            *loadedData_, deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes);
+            *loadedData_, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
+        deserialized_ = false;
     }
 
     auto volume = std::make_shared<Volume>(*loadedData_);
