@@ -126,6 +126,7 @@ private:
     };
     // need to keep track of threads so we can join them
     std::vector<std::unique_ptr<Worker>> workers;
+    mutable std::mutex workers_mutex;
 
     // the task queue
     std::queue<std::function<void()>> tasks;
@@ -149,10 +150,12 @@ auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<std::invoke_resul
 
     std::future<return_type> res = task->get_future();
 
+    std::unique_lock<std::mutex> lock(workers_mutex);
     if (workers.empty()) {
+        lock.unlock();
         (*task)();  // No worker threads, just run the task.
     } else {
-        std::unique_lock<std::mutex> lock(queue_mutex);
+        std::unique_lock<std::mutex> queueLock(queue_mutex);
         tasks.emplace([task]() { (*task)(); });
     }
     condition.notify_one();

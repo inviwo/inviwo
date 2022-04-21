@@ -43,7 +43,17 @@ ThreadPool::ThreadPool(size_t threads, std::function<void()> onThreadStart,
     }
 }
 
+ThreadPool::~ThreadPool() {
+    std::unique_lock<std::mutex> lock(workers_mutex);
+    for (auto& worker : workers) worker->state = State::Abort;
+    condition.notify_all();
+    auto localCopy = std::move(workers);
+    lock.unlock();
+    localCopy.clear();  // this will join all threads.
+}
+
 size_t ThreadPool::trySetSize(size_t size) {
+    std::lock_guard<std::mutex> lock(workers_mutex);
     while (workers.size() < size) {
         workers.push_back(std::make_unique<Worker>(*this));
     }
@@ -68,7 +78,10 @@ size_t ThreadPool::trySetSize(size_t size) {
     return workers.size();
 }
 
-size_t ThreadPool::getSize() const { return workers.size(); }
+size_t ThreadPool::getSize() const {
+    std::lock_guard<std::mutex> lock(workers_mutex);
+    return workers.size();
+}
 
 size_t ThreadPool::getQueueSize() {
     std::unique_lock<std::mutex> lock(queue_mutex);
@@ -77,6 +90,7 @@ size_t ThreadPool::getQueueSize() {
 
 bool ThreadPool::isPoolThread() const {
     auto id = std::this_thread::get_id();
+    std::lock_guard<std::mutex> lock(workers_mutex);
     for (auto& worker : workers) {
         if (worker->thread.get_id() == id) {
             return true;
@@ -85,10 +99,15 @@ bool ThreadPool::isPoolThread() const {
     return false;
 }
 
-ThreadPool::~ThreadPool() {
-    for (auto& worker : workers) worker->state = State::Abort;
-    condition.notify_all();
-    workers.clear();  // this will join all threads.
+void ThreadPool::enqueueRaw(std::function<void()> task) {
+    std::lock_guard<std::mutex> lock(workers_mutex);
+    if (workers.empty()) {
+        task();  // No worker threads, just run the task.
+    } else {
+        std::unique_lock<std::mutex> queueLock(queue_mutex);
+        tasks.emplace(std::move(task));
+    }
+    condition.notify_one();
 }
 
 ThreadPool::Worker::~Worker() { thread.join(); }
@@ -120,16 +139,6 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
     }} {
 
     util::setThreadDescription(thread, "Inviwo Worker Thread");
-}
-
-void ThreadPool::enqueueRaw(std::function<void()> task) {
-    if (workers.empty()) {
-        task();  // No worker threads, just run the task.
-    } else {
-        std::unique_lock<std::mutex> lock(queue_mutex);
-        tasks.emplace(std::move(task));
-    }
-    condition.notify_one();
 }
 
 }  // namespace inviwo
