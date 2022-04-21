@@ -117,17 +117,17 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
         } else if (isSorted(src)) {  // Sorted + non continuous
             dataFrameState = 2;
         } else {
-            dataFrameState = 4;  // Unsorted + non continuous
+            dataFrameState = 3;  // Unsorted + non continuous
         }
 
         size_t index = 0;
-        std::map<unsigned int, unsigned int> orderedIndexMap;
+        //std::map<unsigned int, unsigned int> orderedIndexMap;
         std::unordered_map<unsigned int, unsigned int> unorderedIndexMap;
         switch (dataFrameState) {
             case 1:
                 std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
                                [&](const ValueType& v) {
-                                   if (dst.size() < v) {
+                                   if (dst.size() -1 < v) {
                                        return ValueType{0};
                                    }
                                    return static_cast<ValueType>(dst[static_cast<uint32_t>(v)]);
@@ -141,19 +141,6 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
                                });
                 break;
             case 3:
-                for (size_t i = 0; i < src.size(); ++i) {
-                    orderedIndexMap[src[i]] = dst[i];
-                }
-                std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
-                               [&](const ValueType& v) {
-                                   if (orderedIndexMap.count(static_cast<uint32_t>(v)) == 1) {
-                                       return static_cast<ValueType>(
-                                           orderedIndexMap[static_cast<uint32_t>(v)]);
-                                   }
-                                   return ValueType{0};
-                               });
-                break;
-            case 4:
                 for (size_t i = 0; i < src.size(); ++i) {
                     unorderedIndexMap[src[i]] = dst[i];
                 }
@@ -213,6 +200,9 @@ size_t binarySearch(const std::vector<unsigned int>& src, const unsigned int val
     size_t high = src.size();
     while (low < high) {
         size_t mid = (low + high) / 2;
+        if (mid <= 0) {
+            return 0;
+        }
 
         if (src[mid] == value) {
             return mid;

@@ -43,8 +43,8 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeRegionMap, Volume Region Map}
  * ![](org.inviwo.VolumeRegionMap.png?classIdentifier=org.inviwo.VolumeRegionMap)
- * Indices are remapped to values provided in CSV file. Requires two columns. 1st column is old
- * indices, second contains values to be mapped to.
+ * Indices are remapped to values provided in columns. Requires two columns. First column contains old
+ * indices and second column contains values to be mapped to.
  * ### Inports
  *   * __inputVolume__ Input volume
  *
