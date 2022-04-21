@@ -5,7 +5,7 @@ set(COMMAND_ARGS
     ${WINDEPLOYQT}
     ${APP_PATH}
     --compiler-runtime
-    -verbose=1
+    -verbose=2
 )
 execute_process(COMMAND ${COMMAND_ARGS} RESULT_VARIABLE EXIT_CODE)
 if(NOT EXIT_CODE EQUAL 0)
