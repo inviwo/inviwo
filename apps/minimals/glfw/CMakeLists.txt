@@ -26,4 +26,4 @@ ivw_define_standard_definitions(inviwo_glfwminimum inviwo_glfwminimum)
 ivw_define_standard_properties(inviwo_glfwminimum)
 
 ivw_folder(inviwo_glfwminimum minimals)
-ivw_default_install_comp_targets(glfw_app inviwo_glfwminimum)
+ivw_default_install_targets(inviwo_glfwminimum)

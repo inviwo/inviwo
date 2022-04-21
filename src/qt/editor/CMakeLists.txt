@@ -197,16 +197,8 @@ endif()
 
 ivw_deploy_qt(inviwo-qteditor)
 
-# Make package (for other projects to find)
 ivw_default_install_targets(inviwo-qteditor)
-ivw_qt_add_to_install(qt_editor 
-    Qt${QT_VERSION_MAJOR}Core
-    Qt${QT_VERSION_MAJOR}Gui
-    Qt${QT_VERSION_MAJOR}Widgets
-    Qt${QT_VERSION_MAJOR}Help
-    Qt${QT_VERSION_MAJOR}Sql # QtSql is needed by QtHelp
-    Qt${QT_VERSION_MAJOR}Svg
-) 
+# Make package (for other projects to find)
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
 
 ivw_register_license_file(NAME "DocumentWindow" MODULE QtWidgets

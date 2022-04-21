@@ -27,7 +27,20 @@
 # 
 #################################################################################
 
- 
+ # Adds special qt dependency and includes package variables to the project
+macro(ivw_qt_add_to_install ivw_comp)
+    message(DEPRECATION "Use ivw_default_install_targets with target as argument instead")
+    list(APPEND ivw_install_list
+        "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};Application;/"
+    )
+endmacro()
+
+# A helper funtion to install targets.  deprecated
+function(ivw_default_install_comp_targets comp)
+    message(DEPRECATION "Use ivw_default_install_targets")
+    ivw_default_install_targets(${ARGN})
+endfunction()
+
 macro(ivw_project project_name)
     message(DEPRECATION "Use project")
     project(${project_name} ${ARGN})

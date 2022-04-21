@@ -5,6 +5,7 @@ set(APP_BUNDLE_PATH "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/${IVW_PACKAGE_SELECT_A
 set(COMMAND_ARGS
     ${MACDEPLOYQT}
     ${APP_BUNDLE_PATH}
+    -verbose=1
     # Silences warnings on subsequent re-installations
     -always-overwrite
 )

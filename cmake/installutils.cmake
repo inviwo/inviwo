@@ -150,11 +150,6 @@ macro(ivw_add_to_module_pack folder)
     )
 endmacro()
 
-# A helper funtion to install targets.  deprecated
-function(ivw_default_install_comp_targets comp)
-    ivw_default_install_targets(${ARGN})
-endfunction()
-
 # A helper funtion to install module targets
 function(ivw_default_install_targets)
     foreach(target IN LISTS ARGN)
@@ -213,91 +208,6 @@ function(ivw_private_install_module_dirs)
         "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};Testing;/"
     )
 endfunction()
-
-# Adds special qt dependency and includes package variables to the project
-macro(ivw_qt_add_to_install ivw_comp)
-    foreach(qtarget ${ARGN})
-        find_package(${qtarget} QUIET REQUIRED)
-        
-        if(${qtarget}_FOUND)
-            if(WIN32)
-                set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
-                install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
-                        DESTINATION bin 
-                        COMPONENT Application 
-                        CONFIGURATIONS Debug)
-                install(FILES ${QTARGET_DIR}/${qtarget}.dll 
-                        DESTINATION bin 
-                        COMPONENT Application 
-                        CONFIGURATIONS Release RelWithDebInfo)
-                set(dest_dir "bin")
-            elseif(APPLE)
-                set(dest_dir "${IVW_APP_INSTALL_NAME}.app/Contents/plugins")
-            endif()
-            if (dest_dir)
-                if (${QT_VERSION_MAJOR} VERSION_LESS 6)
-                    foreach(plugin IN LISTS ${${qtarget}_PLUGINS})
-                        get_target_property(_loc ${plugin} LOCATION)
-                        get_filename_component(_path ${_loc} PATH)
-                        get_filename_component(_dirname ${_path} NAME)
-                        install(FILES ${_loc} 
-                                DESTINATION "${dest_dir}/${_dirname}"
-                                COMPONENT Application)
-                    endforeach()
-                else()
-                    # Plugins are not stored in QtYXXX_PLUGINS anymore.
-                    # The QT_PLUGINS property could have been used, but it is
-                    # only set for non-imported targets (static builds, see qt_internal_add_plugin).
-                    # See https://github.com/qt/qtbase/blob/9db7cc79a26ced4997277b5c206ca15949133240/cmake/QtProperties.cmake
-                    # Also tried to use QT_KNOWN_PLUGINS, but it was empty.
-                    # In case the plugins could have beem retrieved, it would have been
-                    # possible to use the QT_MODULE plugin target property 
-                    # to find out which Qt module it is associated with...
-
-                    # The workaround below instead finds the plugin types registered 
-                    # with the Qt module and installs all plugins of those types.
-                    # The workaround may thus copy redundant plugins.
-
-                    # Extract XXX from QtYXXX
-                    string(REGEX REPLACE "Qt${QT_VERSION_MAJOR}(.+)" "\\1" 
-                                         qt_module "${qtarget}")
-                    get_target_property(target_type Qt${QT_VERSION_MAJOR}::${qt_module} TYPE)
-
-                    if(NOT target_type STREQUAL "INTERFACE_LIBRARY")
-                        # MODULE_PLUGIN_TYPES are for example "accessiblebridge;platforms;imageformats;"
-                        # The plugin types are often named according to the folder in which 
-                        # the libraries are stored. So, we install all files in those folders.
-                        #
-                        # It is set in qt_internal_add_module
-                        # https://github.com/qt/qtbase/blob/7e11ddc930f51dcfee031b92fb944bd1d4511d81/cmake/QtModuleHelpers.cmake
-                        get_target_property(plugin_types
-                                            Qt${QT_VERSION_MAJOR}::${qt_module} MODULE_PLUGIN_TYPES)
-                        if(plugin_types)
-                            foreach(plugin_type IN ITEMS ${plugin_types})
-                                if(APPLE)
-                                    # Tested with qt installed via brew
-                                    set(plugins_dir "${QT_DIR}/../../../share/qt/plugins/${plugin_type}")
-                                else()
-                                    set(plugins_dir "${QT_DIR}/../../../plugins/${plugin_type}")
-                                endif()
-                                
-                                IF(IS_DIRECTORY ${plugins_dir})
-                                    install(DIRECTORY "${plugins_dir}"
-                                        DESTINATION ${dest_dir}
-                                        COMPONENT Application)
-                                endif()
-                            endforeach()
-                            
-                        endif()
-                    endif()
-                endif()              
-            endif()
-        endif()
-    endforeach()
-    list(APPEND ivw_install_list
-        "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};Application;/"
-    )
-endmacro()
 
 function(ivw_register_package name)
     set(incdirs "")
