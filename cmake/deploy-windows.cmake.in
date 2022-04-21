@@ -1,0 +1,15 @@
+set(WINDEPLOYQT "@WINDEPLOYQT@")
+set(IVW_PACKAGE_SELECT_APP "@IVW_PACKAGE_SELECT_APP@")
+
+set(APP_PATH "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/bin/${IVW_PACKAGE_SELECT_APP}.exe")
+set(COMMAND_ARGS
+    ${WINDEPLOYQT}
+    ${APP_PATH}
+    --compiler-runtime
+    -verbose=1
+)
+execute_process(COMMAND ${COMMAND_ARGS} RESULT_VARIABLE EXIT_CODE)
+if(NOT EXIT_CODE EQUAL 0)
+    message(FATAL_ERROR
+        \"Running ${COMMAND_ARGS} failed with exit code \${EXIT_CODE}.\")
+endif()

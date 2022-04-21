@@ -84,7 +84,13 @@ if(WIN32)
     else()
         set(CPACK_GENERATOR "ZIP")
     endif()
-
+    get_target_property(qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
+    get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
+    find_program(WINDEPLOYQT windeployqt HINTS "${qt_bin_dir}")
+    
+    # Copies necessary Qt libraries to the staging install directory
+    configure_file("${IVW_ROOT_DIR}/cmake/deploy-windows.cmake.in" "${PROJECT_BINARY_DIR}/deploy-windows.cmake" @ONLY)
+    set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-windows.cmake")
 elseif(APPLE)
     if(IVW_PACKAGE_INSTALLER)
         set(CPACK_GENERATOR           "DragNDrop")
