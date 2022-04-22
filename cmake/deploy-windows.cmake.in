@@ -12,7 +12,7 @@ foreach(file ${files})
     )
     execute_process(COMMAND ${COMMAND_ARGS} RESULT_VARIABLE EXIT_CODE)
     if(NOT EXIT_CODE EQUAL 0)
-        message(FATAL_ERROR
+        message(
             \"Running ${COMMAND_ARGS} failed with exit code \${EXIT_CODE}.\")
     endif()
 endforeach()
