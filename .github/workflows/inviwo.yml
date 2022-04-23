@@ -33,7 +33,9 @@ jobs:
           - os: 'ubuntu-20.04'
             triplet: 'x64-linux'
             mono: 'mono'
-            cmake: '--preset ninja-dev-vcpkg -DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
+            # Disable benchmark for now due to error: 
+            # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
+            cmake: '--preset ninja-dev-vcpkg -DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF -DIVW_TEST_BENCHMARKS=OFF' 
             targets: 'all package'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.zip'
