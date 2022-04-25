@@ -38,6 +38,8 @@
 #include <inviwo/core/processors/poolprocessor.h>
 #include <optional>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
@@ -65,7 +67,7 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     static void remap(std::shared_ptr<Volume>& volume, std::vector<unsigned int> src,
-                      std::vector<unsigned int> dst);
+                      std::vector<unsigned int> dst, const int missingValues);
 
 private:
     DataFrameInport dataFrame_;
@@ -73,6 +75,7 @@ private:
     VolumeOutport outport_;
     ColumnOptionProperty from_;
     ColumnOptionProperty to_;
+    IntProperty missingValues_;
 };
 
 }  // namespace inviwo

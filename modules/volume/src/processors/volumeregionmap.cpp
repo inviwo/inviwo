@@ -55,12 +55,14 @@ VolumeRegionMap::VolumeRegionMap()
     , inport_("inport")
     , outport_("outport")
     , from_{"from", "From", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 1}
-    , to_{"to", "to", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2} {
+    , to_{"to", "to", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2}
+    , missingValues_{"missingValues", "Set unfound values", 0, 0, 100} {
 
     addPort(inport_);
     addPort(dataFrame_);
     addPort(outport_);
     addProperties(from_, to_);
+    addProperties(missingValues_);
 }
 
 namespace {
@@ -83,6 +85,8 @@ void VolumeRegionMap::process() {
     auto newIdx = csv->getColumn(to_.getSelectedValue());
     auto nrows = csv->getNumberOfRows();
 
+    int missingValue = missingValues_.get();
+
     // Store in vectors
     std::vector<uint32_t> sourceIndices(nrows);
     std::vector<uint32_t> destinationIndices(nrows);
@@ -95,13 +99,13 @@ void VolumeRegionMap::process() {
     // Volume
     auto inVolume = inport_.getData();
     auto newVolume = std::shared_ptr<Volume>(inVolume->clone());
-    remap(newVolume, sourceIndices, destinationIndices);
+    remap(newVolume, sourceIndices, destinationIndices, missingValue);
 
     outport_.setData(newVolume);
 }
 
 void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigned int> src,
-                            std::vector<unsigned int> dst) {
+                            std::vector<unsigned int> dst, int missingValue) {
     auto volRep = volume->getEditableRepresentation<VolumeRAM>();
 
     volRep->dispatch<void, dispatching::filter::Scalars>([&](auto volram) {
@@ -121,14 +125,14 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
         }
 
         size_t index = 0;
-        //std::map<unsigned int, unsigned int> orderedIndexMap;
+        // std::map<unsigned int, unsigned int> orderedIndexMap;
         std::unordered_map<unsigned int, unsigned int> unorderedIndexMap;
         switch (dataFrameState) {
             case 1:
                 std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
                                [&](const ValueType& v) {
-                                   if (dst.size() -1 < v) {
-                                       return ValueType{0};
+                                   if (dst.size() - 1 < v) {
+                                       return static_cast<ValueType>(missingValue);
                                    }
                                    return static_cast<ValueType>(dst[static_cast<uint32_t>(v)]);
                                });
@@ -150,7 +154,7 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
                                        return static_cast<ValueType>(
                                            unorderedIndexMap[static_cast<uint32_t>(v)]);
                                    }
-                                   return ValueType{0};
+                                   return static_cast<ValueType>(missingValue);
                                });
                 break;
             default:
@@ -161,7 +165,7 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
                                            return static_cast<ValueType>(dst[i]);
                                        }
                                    }
-                                   return ValueType{0};
+                                   return static_cast<ValueType>(missingValue);
                                });
                 break;
         }
