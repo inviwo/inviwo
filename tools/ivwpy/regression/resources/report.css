@@ -62,6 +62,18 @@ ol li {
 .toggle:hover {
     color : #555555;
 }
+.log .warn{
+    color: orange;
+}
+.log .error{
+    color: red;
+}
+.log .level{
+    font-weight: bold;
+}
+.nowrap {
+    white-space: pre;
+}
 a.version {
     padding : 0px 5px 0px 0px;
 }
@@ -226,6 +238,7 @@ div.key {
 
 div.log {
   font-family: monospace;
+  tab-size: 4;
 }
 div.log .info {
 }
