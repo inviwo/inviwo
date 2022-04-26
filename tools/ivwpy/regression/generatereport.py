@@ -545,7 +545,7 @@ class TestRun:
             doc.asis(self.sparkLine("elapsed_time", "sparkline_elapsed_time"))
         return doc.getvalue()
 
-    def failueSeries(self, length=30):
+    def failureSeries(self, length=30):
         doc, tag, text = yattag.Doc().tagtext()
         with tag('div'):
             text("{:1d} ".format(len(self.report["failures"])) + " ")
@@ -561,7 +561,7 @@ class TestRun:
             with tag("div", klass="cell testname"):
                 text(self.report["name"])
             with tag("div", klass="cell testfailures"):
-                doc.asis(self.failueSeries())
+                doc.asis(self.failureSeries())
             with tag("div", klass="cell testruntime"):
                 doc.asis(self.timeSeries())
             with tag("div", klass="cell testdate"):
