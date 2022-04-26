@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ var summary_options = {
     }
 };
 
-summery_data = [
+summary_data = [
     {
         lines: { 
             show : true, 
@@ -127,7 +127,7 @@ summery_data = [
             fillColor : "#FFE7E7"
         },
         points: { show: false },
-        label : "Failues",
+        label : "Failures",
         data  : faildata,
         color : "#FF9898",
         stack : "test",
@@ -161,8 +161,8 @@ summery_data = [
     }
 ];
 
-$("#flot-summary").plot(summery_data, summary_options);
-$("#flot-summary").dblclick(function () {$("#flot-summary").plot(summery_data, summary_options);});
+$("#flot-summary").plot(summary_data, summary_options);
+$("#flot-summary").dblclick(function () {$("#flot-summary").plot(summary_data, summary_options);});
 
 $("#flot-summary").bind("plotselected", function (event, ranges) {
     // clamp the zooming to prevent eternal zoom
@@ -174,7 +174,7 @@ $("#flot-summary").bind("plotselected", function (event, ranges) {
         ranges.yaxis.to = ranges.yaxis.from + 0.00001;
     }
     // do the zooming
-    $("#flot-summary").plot(summery_data,
+    $("#flot-summary").plot(summary_data,
         $.extend(true, {}, summary_options, {
             xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
             yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }

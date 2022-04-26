@@ -74,7 +74,7 @@ $(document).ready(function() {
         return 'Diff ' + date.toLocaleString() + ' : ' + val.toPrecision(8) + '%';
     }, {}));
 
-    $('.sparkline-failues').sparkline('html', sparkOptions(function(date, val) {
+    $('.sparkline-failures').sparkline('html', sparkOptions(function(date, val) {
         return 'Failures ' + date.toLocaleString() + ' : ' + val;
     }, {
         chartRangeMin : 0,
