@@ -33,7 +33,7 @@ import subprocess
 
 from . error import *
 from .. util import *
-
+from .. colorprint import *
 
 class RunSettings:
     def __init__(self, timeout=15, activeModules=None):
@@ -58,6 +58,11 @@ class InviwoApp:
                                     report['date'].replace(":", "_"))
 
         mkdir(report['outputdir'], "imgtest")
+
+        if len(test.getWorkspaces()) == 0:
+            raise RegressionError(f"Could not locate workspace for '{test.name}' ({test.path}).")
+        elif len(test.getWorkspaces()) > 1:
+            print_warn(f"Found multiple workspaces for '{test.name}' ({test.path}).\nUsing '{test.getWorkspaces()[0]}'.")
 
         for workspace in test.getWorkspaces():
             starttime = time.time()
@@ -97,5 +102,6 @@ class InviwoApp:
             report['log'] = "log.txt"
             report['returncode'] = process.returncode
             report['elapsed_time'] = time.time() - starttime
+            break
 
-            return report
+        return report
