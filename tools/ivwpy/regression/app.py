@@ -311,7 +311,7 @@ class App:
                           header=header,
                           footer=footer)
         filepath = html.saveHtml(self.htmlFile)
-        date = datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S')
+        date = self.db.getLastRunDate().strftime('%Y-%m-%dT%H_%M_%S')
         shutil.copyfile(filepath, toPath(self.output,
                                          self.htmlFile + "-" + date + ".html"))
 

@@ -73,10 +73,12 @@ from sqlalchemy import desc
 #  │              │            ┌────────────1│ commit_id    │  │  │ id           │
 #  │ id           │            │             │ measurements │n─┘  │ created      │
 #  │ created      │            │             │ failures     │n───1│ testrun_id   │
-#  │ name         │            │             │ config       │     │ key          │
-#  │ hash         │            │             │              │     │ message      │
+#  │ hash         │            │             │ config       │     │ key          │
+#  │ date         │            │             │              │     │ message      │
 #  │ testruns     │n───────────┘             └──────────────┘     │              │
-#  │              │                                               └──────────────┘
+#  │ author       │                                               └──────────────┘
+#  │ message      │
+#  │ server       │
 #  └──────────────┘
 
 SqlBase = declarative_base()
@@ -284,6 +286,9 @@ class Database():
 
     def getRuns(self):
         return self.session.query(Run).all()
+
+    def getLastRunDate(self):
+        return self.session.query(Run).order_by(Run.created.desc()).first().created
 
     def getSeries(self, modulename, testname, seriesname):
         return self.session.query(Series).join(Test).join(Module).filter(
