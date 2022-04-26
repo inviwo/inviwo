@@ -36,7 +36,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, relationship, backref
 
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 
 # Table declarations
 
@@ -251,6 +251,15 @@ class Database():
     def getCommit(self, hash):
         commit = self.session.query(Commit).filter(Commit.hash == hash).one_or_none()
         return commit
+
+    def getLastCommit(self):
+        commits = self.session.query(Commit).order_by(Commit.date.desc())
+        return commits.first() if commits.count() > 0 else None
+
+    def getLatestCommits(self):
+        # returns the latest commit for each repository/server
+        return self.session.query(Commit).group_by(Commit.server) \
+            .having(func.max(Commit.id)).order_by(Commit.server)
 
     def addCommit(self, hash, date, author, message, server):
         return self.addEntry(Commit,
