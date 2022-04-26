@@ -571,7 +571,7 @@ class HtmlReport:
         self.doc, tag, text = yattag.Doc().tagtext()
         self.db = database
         self.basedir = basedir
-        self.created = datetime.datetime.now()
+        self.created = self.db.getLastRunDate()
         self.scriptDirname = "_scripts"
         self.scripts = ["jquery-2.2.0.min.js",
                         "jquery.sparkline.min.js",
