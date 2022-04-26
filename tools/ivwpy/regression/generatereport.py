@@ -49,11 +49,13 @@ from . database import *
 from . statistics import *
 
 # Javascript packages
-# jQuary             http://jquery.com
-# wheelzoom          http://www.jacklmoore.com/wheelzoom
-# jQuery Sparklines  http://omnipotent.net/jquery.sparkline/
-# List.js            http://www.listjs.com/
-# Flot               http://www.flotcharts.org
+# jQuery              http://jquery.com
+# jQuery Sparklines   http://omnipotent.net/jquery.sparkline/
+# jQuery Flot         http://www.flotcharts.org
+#        Flot tooltip https://github.com/krzysu/flot.tooltip (no longer maintained since 2016)
+# jQuery Zoom         https://www.jacklmoore.com/zoom/
+# List.js             https://listjs.com
+# clipboard.js        https://clipboardjs.com
 
 # Jenkins note: https://wiki.jenkins-ci.org/display/JENKINS/Configuring+Content+Security+Policy
 # System.setProperty("hudson.model.DirectoryBrowserSupport.CSP",
@@ -608,16 +610,16 @@ class HtmlReport:
         self.basedir = basedir
         self.created = self.db.getLastRunDate()
         self.scriptDirname = "_scripts"
-        self.scripts = ["jquery-2.2.0.min.js",
+        self.scripts = ["jquery-3.6.0.min.js",
+                        "clipboard.min.js",
+                        "jquery.flot.js",
+                        "jquery.flot.selection.js",
+                        "jquery.flot.stack.js",
+                        "jquery.flot.time.js",
+                        "jquery.flot.tooltip.min.js",
                         "jquery.sparkline.min.js",
                         "jquery.zoom.js",
                         "list.min.js",
-                        "jquery.flot.js",
-                        "jquery.flot.time.js",
-                        "jquery.flot.selection.js",
-                        "jquery.flot.stack.js",
-                        "jquery.flot.tooltip.min.js",
-                        "clipboard.min.js",
                         "main.js"]
         self.postScripts = ["make-list.js", "make-flot.js"]
 
