@@ -46,4 +46,4 @@ ivw_define_standard_properties(inviwo_qtminimum)
 # Move to folder
 ivw_folder(inviwo_qtminimum minimals)
 # Add application to pack
-ivw_default_install_comp_targets(qt_app inviwo_qtminimum)
+ivw_default_install_targets(inviwo_qtminimum)

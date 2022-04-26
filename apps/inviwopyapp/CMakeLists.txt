@@ -53,6 +53,6 @@ target_compile_definitions(inviwopyapp PUBLIC
 # Move to folder
 ivw_folder(inviwopyapp minimals)
 # Add application to pack
-ivw_default_install_comp_targets(qt_app inviwopyapp)
+ivw_default_install_targets(inviwopyapp)
 
 set_property(GLOBAL APPEND PROPERTY IVW_PYAPP_LIST inviwopyapp)

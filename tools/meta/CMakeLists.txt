@@ -110,4 +110,4 @@ if(IVW_TESTS_META_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-ivw_default_install_comp_targets(core inviwo-meta)
+ivw_default_install_targets(inviwo-meta)

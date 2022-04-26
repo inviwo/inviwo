@@ -85,20 +85,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         MACOSX_BUNDLE_COPYRIGHT "C) 2012-${YEAR} Inviwo Foundation"
         XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.inviwo.Inviwo"
     )
-    #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
-    set(plugin_dest_dir Inviwo.app/Contents/MacOS)
-    set(qtconf_dest_dir Inviwo.app/Contents/Resources)
-    set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/MacOS/Inviwo")
-    set(DIRS "\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")   
-    # get link errors with out this line.
-    install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Application)
-    install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
-                  include(BundleUtilities)
-                  file(GLOB_RECURSE LIBS1 \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}\")
-                  file(GLOB_RECURSE LIBS2 \"\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-                  fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
-            COMPONENT Application
-    )
+
     set(CPACK_BINARY_DRAGNDROP ON)
 endif()
 

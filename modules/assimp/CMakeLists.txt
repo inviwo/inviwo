@@ -28,8 +28,11 @@ if(NOT IVW_USE_EXTERNAL_ASSIMP)
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/assimp/LICENSE
     )
     ivw_default_install_targets(assimp)
+    # assimp adds IrrXML as internal dependency, 
+    # which will not be installed unless we add it to the Application component
+    ivw_default_install_targets(IrrXML)
 else()
-    find_package(Assimp CONFIG REQUIRED)
+    find_package(assimp CONFIG REQUIRED)
     ivw_vcpkg_install(assimp MODULE Assimp)
 endif()
 

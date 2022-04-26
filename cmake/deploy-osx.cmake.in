@@ -1,0 +1,16 @@
+set(MACDEPLOYQT "@MACDEPLOYQT@")
+set(IVW_PACKAGE_SELECT_APP "@IVW_PACKAGE_SELECT_APP@")
+
+set(APP_BUNDLE_PATH "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/${IVW_PACKAGE_SELECT_APP}.app")
+set(COMMAND_ARGS
+    ${MACDEPLOYQT}
+    ${APP_BUNDLE_PATH}
+    -verbose=1
+    # Silences warnings on subsequent re-installations
+    -always-overwrite
+)
+execute_process(COMMAND ${COMMAND_ARGS} RESULT_VARIABLE EXIT_CODE)
+if(NOT EXIT_CODE EQUAL 0)
+    message(FATAL_ERROR
+        \"Running ${COMMAND_ARGS} failed with exit code \${EXIT_CODE}.\")
+endif()

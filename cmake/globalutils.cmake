@@ -984,7 +984,7 @@ endfunction()
 # Uses QT's windeployqt.exe to copy necessary QT-dependencies (dlls etc) 
 # for the given target to the build folder for development purposes. 
 # Does nothing on platforms other than Windows. 
-# Use ivw_qt_add_to_install (installutils.cmake) for deployment.  
+# Use ivw_default_install_targets (installutils.cmake) for deployment.  
 function(ivw_deploy_qt target)
     if(WIN32)
         get_target_property(target_type ${target} TYPE)

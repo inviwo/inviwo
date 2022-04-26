@@ -47,11 +47,6 @@ ivw_define_standard_definitions(IVW_QTAPPLICATIONBASE inviwo-qtapplicationbase)
 ivw_define_standard_properties(inviwo-qtapplicationbase)
 
 # Make package (for other projects to find)
-ivw_default_install_comp_targets(qt_applicationbase inviwo-qtapplicationbase)
-ivw_qt_add_to_install(inviwo-qtapplicationbase 
-	Qt${QT_VERSION_MAJOR}Core
-	Qt${QT_VERSION_MAJOR}Gui
-	Qt${QT_VERSION_MAJOR}Widgets
-)
+ivw_default_install_targets(inviwo-qtapplicationbase)
 ivw_make_package(InviwoQtApplicationBase inviwo-qtapplicationbase)
 

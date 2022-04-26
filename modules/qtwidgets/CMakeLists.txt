@@ -211,12 +211,7 @@ target_compile_definitions(inviwo-module-qtwidgets PUBLIC
 ivw_compile_optimize_on_target(inviwo-module-qtwidgets)
 
 ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
-ivw_qt_add_to_install(qt_widgets 
-    Qt${QT_VERSION_MAJOR}Core
-    Qt${QT_VERSION_MAJOR}Gui
-    Qt${QT_VERSION_MAJOR}Widgets
-    Qt${QT_VERSION_MAJOR}Svg
-)
+ivw_default_install_targets(inviwo-module-qtwidgets)
 
 ivw_deploy_qt(inviwo-module-qtwidgets)
 

@@ -79,6 +79,13 @@
       "displayName": "MSVC 2022 Using vcpkg",
       "description": "MSVC 2022 Development using vcpkg configuration",
       "inherits" : ["vcpkg", "msvc-dev"]
+    },
+    {
+      "name": "ninja-dev-vcpkg",
+      "displayName": "Ninja using vcpkg",
+      "description": "Ninja development using vcpkg configuration",
+      "generator": "Ninja",
+      "inherits" : ["vcpkg", "develop"]
     }
   ]
 }

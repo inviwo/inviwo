@@ -1,0 +1,18 @@
+set(WINDEPLOYQT "@WINDEPLOYQT@")
+set(APP_PATH "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/bin")
+file(GLOB files 
+          "${APP_PATH}/*.dll" 
+          "${APP_PATH}/*.exe")
+foreach(file ${files})
+    set(COMMAND_ARGS
+        ${WINDEPLOYQT}
+        ${file}
+        --no-compiler-runtime # handled by include(InstallRequiredSystemLibraries)
+        -verbose=3
+    )
+    execute_process(COMMAND ${COMMAND_ARGS} RESULT_VARIABLE EXIT_CODE)
+    if(NOT EXIT_CODE EQUAL 0)
+        message(
+            \"Running ${COMMAND_ARGS} failed with exit code \${EXIT_CODE}.\")
+    endif()
+endforeach()
