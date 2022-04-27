@@ -2,8 +2,8 @@
 
 [![Build Status](http://jenkins.inviwo.org:8080/buildStatus/icon?job=inviwo/master)](http://jenkins.inviwo.org:8080/job/inviwo/job/master/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
 [![Release version](https://img.shields.io/github/release/inviwo/inviwo.svg?maxAge=86400)](https://github.com/inviwo/inviwo/releases/latest)
+[![Slack](https://img.shields.io/badge/slack-join?style=social&logo=slack)](https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLTRiMWM1ZWJiYjljZjkwNWE3OTk3MzYxODZlMDUyMzRmZjUzMzBiZjVhNTM3NWUyNzU1MjI4OWJjMzdkODViMzM)
 
-<div class="inviwo-screenshot">
 
 ![](docs/images/inviwo-screenshot.png)
 
