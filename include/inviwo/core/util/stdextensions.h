@@ -465,7 +465,7 @@ struct iter_range : std::pair<Iter, Iter> {
     using const_iterator = Iter;
     using iterator = Iter;
     using std::pair<Iter, Iter>::pair;
-    iter_range(std::pair<Iter, Iter> const& x) : std::pair<Iter, Iter>(x) {}
+    iter_range(const std::pair<Iter, Iter>& x) : std::pair<Iter, Iter>(x) {}
     Iter begin() const { return this->first; }
     Iter end() const { return this->second; }
 };

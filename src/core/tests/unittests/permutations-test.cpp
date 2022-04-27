@@ -39,8 +39,7 @@ namespace inviwo {
 TEST(Permutations, permutations) {
 
     std::array values = {0, 1, 2};
-    auto v = util::span{values};
-    util::Permutations perm(v, 1);
+    util::Permutations perm(util::make_span(values), 1);
 
     EXPECT_EQ(*perm.begin(), 0);
     EXPECT_EQ(++perm.begin(), perm.end());
@@ -55,7 +54,7 @@ TEST(Permutations, permutations) {
 
     EXPECT_FALSE(perm.next());
 
-    perm = util::Permutations(v, 2);
+    perm = util::Permutations(util::make_span(values), 2);
 
     auto it = perm.begin();
     EXPECT_EQ(*it, 0);
@@ -94,7 +93,7 @@ TEST(Permutations, permutations) {
 
     EXPECT_FALSE(perm.next());
 
-    perm = util::Permutations(v, 3);
+    perm = util::Permutations(util::make_span(values), 3);
 
     it = perm.begin();
     EXPECT_EQ(*it, 0);
@@ -143,8 +142,7 @@ TEST(Permutations, permutations) {
 TEST(Permutations, Combinations) {
 
     std::array values = {0, 1, 2};
-    auto v = util::span{values};
-    util::Combinations comb(v, 1);
+    util::Combinations comb(util::make_span(values), 1);
 
     EXPECT_EQ(*comb.begin(), 0);
     EXPECT_EQ(++comb.begin(), comb.end());
@@ -159,7 +157,7 @@ TEST(Permutations, Combinations) {
 
     EXPECT_FALSE(comb.next());
 
-    comb = util::Combinations(v, 2);
+    comb = util::Combinations(util::make_span(values), 2);
 
     auto it = comb.begin();
     EXPECT_EQ(*it, 0);
@@ -180,7 +178,7 @@ TEST(Permutations, Combinations) {
 
     EXPECT_FALSE(comb.next());
 
-    comb = util::Combinations(v, 3);
+    comb = util::Combinations(util::make_span(values), 3);
 
     it = comb.begin();
     EXPECT_EQ(*it, 0);
@@ -194,8 +192,7 @@ TEST(Permutations, Combinations) {
 TEST(Permutations, IndexProduct) {
 
     std::array sizes = {3, 2};
-    auto s = util::span{sizes};
-    util::IndexProduct inds(s);
+    util::IndexProduct inds(util::make_span(sizes));
 
     auto it = inds.begin();
     EXPECT_EQ(*it, 0);

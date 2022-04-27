@@ -121,10 +121,6 @@ void ColumnOptionProperty::setDefaultSelectedIndex(int index) {
 }
 
 const std::string& ColumnOptionProperty::getSelectedColumnHeader() const {
-    if (getSelectedIndex() < 0) {
-        static std::string empty = {};
-        return empty;
-    }
     return getSelectedDisplayName();
 }
 

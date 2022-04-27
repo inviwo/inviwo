@@ -90,15 +90,16 @@ protected:
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
     // Sort extensions by length to first compare long extensions. Avoids selecting extension xyz in
     // case xyzw exist, see getReaderForTypeAndExtension
-    static constexpr auto comp = [](const FileExtension& a, const FileExtension& b) {
+    static bool compare(const FileExtension& a, const FileExtension& b) {
         if (a.extension_.size() != b.extension_.size()) {
             return a.extension_.size() > b.extension_.size();
         } else {
             // Order does not matter
             return a < b;
         }
-    };
-    std::map<FileExtension, DataReader*, decltype(comp)> map_{comp};
+    }
+    std::map<FileExtension, DataReader*, bool (*)(const FileExtension& a, const FileExtension& b)>
+        map_{compare};
 #endif
 };
 
