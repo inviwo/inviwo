@@ -43,7 +43,9 @@ target_compile_definitions(inviwo-qtapplicationbase PUBLIC
 )
 
 # Define defintions
-ivw_define_standard_definitions(inviwo-qtapplicationbase inviwo-qtapplicationbase)
+# Use ivw-qtapplicationbase instead of inviwo-qtapplicationbase
+# to make standard definition naming consisten with other code, e.g., IVW_XXX
+ivw_define_standard_definitions(ivw-qtapplicationbase inviwo-qtapplicationbase)
 ivw_define_standard_properties(inviwo-qtapplicationbase)
 
 # Make package (for other projects to find)
