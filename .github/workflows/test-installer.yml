@@ -60,8 +60,8 @@ jobs:
       run: |
         # Find the name of the installer 
         DMG=$(ls Inviwo-*.dmg)
-        # Mount installer image
-        hdiutil attach $DMG
+        # Mount installer image, say yes to license agreement
+        yes | hdiutil attach $DMG > /dev/null
         # Install by copying Inviwo.app to applications folder
         cp -r /Volumes/${DMG%%.dmg}/Inviwo.app /Applications/
         hdiutil detach /Volumes/${DMG%%.dmg}/
