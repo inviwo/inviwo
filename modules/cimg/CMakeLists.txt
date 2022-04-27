@@ -41,7 +41,7 @@ find_package(TIFF REQUIRED)
 option(IVW_USE_EXTERNAL_CIMG  "Cimg is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_CIMG)
     add_subdirectory(ext/cimg)
-    ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
+    ivw_register_license_file(NAME CImg VERSION 3.1.1 MODULE CImg TYPE CeCILL-C
         URL http://cimg.eu
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
     )

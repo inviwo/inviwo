@@ -84,14 +84,14 @@ struct OutportIterable {
         pointer operator->() const { return self_->get(); }
 
         bool operator==(const const_iterator& rhs) const {
-            if (!self_ && !(rhs.self_)) {
-                return true;
+            if (self_ && rhs.self_) {
+                return self_->equal(*(rhs.self_));
             } else if (self_) {
                 return self_->end();
             } else if (rhs.self_) {
                 return rhs.self_->end();
             } else {
-                return self_->equal(*(rhs.self_));
+                return true;
             }
         }
         bool operator!=(const const_iterator& rhs) const { return !(*this == rhs); }
@@ -142,14 +142,7 @@ public:
     std::shared_ptr<const T> get() { return data_; };
 
     void inc() { data_.reset(); };
-    bool equal(const OutportIterableWrapper& rhs) const {
-        if (!data_ && !rhs.data_)
-            return true;
-        else if (!data_ != !rhs.data_)
-            return false;
-        else
-            return data_.get() == data_.get();
-    };
+    bool equal(const OutportIterableWrapper& rhs) const { return data_ == rhs.data_; };
     bool end() const { return data_ == nullptr; }
 
 private:

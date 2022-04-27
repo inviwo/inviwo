@@ -135,7 +135,7 @@ TEST(bitset, add_boolVec) {
         if (pushFalse) {
             v.push_back(false);
         }
-        BitSet b(v);
+        BitSet b{v};
         EXPECT_EQ(indices.size(), b.cardinality());
         for (auto index : indices) {
             EXPECT_TRUE(b.contains(index));
