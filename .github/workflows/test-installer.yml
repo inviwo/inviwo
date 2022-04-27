@@ -16,11 +16,9 @@ jobs:
         include:
           - os: 'windows-latest'
             installer: 'inviwo-installer-win'
-            artifact: 'build/inviwo-v*.exe'
             app: 
           - os: 'macos-latest'
             installer: 'inviwo-installer-macos'
-            artifact: 'build/Inviwo-v*.dmg'
     runs-on: ${{ matrix.os }}
     steps:
     - name: Download artifact
@@ -61,7 +59,7 @@ jobs:
       shell: bash
       run: |
         # Find the name of the installer 
-        DMG=$(ls ${{ matrix.artifact }})
+        DMG=$(ls Inviwo-*.dmg)
         # Mount installer image
         hdiutil attach $DMG
         # Install by copying Inviwo.app to applications folder
