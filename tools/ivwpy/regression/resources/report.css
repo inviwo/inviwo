@@ -386,6 +386,47 @@ div.flot-container {
     height: 250px;
 }
 
+.legend {
+    display: block;
+    -webkit-padding-start: 2px;
+    -webkit-padding-end: 2px;
+    border-width: none;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+    padding: 4px;
+}
+.legendLayer {
+    font-size: 12px;
+    font-family: sans-serif;
+    fill: #888;
+}
+.legendLayer .background {
+    fill: #fff; 
+    stroke: transparent;
+    stroke-width: 0;
+    opacity: 0.6;
+}
+.xAxis .tickLabel,
+.y1Axis .tickLabel,
+.y2Axis .tickLabel {
+    fill: #888;
+    font-size: 12px;
+    font-family: sans-serif;
+    line-height: 14px;
+}
+#flotTooltip {
+    position: absolute;
+    display: none;
+    border: 1.5px solid #919191;
+    border-radius: 8px; 
+    padding: 6px;
+    background-color: #c4d7fb;
+    opacity: 0.80;
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
 button.copylinkbtn {
     background : transparent;
     text-decoration: none;
