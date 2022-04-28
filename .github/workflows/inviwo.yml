@@ -38,7 +38,7 @@ jobs:
             cmake: '--preset ninja-dev-vcpkg -DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF -DIVW_TEST_BENCHMARKS=OFF' 
             targets: 'all package'
             installer: 'inviwo-installer-ubuntu'
-            artifact: 'build/inviwo-v*.deb'
+            artifact: 'build/Inviwo-v*.deb'
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
