@@ -10,19 +10,21 @@ on:
 jobs:
   upload_artifact:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/heads/master'}}
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+        include:
+          - os: 'windows-latest'
+            installer: 'inviwo-installer-win'
+          - os: 'macos-latest'
+            installer: 'inviwo-installer-macos'
+    runs-on: ${{ matrix.os }}
     
     steps:
-    - name: Download Windows artifact
+    - name: Download installer
       uses: dawidd6/action-download-artifact@v2
       with:
-        name: inviwo-installer-win
-        workflow: inviwo.yml
-
-    - name: Download MacOS artifact
-      uses: dawidd6/action-download-artifact@v2
-      with:
-        name: inviwo-installer-macos
+        name: ${{ matrix.installer }}
         workflow: inviwo.yml
 
     - name: Upload binaries to release
