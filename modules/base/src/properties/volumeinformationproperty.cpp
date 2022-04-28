@@ -89,12 +89,7 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
         },
         props(*this));
 
-    util::for_each_in_tuple(
-        [&](auto& p) {
-            p.setCurrentStateAsDefault();
-            addProperty(p);
-        },
-        meta(*this));
+    util::for_each_in_tuple([&](auto& p) { addProperty(p); }, meta(*this));
 }
 
 VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProperty& rhs)
