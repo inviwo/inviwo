@@ -98,7 +98,7 @@ static void b1(benchmark::State& state) {
     std::vector<unsigned int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst);
+        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 
@@ -109,7 +109,7 @@ static void b2(benchmark::State& state) {
     std::vector<unsigned int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst);
+        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 
@@ -120,7 +120,7 @@ static void b3(benchmark::State& state) {
     std::vector<unsigned int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst);
+        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 
@@ -138,7 +138,7 @@ static void b4(benchmark::State& state) {
     }
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst);
+        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 
@@ -157,7 +157,7 @@ static void b5(benchmark::State& state) {
     }
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst);
+        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 // Increased vector size, non-sorted + non-continuous
@@ -181,7 +181,7 @@ static void b6(benchmark::State& state) {
     }
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst);
+        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 

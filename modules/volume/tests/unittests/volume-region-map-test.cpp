@@ -52,7 +52,7 @@ TEST(Volume, volume_region_map_test) {
     auto volume = createVolume();
     std::vector<unsigned int> src = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::vector<unsigned int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
-    VolumeRegionMap::remap(volume, src, dst);
+    VolumeRegionMap::remap(volume, src, dst, 0, false);
 
     using VolSampler = TemplateVolumeSampler<float, float, float, 1>;
     const VolSampler sampler(volume);

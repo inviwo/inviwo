@@ -56,12 +56,16 @@ VolumeRegionMap::VolumeRegionMap()
     , outport_("outport")
     , from_{"from", "From", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 1}
     , to_{"to", "to", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2}
-    , missingValues_{"missingValues", "Set unfound values", 0, 0, 100} {
+    , defaultMissingValue_{"setMissingValue", "Don't use missing values", true}
+    , missingValues_{"missingValues", "Set missing values to", 0,
+                     std::pair{0, ConstraintBehavior::Ignore},
+                     std::pair{100, ConstraintBehavior::Ignore}} {
 
     addPort(inport_);
     addPort(dataFrame_);
     addPort(outport_);
     addProperties(from_, to_);
+    addProperties(defaultMissingValue_);
     addProperties(missingValues_);
 }
 
@@ -75,7 +79,6 @@ constexpr auto copyColumn = [](const Column& col, auto& dstContainer, auto assig
             }
         });
 };
-
 }
 
 void VolumeRegionMap::process() {
@@ -84,7 +87,7 @@ void VolumeRegionMap::process() {
     auto oldIdx = csv->getColumn(from_.getSelectedValue());
     auto newIdx = csv->getColumn(to_.getSelectedValue());
     auto nrows = csv->getNumberOfRows();
-
+    bool useMissingValue = defaultMissingValue_.get();
     int missingValue = missingValues_.get();
 
     // Store in vectors
@@ -99,13 +102,13 @@ void VolumeRegionMap::process() {
     // Volume
     auto inVolume = inport_.getData();
     auto newVolume = std::shared_ptr<Volume>(inVolume->clone());
-    remap(newVolume, sourceIndices, destinationIndices, missingValue);
+    remap(newVolume, sourceIndices, destinationIndices, missingValue, useMissingValue);
 
     outport_.setData(newVolume);
 }
 
 void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigned int> src,
-                            std::vector<unsigned int> dst, int missingValue) {
+                            std::vector<unsigned int> dst, int missingValue, bool useMissingValue) {
     auto volRep = volume->getEditableRepresentation<VolumeRAM>();
 
     volRep->dispatch<void, dispatching::filter::Scalars>([&](auto volram) {
@@ -116,33 +119,34 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
 
         // Check which state the dataframe input is in
         size_t dataFrameState = 0;
-        if (isSortedSequence(src)) {  // Sorted + continuous
+
+        if (std::is_sorted(std::begin(src), std::end(src)) &&
+            (src.back() - src.front() == src.size() - 1)) {  // Sorted + continuous
             dataFrameState = 1;
-        } else if (isSorted(src)) {  // Sorted + non continuous
+        } else if (std::is_sorted(std::begin(src), std::end(src))) {  // Sorted + non continuous
             dataFrameState = 2;
         } else {
             dataFrameState = 3;  // Unsorted + non continuous
         }
 
         size_t index = 0;
-        // std::map<unsigned int, unsigned int> orderedIndexMap;
         std::unordered_map<unsigned int, unsigned int> unorderedIndexMap;
         switch (dataFrameState) {
             case 1:
                 std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
                                [&](const ValueType& v) {
-                                   if (dst.size() - 1 < v) {
+                                   if ((v < src.front() || v > src.back()) && useMissingValue) {
                                        return static_cast<ValueType>(missingValue);
                                    }
                                    return static_cast<ValueType>(dst[static_cast<uint32_t>(v)]);
                                });
                 break;
             case 2:
-                std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
-                               [&](const ValueType& v) {
-                                   index = binarySearch(src, static_cast<uint32_t>(v));
-                                   return static_cast<ValueType>(dst[index]);
-                               });
+                std::transform(
+                    dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
+                        index = *std::lower_bound(src.begin(), src.end(), static_cast<uint32_t>(v));
+                        return static_cast<ValueType>(dst[index]);
+                    });
                 break;
             case 3:
                 for (size_t i = 0; i < src.size(); ++i) {
@@ -153,8 +157,11 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
                                    if (unorderedIndexMap.count(static_cast<uint32_t>(v)) == 1) {
                                        return static_cast<ValueType>(
                                            unorderedIndexMap[static_cast<uint32_t>(v)]);
+                                   } else if (useMissingValue) {
+                                       return static_cast<ValueType>(missingValue);
+                                   } else {
+                                       return static_cast<ValueType>(v);
                                    }
-                                   return static_cast<ValueType>(missingValue);
                                });
                 break;
             default:
@@ -165,59 +172,14 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
                                            return static_cast<ValueType>(dst[i]);
                                        }
                                    }
-                                   return static_cast<ValueType>(missingValue);
+                                   if (useMissingValue) {
+                                       return static_cast<ValueType>(missingValue);
+                                   } else {
+                                       return static_cast<ValueType>(v);
+                                   }
                                });
                 break;
         }
     });
 }
-
-/// <summary>
-/// Tests if a index vector contains sequential numbers without gaps.
-/// </summary>
-/// <param name="src">Index vecotr</param>
-/// <returns>True if sequential. False if not sequential.</returns>
-bool isSortedSequence(const std::vector<unsigned int>& src) {
-    unsigned int prev = src[0];
-    for (int i = 1; i < src.size(); ++i) {
-        if (!(src[i] == prev + 1)) {
-            return false;
-        }
-        prev = src[i];
-    }
-    return true;
-}
-
-bool isSorted(const std::vector<unsigned int>& src) {
-    unsigned int prev = src[0];
-    for (int i = 1; i < src.size(); ++i) {
-        if (src[i] <= prev) {
-            return false;
-        }
-        prev = src[i];
-    }
-    return true;
-}
-
-size_t binarySearch(const std::vector<unsigned int>& src, const unsigned int value) {
-    size_t low = 0;
-    size_t high = src.size();
-    while (low < high) {
-        size_t mid = (low + high) / 2;
-        if (mid <= 0) {
-            return 0;
-        }
-
-        if (src[mid] == value) {
-            return mid;
-        }
-        if (src[mid] < value) {
-            low = mid + 1;
-        } else {
-            high = mid - 1;
-        }
-    }
-    return 0;
-}
-
 }  // namespace inviwo
