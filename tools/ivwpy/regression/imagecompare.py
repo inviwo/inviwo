@@ -31,6 +31,7 @@ import PIL.Image as Image
 import PIL.ImageMath as ImageMath
 import PIL.ImageStat as ImageStat
 import PIL.ImageChops as ImageChops
+import shutil
 
 
 class ImageCompare:
@@ -102,7 +103,8 @@ class ImageCompare:
             return False
 
     def saveReferenceImage(self, file):
-        self.refImage.save(file)
+        # copy original file
+        shutil.copyfile(self.refImage.filename, file)
 
     def getRefSize(self):
         return self.refImage.size
