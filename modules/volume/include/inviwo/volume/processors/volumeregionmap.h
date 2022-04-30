@@ -45,8 +45,8 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeRegionMap, Volume Region Map}
  * ![](org.inviwo.VolumeRegionMap.png?classIdentifier=org.inviwo.VolumeRegionMap)
- * Indices are remapped to values provided in columns. Requires two columns. First column contains old
- * indices and second column contains values to be mapped to.
+ * Indices are remapped to values provided in columns. Requires two columns. First column contains
+ * old indices and second column contains values to be mapped to.
  * ### Inports
  *   * __inputVolume__ Input volume
  *
@@ -56,6 +56,9 @@ namespace inviwo {
  * ### Properties
  * * __from__ Index being mapped from
  * * __to__ Index being mapped to
+ * * __defaultMissingValue__ Toggle between setting missing values to specified value or keep
+ * current value
+ * * __missingValues__ Value specifying missing values
  */
 class IVW_MODULE_VOLUME_API VolumeRegionMap : public Processor {
 public:
@@ -66,8 +69,8 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    static void remap(std::shared_ptr<Volume>& volume, std::vector<unsigned int> src,
-                      std::vector<unsigned int> dst, const int missingValues, bool useMissingValue);
+    static void remap(std::shared_ptr<Volume>& volume, std::vector<uint32_t> src,
+                      std::vector<uint32_t> dst, const int missingValues, bool useMissingValue);
 
 private:
     DataFrameInport dataFrame_;
@@ -75,8 +78,7 @@ private:
     VolumeOutport outport_;
     ColumnOptionProperty from_;
     ColumnOptionProperty to_;
-    IntProperty missingValues_;
     BoolProperty defaultMissingValue_;
+    IntProperty missingValues_;
 };
-
 }  // namespace inviwo

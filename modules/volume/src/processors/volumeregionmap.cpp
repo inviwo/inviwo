@@ -29,12 +29,9 @@
 
 #include <inviwo/volume/processors/volumeregionmap.h>
 #include <modules/base/algorithm/volume/volumevoronoi.h>
-
 #include <algorithm>
 #include <functional>
-#include <iostream>
 #include <fstream>
-#include <map>
 #include <unordered_map>
 
 namespace inviwo {
@@ -51,12 +48,12 @@ const ProcessorInfo VolumeRegionMap::getProcessorInfo() const { return processor
 
 VolumeRegionMap::VolumeRegionMap()
     : Processor()
-    , dataFrame_("mapping_indexes")
+    , dataFrame_("mapping_indices")
     , inport_("inport")
     , outport_("outport")
     , from_{"from", "From", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 1}
-    , to_{"to", "to", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2}
-    , defaultMissingValue_{"setMissingValue", "Don't use missing values", true}
+    , to_{"to", "To", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2}
+    , defaultMissingValue_{"setMissingValue", "Set missing values", true}
     , missingValues_{"missingValues", "Set missing values to", 0,
                      std::pair{0, ConstraintBehavior::Ignore},
                      std::pair{100, ConstraintBehavior::Ignore}} {
@@ -82,7 +79,7 @@ constexpr auto copyColumn = [](const Column& col, auto& dstContainer, auto assig
 }
 
 void VolumeRegionMap::process() {
-    // Get columns
+    // Get data
     auto csv = dataFrame_.getData();
     auto oldIdx = csv->getColumn(from_.getSelectedValue());
     auto newIdx = csv->getColumn(to_.getSelectedValue());
@@ -94,10 +91,20 @@ void VolumeRegionMap::process() {
     std::vector<uint32_t> sourceIndices(nrows);
     std::vector<uint32_t> destinationIndices(nrows);
 
+    // Copy to vectors
     copyColumn(*oldIdx, sourceIndices,
                [](const auto& src, auto& dst) { dst = static_cast<uint32_t>(src); });
     copyColumn(*newIdx, destinationIndices,
                [](const auto& src, auto& dst) { dst = static_cast<uint32_t>(src); });
+
+    // Make sure sizes match
+    while (sourceIndices.size() != destinationIndices.size()) {
+        if (sourceIndices.size() < destinationIndices.size()) {
+            destinationIndices.pop_back();
+        } else {
+            sourceIndices.pop_back();
+        }
+    }
 
     // Volume
     auto inVolume = inport_.getData();
@@ -107,49 +114,59 @@ void VolumeRegionMap::process() {
     outport_.setData(newVolume);
 }
 
-void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigned int> src,
-                            std::vector<unsigned int> dst, int missingValue, bool useMissingValue) {
+void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<uint32_t> src,
+                            std::vector<uint32_t> dst, int missingValue, bool useMissingValue) {
     auto volRep = volume->getEditableRepresentation<VolumeRAM>();
 
     volRep->dispatch<void, dispatching::filter::Scalars>([&](auto volram) {
         using ValueType = util::PrecisionValueType<decltype(volram)>;
         ValueType* dataPtr = volram->getDataTyped();
-
         const auto& dim = volram->getDimensions();
 
-        // Check which state the dataframe input is in
-        size_t dataFrameState = 0;
+        // Check state of dataframe
+        uint32_t dataFrameState = 0;
 
-        if (std::is_sorted(std::begin(src), std::end(src)) &&
+        if (std::is_sorted(src.begin(), src.end()) &&
             (src.back() - src.front() == src.size() - 1)) {  // Sorted + continuous
             dataFrameState = 1;
-        } else if (std::is_sorted(std::begin(src), std::end(src))) {  // Sorted + non continuous
+        } else if (std::is_sorted(src.begin(), src.end())) {  // Sorted + non continuous
             dataFrameState = 2;
         } else {
             dataFrameState = 3;  // Unsorted + non continuous
         }
 
-        size_t index = 0;
-        std::unordered_map<unsigned int, unsigned int> unorderedIndexMap;
+        uint32_t index = 0;
+        std::unordered_map<uint32_t, uint32_t> unorderedIndexMap;
         switch (dataFrameState) {
-            case 1:
-                std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
-                               [&](const ValueType& v) {
-                                   if ((v < src.front() || v > src.back()) && useMissingValue) {
-                                       return static_cast<ValueType>(missingValue);
-                                   }
-                                   return static_cast<ValueType>(dst[static_cast<uint32_t>(v)]);
-                               });
+            case 1: // Use indexing directly
+                std::transform(
+                    dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
+                        // Voxel value is inside src range
+                        if (static_cast<uint32_t>(v) >= 0 &&
+                            static_cast<uint32_t>(v) < static_cast<uint32_t>(src.size())) {
+                            return static_cast<ValueType>(dst[static_cast<uint32_t>(v)]);
+                        } else if (useMissingValue) {
+                            return static_cast<ValueType>(missingValue);
+                        } else {
+                            return static_cast<ValueType>(v);
+                        }
+                    });
                 break;
-            case 2:
+            case 2: // Binary search
                 std::transform(
                     dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
                         index = *std::lower_bound(src.begin(), src.end(), static_cast<uint32_t>(v));
-                        return static_cast<ValueType>(dst[index]);
+                        if (index != *src.end()) {
+                            return static_cast<ValueType>(dst[index]);
+                        } else if (useMissingValue) {
+                            return static_cast<ValueType>(missingValue);
+                        } else {
+                            return static_cast<ValueType>(v);
+                        }
                     });
                 break;
-            case 3:
-                for (size_t i = 0; i < src.size(); ++i) {
+            case 3: // Use map
+                for (uint32_t i = 0; i < src.size(); ++i) {
                     unorderedIndexMap[src[i]] = dst[i];
                 }
                 std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
@@ -164,10 +181,10 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<unsigne
                                    }
                                });
                 break;
-            default:
+            default: // Linear
                 std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
                                [&](const ValueType& v) {
-                                   for (size_t i = 0; i < src.size(); ++i) {
+                                   for (uint32_t i = 0; i < src.size(); ++i) {
                                        if (static_cast<uint32_t>(v) == src[i]) {
                                            return static_cast<ValueType>(dst[i]);
                                        }
