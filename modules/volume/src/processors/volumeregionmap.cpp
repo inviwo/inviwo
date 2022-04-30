@@ -138,7 +138,7 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<uint32_
         uint32_t index = 0;
         std::unordered_map<uint32_t, uint32_t> unorderedIndexMap;
         switch (dataFrameState) {
-            case 1: // Use indexing directly
+            case 1:  // Use indexing directly
                 std::transform(
                     dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
                         // Voxel value is inside src range
@@ -152,7 +152,7 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<uint32_
                         }
                     });
                 break;
-            case 2: // Binary search
+            case 2:  // Binary search
                 std::transform(
                     dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
                         index = *std::lower_bound(src.begin(), src.end(), static_cast<uint32_t>(v));
@@ -165,7 +165,7 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<uint32_
                         }
                     });
                 break;
-            case 3: // Use map
+            case 3:  // Use map
                 for (uint32_t i = 0; i < src.size(); ++i) {
                     unorderedIndexMap[src[i]] = dst[i];
                 }
@@ -181,7 +181,7 @@ void VolumeRegionMap::remap(std::shared_ptr<Volume>& volume, std::vector<uint32_
                                    }
                                });
                 break;
-            default: // Linear
+            default:  // Linear
                 std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
                                [&](const ValueType& v) {
                                    for (uint32_t i = 0; i < src.size(); ++i) {
