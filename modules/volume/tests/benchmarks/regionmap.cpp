@@ -48,11 +48,11 @@ public:
 
     std::shared_ptr<inviwo::Volume> createVolume(int zSize) {
         size3_t dims{10, 10, zSize};
-        const size_t size = glm::compMul(dims);
-        std::vector<unsigned int> sampledata;
+        const uint32_t size = static_cast<uint32_t>(glm::compMul(dims));
+        std::vector<uint32_t> sampledata;
         sampledata.reserve(size);
-        unsigned int value = 0;
-        for (size_t i = 0; i < size; ++i) {
+        uint32_t value = 0;
+        for (uint32_t i = 0; i < size; ++i) {
             if (value % 100 == 0) {
                 value++;
                 if (value > 20) {
@@ -62,18 +62,18 @@ public:
             sampledata.push_back(value);
         }
 
-        auto volumeram = std::make_shared<VolumeRAMPrecision<unsigned int>>(dims);
+        auto volumeram = std::make_shared<VolumeRAMPrecision<uint32_t>>(dims);
         std::copy(sampledata.begin(), sampledata.end(), volumeram->getDataTyped());
         return std::make_shared<Volume>(volumeram);
     }
 
     std::shared_ptr<inviwo::Volume> createVolume(int x, int y, int z) {
         size3_t dims{x, y, z};
-        const size_t size = glm::compMul(dims);
-        std::vector<unsigned int> sampledata;
+        const uint32_t size = static_cast<uint32_t>(glm::compMul(dims));
+        std::vector<uint32_t> sampledata;
         sampledata.reserve(size);
-        unsigned int value = 0;
-        for (size_t i = 0; i < size; ++i) {
+        uint32_t value = 0;
+        for (uint32_t i = 0; i < size; ++i) {
             if (value % 100 == 0) {
                 value++;
                 if (value > 20) {
@@ -83,7 +83,7 @@ public:
             sampledata.push_back(value);
         }
 
-        auto volumeram = std::make_shared<VolumeRAMPrecision<unsigned int>>(dims);
+        auto volumeram = std::make_shared<VolumeRAMPrecision<uint32_t>>(dims);
         std::copy(sampledata.begin(), sampledata.end(), volumeram->getDataTyped());
         return std::make_shared<Volume>(volumeram);
     }
@@ -94,8 +94,8 @@ public:
 // Sorted continuous size 10, growing volume
 static void b1(benchmark::State& state) {
     Volume10 v1 = Volume10{state.range(0)};
-    std::vector<unsigned int> src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    std::vector<unsigned int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<uint32_t> src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::vector<uint32_t> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
         VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
@@ -105,8 +105,8 @@ static void b1(benchmark::State& state) {
 // Sorted non-continuous size 10, growing volume
 static void b2(benchmark::State& state) {
     Volume10 v1 = Volume10{state.range(0)};
-    std::vector<unsigned int> src{1, 3, 5, 7, 9, 11, 14, 16, 18, 20};
-    std::vector<unsigned int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<uint32_t> src{1, 3, 5, 7, 9, 11, 14, 16, 18, 20};
+    std::vector<uint32_t> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
         VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
@@ -116,8 +116,8 @@ static void b2(benchmark::State& state) {
 // Unsorted non-continuous size 10, growing volume
 static void b3(benchmark::State& state) {
     Volume10 v1 = Volume10{state.range(0)};
-    std::vector<unsigned int> src{20, 2, 9, 5, 4, 6, 7, 8, 9, 1};
-    std::vector<unsigned int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<uint32_t> src{20, 2, 9, 5, 4, 6, 7, 8, 9, 1};
+    std::vector<uint32_t> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
         VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
@@ -128,11 +128,11 @@ static void b3(benchmark::State& state) {
 static void b4(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
-    std::vector<unsigned int> src;
-    std::vector<unsigned int> dst;
+    std::vector<uint32_t> src;
+    std::vector<uint32_t> dst;
     src.reserve(10000);
     dst.reserve(10000);
-    for (size_t i = 0; i < state.range(0); ++i) {
+    for (int i = 0; i < state.range(0); ++i) {
         src.push_back(i);
         dst.push_back(1000 - i);
     }
@@ -146,14 +146,15 @@ static void b4(benchmark::State& state) {
 static void b5(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
-    std::vector<unsigned int> src;
-    std::vector<unsigned int> dst;
+    std::vector<uint32_t> src;
+    std::vector<uint32_t> dst;
     src.reserve(10000);
     dst.reserve(10000);
-    for (size_t i = 0; i < state.range(0); ++i) {
-        int value = (i % 2) * i;
+    src.push_back(0);
+    dst.push_back(1);
+    for (int i = 2; i < state.range(0) + 1; ++i) {
         src.push_back(i);
-        dst.push_back(1000 - i);
+        dst.push_back(1001 - i);
     }
 
     for (auto _ : state) {
@@ -164,8 +165,8 @@ static void b5(benchmark::State& state) {
 static void b6(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
-    std::vector<unsigned int> src;
-    std::vector<unsigned int> dst;
+    std::vector<uint32_t> src;
+    std::vector<uint32_t> dst;
     src.reserve(10000);
     dst.reserve(10000);
     src.push_back(0);
@@ -174,8 +175,7 @@ static void b6(benchmark::State& state) {
     dst.push_back(1);
     src.push_back(2);
     dst.push_back(0);
-    for (size_t i = 3; i < state.range(0); ++i) {
-        int value = (i % 2) * i;
+    for (int i = 3; i < state.range(0); ++i) {
         src.push_back(i);
         dst.push_back(1000 - i);
     }
