@@ -43,10 +43,10 @@ namespace {
 // A 10x10xzSize volume
 class Volume10 {
 public:
-    Volume10(int zSize) { benchVolume = createVolume(zSize); }
+    Volume10(int64_t zSize) { benchVolume = createVolume(zSize); }
     Volume10(int x, int y, int z) { benchVolume = createVolume(x, y, z); }
 
-    std::shared_ptr<inviwo::Volume> createVolume(int zSize) {
+    std::shared_ptr<inviwo::Volume> createVolume(int64_t zSize) {
         size3_t dims{10, 10, zSize};
         const uint32_t size = static_cast<uint32_t>(glm::compMul(dims));
         std::vector<uint32_t> sampledata;
@@ -93,7 +93,7 @@ public:
 
 // Sorted continuous size 10, growing volume
 static void b1(benchmark::State& state) {
-    Volume10 v1 = Volume10{state.range(0)};
+    Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
     std::vector<uint32_t> src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     std::vector<uint32_t> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
@@ -104,7 +104,7 @@ static void b1(benchmark::State& state) {
 
 // Sorted non-continuous size 10, growing volume
 static void b2(benchmark::State& state) {
-    Volume10 v1 = Volume10{state.range(0)};
+    Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
     std::vector<uint32_t> src{1, 3, 5, 7, 9, 11, 14, 16, 18, 20};
     std::vector<uint32_t> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
@@ -115,7 +115,7 @@ static void b2(benchmark::State& state) {
 
 // Unsorted non-continuous size 10, growing volume
 static void b3(benchmark::State& state) {
-    Volume10 v1 = Volume10{state.range(0)};
+    Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
     std::vector<uint32_t> src{20, 2, 9, 5, 4, 6, 7, 8, 9, 1};
     std::vector<uint32_t> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
