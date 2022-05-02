@@ -74,6 +74,7 @@ signals:
 
 protected:
     virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void mousePressEvent(QMouseEvent *event) override;
 
     int itemSize_;
     ChunkProxyModel* proxy_;
