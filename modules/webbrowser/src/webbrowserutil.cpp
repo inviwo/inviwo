@@ -36,10 +36,12 @@ namespace cefutil {
 
 std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings() {
     CefWindowInfo windowInfo;
-    // in linux set a gtk widget, in windows a hwnd. If not available set nullptr
-    // - may cause
-    // some render errors, in context-menu and plugins.
+    
+#if defined(WIN32) || defined(__APPLE__)
     windowInfo.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
+#else
+    windowInfo.SetAsWindowless(0);
+#endif
 
     CefBrowserSettings browserSettings;
 
