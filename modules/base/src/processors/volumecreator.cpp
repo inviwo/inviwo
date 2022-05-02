@@ -97,6 +97,9 @@ VolumeCreator::VolumeCreator()
 
     addPort(outport_);
     addProperties(type_, format_, dimensions_, index_, information_, basis_);
+
+    information_.setChecked(true);
+    information_.setCurrentStateAsDefault();
 }
 
 void VolumeCreator::process() {
