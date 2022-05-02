@@ -383,14 +383,12 @@ void WorkspaceGridView::resizeEvent(QResizeEvent* event) {
     }
 }
 
-void WorkspaceGridView::mousePressEvent(QMouseEvent *event)
-{
+void WorkspaceGridView::mousePressEvent(QMouseEvent* event) {
     // Deselect if clicking outside, or on the selected item
     QModelIndex item = indexAt(event->pos());
     bool selected = selectionModel()->isSelected(indexAt(event->pos()));
     QTreeView::mousePressEvent(event);
-    if ((!item.isValid()) || selected)
-    {
+    if ((!item.isValid()) || selected) {
         clearSelection();
         const QModelIndex index;
         selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);

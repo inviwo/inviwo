@@ -384,13 +384,13 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
         {  // center column: workspace details and buttons for loading workspaces
             auto centerLayout = new QVBoxLayout();
-            
-            
+
             loadData_ = new QWidget();
             auto loadDataLayout = new QVBoxLayout(loadData_);
             // Add spacer before/after to center the button.
             // Otherwise, the icon and text are placed far apart
-            loadDataLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding));
+            loadDataLayout->addItem(
+                new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding));
             auto loadData = new QToolButton();
             loadData->setText("Drag'n'drop data to load");
             loadData->setIcon(QIcon(":/svgicons/open.svg"));
@@ -398,15 +398,14 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             loadData->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
             loadData->setToolTip("Drag'n''drop file to load");
             loadData->setObjectName("LoadDataToolButton");
-            loadData->setSizePolicy(QSizePolicy::Minimum,
-                                        QSizePolicy::Fixed);
+            loadData->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
             loadDataLayout->addWidget(loadData);
             QObject::connect(loadData, &QToolButton::clicked, this,
                              [this]() { emit openWorkspace(); });
-            loadDataLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding));
+            loadDataLayout->addItem(
+                new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding));
             centerLayout->addWidget(loadData_);
-        
-            
+
             details_ = new QTextEdit(leftWidget);
             details_->setObjectName("NetworkDetails");
             details_->setReadOnly(true);
@@ -415,7 +414,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             details_->setContentsMargins(0, 0, 0, 0);
             details_->document()->setDocumentMargin(0.0);
             details_->setVisible(false);
-            
+
             centerLayout->addWidget(details_);
 
             auto buttonLayout = new QHBoxLayout();
