@@ -36,7 +36,7 @@ namespace cefutil {
 
 std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings() {
     CefWindowInfo windowInfo;
-    
+
 #if defined(WIN32) || defined(__APPLE__)
     windowInfo.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
 #else
