@@ -384,6 +384,29 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
         {  // center column: workspace details and buttons for loading workspaces
             auto centerLayout = new QVBoxLayout();
+            
+            
+            loadData_ = new QWidget();
+            auto loadDataLayout = new QVBoxLayout(loadData_);
+            // Add spacer before/after to center the button.
+            // Otherwise, the icon and text are placed far apart
+            loadDataLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding));
+            auto loadData = new QToolButton();
+            loadData->setText("Drag'n'drop data to load");
+            loadData->setIcon(QIcon(":/svgicons/open.svg"));
+            loadData->setIconSize(utilqt::emToPx(this, QSize(5, 5)));
+            loadData->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+            loadData->setToolTip("Drag'n''drop file to load");
+            loadData->setObjectName("LoadDataToolButton");
+            loadData->setSizePolicy(QSizePolicy::Minimum,
+                                        QSizePolicy::Fixed);
+            loadDataLayout->addWidget(loadData);
+            QObject::connect(loadData, &QToolButton::clicked, this,
+                             [this]() { emit openWorkspace(); });
+            loadDataLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding));
+            centerLayout->addWidget(loadData_);
+        
+            
             details_ = new QTextEdit(leftWidget);
             details_->setObjectName("NetworkDetails");
             details_->setReadOnly(true);
@@ -391,7 +414,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             details_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
             details_->setContentsMargins(0, 0, 0, 0);
             details_->document()->setDocumentMargin(0.0);
-
+            details_->setVisible(false);
+            
             centerLayout->addWidget(details_);
 
             auto buttonLayout = new QHBoxLayout();
@@ -579,7 +603,6 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
         model_->updateRegressionTestEntries();
 
         expandTreeView();
-        selectFirstLeaf();
     }
 
     QSplitter::showEvent(event);
@@ -627,6 +650,8 @@ std::string formatDescription(std::string_view str) {
 void WelcomeWidget::updateDetails(const QModelIndex& index) {
     loadWorkspaceBtn_->setEnabled(index.isValid());
     if (!index.isValid()) {
+        loadData_->show();
+        details_->hide();
         details_->clear();
         return;
     }
@@ -703,6 +728,8 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     }
 
     details_->setHtml(utilqt::toQString(doc));
+    loadData_->hide();
+    details_->show();
 }
 
 QModelIndex WelcomeWidget::findFirstLeaf(QAbstractItemModel* model, QModelIndex parent) {

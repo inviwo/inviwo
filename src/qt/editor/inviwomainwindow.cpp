@@ -1461,6 +1461,10 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
                 }
                 first = false;
             }
+            if (welcomeWidget_->isVisible()) {
+                hideWelcomeScreen();
+                saveWindowState();
+            }
             undoManager_.pushStateIfDirty();
         };
         app_->dispatchFrontAndForget(action);

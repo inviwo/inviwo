@@ -96,6 +96,7 @@ private:
     WorkspaceGridView* workspaceGridView_;
 
     QLineEdit* filterLineEdit_;
+    QWidget* loadData_;
     QTextEdit* details_;
     ChangeLog* changelog_;
     QToolButton* loadWorkspaceBtn_;
