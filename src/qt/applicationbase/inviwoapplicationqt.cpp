@@ -135,9 +135,10 @@ void FileSystemObserverQt::fileChanged(QString fileName) {
 
 }  // namespace
 
-InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, std::string displayName,
-                                         std::string organizationName,
-                                         std::string organizationDomain)
+InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv,
+                                         const std::string& displayName,
+                                         const std::string& organizationName,
+                                         const std::string& organizationDomain)
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName)
     , mainWindow_(nullptr)
@@ -177,10 +178,10 @@ InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, std::string dis
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
 }
 
-InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string organizationName,
-                                         std::string organizationDomain)
-    : InviwoApplicationQt(dummyArgc, dummyArgs(), displayName, organizationName,
-                          organizationDomain) {}
+InviwoApplicationQt::InviwoApplicationQt(const std::string& displayName,
+                                         const std::string& organizationName,
+                                         const std::string& organizationDomain)
+    : InviwoApplicationQt(dummyArgc, dummyArgs(), displayName, organizationName, organizationDomain) {}
 
 InviwoApplicationQt::~InviwoApplicationQt() = default;
 
