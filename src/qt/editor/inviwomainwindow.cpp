@@ -1205,7 +1205,7 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
     saveWindowState();
 }
 
-void InviwoMainWindow::toggleWelcomeScreen() { 
+void InviwoMainWindow::toggleWelcomeScreen() {
     if (getWelcomeWidget()->isVisible()) {
         if (hasRestoreWorkspace()) {
             getWelcomeWidget()->restoreWorkspace();
@@ -1215,7 +1215,6 @@ void InviwoMainWindow::toggleWelcomeScreen() {
     } else {
         showWelcomeScreen();
     }
-
 }
 
 void InviwoMainWindow::showWelcomeScreen() {

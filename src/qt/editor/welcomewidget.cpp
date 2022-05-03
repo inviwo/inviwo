@@ -390,8 +390,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             dragAndDrop_ = new QSvgWidget(QString(":/svgicons/dragndrop.svg"));
             dragAndDrop_->setToolTip("Drag & drop data here to load");
             dragAndDrop_->setObjectName("dragndrop");
-            dragAndDrop_->renderer()->setAspectRatioMode(
-                Qt::AspectRatioMode::KeepAspectRatio);
+            dragAndDrop_->renderer()->setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
             centerLayout->addWidget(dragAndDrop_);
 
             details_ = new QTextEdit(leftWidget);
