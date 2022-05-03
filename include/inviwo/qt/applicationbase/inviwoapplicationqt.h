@@ -63,8 +63,14 @@ private:
 class IVW_QTAPPLICATIONBASE_API InviwoApplicationQt : public QApplication,
                                                       public InviwoApplication {
 public:
-    InviwoApplicationQt(const std::string& displayName = "Inviwo");
-    InviwoApplicationQt(int& argc, char** argv, const std::string& displayName);
+    InviwoApplicationQt(const std::string& displayName = "Inviwo",
+                        const std::string_view organizationName = "Inviwo Foundation",
+                        const std::string_view organizationDomain = "inviwo.org",
+                        const std::string_view windowIconResource = ":/inviwo/inviwo_light.png");
+    InviwoApplicationQt(int& argc, char** argv, const std::string& displayName,
+                        const std::string_view organizationName = "Inviwo Foundation",
+                        const std::string_view organizationDomain = "inviwo.org",
+                        const std::string_view windowIconResource = ":/inviwo/inviwo_light.png");
     virtual ~InviwoApplicationQt();
 
     virtual void closeInviwoApplication() override;
