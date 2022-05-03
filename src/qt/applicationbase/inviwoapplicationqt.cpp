@@ -136,8 +136,9 @@ void FileSystemObserverQt::fileChanged(QString fileName) {
 }  // namespace
 
 InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, const std::string& displayName,
-                                         const std::string& organizationName,
-                                         const std::string& organizationDomain)
+                                         const std::string_view organizationName,
+                                         const std::string_view organizationDomain,
+                                         const std::string_view windowIconResource)
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName)
     , mainWindow_(nullptr)
@@ -146,9 +147,10 @@ InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, const std::stri
 
     setAttribute(Qt::AA_NativeWindows);
 
+    setWindowIcon(QIcon(windowIconResource.data()));
     QCoreApplication::setApplicationName(displayName.c_str());
-    QCoreApplication::setOrganizationName(organizationName.c_str());
-    QCoreApplication::setOrganizationDomain(organizationDomain.c_str());
+    QCoreApplication::setOrganizationName(organizationName.data());
+    QCoreApplication::setOrganizationDomain(organizationDomain.data());
 
     setFileSystemObserver(std::make_unique<FileSystemObserverQt>());
 
@@ -178,10 +180,11 @@ InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, const std::stri
 }
 
 InviwoApplicationQt::InviwoApplicationQt(const std::string& displayName,
-                                         const std::string& organizationName,
-                                         const std::string& organizationDomain)
-    : InviwoApplicationQt(dummyArgc, dummyArgs(), displayName, organizationName,
-                          organizationDomain) {}
+                                         const std::string_view organizationName,
+                                         const std::string_view organizationDomain,
+                                         const std::string_view windowIconResource)
+    : InviwoApplicationQt(dummyArgc, dummyArgs(), displayName, organizationName, organizationDomain,
+                          windowIconResource) {}
 
 InviwoApplicationQt::~InviwoApplicationQt() = default;
 
