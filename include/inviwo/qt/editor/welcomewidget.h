@@ -44,6 +44,7 @@ class QLineEdit;
 class QTextEdit;
 class QScrollArea;
 class QSortFilterProxyModel;
+class QSvgWidget;
 
 namespace inviwo {
 
@@ -96,7 +97,7 @@ private:
     WorkspaceGridView* workspaceGridView_;
 
     QLineEdit* filterLineEdit_;
-    QWidget* loadData_;
+    QSvgWidget* dragAndDrop_;
     QTextEdit* details_;
     ChangeLog* changelog_;
     QToolButton* loadWorkspaceBtn_;

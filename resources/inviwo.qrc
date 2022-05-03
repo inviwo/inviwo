@@ -36,6 +36,7 @@
         <file>svgicons/lineedit-clear.svg</file>
         <file>svgicons/lineedit-clear-active.svg</file>
 
+        <file>svgicons/dragndrop.svg</file>
         <file>svgicons/listitem-add-enabled.svg</file>
         <file>svgicons/listitem-add-disabled.svg</file>
         <file>svgicons/listitem-remove-enabled.svg</file>
