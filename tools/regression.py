@@ -42,6 +42,12 @@ import ivwpy.regression.error
 # %load_ext autoreload
 # %autoreload 2
 
+description = """
+Run Inviwo regression tests.
+
+Tests can have a local configuration ('config.json') in the same directory.
+The "image_test" tag supports the boolean values 'invertDifferenceImage' and 'logscaleDifferenceImage'.
+"""
 
 def makeCmdParser():
     parser = argparse.ArgumentParser(
@@ -73,6 +79,10 @@ def makeCmdParser():
     parser.add_argument("-l", "--list", action="store_true", dest="list", help="List all tests")
     parser.add_argument("--imagetolerance", type=float, action="store", dest="imagetolerance",
                         default=0.0, help="Tolerance when comparing images")
+    parser.add_argument("--imagelogscale", action="store_true",
+                        dest="imagelogscale", help="Apply logarithmic scaling to the difference images")
+    parser.add_argument("--imageinvert", action="store_true",
+                        dest="imageinvert", help="Invert the difference images")
     parser.add_argument('--header', type=str, action="store", dest="header",
                         help='A optional report header', default=None)
     parser.add_argument('--footer', type=str, action="store", dest="footer",
@@ -186,7 +196,9 @@ if __name__ == '__main__':
     )
 
     testSettings = ivwpy.regression.reporttest.ReportTestSettings(
-        imageDifferenceTolerance=args.imagetolerance)
+        imageDifferenceTolerance=args.imagetolerance,
+        imageDiffLogscale=args.imagelogscale,
+        imageDiffInvert=args.imageinvert)
 
     app = ivwpy.regression.app.App(appPath=inviwopath,
                                    moduleTestPaths=modulePaths,

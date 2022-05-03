@@ -28,65 +28,95 @@
 # ********************************************************************************
 
 import PIL.Image as Image
-import PIL.ImageMath as ImageMath
-import PIL.ImageStat as ImageStat
-import PIL.ImageChops as ImageChops
+
+import numpy as np
 import shutil
 
-
 class ImageCompare:
-    def __init__(self, testImage, refImage, allowDifferentImageMode=False, enhance=10):
+    def __init__(self, testImage, refImage, allowDifferentImageMode=False, 
+        logscaleDifferenceImage=False, invertDifferenceImage=False):
 
-        self.testImage = Image.open(testImage)
-        self.refImage = Image.open(refImage)
+        self.image1 = { 'filename' : None, 'size' : None, 'mode' : None }
+        self.image2 = { 'filename' : None, 'size' : None, 'mode' : None }
 
-        self.maskImage = None
+        self.diffPercent = 100
+        self.diffPixelCount = 0
+        self.maxDifferences = None
         self.diffImage = None
-        self.difference = 100
-        self.numberOfDifferentPixels = None
-        self.maxDifference = None
+        self.maskImage = None
 
-        if self.testImage.size != self.refImage.size:
-            return
+        self.logscaleImage = logscaleDifferenceImage
+        self.invertImage = invertDifferenceImage
 
-        if self.testImage.mode != self.refImage.mode:
-            if not allowDifferentImageMode:
+        self.diff(refImage, testImage)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.diffImage is not None:
+            self.diffImage.close()
+        if self.maskImage is not None:
+            self.maskImage.close()
+
+    def diff(self, image1, image2):
+        self.image1['filename'] = image1
+        self.image2['filename'] = image2
+
+        with Image.open(image1) as img1, Image.open(image2) as img2:
+
+            if img1.mode == 'P':
+                img1 = img1.convert(img1.palette.mode)
+            if img2.mode == 'P':
+                img2 = img1.convert(img2.palette.mode)
+
+            self.image1['size'] = img1.size
+            self.image1['mode'] = img1.mode
+            self.image2['size'] = img2.size
+            self.image2['mode'] = img2.mode
+
+            if img1.size != img2.size:
                 return
-            self.refImage = self.refImage.convert(self.testImage.mode)
+            if img1.mode != img2.mode:
+                return
 
-        # ImageChops.difference does not work for signed integers
-        if self.testImage.mode == 'I':
-            self.testImage = self.testImage.convert('L')
-            self.refImage = self.refImage.convert('L')
+            # apply heuristics to determine bit depth since PIL does not provide it
+            #
+            # see https://pillow.readthedocs.io/en/stable/handbook/concepts.html
+            if img1.mode.startswith('I'):
+                maxval = 65535
+            elif img1.mode == 'F':
+                maxval = 1
+            else:
+                maxval = 255
 
-        numPixels = self.testImage.size[0] * self.testImage.size[1]
+            img1np = np.array(img1)
+            img2np = np.array(img2)
 
-        self.diffImage = ImageChops.difference(self.testImage, self.refImage)
+            diffnp = np.abs(img1np.astype(np.int32) - img2np.astype(np.int32))
 
-        channels = len(self.testImage.getbands())
-        if channels == 1:
-            normImage = self.diffImage
-        elif channels == 2:
-            (a, b) = self.diffImage.split()
-            normImage = ImageMath.eval("convert((a+b), 'L')", a=a, b=b)
-        elif channels == 3:
-            (a, b, c) = self.diffImage.split()
-            normImage = ImageMath.eval("convert((a+b+c), 'L')", a=a, b=b, c=c)
-        elif channels == 4:
-            (a, b, c, d) = self.diffImage.split()
-            normImage = ImageMath.eval("convert((a+b+c+d), 'L')", a=a, b=b, c=c, d=d)
+            # normalized differences per channel
+            if len(diffnp.shape) > 2:
+                self.maxDifferences = tuple(np.max(diffnp, axis=(0, 1)) / maxval)
+            else:
+                self.maxDifferences = (np.max(diffnp, axis=(0, 1)) / maxval,)
 
-        self.maskImage = normImage.point(lambda p: 0 if p > 0 else 255, 'L')
+            # combine all channels into one
+            if len(diffnp.shape) > 2:
+                diffnp = diffnp.max(2)
 
-        stats = ImageStat.Stat(normImage)
-        self.maxDifference = stats.extrema[0][1] / (channels * 255)
-        self.difference = (sum(stats.sum) / (255 * channels)) * 100.0 / numPixels
+            # calculate stats
+            numpixels = np.prod(img1np.shape[0:2])
+            self.diffPixelCount = np.count_nonzero(diffnp)
+            self.diffPercent = self.diffPixelCount / numpixels * 100.0
 
-        if enhance != 1:
-            self.diffImage = self.diffImage.point(lambda i: i * (enhance))
-        self.diffImage = ImageChops.invert(self.diffImage)
+            if self.logscaleImage:
+                diffnp = np.log(diffnp + 1)/np.log(maxval + 1) * maxval
+            if self.invertImage:
+                diffnp = maxval - diffnp
 
-        self.numberOfDifferentPixels = int(numPixels - ImageStat.Stat(self.maskImage).sum[0] / 255)
+            self.diffImage = Image.fromarray(diffnp)
+            self.maskImage = Image.fromarray((diffnp == 0))
 
     def saveDifferenceImage(self, difffile):
         if self.diffImage is not None:
@@ -103,32 +133,44 @@ class ImageCompare:
             return False
 
     def saveReferenceImage(self, file):
-        # copy original file
-        shutil.copyfile(self.refImage.filename, file)
-
-    def getRefSize(self):
-        return self.refImage.size
-
-    def getRefMode(self):
-        return self.refImage.mode
-
-    def getTestSize(self):
-        return self.testImage.size
-
-    def getTestMode(self):
-        return self.testImage.mode
-
-    def getDifference(self):
-        return self.difference
-
-    def getNumberOfDifferentPixels(self):
-        return self.numberOfDifferentPixels
-
-    def getMaxDifference(self):
-        return self.maxDifference
+        if self.image1['filename'] is not None:
+            # copy original file
+            shutil.copyfile(self.image1['filename'], file)
 
     def isSameSize(self):
-        return self.testImage.size == self.refImage.size
+        return self.image1['size'] == self.image2['size']
 
     def isSameMode(self):
-        return self.testImage.mode == self.refImage.mode
+        return self.image1['mode'] == self.image2['mode']
+
+    def getDifferencePercent(self):
+        """
+        return the number of different pixels as percentage
+        :return: getNumberOfDifferentPixels() normalized with respect to number of pixels * 100
+        """
+        return self.diffPercent
+
+    def getDifferencePixelCount(self):
+        """
+        return the number of different pixels in the image (combined over all channels including alpha)
+        """
+        return self.diffPixelCount
+
+    def getMaxDifferences(self):
+        """
+        returns a tuple of the maximum difference per channel
+        :return: tuple with per-channel maxima normalized with respect to image bit depth
+        """
+        return self.maxDifferences
+
+    def getRefSize(self):
+        return self.image1['size']
+
+    def getRefMode(self):
+        return self.image1['mode']
+
+    def getTestSize(self):
+        return self.image2['size']
+
+    def getTestMode(self):
+        return self.image2['mode']
