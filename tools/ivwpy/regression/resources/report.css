@@ -301,6 +301,9 @@ div.gitmsgbody, div.gitmsgfooter {
 .box > .gitcommit {
     min-width: 80px;
 }
+.box > .gitdate {
+    min-width: 140px;
+}
 .boxheader {
     font-weight: 600;
 }

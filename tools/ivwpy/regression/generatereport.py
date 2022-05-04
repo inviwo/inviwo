@@ -692,13 +692,13 @@ class HtmlReport:
 
                     with tag('div', klass='git'):
                         with tag('div', klass='box boxheader'):
-                            with tag('span'):
+                            with tag('span', klass='gitserver'):
                                 text('Repository')
-                            with tag('span'):
+                            with tag('span', klass='gitdate'):
                                 text('Date')
                             with tag('span', klass='gitcommit'):
                                 text('Commit')
-                            with tag('span'):
+                            with tag('span', klass='gitauthor'):
                                 text('Author')
                             with tag('span', klass='gitmsgheader'):
                                 text('Message')
@@ -710,7 +710,7 @@ class HtmlReport:
                                     self.doc.asis(gitServerName(commit))
                                 with tag('span', klass='gitdate'):
                                     text(commit.date.strftime('%Y-%m-%d %H:%M:%S'))
-                                with tag('span', klass='gitlink'):
+                                with tag('span', klass='gitcommit'):
                                     self.doc.asis(gitLink(commit))
                                 with tag('span', klass='gitauthor'):
                                     text(commit.author)
