@@ -497,29 +497,30 @@ class TestRun:
 
     def images(self, imgs, testdir):
         doc, tag, text = yattag.Doc().tagtext()
+        failures = safeget(self.report, 'failures', failure={})
+        failedImgs = next((x for x in failures if x[0] == "images"), None)
 
         def path(type, img):
             return os.path.relpath(toPath(testdir, type, img), self.basedir)
 
-        def imgstatus(img, warnPercentage=10):
-            # Return the status of the image. Either "fail", "ok", or "warning".
-            # Warn if within warnPercentage % of the difference tolerance
-            failures = safeget(self.report, 'failures', failure={})
-            failedImgs = next((x for x in failures if x[0] == "images"), None)
-            failed = (failedImgs is not None and img["image"] in failedImgs[1])
-
-            if failed:
+        def imgstatus(img):
+            # Return the status of the image as either "fail" or "ok".
+            if (failedImgs is not None and img["image"] in failedImgs[1]):
                 return "fail"
             else:
                 return "ok"
 
         with tag('ol'):
-            for img in imgs:
+            # sort images so that failed images appear at the top
+            for img in sorted(imgs, key=lambda k: imgstatus(k)):
+                compImageExists = ((img['ref_size'] == img['test_size']) and
+                    (img['ref_mode'] == img['test_mode']))
+
                 doc.asis(listItem(self.imageShort(img),
                                   testImages(path("imgtest", img["image"]),
                                              path("imgref", img["image"]),
-                                             path("imgdiff", img["image"]),
-                                             path("imgmask", img["image"])),
+                                             path("imgdiff", img["image"]) if compImageExists else None,
+                                             path("imgmask", img["image"]) if compImageExists else None),
                                   status=imgstatus(img), hide=False))
         return doc.getvalue()
 
