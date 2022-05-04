@@ -406,7 +406,7 @@ void InviwoMainWindow::addActions() {
         welcomeAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_N);
         welcomeAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         addAction(welcomeAction);
-        connect(welcomeAction, &QAction::triggered, this, &InviwoMainWindow::showWelcomeScreen);
+        connect(welcomeAction, &QAction::triggered, this, &InviwoMainWindow::toggleWelcomeScreen);
         fileMenuItem->addAction(welcomeAction);
         fileMenuItem->addSeparator();
         workspaceToolBar->addAction(welcomeAction);
@@ -1205,6 +1205,18 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
     saveWindowState();
 }
 
+void InviwoMainWindow::toggleWelcomeScreen() {
+    if (getWelcomeWidget()->isVisible()) {
+        if (hasRestoreWorkspace()) {
+            getWelcomeWidget()->restoreWorkspace();
+        } else {
+            hideWelcomeScreen();
+        }
+    } else {
+        showWelcomeScreen();
+    }
+}
+
 void InviwoMainWindow::showWelcomeScreen() {
     if (!newWorkspace()) return;
 
@@ -1460,6 +1472,10 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
                         static_cast<bool>(keyModifiers & Qt::AltModifier), this);
                 }
                 first = false;
+            }
+            if (welcomeWidget_->isVisible()) {
+                hideWelcomeScreen();
+                saveWindowState();
             }
             undoManager_.pushStateIfDirty();
         };

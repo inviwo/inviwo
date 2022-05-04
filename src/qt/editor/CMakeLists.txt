@@ -121,14 +121,16 @@ endif()
 source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/changelog.qrc ${QRC_FILE})
 
 # https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
-find_package(QT 5.12 NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg Help REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg Help REQUIRED)
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
-else()
+find_package(QT 5.15 NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg Help REQUIRED)
+if(QT_VERSION_MAJOR EQUAL 5)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg Help REQUIRED)
     qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+else()
+    # SvgWidget has moved to SvgWidgets in Qt6
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg SvgWidgets Help REQUIRED)
+    qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 endif()
+
 source_group("MOC Files" FILES ${MOCED_FILES})
 add_library(inviwo-qteditor ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES} ${QRC_FILE})
 add_library(inviwo::qteditor ALIAS inviwo-qteditor)
@@ -142,6 +144,12 @@ target_link_libraries(inviwo-qteditor PUBLIC
     Qt${QT_VERSION_MAJOR}::Help
     Qt${QT_VERSION_MAJOR}::Svg
 )
+if(QT_VERSION_MAJOR GREATER_EQUAL 6)
+    target_link_libraries(inviwo-qteditor PUBLIC 
+        Qt${QT_VERSION_MAJOR}::SvgWidgets
+    )
+endif()
+
 if(TARGET inviwo::meta)
     target_link_libraries(inviwo-qteditor PUBLIC inviwo::meta)
     target_compile_definitions(inviwo-qteditor PRIVATE IVW_INVIWO_META)

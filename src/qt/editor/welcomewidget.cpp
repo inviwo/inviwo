@@ -75,6 +75,8 @@
 #include <QImage>
 #include <QScrollArea>
 #include <QSortFilterProxyModel>
+#include <QSvgWidget>
+#include <QSvgRenderer>
 #include <QItemSelectionModel>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
@@ -384,6 +386,13 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
         {  // center column: workspace details and buttons for loading workspaces
             auto centerLayout = new QVBoxLayout();
+
+            dragAndDrop_ = new QSvgWidget(QString(":/svgicons/dragndrop.svg"));
+            dragAndDrop_->setToolTip("Drag & drop data here to load");
+            dragAndDrop_->setObjectName("dragndrop");
+            dragAndDrop_->renderer()->setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
+            centerLayout->addWidget(dragAndDrop_);
+
             details_ = new QTextEdit(leftWidget);
             details_->setObjectName("NetworkDetails");
             details_->setReadOnly(true);
@@ -391,6 +400,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             details_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
             details_->setContentsMargins(0, 0, 0, 0);
             details_->document()->setDocumentMargin(0.0);
+            details_->setVisible(false);
 
             centerLayout->addWidget(details_);
 
@@ -579,7 +589,6 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
         model_->updateRegressionTestEntries();
 
         expandTreeView();
-        selectFirstLeaf();
     }
 
     QSplitter::showEvent(event);
@@ -627,6 +636,8 @@ std::string formatDescription(std::string_view str) {
 void WelcomeWidget::updateDetails(const QModelIndex& index) {
     loadWorkspaceBtn_->setEnabled(index.isValid());
     if (!index.isValid()) {
+        dragAndDrop_->show();
+        details_->hide();
         details_->clear();
         return;
     }
@@ -703,6 +714,8 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     }
 
     details_->setHtml(utilqt::toQString(doc));
+    dragAndDrop_->hide();
+    details_->show();
 }
 
 QModelIndex WelcomeWidget::findFirstLeaf(QAbstractItemModel* model, QModelIndex parent) {

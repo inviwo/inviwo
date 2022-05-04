@@ -383,6 +383,18 @@ void WorkspaceGridView::resizeEvent(QResizeEvent* event) {
     }
 }
 
+void WorkspaceGridView::mousePressEvent(QMouseEvent* event) {
+    // Deselect if clicking outside, or on the selected item
+    QModelIndex item = indexAt(event->pos());
+    bool selected = selectionModel()->isSelected(indexAt(event->pos()));
+    QTreeView::mousePressEvent(event);
+    if ((!item.isValid()) || selected) {
+        clearSelection();
+        const QModelIndex index;
+        selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
+    }
+}
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
 // QTreeView::expandRecursively() was introduced in Qt 5.13
 // see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively

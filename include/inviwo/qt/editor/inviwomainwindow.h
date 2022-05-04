@@ -144,6 +144,7 @@ public:
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
 
+    void toggleWelcomeScreen();
     void showWelcomeScreen();
     void hideWelcomeScreen();
 
