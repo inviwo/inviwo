@@ -13,14 +13,21 @@ m = ivw.regression.Measurements()
 canvas = network.canvas
 imgsrc = network.imgsrc
 
-# These images does seem to work with PIL (in the image compare used by regression.py)
+# These images cannot be compared properly in the image comparison.
+# Some images with a color palette will be converted to RGB while the test image is RGBA
 PILNotWorking = ["tbgn2c16.png",
                  "tbrn2c08.png",
                  "basi0g01.png",
                  "tbbn2c16.png",
                  "basn0g01.png",
                  "tbbn0g04.png",
-                 "tbwn0g16.png"]
+                 "tbwn0g16.png",
+                 "tbbn3p08.png",
+                 "tbgn3p08.png",
+                 "tbwn3p08.png",
+                 "tbyn3p08.png",
+                 "tm3n3p02.png",
+                 "tp1n3p08.png",]
 
 path = inviwopy.app.getModuleByIdentifier("png").path + "/tests/pngtestimages/"
 for filename in os.listdir(path):
@@ -45,7 +52,7 @@ for filename in os.listdir(path):
 
 m.save()
 
-# make sure the last image is allways the same (independent on os.listdir order)
+# make sure the last image is always the same (independent on os.listdir order)
 imgsrc.imageFileName.value = path + "basi0g02.png"
 size = imgsrc.imageDimension_.value
 
