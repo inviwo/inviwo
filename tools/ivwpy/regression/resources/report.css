@@ -200,7 +200,7 @@ div.testruntime {
 div.testdate {
     width : 150px;
 }
-div.imagedifference {
+div.imagediffpercent {
     margin : 0px 5px 0px 5px;
     display : inline-block;
     width : 170px;
@@ -213,17 +213,17 @@ div.imagespark {
 div.imagepixels {
     margin : 0px 5px 0px 5px;
     display : inline-block;
-    width : 90px;
+    width : 150px;
 }
-div.imagepercent {
-    margin : 0px 5px 0px 5px;
-    display : inline-block;
-    width : 90px;
-}
-div.imagedelta {
+div.imagemaxdiff {
     margin : 0px 5px 0px 5px;
     display : inline-block;
     width : 200px;
+}
+div.imagenote {
+    margin : 0px 5px 0px 5px;
+    display : inline-block;
+    width : 145px;
 }
 div.imagename {
     display : inline-block;

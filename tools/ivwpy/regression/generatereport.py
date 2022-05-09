@@ -232,16 +232,18 @@ def testImages(testimg, refimg, diffimg, maskimg):
                     text("Reference")
                 with tag('div', klass="zoom"):
                     doc.asis(image(refimg, alt="reference image", klass="test"))
-            with tag('div'):
-                with tag('div', klass="imgtestlabel"):
-                    text("Difference * 10")
-                with tag('div', klass="zoom"):
-                    doc.asis(image(diffimg, alt="difference image", klass="diff"))
-            with tag('div'):
-                with tag('div', klass="imgtestlabel"):
-                    text("Mask")
-                with tag('div', klass="zoom"):
-                    doc.asis(image(maskimg, alt="mask image", klass="diff"))
+            if diffimg is not None:
+                with tag('div'):
+                    with tag('div', klass="imgtestlabel"):
+                        text("Difference * 10")
+                    with tag('div', klass="zoom"):
+                        doc.asis(image(diffimg, alt="difference image", klass="diff"))
+            if maskimg is not None:
+                with tag('div'):
+                    with tag('div', klass="imgtestlabel"):
+                        text("Mask")
+                    with tag('div', klass="zoom"):
+                        doc.asis(image(maskimg, alt="mask image", klass="diff"))
     return doc.getvalue()
 
 
@@ -428,20 +430,32 @@ class TestRun:
 
         with tag('div', klass="imagename"):
             text(img["image"])
-        with tag('div', klass="imagedifference"):
-            text("Difference: {:2.8f}%".format(img["difference"]))
+        with tag('div', klass="imagediffpercent", title="Difference in percent"):
+            text(f"Difference: {img['difference_percent']:3.2f}%")
         with tag('div', klass="imagespark"):
-            doc.asis(self.sparkLine("image_test_diff." + img["image"], "sparkline_img_diff"))
-        with tag('div', klass="imagepixels"):
-            if img["different_pixels"] is not None:
-                text("Pixels: {:d}".format(img["different_pixels"]))
-        with tag('div', klass="imagepercent"):
-            if img["different_pixels"] is not None:
-                text("({:2.4f}%)".format(
-                    100.0 * img["different_pixels"] / (img['test_size'][0] * img['test_size'][1])))
-        with tag('div', klass="imagedelta"):
-            if img["max_difference"] is not None:
-                text("Largest delta: {:1.8f}".format(img["max_difference"]))
+            doc.asis(self.sparkLine("image_test_diff." + img['image'], "sparkline_img_diff"))
+        
+        identicalSize = (img['ref_size'] == img['test_size'])
+        identicalMode = (img['ref_mode'] == img['test_mode'])
+
+        if identicalSize and identicalMode:
+            with tag('div', klass="imagepixels", title="Number of different pixels"):
+                if img['difference_pixels'] is not None:
+                    text(f"# Pixels: {img['difference_pixels']}")
+            with tag('div', klass="imagemaxdiff", title="Maximum difference per channel"):
+                if img["max_differences"] is not None:
+                    text(f"({', '.join([f'{x:0.3g}' for x in img['max_differences']])})")
+        else:
+            def resolutionToString(sizetuple):
+                return f'({"x".join([str(x) for x in sizetuple])})'
+
+            if not identicalSize:
+                with tag('div', klass="imagenote", title="Image resolution mismatch (test / reference)"):
+                    text(f"{resolutionToString(img['test_size'])} vs. {resolutionToString(img['ref_size'])}")
+            if not identicalMode:
+                with tag('div', klass="imagenote", title="Image format mismatch (test / reference)"):
+                    text(f"{img['test_mode']} vs. {img['ref_mode']}")
+
         return doc.getvalue()
 
     def images(self, imgs, testdir):

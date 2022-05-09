@@ -32,8 +32,11 @@ from .. colorprint import *
 
 
 class ReportTestSettings:
-    def __init__(self, imageDifferenceTolerance=0.0):
+    def __init__(self, imageDifferenceTolerance=0.0,
+        imageDiffLogscale=False, imageDiffInvert=False):
         self.imageDifferenceTolerance = imageDifferenceTolerance
+        self.imageDiffLogscale = imageDiffLogscale
+        self.imageDiffInvert = imageDiffInvert
 
 
 class ReportTest:
@@ -67,12 +70,12 @@ class ReportImageTest(ReportTest):
                 self.message[img['image']] = \
                     ("Image {image} has different sizes, "
                      "Test: {test_size} vs Reference:{ref_size}").format(**img)
-            elif img["difference"] > tol:
+            elif img["difference_percent"] > tol:
                 self.message[img['image']] = \
-                    ("Image {image} has difference greater then the allowed  "
-                     "tolerance ({difference}% &gt; {tol})  "
-                     "difference, {different_pixels} different pixels, "
-                     "largest difference {max_difference}").format(tol=tol, **img)
+                    ("Image {image} has difference greater than the allowed "
+                     "tolerance ({difference_percent}% &gt; {tol})  "
+                     "difference, {difference_pixels} different pixels, "
+                     "largest differences {max_differences}").format(tol=tol, **img)
 
         return len(self.message) == 0
 

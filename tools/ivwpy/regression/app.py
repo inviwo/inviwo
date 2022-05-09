@@ -241,17 +241,32 @@ class App:
         diffpath = mkdir(toPath(outputdir, "imgdiff"))
         maskpath = mkdir(toPath(outputdir, "imgmask"))
 
-        allowDifferentImageMode = safeget(
-            test.config, "image_test", "allowDifferentImageMode", failure=False)
+        invertDifferenceImage = (self.testSettings.imageDiffInvert or
+            safeget(test.config, "image_test", "invertDifferenceImage", failure=False))
+        logscaleDifferenceImage = (self.testSettings.imageDiffLogscale or
+            safeget(test.config, "image_test", "logscaleDifferenceImage", failure=False))
 
         for img in imgs & refs:
-            comp = ImageCompare(testImage=toPath(testpath, img),
-                                refImage=toPath(test.path, img),
-                                allowDifferentImageMode=allowDifferentImageMode)
+            with ImageCompare(testImage=toPath(testpath, img),
+                              refImage=toPath(test.path, img),
+                              logscaleDifferenceImage=logscaleDifferenceImage,
+                              invertDifferenceImage=invertDifferenceImage) as comp:
 
-            comp.saveReferenceImage(toPath(refpath, img))
-            comp.saveDifferenceImage(toPath(diffpath, img))
-            comp.saveMaskImage(toPath(maskpath, img))
+                comp.saveReferenceImage(toPath(refpath, img))
+                comp.saveDifferenceImage(toPath(diffpath, img))
+                comp.saveMaskImage(toPath(maskpath, img))
+
+                imgtest = {
+                    'image': img,
+                    'difference_percent': comp.getDifferencePercent(),
+                    'difference_pixels': comp.getDifferencePixelCount(),
+                    'max_differences': comp.getMaxDifferences(),
+                    'test_size': comp.getTestSize(),
+                    'ref_size': comp.getRefSize(),
+                    'test_mode': comp.getTestMode(),
+                    'ref_mode': comp.getRefMode()
+                }
+                imagetests['tests'].append(imgtest)
 
             # do some hardlinks to save disk space...
             if lastoutdir is not None:
@@ -259,18 +274,6 @@ class App:
                 self.linkImages(toPath(lastoutdir, "imgref", img), toPath(refpath, img))
                 self.linkImages(toPath(lastoutdir, "imgdiff", img), toPath(diffpath, img))
                 self.linkImages(toPath(lastoutdir, "imgmask", img), toPath(maskpath, img))
-
-            imgtest = {
-                'image': img,
-                'difference': comp.getDifference(),
-                'max_difference': comp.getMaxDifference(),
-                'different_pixels': comp.getNumberOfDifferentPixels(),
-                'test_size': comp.getTestSize(),
-                'ref_size': comp.getRefSize(),
-                'test_mode': comp.getTestMode(),
-                'ref_mode': comp.getRefMode()
-            }
-            imagetests['tests'].append(imgtest)
 
         report["images"] = imagetests
         return report
@@ -366,7 +369,7 @@ class App:
             db_img_test = self.db.getOrAddSeries(dbtest, dbfrac, "image_test_diff." + img["image"])
             self.db.addMeasurement(series=db_img_test,
                                    testrun=dbtestrun,
-                                   value=img["difference"])
+                                   value=img["difference_percent"])
 
         if os.path.exists(report['outputdir'] + "/stats.json"):
             stats = []
