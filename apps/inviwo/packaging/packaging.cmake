@@ -122,7 +122,7 @@ else()
       "Icon=${IVW_PACKAGE_SELECT_APP}"
       "Categories=Science;"
     )
-    install(FILE ${PROJECT_BINARY_DIR}/${IVW_PACKAGE_SELECT_APP}.desktop 
+    install(FILES ${PROJECT_BINARY_DIR}/${IVW_PACKAGE_SELECT_APP}.desktop 
             DESTINATION share/applications 
             COMPONENT Application
     )
