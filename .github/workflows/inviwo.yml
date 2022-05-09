@@ -23,6 +23,7 @@ jobs:
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
+            bootstrap_vcpkg: "./vcpkg/bootstrap-vcpkg.bat"
           - os: 'macos-latest'
             triplet: 'x64-osx'
             mono: 'mono'
@@ -31,6 +32,7 @@ jobs:
             targets: 'all package'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
+            bootstrap_vcpkg: "./vcpkg/bootstrap-vcpkg.sh"
           - os: 'ubuntu-20.04'
             triplet: 'x64-linux'
             mono: 'mono'
@@ -41,6 +43,7 @@ jobs:
             targets: 'all package'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
+            bootstrap_vcpkg: "./vcpkg/bootstrap-vcpkg.sh"
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
@@ -79,8 +82,15 @@ jobs:
       with:
         repository: 'microsoft/vcpkg'
         path: 'vcpkg' # The cmake vcpkg present expects vcpkg to be next to the inviwo source folder
-    
+
+    - name: 'Bootstrap vcpkg'
+      shell: bash
+      run: |
+        ${{ matrix.bootstrap_vcpkg }} 
+        ./vcpkg/vcpkg integrate install
+
     # Cache built dependencies for faster subsequent builds
+    # ./vcpkg/bootstrap-vcpkg.bat must have been called before
     - name: 'Setup NuGet Credentials'
       shell: bash
       run: >
