@@ -119,8 +119,8 @@ else()
                         "Name=${IVW_PACKAGE_SELECT_APP}\n"
                         "Exec=$<TARGET_FILE_NAME:${PROJECT_NAME}>\n"
                         "Categories=Science;")
-    file(GENERATE OUTPUT "${IVW_PACKAGE_SELECT_APP}.desktop" CONTENT ${desktop})
-    install(FILES "${IVW_PACKAGE_SELECT_APP}.desktop" 
+    file(GENERATE OUTPUT "${PROJECT_BINARY_DIR}/${IVW_PACKAGE_SELECT_APP}.desktop" CONTENT ${desktop})
+    install(FILES "${PROJECT_BINARY_DIR}/${IVW_PACKAGE_SELECT_APP}.desktop" 
             DESTINATION share/applications 
             COMPONENT Application
     )
