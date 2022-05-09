@@ -19,6 +19,8 @@ jobs:
             app: 
           - os: 'macos-latest'
             installer: 'inviwo-installer-macos'
+          - os: 'ubuntu-20.04'
+            installer: 'inviwo-installer-ubuntu'
     runs-on: ${{ matrix.os }}
     steps:
     - name: Download artifact
@@ -72,3 +74,18 @@ jobs:
       run: |
         cd /Applications/Inviwo.app/Contents/MacOS/
         ./Inviwo --logconsole --quit
+
+    ###############################################################################
+    # Linux
+    ###############################################################################
+    - name: Extract Linux installer and run Inviwo
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        # Find the name of the installer 
+        TGZ=$(ls Inviwo-*.tar.gz)
+        # Extract
+        tar zxvf "$TGZ"
+        # Get folder name and move into the folder 
+        cd "${TGZ%.tar.gz}"
+        ./"bin/Inviwo" --logconsole --quit

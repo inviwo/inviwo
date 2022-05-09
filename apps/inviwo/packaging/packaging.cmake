@@ -114,6 +114,31 @@ elseif(APPLE)
     configure_file("${IVW_ROOT_DIR}/cmake/deploy-osx.cmake.in" "${PROJECT_BINARY_DIR}/deploy-osx.cmake" @ONLY)
     set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-osx.cmake")
 else()
+    file(GENERATE OUTPUT ${PROJECT_BINARY_DIR}/${IVW_PACKAGE_SELECT_APP}.desktop CONTENT
+      "[Desktop Entry]"
+      "Type=Application"
+      "Name=${IVW_PACKAGE_SELECT_APP}"
+      "Exec=${IVW_PACKAGE_SELECT_APP}"
+      "Icon=${IVW_PACKAGE_SELECT_APP}"
+      "Categories=Science;"
+    )
+    install(FILE ${PROJECT_BINARY_DIR}/${IVW_PACKAGE_SELECT_APP}.desktop 
+            DESTINATION share/applications 
+            COMPONENT Application
+    )
+    install(FILES ${IVW_ROOT_DIR}/resources/inviwo/inviwo-logo-512px.png  
+            DESTINATION share/icons/hicolor/512x512/apps 
+            RENAME ${IVW_PACKAGE_SELECT_APP}.png
+            COMPONENT Application
+    )
+
+    # linuxdeployqt will find and copy all used qt libraries and qt plugins. 
+    # See https://github.com/probonopd/linuxdeployqt
+    #
+    # This must be done after copying all binaries to the staging package folder,
+    # but before those files are packaged into an installer (CPACK_PRE_BUILD_SCRIPTS).
+    configure_file("${IVW_ROOT_DIR}/cmake/deploy-linux.cmake.in" "${PROJECT_BINARY_DIR}/deploy-linux.cmake" @ONLY)
+    set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-linux.cmake")
     if(IVW_PACKAGE_INSTALLER)
         set(CPACK_GENERATOR "DEB")
         set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.inviwo.org")
