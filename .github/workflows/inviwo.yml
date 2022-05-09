@@ -26,16 +26,18 @@ jobs:
           - os: 'macos-latest'
             triplet: 'x64-osx'
             mono: 'mono'
-            cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF'
+            # Disable Python until we can package it
+            cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF -DIVW_MODULE_PYTHON3=OFF -DIVW_MODULE_PYTHON3GL=OFF -DIVW_MODULE_PYTHON3QT=OFF'
             targets: 'all package'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
           - os: 'ubuntu-20.04'
             triplet: 'x64-linux'
             mono: 'mono'
+            # Disable Python until we can package it
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
-            cmake: '--preset ninja-dev-vcpkg -DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF -DIVW_TEST_BENCHMARKS=OFF' 
+            cmake: '--preset ninja-dev-vcpkg -DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF -DIVW_TEST_BENCHMARKS=OFF -DIVW_MODULE_PYTHON3=OFF -DIVW_MODULE_PYTHON3GL=OFF -DIVW_MODULE_PYTHON3QT=OFF' 
             targets: 'all package'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
