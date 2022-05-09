@@ -97,6 +97,9 @@ VolumeCreator::VolumeCreator()
 
     addPort(outport_);
     addProperties(type_, format_, dimensions_, index_, information_, basis_);
+
+    information_.setChecked(true);
+    information_.setCurrentStateAsDefault();
 }
 
 void VolumeCreator::process() {
@@ -107,7 +110,8 @@ void VolumeCreator::process() {
 
         basis_.updateForNewEntity(*loadedData_, deserialized_);
         information_.updateForNewVolume(
-            *loadedData_, deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes);
+            *loadedData_, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
+        deserialized_ = false;
     }
 
     auto volume = std::make_shared<Volume>(*loadedData_);

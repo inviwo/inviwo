@@ -37,29 +37,36 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
     if (filesystem::getFileExtension(logPath) != "") {
         fileStream_ = filesystem::ofstream(logPath);
     } else {
+        std::string_view header = R"(<style>
+.warn {
+    color: orange;
+}
+.error {
+    color: red;
+}
+.level {
+    font-weight: bold;
+}
+.nowrap {
+    white-space: pre-wrap;
+    tab-size: 4;
+}
+</style>
+)";
+
         fileStream_ = filesystem::ofstream(logPath.append("/inviwo-log.html"));
+        fileStream_ << header;
     }
 
-    fileStream_ << "<style>" << std::endl
-                << ".warn{" << std::endl
-                << "    color: orange;" << std::endl
-                << "}" << std::endl
-                << ".error{" << std::endl
-                << "    color: red;" << std::endl
-                << "}" << std::endl
-                << ".level{" << std::endl
-                << "    font-weight: bold;" << std::endl
-                << "}" << std::endl
-                << "</style>" << std::endl;
-
-    fileStream_ << "<div class ='info'>Inviwo (V " << build::version << ") Log File</div>"
+    fileStream_ << "<div class='info'>Inviwo (v" << build::version << ") Log File</div>"
                 << std::endl;
 
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
     char formatedString[21];
     strftime(formatedString, sizeof(formatedString), "%Y-%m-%d %H:%M:%S ", &tm);
-    fileStream_ << "<div class ='info'>Created at: " << formatedString << "</div>" << std::endl;
+    fileStream_ << "<div class='info nowrap'>Created at: " << formatedString << "</div>"
+                << std::endl;
 }
 
 FileLogger::~FileLogger() = default;
@@ -71,22 +78,20 @@ void FileLogger::log(std::string_view logSource, LogLevel logLevel, LogAudience 
 
     switch (logLevel) {
         case LogLevel::Info:
-            fileStream_ << "<div class ='info'><span class='level'>Info: </span>";
+            fileStream_ << "<div class='info nowrap'><span class='level'>Info: </span>";
             break;
 
         case LogLevel::Warn:
-            fileStream_ << "<div class ='warn'><span class='level'>Warn: </span>";
+            fileStream_ << "<div class='warn nowrap'><span class='level'>Warn: </span>";
             break;
 
         case LogLevel::Error:
-            fileStream_ << "<div class ='error'><span class='level'>Error: </span>";
+            fileStream_ << "<div class='error nowrap'><span class='level'>Error: </span>";
             break;
     }
 
     auto msg = htmlEncode(logMsg);
-    replaceInString(msg, " ", "&nbsp;");
     replaceInString(msg, "\n", "<br/>");
-    replaceInString(msg, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 
     fileStream_ << "(" << htmlEncode(logSource) << ":" << lineNumber << ") " << msg;
     fileStream_ << "</div>" << std::endl;

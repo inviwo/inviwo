@@ -100,7 +100,7 @@ void BaseOrdinalEditorWidget::applyMaxValue() {
 void BaseOrdinalEditorWidget::applyIncrement() {
     QSignalBlocker spinBlock(editor_);
 
-    editor_->setSingleStep(transformIncrementToEditor());
+    editor_->setIncrement(transformIncrementToEditor());
     editor_->setDecimals(transformIncrementToEditorDecimals());
 }
 

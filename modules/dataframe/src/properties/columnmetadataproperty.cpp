@@ -107,8 +107,8 @@ void ColumnMetaDataProperty::updateForNewColumn(const Column& col, util::Overwri
         }
     };
 
-    overwrite = (overwrite == util::OverwriteState::No || isChecked()) ? util::OverwriteState::No
-                                                                       : util::OverwriteState::Yes;
+    overwrite = (overwrite == util::OverwriteState::Yes && !isChecked()) ? util::OverwriteState::Yes
+                                                                         : util::OverwriteState::No;
     range_.setReadOnly(col.getColumnType() == ColumnType::Categorical ||
                        col.getColumnType() == ColumnType::Index);
     drop_.setReadOnly(col.getColumnType() == ColumnType::Index);

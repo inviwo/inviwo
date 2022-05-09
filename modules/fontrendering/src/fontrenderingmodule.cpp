@@ -126,9 +126,19 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
                     // Move color into font properties
                     if (auto color =
                             xml::getElement(node, "Properties/Property&identifier=color")) {
-                        auto fontProps =
-                            xml::getElement(node, "Properties/Property&identifier=font/Properties");
-                        fontProps->InsertEndChild(*color);
+                        if (auto fontProps = xml::getElement(
+                                node, "Properties/Property&identifier=font/Properties")) {
+                            fontProps->InsertEndChild(*color);
+                        } else {
+                            auto props = xml::getElement(node, "Properties");
+                            if (!props) {
+                                props = xml::createNode("Properties", node);
+                            }
+                            fontProps = xml::createNode(
+                                "Property&type=org.inviwo.FontProperty&identifier=font/Properties",
+                                props);
+                            fontProps->InsertEndChild(*color);
+                        }
                     }
 
                     // Move only text/pos/offset into new ListProperty

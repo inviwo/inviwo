@@ -156,7 +156,7 @@ void VolumeSequenceSource::loadFile(bool deserialize) {
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
         basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
-        const auto overwrite = deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes;
+        const auto overwrite = deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No;
         information_.updateForNewVolume(*(*volumes_)[0], overwrite);
     }
 }
@@ -208,7 +208,7 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
         if ((*volumes_)[0]) {
             basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
             const auto overwrite =
-                deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes;
+                deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No;
             information_.updateForNewVolume(*(*volumes_)[0], overwrite);
         }
     } else {

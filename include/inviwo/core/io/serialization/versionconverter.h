@@ -44,6 +44,9 @@ public:
     virtual bool convert(TxElement* root) = 0;
 };
 
+/**
+ * A version converter for a single node that calls a function for the given node.
+ */
 class IVW_CORE_API NodeVersionConverter : public VersionConverter {
 public:
     template <typename T>
@@ -61,12 +64,23 @@ template <typename T>
 inviwo::NodeVersionConverter::NodeVersionConverter(T* obj, bool (T::*fPtr)(TxElement*))
     : VersionConverter(), fun_(std::bind(fPtr, obj, std::placeholders::_1)) {}
 
+/**
+ * A version converter that traverses all child nodes calling a function for each node. The
+ * traversal stops immediately when the function returns false.
+ */
 class IVW_CORE_API TraversingVersionConverter : public VersionConverter {
 public:
     template <typename T>
     TraversingVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
     TraversingVersionConverter(std::function<bool(TxElement*)> fun);
     virtual ~TraversingVersionConverter() {}
+
+    /**
+     * Traverse all child nodes starting at @p root. The function provided in the constructor will
+     * be called for each traversed node. If the function returns false, the traversal is stopped.
+     * @param root  root node of the traversal
+     * @return true if all children of @p root were traversed, false if the traversal was stopped
+     */
     virtual bool convert(TxElement* root);
 
 private:
@@ -120,9 +134,9 @@ struct ElementMatcher {
 };
 
 /**
- * This will traverse the nodes of a xml tree that matches the selectors given.
- * and apply a visitor. The selector is specified by a vector or ElementMatchers,
- * matching on the node name and the list if given attribute name and value pairs.
+ * This will traverse the nodes of an xml tree starting at @p root that match the selectors given.
+ * and apply a @p visitor. The @p selector is specified by a vector or ElementMatchers,
+ * matching on the node name and the list of given attribute name and value pairs.
  */
 template <typename Visitor>
 void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& selector,
@@ -154,8 +168,8 @@ void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& sele
 }
 
 /**
- * This will traverse all the nodes of the root and apply the visitor to all nodes that match the
- * selector.
+ * This will traverse all the nodes of @p root and apply the @p visitor to all nodes that match the
+ * @p selector.
  */
 template <typename Visitor>
 void visitMatchingNodesRecursive(TxElement* root, const ElementMatcher& selector, Visitor visitor) {
@@ -221,7 +235,7 @@ private:
 };
 
 /**
- * Utility function to change a xml tag matching oldName.
+ * Utility function to change an xml tag matching oldName.
  * @param root The xml node to start from.
  * @param path The elements that you want to change (@see Kind).
  * @param oldName The old tag value. This is also used for identifying the elements.
@@ -231,7 +245,7 @@ IVW_CORE_API bool changeTag(TxElement* root, const std::vector<Kind>& path,
                             const std::string& oldName, const std::string& newName);
 
 /**
- * Utility function to change a attribute processor network element, i.e a processor, port, or
+ * Utility function to change an attribute processor network element, i.e a processor, port, or
  * property.
  * @param root The xml node to start from.
  * @param path The elements that you want to change (@see Kind).

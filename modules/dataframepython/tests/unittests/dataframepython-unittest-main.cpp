@@ -43,6 +43,7 @@
 #include <modules/json/jsonmodulesharedlibrary.h>
 #include <modules/python3/python3modulesharedlibrary.h>
 #include <inviwo/dataframepython/dataframepythonmodulesharedlibrary.h>
+#include <modules/brushingandlinking/brushingandlinkingmodulesharedlibrary.h>
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
@@ -65,6 +66,7 @@ int main(int argc, char** argv) {
         modules.emplace_back(createBaseModule());
         modules.emplace_back(createJSONModule());
         modules.emplace_back(createDataFrameModule());
+        modules.emplace_back(createBrushingAndLinkingModule());
         modules.emplace_back(createPython3Module());
         modules.emplace_back(createDataFramePythonModule());
         app.registerModules(std::move(modules));
