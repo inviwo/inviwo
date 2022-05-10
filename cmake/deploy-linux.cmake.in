@@ -3,7 +3,7 @@ set(IVW_PACKAGE_SELECT_APP "@IVW_PACKAGE_SELECT_APP@")
 # First download and install LinuxDeployQt
 # See https://github.com/probonopd/linuxdeployqt#using-linuxdeployqt-with-travis-ci
 set(LINUXDEPLOYQT_URL "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage")
-set(LINUXDEPLOYQT ${CMAKE_CURRENT_BINARY_DIR}/linuxdeployqt-continuous-x86_64.AppImage)
+set(LINUXDEPLOYQT linuxdeployqt-continuous-x86_64.AppImage)
 
 execute_process(COMMAND wget --no-clobber --no-verbose ${LINUXDEPLOYQT_URL})
 execute_process(COMMAND chmod a+x ${LINUXDEPLOYQT} 
