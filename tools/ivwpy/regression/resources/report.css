@@ -226,7 +226,7 @@ div.testdate {
 div.imagediffpercent {
     margin : 0px 5px 0px 5px;
     display : inline-block;
-    width : 170px;
+    width : 150px;
 }
 div.imagespark {
     margin : 0px 5px 0px 5px;
@@ -246,7 +246,7 @@ div.imagemaxdiff {
 div.imagenote {
     margin : 0px 5px 0px 5px;
     display : inline-block;
-    width : 145px;
+    width : 180px;
 }
 div.imagename {
     display : inline-block;
