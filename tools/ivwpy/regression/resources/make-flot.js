@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ function stdRange(data) {
     var ymin = Math.min(values[values.length - 1], Math.max(minval, avg - 3*std));
     var ymax = Math.max(values[values.length - 1], Math.min(maxval, avg + 3*std));
 
-    return [ymin, ymax]
+    return [ymin, ymax];
 }
 
 var summary_range = stdRange(summarydata);
@@ -70,39 +70,42 @@ var summary_options = {
         show : true,
         position : "right",
         min : summary_range[0],
-        max : summary_range[1]
+        max : summary_range[1],
+        zoomRange: [0.01, 10],
+        autoScale: "loose",
+        autoScaleMargin: 0.02,
     }, {
         show : true,
         position : "left",
         min : 0,
     }],
     xaxis : {
+        show: true,
         mode: "time",
-        timeformat: "%e %b",
+        timeBase: "milliseconds",
+        timeformat: "%e %b<br>%H:%M",
+        zoomRange: [0.1, 100000],
+        timezone: "browser"
     },
     grid: {
         show: true,
         borderColor: "gray",
-        hoverable: true
+        hoverable: true,
     },
-    tooltip: {
-        show: true,
-        xDateFormat: "%Y-%m-%d %H:%M:%S",
-        content: "%s | %x; %y.8"
+    zoom: {
+        interactive: false
+    },
+    selection: {
+        mode: "xy"
     },
     legend: {
         show : true,
         position : "sw",
-        backgroundColor : null,
-        backgroundOpacity : 0,
-        noColumns : 4
-    },
-    selection: {
-            mode: "xy"
+        noColumns : 4,
     }
 };
 
-summery_data = [
+summary_data = [
     {
         lines: { 
             show : true, 
@@ -127,7 +130,7 @@ summery_data = [
             fillColor : "#FFE7E7"
         },
         points: { show: false },
-        label : "Failues",
+        label : "Failures",
         data  : faildata,
         color : "#FF9898",
         stack : "test",
@@ -161,26 +164,57 @@ summery_data = [
     }
 ];
 
-$("#flot-summary").plot(summery_data, summary_options);
-$("#flot-summary").dblclick(function () {$("#flot-summary").plot(summery_data, summary_options);});
+var plot = $.plot("#flot-summary", summary_data, summary_options);
+
+$("#flot-summary").dblclick(function () {
+    plot = $.plot("#flot-summary", summary_data, summary_options);
+});
 
 $("#flot-summary").bind("plotselected", function (event, ranges) {
     // clamp the zooming to prevent eternal zoom
     if (ranges.xaxis.to - ranges.xaxis.from < 0.00001) {
         ranges.xaxis.to = ranges.xaxis.from + 0.00001;
     }
-
     if (ranges.yaxis.to - ranges.yaxis.from < 0.00001) {
         ranges.yaxis.to = ranges.yaxis.from + 0.00001;
     }
-    // do the zooming
-    $("#flot-summary").plot(summery_data,
-        $.extend(true, {}, summary_options, {
-            xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
-            yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
-        })
-        );
+
+    var axes = plot.getAxes();
+    axes.xaxis.options.min = ranges.xaxis.from;
+    axes.xaxis.options.max = ranges.xaxis.to;
+    // zoom only first y axis
+    axes.yaxis.options.min = ranges.yaxis.from;
+    axes.yaxis.options.max = ranges.yaxis.to;
+    
+    plot.setupGrid();
+    plot.draw();
+    plot.clearSelection();
 });
+
+$("<div id='flotTooltip'></div>").appendTo("body");
+
+$("#flot-summary").bind("plothover", function (event, pos, item) {
+    if (!pos.x || !pos.y) {
+        return;
+    }
+
+    if (item) {
+        var date = new Date(item.datapoint[0]);
+        var dateStr = $.plot.formatDate(date, "%Y-%m-%d %H:%M:%S");
+        var value = item.datapoint[1].toString();
+
+        $("#flotTooltip").html("<div><b>" + item.series.label + ":</b> " + value + "</div><div>" + dateStr + "</div")
+            .css({top: item.pageY+8, left: item.pageX+8})
+            .fadeIn(200);
+    } else {
+        $("#flotTooltip").stop().hide();
+    }
+});
+
+$("#flot-summary").bind("plothovercleanup", function (event, pos, item) {
+        $("#flotTooltip").hide();
+});
+
 
 
 function makePlot(elem, data) {
@@ -188,7 +222,10 @@ function makePlot(elem, data) {
         xaxis : {
             show: true,
             mode: "time",
-            timeformat: "%e %b",
+            timeBase: "milliseconds",
+            timeformat: "%e %b<br>%H:%M",
+            zoomRange: [0.1, 100000],
+            timezone: "browser"
         },
         yaxis : {
             show: true,
@@ -196,6 +233,7 @@ function makePlot(elem, data) {
         },
         grid: {
             hoverable: true,
+            borderColor: "gray",
         },
         tooltip: {
             show: true,
@@ -205,8 +243,10 @@ function makePlot(elem, data) {
         legend: {
             show : true,
             position : "ne",
-            backgroundColor : null,
-            backgroundOpacity : 0
+            labelFormatter: function(label, series) {
+                // series is the series object for the label
+                return label.replaceAll('_', ' ');
+            },
         },
         lines: { show: true },
         points: { show: true },
@@ -217,7 +257,9 @@ function makePlot(elem, data) {
 
     $(elem).plot(data, options);
 
-    $(elem).dblclick(function () {$(elem).plot(data, options);});
+    $(elem).dblclick(function () {
+        $(elem).plot(data, options);        
+    });
     
     $(elem).bind("plotselected", function (event, ranges) {
         // clamp the zooming to prevent eternal zoom
@@ -228,13 +270,42 @@ function makePlot(elem, data) {
         if (ranges.yaxis.to - ranges.yaxis.from < 0.00001) {
             ranges.yaxis.to = ranges.yaxis.from + 0.00001;
         }
-        // do the zooming
-        $(elem).plot(data,
-            $.extend(true, {}, options, {
-                xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
-                yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
-            })
-        );
+
+        let plot = $(elem).data("plot");
+        var axes = plot.getAxes();
+        axes.xaxis.options.min = ranges.xaxis.from;
+        axes.xaxis.options.max = ranges.xaxis.to;
+        // zoom only first y axis
+        axes.yaxis.options.min = ranges.yaxis.from;
+        axes.yaxis.options.max = ranges.yaxis.to;
+        
+        plot.setupGrid();
+        plot.draw();
+        plot.clearSelection();
+    });
+
+    $(elem).bind("plothover", function (event, pos, item) {
+        if (!pos.x || !pos.y) {
+            return;
+        }
+
+        if (item) {
+            let date = new Date(item.datapoint[0]);
+            let dateStr = $.plot.formatDate(date, "%Y-%m-%d %H:%M:%S");
+            let value = item.datapoint[1].toString();
+
+            let label = item.series.label.replaceAll('_', ' ');
+
+            $("#flotTooltip").html("<div><b>" + label + ":</b> " + value + "</div><div>" + dateStr + "</div")
+                .css({top: item.pageY+8, left: item.pageX+8})
+                .fadeIn(200);
+        } else {
+            $("#flotTooltip").stop().hide();
+        }
+    });
+
+    $(elem).bind("plothovercleanup", function (event, pos, item) {
+            $("#flotTooltip").hide();
     });
 }
 

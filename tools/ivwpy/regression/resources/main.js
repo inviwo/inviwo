@@ -26,68 +26,68 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
- 
+
 function sparkOptions(formater, extra) {
-	opts = {
-		type : 'line', 
-		width : '75px', 
-		enableTagOptions: true,
-		fillColor : false,
-		lineColor : '#473386',
-		spotColor : '#222222',
-		highlightSpotColor : '#777777',
-		highlightLineColor : '#777777',
-		spotRadius : 2,
-		minSpotColor : false,
-		maxSpotColor : false,
-		normalRangeColor: '#B3EEB3',
-		drawNormalOnTop: false,
-		chartRangeClip: true,
-		tooltipFormatFieldlist : ['x', 'y'],
-		tooltipFormatter :  function(sp, options, fields) {
-			var retval = "";
-			if (!fields.isNull) {
-				retval += '<div class="jqsfield">';
-				retval += formater(new Date(1000*fields.x), fields.y);
-				retval += '</div>';
-			}
-			return retval;
-		}
-	};
-	jQuery.extend(opts, extra);
-	return opts;
+    opts = {
+        type : 'line',
+        width : '75px',
+        enableTagOptions: true,
+        fillColor : false,
+        lineColor : '#473386',
+        spotColor : '#222222',
+        highlightSpotColor : '#777777',
+        highlightLineColor : '#777777',
+        spotRadius : 2,
+        minSpotColor : false,
+        maxSpotColor : false,
+        normalRangeColor: '#B3EEB3',
+        drawNormalOnTop: false,
+        chartRangeClip: true,
+        tooltipFormatFieldlist : ['x', 'y'],
+        tooltipFormatter :  function(sp, options, fields) {
+            var retval = "";
+            if (!fields.isNull) {
+                retval += '<div class="jqsfield">';
+                retval += formater(new Date(1000*fields.x), fields.y);
+                retval += '</div>';
+            }
+            return retval;
+        }
+    };
+    jQuery.extend(opts, extra);
+    return opts;
 }
 
 
 $(document).ready(function() {
-   	$('div.lihead').click(function() {
-   			body = $(this).next(".libody") 			
-   			body.slideToggle(100);
-           	$.sparkline_display_visible();
+    $('div.lihead').click(function() {
+            body = $(this).next(".libody")
+            body.slideToggle(100);
+            $.sparkline_display_visible();
     });
 
-	$('.sparkline_elapsed_time').sparkline('html', sparkOptions(function(date, val) { 
-		return 'Run time ' + date.toLocaleString() + ' : ' + val.toPrecision(6) + 's'; 
-	}, {}));
+    $('.sparkline_elapsed_time').sparkline('html', sparkOptions(function(date, val) {
+        return 'Run time ' + date.toLocaleString() + ' : ' + val.toPrecision(6) + 's';
+    }, {}));
 
-	$('.sparkline_img_diff').sparkline('html', sparkOptions(function(date, val) { 
-		return 'Diff ' + date.toLocaleString() + ' : ' + val.toPrecision(8) + '%'; 
-	}, {}));
-	
-	$('.sparkline-failues').sparkline('html', sparkOptions(function(date, val) { 
-		return 'Failures ' + date.toLocaleString() + ' : ' + val; 
-	}, {
-		chartRangeMin : 0, 
-		chartRangeMax : 6,
-		normalRangeMin : -0.5,
-		normalRangeMax : 0.5
-	}));
+    $('.sparkline_img_diff').sparkline('html', sparkOptions(function(date, val) {
+        return 'Diff ' + date.toLocaleString() + ' : ' + val.toPrecision(8) + '%';
+    }, {}));
 
-	$('.zoomset').zoom({magnify : 4, on : 'grab', duration : 400});
-	
-	userList.sort('testname');
-	userList.sort('testmodule');
-	userList.sort('testfailures', { order: "desc" });
+    $('.sparkline-failures').sparkline('html', sparkOptions(function(date, val) {
+        return 'Failures ' + date.toLocaleString() + ' : ' + val;
+    }, {
+        chartRangeMin : 0,
+        chartRangeMax : 6,
+        normalRangeMin : -0.5,
+        normalRangeMax : 0.5
+    }));
 
-	new Clipboard('.copylinkbtn');
+    $('.zoomset').zoom({magnify : 4, on : 'grab', duration : 400});
+
+    userList.sort('testname');
+    userList.sort('testmodule');
+    userList.sort('testfailures', { order: "desc" });
+
+    new Clipboard('.copylinkbtn');
  });

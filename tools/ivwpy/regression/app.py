@@ -311,7 +311,7 @@ class App:
                           header=header,
                           footer=footer)
         filepath = html.saveHtml(self.htmlFile)
-        date = datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S')
+        date = self.db.getLastRunDate().strftime('%Y-%m-%dT%H_%M_%S')
         shutil.copyfile(filepath, toPath(self.output,
                                          self.htmlFile + "-" + date + ".html"))
 
@@ -324,10 +324,10 @@ class App:
 
     def printSummary(self, out=sys.stdout):
         if(self.success()):
-            print_good("Success: {0.successes}, Failues: {0.failures}, Skipped: {0.skipped}".format(
+            print_good("Success: {0.successes}, Failures: {0.failures}, Skipped: {0.skipped}".format(
                 self.summary), file=out)
         else:
-            print_error(f"Success: {self.summary.successes}, Failues: {self.summary.failures},"
+            print_error(f"Success: {self.summary.successes}, Failures: {self.summary.failures},"
                         f" Skipped: {self.summary.skipped}", file=out)
         for i in self.summary.errors:
             print_error(i, file=out)

@@ -26,12 +26,31 @@
 @color-complement-3: #55C055;
 @color-complement-4: #2F9C2F;
 
+.flexboxmixin() {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.flexmixin(@values) {
+  -webkit-box-flex: @values;
+  -moz-box-flex:  @values;
+  -webkit-flex:  @values;
+  -ms-flex:  @values;
+  flex:  @values;
+}
+
 body {
     margin: 0px 0px 0px 0px; 
 }
 
 div.report {
     margin: 8px 8px 8px 8px; 
+}
+div.git {
+    margin: 1em 0px 2em 0px;
 }
 
 ul,ol {
@@ -79,11 +98,12 @@ a.version {
 }
 a:link, a:visited {
     text-decoration: none;
-    color : #000000;
+    color: #224abb;
+    font-weight: 600;
 }
 a:hover, a:active {
     text-decoration: underline;
-    color : #000000;
+    color: #224abb;
 }
 
 div.title {
@@ -112,6 +132,7 @@ div.slider {
 div.slider div.zoom {
     padding : 0px;
     margin : 0px;
+    min-width: 120px;
 }
 
 div.slider div.zoom:last-child{
@@ -164,6 +185,7 @@ div.libody {
     padding-bottom : 15px;
 }
 div.head {
+    margin-top: 1em;
     border-bottom-style : solid;
     border-bottom-color : #dddddd;
     border-bottom-width : 2px;
@@ -179,6 +201,7 @@ div.cell {
     margin : 0px 5px 0px 5px;
     display : inline-block;
     overflow: hidden;
+    vertical-align: top;
 }
 span.runtime {
     float : left;
@@ -203,7 +226,7 @@ div.testdate {
 div.imagediffpercent {
     margin : 0px 5px 0px 5px;
     display : inline-block;
-    width : 170px;
+    width : 150px;
 }
 div.imagespark {
     margin : 0px 5px 0px 5px;
@@ -223,7 +246,7 @@ div.imagemaxdiff {
 div.imagenote {
     margin : 0px 5px 0px 5px;
     display : inline-block;
-    width : 145px;
+    width : 180px;
 }
 div.imagename {
     display : inline-block;
@@ -249,6 +272,42 @@ div.log .error {
     color : red;
 }
 
+div.gitmsgheader {
+    font-weight: 600;
+}
+div.gitmsgbody, div.gitmsgfooter {
+    margin-top: 5px;
+}
+
+.box {
+    .flexboxmixin();
+    margin-bottom: 4px;
+    gap: 10px;
+}
+.box :first-child {
+    min-width: 100px;
+    .flexmixin(none);
+}
+.box > * {
+    .flexmixin(none);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    min-width: 100px;
+}
+.box :last-child {
+    .flexmixin(2 1 0);
+}
+.box > .gitcommit {
+    min-width: 80px;
+}
+.box > .gitdate {
+    min-width: 140px;
+}
+.boxheader {
+    font-weight: 600;
+}
+
 input {
     vertical-align : middle;
     border-radius : 5px;
@@ -263,6 +322,7 @@ input:focus {
 .sort {
     background : none;
     font-size : 100%;
+    font-weight: 600;
     cursor : pointer;
     display : inline-block;
     padding : 0px 30px 0px 0px;
@@ -327,6 +387,47 @@ div.flot-plots {
 div.flot-container {
     width: 400px;
     height: 250px;
+}
+
+.legend {
+    display: block;
+    -webkit-padding-start: 2px;
+    -webkit-padding-end: 2px;
+    border-width: none;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+    padding: 4px;
+}
+.legendLayer {
+    font-size: 12px;
+    font-family: sans-serif;
+    fill: #888;
+}
+.legendLayer .background {
+    fill: #fff; 
+    stroke: transparent;
+    stroke-width: 0;
+    opacity: 0.6;
+}
+.xAxis .tickLabel,
+.y1Axis .tickLabel,
+.y2Axis .tickLabel {
+    fill: #888;
+    font-size: 12px;
+    font-family: sans-serif;
+    line-height: 14px;
+}
+#flotTooltip {
+    position: absolute;
+    display: none;
+    border: 1.5px solid #919191;
+    border-radius: 8px; 
+    padding: 6px;
+    background-color: #c4d7fb;
+    opacity: 0.80;
+    font-family: sans-serif;
+    font-size: 12px;
 }
 
 button.copylinkbtn {

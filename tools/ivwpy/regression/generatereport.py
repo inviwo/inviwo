@@ -49,11 +49,13 @@ from . database import *
 from . statistics import *
 
 # Javascript packages
-# jQuary             http://jquery.com
-# wheelzoom          http://www.jacklmoore.com/wheelzoom
-# jQuery Sparklines  http://omnipotent.net/jquery.sparkline/
-# List.js            http://www.listjs.com/
-# Flot               http://www.flotcharts.org
+# jQuery              http://jquery.com
+# jQuery Sparklines   http://omnipotent.net/jquery.sparkline/
+# jQuery Flot         http://www.flotcharts.org
+#        Flot tooltip https://github.com/krzysu/flot.tooltip (no longer maintained since 2016)
+# jQuery Zoom         https://www.jacklmoore.com/zoom/
+# List.js             https://listjs.com
+# clipboard.js        https://clipboardjs.com
 
 # Jenkins note: https://wiki.jenkins-ci.org/display/JENKINS/Configuring+Content+Security+Policy
 # System.setProperty("hudson.model.DirectoryBrowserSupport.CSP",
@@ -141,12 +143,20 @@ def gitLink(commit):
     doc, tag, text = yattag.Doc().tagtext()
 
     if isValidString(commit.server, commit.hash):
-        with tag('a', href=commit.server + "/commit/" + commit.hash):
-            text(commit.server + "/commit/" + commit.hash)
+        with tag('a', href=commit.server + "/commit/" + commit.hash, title=commit.hash):
+            text(commit.hash[:7])
     else:
         text("None")
     return doc.getvalue()
 
+def gitServerName(commit):
+    doc, tag, text = yattag.Doc().tagtext()
+    if isValidString(commit.server):
+        with tag('a', href=commit.server, title=commit.server):
+            text(commit.server.rsplit('/', 1)[-1])
+    else:
+        text("Unknown")
+    return doc.getvalue()
 
 def getDiffLink(start, stop):
     doc, tag, text = yattag.Doc().tagtext()
@@ -157,18 +167,45 @@ def getDiffLink(start, stop):
         text("None")
     return doc.getvalue()
 
+def commitSplitMessage(msg):
+    # format of git commit message:
+    #   <header>
+    #   <blank line>
+    #   <body>
+    #   <blank line>
+    #   <footer>
+    header, _, part = msg.strip().partition('\n\n')
+    body, _, footer = part.rpartition('\n\n')
+    if body == '':
+        body, footer = footer, body
+    return header, body, footer
 
-def commitInfo(commit):
+def commitInfo(commit, abbrevmessage=True):
+
+    def formatMessage(header, body, footer):
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('div', klass='gitmsgheader'):
+            text(header)
+        if body:
+            with tag('div', klass='gitmsgbody'):
+                text(body)
+        if footer:
+            with tag('div', klass='gitmsgfooter'):
+                text(footer)
+        return doc.getvalue()
+
     doc, tag, text = yattag.Doc().tagtext()
     with tag('ul'):
-        val = html.escape(commit.message)
-        vabr = html.escape(abr(commit.message))
+        header, body, footer = commitSplitMessage(commit.message)
+
+        val = formatMessage(header, body, footer)
+        vabr = html.escape(abr(header)) if abbrevmessage else val
         gdate = commit.date.strftime('%Y-%m-%d %H:%M:%S')
 
         doc.asis(listItem(keyval("Message", vabr), val, toggle=vabr != val))
         doc.asis(listItem(keyval("Author", commit.author), toggle=False))
         doc.asis(listItem(keyval("Date", gdate), toggle=False))
-        doc.asis(listItem(keyval("Repository", gitLink(commit)), toggle=False))
+        doc.asis(listItem(keyval("Commit", gitLink(commit)), toggle=False))
 
     return doc.getvalue()
 
@@ -460,23 +497,31 @@ class TestRun:
 
     def images(self, imgs, testdir):
         doc, tag, text = yattag.Doc().tagtext()
+        failures = safeget(self.report, 'failures', failure={})
+        failedImgs = next((x for x in failures if x[0] == "images"), None)
 
         def path(type, img):
             return os.path.relpath(toPath(testdir, type, img), self.basedir)
 
-        def imgstatus(key):
-            failures = safeget(self.report, 'failures', failure={})
-            fail = next((x for x in failures if x[0] == "images"), None)
-            return "ok" if fail is None else "fail"
+        def imgstatus(img):
+            # Return the status of the image as either "fail" or "ok".
+            if (failedImgs is not None and img["image"] in failedImgs[1]):
+                return "fail"
+            else:
+                return "ok"
 
         with tag('ol'):
-            for img in imgs:
+            # sort images so that failed images appear at the top
+            for img in sorted(imgs, key=lambda k: imgstatus(k)):
+                compImageExists = ((img['ref_size'] == img['test_size']) and
+                    (img['ref_mode'] == img['test_mode']))
+
                 doc.asis(listItem(self.imageShort(img),
                                   testImages(path("imgtest", img["image"]),
                                              path("imgref", img["image"]),
-                                             path("imgdiff", img["image"]),
-                                             path("imgmask", img["image"])),
-                                  status=imgstatus(img['image']), hide=False))
+                                             path("imgdiff", img["image"]) if compImageExists else None,
+                                             path("imgmask", img["image"]) if compImageExists else None),
+                                  status=imgstatus(img), hide=False))
         return doc.getvalue()
 
     def txtsItem(self, tests, regdir, testdir):
@@ -515,7 +560,7 @@ class TestRun:
             doc.asis(self.sparkLine("elapsed_time", "sparkline_elapsed_time"))
         return doc.getvalue()
 
-    def failueSeries(self, length=30):
+    def failureSeries(self, length=30):
         doc, tag, text = yattag.Doc().tagtext()
         with tag('div'):
             text("{:1d} ".format(len(self.report["failures"])) + " ")
@@ -531,7 +576,7 @@ class TestRun:
             with tag("div", klass="cell testname"):
                 text(self.report["name"])
             with tag("div", klass="cell testfailures"):
-                doc.asis(self.failueSeries())
+                doc.asis(self.failureSeries())
             with tag("div", klass="cell testruntime"):
                 doc.asis(self.timeSeries())
             with tag("div", klass="cell testdate"):
@@ -578,18 +623,28 @@ class HtmlReport:
         self.doc, tag, text = yattag.Doc().tagtext()
         self.db = database
         self.basedir = basedir
-        self.created = datetime.datetime.now()
+        self.created = self.db.getLastRunDate()
         self.scriptDirname = "_scripts"
-        self.scripts = ["jquery-2.2.0.min.js",
+        self.scripts = ["jquery-3.6.0.min.js",
+                        "clipboard.min.js",
+                        "jquery.event.drag.js",
+                        "jquery.canvaswrapper.js",
+                        "jquery.colorhelpers.js",
+                        "jquery.flot.js",
+                        "jquery.flot.saturated.js",
+                        "jquery.flot.browser.js",
+                        "jquery.flot.drawSeries.js",
+                        "jquery.flot.stack.js",
+                        "jquery.flot.uiConstants.js",
+                        "jquery.flot.axislabels.js",
+                        "jquery.flot.time.js",
+                        "jquery.flot.legend.js",
+                        "jquery.flot.time.js",
+                        "jquery.flot.hover.js",
+                        "jquery.flot.selection.js",
                         "jquery.sparkline.min.js",
                         "jquery.zoom.js",
                         "list.min.js",
-                        "jquery.flot.js",
-                        "jquery.flot.time.js",
-                        "jquery.flot.selection.js",
-                        "jquery.flot.stack.js",
-                        "jquery.flot.tooltip.min.js",
-                        "clipboard.min.js",
                         "main.js"]
         self.postScripts = ["make-list.js", "make-flot.js"]
 
@@ -617,12 +672,13 @@ class HtmlReport:
                             text("Inviwo Regressions")
                         self.doc.stag('input', klass='search', placeholder="Search")
 
+                    timestamp = self.created.strftime('%Y-%m-%d %H:%M:%S')
                     with tag('div', klass='subtitle'):
                         with tag('div', klass="cell testdate"):
-                            text(self.created.strftime('%Y-%m-%d %H:%M:%S'))
+                            text(timestamp)
 
                         with tag('div', klass="cell"):
-                            with tag('a', klass='version', href="report.html"):
+                            with tag('a', klass='version', href="report.html", title=timestamp):
                                 text("latest")
 
                             oldreports = glob.glob(self.basedir + "/report-*.html")
@@ -631,11 +687,39 @@ class HtmlReport:
 
                             for i, old in enumerate(oldreports[:10]):
                                 prev = os.path.relpath(old, self.basedir)
-                                with tag('a', klass='version', href=prev):
+                                title = f'{old[-24:-14]} {old[-13:-5].replace("_", ":")}'
+                                with tag('a', klass='version', href=prev, title=title):
                                     text("-" + str(i + 1))
 
+                    with tag('div', klass='git'):
+                        with tag('div', klass='box boxheader'):
+                            with tag('span', klass='gitserver'):
+                                text('Repository')
+                            with tag('span', klass='gitdate'):
+                                text('Date')
+                            with tag('span', klass='gitcommit'):
+                                text('Commit')
+                            with tag('span', klass='gitauthor'):
+                                text('Author')
+                            with tag('span', klass='gitmsgheader'):
+                                text('Message')
+
+                        for commit in self.db.getLatestCommits():
+                            commitHeader, _, _ = commitSplitMessage(commit.message)
+                            with tag('div', klass='box'):
+                                with tag('span', klass='gitserver'):
+                                    self.doc.asis(gitServerName(commit))
+                                with tag('span', klass='gitdate'):
+                                    text(commit.date.strftime('%Y-%m-%d %H:%M:%S'))
+                                with tag('span', klass='gitcommit'):
+                                    self.doc.asis(gitLink(commit))
+                                with tag('span', klass='gitauthor'):
+                                    text(commit.author)
+                                with tag('span', klass='gitmsgheader'):
+                                    text(commitHeader)
+
                     with tag('div', klass='summary'):
-                        self.doc.stag('div', style="width:800px;height:150px", id='flot-summary')
+                        self.doc.stag('div', style="width:800px;height:200px", id='flot-summary')
 
                     with tag("div", klass="head"):
                         with tag("div", klass="cell testmodule"):

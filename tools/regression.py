@@ -38,7 +38,7 @@ import ivwpy.regression
 import ivwpy.regression.app
 import ivwpy.regression.error
 
-# Ipython auto reaload
+# Ipython auto reload
 # %load_ext autoreload
 # %autoreload 2
 
@@ -84,9 +84,9 @@ def makeCmdParser():
     parser.add_argument("--imageinvert", action="store_true",
                         dest="imageinvert", help="Invert the difference images")
     parser.add_argument('--header', type=str, action="store", dest="header",
-                        help='A optional report header', default=None)
+                        help='An optional report header', default=None)
     parser.add_argument('--footer', type=str, action="store", dest="footer",
-                        help='A optional report footer', default=None)
+                        help='An optional report footer', default=None)
     parser.add_argument("-v", "--view", action="store_true",
                         dest="view", help="Open the report when done")
     parser.add_argument("--log", type=str, dest="log", default="WARN",
@@ -182,7 +182,7 @@ if __name__ == '__main__':
         output = mkdir(config.get("CMake", "binary_dir"), "regress")
     else:
         print_error(
-            "Regression.py was unable to decide on a output dir,"
+            "Regression.py was unable to decide on an output dir,"
             " please specify \"-o <output path>\"")
         sys.exit(1)
 
