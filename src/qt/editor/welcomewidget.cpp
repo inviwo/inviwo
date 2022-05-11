@@ -41,6 +41,7 @@
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/algorithm/searchdsl.h>
 
+#include <inviwo/qt/editor/verticallabel.h>
 #include <inviwo/qt/editor/workspacetreemodel.h>
 #include <inviwo/qt/editor/workspacetreeview.h>
 #include <inviwo/qt/editor/workspacegridview.h>
@@ -495,14 +496,15 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         setStretchFactor(0, 2);  // left + center widget (workspace view + details)
         setStretchFactor(1, 1);  // rightColumn (changelog)
         rightColumn->setObjectName("WelcomeRightColumn");
-        auto rightColumnLayout = new QVBoxLayout(rightColumn);
+        rightColumnLayout = new QVBoxLayout(rightColumn);
         rightColumnLayout->setContentsMargins(space, 0, space, 3 * space);
 
         {
-            auto title = new QLabel("Latest Changes", rightColumn);
+            auto title = new VerticalLabel("Latest Changes", rightColumn);
             title->setAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
             title->setObjectName("ChangeLog");
             rightColumnLayout->addWidget(title);
+            
         }
 
         {

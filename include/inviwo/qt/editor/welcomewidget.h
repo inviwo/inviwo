@@ -98,6 +98,8 @@ private:
     WorkspaceTreeView* workspaceTreeView_;
     WorkspaceGridView* workspaceGridView_;
 
+    QVBoxLayout* rightColumnLayout;
+
     QLineEdit* filterLineEdit_;
     QSvgWidget* dragAndDrop_;
     QTextEdit* details_;

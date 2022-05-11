@@ -10,7 +10,9 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/verticallabel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/subpropertyselectiondialog.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/verticallabel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacegridview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacetreemodel.h
@@ -101,6 +103,7 @@ set(SOURCE_FILES
     subpropertyselectiondialog.cpp
     toolsmenu.cpp
     undomanager.cpp
+    verticallabel.cpp
     welcomewidget.cpp
     workspaceannotationsqt.cpp
     workspacegridview.cpp
@@ -182,7 +185,9 @@ if(IVW_CFG_BUILD_CHANGELOG)
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CopyIfFound.cmake"
         CONTENT 
             "if (EXISTS \"${buildFile}\")
+
                 file(COPY \"${buildFile}\" DESTINATION \"${destDir}\")
+
             endif()"
     )
 
