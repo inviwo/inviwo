@@ -34,6 +34,7 @@
 #include <inviwo/volume/processors/volumeregionmap.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/templatesampler.h>
+#include <inviwo/volume/algorithm/volumemap.h>
 
 namespace inviwo {
 
@@ -47,11 +48,57 @@ std::shared_ptr<inviwo::Volume> createVolume() {
     return std::make_shared<Volume>(volumeram);
 }
 
-TEST(Volume, volume_region_map_test) {
+TEST(Volume, volume_region_map_test_sorted_continuous_sequence) {
     auto volume = createVolume();
-    std::vector<unsigned int> src = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    std::vector<unsigned int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
-    VolumeRegionMap::remap(volume, src, dst, 0, false);
+    std::vector<short> src = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::vector<short> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
+    remap(volume, src, dst, 0, false);
+
+    using VolSampler = TemplateVolumeSampler<float, float, float, 1>;
+    const VolSampler sampler(volume);
+
+    EXPECT_EQ(1, sampler.sample(vec3(0.f, 0.f, 0.f)));
+    EXPECT_EQ(1, sampler.sample(vec3(0.f, 0.f, 0.5f)));
+    EXPECT_EQ(1, sampler.sample(vec3(0.f, 0.f, 1.f)));
+
+    EXPECT_EQ(1, sampler.sample(vec3(0.5f, 0.0f, 0.f)));
+    EXPECT_EQ(1, sampler.sample(vec3(0.5f, 0.0f, 0.5f)));
+    EXPECT_EQ(1, sampler.sample(vec3(0.5f, 0.0f, 1.f)));
+
+    EXPECT_EQ(1, sampler.sample(vec3(1.f, 0.0f, 0.f)));
+    EXPECT_EQ(1, sampler.sample(vec3(1.f, 0.0f, 0.5f)));
+    EXPECT_EQ(1, sampler.sample(vec3(1.f, 0.0f, 1.f)));
+
+    EXPECT_EQ(2, sampler.sample(vec3(0.f, 0.5f, 0.f)));
+    EXPECT_EQ(2, sampler.sample(vec3(0.f, 0.5f, 0.5f)));
+    EXPECT_EQ(2, sampler.sample(vec3(0.f, 0.5f, 1.f)));
+
+    EXPECT_EQ(2, sampler.sample(vec3(0.5f, 0.5f, 0.f)));
+    EXPECT_EQ(2, sampler.sample(vec3(0.5f, 0.5f, 0.5f)));
+    EXPECT_EQ(2, sampler.sample(vec3(0.5f, 0.5f, 1.f)));
+
+    EXPECT_EQ(2, sampler.sample(vec3(1.f, 0.5f, 0.f)));
+    EXPECT_EQ(2, sampler.sample(vec3(1.f, 0.5f, 0.5f)));
+    EXPECT_EQ(2, sampler.sample(vec3(1.f, 0.5f, 1.f)));
+
+    EXPECT_EQ(3, sampler.sample(vec3(0.f, 1.f, 0.f)));
+    EXPECT_EQ(3, sampler.sample(vec3(0.f, 1.f, 0.5f)));
+    EXPECT_EQ(3, sampler.sample(vec3(0.f, 1.f, 1.f)));
+
+    EXPECT_EQ(3, sampler.sample(vec3(0.5f, 1.f, 0.f)));
+    EXPECT_EQ(3, sampler.sample(vec3(0.5f, 1.f, 0.5f)));
+    EXPECT_EQ(3, sampler.sample(vec3(0.5f, 1.f, 1.f)));
+
+    EXPECT_EQ(3, sampler.sample(vec3(1.f, 1.f, 0.f)));
+    EXPECT_EQ(3, sampler.sample(vec3(1.f, 1.f, 0.5f)));
+    EXPECT_EQ(3, sampler.sample(vec3(1.f, 1.f, 1.f)));
+}
+
+TEST(Volume, volume_region_map_test_binary_search) {
+    auto volume = createVolume();
+    std::vector<short> src = {1, 3, 2, 4, 5, 6, 7, 8, 9};
+    std::vector<short> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
+    remap(volume, src, dst, 0, false);
 
     using VolSampler = TemplateVolumeSampler<float, float, float, 1>;
     const VolSampler sampler(volume);

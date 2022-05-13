@@ -26,56 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/volume/volumemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <optional>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <vector>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeRegionMap, Volume Region Map}
- * ![](org.inviwo.VolumeRegionMap.png?classIdentifier=org.inviwo.VolumeRegionMap)
- * Indices are remapped to values provided in columns. Requires two columns. First column contains
- * old indices and second column contains values to be mapped to.
- * ### Inports
- *   * __inputVolume__ Input volume
- *
- * ### Outports
- *   * __outputVolume__ Output volume
- *
- * ### Properties
- * * __from__ Index being mapped from
- * * __to__ Index being mapped to
- * * __defaultMissingValue__ Toggle between setting missing values to specified value or keep
- * current value
- * * __missingValues__ Value specifying missing values
- */
-class IVW_MODULE_VOLUME_API VolumeRegionMap : public Processor {
-public:
-    VolumeRegionMap();
-    virtual ~VolumeRegionMap() = default;
+void IVW_MODULE_VOLUME_API remap(std::shared_ptr<Volume>& volume, std::vector<short> src,
+                                 std::vector<short> dst, short missingValue, bool useMissingValue);
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    DataFrameInport dataFrame_;
-    VolumeInport inport_;
-    VolumeOutport outport_;
-    ColumnOptionProperty from_;
-    ColumnOptionProperty to_;
-    BoolProperty defaultMissingValue_;
-    IntProperty missingValues_;
-};
 }  // namespace inviwo

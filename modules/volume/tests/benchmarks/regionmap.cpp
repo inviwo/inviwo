@@ -36,6 +36,7 @@
 #include <array>
 #include <vector>
 #include <inviwo/volume/processors/volumeregionmap.h>
+#include <inviwo/volume/algorithm/volumemap.h>
 
 using namespace inviwo;
 
@@ -94,33 +95,33 @@ public:
 // Sorted continuous size 10, growing volume
 static void b1(benchmark::State& state) {
     Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
-    std::vector<uint32_t> src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    std::vector<uint32_t> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<short> src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::vector<short> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
+        remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 
 // Sorted non-continuous size 10, growing volume
 static void b2(benchmark::State& state) {
     Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
-    std::vector<uint32_t> src{1, 3, 5, 7, 9, 11, 14, 16, 18, 20};
-    std::vector<uint32_t> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<short> src{1, 3, 5, 7, 9, 11, 14, 16, 18, 20};
+    std::vector<short> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
+        remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 
 // Unsorted non-continuous size 10, growing volume
 static void b3(benchmark::State& state) {
     Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
-    std::vector<uint32_t> src{20, 2, 9, 5, 4, 6, 7, 8, 9, 1};
-    std::vector<uint32_t> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<short> src{20, 2, 9, 5, 4, 6, 7, 8, 9, 1};
+    std::vector<short> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
+        remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 
@@ -128,17 +129,17 @@ static void b3(benchmark::State& state) {
 static void b4(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
-    std::vector<uint32_t> src;
-    std::vector<uint32_t> dst;
+    std::vector<short> src;
+    std::vector<short> dst;
     src.reserve(10000);
     dst.reserve(10000);
-    for (int i = 0; i < state.range(0); ++i) {
+    for (short i = 0; i < state.range(0); ++i) {
         src.push_back(i);
         dst.push_back(1000 - i);
     }
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
+        remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 
@@ -146,27 +147,27 @@ static void b4(benchmark::State& state) {
 static void b5(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
-    std::vector<uint32_t> src;
-    std::vector<uint32_t> dst;
+    std::vector<short> src;
+    std::vector<short> dst;
     src.reserve(10000);
     dst.reserve(10000);
     src.push_back(0);
     dst.push_back(1);
-    for (int i = 2; i < state.range(0) + 1; ++i) {
+    for (short i = 2; i < state.range(0) + 1; ++i) {
         src.push_back(i);
         dst.push_back(1001 - i);
     }
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
+        remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 // Increased vector size, non-sorted + non-continuous
 static void b6(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
-    std::vector<uint32_t> src;
-    std::vector<uint32_t> dst;
+    std::vector<short> src;
+    std::vector<short> dst;
     src.reserve(10000);
     dst.reserve(10000);
     src.push_back(0);
@@ -175,13 +176,13 @@ static void b6(benchmark::State& state) {
     dst.push_back(1);
     src.push_back(2);
     dst.push_back(0);
-    for (int i = 3; i < state.range(0); ++i) {
+    for (short i = 3; i < state.range(0); ++i) {
         src.push_back(i);
         dst.push_back(1000 - i);
     }
 
     for (auto _ : state) {
-        VolumeRegionMap::remap(v1.benchVolume, src, dst, 0, true);
+        remap(v1.benchVolume, src, dst, 0, true);
     }
 }
 
