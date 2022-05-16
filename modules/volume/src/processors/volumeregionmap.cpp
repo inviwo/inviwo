@@ -82,17 +82,17 @@ void VolumeRegionMap::process() {
     auto newIdx = csv->getColumn(to_.getSelectedValue());
     auto nrows = csv->getNumberOfRows();
     bool useMissingValue = defaultMissingValue_.get();
-    short missingValue = static_cast<short>(missingValues_.get());
+    int missingValue = missingValues_.get();
 
     // Store in vectors
-    std::vector<short> sourceIndices(nrows);
-    std::vector<short> destinationIndices(nrows);
+    std::vector<int> sourceIndices(nrows);
+    std::vector<int> destinationIndices(nrows);
 
     // Copy to vectors
     copyColumn(*oldIdx, sourceIndices,
-               [](const auto& src, auto& dst) { dst = static_cast<short>(src); });
+               [](const auto& src, auto& dst) { dst = static_cast<int>(src); });
     copyColumn(*newIdx, destinationIndices,
-               [](const auto& src, auto& dst) { dst = static_cast<short>(src); });
+               [](const auto& src, auto& dst) { dst = static_cast<int>(src); });
 
     // Make sure sizes match
     while (sourceIndices.size() != destinationIndices.size()) {

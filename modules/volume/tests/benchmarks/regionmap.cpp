@@ -50,7 +50,7 @@ public:
     std::shared_ptr<inviwo::Volume> createVolume(int64_t zSize) {
         size3_t dims{10, 10, zSize};
         const uint32_t size = static_cast<uint32_t>(glm::compMul(dims));
-        std::vector<uint32_t> sampledata;
+        std::vector<int> sampledata;
         sampledata.reserve(size);
         uint32_t value = 0;
         for (uint32_t i = 0; i < size; ++i) {
@@ -71,7 +71,7 @@ public:
     std::shared_ptr<inviwo::Volume> createVolume(int x, int y, int z) {
         size3_t dims{x, y, z};
         const uint32_t size = static_cast<uint32_t>(glm::compMul(dims));
-        std::vector<uint32_t> sampledata;
+        std::vector<int> sampledata;
         sampledata.reserve(size);
         uint32_t value = 0;
         for (uint32_t i = 0; i < size; ++i) {
@@ -95,8 +95,8 @@ public:
 // Sorted continuous size 10, growing volume
 static void b1(benchmark::State& state) {
     Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
-    std::vector<short> src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    std::vector<short> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<int> src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::vector<int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
         remap(v1.benchVolume, src, dst, 0, true);
@@ -106,8 +106,8 @@ static void b1(benchmark::State& state) {
 // Sorted non-continuous size 10, growing volume
 static void b2(benchmark::State& state) {
     Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
-    std::vector<short> src{1, 3, 5, 7, 9, 11, 14, 16, 18, 20};
-    std::vector<short> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<int> src{1, 3, 5, 7, 9, 11, 14, 16, 18, 20};
+    std::vector<int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
         remap(v1.benchVolume, src, dst, 0, true);
@@ -117,8 +117,8 @@ static void b2(benchmark::State& state) {
 // Unsorted non-continuous size 10, growing volume
 static void b3(benchmark::State& state) {
     Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
-    std::vector<short> src{20, 2, 9, 5, 4, 6, 7, 8, 9, 1};
-    std::vector<short> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<int> src{20, 2, 9, 5, 4, 6, 7, 8, 9, 1};
+    std::vector<int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
         remap(v1.benchVolume, src, dst, 0, true);
@@ -129,11 +129,11 @@ static void b3(benchmark::State& state) {
 static void b4(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
-    std::vector<short> src;
-    std::vector<short> dst;
+    std::vector<int> src;
+    std::vector<int> dst;
     src.reserve(10000);
     dst.reserve(10000);
-    for (short i = 0; i < state.range(0); ++i) {
+    for (int i = 0; i < state.range(0); ++i) {
         src.push_back(i);
         dst.push_back(1000 - i);
     }
@@ -147,13 +147,13 @@ static void b4(benchmark::State& state) {
 static void b5(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
-    std::vector<short> src;
-    std::vector<short> dst;
+    std::vector<int> src;
+    std::vector<int> dst;
     src.reserve(10000);
     dst.reserve(10000);
     src.push_back(0);
     dst.push_back(1);
-    for (short i = 2; i < state.range(0) + 1; ++i) {
+    for (int i = 2; i < state.range(0) + 1; ++i) {
         src.push_back(i);
         dst.push_back(1001 - i);
     }
@@ -166,8 +166,8 @@ static void b5(benchmark::State& state) {
 static void b6(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
-    std::vector<short> src;
-    std::vector<short> dst;
+    std::vector<int> src;
+    std::vector<int> dst;
     src.reserve(10000);
     dst.reserve(10000);
     src.push_back(0);
@@ -176,7 +176,7 @@ static void b6(benchmark::State& state) {
     dst.push_back(1);
     src.push_back(2);
     dst.push_back(0);
-    for (short i = 3; i < state.range(0); ++i) {
+    for (int i = 3; i < state.range(0); ++i) {
         src.push_back(i);
         dst.push_back(1000 - i);
     }

@@ -39,22 +39,22 @@
 namespace inviwo {
 
 namespace {
-std::array<unsigned int, 27> sampledata = {
+std::array<int, 27> sampledata = {
     {1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9}};
 
 std::shared_ptr<inviwo::Volume> createVolume() {
-    auto volumeram = std::make_shared<VolumeRAMPrecision<float>>(size3_t{3, 3, 3});
+    auto volumeram = std::make_shared<VolumeRAMPrecision<int>>(size3_t{3, 3, 3});
     std::copy(sampledata.begin(), sampledata.end(), volumeram->getDataTyped());
     return std::make_shared<Volume>(volumeram);
 }
 
 TEST(Volume, volume_region_map_test_sorted_continuous_sequence) {
     auto volume = createVolume();
-    std::vector<short> src = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    std::vector<short> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
+    std::vector<int> src = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::vector<int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
     remap(volume, src, dst, 0, false);
 
-    using VolSampler = TemplateVolumeSampler<float, float, float, 1>;
+    using VolSampler = TemplateVolumeSampler<int, int, int, 1>;
     const VolSampler sampler(volume);
 
     EXPECT_EQ(1, sampler.sample(vec3(0.f, 0.f, 0.f)));
@@ -94,13 +94,13 @@ TEST(Volume, volume_region_map_test_sorted_continuous_sequence) {
     EXPECT_EQ(3, sampler.sample(vec3(1.f, 1.f, 1.f)));
 }
 
-TEST(Volume, volume_region_map_test_binary_search) {
+TEST(Volume, volume_region_map_test_unordered_map) {
     auto volume = createVolume();
-    std::vector<short> src = {1, 3, 2, 4, 5, 6, 7, 8, 9};
-    std::vector<short> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
+    std::vector<int> src = {1, 3, 2, 4, 5, 6, 7, 8, 9};
+    std::vector<int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
     remap(volume, src, dst, 0, false);
 
-    using VolSampler = TemplateVolumeSampler<float, float, float, 1>;
+    using VolSampler = TemplateVolumeSampler<int, int, int, 1>;
     const VolSampler sampler(volume);
 
     EXPECT_EQ(1, sampler.sample(vec3(0.f, 0.f, 0.f)));

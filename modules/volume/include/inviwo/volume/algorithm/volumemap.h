@@ -36,7 +36,8 @@
 
 namespace inviwo {
 
-void IVW_MODULE_VOLUME_API remap(std::shared_ptr<Volume>& volume, std::vector<short> src,
-                                 std::vector<short> dst, short missingValue, bool useMissingValue);
+void IVW_MODULE_VOLUME_API remap(std::shared_ptr<Volume>& volume, std::vector<int> src,
+                                 std::vector<int> dst, int missingValue,
+                                 bool useMissingValue);
 
 }  // namespace inviwo

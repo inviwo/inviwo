@@ -31,11 +31,18 @@
 
 #include <algorithm>
 #include <unordered_map>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-void remap(std::shared_ptr<Volume>& volume, std::vector<short> src, std::vector<short> dst,
-           short missingValue, bool useMissingValue) {
+void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<int> dst,
+           int missingValue, bool useMissingValue) {
+
+    if (src.size() == 0 || src.size() != dst.size()) {
+        throw Exception(IVW_CONTEXT_CUSTOM("Remap"), "Invalid dataframe size (src = {}, dst = {})",
+                        src.size(), dst.size());
+    }
+
     auto volRep = volume->getEditableRepresentation<VolumeRAM>();
 
     volRep->dispatch<void, dispatching::filter::Scalars>([&](auto volram) {
@@ -44,80 +51,48 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<short> src, std::vector<
         const auto& dim = volram->getDimensions();
 
         // Check state of dataframe
-        uint32_t dataFrameState = 0;
+        bool sorted = std::is_sorted(src.begin(), src.end());
 
-        if (std::is_sorted(src.begin(), src.end()) &&
-            (static_cast<int>(src.back() - src.front()) ==
-             static_cast<int>(src.size() - 1))) {  // Sorted + continuous
-            dataFrameState = 1;
-        } else if (std::is_sorted(src.begin(), src.end())) {  // Sorted + non continuous
-            dataFrameState = 2;
+        if (sorted && src.back() - src.front() == src.size() - 1) {  // Sorted + continuous
+            std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
+                           [&](const ValueType& v) {
+                               // Voxel value is inside src range
+                               if (v >= src.front() && v <= src.back()) {
+                                   int index = static_cast<int>(v - src.front());
+                                   return static_cast<ValueType>(dst[index]);
+                               } else if (useMissingValue) {
+                                   return static_cast<ValueType>(missingValue);
+                               } else {
+                                   return v;
+                               }
+                           });
+        } else if (sorted) {  // Sorted + non continuous
+            std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
+                           [&](const ValueType& v) {
+                               int index = *std::lower_bound(src.begin(), src.end(), v);
+                               if (index != *src.end()) {
+                                   return static_cast<ValueType>(dst[index]);
+                               } else if (useMissingValue) {
+                                   return static_cast<ValueType>(missingValue);
+                               } else {
+                                   return v;
+                               }
+                           });
         } else {
-            dataFrameState = 3;  // Unsorted + non continuous
-        }
-
-        short index = 0;
-        std::unordered_map<short, short> unorderedIndexMap;
-        switch (dataFrameState) {
-            case 1:  // Use indexing directly
-                std::transform(
-                    dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
-                        // Voxel value is inside src range
-                        if (static_cast<short>(v) >= src.front() &&
-                            static_cast<short>(v) <= static_cast<short>(src.size() + src.front())) {
-                            index = static_cast<short>(v) - src.front();
-                            return static_cast<ValueType>(dst[index]);
-                        } else if (useMissingValue) {
-                            return static_cast<ValueType>(missingValue);
-                        } else {
-                            return static_cast<ValueType>(v);
-                        }
-                    });
-                break;
-            case 2:  // Binary search
-                std::transform(
-                    dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
-                        index = *std::lower_bound(src.begin(), src.end(), static_cast<uint32_t>(v));
-                        if (index != *src.end()) {
-                            return static_cast<ValueType>(dst[index]);
-                        } else if (useMissingValue) {
-                            return static_cast<ValueType>(missingValue);
-                        } else {
-                            return static_cast<ValueType>(v);
-                        }
-                    });
-                break;
-            case 3:  // Use map
-                for (uint32_t i = 0; i < src.size(); ++i) {
-                    unorderedIndexMap[src[i]] = dst[i];
-                }
-                std::transform(
-                    dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
-                        if (unorderedIndexMap.count(static_cast<short>(v)) ==
-                            static_cast<short>(1)) {
-                            return static_cast<ValueType>(unorderedIndexMap[static_cast<short>(v)]);
-                        } else if (useMissingValue) {
-                            return static_cast<ValueType>(missingValue);
-                        } else {
-                            return static_cast<ValueType>(v);
-                        }
-                    });
-                break;
-            default:  // Linear
-                std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
-                               [&](const ValueType& v) {
-                                   for (uint32_t i = 0; i < src.size(); ++i) {
-                                       if (static_cast<short>(v) == src[i]) {
-                                           return static_cast<ValueType>(dst[i]);
-                                       }
-                                   }
-                                   if (useMissingValue) {
-                                       return static_cast<ValueType>(missingValue);
-                                   } else {
-                                       return static_cast<ValueType>(v);
-                                   }
-                               });
-                break;
+            std::unordered_map<int, int> unorderedIndexMap;
+            for (int i = 0; i < src.size(); ++i) {
+                unorderedIndexMap[src[i]] = dst[i];
+            }
+            std::transform(
+                dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
+                    if (unorderedIndexMap.count(static_cast<int>(v)) == 1) {
+                        return static_cast<ValueType>(unorderedIndexMap[static_cast<int>(v)]);
+                    } else if (useMissingValue) {
+                        return static_cast<ValueType>(missingValue);
+                    } else {
+                        return v;
+                    }
+                });
         }
     });
 }
