@@ -185,10 +185,9 @@ std::vector<std::vector<std::uint32_t>> gatherLoops(std::vector<glm::u32vec2>& e
                     edges.erase(it);
                 }
             } else {
-                LogWarnCustom(
-                    "MeshClipping",
-                    "Found edge, that is not connected to any other edge. This could mean, the "
-                    "clipped mesh was not manifold.");
+                LogWarnCustom("MeshClipping",
+                              "Found edge that is not connected to any other edge. This could mean "
+                              "the clipped mesh was not a manifold.");
                 break;
             }
         }
@@ -456,6 +455,13 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
     return newEdges;
 }
 
+template <typename PB, typename T>
+struct BufferAccess {
+    BufferAccess(const PB& buffer) : buffer(buffer) {}
+    T operator()(uint32_t index, float weight) { return static_cast<T>(buffer[index]) * weight; }
+    const PB& buffer;
+};
+
 }  // namespace detail
 
 std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldSpacePlane,
@@ -486,10 +492,8 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                                                const std::vector<uint32_t>& indices,
                                                const std::vector<float>& weights) {
                         return static_cast<ValueType>(std::inner_product(
-                            indices.begin(), indices.end(), weights.begin(), T{0}, std::plus<>{},
-                            [&](uint32_t index, float weight) {
-                                return static_cast<T>(buffer[index]) * weight;
-                            }));
+                            indices.begin(), indices.end(), weights.begin(), T{0}, std::plus<T>{},
+                            detail::BufferAccess<PB, T>{buffer}));
                     };
                     (void)mix;
 
