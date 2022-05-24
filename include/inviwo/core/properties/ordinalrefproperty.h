@@ -48,13 +48,42 @@ namespace inviwo {
  */
 template <typename T>
 struct OrdinalRefPropertyState {
-    std::pair<T, ConstraintBehavior> minValue =
-        std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable};
-    std::pair<T, ConstraintBehavior> maxValue =
-        std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable};
+    T min = Defaultvalues<T>::getMin();
+    ConstraintBehavior minConstraint = ConstraintBehavior::Editable;
+    T max = Defaultvalues<T>::getMax();
+    ConstraintBehavior maxConstraint = ConstraintBehavior::Editable;
     T increment = Defaultvalues<T>::getInc();
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
     PropertySemantics semantics = defaultSemantics();
+
+    auto setMin(T newMin) -> OrdinalRefPropertyState {
+        min = newMin;
+        return *this;
+    }
+    auto setMinConstraint(ConstraintBehavior newMinConstraint) -> OrdinalRefPropertyState {
+        minConstraint = newMinConstraint;
+        return *this;
+    }
+    auto setMax(T newMax) -> OrdinalRefPropertyState {
+        max = newMax;
+        return *this;
+    }
+    auto setMaxConstraint(ConstraintBehavior newMaxConstraint) -> OrdinalRefPropertyState {
+        maxConstraint = newMaxConstraint;
+        return *this;
+    }
+    auto setInc(T newIncrement) -> OrdinalRefPropertyState {
+        increment = newIncrement;
+        return *this;
+    }
+    auto setInvalidationLevel(InvalidationLevel newInvalidationLevel) -> OrdinalRefPropertyState {
+        invalidationLevel = newInvalidationLevel;
+        return *this;
+    }
+    auto setSemantics(PropertySemantics newSemantics) -> OrdinalRefPropertyState {
+        semantics = newSemantics;
+        return *this;
+    }
 
     static PropertySemantics defaultSemantics() {
         if constexpr (util::extent<T, 1>::value > 1) {
@@ -296,10 +325,10 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
                                           OrdinalRefPropertyState<T> state)
     : OrdinalRefProperty{identifier,
                          displayName,
-                         get,
-                         set,
-                         state.minValue,
-                         state.maxValue,
+                         std::move(get),
+                         std::move(set),
+                         std::pair{state.min, state.minConstraint},
+                         std::pair{state.max, state.maxConstraint},
                          state.increment,
                          state.invalidationLevel,
                          state.semantics} {}

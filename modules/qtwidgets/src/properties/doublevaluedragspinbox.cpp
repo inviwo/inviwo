@@ -48,6 +48,7 @@ DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget* parent)
     , invalid_(false) {
     setObjectName("valueDragSpinBox");
     spinBox_->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    spinBox_->setAlignment(Qt::AlignRight);
 
     auto layout = new QHBoxLayout();
     layout->setSpacing(utilqt::emToPx(this, 0.2));
