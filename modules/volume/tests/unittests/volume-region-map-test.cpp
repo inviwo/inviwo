@@ -42,14 +42,22 @@ namespace {
 std::array<int, 27> sampledata = {
     {1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9}};
 
-std::shared_ptr<inviwo::Volume> createVolume() {
+std::array<int, 8> sampledata2 = {{1, 1, 3, 3, 4, 4, 5, 5}};
+
+std::shared_ptr<inviwo::Volume> createVolume3x3x3() {
     auto volumeram = std::make_shared<VolumeRAMPrecision<int>>(size3_t{3, 3, 3});
     std::copy(sampledata.begin(), sampledata.end(), volumeram->getDataTyped());
     return std::make_shared<Volume>(volumeram);
 }
 
+std::shared_ptr<inviwo::Volume> createVolume2x2x2() {
+    auto volumeram = std::make_shared<VolumeRAMPrecision<int>>(size3_t{2, 2, 2});
+    std::copy(sampledata2.begin(), sampledata2.end(), volumeram->getDataTyped());
+    return std::make_shared<Volume>(volumeram);
+}
+
 TEST(Volume, volume_region_map_test_sorted_continuous_sequence) {
-    auto volume = createVolume();
+    auto volume = createVolume3x3x3();
     std::vector<int> src = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::vector<int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
     remap(volume, src, dst, 0, false);
@@ -95,7 +103,7 @@ TEST(Volume, volume_region_map_test_sorted_continuous_sequence) {
 }
 
 TEST(Volume, volume_region_map_test_unordered_map) {
-    auto volume = createVolume();
+    auto volume = createVolume3x3x3();
     std::vector<int> src = {1, 3, 2, 4, 5, 6, 7, 8, 9};
     std::vector<int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
     remap(volume, src, dst, 0, false);
@@ -138,6 +146,28 @@ TEST(Volume, volume_region_map_test_unordered_map) {
     EXPECT_EQ(3, sampler.sample(vec3(1.f, 1.f, 0.f)));
     EXPECT_EQ(3, sampler.sample(vec3(1.f, 1.f, 0.5f)));
     EXPECT_EQ(3, sampler.sample(vec3(1.f, 1.f, 1.f)));
+}
+
+TEST(Volume, volume_region_map_test_binary_search) {
+    auto volume = createVolume2x2x2();
+    std::vector<int> src = {1, 3, 4, 5};
+    std::vector<int> dst = {1, 1, 2, 2};
+    remap(volume, src, dst, 0, false);
+
+    using VolSampler = TemplateVolumeSampler<int, int, int, 1>;
+    const VolSampler sampler(volume);
+
+    EXPECT_EQ(1, sampler.sample(vec3(0.f, 0.f, 0.f)));
+    EXPECT_EQ(1, sampler.sample(vec3(1.0f, 0.0f, 0.f)));
+
+    EXPECT_EQ(1, sampler.sample(vec3(0.f, 1.f, 0.f)));
+    EXPECT_EQ(1, sampler.sample(vec3(1.0f, 1.0f, 0.f)));
+
+    EXPECT_EQ(2, sampler.sample(vec3(0.f, 0.f, 1.0f)));
+    EXPECT_EQ(2, sampler.sample(vec3(1.0f, 0.0f, 1.0f)));
+
+    EXPECT_EQ(2, sampler.sample(vec3(0.f, 1.0f, 1.0f)));
+    EXPECT_EQ(2, sampler.sample(vec3(1.0f, 1.0f, 1.0f)));
 }
 }  // namespace
 }  // namespace inviwo

@@ -53,31 +53,33 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<in
         // Check state of dataframe
         bool sorted = std::is_sorted(src.begin(), src.end());
 
-        if (sorted && src.back() - src.front() == src.size() - 1) {  // Sorted + continuous
-            std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
-                           [&](const ValueType& v) {
-                               // Voxel value is inside src range
-                               if (v >= src.front() && v <= src.back()) {
-                                   int index = static_cast<int>(v - src.front());
-                                   return static_cast<ValueType>(dst[index]);
-                               } else if (useMissingValue) {
-                                   return static_cast<ValueType>(missingValue);
-                               } else {
-                                   return v;
-                               }
-                           });
+        if (sorted && (src.back() - src.front()) ==
+                          static_cast<int>(src.size()) - 1) {  // Sorted + continuous
+            std::transform(
+                dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
+                    // Voxel value is inside src range
+                    if (static_cast<int>(v) >= src.front() && static_cast<int>(v) <= src.back()) {
+                        int index = static_cast<int>(v) - src.front();
+                        return static_cast<ValueType>(dst[index]);
+                    } else if (useMissingValue) {
+                        return static_cast<ValueType>(missingValue);
+                    } else {
+                        return v;
+                    }
+                });
         } else if (sorted) {  // Sorted + non continuous
-            std::transform(dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr,
-                           [&](const ValueType& v) {
-                               int index = *std::lower_bound(src.begin(), src.end(), v);
-                               if (index != *src.end()) {
-                                   return static_cast<ValueType>(dst[index]);
-                               } else if (useMissingValue) {
-                                   return static_cast<ValueType>(missingValue);
-                               } else {
-                                   return v;
-                               }
-                           });
+            std::transform(
+                dataPtr, dataPtr + dim.x * dim.y * dim.z, dataPtr, [&](const ValueType& v) {
+                    auto index = std::distance(
+                        src.begin(), std::lower_bound(src.begin(), src.end(), static_cast<int>(v)));
+                    if (index < static_cast<int>(src.size())) {
+                        return static_cast<ValueType>(dst[index]);
+                    } else if (useMissingValue) {
+                        return static_cast<ValueType>(missingValue);
+                    } else {
+                        return v;
+                    }
+                });
         } else {
             std::unordered_map<int, int> unorderedIndexMap;
             for (int i = 0; i < src.size(); ++i) {
