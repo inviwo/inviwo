@@ -82,7 +82,7 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<in
                 });
         } else {
             std::unordered_map<int, int> unorderedIndexMap;
-            for (int i = 0; i < src.size(); ++i) {
+            for (size_t i = 0; i < src.size(); ++i) {
                 unorderedIndexMap[src[i]] = dst[i];
             }
             std::transform(
