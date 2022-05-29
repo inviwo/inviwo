@@ -45,7 +45,8 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<in
 
     auto uniqueIterator = std::unique(src.begin(), src.end());
     if (uniqueIterator != src.end()) {
-        throw Exception(IVW_CONTEXT_CUSTOM("Remap"), "Duplicate elements in source row (numberOfDuplicates = {})",
+        throw Exception(IVW_CONTEXT_CUSTOM("Remap"),
+                        "Duplicate elements in source row (numberOfDuplicates = {})",
                         src.size() - std::distance(src.begin(), uniqueIterator));
     }
 
