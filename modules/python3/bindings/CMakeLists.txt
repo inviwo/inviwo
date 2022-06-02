@@ -38,6 +38,7 @@ set(SOURCE_FILES
     src/pycompositeproperties.cpp
     src/pydataformat.cpp
     src/pydatamapper.cpp
+    src/pydatareaders.cpp
     src/pyevent.cpp
     src/pyflags.cpp
     src/pyglmmattypes.cpp

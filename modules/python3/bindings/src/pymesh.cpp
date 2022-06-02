@@ -42,11 +42,14 @@
 
 #include <fmt/format.h>
 
+PYBIND11_MAKE_OPAQUE(std::vector<std::shared_ptr<inviwo::Mesh>>)
+
 namespace inviwo {
 
 namespace py = pybind11;
 
 void exposeMesh(pybind11::module& m) {
+
     py::class_<Mesh::MeshInfo>(m, "MeshInfo")
         .def(py::init<>())
         .def(py::init<DrawType, ConnectivityType>())
@@ -296,7 +299,11 @@ void exposeMesh(pybind11::module& m) {
             return self.addVertex(vertex);
         });
 
+    using MeshSequence = std::vector<std::shared_ptr<Mesh>>;
+    py::bind_vector<MeshSequence>(m, "MeshSequence", py::module_local(false));
+
     exposeStandardDataPorts<Mesh>(m, "Mesh");
+    exposeStandardDataPorts<MeshSequence>(m, "MeshSequence");
 }
 
 }  // namespace inviwo
