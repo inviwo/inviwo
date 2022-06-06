@@ -38,22 +38,21 @@
 namespace inviwo {
 
 // Allow overriding virtual functions from Python
-class DataReaderTrampoline : public DataReader,
-                                               public pybind11::trampoline_self_life_support {
+class DataReaderTrampoline : public DataReader, public pybind11::trampoline_self_life_support {
 public:
-    using DataReader::DataReader; // Inherit constructors
+    using DataReader::DataReader;  // Inherit constructors
 
     virtual DataReader* clone() {
         PYBIND11_OVERRIDE_PURE(DataReader*, /* Return type */
                                DataReader,  /* Parent class */
-                               clone,        /* Name of function in C++ (must match Python name) */
+                               clone,       /* Name of function in C++ (must match Python name) */
         );
     }
     virtual bool setOption(std::string_view key, std::any value) {
-        PYBIND11_OVERRIDE(bool,              /* Return type */
+        PYBIND11_OVERRIDE(bool,       /* Return type */
                           DataReader, /* Parent class */
-                          setOption,         /* Name of function in C++ (must match Python name) */
-                          key, value         /* Argument(s) */
+                          setOption,  /* Name of function in C++ (must match Python name) */
+                          key, value  /* Argument(s) */
         );
     }
 };
@@ -67,28 +66,28 @@ public:
     virtual DataReaderType<T>* clone() {
         PYBIND11_OVERRIDE_PURE(DataReaderType<T>*, /* Return type */
                                DataReaderType<T>,  /* Parent class */
-                               clone,               /* Name of function in C++ (must match Python name) */
+                               clone, /* Name of function in C++ (must match Python name) */
         );
     }
     virtual bool setOption(std::string_view key, std::any value) {
         PYBIND11_OVERRIDE(bool,              /* Return type */
-                               DataReaderType<T>,  /* Parent class */
-                               setOption, /* Name of function in C++ (must match Python name) */
-                               key, value       /* Argument(s) */
+                          DataReaderType<T>, /* Parent class */
+                          setOption,         /* Name of function in C++ (must match Python name) */
+                          key, value         /* Argument(s) */
         );
     }
     virtual std::shared_ptr<T> readData(std::string_view filePath) {
         PYBIND11_OVERRIDE_PURE(std::shared_ptr<T>, /* Return type */
                                DataReaderType<T>,  /* Parent class */
-                               readData,           /* Name of function in C++ (must match Python name) */
-                               filePath            /* Argument(s) */
+                               readData, /* Name of function in C++ (must match Python name) */
+                               filePath  /* Argument(s) */
         );
     }
     virtual std::shared_ptr<T> readData(std::string_view filePath, MetaDataOwner* owner) {
         PYBIND11_OVERRIDE(std::shared_ptr<T>, /* Return type */
-                               DataReaderType<T>,  /* Parent class */
-                               readData, /* Name of function in C++ (must match Python name) */
-                               filePath, owner  /* Argument(s) */
+                          DataReaderType<T>,  /* Parent class */
+                          readData,           /* Name of function in C++ (must match Python name) */
+                          filePath, owner     /* Argument(s) */
         );
     }
 };
@@ -109,8 +108,8 @@ void exposeDataReaders(pybind11::module& m) {
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Image>::readData))
         .def("readData",
              py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Image>::readData));
-    py::class_<DataReaderType<Mesh>, DataReader, DataReaderTypeTrampoline<Mesh>>(
-        m, "MeshDataReader")
+    py::class_<DataReaderType<Mesh>, DataReader, DataReaderTypeTrampoline<Mesh>>(m,
+                                                                                 "MeshDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Mesh>::readData))
         .def("readData",
              py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Mesh>::readData));
@@ -126,20 +125,20 @@ void exposeDataReaders(pybind11::module& m) {
         .def("hasKey", [](DataReaderFactory* f, FileExtension key) { return f->hasKey(key); })
         .def("create", [](DataReaderFactory* f, std::string key) { return f->create(key); })
         .def("create", [](DataReaderFactory* f, FileExtension key) { return f->create(key); })
-        // No good way of dealing with template return types so we manually define one for each known type. 
-        // https://github.com/pybind/pybind11/issues/1667#issuecomment-454348004
-        // If your module exposes a new reader type it will have to bind getXXXReader.
-        .def("getImageReader", [](DataReaderFactory* f, std::string_view filePathOrExtension) {
-            return f->getReaderForTypeAndExtension<Image>(filePathOrExtension);
-        })
-        .def("getMeshReader", [](DataReaderFactory* f, std::string_view filePathOrExtension) {
+        // No good way of dealing with template return types so we manually define one for each
+        // known type. https://github.com/pybind/pybind11/issues/1667#issuecomment-454348004 If your
+        // module exposes a new reader type it will have to bind getXXXReader.
+        .def("getImageReader",
+             [](DataReaderFactory* f, std::string_view filePathOrExtension) {
+                 return f->getReaderForTypeAndExtension<Image>(filePathOrExtension);
+             })
+        .def("getMeshReader",
+             [](DataReaderFactory* f, std::string_view filePathOrExtension) {
                  return f->getReaderForTypeAndExtension<Mesh>(filePathOrExtension);
              })
         .def("getVolumeReader", [](DataReaderFactory* f, std::string_view filePathOrExtension) {
             return f->getReaderForTypeAndExtension<Volume>(filePathOrExtension);
         });
-
-
 }
 
 }  // namespace inviwo
