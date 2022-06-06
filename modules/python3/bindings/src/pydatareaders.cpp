@@ -110,7 +110,7 @@ void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string
                                                                        std::string_view) const) &
                  DataReaderFactory::getReaderForTypeAndExtension<T>)
         .def(fmt::format("has{}Reader", type).c_str(),
-             (bool(DataReaderFactory::*)(std::string_view) const) &
+             (bool (DataReaderFactory::*)(std::string_view) const) &
                  DataReaderFactory::hasReaderForTypeAndExtension<T>);
 }
 
@@ -152,8 +152,8 @@ void exposeDataReaders(pybind11::module& m) {
                  (std::unique_ptr<DataReader>(DataReaderFactory::*)(std::string_view) const) &
                      DataReaderFactory::create)
             .def("hasKey",
-                 (bool(DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
-            .def("hasKey", (bool(DataReaderFactory::*)(const FileExtension&) const) &
+                 (bool (DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
+            .def("hasKey", (bool (DataReaderFactory::*)(const FileExtension&) const) &
                                DataReaderFactory::hasKey);
     // No good way of dealing with template return types so we manually define one for each known
     // type.
