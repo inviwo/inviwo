@@ -92,6 +92,28 @@ public:
     }
 };
 
+template <typename T>
+void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string_view type) {
+    namespace py = pybind11;
+    r.def(fmt::format("getExtensionsFor{}", type).c_str(),
+          (std::vector<FileExtension>(DataReaderFactory::*)() const) &
+              DataReaderFactory::getExtensionsForType<T>)
+        .def(fmt::format("get{}Reader", type).c_str(),
+             (std::unique_ptr<DataReaderType<T>>(DataReaderFactory::*)(std::string_view) const) &
+                 DataReaderFactory::getReaderForTypeAndExtension<T>)
+        .def(
+            fmt::format("get{}Reader", type).c_str(),
+            (std::unique_ptr<DataReaderType<T>>(DataReaderFactory::*)(const FileExtension&) const) &
+                DataReaderFactory::getReaderForTypeAndExtension<T>)
+        .def(fmt::format("get{}Reader", type).c_str(),
+             (std::unique_ptr<DataReaderType<T>>(DataReaderFactory::*)(const FileExtension&,
+                                                                       std::string_view) const) &
+                 DataReaderFactory::getReaderForTypeAndExtension<T>)
+        .def(fmt::format("has{}Reader", type).c_str(),
+             (bool(DataReaderFactory::*)(std::string_view) const) &
+                 DataReaderFactory::hasReaderForTypeAndExtension<T>);
+}
+
 void exposeDataReaders(pybind11::module& m) {
     namespace py = pybind11;
 
@@ -103,6 +125,7 @@ void exposeDataReaders(pybind11::module& m) {
         .def("setOption", &DataReader::setOption)
         .def("getOption", &DataReader::getOption);
 
+    // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#binding-classes-with-template-parameters
     py::class_<DataReaderType<Image>, DataReader, DataReaderTypeTrampoline<Image>>(
         m, "ImageDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Image>::readData))
@@ -119,26 +142,26 @@ void exposeDataReaders(pybind11::module& m) {
         .def("readData", py::overload_cast<std::string_view, MetaDataOwner*>(
                              &DataReaderType<Volume>::readData));
 
-    py::class_<DataReaderFactory>(m, "DataReaderFactory")
-        .def(py::init<>())
-        .def("hasKey", [](DataReaderFactory* f, std::string key) { return f->hasKey(key); })
-        .def("hasKey", [](DataReaderFactory* f, FileExtension key) { return f->hasKey(key); })
-        .def("create", [](DataReaderFactory* f, std::string key) { return f->create(key); })
-        .def("create", [](DataReaderFactory* f, FileExtension key) { return f->create(key); })
-        // No good way of dealing with template return types so we manually define one for each
-        // known type. https://github.com/pybind/pybind11/issues/1667#issuecomment-454348004 If your
-        // module exposes a new reader type it will have to bind getXXXReader.
-        .def("getImageReader",
-             [](DataReaderFactory* f, std::string_view filePathOrExtension) {
-                 return f->getReaderForTypeAndExtension<Image>(filePathOrExtension);
-             })
-        .def("getMeshReader",
-             [](DataReaderFactory* f, std::string_view filePathOrExtension) {
-                 return f->getReaderForTypeAndExtension<Mesh>(filePathOrExtension);
-             })
-        .def("getVolumeReader", [](DataReaderFactory* f, std::string_view filePathOrExtension) {
-            return f->getReaderForTypeAndExtension<Volume>(filePathOrExtension);
-        });
+    auto fr =
+        py::class_<DataReaderFactory>(m, "DataReaderFactory")
+            .def(py::init<>())
+            .def("create",
+                 (std::unique_ptr<DataReader>(DataReaderFactory::*)(const FileExtension&) const) &
+                     DataReaderFactory::create)
+            .def("create",
+                 (std::unique_ptr<DataReader>(DataReaderFactory::*)(std::string_view) const) &
+                     DataReaderFactory::create)
+            .def("hasKey",
+                 (bool(DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
+            .def("hasKey", (bool(DataReaderFactory::*)(const FileExtension&) const) &
+                               DataReaderFactory::hasKey);
+    // No good way of dealing with template return types so we manually define one for each known
+    // type.
+    // https://github.com/pybind/pybind11/issues/1667#issuecomment-454348004
+    // If your module exposes a new reader type it will have to bind getXXXReader.
+    exposeFactoryReaderType<Image>(fr, "Image");
+    exposeFactoryReaderType<Mesh>(fr, "Mesh");
+    exposeFactoryReaderType<Volume>(fr, "Volume");
 }
 
 }  // namespace inviwo
