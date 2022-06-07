@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <unordered_map>
+#include <unordered_set>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
@@ -44,13 +45,11 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<in
     }
 
     // Create sorted copy of src and check if it contains duplicates
-    std::vector<int> sorted = src;
-    std::sort(sorted.begin(), sorted.end());
-    auto uniqueIterator = std::unique(sorted.begin(), sorted.end());
-    if (uniqueIterator != sorted.end()) {
+    std::unordered_set<int> set(src.begin(), src.end());
+    if (src.size() != set.size()) {
         throw Exception(IVW_CONTEXT_CUSTOM("Remap"),
                         "Duplicate elements in source row (numberOfDuplicates = {})",
-                        sorted.size() - std::distance(sorted.begin(), uniqueIterator));
+                        src.size() - set.size());
     }
 
     auto volRep = volume->getEditableRepresentation<VolumeRAM>();
