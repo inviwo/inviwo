@@ -42,13 +42,13 @@ class DataReaderTrampoline : public DataReader, public pybind11::trampoline_self
 public:
     using DataReader::DataReader;  // Inherit constructors
 
-    virtual DataReader* clone() {
+    virtual DataReader* clone() const override {
         PYBIND11_OVERRIDE_PURE(DataReader*, /* Return type */
                                DataReader,  /* Parent class */
                                clone,       /* Name of function in C++ (must match Python name) */
         );
     }
-    virtual bool setOption(std::string_view key, std::any value) {
+    virtual bool setOption(std::string_view key, std::any value) override {
         PYBIND11_OVERRIDE(bool,       /* Return type */
                           DataReader, /* Parent class */
                           setOption,  /* Name of function in C++ (must match Python name) */
@@ -63,27 +63,27 @@ class DataReaderTypeTrampoline : public DataReaderType<T>,
 public:
     using DataReaderType<T>::DataReaderType;  // Inherit constructors
 
-    virtual DataReaderType<T>* clone() {
+    virtual DataReaderType<T>* clone() const override {
         PYBIND11_OVERRIDE_PURE(DataReaderType<T>*, /* Return type */
                                DataReaderType<T>,  /* Parent class */
                                clone, /* Name of function in C++ (must match Python name) */
         );
     }
-    virtual bool setOption(std::string_view key, std::any value) {
+    virtual bool setOption(std::string_view key, std::any value) override {
         PYBIND11_OVERRIDE(bool,              /* Return type */
                           DataReaderType<T>, /* Parent class */
                           setOption,         /* Name of function in C++ (must match Python name) */
                           key, value         /* Argument(s) */
         );
     }
-    virtual std::shared_ptr<T> readData(std::string_view filePath) {
+    virtual std::shared_ptr<T> readData(std::string_view filePath) override{
         PYBIND11_OVERRIDE_PURE(std::shared_ptr<T>, /* Return type */
                                DataReaderType<T>,  /* Parent class */
                                readData, /* Name of function in C++ (must match Python name) */
                                filePath  /* Argument(s) */
         );
     }
-    virtual std::shared_ptr<T> readData(std::string_view filePath, MetaDataOwner* owner) {
+    virtual std::shared_ptr<T> readData(std::string_view filePath, MetaDataOwner* owner) override {
         PYBIND11_OVERRIDE(std::shared_ptr<T>, /* Return type */
                           DataReaderType<T>,  /* Parent class */
                           readData,           /* Name of function in C++ (must match Python name) */
