@@ -76,7 +76,7 @@ public:
                           key, value         /* Argument(s) */
         );
     }
-    virtual std::shared_ptr<T> readData(std::string_view filePath) override{
+    virtual std::shared_ptr<T> readData(std::string_view filePath) override {
         PYBIND11_OVERRIDE_PURE(std::shared_ptr<T>, /* Return type */
                                DataReaderType<T>,  /* Parent class */
                                readData, /* Name of function in C++ (must match Python name) */
