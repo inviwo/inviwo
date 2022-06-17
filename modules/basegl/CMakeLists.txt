@@ -62,6 +62,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/meshrenderprocessorgl.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
+    include/modules/basegl/processors/raycasting/atlasisosurfacerenderer.h
     include/modules/basegl/processors/raycasting/atlasvolumeraycaster.h
     include/modules/basegl/processors/raycasting/multichannelvolumeraycaster.h
     include/modules/basegl/processors/raycasting/sphericalvolumeraycaster.h
@@ -179,6 +180,7 @@ set(SOURCE_FILES
     src/processors/meshrenderprocessorgl.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
+    src/processors/raycasting/atlasisosurfacerenderer.cpp
     src/processors/raycasting/atlasvolumeraycaster.cpp
     src/processors/raycasting/multichannelvolumeraycaster.cpp
     src/processors/raycasting/sphericalvolumeraycaster.cpp
@@ -306,6 +308,7 @@ set(SHADER_FILES
     glsl/volumemerger.frag
     glsl/volumenormalization.frag
     glsl/volumeslice.frag
+    glsl/raycasting/atlasisosurfacerenderer.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
