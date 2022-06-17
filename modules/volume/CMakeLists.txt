@@ -2,6 +2,8 @@ ivw_module(Volume)
 
 set(HEADER_FILES
     include/inviwo/volume/algorithm/volumemap.h
+    include/inviwo/volume/processors/atlasboundary.h
+    include/inviwo/volume/processors/volumeregionmap.h
     include/inviwo/volume/processors/volumeregionmapper.h
     include/inviwo/volume/processors/volumeregionstatistics.h
     include/inviwo/volume/processors/volumevoronoisegmentation.h
@@ -12,6 +14,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/algorithm/volumemap.cpp
+    src/processors/atlasboundary.cpp
+    src/processors/volumeregionmap.cpp
     src/processors/volumeregionmapper.cpp
     src/processors/volumeregionstatistics.cpp
     src/processors/volumevoronoisegmentation.cpp
