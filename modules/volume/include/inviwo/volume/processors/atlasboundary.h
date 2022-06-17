@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2023 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,46 @@
  *
  *********************************************************************************/
 
-#include <inviwo/volume/processors/atlasboundary.h>
-#include <inviwo/volume/processors/volumeregionstatistics.h>
-#include <inviwo/volume/processors/volumeregionmapper.h>
-#include <inviwo/volume/processors/volumevoronoisegmentation.h>
-#include <inviwo/volume/volumemodule.h>
+#pragma once
+
+#include <inviwo/volume/volumemoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
-VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume") {
-    // Register objects that can be shared with the rest of inviwo here:
+/** \docpage{org.inviwo.atlasboundary, atlasboundary}
+ * ![](org.inviwo.atlasboundary.png?classIdentifier=org.inviwo.atlasboundary)
+ * Creates an atlas volume representing the current brushing and linking state.
+ * - 0 = none
+ * - 1 = selected
+ * - 2 = filtered
+ * - 3 = highlighted
+ *
+ * ### Inports
+ *   * __volume__ Atlas volume.
+ *   * __brushing__ Brushing and linking.
+ *
+ * ### Outports
+ *   * __outport__ Segmented volume in range [0,3].
+ */
+class IVW_MODULE_VOLUME_API AtlasBoundary : public Processor {
+public:
+    AtlasBoundary();
+    virtual ~AtlasBoundary() override = default;
 
-    // Processors
-    registerProcessor<VolumeRegionMapper>();
-    registerProcessor<VolumeRegionStatistics>();
-    registerProcessor<VolumeVoronoiSegmentation>();
-    registerProcessor<AtlasBoundary>();
-}
+    virtual void process() override;
+
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    VolumeInport volumeInport_;
+    BrushingAndLinkingInport brushing_;
+    VolumeOutport outport_;
+    std::shared_ptr<Volume> volume_;
+};
 
 }  // namespace inviwo
