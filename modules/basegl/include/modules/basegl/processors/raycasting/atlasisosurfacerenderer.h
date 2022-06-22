@@ -32,19 +32,14 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 
-//#include <inviwo/core/ports/volumeport.h>
-//#include <inviwo/core/ports/imageport.h>
-//#include <modules/opengl/shader/shader.h>
 
-#include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/isotfproperty.h>
-#include <inviwo/core/properties/raycastingproperty.h>
+
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/selectioncolorproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
@@ -89,6 +84,7 @@ private:
     FloatProperty sampleRate_;
     Volume volume_;
     float sampleRateValue_;
+    BoolProperty volumeSwitch_;
 };
 
 }  // namespace inviwo
