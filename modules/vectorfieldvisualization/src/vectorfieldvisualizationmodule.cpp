@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <modules/vectorfieldvisualization/generatestreamfunction.h>
 #include <modules/vectorfieldvisualization/processors/2d/seedstomesh2d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/holgersthreelines.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h>
@@ -87,6 +88,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<ArrowGlyphs2D>();
     registerProcessor<ArrowGlyphs3D>();
     registerProcessor<FlowField2DProcessor>();
+    registerProcessor<GenerateStreamFunction>();
     registerProcessor<HolgersThreeLines>();
     registerProcessor<LineSourceASCII>();
     registerProcessor<RBFVectorFieldGenerator2D>();

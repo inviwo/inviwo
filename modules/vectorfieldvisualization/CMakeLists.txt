@@ -2,13 +2,13 @@
 # Inviwo VectorFieldVisualization Module
 ivw_module(VectorFieldVisualization)
 
-
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/modules/vectorfieldvisualization/algorithms/integrallineoperations.h
     include/modules/vectorfieldvisualization/datastructures/integralline.h
     include/modules/vectorfieldvisualization/datastructures/integrallineset.h
+    include/modules/vectorfieldvisualization/generatestreamfunction.h
     include/modules/vectorfieldvisualization/integrallinetracer.h
     include/modules/vectorfieldvisualization/ports/seedpointsport.h
     include/modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h
@@ -53,6 +53,7 @@ set(SOURCE_FILES
     src/algorithms/integrallineoperations.cpp
     src/datastructures/integralline.cpp
     src/datastructures/integrallineset.cpp
+    src/generatestreamfunction.cpp
     src/integrallinetracer.cpp
     src/processors/2d/seedpointgenerator2d.cpp
     src/processors/2d/seedstomesh2d.cpp

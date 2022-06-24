@@ -67,7 +67,9 @@ public:
      */
     FormatConversionChannel(const std::shared_ptr<const DataChannel<FromT, N>> channel,
                             const std::string& name)
-        : DataChannel<T, N>(name, channel->getGridPrimitiveType()), channel_(channel) {}
+        : DataChannel<T, N>(name, channel->getGridPrimitiveType()), channel_(channel) {
+            this->setInvalidValue(static_cast<T>(channel->getInvalidValue()));
+        }
 
     virtual ~FormatConversionChannel() = default;
 
@@ -108,6 +110,9 @@ struct CreateFormatConversionChannelToTN {
             std::dynamic_pointer_cast<const DataChannel<typename FromT::type, N>>(channel);
 
         if (!dataChannel) {
+            std::cout << fmt::format("Input for conversion not of type <?, {}>", N) << std::endl;
+            if (!channel)
+                std::cout << "Well, was nullptr actually..." << std::endl;
             return nullptr;
         }
         auto convertedChannel =

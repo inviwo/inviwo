@@ -146,7 +146,7 @@ void DataChannel<T, N>::computeMinMax() const {
     bool initialized = false;
 
     for (const Vec& val : this->all<Vec>()) {
-        if (!isValid(val[0])) continue;
+        if (!this->isValid(val[0])) continue;
         if (!initialized) {
             minT = val;
             maxT = val;
@@ -168,29 +168,39 @@ void DataChannel<T, N>::computeMinMax() const {
     validMinMax_ = true;
 }
 
-template <typename T, ind N>
-bool DataChannel<T, N>::isValid(T val) const {
+template <typename T>
+bool BaseTypedChannel<T>::isValid(T val) const {
     return !std::isnan(val) && val != invalidValue_;
 }
 
-template <typename T, ind N>
-T DataChannel<T, N>::getInvalidValue() const {
+template <typename T>
+T BaseTypedChannel<T>::getInvalidValue() const {
     return invalidValue_;
 }
 
-template <typename T, ind N>
-void DataChannel<T, N>::setInvalidValue(T val) {
+template <typename T>
+void BaseTypedChannel<T>::setInvalidValue(T val) {
     invalidValue_ = val;
 }
 
-template <typename T, ind N>
-double DataChannel<T, N>::getInvalidValueDouble() const {
+template <typename T>
+double BaseTypedChannel<T>::getInvalidValueDouble() const {
     return static_cast<double>(invalidValue_);
 }
 
-template <typename T, ind N>
-void DataChannel<T, N>::setInvalidValueDouble(double val) {
+template <typename T>
+void BaseTypedChannel<T>::setInvalidValueDouble(double val) {
     invalidValue_ = static_cast<T>(val);
+}
+
+template <typename T, ind N>
+bool DataChannel<T, N>::isDataValid(ind index) const {
+    std::array<T, N> data;
+    this->fillRaw(data.data(), index);
+    for (ind n =0; n < N; ++n)
+        if(this->isValid(data[n])) return true;
+    return false;
+    // return this->isValid(data[0]);
 }
 
 template <typename T, ind N>

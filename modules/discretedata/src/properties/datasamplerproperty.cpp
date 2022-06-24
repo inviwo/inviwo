@@ -75,6 +75,7 @@ DataSamplerProperty& DataSamplerProperty::operator=(const DataSamplerProperty& p
     if (datasetInput_) datasetInput_->onChange(updateCallback);
 
     updateSamplerList();
+    return *this;
 }
 
 std::shared_ptr<const DataSetSamplerBase> DataSamplerProperty::getCurrentSampler() const {

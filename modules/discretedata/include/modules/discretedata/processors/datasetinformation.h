@@ -56,9 +56,25 @@ public:
     ChannelInformationProperty() = delete;
     ChannelInformationProperty(const std::string& identifier, const std::string& name,
                                const Channel& channel);
-    StringProperty channelName_, channelPrimitive_, dataType_, dataRange_;
-    // using DoubleVec2Property = OrdinalProperty<dvec2>;
+    StringProperty channelName_, channelPrimitive_, dataType_, dataRange_, invalidValue_;
 };
+
+class IVW_MODULE_DISCRETEDATA_API SamplerInformationProperty : public CompositeProperty {
+public:
+    SamplerInformationProperty() = delete;
+    SamplerInformationProperty(const std::string& identifier, const std::string& name,
+                               const DataSetSamplerBase& sampler);
+    StringProperty range_;
+};
+
+// namespace detail {
+// struct SamplerDispatcher {
+//         template <typename Result, ind N>
+//         Result operator()(const DataSetSamplerBase& sampler) {
+            
+//                           }
+// };
+//                           }
 
 /** \docpage{org.inviwo.DataSetInformation, Data Set Info}
  * ![](org.inviwo.DataSetInformation.png?classIdentifier=org.inviwo.DataSetInformation)

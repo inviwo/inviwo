@@ -60,6 +60,7 @@
 #include <modules/basegl/processors/imageprocessing/imageoverlaygl.h>
 #include <modules/basegl/processors/imageprocessing/imageresample.h>
 #include <modules/basegl/processors/imageprocessing/imagescaling.h>
+#include <modules/basegl/processors/imageprocessing/imageshader.h>
 #include <modules/basegl/processors/imageprocessing/imagesubsetgl.h>
 #include <modules/basegl/processors/imageprocessing/jacobian2d.h>
 #include <modules/basegl/processors/isoraycaster.h>
@@ -160,6 +161,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageOverlayGL>();
     registerProcessor<ImageResample>();
     registerProcessor<ImageScaling>();
+    registerProcessor<ImageShader>();
     registerProcessor<ImageSubsetGL>();
     registerProcessor<Jacobian2D>();
     registerProcessor<RowLayout>();
@@ -283,7 +285,7 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
             {"ImageGrayscale", "img_graysc.frag"},  {"ImageLowPass", "img_lowpass.frag"},
             {"ImageHighPass", "img_highpass.frag"}, {"ImageMapping", "img_mapping.frag"},
             {"ImageInvert", "img_invert.frag"},     {"ImageNormalization", "img_normalize.frag"},
-            {"ImageResample", "img_resample.frag"}};
+            {"ImageResample", "img_resample.frag"}, {"ImageShader", "img_shader.frag"}};
 
         for (const auto& i : imageGLrepl) {
             xml::IdentifierReplacement inport = {{xml::Kind::processor("org.inviwo." + i.first),

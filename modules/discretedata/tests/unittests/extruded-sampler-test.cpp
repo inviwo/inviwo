@@ -44,8 +44,8 @@ namespace discretedata {
 
 TEST(DataSet, ExtrudedSampler) {
     using FArr2 = std::array<float, 2>;
-    using FArr3 = std::array<float, 3>;
-    using IArr8 = std::array<ind, 8>;
+    // using FArr3 = std::array<float, 3>;
+    // using IArr8 = std::array<ind, 8>;
 
     auto gridXY = std::make_shared<CurvilinearGrid<2>>(5, 3);
     auto positionsXY = std::make_shared<AnalyticChannel<double, 2, dvec2>>(

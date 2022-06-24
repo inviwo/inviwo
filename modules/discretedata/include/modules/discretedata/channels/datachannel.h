@@ -30,6 +30,7 @@
 #pragma once
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/discretedata/util/typeutil.h>
 #include <modules/discretedata/discretedatatypes.h>
 #include <modules/discretedata/channels/channel.h>
 #include <modules/discretedata/channels/channelgetter.h>
@@ -54,10 +55,19 @@ public:
 
     virtual void fillRaw(T* dest, ind index, ind numElements = 1) const = 0;
 
+    bool isValid(T val) const;
+    T getInvalidValue() const;
+    void setInvalidValue(T val);
+    virtual double getInvalidValueDouble() const;
+    virtual void setInvalidValueDouble(double val);
+
 protected:
     virtual void fillRaw(void* dest, ind index, ind numElements = 1) const {
         fillRaw(reinterpret_cast<T*>(dest), index, numElements);
     }
+
+    T invalidValue_ = dd_util::InvalidValue<T>::get();  // invalidValue_ =static_cast<T>(std::is_same_v<T, double> ?
+                      // -1.0000000200408773e+20 : 0.0);
 };
 
 template <typename T, ind N>
@@ -125,6 +135,8 @@ public:
     void operator()(VecNT& dest, ind index) const;
 
     virtual std::shared_ptr<Channel> toBufferChannel() const override;
+
+    virtual bool isDataValid(ind index) const;
 
     template <typename VecNT = DefaultVec>
     iterator<VecNT> begin();
@@ -197,17 +209,8 @@ public:
     template <typename VecNT>
     void getMinMax(VecNT& min, VecNT& max) const;
 
-    bool isValid(T val) const;
-    T getInvalidValue() const;
-    void setInvalidValue(T val);
-    virtual double getInvalidValueDouble() const;
-    virtual void setInvalidValueDouble(double val);
-
 protected:
     void computeMinMax() const;
-
-    T invalidValue_ = -1.0000000200408773e+20;  // static_cast<T>(std::is_same_v<T, double> ?
-                                                // -1.0000000200408773e+20 : 0.0);
 
 private:
     mutable std::array<double, N> min_;

@@ -45,6 +45,7 @@ public:
     const InterpolantBase& getInterpolantBase() const;
     virtual std::string getIdentifier() const = 0;
     virtual Mesh* getDebugMesh() const { return nullptr; }
+    virtual std::string getRangeString() const = 0;
 
 public:
     const std::shared_ptr<const Connectivity> grid_;
@@ -79,6 +80,7 @@ public:
     const Interpolant<SpatialDims>& getInterpolant() const;
     virtual const std::array<float, SpatialDims>& getMin() const { return coordsMin_; };
     virtual const std::array<float, SpatialDims>& getMax() const { return coordsMax_; };
+    virtual std::string getRangeString() const override;
 
 protected:
     Interpolant<SpatialDims>* interpolant_;

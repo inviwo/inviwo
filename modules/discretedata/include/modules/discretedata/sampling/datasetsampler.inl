@@ -94,5 +94,19 @@ const Interpolant<SpatialDims>& DataSetSampler<SpatialDims>::getInterpolant() co
     return *interpolant_;
 }
 
+template <unsigned int SpatialDims>
+std::string DataSetSampler<SpatialDims>::getRangeString() const{
+    std::stringstream stream;
+    stream << "[" << coordsMin_[0];
+    for (unsigned d = 1; d < SpatialDims; ++d)
+        stream << ", " << coordsMin_[d];
+
+    stream << "] to [" << coordsMax_[0];
+    for (unsigned d = 1; d < SpatialDims; ++d)
+        stream << ", " << coordsMax_[d];
+    stream << ']';
+    return stream.str();
+}
+
 }  // namespace discretedata
 }  // namespace inviwo

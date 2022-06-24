@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,70 +29,37 @@
 
 #pragma once
 
-#include <modules/discretedata/discretedatamoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <modules/discretedata/properties/datachannelproperty.h>
-#include <type_traits>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/geometry/meshram.h>
-
-#include <modules/discretedata/ports/datasetport.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
-namespace discretedata {
 
-/** \docpage{org.inviwo.MeshFromDataSet, Mesh From Data Set}
-    ![](org.inviwo.MeshFromDataSet.png?classIdentifier=org.inviwo.MeshFromDataSet)
-
-    Converts a DataSet into a Mesh.
-
-    ### Inports
-      * __InDataSet__ Input DataSet to be converted.
-
-    ### Outports
-      * __OutMesh__ Converted Mesh.
-*/
-
-/** \class MeshFromDataSet
-    \brief Converts a DataSet to a Mesh
-*/
-class IVW_MODULE_DISCRETEDATA_API MeshFromDataSet : public Processor {
-    // Construction / Deconstruction
+/** \docpage{org.inviwo.GenerateStreamFunction, Generate Stream Function}
+ * ![](org.inviwo.GenerateStreamFunction.png?classIdentifier=org.inviwo.GenerateStreamFunction)
+ * Given a 2D vector field, calculate its stream function, i.e., a scalar field whos co-gradient is the inital vector field.
+ * Generally, we would have to solve a large linear system here.
+ * But we can approximte the function by setting an inital value and flood-filling through the cells from there.
+ * This way, we accumulate an error, but are much faster and simpler.
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API GenerateStreamFunction : public Processor {
 public:
-    MeshFromDataSet();
-    virtual ~MeshFromDataSet() = default;
+    GenerateStreamFunction();
+    virtual ~GenerateStreamFunction() = default;
 
-    // Methods
-public:
+    virtual void process() override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    /// Our main computation function
-    virtual void process() override;
-
-    // Ports
-public:
-    /// Input dataset
-    DataSetInport portInDataSet_;
-
-    /// Output Mesh
-    MeshOutport portOutMesh_;
-
-    DataChannelProperty positionChannel_, colorChannel_, textureChannel_, metaDataChannel_,
-        radiusChannel_;
-    BoolProperty normalizeTextureCoords_, normalizeMetaData_;
-
-    GridPrimitiveProperty primitive_;
-
-    BoolProperty cutAtBorder_;
-
-    enum InvalidColor { Transparent, Black, White };
-    TemplateOptionProperty<InvalidColor> invalidColor_;
+private:
+    ImageInport vectorFieldIn_;
+    ImageOutport streamFunctionOut_;
+    IntSize2Property seedPosition_;
+    FloatVec2Property dataRange_;
+    BoolProperty singleUpdateOnly_;
 };
 
-}  // namespace discretedata
 }  // namespace inviwo

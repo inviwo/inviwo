@@ -143,10 +143,10 @@ std::shared_ptr<inviwo::Image> ImageFromDataSet::sampleImage(
         return nullptr;
     }
 
-    ivec2 imageSize = imageSize_.get();
+    size2_t imageSize = imageSize_.get();
 
     auto image =
-        std::make_shared<Image>(size2_t(imageSize.x, imageSize.y), DataFormat<vec4>::get());
+        std::make_shared<Image>(imageSize, DataFormat<vec4>::get());
 
     auto layer = image->getColorLayer();
     if (!layer) return nullptr;
@@ -160,23 +160,25 @@ std::shared_ptr<inviwo::Image> ImageFromDataSet::sampleImage(
 
     auto spatialSampler = DataSetSpatialSampler2D(sampler, interpolationType_.get(), dataChannel);
 
+    
     for (size_t y = 0; y < imageSize.y; ++y)
         for (size_t x = 0; x < imageSize.x; ++x)
 
         {
-            // size_t x = 40;  // 204;
-            // size_t y = 80;  // 150;
-            // auto samplePos = offset;
-            // samplePos.x += (extent.x * x) / imageSize.x;
-            // samplePos.y += (extent.y * y) / imageSize.y;
-            // if (x == imageSize.x / 2 && y == imageSize.y / 2) {
-            //     std::cout << "Midpoint!" << std::endl;
-            // }
+            
             dvec2 samplePos = {double(x) / (imageSize.x - 1), double(y) / (imageSize.y - 1)};
             dvec2 sampled = spatialSampler.sampleDataSpace(samplePos);
-            bool color = std::abs(sampled.x) + std::abs(sampled.y) >
-                         0;  // dataChannel->isValid(sampled.x);  //
-            data[x + y * imageSize.x] = {sampled.x, sampled.y, color ? 0.0 : 1.0, 1};
+            // bool color = std::abs(sampled.x) + std::abs(sampled.y) >
+            //              0;
+            data[x + y * imageSize.x] = {sampled.x, sampled.y, 0, 1}; 
+           /* data[x + y * imageSize.x] = {0, 0, 0, 1};
+            if (x==85 && y==93) {
+                dvec2 sampledTmp = spatialSampler.sampleDataSpace(samplePos);
+                std::cout << "Sampled: " << sampledTmp << std::endl;
+
+                data[x + y * imageSize.x] = {sampledTmp.x, sampledTmp.y,1,1};
+
+            }*/
 
             // if (!color) {
             //     std::cout << "Sampling failed!!! " << x << " - " << y << std::endl;

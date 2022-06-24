@@ -87,10 +87,15 @@ struct SphericalCoordinateDispatcher {
         auto dataChannel =
             std::dynamic_pointer_cast<const DataChannel<typename T::type, N>>(channel);
         ivwAssert(dataChannel, "Dispatch failed, dynamic cast to specific type failed.");
-        results[0] = std::make_shared<AnalyticChannel<double, std::max(ind(3), N)>>(
+        auto posChannel= std::make_shared<AnalyticChannel<double, std::max(ind(3), N)>>(
             [dataChannel, radius, verticalScale](auto& spVec, ind idx) {
                 std::array<typename T::type, N> cVec;
                 dataChannel->fill(cVec, idx);
+                if (!dataChannel->isValid(cVec[0])) {
+                    for (ind n = 3; n < N; ++n) 
+                        spVec[n] = dataChannel->getInvalidValue();
+                    return;
+                }
 
                 double r = radius;
                 if constexpr (N >= 3) {
@@ -109,13 +114,15 @@ struct SphericalCoordinateDispatcher {
                 }
             },
             channel->size(), name, channel->getGridPrimitiveType());
+        posChannel->setInvalidValue(0);
+        results[0] = posChannel;
         if (convertToBuffer) {
             results[0] = results[0]->toBufferChannel();
         }
 
         // Convert velocity channel from m/s to latlon/s (if any is given).
         if (velocityChannel) {
-            results[1] = std::make_shared<AnalyticChannel<double, 2, std::array<double, 2>>>(
+            auto veloChannel = std::make_shared<AnalyticChannel<double, 2, std::array<double, 2>>>(
                 [velocityChannel, dataChannel](std::array<double, 2>& velocityDegrees, ind idx) {
                     static const double AVG_EARTH_RADIUS = 6371000.0f;
                     static const double DEGREE_TO_RAD = M_PI / 180.0;
@@ -124,14 +131,16 @@ struct SphericalCoordinateDispatcher {
                     std::array<typename T::type, N> latLon;
                     dataChannel->fill(latLon, idx);
                     if (!dataChannel->isValid(latLon[0])) {
-                        velocityDegrees[0] = velocityChannel->getInvalidValue();
+                        for (ind n = 3; n < N; ++n) 
+                        velocityDegrees[n] = velocityChannel->getInvalidValue();
                         return;
                     }
 
                     std::array<float, 2> uv{0};
                     velocityChannel->fill(uv, idx);
                     if (!velocityChannel->isValid(uv[0])) {
-                        velocityDegrees[0] = velocityChannel->getInvalidValue();
+                        for (ind n = 3; n < N; ++n) 
+                        velocityDegrees[n] = velocityChannel->getInvalidValue();
                         return;
                     }
 
@@ -148,7 +157,8 @@ struct SphericalCoordinateDispatcher {
                 },
                 velocityChannel->size(),
                 fmt::format("{}_in_lat_lon_per_day", velocityChannel->getName()));
-
+            veloChannel->setInvalidValue(velocityChannel->getInvalidValue());
+            results[1] = veloChannel;
             if (convertToBuffer) {
                 results[1] = results[1]->toBufferChannel();
             }

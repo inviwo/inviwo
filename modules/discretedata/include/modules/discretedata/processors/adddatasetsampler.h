@@ -87,7 +87,7 @@ private:
     const InterpolantBase* interpolant_;
     std::shared_ptr<DataSetSamplerBase> sampler_;
 
-    bool interpolantChanged_, interpolationChanged_, samplerChanged_, rangeChanged_;
+    bool interpolantChanged_, interpolationChanged_, samplerChanged_, rangeChanged_, lockProcess_;
 
     static std::map<std::string, std::pair<std::string, CreateSampler>> samplerCreatorList_;
     static std::map<std::string, std::pair<std::string, CreateInterpolant>> interpolantCreatorList_;
@@ -99,12 +99,13 @@ private:
                           std::shared_ptr<const Channel> coordinates,
                           const InterpolantBase* interpolant,
                           const BoolCompositeProperty& restrictRange) {
-            std::cout << "Let's got!" << std::endl;
+            std::cout << "Let's go!" << std::endl;
 
             auto* usableInterpolant = dynamic_cast<const Interpolant<N>*>(interpolant);
             auto usableCoords =
                 std::dynamic_pointer_cast<const DataChannel<double, N>>(coordinates);
             if (!usableCoords) {
+                std::cout << fmt::format("V Adding a conversion to DataChannel<double, {}>", N) << std::endl;
                 dd_detail::CreateFormatConversionChannelToTN<double, N> dispatcher;
                 usableCoords = dispatching::dispatch<std::shared_ptr<DataChannel<double, N>>,
                                                      dispatching::filter::Scalars>(
@@ -165,6 +166,9 @@ private:
             std::array<T, N> coordsMinDouble, coordsMaxDouble;
             coordinates->getMinMax(coordsMinDouble, coordsMaxDouble);
             std::cout << "Y Dispatching Update" << std::endl;
+            for (auto* floatProp : rangeProps->getPropertiesByType<FloatVec2Property>()) {
+                floatProp->setVisible(false);
+            }
             for (size_t d = 0; d < N; ++d) {
                 auto prop = dynamic_cast<FloatVec2Property*>(
                     rangeProps->getPropertyByIdentifier(fmt::format("rangeDim{}", d)));
@@ -177,23 +181,24 @@ private:
                     //         rangeProps->getOwner()->invalidate(InvalidationLevel::InvalidOutput);
                     // });
                     rangeProps->addProperty(prop, true);
-                }
+                } else
+                    prop->setVisible(true);
 
                 prop->setMinValue(vec2(coordsMinDouble[d]));
                 prop->setMaxValue(vec2(coordsMaxDouble[d]));
             }
 
-            std::cout << "Y Updating Props" << std::endl;
-            std::vector<FloatVec2Property*> allProps =
-                rangeProps->getPropertiesByType<FloatVec2Property>();
-            for (Property* prop : allProps) {
-                auto name = prop->getIdentifier();
-                std::cout << "   prop: " << name << std::endl;
-                if (name.length() < 9 || name.c_str()[8] < '0' || name.c_str()[8] > '9') continue;
-                int num = std::stoi(name.substr(8));
-                std::cout << fmt::format("Prop: {}, number {} (of {})", name, num, N) << std::endl;
-                if (num >= N) rangeProps->removeProperty(prop);
-            }
+            // std::cout << "Y Updating Props" << std::endl;
+            // std::vector<FloatVec2Property*> allProps =
+            //     rangeProps->getPropertiesByType<FloatVec2Property>();
+            // for (Property* prop : allProps) {
+            //     auto name = prop->getIdentifier();
+            //     std::cout << "   prop: " << name << std::endl;
+            //     if (name.length() < 9 || name.c_str()[8] < '0' || name.c_str()[8] > '9') continue;
+            //     int num = std::stoi(name.substr(8));
+            //     std::cout << fmt::format("Prop: {}, number {} (of {})", name, num, N) << std::endl;
+            //     if (num >= N) rangeProps->removeProperty(prop);
+            // }
         }
     };
 };
@@ -205,6 +210,8 @@ void AddDataSetSampler::addSamplerType(std::string identifier, std::string displ
         [](ind baseDim, std::shared_ptr<const Connectivity> grid,
            std::shared_ptr<const Channel> coordinates, const InterpolantBase* interpolant,
            const BoolCompositeProperty& restrictRange) {
+            std::cout << fmt::format("Z Dispatching {}", baseDim) << std::endl;
+            std::cout << "Let's make a sampler!" << std::endl;
             SamplerDispatcher<SamplerType> dispatcher;
             return channeldispatching::dispatchNumber<std::shared_ptr<DataSetSamplerBase>, 1, 3>(
                 baseDim, dispatcher, grid, coordinates, interpolant, restrictRange);

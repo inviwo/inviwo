@@ -187,6 +187,26 @@ static Result dispatchNumber(ind number, Callable&& obj, Args&&... args) {
     }
 }
 
+/**
+ *	Matches all scalar types that have an OrdinalProperty equivalent.
+ */
+template <typename Format>
+struct OrdinalScalars : std::integral_constant<bool, Format::id() == DataFormatId::Float32 ||
+                                                         Format::id() == DataFormatId::Float64 ||
+                                                         Format::id() == DataFormatId::Int32 ||
+                                                         Format::id() == DataFormat<size_t>::id()> {
+};
+
+/**
+ *	Matches all scalar types that do NoT have an OrdinalProperty equivalent.
+ */
+template <typename Format>
+struct NonOrdinalScalars
+    : std::integral_constant<bool, Format::id() != DataFormatId::Float32 &&
+                                       Format::id() != DataFormatId::Float64 &&
+                                       Format::id() != DataFormatId::Int32 &&
+                                       Format::id() != DataFormat<size_t>::id()> {};
+
 }  // namespace channeldispatching
 }  // namespace discretedata
 }  // namespace inviwo

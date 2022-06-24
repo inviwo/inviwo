@@ -186,7 +186,8 @@ void exposeImage(py::module& m) {
                 toString(self.getDimensions()), toString(self.getSwizzleMask()));
         });
 
-    exposeInport<ImageInport>(m, "Image");
+    exposeInport<ImageInport>(m, "Image")
+        .def("setOutportDeterminesSize", &ImageInport::setOutportDeterminesSize);
     exposeInport<ImageMultiInport>(m, "ImageMulti");
     exposeOutport<ImageOutport>(m, "Image")
         .def_property_readonly("dimensions", &ImageOutport::getDimensions)

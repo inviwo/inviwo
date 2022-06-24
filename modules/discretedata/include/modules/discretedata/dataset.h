@@ -126,7 +126,7 @@ public:
 
     // Channels
 
-    bool hasChannel(std::shared_ptr<const Channel> channel) const;
+    bool hasChannel(const std::shared_ptr<const Channel>& channel) const;
 
     /**
      * Add a new channel to the set
@@ -139,7 +139,7 @@ public:
      * Add a new channel to the set
      * @param channel Shared pointer to data, remains valid
      */
-    void addChannel(std::shared_ptr<const Channel> channel);
+    void addChannel(const std::shared_ptr<const Channel>& channel);
 
     /**
      * Returns the channel list (map from name and primitive to channel shared pointer).
@@ -196,7 +196,7 @@ public:
      * @param channel Shared pointer to data
      * @return Successful - channel was saved in the set indeed
      */
-    bool removeChannel(std::shared_ptr<const Channel> channel);
+    bool removeChannel(const std::shared_ptr<const Channel>& channel);
 
     /**
      * Number of channels currently held

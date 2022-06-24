@@ -49,15 +49,15 @@ SphericalCoordinates::SphericalCoordinates()
     , dataOut_("DataOut")
     , positions_("positions", "Lon/Lat Channel", &dataIn_,
                  [](auto channel) { return channel->getNumComponents() >= 2; })
-    , name_("outName", "Channel Name", "SphericalCoords")
-    , autoName_("autoName", "Auto Name?", true)
-    , radius_("radius", "Radius", 10, 0.1, 100)
-    , verticalScale_("vertScale", "Vertical Scale", 0.01, 0.001, 10, 0.001)
     , velocities_("velocity_m_s", "Velocity in m/s", &dataIn_,
                   [](auto channel) {
                       return channel->getNumComponents() == 2 &&
                              channel->getDataFormatId() == DataFormatId::Float32;
                   })
+    , name_("outName", "Channel Name", "SphericalCoords")
+    , autoName_("autoName", "Auto Name?", true)
+    , radius_("radius", "Radius", 10, 0.1, 100)
+    , verticalScale_("vertScale", "Vertical Scale", 0.01, 0.001, 10, 0.001)
     , bufferChannel_("bufferChannel", "To Buffer Channel?", false)
 // , velocities_("velocitiesToTransform", "Velocities to Scale", [&]() {
 //     std::vector<std::unique_ptr<Property>> v;

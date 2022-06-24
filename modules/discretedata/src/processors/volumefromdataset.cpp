@@ -56,8 +56,8 @@ VolumeFromDataSet::VolumeFromDataSet()
     , channelToConvert_("channelName", "Data Channel", &portInDataSet_)
     , sampler_("sampler", "Sampler", &portInDataSet_)
     , volumeSize_("volumeSize", "Volume size", {128, 128, 128},
-                  {{32, 32, 32}, ConstraintBehavior::Immutable},
-                  {{512, 512, 512}, ConstraintBehavior::Immutable})
+                  {{2,2,2}, ConstraintBehavior::Immutable},
+                  {{512, 512, 512}, ConstraintBehavior::Ignore})
     , invalidValue_("invalidValue", "Invalid value", 0, {-1, ConstraintBehavior::Ignore},
                     {1, ConstraintBehavior::Ignore}, 0.1, InvalidationLevel::InvalidOutput,
                     PropertySemantics::Text)

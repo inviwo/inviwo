@@ -105,6 +105,8 @@ public:
             //             "provided to template ({}).",
             //             numTotalComponents, N));
             channels_.clear();
+        } else {
+            this->setInvalidValue(std::dynamic_pointer_cast<const BaseTypedChannel<T>>(channels_[0])->getInvalidValue());
         }
     }
 

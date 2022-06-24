@@ -118,6 +118,9 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
     bool parallelY = dd_util::arrParallel(c, dd_util::arrMinus(d, b));
     // double dotProdX = dd_util::arrDotProduct(b, dd_util::arrMinus(d, c));
     // double dotProdY = dd_util::arrDotProduct(c, dd_util::arrMinus(d, b));
+    if ((b[1] * c[0] - b[0] * c[1]) == 0) std::cout << "Meh!" << std::endl;
+    if ((c[1] * b[0] - c[0] * b[1]) == 0) std::cout << "Mäh!" << std::endl;
+
     if (parallelX && parallelY) {
         // std::cerr << "Interpolant says both parallel!" << std::endl;
         // std::cout << fmt::format("u = {} = ({} - {}) / ({} - {})", u, p[1] * c[0], p[0] * c[1],
@@ -131,9 +134,21 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
         // std::cout << "u: " << u << " - v: " << v << std::endl;
 
     } else {
+        // if (d[0]-b[0] == 0) {
+        //     if (Dim < 3) 
+        //     i0 = 2;
+        // }
         double lx = d[0] - b[0];
         double ly = d[1] - b[1];
+        if (lx == 0) lx = 0.000000001;
+        if (ly == 0) ly = 0.000000001;
+        
         // double t = double(a[1] - b[1]) / (ly * (1.0 - (lx * c[1]) / (ly * c[0])));
+        if (lx == 0 || ly == 0 || (c[0] / lx - c[1] / ly) == 0) {
+            // std::cout << "Zeros in the ls!" << std::endl;
+            // std::cout << fmt::format("lx: {}, ly: {}, c[0]: {}, c[1]: {}", lx, ly, c[0], c[1]) << std::endl;
+            return false;
+        }
         double s = (b[0] / lx - b[1] / ly) / (c[0] / lx - c[1] / ly);
         double fx = s * c[0];
         double fy = s * c[1];
@@ -141,6 +156,8 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
         double jy = p[1] - fy;
         u = (fx / jx - fy / jy) / (b[0] / jx - b[1] / jy);
         v = (p[0] - u * b[0]) / (c[0] - u * b[0] - u * c[0] + u * d[0]);
+        // if ((b[0] / jx - b[1] / jy) == 0 || jx == 0 || jy == 0 || (c[0] - u * b[0] - u * c[0] + u * d[0]) == 0)
+        //     std::cout << "Noooo!" << std::endl;
 
         // DBG
         // weights.resize(3);
@@ -151,7 +168,11 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
         // return false;
     }
     // Check if outside.
-    if (u < 0 || u > 1 || v < 0 || v > 1) {
+    if (std::isnan(u) || std::isnan(v))
+        std::cout << "NAAAAAAAN!" << std::endl;
+
+    if (std::isnan(u) || std::isnan(v) || u < 0 || u > 1 || v < 0 || v > 1) {
+        // if (std::isnan(u))
         // static bool firstUV = true;
         // if (firstUV)
         if (debugOutput) std::cout << fmt::format("% ({}, {}) not inside [0,1]", u, v) << std::endl;

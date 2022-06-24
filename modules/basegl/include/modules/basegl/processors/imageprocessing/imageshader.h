@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,72 +27,49 @@
  *
  *********************************************************************************/
 
-#pragma once
+#ifndef IVW_IMAGESHADER_H
+#define IVW_IMAGESHADER_H
 
-#include <modules/discretedata/discretedatamoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <modules/discretedata/properties/datachannelproperty.h>
-#include <type_traits>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/geometry/meshram.h>
-
-#include <modules/discretedata/ports/datasetport.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
-namespace discretedata {
 
-/** \docpage{org.inviwo.MeshFromDataSet, Mesh From Data Set}
-    ![](org.inviwo.MeshFromDataSet.png?classIdentifier=org.inviwo.MeshFromDataSet)
+/** \docpage{org.inviwo.ImageInvert, Image Invert}
+ * Apply a shader to an input image.
+ * ![](org.inviwo.ImageInvert.png?classIdentifier=org.inviwo.ImageInvert)
+ *
+ * ### Inports
+ *   * __ImageInport__ The input image.
+ *
+ * ### Outports
+ *   * __ImageOutport__ The output image.
+ */
 
-    Converts a DataSet into a Mesh.
-
-    ### Inports
-      * __InDataSet__ Input DataSet to be converted.
-
-    ### Outports
-      * __OutMesh__ Converted Mesh.
-*/
-
-/** \class MeshFromDataSet
-    \brief Converts a DataSet to a Mesh
-*/
-class IVW_MODULE_DISCRETEDATA_API MeshFromDataSet : public Processor {
-    // Construction / Deconstruction
+/*! \class ImageShader
+ *
+ * \brief Apply a custom shader to the imput image.
+ */
+class IVW_MODULE_BASEGL_API ImageShader : public ImageGLProcessor {
 public:
-    MeshFromDataSet();
-    virtual ~MeshFromDataSet() = default;
-
-    // Methods
-public:
+    ImageShader();
+    virtual ~ImageShader();
+    virtual void process() override;
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+    virtual void initializeResources() override;
 
-protected:
-    /// Our main computation function
-    virtual void process() override;
-
-    // Ports
-public:
-    /// Input dataset
-    DataSetInport portInDataSet_;
-
-    /// Output Mesh
-    MeshOutport portOutMesh_;
-
-    DataChannelProperty positionChannel_, colorChannel_, textureChannel_, metaDataChannel_,
-        radiusChannel_;
-    BoolProperty normalizeTextureCoords_, normalizeMetaData_;
-
-    GridPrimitiveProperty primitive_;
-
-    BoolProperty cutAtBorder_;
-
-    enum InvalidColor { Transparent, Black, White };
-    TemplateOptionProperty<InvalidColor> invalidColor_;
+private:
+    ImageShader(std::shared_ptr<StringShaderResource> fragmentShader);
+    std::shared_ptr<StringShaderResource> fragmentShader_;
+    StringProperty fragmentSrc_;
+    BoolProperty differentOutputFormat_;
+    TemplateOptionProperty<DataFormatId> outputFormat_;
 };
 
-}  // namespace discretedata
 }  // namespace inviwo
+
+#endif  // IVW_IMAGESHADER_H

@@ -67,7 +67,8 @@ void exposeDataSet(pybind11::module& m) {
              "grid"_a, "Create an empty DataSet from a given grid.")
         .def(py::init<const DataSetInitializer&>(), "initializer"_a,
              "Create a DataSet from a given grid and channel list.")
-        .def("addChannel", py::overload_cast<std::shared_ptr<const Channel>>(&DataSet::addChannel),
+        .def("addChannel",
+             py::overload_cast<const std::shared_ptr<const Channel>&>(&DataSet::addChannel),
              // "channel"_a,
              "Add a new channel to the DataSet.")
         // .def("__repr__", &Processor::getIdentifier)

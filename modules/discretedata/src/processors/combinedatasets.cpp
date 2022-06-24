@@ -57,6 +57,7 @@ void CombineDataSets::process() {
 
     auto dataSets = additionalDataSetsIn_.getVectorData();
     size_t numDataSets = dataSets.size();
+    std::cout << "A0" << std::endl;
 
     if (!baseDataSetIn_.hasData() || numDataSets < 1) {
         dataOut_.clear();
@@ -67,10 +68,12 @@ void CombineDataSets::process() {
     const Connectivity& grid = *baseDataSetIn_.getData()->getGrid();
     std::vector<bool> isRepresented(numDataSets, false);
     std::vector<Property*> removeProps;
+    std::cout << "A1" << std::endl;
 
     for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
 
         bool matched = false;
+        std::cout << "B0: " << dataSetProp->getIdentifier() << std::endl;
 
         // Test for unchanged DataSets.
         for (size_t i = 0; i < numDataSets; ++i) {
@@ -82,9 +85,11 @@ void CombineDataSets::process() {
         }
         if (matched) continue;
 
+    std::cout << "B1" << std::endl;
         // Test for DataSets with same name.
         for (size_t i = 0; i < numDataSets; ++i) {
             if (!isRepresented[i] &&
+                dataSetProp->dataSet_->getName().length() == dataSets[i]->getName().length() &&
                 dataSetProp->dataSet_->getName().compare(dataSets[i]->getName()) == 0) {
                 dataSetProp->updateDataSet(dataSets[i], grid);
                 isRepresented[i] = true;
@@ -92,15 +97,23 @@ void CombineDataSets::process() {
                 break;
             }
         }
+
+    std::cout << "B2" << std::endl;
         if (matched) continue;
 
         // Throw out.
         removeProps.push_back(dataSetProp);
     }
+
+    std::cout << "A2" << std::endl;
     for (auto* prop : removeProps) removeProperty(prop);
+
+    std::cout << "A3" << std::endl;
 
     for (auto&& [data, represented] : util::zip(dataSets, isRepresented)) {
         if (represented) continue;
+
+    std::cout << "C0: " << data->getName() << std::endl;
 
         auto ident = fmt::format("dataset{}_{}", data->getName(), rand());
 
@@ -108,8 +121,11 @@ void CombineDataSets::process() {
             ident = fmt::format("dataset{}_{}", data->getName(), rand());
         }
         addProperty(new DataSetChannelsProperty(ident, data, grid));
+
+    std::cout << "C1" << std::endl;
     }
 
+    std::cout << "A4" << std::endl;
     // Is this the first process after deserializing?
     // Then set the channels we deserialized.
     if (deserializedChannels_.size()) {
@@ -117,20 +133,28 @@ void CombineDataSets::process() {
         deserializedChannels_.clear();
     }
 
+    std::cout << "A5" << std::endl;
     // Actually process!
     LogWarn("@ Processing! Like, for real!");
     auto dataSetOut = std::make_shared<DataSet>(*baseDataSetIn_.getData());
     for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
-
+        
+    std::cout << "D0: " <<dataSetProp->dataSet_->getName() << std::endl;
         for (auto* channProp : dataSetProp->getPropertiesByType<ChannelPickingListProperty>()) {
             if (channProp->get()) dataSetOut->addChannel(channProp->channel_);
         }
     }
 
+    std::cout << "A6" << std::endl;
+    if (baseDataSetIn_.getData()->size() == dataSetOut->size()) {
+        std::cout << "No channels added, aborting" << std::endl;
+        dataOut_.clear();
+        return;
+    }
     dataOut_.setData(dataSetOut);
 }
 
-void CombineDataSets::deserializeSelection() {
+void CombineDataSets::deserializeSelection() { 
     auto strIt = deserializedChannels_.begin();
 
     do {
@@ -142,6 +166,7 @@ void CombineDataSets::deserializeSelection() {
             std::string dataSetStr = strIt->substr(9, strIt->length() - 9);
 
             DataSetChannelsProperty* currentDataSetProp = nullptr;
+            std::cout << "Num DatasetChannelProperties: " << getPropertiesByType<DataSetChannelsProperty>().size() << std::endl;
             for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
                 if (dataSetProp->getDisplayName().compare(dataSetStr) == 0) {
                     currentDataSetProp = dataSetProp;
@@ -149,21 +174,24 @@ void CombineDataSets::deserializeSelection() {
                 }
             }
             if (!currentDataSetProp) {
-                LogError("Error deserialising");
-                return;
+                LogError("Error deserializing");
+                std::cout << "Could not deserialize DataSet " << dataSetStr << std::endl;
+                strIt++;
+                continue;
+                // return;
             }
 
             strIt++;
             // Read the next strings denoting channels that should be set.
             while (isValid() && !isDataSet()) {
-                std::cout << "\nNow,\n* All Properties" << std::endl;
+                std::cout << "\n-----------------------\nNow,\n* All Properties" << std::endl;
                 for (auto* prop : currentDataSetProp->getProperties()) {
                     std::cout << "*   Prop: " << prop->getDisplayName() << std::endl;
                 }
 
                 // Check all datasets.
                 if (!isDataSet()) {
-                    std::cout << "Strign to pick up property from: " << *strIt << std::endl;
+                    std::cout << "String to pick up property from: " << *strIt << std::endl;
                     auto* channProp = dynamic_cast<ChannelPickingListProperty*>(
                         currentDataSetProp->getPropertyByIdentifier(*strIt));
                     if (channProp) channProp->set(true);
@@ -172,16 +200,17 @@ void CombineDataSets::deserializeSelection() {
             }
         }
     } while (isValid());
+    std::cout << "Deserializing CombineDataSet successfull!" << std::endl;
 }
 
-void CombineDataSets::deserialize(Deserializer& d) {
+void CombineDataSets::deserialize(Deserializer& d) {  // YUPP
     Processor::deserialize(d);
     clearProperties();
 
     d.deserialize("selectedChannels", deserializedChannels_);
 }
 
-void CombineDataSets::serialize(Serializer& s) const {
+void CombineDataSets::serialize(Serializer& s) const {  // YUPP
     Processor::serialize(s);
     std::vector<std::string> channelString;
     for (auto* prop : getPropertiesByType<DataSetChannelsProperty>()) {
@@ -192,13 +221,10 @@ void CombineDataSets::serialize(Serializer& s) const {
         }
     }
 
-    for (auto& str : channelString) {
-    }
-
     s.serialize("selectedChannels", channelString);
 }
 
-ChannelPickingListProperty::ChannelPickingListProperty(
+ChannelPickingListProperty::ChannelPickingListProperty(  // YUPP
     const std::shared_ptr<const Channel>& channel, const Connectivity& grid)
     : BoolProperty(channel->getName(), channel->getName()), channel_(channel) {
 
@@ -208,7 +234,7 @@ ChannelPickingListProperty::ChannelPickingListProperty(
     }
 }
 
-DataSetChannelsProperty::DataSetChannelsProperty(
+DataSetChannelsProperty::DataSetChannelsProperty( // YUPP
     const std::string& identifier,  // const std::string& name,
     std::shared_ptr<const DataSet>& dataSet, const Connectivity& grid)
     : CompositeProperty(identifier, dataSet->getName()), dataSet_(dataSet) {
@@ -220,14 +246,14 @@ DataSetChannelsProperty::DataSetChannelsProperty(
         std::cout << fmt::format("* Channel {} -> {} ({})", channel.getName(),
                                  channelProp->getDisplayName(), channelProp->getIdentifier())
                   << std::endl;
-        std::cout << "* All Properties" << std::endl;
-        for (auto* prop : getProperties()) {
-            std::cout << "*    Prop: " << prop->getDisplayName() << std::endl;
-        }
+    }
+    std::cout << "* All Properties" << std::endl;
+    for (auto* prop : getProperties()) {
+        std::cout << "*    Prop: " << prop->getDisplayName() << std::endl;
     }
 }
 
-void DataSetChannelsProperty::updateDataSet(std::shared_ptr<const DataSet>& dataSet,
+void DataSetChannelsProperty::updateDataSet(std::shared_ptr<const DataSet>& dataSet, // YUPP
                                             const Connectivity& grid) {
     const auto newChannelNames = dataSet->getChannelNames();
     std::vector<bool> channelHasProperty(newChannelNames.size(), false);

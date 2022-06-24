@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,29 +27,32 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/io/datawriterfactory.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#pragma once
+
+#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/channels/datachannel.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <warn/push>
+#include <inviwo/core/util/glm.h>
+#include <warn/pop>
+
+#include <bitset>
 
 namespace inviwo {
+namespace discretedata {
+namespace dd_util {
 
-LayerRAM::LayerRAM(LayerType type, const DataFormatBase* format)
-    : LayerRepresentation(type, format) {}
+template <typename T>
+struct InvalidValue {static constexpr T get() {return std::numeric_limits<T>::max();}};
 
-bool LayerRAM::copyRepresentationsTo(LayerRepresentation* targetLayerRam) const {
-    // We use a LayerDataWriter to copy/resize one representation into another. By asking for the
-    // bmp file-extension we will get the LayerWriter defined in the CImg module which implements
-    // the writeDataToRepresentation method
-    static DataWriterType<Layer>* layerWriter_ = InviwoApplication::getPtr()
-                                                     ->getDataWriterFactory()
-                                                     ->getWriterForTypeAndExtension<Layer>("bmp")
-                                                     .release();
-    if (!layerWriter_) return false;
-    return layerWriter_->writeDataToRepresentation(this, targetLayerRam);
-}
+// template <>
+// struct InvalidValue<float> {static constexpr float get() { return std::nanf("1"); }};
+// template <>
+// struct InvalidValue<double> {static constexpr double get() { return std::nan("1"); }};
+// template <>
+// struct InvalidValue<long double> {static constexpr long double get() { return std::nanl("1"); }};
 
-std::type_index LayerRAM::getTypeIndex() const { return std::type_index(typeid(LayerRAM)); }
-
+}  // namespace dd_util
+}  // namespace discretedata
 }  // namespace inviwo

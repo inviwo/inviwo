@@ -67,11 +67,14 @@ void CombineChannels::addAllChannelProperties() {
     LogWarn("Adding channels");
 
     for (auto channel : dataIn_.getData()->getChannels()) {
-        channelList_.addProperty(new BoolProperty(combineString(*channel.second),
-                                                  fmt::format("{} ({})", channel.first.first,
-                                                              primitiveName(channel.first.second)),
-                                                  false),
-                                 true);
+        std::string identifier = combineString(*channel.second);
+        if (!channelList_.getPropertyByIdentifier(identifier))
+            channelList_.addProperty(
+                new BoolProperty(identifier,
+                                 fmt::format("{} ({})", channel.first.first,
+                                             primitiveName(channel.first.second)),
+                                 false),
+                true);
     }
     // channelList_.
 }

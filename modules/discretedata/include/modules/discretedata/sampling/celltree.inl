@@ -203,10 +203,11 @@ ind CellTree<SpatialDims>::locateAndSampleCell(const std::array<float, SpatialDi
 
         if (debugOutput) std::cout << "Sampling some cells" << std::endl;
         for (ind c = node->leaf.start; c < node->leaf.start + node->leaf.size; ++c) {
-            if (debugOutput && cells_[c] == 12384) {
-                std::cout << "=== Sample 12384!!!" << std::endl;
-            }
+            // if (debugOutput && cells_[c] == 12384) {
+            //     std::cout << "=== Sample 12384!!!" << std::endl;
+            // }
             if (sampleCell(cells_[c], pos, returnVertices, returnWeights, interpolationType)) {
+                // std::cout << fmt::format("Was in cell {}\n\twith vertices {}, {}, {}, {}\n\twith weights {}, {}, {}, {}",c, returnVertices[0], returnVertices[1], returnVertices[2], returnVertices[3], returnWeights[0], returnWeights[1], returnWeights[2], returnWeights[3]) << std::endl;
                 return cells_[c];
             }
         }
@@ -244,7 +245,7 @@ void CellTree<SpatialDims>::buildCellTree(
                 }
         }
     }
-    for (size_t c = 0; c < numActualCells;) {
+    for (ind c = 0; c < numActualCells;) {
         if (cells_[c] == -1) {
             std::swap(cells_[c], cells_[numActualCells - 1]);
             numActualCells--;
@@ -373,12 +374,12 @@ void CellTree<SpatialDims>::buildCellTree(
         auto itEnd = it + node.leaf.size;            // Last element.
 
         bool badSplit = (bestDim->numCellsLeft == numCells || bestDim->numCellsLeft == 0);
-        if (badSplit) {
+        // if (badSplit) {
 
-            for (size_t b = 0; b < optimalSplitPerDimensions.size(); ++b) {
-                auto& bucket = optimalSplitPerDimensions[b];
-            }
-        }
+        //     for (size_t b = 0; b < optimalSplitPerDimensions.size(); ++b) {
+        //         auto& bucket = optimalSplitPerDimensions[b];
+        //     }
+        // }
 
         NodeInfo children[2] = {NodeInfo{ind(nodes_.size()), FloatCoord{0}, FloatCoord{0}},
                                 NodeInfo{ind(nodes_.size()) + 1, FloatCoord{0}, FloatCoord{0}}};

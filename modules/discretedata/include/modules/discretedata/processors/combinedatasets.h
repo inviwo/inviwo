@@ -64,7 +64,7 @@ public:
 
     void updateDataSet(std::shared_ptr<const DataSet>& dataSet, const Connectivity& grid);
 
-    std::shared_ptr<const DataSet> dataSet_;
+    std::shared_ptr<const DataSet> dataSet_ = nullptr;
 };
 
 /** \docpage{org.inviwo.CombineDataSets, Combine Data Sets}

@@ -68,6 +68,7 @@ public:
             // ivwAssert(false, "Not two channels of correct type given.");
             return;
         }
+        this->setInvalidValue(baseChannel->getInvalidValue());
 
         // ivwAssert(baseChannel_->getDataFormatId() == extendChannel_->getDataFormatId(),
         //           fmt::format("Scalar type \'{}\' of channels {} does not match \'{}\' of {}.",
@@ -76,8 +77,8 @@ public:
         //                       DataFormatBase::get(extendChannel_->getDataFormatId())->getString(),
         //                       extendChannel_->getName()));
 
-        ind numTotalComponents =
-            baseChannel_->getNumComponents() + extendChannel_->getNumComponents();
+        // ind numTotalComponents =
+        //     baseChannel_->getNumComponents() + extendChannel_->getNumComponents();
 
         // Check the number of components.
         // ivwAssert(numTotalComponents == N,

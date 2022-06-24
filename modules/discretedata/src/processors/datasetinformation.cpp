@@ -79,9 +79,10 @@ void DataSetInformation::process() {
 
     size_t samplerID = 0;
     for (auto sampler : data.getSamplers()) {
-        auto samplerName =
-            new StringProperty{fmt::format("Sampler{}", samplerID++), "Sampler", sampler.first};
-        samplerInformation_.addProperty(samplerName, true);
+        // auto samplerName =
+        //     new StringProperty{fmt::format("Sampler{}", samplerID++), "Sampler", sampler.first};
+        // samplerInformation_.addProperty(samplerName, true);
+        samplerInformation_.addProperty(new SamplerInformationProperty(fmt::format("Sampler{}", samplerID++),sampler.first, *sampler.second));
     }
 }
 
@@ -95,7 +96,7 @@ GridInformationProperty::GridInformationProperty(const std::string& identifier,
     , numElements_("numElements", "Num Elements") {
     for (GridPrimitive prim = GridPrimitive::Vertex; prim <= grid.getDimension();
          prim = GridPrimitive((int)prim + 1)) {
-        ind numElements = grid.getNumElements(prim);
+        int numElements = (int)grid.getNumElements(prim);
         auto* prop = new IntProperty{fmt::format("numElements{}D", static_cast<int>(prim)),
                                      primitiveName(prim, numElements != 1),
                                      numElements,
@@ -124,7 +125,8 @@ ChannelInformationProperty::ChannelInformationProperty(const std::string& identi
           "primitive", "Primitive",
           fmt::format("{} ({})", primitiveName(channel.getGridPrimitiveType()), channel.size()))
     , dataType_("dataFormat", "Data Format")
-    , dataRange_("dataRange", "Data Range") {
+    , dataRange_("dataRange", "Data Range")
+    , invalidValue_("invalidValue", "Invalid Value") {
 
     dataType_ = fmt::format(
         "{} x {}",
@@ -138,29 +140,42 @@ ChannelInformationProperty::ChannelInformationProperty(const std::string& identi
         std::stringstream str;
 
         str << "[ (" << min[0];
-        for (size_t i = 1; i < dataChannel->getNumComponents(); ++i) {
+        for (ind i = 1; i < dataChannel->getNumComponents(); ++i) {
             str << ", " << min[i];
         }
 
         str << "), (" << max[0];
-        for (size_t i = 1; i < dataChannel->getNumComponents(); ++i) {
+        for (ind i = 1; i < dataChannel->getNumComponents(); ++i) {
             str << ", " << max[i];
         }
         str << ") ]";
 
         dataRange_ = str.str();
+        invalidValue_ = fmt::format("{}", dataChannel->getInvalidValue());
     });
 
     channelName_.setReadOnly(true);
     channelPrimitive_.setReadOnly(true);
     dataType_.setReadOnly(true);
     dataRange_.setReadOnly(true);
+    invalidValue_.setReadOnly(true);
 
-    addProperties(channelName_, channelPrimitive_, dataType_, dataRange_);
+    addProperties(channelName_, channelPrimitive_, dataType_, dataRange_, invalidValue_);
     //     template <typename Result, typename Callable, typename... Args>
     // auto dispatch(Callable&& callable, Args&&... args) -> Result;
     // void DataChannel<T, N>::getMinMax(VecNT& minDest, VecNT& maxDest) const {
 }
+
+SamplerInformationProperty::SamplerInformationProperty(const std::string& identifier,
+                                                       const std::string& name,
+                                                       const DataSetSamplerBase& sampler)
+    : CompositeProperty(identifier, name)
+    // , samplerName_("name", "Name", sampler.getName())
+    , range_("range", "Coordinate Range", sampler.getRangeString()){
+        // samplerName_.setReadOnly(true);
+        range_.setReadOnly(true);
+        addProperty(range_);
+    }
 
 }  // namespace discretedata
 }  // namespace inviwo

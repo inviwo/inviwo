@@ -69,14 +69,16 @@ AddDataSetSampler::AddDataSetSampler()
     , interpolantChanged_(true)
     , interpolationChanged_(true)
     , samplerChanged_(true)
-    , rangeChanged_(true) {
+    , rangeChanged_(true) 
+    , lockProcess_(false){
 
     addPort(dataIn_);
     addPort(dataOut_);
     addPort(meshOut_);
     addProperties(positionChannel_, samplerCreator_, interpolantCreator_, restrictRange_);
     positionChannel_.gridPrimitive_.setVisible(false);
-    restrictRange_.onChange([&]() {
+    restrictRange_.getBoolProperty()->onChange([&]() {
+        if (lockProcess_)
         for (FloatVec2Property* prop : restrictRange_.getPropertiesByType<FloatVec2Property>())
             prop->setInvalidationLevel(restrictRange_ ? InvalidationLevel::InvalidOutput
                                                       : InvalidationLevel::Valid);
@@ -110,12 +112,19 @@ void AddDataSetSampler::process() {
 
     LogWarn("= Process!");
     std::cout << "X== Proccess! ==" << std::endl;
+    // if (lockProcess_) return;
     auto removeChangedFlags = [this]() {
         interpolantChanged_ = false;
         interpolationChanged_ = false;
         samplerChanged_ = false;
         rangeChanged_ = false;
     };
+
+    // if (restrictRange_.isModified()) {
+    //     for (FloatVec2Property* prop : restrictRange_.getPropertiesByType<FloatVec2Property>())
+    //         prop->setInvalidationLevel(restrictRange_ ? InvalidationLevel::InvalidOutput
+    //                                                   : InvalidationLevel::Valid);
+    // }
 
     if (!dataIn_.hasData() || !positionChannel_.hasSelectableChannels() ||
         !positionChannel_.getCurrentChannel()) {
@@ -140,16 +149,20 @@ void AddDataSetSampler::process() {
     if (samplerChanged_ || dataIn_.isChanged() || rangeChanged_) {
         std::cout << "X Getting new sampler of type " << samplerCreator_.getSelectedIdentifier()
                   << std::endl;
-        removeChangedFlags();
+        // lockProcess_ = true;
         updateRangeProperties();
+        removeChangedFlags();
         LogWarn("Getting new sampler of type " << samplerCreator_.getSelectedIdentifier());
+        if (samplerCreatorList_.find(samplerCreator_.getSelectedIdentifier()) ==samplerCreatorList_.end())
+            std::cout << "WAAAAAT?! No " <<samplerCreator_.getSelectedIdentifier() << std::endl;
+
         sampler_ = samplerCreatorList_[samplerCreator_.getSelectedIdentifier()].second(
             baseDim, dataIn_.getData()->getGrid(), positionChannel_.getCurrentChannel(),
             interpolant_, restrictRange_);
         // LogWarn("Sampler address: " << sampler_);
         // std::cout << "X Sampler address: " << sampler_ << std::endl;
     }
-
+    std::cout << "Removed flags!" << std::endl;
     removeChangedFlags();
     // sampler_->interpolationType_ = interpolationType_.get();
 
@@ -168,6 +181,7 @@ void AddDataSetSampler::process() {
 
     meshOut_.setData(sampler_->getDebugMesh());
     std::cout << "Ended process AddDataSetSampler" << std::endl;
+    // lockProcess_= false;
 }
 
 void AddDataSetSampler::updateRangeProperties() {

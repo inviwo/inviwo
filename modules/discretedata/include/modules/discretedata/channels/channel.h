@@ -83,6 +83,8 @@ public:
 
     virtual void setInvalidValueDouble(double val) = 0;
 
+    virtual bool isDataValid(ind index) const = 0;
+
 protected:
     /**
      * Sets the "GridPrimitiveType" meta data
@@ -131,11 +133,12 @@ public:
 
     /**
      * Dispatching a function that gets a templated DataChannel as first argument.
-     * Standard filter and dimension range.
      */
-    // template <typename Result, typename Callable, typename... Args>
-    // static auto dispatchSharedPointer(std::shared_ptr<Channel> channel, Callable&& callable,
-    //                                   Args&&... args) -> Result;
+    template <typename Result, template <class> class Predicate, ind Min, ind Max,
+              typename Callable, typename... Args>
+    static auto dispatchSharedPointer(std::shared_ptr<const Channel> channel, Callable&& callable,
+                                      Args&&... args) -> Result;
+
     /**
      * Dispatching a function that gets a templated DataChannel as first argument.
      * Standard filter and dimension range.
@@ -232,22 +235,21 @@ auto Channel::dispatch(Callable&& callable, Args&&... args) const -> Result {
         std::forward<Args>(args)...);
 }
 
-// template <typename Result, typename Callable, typename... Args>
-// static auto dispatchSharedPointer(std::shared_ptr<Channel> channel, Callable&& callable,
-//                                   Args&&... args) -> Result {
-//     detail_dd::ChannelSharedDispatcher dispatcher;
-//     return channeldispatching::dispatch<Result, dispatching::filter::Scalars, 1, 4>(
-//         channel->getDataFormatId(), channel->getNumComponents(), dispatcher,
-//         std::forward<Callable>(callable), channel, std::forward<Args>(args)...);
-// }
+template <typename Result, template <class> class Predicate, ind Min, ind Max, typename Callable,
+          typename... Args>
+auto Channel::dispatchSharedPointer(std::shared_ptr<const Channel> channel, Callable&& callable,
+                                    Args&&... args) -> Result {
+    detail_dd::ChannelSharedConstDispatcher dispatcher;
+    return channeldispatching::dispatch<Result, Predicate, Min, Max>(
+        channel->getDataFormatId(), channel->getNumComponents(), dispatcher,
+        std::forward<Callable>(callable), channel, std::forward<Args>(args)...);
+}
 
 template <typename Result, typename Callable, typename... Args>
 auto Channel::dispatchSharedPointer(std::shared_ptr<const Channel> channel, Callable&& callable,
                                     Args&&... args) -> Result {
-    detail_dd::ChannelSharedConstDispatcher dispatcher;
-    return channeldispatching::dispatch<Result, dispatching::filter::Scalars, 1, 4>(
-        channel->getDataFormatId(), channel->getNumComponents(), dispatcher,
-        std::forward<Callable>(callable), channel, std::forward<Args>(args)...);
+    return Channel::dispatchSharedPointer<Result, dispatching::filter::Scalars, 1, 4>(
+        channel, callable, std::forward<Args>(args)...);
 }
 
 }  // namespace discretedata

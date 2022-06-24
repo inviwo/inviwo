@@ -113,6 +113,7 @@ pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
         .def("getData", &Port::getData)
         .def("getVectorData", &Port::getVectorData)
         .def("getSourceVectorData", &Port::getSourceVectorData)
+        .def("setOptional", &Port::setOptional)
         .def("data",
              [](Port* p) {
                  return util::IterRangeGenerator<typename Port::const_iterator>(p->begin(),

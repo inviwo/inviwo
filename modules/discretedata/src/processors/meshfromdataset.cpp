@@ -58,7 +58,12 @@ MeshFromDataSet::MeshFromDataSet()
                     DataChannelProperty::FilterPassDim<0>)
     , textureChannel_("textureChannel", "Texture Coordinate Channel", &portInDataSet_,
                       DataChannelProperty::FilterPassDim<0>)
+    , radiusChannel_("radiusChannel", "Radius Channel", &portInDataSet_,
+                     DataChannelProperty::FilterPassDim<0>)
+    , metaDataChannel_("metaChannel", "Meta Data Channel", &portInDataSet_,
+                       DataChannelProperty::FilterPassDim<0>)
     , normalizeTextureCoords_("normalizeTextureCoords", "Normalize Tex Coords")
+    , normalizeMetaData_("normalizeMetaData", "Normalize Meta Data", true)
     , primitive_("primitive", "Mesh Primitive")
     , cutAtBorder_("cutAtBorder", "Don't connect borders", false)
     , invalidColor_("invalidColor", "Invalid Color",
@@ -68,37 +73,11 @@ MeshFromDataSet::MeshFromDataSet()
 
     addPort(portInDataSet_);
     addPort(portOutMesh_);
-    addProperties(positionChannel_, colorChannel_, textureChannel_, normalizeTextureCoords_,
-                  primitive_, cutAtBorder_, invalidColor_);
+    textureChannel_.addProperty(normalizeTextureCoords_);
+    metaDataChannel_.addProperty(normalizeMetaData_);
+    addProperties(positionChannel_, colorChannel_, textureChannel_, radiusChannel_,
+                  metaDataChannel_, primitive_, cutAtBorder_, invalidColor_);
 }
-
-// namespace {
-// template <typename ToType>
-// struct NormalizeChannelToBufferDispatcher {
-
-//     template <typename T, ind N>
-//     std::shared_ptr<BufferBase> operator()(const DataChannel<T, N>* positions) {
-//         typedef typename DataChannel<T, N>::DefaultVec DefaultVec;
-//         ind numElements = positions->size();
-//         std::vector<DefaultVec> data(numElements);
-//         positions->fill(*data.data(), 0, numElements);
-//         DefaultVec min, max;
-//         auto ext = positions->getMinMax(min, max);
-//         T* rawPtr = reinterpret_cast<T*>(data.data());
-//         for (ind e = 0; e < numElements * N; ++e) {
-//             rawPtr[e] = (rawPtr[e] - min) / (max - min);
-//         }
-
-//         std::vector<ToType> convBuffer;
-//         convBuffer.reserve(data.size());
-
-//         for (const DefaultVec& val : data) convBuffer.push_back(util::glm_convert<ToType>(val));
-
-//         auto buffer = util::makeBuffer(std::move(convBuffer));
-//         return buffer;
-//     }
-// };
-// }  // namespace
 
 void MeshFromDataSet::process() {
 
@@ -125,6 +104,9 @@ void MeshFromDataSet::process() {
     auto posChannel = positionChannel_.getCurrentChannel();
     auto colorChannel = colorChannel_.getCurrentChannel();
     auto textureChannel = textureChannel_.getCurrentChannel();
+    auto radiusChannel = radiusChannel_.getCurrentChannel();
+    auto metaChannel = metaDataChannel_.getCurrentChannel();
+
     if (!posChannel) {
         // invalidate(InvalidationLevel::InvalidOutput);
         portOutMesh_.clear();
@@ -139,6 +121,7 @@ void MeshFromDataSet::process() {
         posChannel->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 4>(
             posToBuffer);
     result->addBuffer(BufferType::PositionAttrib, positions);
+    auto positionsTyped = std::dynamic_pointer_cast<Buffer<vec3>>(positions);
 
     // Add colors.
     dvec4 invalidColor;
@@ -205,6 +188,40 @@ void MeshFromDataSet::process() {
         result->addBuffer(BufferType::TexcoordAttrib, texCoords);
     }
 
+    // Add radii.
+    if (radiusChannel && radiusChannel->getNumComponents() == 1) {
+
+        std::shared_ptr<BufferBase> radii;
+
+        radii = radiusChannel
+                    ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 1>(
+                        dd_util::ChannelToBufferDispatcher<float>());
+
+        result->addBuffer(BufferType::RadiiAttrib, radii);
+    }
+
+    // Add meta data.
+    if (metaChannel && metaChannel->getNumComponents() == 1) {
+
+        std::shared_ptr<BufferBase> metaData;
+        if (normalizeMetaData_.get()) {
+            auto minMax = dd_util::getMinMax(metaChannel.get());
+            metaData =
+                metaChannel
+                    ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 1>(
+                        dd_util::ChannelToBufferDispatcher<float>(),
+                        [min = minMax.first[0], range = minMax.second[0] - minMax.first[0]](
+                            const auto& vec) -> float { return float((vec - min) / range); });
+        } else {
+            metaData =
+                metaChannel
+                    ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 1>(
+                        dd_util::ChannelToBufferDispatcher<float>());
+        }
+
+        result->addBuffer(BufferType::ScalarMetaAttrib, metaData);
+    }
+
     // Add indices.
     if (primitive_.get() != GridPrimitive::Vertex) {
         std::vector<ind> indexData;
@@ -217,6 +234,15 @@ void MeshFromDataSet::process() {
                     pInDataSet->getGrid()->getConnections(
                         indexData, element.getIndex(), GridPrimitive::Face, GridPrimitive::Vertex,
                         cutAtBorder_.get());
+
+                    bool isValidElement = true;
+                    for (auto& idx : indexData) {
+                        if (!posChannel->isDataValid(idx)) {
+                            isValidElement = false;
+                            break;
+                        }
+                    }
+                    if (!isValidElement) continue;
 
                     // Add triangle "fans".
                     ind tri = 0;
@@ -241,6 +267,15 @@ void MeshFromDataSet::process() {
                     pInDataSet->getGrid()->getConnections(
                         indexData, element.getIndex(), GridPrimitive::Edge, GridPrimitive::Vertex,
                         cutAtBorder_.get());
+                    // if (element.getIndex() % 1000 == 0) {
+                    //     if (indexData.size() == 2)
+                    //         std::cout << fmt::format("Edge {}: {} -> {}", element.getIndex(),
+                    //                                  indexData[0], indexData[1])
+                    //                   << std::endl;
+                    //     else
+                    //         std::cout << fmt::format("Edge {} is empty", element.getIndex())
+                    //                   << std::endl;
+                    // }
                     ivwAssert(indexData.size() == 2 || indexData.size() == 0,
                               "An edge not made out of 2 points...");
                     if (indexData.size() == 2) {
@@ -248,6 +283,8 @@ void MeshFromDataSet::process() {
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[1]));
                     }
                 }
+                // indexMeshData.push_back(0);
+                // indexMeshData.push_back(360 * 200 - 1);
                 break;
             default:
                 break;

@@ -39,6 +39,7 @@ set(HEADER_FILES
     include/modules/discretedata/discretedatatypes.h
     include/modules/discretedata/ports/datasetport.h
     include/modules/discretedata/processors/adddatasetsampler.h
+    include/modules/discretedata/processors/changeinvalidvalue.h
     include/modules/discretedata/processors/channeloperations.h
     include/modules/discretedata/processors/colormapchannel.h
     include/modules/discretedata/processors/combinechannels.h
@@ -52,6 +53,7 @@ set(HEADER_FILES
     include/modules/discretedata/processors/datasetroi.h
     include/modules/discretedata/processors/datasetsource.h
     include/modules/discretedata/processors/datasettospatialsampler.h
+    include/modules/discretedata/processors/elementinformation.h
     include/modules/discretedata/processors/exampledataset.h
     include/modules/discretedata/processors/extendspatialsampler.h
     include/modules/discretedata/processors/extrudedataset.h
@@ -72,6 +74,7 @@ set(HEADER_FILES
     include/modules/discretedata/util/arrayutil.h
     include/modules/discretedata/util/prefixsumvector.h
     include/modules/discretedata/util/spatialentitychannel.h
+    include/modules/discretedata/util/typeutil.h
     include/modules/discretedata/util/util.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -101,6 +104,7 @@ set(SOURCE_FILES
     src/discretedatamodule.cpp
     src/discretedatatypes.cpp
     src/processors/adddatasetsampler.cpp
+    src/processors/changeinvalidvalue.cpp
     src/processors/channeloperations.cpp
     src/processors/colormapchannel.cpp
     src/processors/combinechannels.cpp
@@ -113,6 +117,7 @@ set(SOURCE_FILES
     src/processors/datasetinformation.cpp
     src/processors/datasetroi.cpp
     src/processors/datasetsource.cpp
+    src/processors/elementinformation.cpp
     src/processors/exampledataset.cpp
     src/processors/extendspatialsampler.cpp
     src/processors/extrudedataset.cpp

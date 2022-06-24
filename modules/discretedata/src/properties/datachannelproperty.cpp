@@ -106,6 +106,7 @@ DataChannelProperty& DataChannelProperty::operator=(const DataChannelProperty& p
     // addProperty(gridPrimitive_);
     // addProperty(channelName_);
     updateChannelList();
+    return *this;
 }
 
 std::shared_ptr<const Channel> DataChannelProperty::getCurrentChannel() const {

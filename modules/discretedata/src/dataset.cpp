@@ -34,7 +34,7 @@
 namespace inviwo {
 namespace discretedata {
 
-bool DataSet::hasChannel(std::shared_ptr<const Channel> channel) const {
+bool DataSet::hasChannel(const std::shared_ptr<const Channel>& channel) const {
     for (auto& c : channels_) {
         if (c.second == channel) return true;
     }
@@ -50,14 +50,14 @@ std::shared_ptr<const Channel> DataSet::addChannel(const Channel* channel) {
     return sharedChannel;
 }
 
-void DataSet::addChannel(std::shared_ptr<const Channel> sharedChannel) {
+void DataSet::addChannel(const std::shared_ptr<const Channel>& sharedChannel) {
     util::validateIdentifier(sharedChannel->getName(), "Channel", IVW_CONTEXT);
     channels_.insert(std::make_pair(
         std::make_pair(sharedChannel->getName(), sharedChannel->getGridPrimitiveType()),
         sharedChannel));
 }
 
-bool DataSet::removeChannel(std::shared_ptr<const Channel> channel) {
+bool DataSet::removeChannel(const std::shared_ptr<const Channel>& channel) {
     return channels_.erase(std::make_pair(channel->getName(), channel->getGridPrimitiveType())) !=
            0;
 }
