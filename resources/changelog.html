@@ -26,6 +26,8 @@
 </style>
 </head>
 <body>
+<h2>2022-06-27 New processor: Volume Region Mapper</h2>
+<p>The <code class="notranslate">Volume Region Mapper</code> processor maps each unique voxel value of a Volume to another integer value. The value mapping is provided by two DataFrame columns.</p>
 <h2>2022-03-09 DataFrame filtering and CSV filtering</h2>
 <p>DataFrames can now be filtered with the <code class="notranslate">DataFrame Filter</code> processor or when loading a CSV file with the <code class="notranslate">CSV Source</code> processor. The <code class="notranslate">DataFrame Filter</code> also supports brushing &amp; linking filtering. Filters exist for matching values (<code class="notranslate">int64</code> and <code class="notranslate">double</code> as well as categorical values), ranges, and commented lines.</p>
 <h2>2022-03-04 DataFrame &amp; CategoricalColumn clean-up</h2>
@@ -38,8 +40,6 @@
 <h2>2022-02-01 Icon Grid View</h2>
 <p>The welcome widget now has an icon grid view with previews of the first canvas in each network.<br>
 The workspace and processor search fields gained new features. One can for example search for all networks with a <code class="notranslate">Volume Raycaster</code> processor that was created by <code class="notranslate">Martin</code> like this: <code class="notranslate">processors:\"Volume Raycaster\" author:Martin"</code>. The tooltip for each search field has more details.</p>
-<h2>2022-01-31 Volume Region Map</h2>
-<p>The processor Volume Region Map has been added.</p>
 <h2>2021-12-09 DataFrame Column Units</h2>
 <p>The <code class="notranslate">DataFrame</code> <code class="notranslate">Column</code> now has a <code class="notranslate">unit</code> member and many processors (<code class="notranslate">PCP</code>, <code class="notranslate">ScatterPlot</code>, <code class="notranslate">DataFrameTable</code>), operating on DataFrames will now also display the column units if available. The <code class="notranslate">ColumnMetaDataProperty</code> used in the <code class="notranslate">CSVSource</code> processor got support for specifying units.</p>
 <h2>2021-12-09 Volume Units</h2>

@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-06-27 New processor: Volume Region Mapper
+The `Volume Region Mapper` processor maps each unique voxel value of a Volume to another integer value. The value mapping is provided by two DataFrame columns.
+
 ## 2022-03-09 DataFrame filtering and CSV filtering
 DataFrames can now be filtered with the `DataFrame Filter` processor or when loading a CSV file with the `CSV Source` processor. The `DataFrame Filter` also supports brushing & linking filtering. Filters exist for matching values (`int64` and `double` as well as categorical values), ranges, and commented lines.
 
@@ -16,9 +19,6 @@ for (auto v : col) {
 ## 2022-02-01 Icon Grid View
 The welcome widget now has an icon grid view with previews of the first canvas in each network. 
 The workspace and processor search fields gained new features. One can for example search for all networks with a `Volume Raycaster` processor that was created by `Martin` like this: `processors:\"Volume Raycaster\" author:Martin"`. The tooltip for each search field has more details. 
-
-## 2022-01-31 Volume Region Map
-The processor Volume Region Map has been added.
 
 ## 2021-12-09 DataFrame Column Units
 The `DataFrame` `Column` now has a `unit` member and many processors (`PCP`, `ScatterPlot`, `DataFrameTable`), operating on DataFrames will now also display the column units if available. The `ColumnMetaDataProperty` used in the `CSVSource` processor got support for specifying units. 
