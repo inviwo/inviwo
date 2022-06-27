@@ -31,7 +31,6 @@
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
-#include <inviwo/volume/processors/volumeregionmap.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/templatesampler.h>
 #include <inviwo/volume/algorithm/volumemap.h>

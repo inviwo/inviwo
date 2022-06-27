@@ -32,37 +32,36 @@
 #include <inviwo/volume/volumemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/imageport.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <optional>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeRegionMap, Volume Region Map}
- * ![](org.inviwo.VolumeRegionMap.png?classIdentifier=org.inviwo.VolumeRegionMap)
- * Indices are remapped to values provided in columns. Requires two columns. First column contains
- * old indices and second column contains values to be mapped to.
+/** \docpage{org.inviwo.VolumeRegionMapper, Volume Region Map}
+ * ![](org.inviwo.VolumeRegionMapper.png?classIdentifier=org.inviwo.VolumeRegionMapper)
+ * Voxel values are remapped to values provided in columns of a DataFrame. Requires two columns.
+ * First column contains the source indices and the second column contains the matching destination
+ * indices.
+ *
  * ### Inports
- *   * __inputVolume__ Input volume
+ *   * __inport__          Input volume
+ *   * __mappingIndices__  DataFrame with at least two columns used for mapping the input volume
  *
  * ### Outports
- *   * __outputVolume__ Output volume
+ *   * __outport__         Resulting volume after mapping the voxels of the input volume.
  *
  * ### Properties
- * * __from__ Index being mapped from
- * * __to__ Index being mapped to
- * * __defaultMissingValue__ Toggle between setting missing values to specified value or keep
- * current value
- * * __missingValues__ Value specifying missing values
+ * * __from__             DataFrame column index for source values
+ * * __to__               DataFrame column index for destination values
+ * * __useMissingValue__  If set, unmapped values are set to __missingValue__
+ * * __missingValue__     Value specifying missing values
  */
-class IVW_MODULE_VOLUME_API VolumeRegionMap : public Processor {
+class IVW_MODULE_VOLUME_API VolumeRegionMapper : public Processor {
 public:
-    VolumeRegionMap();
-    virtual ~VolumeRegionMap() = default;
+    VolumeRegionMapper();
+    virtual ~VolumeRegionMapper() = default;
 
     virtual void process() override;
 
@@ -70,12 +69,13 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataFrameInport dataFrame_;
     VolumeInport inport_;
+    DataFrameInport dataFrame_;
     VolumeOutport outport_;
     ColumnOptionProperty from_;
     ColumnOptionProperty to_;
-    BoolProperty defaultMissingValue_;
-    IntProperty missingValues_;
+    BoolProperty useMissingValue_;
+    IntProperty missingValue_;
 };
+
 }  // namespace inviwo

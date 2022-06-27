@@ -27,40 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/volume/processors/volumeregionmap.h>
-#include <modules/base/algorithm/volume/volumevoronoi.h>
+#include <inviwo/volume/processors/volumeregionmapper.h>
 #include <inviwo/volume/algorithm/volumemap.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VolumeRegionMap::processorInfo_{
-    "org.inviwo.VolumeRegionMap",                               // Class identifier
-    "Volume Region Map",                                        // Display name
+const ProcessorInfo VolumeRegionMapper::processorInfo_{
+    "org.inviwo.VolumeRegionMapper",                            // Class identifier
+    "Volume Region Mapper",                                     // Display name
     "Volume Operation",                                         // Category
     CodeState::Stable,                                          // Code state
     Tag::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"}  // Tags
 };
-const ProcessorInfo VolumeRegionMap::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo VolumeRegionMapper::getProcessorInfo() const { return processorInfo_; }
 
-VolumeRegionMap::VolumeRegionMap()
+VolumeRegionMapper::VolumeRegionMapper()
     : Processor()
-    , dataFrame_("mapping_indices")
     , inport_("inport")
+    , dataFrame_("mappingIndices")
     , outport_("outport")
-    , from_{"from", "From", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 1}
-    , to_{"to", "To", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2}
-    , defaultMissingValue_{"setMissingValue", "Set missing values", true}
-    , missingValues_{"missingValues", "Set missing values to", 0,
-                     std::pair{0, ConstraintBehavior::Ignore},
-                     std::pair{100, ConstraintBehavior::Ignore}} {
+    , from_{"fromColumn", "From Column Index", dataFrame_, ColumnOptionProperty::AddNoneOption::No,
+            1}
+    , to_{"toColumn", "To Column Index", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2}
+    , useMissingValue_{"useMissingValue", "Use missing value", true}
+    , missingValue_{"missingValue", "Missing value", 0, std::pair{0, ConstraintBehavior::Ignore},
+                    std::pair{100, ConstraintBehavior::Ignore}} {
 
     addPort(inport_);
     addPort(dataFrame_);
     addPort(outport_);
-    addProperties(from_, to_);
-    addProperties(defaultMissingValue_);
-    addProperties(missingValues_);
+    addProperties(from_, to_, useMissingValue_, missingValue_);
 }
 
 namespace {
@@ -75,16 +73,14 @@ constexpr auto copyColumn = [](const Column& col, auto& dstContainer, auto assig
 };
 }
 
-void VolumeRegionMap::process() {
+void VolumeRegionMapper::process() {
     // Get data
-    auto csv = dataFrame_.getData();
-    auto oldIdx = csv->getColumn(from_.getSelectedValue());
-    auto newIdx = csv->getColumn(to_.getSelectedValue());
-    auto nrows = csv->getNumberOfRows();
-    bool useMissingValue = defaultMissingValue_.get();
-    int missingValue = missingValues_.get();
+    auto dataframe = dataFrame_.getData();
+    auto oldIdx = dataframe->getColumn(from_.getSelectedValue());
+    auto newIdx = dataframe->getColumn(to_.getSelectedValue());
 
     // Store in vectors
+    const auto nrows = dataframe->getNumberOfRows();
     std::vector<int> sourceIndices(nrows);
     std::vector<int> destinationIndices(nrows);
 
@@ -104,9 +100,8 @@ void VolumeRegionMap::process() {
     }
 
     // Volume
-    auto inVolume = inport_.getData();
-    auto newVolume = std::shared_ptr<Volume>(inVolume->clone());
-    remap(newVolume, sourceIndices, destinationIndices, missingValue, useMissingValue);
+    auto newVolume = std::shared_ptr<Volume>(inport_.getData()->clone());
+    remap(newVolume, sourceIndices, destinationIndices, missingValue_, useMissingValue_);
 
     outport_.setData(newVolume);
 }

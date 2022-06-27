@@ -30,13 +30,31 @@
 
 #include <inviwo/volume/volumemoduledefine.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <memory>
 #include <vector>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
-void IVW_MODULE_VOLUME_API remap(std::shared_ptr<Volume>& volume, std::vector<int> src,
-                                 std::vector<int> dst, int missingValue, bool useMissingValue);
+class Volume;
+
+/**
+ * Remap all voxels of @p volume by mapping values from @p src to @p dst.
+ * @param[in,out] volume  voxels of this scalar volume will be remapped
+ * @param src   list of source indices
+ * @param dst   list of destination indices matching @p src
+ * @param missingValue    assigned if a value cannot be found in @p src and @p useMissingValue is
+ *                        set
+ * @param useMissingValue if true, all values not included in @p src are mapped to @p missingValue
+ * @throw Exception if @p src and @p dst have different sizes
+ * @throw Exception if @p src contains duplicated values
+ * @pre @p volume must be a scalar volume
+ * @pre @p src and @p dst must have the same length
+ * @pre @p src must not contain duplicates
+ * @pre @p dst may contain duplicates
+ * @post @p volume only contains voxels with values found in @p dst
+ */
+void IVW_MODULE_VOLUME_API remap(std::shared_ptr<Volume>& volume, const std::vector<int>& src,
+                                 const std::vector<int>& dst, int missingValue,
+                                 bool useMissingValue);
 
 }  // namespace inviwo

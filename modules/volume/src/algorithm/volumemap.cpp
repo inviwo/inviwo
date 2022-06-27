@@ -28,16 +28,19 @@
  *********************************************************************************/
 
 #include <inviwo/volume/algorithm/volumemap.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/zip.h>
 
 #include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
-#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<int> dst,
-           int missingValue, bool useMissingValue) {
+void remap(std::shared_ptr<Volume>& volume, const std::vector<int>& src,
+           const std::vector<int>& dst, int missingValue, bool useMissingValue) {
 
     if (src.size() == 0 || src.size() != dst.size()) {
         throw Exception(IVW_CONTEXT_CUSTOM("Remap"), "Invalid dataframe size (src = {}, dst = {})",
@@ -54,6 +57,8 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<in
 
     auto volRep = volume->getEditableRepresentation<VolumeRAM>();
 
+#include <warn/push>
+#include <warn/ignore/conversion>
     volRep->dispatch<void, dispatching::filter::Scalars>([&](auto volram) {
         using ValueType = util::PrecisionValueType<decltype(volram)>;
         ValueType* dataPtr = volram->getDataTyped();
@@ -64,10 +69,12 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<in
 
         if (sorted && (src.back() - src.front()) ==
                           static_cast<int>(src.size()) - 1) {  // Sorted + continuous
+            const int first = src.front();
+            const int last = src.back();
             std::transform(dataPtr, dataPtr + glm::compMul(dim), dataPtr, [&](const ValueType& v) {
                 // Voxel value is inside src range
-                if (static_cast<int>(v) >= src.front() && static_cast<int>(v) <= src.back()) {
-                    int index = static_cast<int>(v) - src.front();
+                if (static_cast<int>(v) >= first && static_cast<int>(v) <= last) {
+                    const int index = static_cast<int>(v) - first;
                     return static_cast<ValueType>(dst[index]);
                 } else if (useMissingValue) {
                     return static_cast<ValueType>(missingValue);
@@ -77,9 +84,9 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<in
             });
         } else if (sorted) {  // Sorted + non continuous
             std::transform(dataPtr, dataPtr + glm::compMul(dim), dataPtr, [&](const ValueType& v) {
-                auto index = std::distance(
-                    src.begin(), std::lower_bound(src.begin(), src.end(), static_cast<int>(v)));
-                if (index < static_cast<int>(src.size())) {
+                if (auto it = std::lower_bound(src.begin(), src.end(), static_cast<int>(v));
+                    it != src.end()) {
+                    const auto index = std::distance(src.begin(), it);
                     return static_cast<ValueType>(dst[index]);
                 } else if (useMissingValue) {
                     return static_cast<ValueType>(missingValue);
@@ -89,12 +96,13 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<in
             });
         } else {
             std::unordered_map<int, int> unorderedIndexMap;
-            for (size_t i = 0; i < src.size(); ++i) {
-                unorderedIndexMap[src[i]] = dst[i];
+            for (auto&& [srcIdx, dstIdx] : util::zip(src, dst)) {
+                unorderedIndexMap[srcIdx] = dstIdx;
             }
             std::transform(dataPtr, dataPtr + glm::compMul(dim), dataPtr, [&](const ValueType& v) {
-                if (unorderedIndexMap.count(static_cast<int>(v)) == 1) {
-                    return static_cast<ValueType>(unorderedIndexMap[static_cast<int>(v)]);
+                if (auto it = unorderedIndexMap.find(static_cast<int>(v));
+                    it != unorderedIndexMap.end()) {
+                    return static_cast<ValueType>(it->second);
                 } else if (useMissingValue) {
                     return static_cast<ValueType>(missingValue);
                 } else {
@@ -103,5 +111,7 @@ void remap(std::shared_ptr<Volume>& volume, std::vector<int> src, std::vector<in
             });
         }
     });
+#include <warn/pop>
 }
+
 }  // namespace inviwo
