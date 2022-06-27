@@ -56,11 +56,11 @@ vec4 raycast(vec3 entryPoint, vec3 exitPoint, float samplingRate)
             {
                 color = highlightedColor;
             }
-            else if(showSelected && (value == 2 || prevValue == 2))
+            else if(showSelected && (value == 1 || prevValue == 1))
             {
                 color = selectedColor;
             }
-            else if(showFiltered && (value == 1 || prevValue == 1))
+            else if(showFiltered && (value == 2 || prevValue == 2))
             {
                 color = filteredColor;
             }

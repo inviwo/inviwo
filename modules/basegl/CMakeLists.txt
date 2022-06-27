@@ -96,6 +96,7 @@ set(HEADER_FILES
     include/modules/basegl/rendering/linerenderer.h
     include/modules/basegl/rendering/splitterrenderer.h
     include/modules/basegl/shadercomponents/atlascomponent.h
+    include/modules/basegl/shadercomponents/atlasisosurfacecomponent.h
     include/modules/basegl/shadercomponents/backgroundcomponent.h
     include/modules/basegl/shadercomponents/cameracomponent.h
     include/modules/basegl/shadercomponents/entryexitcomponent.h
@@ -214,6 +215,7 @@ set(SOURCE_FILES
     src/rendering/linerenderer.cpp
     src/rendering/splitterrenderer.cpp
     src/shadercomponents/atlascomponent.cpp
+    src/shadercomponents/atlasisosurfacecomponent.cpp
     src/shadercomponents/backgroundcomponent.cpp
     src/shadercomponents/cameracomponent.cpp
     src/shadercomponents/entryexitcomponent.cpp
