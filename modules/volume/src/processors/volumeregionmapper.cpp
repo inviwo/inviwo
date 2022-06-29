@@ -101,7 +101,7 @@ void VolumeRegionMapper::process() {
 
     // Volume
     auto newVolume = std::shared_ptr<Volume>(inport_.getData()->clone());
-    remap(newVolume, sourceIndices, destinationIndices, missingValue_, useMissingValue_);
+    util::remap(*newVolume, sourceIndices, destinationIndices, missingValue_, useMissingValue_);
 
     outport_.setData(newVolume);
 }

@@ -59,7 +59,7 @@ TEST(Volume, volume_region_map_test_sorted_continuous_sequence) {
     auto volume = createVolume3x3x3();
     std::vector<int> src = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::vector<int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
-    remap(volume, src, dst, 0, false);
+    util::remap(*volume, src, dst, 0, false);
 
     using VolSampler = TemplateVolumeSampler<int, int, int, 1>;
     const VolSampler sampler(volume);
@@ -105,7 +105,7 @@ TEST(Volume, volume_region_map_test_unordered_map) {
     auto volume = createVolume3x3x3();
     std::vector<int> src = {1, 3, 2, 4, 5, 6, 7, 8, 9};
     std::vector<int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
-    remap(volume, src, dst, 0, false);
+    util::remap(*volume, src, dst, 0, false);
 
     using VolSampler = TemplateVolumeSampler<int, int, int, 1>;
     const VolSampler sampler(volume);
@@ -151,7 +151,7 @@ TEST(Volume, volume_region_map_test_binary_search) {
     auto volume = createVolume2x2x2();
     std::vector<int> src = {1, 3, 4, 5};
     std::vector<int> dst = {1, 1, 2, 2};
-    remap(volume, src, dst, 0, false);
+    util::remap(*volume, src, dst, 0, false);
 
     using VolSampler = TemplateVolumeSampler<int, int, int, 1>;
     const VolSampler sampler(volume);

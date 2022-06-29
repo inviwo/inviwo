@@ -37,10 +37,10 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace inviwo {
+namespace inviwo::util {
 
-void remap(std::shared_ptr<Volume>& volume, const std::vector<int>& src,
-           const std::vector<int>& dst, int missingValue, bool useMissingValue) {
+void remap(Volume& volume, const std::vector<int>& src, const std::vector<int>& dst,
+           int missingValue, bool useMissingValue) {
 
     if (src.size() == 0 || src.size() != dst.size()) {
         throw Exception(IVW_CONTEXT_CUSTOM("Remap"), "Invalid dataframe size (src = {}, dst = {})",
@@ -55,7 +55,7 @@ void remap(std::shared_ptr<Volume>& volume, const std::vector<int>& src,
                         src.size() - set.size());
     }
 
-    auto volRep = volume->getEditableRepresentation<VolumeRAM>();
+    auto volRep = volume.getEditableRepresentation<VolumeRAM>();
 
 #include <warn/push>
 #include <warn/ignore/conversion>
@@ -114,4 +114,4 @@ void remap(std::shared_ptr<Volume>& volume, const std::vector<int>& src,
 #include <warn/pop>
 }
 
-}  // namespace inviwo
+}  // namespace inviwo::util

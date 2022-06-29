@@ -37,6 +37,8 @@ namespace inviwo {
 
 class Volume;
 
+namespace util {
+
 /**
  * Remap all voxels of @p volume by mapping values from @p src to @p dst.
  * @param[in,out] volume  voxels of this scalar volume will be remapped
@@ -53,8 +55,10 @@ class Volume;
  * @pre @p dst may contain duplicates
  * @post @p volume only contains voxels with values found in @p dst
  */
-void IVW_MODULE_VOLUME_API remap(std::shared_ptr<Volume>& volume, const std::vector<int>& src,
+void IVW_MODULE_VOLUME_API remap(Volume& volume, const std::vector<int>& src,
                                  const std::vector<int>& dst, int missingValue,
                                  bool useMissingValue);
+
+}  // namespace util
 
 }  // namespace inviwo
