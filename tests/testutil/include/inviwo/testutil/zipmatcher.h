@@ -53,6 +53,8 @@ public:
     ZipPairMatcherImpl(FirstMatcher first_matcher, SecondMatcher second_matcher)
         : first_matcher_(::testing::SafeMatcherCast<const FirstType&>(first_matcher))
         , second_matcher_(::testing::SafeMatcherCast<const SecondType&>(second_matcher)) {}
+    ZipPairMatcherImpl(const ZipPairMatcherImpl& rhs)
+        : first_matcher_(rhs.first_matcher_), second_matcher_(rhs.second_matcher_) {}
 
     bool MatchAndExplain(PairType a_pair, ::testing::MatchResultListener* listener) const override {
         if (!listener->IsInterested()) {
@@ -121,6 +123,8 @@ class ZipPairMatcher {
 public:
     ZipPairMatcher(FirstMatcher first_matcher, SecondMatcher second_matcher)
         : first_matcher_(first_matcher), second_matcher_(second_matcher) {}
+    ZipPairMatcher(const ZipPairMatcher& rhs)
+        : first_matcher_(rhs.first_matcher_), second_matcher_(rhs.second_matcher_) {}
 
     template <typename PairType>
     operator ::testing::Matcher<PairType>() const {

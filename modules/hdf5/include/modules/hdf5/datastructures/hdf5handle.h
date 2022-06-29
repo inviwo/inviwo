@@ -139,11 +139,6 @@ std::vector<glm::tvec3<T, glm::defaultp>> Handle::getVectorOfVec3AtPath(const Pa
     hsize_t* dims = new hsize_t[rank];
     ds.getSpace().getSimpleExtentDims(dims);
 
-    size_t size = 1;
-    for (size_t i = 0; i < rank; ++i) {
-        size *= dims[i];
-    }
-
     if (dims[1] != 3) throw Exception("Trying to read data with invalid dimension");
 
     H5::DataType dt = ds.getDataType();
@@ -158,24 +153,24 @@ std::vector<glm::tvec3<T, glm::defaultp>> Handle::getVectorOfVec3AtPath(const Pa
 }
 
 /*
-H5T_NATIVE_CHAR 	char
-H5T_NATIVE_SCHAR 	signed char
-H5T_NATIVE_UCHAR 	unsigned char
-H5T_NATIVE_SHORT 	short
-H5T_NATIVE_USHORT 	unsigned short
-H5T_NATIVE_INT 	int
-H5T_NATIVE_UINT 	unsigned
-H5T_NATIVE_LONG 	long
-H5T_NATIVE_ULONG 	unsigned long
-H5T_NATIVE_LLONG 	long long
-H5T_NATIVE_ULLONG 	unsigned long long
-H5T_NATIVE_FLOAT 	float
-H5T_NATIVE_DOUBLE 	double
-H5T_NATIVE_LDOUBLE 	long double
-H5T_NATIVE_HSIZE 	hsize_t
-H5T_NATIVE_HSSIZE 	hssize_t
-H5T_NATIVE_HERR 	herr_t
-H5T_NATIVE_HBOOL 	hbool_t
+H5T_NATIVE_CHAR     char
+H5T_NATIVE_SCHAR    signed char
+H5T_NATIVE_UCHAR    unsigned char
+H5T_NATIVE_SHORT    short
+H5T_NATIVE_USHORT   unsigned short
+H5T_NATIVE_INT      int
+H5T_NATIVE_UINT     unsigned
+H5T_NATIVE_LONG     long
+H5T_NATIVE_ULONG    unsigned long
+H5T_NATIVE_LLONG    long long
+H5T_NATIVE_ULLONG   unsigned long long
+H5T_NATIVE_FLOAT    float
+H5T_NATIVE_DOUBLE   double
+H5T_NATIVE_LDOUBLE  long double
+H5T_NATIVE_HSIZE    hsize_t
+H5T_NATIVE_HSSIZE   hssize_t
+H5T_NATIVE_HERR     herr_t
+H5T_NATIVE_HBOOL    hbool_t
 */
 
 }  // namespace hdf5
