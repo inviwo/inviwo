@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
+#include "utils/selectioncolor.glsl"
 
 in vec4 gColor;
 in vec2 gPos;
@@ -38,7 +39,7 @@ uniform int circle = 1;
 uniform float borderWidth = 1;
 uniform vec4 borderColor;
 
-uniform SecondaryColor secondaryColor = SecondaryColor(vec4(0.0), 0.0, 0.0);
+uniform SelectionColor secondaryColor = SelectionColor(vec4(0.0), 0.0, 0.0, true);
 
 uniform float antialiasing = 1.5; // [pixel]
 

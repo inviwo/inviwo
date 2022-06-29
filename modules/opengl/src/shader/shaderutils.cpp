@@ -498,6 +498,23 @@ void setShaderUniforms(Shader& shader, const IsoTFProperty& property, std::strin
     setShaderUniforms(shader, property.isovalues_, property.isovalues_.getIdentifier());
 }
 
+void setShaderUniforms(Shader& shader, const SelectionColorProperty& property) {
+    setShaderUniforms(shader, property.getState(), property.getIdentifier());
+}
+
+void setShaderUniforms(Shader& shader, const SelectionColorProperty& property,
+                       std::string_view name) {
+    setShaderUniforms(shader, property.getState(), name);
+}
+
+void setShaderUniforms(Shader& shader, const SelectionColorState& state, std::string_view name) {
+    StrBuffer buff;
+    shader.setUniform(buff.replace("{}.color", name), state.color);
+    shader.setUniform(buff.replace("{}.colorMixIn", name), state.colorMixIn);
+    shader.setUniform(buff.replace("{}.alphaMixIn", name), 1.0f);
+    shader.setUniform(buff.replace("{}.visible", name), state.visible);
+}
+
 void addShaderDefinesBGPort(Shader& shader, const ImageInport& port) {
     std::string_view bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
     if (port.isConnected()) {

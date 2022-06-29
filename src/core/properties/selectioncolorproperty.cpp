@@ -39,10 +39,22 @@ SelectionColorProperty::SelectionColorProperty(std::string_view identifier,
                                                vec3 color, float alpha,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : BoolCompositeProperty(identifier, displayName, checked, invalidationLevel, semantics)
-    , color_("color", "Color", util::ordinalColor(color))
-    , alpha_("alpha", "Alpha", alpha)
-    , intensity_("intensity", "Mixing", 0.7f, 0.01f, 1.0f, 0.001f) {
+    : SelectionColorProperty(identifier, displayName, Document{}, checked, color, alpha,
+                             invalidationLevel) {}
+
+SelectionColorProperty::SelectionColorProperty(std::string_view identifier,
+                                               std::string_view displayName, Document help,
+                                               bool checked, vec3 color, float alpha,
+                                               InvalidationLevel invalidationLevel,
+                                               PropertySemantics semantics)
+    : BoolCompositeProperty(identifier, displayName, std::move(help), checked, invalidationLevel,
+                            semantics)
+    , color_("color", "Color", util::ordinalColor(color).set("Overlay color"_help))
+    , alpha_("alpha", "Alpha", "Determines the opacity of the overlay color"_help, alpha)
+    , intensity_(
+          "intensity", "Mixing",
+          "Blending factor for mixing the overlay color with the item's original color."_help, 0.7f,
+          {0.0f, ConstraintBehavior::Immutable}, {1.0f, ConstraintBehavior::Immutable}, 0.001f) {
     addProperties(color_, alpha_, intensity_);
 }
 
@@ -56,6 +68,10 @@ SelectionColorProperty::SelectionColorProperty(const SelectionColorProperty& rhs
 
 SelectionColorProperty* SelectionColorProperty::clone() const {
     return new SelectionColorProperty(*this);
+}
+
+SelectionColorState SelectionColorProperty::getState() const {
+    return {getColor(), getMixIntensity(), isChecked()};
 }
 
 vec4 SelectionColorProperty::getColor() const { return vec4{color_.get(), alpha_.get()}; }
