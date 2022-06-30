@@ -18,9 +18,11 @@ jobs:
           - os: 'windows-latest'
             triplet: 'x64-windows'
             mono: ''
-            cmake: '--preset msvc-dev-vcpkg -DIVW_MODULE_HDF5=ON -DIVW_DOXYGEN_PROJECT=ON 
+            # Disable doxygen for now since generating python docs fails (#1309)
+            cmake: '--preset msvc-dev-vcpkg -DIVW_MODULE_HDF5=ON -DIVW_DOXYGEN_PROJECT=OFF 
                     -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"'
-            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+            # Removed targets 'DOXY-Inviwo DOXY-Python' due to disabled doxygen
+            targets: 'ALL_BUILD package'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
           - os: 'macos-latest'
