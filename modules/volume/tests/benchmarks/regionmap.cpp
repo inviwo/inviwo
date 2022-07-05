@@ -35,7 +35,6 @@
 #include <benchmark/benchmark.h>
 #include <array>
 #include <vector>
-#include <inviwo/volume/processors/volumeregionmap.h>
 #include <inviwo/volume/algorithm/volumemap.h>
 
 using namespace inviwo;
@@ -47,7 +46,7 @@ public:
     Volume10(int64_t zSize) { benchVolume = createVolume(zSize); }
     Volume10(int x, int y, int z) { benchVolume = createVolume(x, y, z); }
 
-    std::shared_ptr<inviwo::Volume> createVolume(int64_t zSize) {
+    Volume createVolume(int64_t zSize) {
         size3_t dims{10, 10, zSize};
         const uint32_t size = static_cast<uint32_t>(glm::compMul(dims));
         std::vector<int> sampledata;
@@ -65,10 +64,10 @@ public:
 
         auto volumeram = std::make_shared<VolumeRAMPrecision<uint32_t>>(dims);
         std::copy(sampledata.begin(), sampledata.end(), volumeram->getDataTyped());
-        return std::make_shared<Volume>(volumeram);
+        return Volume(volumeram);
     }
 
-    std::shared_ptr<inviwo::Volume> createVolume(int x, int y, int z) {
+    Volume createVolume(int x, int y, int z) {
         size3_t dims{x, y, z};
         const uint32_t size = static_cast<uint32_t>(glm::compMul(dims));
         std::vector<int> sampledata;
@@ -86,47 +85,50 @@ public:
 
         auto volumeram = std::make_shared<VolumeRAMPrecision<uint32_t>>(dims);
         std::copy(sampledata.begin(), sampledata.end(), volumeram->getDataTyped());
-        return std::make_shared<Volume>(volumeram);
+        return Volume(volumeram);
     }
 
-    std::shared_ptr<Volume> benchVolume;
+    Volume benchVolume;
 };
 
 // Sorted continuous size 10, growing volume
-static void b1(benchmark::State& state) {
+void b1(benchmark::State& state) {
     Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
     std::vector<int> src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     std::vector<int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
-        remap(v1.benchVolume, src, dst, 0, true);
+        Volume tmp(v1.benchVolume);
+        util::remap(tmp, src, dst, 0, true);
     }
 }
 
 // Sorted non-continuous size 10, growing volume
-static void b2(benchmark::State& state) {
+void b2(benchmark::State& state) {
     Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
     std::vector<int> src{1, 3, 5, 7, 9, 11, 14, 16, 18, 20};
     std::vector<int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
-        remap(v1.benchVolume, src, dst, 0, true);
+        Volume tmp(v1.benchVolume);
+        util::remap(tmp, src, dst, 0, true);
     }
 }
 
 // Unsorted non-continuous size 10, growing volume
-static void b3(benchmark::State& state) {
+void b3(benchmark::State& state) {
     Volume10 v1 = Volume10{static_cast<int>(state.range(0))};
     std::vector<int> src{20, 2, 9, 5, 4, 6, 7, 8, 9, 1};
     std::vector<int> dst{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     for (auto _ : state) {
-        remap(v1.benchVolume, src, dst, 0, true);
+        Volume tmp(v1.benchVolume);
+        util::remap(tmp, src, dst, 0, true);
     }
 }
 
 // Increased vector size, sorted + continuous (directly indexing)
-static void b4(benchmark::State& state) {
+void b4(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
     std::vector<int> src;
@@ -139,12 +141,13 @@ static void b4(benchmark::State& state) {
     }
 
     for (auto _ : state) {
-        remap(v1.benchVolume, src, dst, 0, true);
+        Volume tmp(v1.benchVolume);
+        util::remap(tmp, src, dst, 0, true);
     }
 }
 
 // Increased vector size, sorted + non-continuous (binary search)
-static void b5(benchmark::State& state) {
+void b5(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
     std::vector<int> src;
@@ -159,11 +162,12 @@ static void b5(benchmark::State& state) {
     }
 
     for (auto _ : state) {
-        remap(v1.benchVolume, src, dst, 0, true);
+        Volume tmp(v1.benchVolume);
+        util::remap(tmp, src, dst, 0, true);
     }
 }
 // Increased vector size, non-sorted + non-continuous
-static void b6(benchmark::State& state) {
+void b6(benchmark::State& state) {
 
     Volume10 v1 = Volume10{1, 1, 10000};
     std::vector<int> src;
@@ -182,7 +186,8 @@ static void b6(benchmark::State& state) {
     }
 
     for (auto _ : state) {
-        remap(v1.benchVolume, src, dst, 0, true);
+        Volume tmp(v1.benchVolume);
+        util::remap(tmp, src, dst, 0, true);
     }
 }
 
