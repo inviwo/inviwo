@@ -56,7 +56,7 @@ public:
 protected:
     // override from CollapsibleGroupBoxWidgetQt
     virtual void setCollapsed(bool value) override;
-    
+
     virtual void onDidAddProperty(Property* property, size_t index) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
