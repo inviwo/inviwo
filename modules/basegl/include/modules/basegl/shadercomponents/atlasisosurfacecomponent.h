@@ -31,37 +31,35 @@
 #include <modules/basegl/baseglmoduledefine.h>
 
 #include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/volume/volumeutils.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/selectioncolorproperty.h>
-
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <string>
 #include <vector>
 
 namespace inviwo {
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * Adds an option to render segments in range [0, 3] of type UINT, and render these
+ * with or without lighting. See the Atlas Boundary processor for such data.
  */
-class IVW_MODULE_BASEGL_API atlasisosurfacecomponent : public ShaderComponent {
+class IVW_MODULE_BASEGL_API AtlasIsosurfaceComponent : public ShaderComponent {
 public:
-    atlasisosurfacecomponent(Processor* p, std::string_view volume);
-
+    AtlasIsosurfaceComponent(std::string_view volume);
     virtual std::string_view getName() const override;
-
-    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
-
-    virtual void initializeResources(Shader& shader) override;
-
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
     virtual std::vector<Property*> getProperties() override;
-
     virtual std::vector<Segment> getSegments() override;
 
 private:
-    std::string volume_;
-    VolumeInport atlas_;
-    FloatProperty sampleRate_;
+    VolumeInport volume_;
+    std::string name_;
+    std::shared_ptr<const Volume> smoothVolume_;
+
+    BoolCompositeProperty useAtlasBoundary_;
+    BoolProperty applyBoundaryLight_;
     SelectionColorProperty showHighlighted_;
     SelectionColorProperty showSelected_;
     SelectionColorProperty showFiltered_;

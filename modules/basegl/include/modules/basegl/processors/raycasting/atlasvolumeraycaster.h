@@ -56,6 +56,8 @@
 
 #include <fmt/core.h>  // for format, basic_st...
 
+#include <modules/basegl/shadercomponents/atlasisosurfacecomponent.h>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.AtlasVolumeRaycaster, Atlas Volume Raycaster}
@@ -105,6 +107,7 @@ private:
     PositionIndicatorComponent positionIndicator_;
     SampleTransformComponent sampleTransform_;
     AtlasComponent atlas_;
+    AtlasIsosurfaceComponent atlasIso_;
 };
 
 }  // namespace inviwo

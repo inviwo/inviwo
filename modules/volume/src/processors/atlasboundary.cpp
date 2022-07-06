@@ -62,7 +62,7 @@ void AtlasBoundary::process() {
         std::vector<int> filteredDestination(filtered.toVector().size(), 2);
         std::vector<int> highlightedDestination(highlighted.toVector().size(), 3);
 
-        // Append to
+        // Append to B&L to vectors
         std::vector<int> sourceIndices;
         std::vector<int> destinationIndices;
 
@@ -81,15 +81,16 @@ void AtlasBoundary::process() {
             destinationIndices.push_back(0);
         }
 
+        // Remap using vectors and cloned volume
         auto volume = volumeInport_.getData();
         volume_ = std::shared_ptr<Volume>(volume->clone());
         remap(volume_, sourceIndices, destinationIndices, 0, true);
+        // Set volume properties
         volume_->setInterpolation(InterpolationType::Nearest);
         volume_->setSwizzleMask(swizzlemasks::luminance);
         volume_->dataMap_.dataRange = dvec2{0.0, 3.0};
         volume_->dataMap_.valueRange = volume_->dataMap_.dataRange;
     }
-
     outport_.setData(volume_);
 }
 

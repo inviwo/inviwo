@@ -31,47 +31,71 @@
 
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/opengl/volume/volumeutils.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumegl.h>
+#include <inviwo/core/ports/volumeport.h>
+
+#include <inviwo/core/datastructures/buffer/bufferram.h>
 
 namespace inviwo {
 
-atlasisosurfacecomponent::atlasisosurfacecomponent(Processor* p, std::string_view volume)
-    : ShaderComponent()
-    , atlas_{"atlas"}
-    , volume_(volume)
+AtlasIsosurfaceComponent::AtlasIsosurfaceComponent(std::string_view volume)
+    : ShaderComponent{}
+    , volume_{"atlasboundary"}
+    , name_(volume)
+    , useAtlasBoundary_{"useAtlasBoundary", "Render ISO using atlas boundary", true}
+    , applyBoundaryLight_{"applyBoundaryLight", "Apply lighting to boundary", true}
     , showHighlighted_("showHighlightedIndices", "Show Highlighted", true,
                        vec3(1.0f, 0.906f, 0.612f))
     , showSelected_("showSelectedIndices", "Show Selected", true, vec3(1.0f, 0.769f, 0.247f))
-    , showFiltered_("showFilteredIndices", "Show Filtered", true, vec3(0.5f, 0.5f, 0.5f))
-    , sampleRate_{"sampleRate", "Sampling Rate", 2.0f,
-                  std::pair{1.0f, ConstraintBehavior::Immutable},
-                  std::pair{20.0f, ConstraintBehavior::Editable}} {}
+    , showFiltered_("showFilteredIndices", "Show Filtered", true, vec3(0.5f, 0.5f, 0.5f)) {}
 
-std::string_view atlasisosurfacecomponent::getName() const { return atlas_.getIdentifier(); }
+std::string_view AtlasIsosurfaceComponent::getName() const { return volume_.getIdentifier(); }
 
-void atlasisosurfacecomponent::process(Shader& shader, TextureUnitContainer& cont) {
-    utilgl::bindAndSetUniforms(shader, cont, atlas_);
+void AtlasIsosurfaceComponent::process(Shader& shader, TextureUnitContainer&) {
+
+    shader.setUniform("useAtlasBoundary", useAtlasBoundary_.getBoolProperty()->get());
+    shader.setUniform("applyBoundaryLight", applyBoundaryLight_.get());
     shader.setUniform("selectedColor", showSelected_.getColor());
     shader.setUniform("showSelected", showSelected_.getBoolProperty()->get());
     shader.setUniform("highlightedColor", showHighlighted_.getColor());
     shader.setUniform("showHighlighted", showHighlighted_.getBoolProperty()->get());
     shader.setUniform("filteredColor", showFiltered_.getColor());
     shader.setUniform("showFiltered", showFiltered_.getBoolProperty()->get());
+
+    if (volume_.isChanged()) {
+        if (volume_.getData()->getInterpolation() == InterpolationType::Linear) {
+            smoothVolume_ = volume_.getData();
+        } else {
+            auto in = std::shared_ptr<Volume>(volume_.getData()->clone());
+            in->setInterpolation(InterpolationType::Linear);
+            smoothVolume_ = in;
+        }
+        smoothVolume_->getRepresentation<VolumeGL>()->bindTexture(2);
+    }
 }
 
-void atlasisosurfacecomponent::initializeResources(Shader& shader) {
-    auto fso = shader.getFragmentShaderObject();
-}
 
-std::vector<Property*> atlasisosurfacecomponent::getProperties() {
-    return {&sampleRate_, &showHighlighted_, &showSelected_, &showFiltered_};
+
+std::vector<Property*> AtlasIsosurfaceComponent::getProperties() {
+    return {&useAtlasBoundary_, &applyBoundaryLight_, &showHighlighted_, &showSelected_,
+            &showFiltered_};
 }
 
 namespace {
 constexpr std::string_view uniforms = util::trim(R"(
+uniform sampler3D smoothAtlas;
+uniform bool useAtlasBoundary;
+uniform bool applyBoundaryLight;
 uniform vec4 selectedColor;
 uniform vec4 highlightedColor;
 uniform vec4 filteredColor;
-uniform bool showHighlighted;
+uniform bool showHighlighted; 
 uniform bool showSelected;
 uniform bool showFiltered;
 )");
@@ -83,38 +107,63 @@ uint prevBoundaryValue = 0;
 
 constexpr std::string_view loop = util::trim(R"(
 prevBoundaryValue = boundaryValue;
-float v = getNormalizedVoxel({atlas}, {atlas}Parameters, samplePosition).x;
-value = uint(v*3.0f + 0.5f);
+boundaryValue = uint(atlasSegment*3.0f + 0.5f);
 
-if(boundaryValue != prevBoundaryValue)
+if(!useAtlasBoundary)
 {
-    vec4 color = vec4(0);
+    // Do nothing
+}
+else if(useAtlasBoundary && (boundaryValue != prevBoundaryValue))
+{
+    vec4 bcolor = vec4(0);
     if(showHighlighted && (boundaryValue == 3 || prevBoundaryValue == 3))
     {
-        color = highlightedColor;
+        bcolor = highlightedColor;
     }
-    else if(showSelected && (boundaryValue == 2 || prevBoundaryValue == 2))
+    else if(showSelected && (boundaryValue == 1 || prevBoundaryValue == 1))
     {
-        color = selectedColor;
+        bcolor = selectedColor;
     }
-    else if(showFiltered && (boundaryValue == 1 || prevBoundaryValue == 1))
+    else if(showFiltered && (boundaryValue == 2 || prevBoundaryValue == 2))
     {
-        color = filteredColor;
+        bcolor = filteredColor;
     }
-    color.rgb *= color.a;
-    result += (1.0f - result.a) * color;
+
+    #if defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED)
+    if(applyBoundaryLight)
+    {
+        vec4 atlasGradient = vec4(1);
+        
+        atlasGradient.rgb = normalize(COMPUTE_GRADIENT_FOR_CHANNEL(getNormalizedVoxel(atlas, atlasParameters, samplePosition), smoothAtlas, atlasParameters, samplePosition, channel));
+     
+        vec3 worldSpacePosition = (atlasParameters.textureToWorldNormalMatrix * vec4(samplePosition, 1.0)).xyz;
+
+        bcolor.rgb = APPLY_LIGHTING(lighting, bcolor.rgb, bcolor.rgb, vec3(1.0), worldSpacePosition, -atlasGradient.rgb, cameraDir);
+
+        //result = atlasGradient;      
+    }   
+    #endif
+
+    if(bcolor.a > 0)
+    {
+        // Compositing //
+        bcolor.rgb *= bcolor.a; 
+        result += (1.0f - result.a) * bcolor;
+        //result = compositeDVR(result, bcolor, rayPosition, rayDepth, rayStep);
+        // End compositing //
+    }
 }
 )");
 
 }  // namespace
 
-auto atlasisosurfacecomponent::getSegments() -> std::vector<Segment> {
+auto AtlasIsosurfaceComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
-    return {
-        {fmt::format(uniforms, "atlas"_a = getName()), placeholder::uniform, 700},
-        {fmt::format(first, "atlas"_a = getName(), "color"_a = volume_), placeholder::first, 700},
-        {fmt::format(loop, "atlas"_a = getName(), "color"_a = volume_), placeholder::loop, 700}};
+    return {{R"(#include "utils/compositing.glsl")", placeholder::include, 900},
+            {std::string(uniforms), placeholder::uniform, 900},
+            {std::string(first), placeholder::first, 900},
+            {std::string(loop), placeholder::loop, 900}};
 }
 
 }  // namespace inviwo
