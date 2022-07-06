@@ -124,7 +124,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
         detail::addProperty<IntProperty>(*stringItem, "column", "Column", 0, 0,
                                          std::numeric_limits<int>::max(), 1);
 
-        detail::addOptionProperty<TemplateOptionProperty<filters::StringComp>>(
+        detail::addOptionProperty<OptionProperty<filters::StringComp>>(
             *stringItem, "comp", "Comparison",
             std::vector<OptionPropertyOption<filters::StringComp>>{
                 {"equal", "equal (==)", filters::StringComp::Equal},
@@ -140,7 +140,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
         detail::addProperty<IntProperty>(*intItem, "column", "Column", 0, 0,
                                          std::numeric_limits<int>::max(), 1);
 
-        detail::addOptionProperty<TemplateOptionProperty<filters::NumberComp>>(
+        detail::addOptionProperty<OptionProperty<filters::NumberComp>>(
             *intItem, "comp", "Comparison",
             std::vector<OptionPropertyOption<filters::NumberComp>>{
                 {"equal", "equal (==)", filters::NumberComp::Equal},
@@ -160,7 +160,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
         detail::addProperty<IntProperty>(*doubleItem, "column", "Column", 0, 0,
                                          std::numeric_limits<int>::max(), 1);
 
-        detail::addOptionProperty<TemplateOptionProperty<filters::NumberComp>>(
+        detail::addOptionProperty<OptionProperty<filters::NumberComp>>(
             *doubleItem, "comp", "Comparison",
             std::vector<OptionPropertyOption<filters::NumberComp>>{
                 {"equal", "equal (==)", filters::NumberComp::Equal},

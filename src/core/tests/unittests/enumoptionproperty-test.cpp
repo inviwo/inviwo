@@ -67,8 +67,8 @@ struct EnumTraits<MyEnumUShort> {
 };
 
 TEST(EnumOptionProperty, ClassIdentifier) {
-    TemplateOptionProperty<MyEnumA> pA("test", "test");
-    TemplateOptionProperty<MyEnumB> pB("test", "test");
+    OptionProperty<MyEnumA> pA("test", "test");
+    OptionProperty<MyEnumB> pB("test", "test");
 
     auto idA = pA.getClassIdentifier();
     auto idB = pB.getClassIdentifier();
@@ -77,8 +77,8 @@ TEST(EnumOptionProperty, ClassIdentifier) {
 }
 
 TEST(EnumOptionProperty, ClassIdentifierShort) {
-    TemplateOptionProperty<MyEnumShort> pShort("test", "test");
-    TemplateOptionProperty<MyEnumUShort> pUShort("test", "test");
+    OptionProperty<MyEnumShort> pShort("test", "test");
+    OptionProperty<MyEnumUShort> pUShort("test", "test");
 
     auto idShort = pShort.getClassIdentifier();
     auto idUShort = pUShort.getClassIdentifier();
@@ -88,11 +88,10 @@ TEST(EnumOptionProperty, ClassIdentifierShort) {
 
 TEST(EnumOptionProperty, Serialization) {
     PropertyFactory factory;
-    PropertyFactoryObjectTemplate<TemplateOptionProperty<MyEnumB>> factoryObj;
+    PropertyFactoryObjectTemplate<OptionProperty<MyEnumB>> factoryObj;
     factory.registerObject(&factoryObj);
 
-    std::unique_ptr<Property> propA =
-        std::make_unique<TemplateOptionProperty<MyEnumB>>("test", "test");
+    std::unique_ptr<Property> propA = std::make_unique<OptionProperty<MyEnumB>>("test", "test");
     propA->setSerializationMode(PropertySerializationMode::All);
     std::stringstream ss;
     Serializer s("");

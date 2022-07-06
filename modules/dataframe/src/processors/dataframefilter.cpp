@@ -151,17 +151,17 @@ dataframefilters::Filters DataFrameFilter::createFilters() const {
                 if (startsWith(identifier, "stringItem")) {
                     itemFilters.push_back(dataframefilters::stringMatch(
                         detail::getValue<IntProperty>(cp, "column"),
-                        detail::getValue<TemplateOptionProperty<filters::StringComp>>(cp, "comp"),
+                        detail::getValue<OptionProperty<filters::StringComp>>(cp, "comp"),
                         detail::getValue<StringProperty>(cp, "match")));
                 } else if (startsWith(identifier, "intItem")) {
                     itemFilters.push_back(dataframefilters::intMatch(
                         detail::getValue<IntProperty>(cp, "column"),
-                        detail::getValue<TemplateOptionProperty<filters::NumberComp>>(cp, "comp"),
+                        detail::getValue<OptionProperty<filters::NumberComp>>(cp, "comp"),
                         detail::getValue<Int64Property>(cp, "value")));
                 } else if (startsWith(identifier, "doubleItem")) {
                     itemFilters.push_back(dataframefilters::doubleMatch(
                         detail::getValue<IntProperty>(cp, "column"),
-                        detail::getValue<TemplateOptionProperty<filters::NumberComp>>(cp, "comp"),
+                        detail::getValue<OptionProperty<filters::NumberComp>>(cp, "comp"),
                         detail::getValue<DoubleProperty>(cp, "value"),
                         detail::getValue<DoubleProperty>(cp, "epsilon")));
                 } else if (startsWith(identifier, "intRangeItem")) {

@@ -49,7 +49,7 @@ public:
     SystemSettings(InviwoApplication* app);
     virtual ~SystemSettings();
     StringProperty workspaceAuthor_;
-    TemplateOptionProperty<UsageMode> applicationUsageMode_;
+    OptionProperty<UsageMode> applicationUsageMode_;
     IntSizeTProperty poolSize_;
     BoolProperty enablePortInspectors_;
     IntProperty portInspectorSize_;
@@ -60,7 +60,7 @@ public:
     BoolProperty logStackTraceProperty_;
     BoolProperty runtimeModuleReloading_;
     BoolProperty enableResourceManager_;
-    TemplateOptionProperty<MessageBreakLevel> breakOnMessage_;
+    OptionProperty<MessageBreakLevel> breakOnMessage_;
     BoolProperty breakOnException_;
     BoolProperty stackTraceInException_;
 

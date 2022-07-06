@@ -67,14 +67,14 @@ enum class OptionRegEnumUInt : unsigned int {};
 struct ColumnOptionConverterRegFunctor {
     template <typename T>
     auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(std::make_unique<ColumnOptionToOptionConverter<TemplateOptionProperty<T>>>());
+        reg(std::make_unique<ColumnOptionToOptionConverter<OptionProperty<T>>>());
     }
 };
 
 struct OptionColumnConverterRegFunctor {
     template <typename T>
     auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(std::make_unique<OptionToColumnOptionConverter<TemplateOptionProperty<T>>>());
+        reg(std::make_unique<OptionToColumnOptionConverter<OptionProperty<T>>>());
     }
 };
 
@@ -101,8 +101,8 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     registerProperty<ColumnMetaDataProperty>();
     registerProperty<ColumnMetaDataListProperty>();
     registerProperty<FilterListProperty>();
-    registerProperty<TemplateOptionProperty<filters::StringComp>>();
-    registerProperty<TemplateOptionProperty<filters::NumberComp>>();
+    registerProperty<OptionProperty<filters::StringComp>>();
+    registerProperty<OptionProperty<filters::NumberComp>>();
 
     // Readers and writes
     registerDataReader(std::make_unique<CSVReader>());

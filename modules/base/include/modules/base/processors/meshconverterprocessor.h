@@ -64,7 +64,7 @@ private:
 
     MeshFlatMultiInport inport_;
     DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
-    TemplateOptionProperty<Type> type_;
+    OptionProperty<Type> type_;
 };
 
 }  // namespace inviwo

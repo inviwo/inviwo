@@ -75,10 +75,10 @@ public:
 
     virtual RaycastingProperty* clone() const override;
 
-    TemplateOptionProperty<RenderingType> renderingType_;
-    TemplateOptionProperty<Classification> classification_;
-    TemplateOptionProperty<CompositingType> compositing_;
-    TemplateOptionProperty<GradientComputation> gradientComputation_;
+    OptionProperty<RenderingType> renderingType_;
+    OptionProperty<Classification> classification_;
+    OptionProperty<CompositingType> compositing_;
+    OptionProperty<GradientComputation> gradientComputation_;
 
     FloatProperty samplingRate_;
 };

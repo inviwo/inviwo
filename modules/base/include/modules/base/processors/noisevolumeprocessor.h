@@ -59,7 +59,7 @@ private:
     VolumeOutport volume_;
 
     IntSize3Property size_;
-    TemplateOptionProperty<NoiseType> type_;
+    OptionProperty<NoiseType> type_;
 
     FloatMinMaxProperty range_;
 

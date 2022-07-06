@@ -103,7 +103,7 @@ private:
     MarginProperty margins_;
     FloatProperty axisMargin_;
 
-    TemplateOptionProperty<AxisRangeMode> rangeMode_;
+    OptionProperty<AxisRangeMode> rangeMode_;
 
     CompositeProperty customRanges_;
     DoubleMinMaxProperty rangeXaxis_;

@@ -86,8 +86,8 @@ private:
     BufferInport curvature_;           // Optional
     MeshOutport outport_;
 
-    TemplateOptionProperty<DrawType> drawType_;
-    TemplateOptionProperty<ConnectivityType> connectivity_;
+    OptionProperty<DrawType> drawType_;
+    OptionProperty<ConnectivityType> connectivity_;
 };
 
 }  // namespace inviwo

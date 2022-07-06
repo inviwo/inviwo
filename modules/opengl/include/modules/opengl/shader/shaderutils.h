@@ -92,7 +92,7 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const RaycastingPro
                                              std::string_view name);
 
 IVW_MODULE_OPENGL_API void setShaderDefines(
-    Shader& shader, const TemplateOptionProperty<RaycastingProperty::GradientComputation>& property,
+    Shader& shader, const OptionProperty<RaycastingProperty::GradientComputation>& property,
     bool voxelClassification = false);
 
 // SpatialEntity
@@ -143,20 +143,18 @@ void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property) {
 
 namespace detail {
 template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-T getOptionValue(const TemplateOptionProperty<T>& prop) {
+T getOptionValue(const OptionProperty<T>& prop) {
     return prop.get();
 }
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-auto getOptionValue(const TemplateOptionProperty<T>& prop) ->
-    typename std::underlying_type<T>::type {
+auto getOptionValue(const OptionProperty<T>& prop) -> typename std::underlying_type<T>::type {
     return static_cast<typename std::underlying_type<T>::type>(prop.get());
 }
 }  // namespace detail
 
 // Option Property
 template <typename T>
-void setShaderUniforms(Shader& shader, const TemplateOptionProperty<T>& property,
-                       std::string_view name) {
+void setShaderUniforms(Shader& shader, const OptionProperty<T>& property, std::string_view name) {
     shader.setUniform(name, detail::getOptionValue(property));
 }
 

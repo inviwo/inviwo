@@ -104,8 +104,8 @@ public:
     FloatProperty width_;
 
     BoolProperty flipped_;
-    TemplateOptionProperty<Orientation> orientation_;
-    TemplateOptionProperty<Placement> placement_;
+    OptionProperty<Orientation> orientation_;
+    OptionProperty<Placement> placement_;
 
     // caption besides axis
     PlotTextProperty captionSettings_;

@@ -73,7 +73,7 @@ public:
 
     OrdinalProperty<T> value_;
     OrdinalProperty<T> delta_;
-    TemplateOptionProperty<BoundaryType> boundary_;
+    OptionProperty<BoundaryType> boundary_;
     BoolProperty active_;
 };
 

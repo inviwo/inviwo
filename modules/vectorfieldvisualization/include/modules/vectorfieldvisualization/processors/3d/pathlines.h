@@ -72,7 +72,7 @@ private:
     PathLineProperties pathLineProperties_;
 
     TransferFunctionProperty tf_;
-    TemplateOptionProperty<ColoringMethod> coloringMethod_;
+    OptionProperty<ColoringMethod> coloringMethod_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
 

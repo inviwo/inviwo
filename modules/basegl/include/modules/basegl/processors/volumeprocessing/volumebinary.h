@@ -80,7 +80,7 @@ protected:
     virtual void initializeResources() override;
 
     FloatProperty threshold_;
-    TemplateOptionProperty<Operator> op_;
+    OptionProperty<Operator> op_;
 };
 
 }  // namespace inviwo

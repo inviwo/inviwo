@@ -88,10 +88,10 @@ private:
     FloatProperty filteredMix_;
 
     TransferFunctionProperty tf_;
-    TemplateOptionProperty<ColoringGroup> coloringGroup_;
+    OptionProperty<ColoringGroup> coloringGroup_;
     FloatVec3Property coloringColor_;
     FloatProperty coloringAlpha_;
-    TemplateOptionProperty<colorbrewer::Family> coloringScheme_;
+    OptionProperty<colorbrewer::Family> coloringScheme_;
 
     ButtonGroupProperty coloringApply_;
     ColoringAction coloringAction_;

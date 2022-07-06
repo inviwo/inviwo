@@ -121,7 +121,7 @@ private:
 
     FloatProperty meshScale_;  // Scale size of mesh
     IntVec2Property meshRes_;  // mesh resolution
-    TemplateOptionProperty<MeshType> meshType_;
+    OptionProperty<MeshType> meshType_;
     BoolProperty enablePicking_;
     PickingMapper picking_;
     CameraProperty camera_;

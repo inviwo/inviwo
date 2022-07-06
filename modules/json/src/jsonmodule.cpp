@@ -68,7 +68,7 @@ struct MinMaxReghelper {
 struct OptionReghelper {
     template <typename T>
     auto operator()(JSONModule& m) {
-        using PropertyType = TemplateOptionProperty<T>;
+        using PropertyType = OptionProperty<T>;
         m.registerPropertyJSONConverter<PropertyType>();
     }
 };
@@ -77,11 +77,11 @@ struct OptionEnumReghelper {
     template <typename T>
     auto operator()(JSONModule& m) {
         enum class e : T;
-        using PropertyType = TemplateOptionProperty<e>;
+        using PropertyType = OptionProperty<e>;
         m.registerPropertyJSONConverter<PropertyType>();
 
         enum class eU : std::make_unsigned_t<T>;
-        using PropertyTypeU = TemplateOptionProperty<eU>;
+        using PropertyTypeU = OptionProperty<eU>;
         m.registerPropertyJSONConverter<PropertyTypeU>();
     }
 };

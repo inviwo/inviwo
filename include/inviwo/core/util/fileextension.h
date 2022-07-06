@@ -113,7 +113,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 template <>
-struct PropertyTraits<TemplateOptionProperty<FileExtension>> {
+struct PropertyTraits<OptionProperty<FileExtension>> {
     static std::string classIdentifier() { return "org.inviwo.OptionPropertyFileExtension"; }
 };
 

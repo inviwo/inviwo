@@ -78,7 +78,7 @@ private:
     VolumeOutport outport_;
 
     StringProperty inputFormat_;
-    TemplateOptionProperty<DataFormatId> format_;
+    OptionProperty<DataFormatId> format_;
     BoolProperty enableDataMapping_;
 
     DataRangeProperty dataRange_;

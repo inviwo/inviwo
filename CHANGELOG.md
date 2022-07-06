@@ -1,7 +1,11 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+
 ## 2022-06-27 New processor: Volume Region Mapper
 The `Volume Region Mapper` processor maps each unique voxel value of a Volume to another integer value. The value mapping is provided by two DataFrame columns.
+
+## 2022-04-14 TemplateOptionProperty renamed to OptionProperty
+The old name still works but is now deprecated.
 
 ## 2022-03-09 DataFrame filtering and CSV filtering
 DataFrames can now be filtered with the `DataFrame Filter` processor or when loading a CSV file with the `CSV Source` processor. The `DataFrame Filter` also supports brushing & linking filtering. Filters exist for matching values (`int64` and `double` as well as categorical values), ranges, and commented lines.

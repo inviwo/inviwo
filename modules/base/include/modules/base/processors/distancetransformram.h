@@ -103,7 +103,7 @@ private:
     IntSize3Property upsampleFactorVec3_;  // non-uniform upscaling of the output field
 
     DoubleMinMaxProperty dataRangeOutput_;
-    TemplateOptionProperty<DataRangeMode> dataRangeMode_;
+    OptionProperty<DataRangeMode> dataRangeMode_;
     DoubleMinMaxProperty customDataRange_;
 };
 

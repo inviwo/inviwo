@@ -187,10 +187,10 @@ private:
     BrushingAndLinkingInport brushLinkPort_;
     ImageOutport outport_;
 
-    TemplateOptionProperty<RenderMode> renderMode_;
+    OptionProperty<RenderMode> renderMode_;
 
     CompositeProperty clipping_;
-    TemplateOptionProperty<GlyphClippingMode> clipMode_;
+    OptionProperty<GlyphClippingMode> clipMode_;
     FloatProperty clipShadingFactor_;  //!< multiplied with glyph color for clip surfaces
     BoolProperty shadeClippedArea_;
 

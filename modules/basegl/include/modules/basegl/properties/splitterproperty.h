@@ -67,7 +67,7 @@ public:
     virtual float getWidth() const override;
     virtual float getTriangleSize() const override;
 
-    TemplateOptionProperty<splitter::Style> style_;
+    OptionProperty<splitter::Style> style_;
     FloatVec4Property color_;
     FloatVec4Property bgColor_;
     FloatVec4Property hoverColor_;

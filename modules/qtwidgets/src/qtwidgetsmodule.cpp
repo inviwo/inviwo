@@ -142,7 +142,7 @@ struct MinMaxTextWidgetReghelper {
 struct OptionWidgetReghelper {
     template <typename T>
     auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
-        using PropertyType = TemplateOptionProperty<T>;
+        using PropertyType = OptionProperty<T>;
 
         qm.registerPropertyWidget<OptionPropertyWidgetQt, PropertyType>(semantics);
     }

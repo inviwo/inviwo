@@ -89,13 +89,13 @@ public:
     ImageInport inport_;
     ImageOutport outport_;
 
-    TemplateOptionProperty<BackgroundStyle> backgroundStyle_;
+    OptionProperty<BackgroundStyle> backgroundStyle_;
     FloatVec4Property bgColor1_;
     FloatVec4Property bgColor2_;
     IntVec2Property checkerBoardSize_;
     ButtonProperty switchColors_;
 
-    TemplateOptionProperty<BlendMode> blendMode_;
+    OptionProperty<BlendMode> blendMode_;
 
 private:
     void updateShaderInputs();

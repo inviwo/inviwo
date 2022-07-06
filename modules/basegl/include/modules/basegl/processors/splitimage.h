@@ -80,7 +80,7 @@ private:
     ImageInport inport1_;
     ImageOutport outport_;
 
-    TemplateOptionProperty<splitter::Direction> splitDirection_;
+    OptionProperty<splitter::Direction> splitDirection_;
     FloatProperty splitPosition_;
 
     SplitterProperty splitterSettings_;

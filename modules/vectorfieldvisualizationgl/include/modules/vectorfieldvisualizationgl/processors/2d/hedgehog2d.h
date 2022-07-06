@@ -61,7 +61,7 @@ private:
     FloatProperty glyphScale_;
     IntVec2Property numberOfGlyphs_;
     BoolProperty jitter_;
-    TemplateOptionProperty<GlyphType> glyphType_;
+    OptionProperty<GlyphType> glyphType_;
 
     FloatVec4Property color_;
 

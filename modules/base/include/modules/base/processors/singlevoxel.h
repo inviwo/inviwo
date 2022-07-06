@@ -69,7 +69,7 @@ private:
     DoubleVec3Property dvec3Property_;
     DoubleVec4Property dvec4Property_;
 
-    TemplateOptionProperty<CoordinateSpace> space_;
+    OptionProperty<CoordinateSpace> space_;
 };
 
 }  // namespace inviwo
