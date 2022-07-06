@@ -186,24 +186,21 @@ enum class OptionRegEnumUInt : unsigned int {};
 struct OptionStringConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(
-            std::make_unique<OptionToStringConverter<OptionProperty<T>>>());
+        m.registerPropertyConverter(std::make_unique<OptionToStringConverter<OptionProperty<T>>>());
     }
 };
 
 struct OptionIntConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(
-            std::make_unique<OptionToIntConverter<OptionProperty<T>>>());
+        m.registerPropertyConverter(std::make_unique<OptionToIntConverter<OptionProperty<T>>>());
     }
 };
 
 struct IntOptionConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(
-            std::make_unique<IntToOptionConverter<OptionProperty<T>>>());
+        m.registerPropertyConverter(std::make_unique<IntToOptionConverter<OptionProperty<T>>>());
     }
 };
 

@@ -217,9 +217,9 @@ void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
                      property.classification_.get() == RaycastingProperty::Classification::Voxel);
 }
 
-void setShaderDefines(
-    Shader& shader, const OptionProperty<RaycastingProperty::GradientComputation>& property,
-    bool voxelClassification) {
+void setShaderDefines(Shader& shader,
+                      const OptionProperty<RaycastingProperty::GradientComputation>& property,
+                      bool voxelClassification) {
 
     const std::string_view channel = (voxelClassification ? "3" : "channel");
     const std::string_view channelDef = (voxelClassification ? "3" : "0");

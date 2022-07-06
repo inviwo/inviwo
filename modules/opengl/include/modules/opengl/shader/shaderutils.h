@@ -147,16 +147,14 @@ T getOptionValue(const OptionProperty<T>& prop) {
     return prop.get();
 }
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-auto getOptionValue(const OptionProperty<T>& prop) ->
-    typename std::underlying_type<T>::type {
+auto getOptionValue(const OptionProperty<T>& prop) -> typename std::underlying_type<T>::type {
     return static_cast<typename std::underlying_type<T>::type>(prop.get());
 }
 }  // namespace detail
 
 // Option Property
 template <typename T>
-void setShaderUniforms(Shader& shader, const OptionProperty<T>& property,
-                       std::string_view name) {
+void setShaderUniforms(Shader& shader, const OptionProperty<T>& property, std::string_view name) {
     shader.setUniform(name, detail::getOptionValue(property));
 }
 

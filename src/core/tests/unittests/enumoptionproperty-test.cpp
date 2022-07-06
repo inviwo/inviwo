@@ -91,8 +91,7 @@ TEST(EnumOptionProperty, Serialization) {
     PropertyFactoryObjectTemplate<OptionProperty<MyEnumB>> factoryObj;
     factory.registerObject(&factoryObj);
 
-    std::unique_ptr<Property> propA =
-        std::make_unique<OptionProperty<MyEnumB>>("test", "test");
+    std::unique_ptr<Property> propA = std::make_unique<OptionProperty<MyEnumB>>("test", "test");
     propA->setSerializationMode(PropertySerializationMode::All);
     std::stringstream ss;
     Serializer s("");

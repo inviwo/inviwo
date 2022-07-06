@@ -43,8 +43,7 @@
 namespace inviwo {
 
 namespace util {
-inline void updateReaderFromFile(const FileProperty& file,
-                                 OptionProperty<FileExtension>& reader) {
+inline void updateReaderFromFile(const FileProperty& file, OptionProperty<FileExtension>& reader) {
     if ((file.getSelectedExtension() == FileExtension::all() &&
          !reader.getSelectedValue().matches(file)) ||
         file.getSelectedExtension().empty()) {

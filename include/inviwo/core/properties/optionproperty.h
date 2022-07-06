@@ -177,7 +177,7 @@ public:
      * Implicit conversion operator. The OptionProperty will implicitly be converted to T when
      * possible.
      */
-    operator const T &() const;
+    operator const T&() const;
 
     template <typename U = T,
               class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
@@ -566,7 +566,7 @@ const T& OptionProperty<T>::getSelectedValue() const {
 }
 
 template <typename T>
-OptionProperty<T>::operator const T &() const {
+OptionProperty<T>::operator const T&() const {
     IVW_ASSERT(selectedIndex_ < options_.size(),
                "Index out of range (number of options: " << options_.size()
                                                          << ", index: " << selectedIndex_ << ")");
