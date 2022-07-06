@@ -13,12 +13,13 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
+        fail-fast: false
         include:
           - os: 'windows-latest'
             installer: 'inviwo-installer-win'
-            app: 
           - os: 'macos-latest'
             installer: 'inviwo-installer-macos'
+        
     runs-on: ${{ matrix.os }}
     steps:
     - name: Download artifact
