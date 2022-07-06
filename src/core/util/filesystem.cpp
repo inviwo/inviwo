@@ -545,7 +545,7 @@ std::string findBasePath() {
 
         if (directoryExists(macPath)) {
             // remove "data"
-            return macPath.substr(0, macPath.find_last_of('/'));
+            return macPath.substr(0, macPath.rfind("/data"));
         }
     }
 #endif
