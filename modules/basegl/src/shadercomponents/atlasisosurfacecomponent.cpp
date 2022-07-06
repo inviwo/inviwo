@@ -53,7 +53,10 @@ AtlasIsosurfaceComponent::AtlasIsosurfaceComponent(std::string_view volume)
     , showHighlighted_("showHighlightedIndices", "Show Highlighted", true,
                        vec3(1.0f, 0.906f, 0.612f))
     , showSelected_("showSelectedIndices", "Show Selected", true, vec3(1.0f, 0.769f, 0.247f))
-    , showFiltered_("showFilteredIndices", "Show Filtered", true, vec3(0.5f, 0.5f, 0.5f)) {}
+    , showFiltered_("showFilteredIndices", "Show Filtered", true, vec3(0.5f, 0.5f, 0.5f)) {
+    useAtlasBoundary_.addProperties(applyBoundaryLight_, showHighlighted_, showFiltered_,
+                                    showSelected_);
+}
 
 std::string_view AtlasIsosurfaceComponent::getName() const { return volume_.getIdentifier(); }
 
@@ -83,8 +86,7 @@ void AtlasIsosurfaceComponent::process(Shader& shader, TextureUnitContainer&) {
 
 
 std::vector<Property*> AtlasIsosurfaceComponent::getProperties() {
-    return {&useAtlasBoundary_, &applyBoundaryLight_, &showHighlighted_, &showSelected_,
-            &showFiltered_};
+    return {&useAtlasBoundary_};
 }
 
 namespace {

@@ -84,7 +84,7 @@ void AtlasBoundary::process() {
         // Remap using vectors and cloned volume
         auto volume = volumeInport_.getData();
         volume_ = std::shared_ptr<Volume>(volume->clone());
-        remap(volume_, sourceIndices, destinationIndices, 0, true);
+        util::remap(*volume_, sourceIndices, destinationIndices, 0, true);
         // Set volume properties
         volume_->setInterpolation(InterpolationType::Nearest);
         volume_->setSwizzleMask(swizzlemasks::luminance);
