@@ -33,21 +33,22 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo PointGenerationProcessor::processorInfo_{
+const ProcessorInfo Point3DGenerationProcessor::processorInfo_{
     "org.inviwo.PointGenerationProcessor",  // Class identifier
     "Point Generation",                     // Display name
     "Data Creation",                        // Category
     CodeState::Stable,                      // Code state
     Tags::CPU,                              // Tags
 };
-const ProcessorInfo PointGenerationProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo Point3DGenerationProcessor::getProcessorInfo() const { return processorInfo_; }
 
-PointGenerationProcessor::PointGenerationProcessor()
+Point3DGenerationProcessor::Point3DGenerationProcessor()
     : Processor()
     , outport_("outport")
-    , grid_{{"axis1", "Axis 1", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
+    , grid_{{"basis", "Basis", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
             {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
             {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
+            {"autoCenter", "Auto Center", true},
             {"offset", "Offset", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
             {"nPoints", "Number of Points", util::ordinalCount(size3_t{10}, 100u)},
             {"jitter", "jitter", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 10.f)},
@@ -55,6 +56,7 @@ PointGenerationProcessor::PointGenerationProcessor()
     , box_{{"axis1", "Axis 1", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
            {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
            {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
+           {"autoCenter", "Auto Center", true},
            {"offset", "Offset", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
            {"nPoints", "Number of Points", util::ordinalCount(size_t{10}, 100u)},
            {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
@@ -66,20 +68,39 @@ PointGenerationProcessor::PointGenerationProcessor()
     , boxProps_{"box", "Random box", false}
     , sphereProps_{"sphere", "Random Sphere", false} {
 
-    gridProps_.addProperties(grid_.a1, grid_.a2, grid_.a3, grid_.offset, grid_.nPoints,
-                             grid_.jitter, grid_.seed);
-    boxProps_.addProperties(box_.a1, box_.a2, box_.a3, box_.offset, box_.nPoints, box_.seed);
+    gridProps_.addProperties(grid_.a1, grid_.a2, grid_.a3, grid_.autoCenter, grid_.offset,
+                             grid_.nPoints, grid_.jitter, grid_.seed);
+    boxProps_.addProperties(box_.a1, box_.a2, box_.a3, box_.autoCenter, box_.offset, box_.nPoints,
+                            box_.seed);
     sphereProps_.addProperties(sphere_.center, sphere_.radius, sphere_.nPoints, sphere_.seed);
     addProperties(gridProps_, boxProps_, sphereProps_);
 
     addPort(outport_);
+
+    auto center = [](auto& item) {
+        auto callback = [&item]() {
+            if (item.autoCenter) {
+                item.offset.set(-0.5 * (item.a1.get() + item.a2.get() + item.a3.get()));
+            }
+        };
+        item.a1.onChange(callback);
+        item.a2.onChange(callback);
+        item.a3.onChange(callback);
+        item.autoCenter.onChange([&item, callback]() {
+            item.autoCenter.setReadOnly(item.autoCenter);
+            if (item.autoCenter) callback();
+        });
+    };
+
+    center(grid_);
+    center(box_);
 }
 
-void PointGenerationProcessor::process() {
+void Point3DGenerationProcessor::process() {
     std::shared_ptr<std::vector<vec3>> points = std::make_shared<std::vector<vec3>>();
 
     if (gridProps_) {
-        util::GridPointGeneration opts{
+        util::Grid3DPointGeneration opts{
             mat4{vec4{grid_.a1.get(), 0.0f}, vec4{grid_.a2.get(), 0.0f}, vec4{grid_.a3.get(), 0.0f},
                  vec4{grid_.offset.get(), 1.0f}},
             grid_.nPoints.get(),
@@ -89,7 +110,7 @@ void PointGenerationProcessor::process() {
     }
 
     if (boxProps_) {
-        util::RandomPointGeneration opts{
+        util::RandomCubicalPointGeneration opts{
             mat4{vec4{box_.a1.get(), 0.0f}, vec4{box_.a2.get(), 0.0f}, vec4{box_.a3.get(), 0.0f},
                  vec4{box_.offset.get(), 1.0f}},
             box_.nPoints.get(), box_.seed.get()};
@@ -97,8 +118,8 @@ void PointGenerationProcessor::process() {
     }
 
     if (sphereProps_) {
-        util::SpherePointGeneration opts{sphere_.center.get(), sphere_.radius.get(),
-                                         sphere_.nPoints.get(), sphere_.seed.get()};
+        util::RandomSphericalPointGeneration opts{sphere_.center.get(), sphere_.radius.get(),
+                                                  sphere_.nPoints.get(), sphere_.seed.get()};
         util::generatePoints<float>(std::back_inserter(*points), opts);
     }
 

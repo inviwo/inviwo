@@ -67,8 +67,8 @@ constexpr ShaderSegment::Placeholder uniform{"#pragma IVW_SHADER_SEGMENT_PLACEHO
                                              "uniform"};
 constexpr ShaderSegment::Placeholder transforms{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_TRANSFORMS",
                                                 "transforms"};
-constexpr ShaderSegment::Placeholder setupVert{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP_VERT",
-                                               "setupVert"};
+constexpr ShaderSegment::Placeholder setupVert{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP",
+                                               "setup"};
 }  // namespace irplaceholder
 
 namespace {
@@ -113,7 +113,7 @@ out vec3 texCoord;
 out vec4 worldPosition;
 flat out vec4 picking;
  
-#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP_VERT
+#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
  
 void main() {
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_TRANSFORMS
@@ -133,8 +133,6 @@ in vec3 normal;
 in vec3 texCoord;
 in vec4 worldPosition;
 flat in vec4 picking;
- 
-#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP_FRAG
  
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
@@ -192,18 +190,6 @@ DynPortManager::~DynPortManager() {
 }
 
 template <typename T>
-inline constexpr std::string_view glslTypeName() {
-    using types =
-        std::tuple<float, double, bool, uint32_t, int32_t, vec2, dvec2, bvec2, ivec2, uvec2, vec3,
-                   dvec3, bvec3, ivec3, uvec3, vec4, dvec4, bvec4, ivec4, uvec4>;
-    constexpr std::array<std::string_view, 20> names = {
-        "float", "double", "bool",  "uint",  "int",   "vec2", "dvec2", "bvec2", "ivec2", "uvec2",
-        "vec3",  "dvec3",  "bvec3", "ivec3", "uvec3", "vec4", "dvec4", "bvec4", "ivec4", "uvec4"};
-
-    return names[util::index_of<T, types>()];
-}
-
-template <typename T>
 DynPortManager createDynPortManager(InstanceRenderer* theRenderer, std::string_view identifier,
                                     StringProperty* uniform) {
 
@@ -218,7 +204,7 @@ DynPortManager createDynPortManager(InstanceRenderer* theRenderer, std::string_v
     auto addUniform = [u = uniform](ShaderObject& so) {
         so.addSegment(ShaderSegment{
             irplaceholder::uniform, u->get(),
-            fmt::format("uniform {0} {1} = {0}(0);", detail::glslTypeName<T>(), u->get())});
+            fmt::format("uniform {0} {1} = {0}(0);", utilgl::glslTypeName<T>(), u->get())});
     };
 
     return DynPortManager{theRenderer, std::move(port), std::move(size), std::move(set),

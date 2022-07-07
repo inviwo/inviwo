@@ -49,12 +49,19 @@ public:
                        "Buffer Usage",
                        {BufferUsage::Static, BufferUsage::Dynamic},
                        0}
-        , bufferTarget_{
-              "bufferTarget", "Buffer Target", {BufferTarget::Data, BufferTarget::Index}, 0} {
+        , bufferTarget_{"bufferTarget", "Buffer Target",
+                        []() -> std::vector<BufferTarget> {
+                            if constexpr (std::is_floating_point_v<T>) {
+                                return {BufferTarget::Data};
+                            } else {
+                                return {BufferTarget::Index, BufferTarget::Data};
+                            }
+                        }(),
+                        0} {
 
         addPorts(inport_, outport_);
         addProperties(bufferUsage_, bufferTarget_);
-    }
+    }  // namespace inviwo
     virtual ~VectorToBuffer() override = default;
 
     virtual void process() override {

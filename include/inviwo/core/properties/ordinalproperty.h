@@ -35,6 +35,7 @@
 #include <inviwo/core/util/glm.h>
 
 #include <string>
+#include <type_traits>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -257,50 +258,75 @@ IVW_CORE_API OrdinalPropertyState<vec3> ordinalLight(
     const vec3& pos, float min = -100.0, float max = 100.0,
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
 
-template <typename T, typename U>
+/**
+ * A factory function for configuring a OrdinalProperty representing a generic vector, with a
+ * symmetric range around zero, and Ignored boundary constraints.
+ * @param value the default value for the property
+ * @param minMax used to construct the range of the property like min = T{-minMax}, max = T{minMax}.
+ * The constraint behavior will be Ignore.
+ * @param invalidationLevel property invalidation level, defaults to InvalidOutput
+ * @param semantics property semantics, defaults to SpinBox
+ */
+template <typename T = double, typename U = T>
 OrdinalPropertyState<T> ordinalSymmetricVector(
-    const T& val, const U& minMax,
+    const T& value = {0}, const U& minMax = U{100},
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
     PropertySemantics semantics = PropertySemantics::SpinBox) {
 
-    return {val,
-            decltype(val){-minMax},
+    return {value,
+            std::decay_t<decltype(value)>{-minMax},
             ConstraintBehavior::Ignore,
-            decltype(val){minMax},
+            std::decay_t<decltype(value)>{minMax},
             ConstraintBehavior::Ignore,
-            decltype(val){0.1},
+            std::decay_t<decltype(value)>{0.1},
             invalidationLevel,
             semantics};
 }
 
+/**
+ * A factory function for configuring a OrdinalProperty representing a count. It will have a
+ * Immutable min at zero and an upper Ignored max. The increment will be one.
+ * @param value the default value for the property
+ * @param max used to construct the max value. The max constraint behavior will be Ignore.
+ * @param invalidationLevel property invalidation level, defaults to InvalidOutput
+ * @param semantics property semantics, defaults to SpinBox
+ */
 template <typename T = size_t, typename U = T>
 OrdinalPropertyState<T> ordinalCount(
-    const T& val = T{0}, const U& max = U{100},
+    const T& value = T{0}, const U& max = U{100},
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
     PropertySemantics semantics = PropertySemantics::SpinBox) {
 
-    return {val,
-            decltype(val){0},
+    return {value,
+            std::decay_t<decltype(value)>{0},
             ConstraintBehavior::Immutable,
-            decltype(val){max},
+            std::decay_t<decltype(value)>{max},
             ConstraintBehavior::Ignore,
-            decltype(val){1},
+            std::decay_t<decltype(value)>{1},
             invalidationLevel,
             semantics};
 }
 
+/**
+ * A factory function for configuring a OrdinalProperty representing a length. It will have a
+ * Immutable min at zero and an upper Ignored max.
+ * @param value the default value for the property
+ * @param max used to construct the max value. The max constraint behavior will be Ignore.
+ * @param invalidationLevel property invalidation level, defaults to InvalidOutput
+ * @param semantics property semantics, defaults to SpinBox
+ */
 template <typename T = double, typename U = T>
 OrdinalPropertyState<T> ordinalLength(
-    const T& val = T{0}, const U& max = U{100},
+    const T& value = T{0}, const U& max = U{100},
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
     PropertySemantics semantics = PropertySemantics::SpinBox) {
 
-    return {val,
-            decltype(val){0},
+    return {value,
+            std::decay_t<decltype(value)>{0},
             ConstraintBehavior::Immutable,
-            decltype(val){max},
+            std::decay_t<decltype(value)>{max},
             ConstraintBehavior::Ignore,
-            decltype(val){0.1},
+            std::decay_t<decltype(value)>{0.1},
             invalidationLevel,
             semantics};
 }

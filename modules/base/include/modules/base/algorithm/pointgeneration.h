@@ -42,20 +42,20 @@ namespace inviwo {
 
 namespace util {
 
-struct GridPointGeneration {
+struct Grid3DPointGeneration {
     dmat4 bases = dmat4(1.0);
     size3_t nPoints = {5, 5, 5};
     std::optional<dvec3> jitter = std::nullopt;
     std::optional<size_t> seed = std::nullopt;
 };
 
-struct RandomPointGeneration {
+struct RandomCubicalPointGeneration {
     dmat4 bases = dmat4(1.0);
     size_t nPoints = 25;
     std::optional<size_t> seed = std::nullopt;
 };
 
-struct SpherePointGeneration {
+struct RandomSphericalPointGeneration {
     dvec3 center = dvec3{0.0};
     dvec2 radius = dvec2{0.0, 1.0};
     size_t nPoints = 25;
@@ -63,9 +63,9 @@ struct SpherePointGeneration {
 };
 
 template <typename T, typename OutIt>
-void generatePoints(
-    OutIt outIt,
-    std::variant<GridPointGeneration, RandomPointGeneration, SpherePointGeneration> opts) {
+void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubicalPointGeneration,
+                                              RandomSphericalPointGeneration>
+                                     opts) {
 
     const auto makeMT = [](const auto& opts) {
         std::mt19937 mt;
@@ -80,7 +80,7 @@ void generatePoints(
 
     std::visit(
         util::overloaded{
-            [&](const GridPointGeneration& opts) {
+            [&](const Grid3DPointGeneration& opts) {
                 const auto bases =
                     opts.bases * glm::scale(dvec3{1.0 / opts.nPoints.x, 1.0 / opts.nPoints.y,
                                                   1.0 / opts.nPoints.z});
@@ -102,7 +102,7 @@ void generatePoints(
                     });
                 }
             },
-            [&](const RandomPointGeneration& opts) {
+            [&](const RandomCubicalPointGeneration& opts) {
                 auto mt = makeMT(opts);
 
                 for (size_t i = 0; i < opts.nPoints; ++i) {
@@ -113,7 +113,7 @@ void generatePoints(
                     outIt++ = glm::vec<3, T>{point};
                 }
             },
-            [&](const SpherePointGeneration& opts) {
+            [&](const RandomSphericalPointGeneration& opts) {
                 auto mt = makeMT(opts);
 
                 auto thetaGen = [&]() { return util::randomNumber<T>(mt, 0, glm::two_pi<T>()); };

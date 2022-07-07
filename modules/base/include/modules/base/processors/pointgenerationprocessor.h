@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/glmvec.h>
 
@@ -40,10 +41,10 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API PointGenerationProcessor : public Processor {
+class IVW_MODULE_BASE_API Point3DGenerationProcessor : public Processor {
 public:
-    PointGenerationProcessor();
-    virtual ~PointGenerationProcessor() override = default;
+    Point3DGenerationProcessor();
+    virtual ~Point3DGenerationProcessor() override = default;
 
     virtual void process() override;
 
@@ -57,6 +58,7 @@ private:
         FloatVec3Property a1;
         FloatVec3Property a2;
         FloatVec3Property a3;
+        BoolProperty autoCenter;
         FloatVec3Property offset;
         IntSize3Property nPoints;
         FloatVec3Property jitter;
@@ -67,6 +69,7 @@ private:
         FloatVec3Property a1;
         FloatVec3Property a2;
         FloatVec3Property a3;
+        BoolProperty autoCenter;
         FloatVec3Property offset;
         IntSizeTProperty nPoints;
         IntSizeTProperty seed;

@@ -160,7 +160,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshPlaneClipping>();
     registerProcessor<NoiseProcessor>();
     registerProcessor<PixelToBufferProcessor>();
-    registerProcessor<PointGenerationProcessor>();
+    registerProcessor<Point3DGenerationProcessor>();
     registerProcessor<PointLightSourceProcessor>();
     registerProcessor<OrdinalPropertyAnimator>();
     registerProcessor<SpotLightSourceProcessor>();
@@ -173,6 +173,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<TrianglesToWireframe>();
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();
+    registerProcessor<VectorToBuffer<unsigned int>>();
     registerProcessor<VectorToBuffer<float>>();
     registerProcessor<VectorToBuffer<vec2>>();
     registerProcessor<VectorToBuffer<vec3>>();
