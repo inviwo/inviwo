@@ -53,8 +53,10 @@ namespace {
 OrdinalPropertyState<float> ordinalAlpha(
     const float& value, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput) {
     return {value,
-            {0.0f, ConstraintBehavior::Immutable},
-            {1.0f, ConstraintBehavior::Immutable},
+            0.0f,
+            ConstraintBehavior::Immutable,
+            1.0f,
+            ConstraintBehavior::Immutable,
             0.01f,
             invalidationLevel,
             PropertySemantics::Default};

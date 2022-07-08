@@ -35,6 +35,7 @@
 #include <inviwo/core/util/glm.h>
 
 #include <string>
+#include <type_traits>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -47,13 +48,46 @@ namespace inviwo {
 template <typename T>
 struct OrdinalPropertyState {
     T value{};
-    std::pair<T, ConstraintBehavior> minValue =
-        std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable};
-    std::pair<T, ConstraintBehavior> maxValue =
-        std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable};
+    T min = Defaultvalues<T>::getMin();
+    ConstraintBehavior minConstraint = ConstraintBehavior::Editable;
+    T max = Defaultvalues<T>::getMax();
+    ConstraintBehavior maxConstraint = ConstraintBehavior::Editable;
     T increment = Defaultvalues<T>::getInc();
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
     PropertySemantics semantics = defaultSemantics();
+
+    auto setValue(T newValue) -> OrdinalPropertyState {
+        value = newValue;
+        return *this;
+    }
+    auto setMin(T newMin) -> OrdinalPropertyState {
+        min = newMin;
+        return *this;
+    }
+    auto setMinConstraint(ConstraintBehavior newMinConstraint) -> OrdinalPropertyState {
+        minConstraint = newMinConstraint;
+        return *this;
+    }
+    auto setMax(T newMax) -> OrdinalPropertyState {
+        max = newMax;
+        return *this;
+    }
+    auto setMaxConstraint(ConstraintBehavior newMaxConstraint) -> OrdinalPropertyState {
+        maxConstraint = newMaxConstraint;
+        return *this;
+    }
+    auto setInc(T newIncrement) -> OrdinalPropertyState {
+        increment = newIncrement;
+        return *this;
+    }
+    auto setInvalidation(InvalidationLevel newInvalidationLevel) -> OrdinalPropertyState {
+        invalidationLevel = newInvalidationLevel;
+        return *this;
+    }
+    auto setSemantics(PropertySemantics newSemantics) -> OrdinalPropertyState {
+        semantics = newSemantics;
+        return *this;
+    }
 
     static PropertySemantics defaultSemantics() {
         if constexpr (util::extent<T, 1>::value > 1) {
@@ -224,6 +258,79 @@ IVW_CORE_API OrdinalPropertyState<vec3> ordinalLight(
     const vec3& pos, float min = -100.0, float max = 100.0,
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
 
+/**
+ * A factory function for configuring a OrdinalProperty representing a generic vector, with a
+ * symmetric range around zero, and Ignored boundary constraints.
+ * @param value the default value for the property
+ * @param minMax used to construct the range of the property like min = T{-minMax}, max = T{minMax}.
+ * The constraint behavior will be Ignore.
+ * @param invalidationLevel property invalidation level, defaults to InvalidOutput
+ * @param semantics property semantics, defaults to SpinBox
+ */
+template <typename T = double, typename U = T>
+OrdinalPropertyState<T> ordinalSymmetricVector(
+    const T& value = {0}, const U& minMax = U{100},
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+    PropertySemantics semantics = PropertySemantics::SpinBox) {
+
+    return {value,
+            std::decay_t<decltype(value)>{-minMax},
+            ConstraintBehavior::Ignore,
+            std::decay_t<decltype(value)>{minMax},
+            ConstraintBehavior::Ignore,
+            std::decay_t<decltype(value)>{0.1},
+            invalidationLevel,
+            semantics};
+}
+
+/**
+ * A factory function for configuring a OrdinalProperty representing a count. It will have a
+ * Immutable min at zero and an upper Ignored max. The increment will be one.
+ * @param value the default value for the property
+ * @param max used to construct the max value. The max constraint behavior will be Ignore.
+ * @param invalidationLevel property invalidation level, defaults to InvalidOutput
+ * @param semantics property semantics, defaults to SpinBox
+ */
+template <typename T = size_t, typename U = T>
+OrdinalPropertyState<T> ordinalCount(
+    const T& value = T{0}, const U& max = U{100},
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+    PropertySemantics semantics = PropertySemantics::SpinBox) {
+
+    return {value,
+            std::decay_t<decltype(value)>{0},
+            ConstraintBehavior::Immutable,
+            std::decay_t<decltype(value)>{max},
+            ConstraintBehavior::Ignore,
+            std::decay_t<decltype(value)>{1},
+            invalidationLevel,
+            semantics};
+}
+
+/**
+ * A factory function for configuring a OrdinalProperty representing a length. It will have a
+ * Immutable min at zero and an upper Ignored max.
+ * @param value the default value for the property
+ * @param max used to construct the max value. The max constraint behavior will be Ignore.
+ * @param invalidationLevel property invalidation level, defaults to InvalidOutput
+ * @param semantics property semantics, defaults to SpinBox
+ */
+template <typename T = double, typename U = T>
+OrdinalPropertyState<T> ordinalLength(
+    const T& value = T{0}, const U& max = U{100},
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+    PropertySemantics semantics = PropertySemantics::SpinBox) {
+
+    return {value,
+            std::decay_t<decltype(value)>{0},
+            ConstraintBehavior::Immutable,
+            std::decay_t<decltype(value)>{max},
+            ConstraintBehavior::Ignore,
+            std::decay_t<decltype(value)>{0.1},
+            invalidationLevel,
+            semantics};
+}
+
 }  // namespace util
 
 // Scalar properties
@@ -293,11 +400,14 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
     , maxConstraint_{"maxConstraint", maxValue.second} {
 
     if (!validRange(minValue_, maxValue_) || value_ != clamp(value_)) {
-        throw Exception{
-            fmt::format("Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
-                        minValue_.value, value_.value, maxValue_.value, this->getDisplayName(),
-                        Defaultvalues<T>::getName(), this->getPath()),
-            IVW_CONTEXT};
+        throw Exception{IVW_CONTEXT,
+                        "Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
+                        minValue_.value,
+                        value_.value,
+                        maxValue_.value,
+                        this->getDisplayName(),
+                        Defaultvalues<T>::getName(),
+                        this->getPath()};
     }
 }
 
@@ -307,8 +417,8 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
     : OrdinalProperty{identifier,
                       displayName,
                       state.value,
-                      state.minValue,
-                      state.maxValue,
+                      std::pair{state.min, state.minConstraint},
+                      std::pair{state.max, state.maxConstraint},
                       state.increment,
                       state.invalidationLevel,
                       state.semantics} {}
@@ -401,10 +511,8 @@ void OrdinalProperty<T>::set(component_type val, size_t i, size_t j) {
 template <typename T>
 void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, const T& increment) {
     if (!validRange(minVal, maxVal)) {
-        throw Exception{
-            fmt::format("Invalid range given for \"{}\" ({}Property, {})", this->getDisplayName(),
-                        Defaultvalues<T>::getName(), this->getPath()),
-            IVW_CONTEXT};
+        throw Exception{IVW_CONTEXT, "Invalid range given for \"{}\" ({}Property, {})",
+                        this->getDisplayName(), Defaultvalues<T>::getName(), this->getPath()};
     }
 
     bool modified = false;

@@ -49,7 +49,7 @@ BasisProperty::BasisProperty(std::string_view identifier, std::string_view displ
                   {"Voxel", "Voxel", BasisPropertyReference::Voxel}},
                  0, InvalidationLevel::Valid)
     , overRideDefaults_("override", "Override", false)
-    , updateForNewEntiry_("update", "Update On New Data", true, InvalidationLevel::Valid)
+    , updateForNewEntry_("update", "Update On New Data", true, InvalidationLevel::Valid)
     , size_("size", "Size", vec3(1.0f), vec3(0.0), vec3(std::numeric_limits<float>::max()),
             vec3{0.001f}, InvalidationLevel::Valid)
     , a_("a", "A", vec3(1.0f, 0.0f, 0.0f), vec3(std::numeric_limits<float>::lowest()),
@@ -89,7 +89,7 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
     , mode_(rhs.mode_)
     , reference_(rhs.reference_)
     , overRideDefaults_(rhs.overRideDefaults_)
-    , updateForNewEntiry_(rhs.updateForNewEntiry_)
+    , updateForNewEntry_(rhs.updateForNewEntry_)
     , size_(rhs.size_)
     , a_(rhs.a_)
     , b_(rhs.b_)
@@ -134,7 +134,7 @@ void BasisProperty::update(const SpatialEntity<3>& entity, bool deserialize) {
     util::for_each_argument([&](auto& elem) { elem.setCurrentStateAsDefault(); }, size_, a_, b_, c_,
                             offset_);
 
-    if (deserialize || !updateForNewEntiry_) {
+    if (deserialize || !updateForNewEntry_) {
         overrideModel_.value = org;
         load();
     }

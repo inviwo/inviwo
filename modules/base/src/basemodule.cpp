@@ -63,6 +63,7 @@
 #include <modules/base/processors/orientationindicator.h>
 #include <modules/base/processors/pixeltobufferprocessor.h>
 #include <modules/base/processors/pixelvalue.h>
+#include <modules/base/processors/pointgenerationprocessor.h>
 #include <modules/base/processors/pointlightsourceprocessor.h>
 #include <modules/base/processors/randommeshgenerator.h>
 #include <modules/base/processors/randomspheregenerator.h>
@@ -72,6 +73,7 @@
 #include <modules/base/processors/surfaceextractionprocessor.h>
 #include <modules/base/processors/transform.h>
 #include <modules/base/processors/trianglestowireframe.h>
+#include <modules/base/processors/vectortobuffer.h>
 #include <modules/base/processors/volumeboundaryplanes.h>
 #include <modules/base/processors/volumeconverter.h>
 #include <modules/base/processors/volumecreator.h>
@@ -158,6 +160,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshPlaneClipping>();
     registerProcessor<NoiseProcessor>();
     registerProcessor<PixelToBufferProcessor>();
+    registerProcessor<Point3DGenerationProcessor>();
     registerProcessor<PointLightSourceProcessor>();
     registerProcessor<OrdinalPropertyAnimator>();
     registerProcessor<SpotLightSourceProcessor>();
@@ -170,6 +173,11 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<TrianglesToWireframe>();
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();
+    registerProcessor<VectorToBuffer<unsigned int>>();
+    registerProcessor<VectorToBuffer<float>>();
+    registerProcessor<VectorToBuffer<vec2>>();
+    registerProcessor<VectorToBuffer<vec3>>();
+    registerProcessor<VectorToBuffer<vec4>>();
     registerProcessor<VolumeConverter>();
     registerProcessor<WorldTransformMeshDeprecated>();
     registerProcessor<WorldTransformVolumeDeprecated>();

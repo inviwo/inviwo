@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwopy/pyglmtypes.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <inviwo/core/util/glm.h>
 
@@ -72,15 +73,15 @@ struct ExposePortsFunctor {
                     static_assert(alwaysFalse<T>(), "Missing name for T");
                 }
             }();
-            const auto vecname = fmt::format("{}Vector", name);
-            py::bind_vector<std::vector<T>>(m, vecname);
-            exposeStandardDataPorts<std::vector<T>>(m, vecname);
+            const auto vectorName = fmt::format("{}Vector", name);
+            py::bind_vector<std::vector<T>>(m, vectorName);
+            exposeStandardDataPorts<std::vector<T>>(m, vectorName);
 
         } else {
             const auto prefix = glm::detail::prefix<V>::value();
-            const auto vecname = fmt::format("{}vec{}Vector", prefix, N);
-            py::bind_vector<std::vector<T>>(m, vecname, py::buffer_protocol{});
-            exposeStandardDataPorts<std::vector<T>>(m, vecname);
+            const auto vectorName = fmt::format("{}vec{}Vector", prefix, N);
+            py::bind_vector<std::vector<T>>(m, vectorName, py::buffer_protocol{});
+            exposeStandardDataPorts<std::vector<T>>(m, vectorName);
         }
     }
 };

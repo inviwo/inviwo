@@ -602,6 +602,18 @@ private:
     T* item_;
 };
 
+template <typename T>
+inline constexpr std::string_view glslTypeName() {
+    using types =
+        std::tuple<float, double, bool, uint32_t, int32_t, vec2, dvec2, bvec2, ivec2, uvec2, vec3,
+                   dvec3, bvec3, ivec3, uvec3, vec4, dvec4, bvec4, ivec4, uvec4>;
+    constexpr std::array<std::string_view, 20> names = {
+        "float", "double", "bool",  "uint",  "int",   "vec2", "dvec2", "bvec2", "ivec2", "uvec2",
+        "vec3",  "dvec3",  "bvec3", "ivec3", "uvec3", "vec4", "dvec4", "bvec4", "ivec4", "uvec4"};
+
+    return names[util::index_of<T, types>()];
+}
+
 }  // namespace utilgl
 
 }  // namespace inviwo

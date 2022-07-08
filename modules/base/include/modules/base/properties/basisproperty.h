@@ -81,7 +81,7 @@ public:
     OptionProperty<BasisPropertyReference> reference_;
 
     BoolProperty overRideDefaults_;
-    BoolProperty updateForNewEntiry_;
+    BoolProperty updateForNewEntry_;
 
     FloatVec3Property size_;
     FloatVec3Property a_;
@@ -93,12 +93,12 @@ public:
 
 private:
     auto props() {
-        return std::tie(mode_, reference_, overRideDefaults_, updateForNewEntiry_, size_, a_, b_,
-                        c_, autoCenter_, offset_, resetOverride_);
+        return std::tie(mode_, reference_, overRideDefaults_, updateForNewEntry_, size_, a_, b_, c_,
+                        autoCenter_, offset_, resetOverride_);
     }
     auto props() const {
-        return std::tie(mode_, reference_, overRideDefaults_, updateForNewEntiry_, size_, a_, b_,
-                        c_, autoCenter_, offset_, resetOverride_);
+        return std::tie(mode_, reference_, overRideDefaults_, updateForNewEntry_, size_, a_, b_, c_,
+                        autoCenter_, offset_, resetOverride_);
     }
 
     void update(const SpatialEntity<3>& volume, bool deserialize);
