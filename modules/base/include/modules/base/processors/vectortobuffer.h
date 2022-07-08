@@ -51,10 +51,10 @@ public:
                        0}
         , bufferTarget_{"bufferTarget", "Buffer Target",
                         []() -> std::vector<BufferTarget> {
-                            if constexpr (std::is_floating_point_v<T>) {
-                                return {BufferTarget::Data};
-                            } else {
+                            if constexpr (std::is_integral_v<T>) {
                                 return {BufferTarget::Index, BufferTarget::Data};
+                            } else {
+                                return {BufferTarget::Data};
                             }
                         }(),
                         0} {
