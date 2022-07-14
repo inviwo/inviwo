@@ -36,6 +36,7 @@
 
 #include <functional>
 #include <sstream>
+#include <iomanip>
 #include <type_traits>
 #include <string>
 #include <unordered_map>
@@ -219,21 +220,29 @@ public:
         doc.visit(
             [&](Element* elem, std::vector<Element*>& stack) {
                 if (elem->isNode()) {
-                    ss << std::string(stack.size() * 4, ' ') << "<" << elem->name();
+                    ss << std::setw(stack.size() * 4) << ' ' << '<' << elem->name();
                     for (const auto& item : elem->attributes()) {
-                        ss << " " << item.first << "='" << item.second << "'";
+                        ss << ' ' << item.first << "='" << item.second << '\'';
                     }
-                    ss << ">\n";
+                    ss << '>';
+                    if (!elem->noIndent()) ss << '\n';
                 } else if (elem->isText() && !elem->content().empty()) {
                     if (!stack.empty() && !stack.back()->noIndent()) {
-                        ss << std::string((stack.size()) * 4, ' ');
+                        ss << std::setw(stack.size() * 4) << ' ' << elem->content() << '\n';
+                    } else if (!stack.empty() && stack.back()->noIndent()) {
+                        ss << elem->content();
+                    } else {
+                        ss << elem->content() << '\n';
                     }
-                    ss << elem->content() << "\n";
                 }
             },
             [&](Element* elem, std::vector<Element*>& stack) {
                 if (elem->isNode() && !elem->emptyTag()) {
-                    ss << std::string(stack.size() * 4, ' ') << "</" << elem->name() << ">\n";
+                    if (!elem->noIndent()) {
+                        ss << std::setw(stack.size() * 4) << ' ' << "</" << elem->name() << ">\n";
+                    } else {
+                        ss << "</" << elem->name() << ">\n";
+                    }
                 }
             });
 

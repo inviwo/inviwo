@@ -35,12 +35,14 @@
 namespace inviwo {
 
 CompositeProcessorFactoryObject::CompositeProcessorFactoryObject(const std::string& file)
-    : ProcessorFactoryObject(makeProcessorInfo(file)), file_{file} {}
+    : ProcessorFactoryObject(makeProcessorInfo(file), "inviwo::CompositeProcessor"), file_{file} {}
 
 std::unique_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplication* app) {
     auto pi = getProcessorInfo();
     return std::make_unique<CompositeProcessor>(pi.displayName, pi.displayName, app, file_);
 }
+
+Document CompositeProcessorFactoryObject::getMetaInformation() const { return Document(file_); }
 
 ProcessorInfo CompositeProcessorFactoryObject::makeProcessorInfo(const std::string& file) {
 

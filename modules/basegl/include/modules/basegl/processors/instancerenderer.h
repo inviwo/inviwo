@@ -57,7 +57,10 @@ namespace inviwo {
 class InstanceRenderer;
 
 namespace detail {
-
+/**
+ * Helper class for the InstanceRenderer to manage construction, destruction, binding, and setting
+ * of uniforms for dynamically created ports.
+ */
 struct IVW_MODULE_BASEGL_API DynPortManager {
     DynPortManager(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
                    std::function<size_t()> aSize, std::function<void(Shader&, size_t)> aSet,
@@ -96,7 +99,7 @@ private:
     static std::vector<std::unique_ptr<Property>> prefabs();
 
     MeshInport inport_;
-    ImageInport imageInport_;
+    ImageInport background_;
     ImageOutport outport_;
 
     ListProperty ports_;

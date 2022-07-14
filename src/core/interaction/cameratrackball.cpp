@@ -37,6 +37,10 @@ std::string CameraTrackball::getClassIdentifier() const { return classIdentifier
 
 CameraTrackball::CameraTrackball(CameraProperty* cameraProp) : Trackball(cameraProp) {}
 
+CameraTrackball::CameraTrackball(std::string_view identifier, std::string_view displayName,
+                                 CameraProperty* cameraProp)
+    : Trackball(identifier, displayName, cameraProp) {}
+
 CameraTrackball::~CameraTrackball() = default;
 
 }  // namespace inviwo

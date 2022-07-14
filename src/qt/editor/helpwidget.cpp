@@ -39,6 +39,7 @@
 #include <inviwo/core/util/docbuilder.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/network/networkutils.h>
 
 #include <fmt/format.h>
 
@@ -63,6 +64,7 @@
 #include <QTabWidget>
 #include <QToolBar>
 #include <QDesktopServices>
+#include <QTimer>
 #include <warn/pop>
 
 namespace inviwo {
@@ -196,8 +198,26 @@ constexpr std::string_view css = R"(
     }
     )";
 
+template <typename T>
+void link(T& factory, std::string_view id, Document::DocumentHandle& handle) {
+    std::string base = "https://inviwo.org/inviwo/cpp-api/class";
+    if (auto* fo = factory->getFactoryObject(id)) {
+        auto& typeName = fo->getTypeName();
+        std::string name{typeName.substr(0, typeName.find_first_of('<'))};
+        std::string doxyName{name};
+        replaceInString(doxyName, ":", "_1");
+        handle.append("a", "", {{"href", base + doxyName}}).append("span", name, {{"class", "id"}});
+    }
+}
+
 Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo& info,
-                      const InviwoModule& module) {
+                      const InviwoModule& module, InviwoApplication& app) {
+
+    auto processorFactory = app.getProcessorFactory();
+    auto propertyFactory = app.getPropertyFactory();
+    auto inportFactory = app.getInportFactory();
+    auto outportFactory = app.getOutportFactory();
+
     Document doc;
 
     auto html = doc.append("html");
@@ -206,10 +226,11 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
     body.append("h3", fmt::format("{}", processor.displayName));
 
     auto tr = body.append("table").append("tr");
-    tr.append("td").append(
-        "img", "",
-        {{"src", fmt::format("{0}.png?classIdentifier={0}", processor.classIdentifier)}});
+    tr.append("td").append("img", "",
+                           {{"src", fmt::format("{0}.png?type=preview&classIdentifier={0}",
+                                                processor.classIdentifier)}});
     auto td = tr.append("td");
+    link(processorFactory, processor.classIdentifier, td);
     td.append("i", processor.classIdentifier);
 
     using P = Document::PathComponent;
@@ -228,6 +249,7 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
         for (const auto& inport : processor.inports) {
             auto li = inports.append("li", "", {{"class", "item"}});
             li.append("span", inport.displayName, {{"class", "name"}});
+            link(inportFactory, inport.classIdentifier, li);
             li.append("span", inport.classIdentifier, {{"class", "id"}});
             if (!inport.help.empty()) {
                 li.append("div", "", {{"class", "help"}}).append(inport.help);
@@ -241,6 +263,7 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
         for (const auto& outport : processor.outports) {
             auto li = outports.append("li", "", {{"class", "item"}});
             li.append("span", outport.displayName, {{"class", "name"}});
+            link(outportFactory, outport.classIdentifier, li);
             li.append("span", outport.classIdentifier, {{"class", "id"}});
             if (!outport.help.empty()) {
                 li.append("div", "", {{"class", "help"}}).append(outport.help);
@@ -255,12 +278,15 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
             auto li = properties.append("li", "", {{"class", "item"}});
             if (!property.properties.empty()) {
                 li.append("a", "",
-                          {{"href", fmt::format("file:///{}/{}", processor.classIdentifier, idx)}})
+                          {{"href", fmt::format("file:///{}/{}?type=processor",
+                                                processor.classIdentifier, idx)}})
                     .append("span", property.displayName, {{"class", "name"}});
             } else {
                 li.append("span", property.displayName, {{"class", "name"}});
             }
+            link(propertyFactory, property.classIdentifier, li);
             li.append("span", property.classIdentifier, {{"class", "id"}});
+
             if (!property.help.empty()) {
                 li.append("div", "", {{"class", "help"}}).append(property.help);
             }
@@ -270,13 +296,15 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
     return doc;
 }
 
-Document makePropertyHelp(const help::HelpProperty& property, std::string_view path) {
+Document makePropertyHelp(const help::HelpProperty& property, std::string_view path,
+                          PropertyFactory* propertyFactory) {
     Document doc;
 
     auto html = doc.append("html");
     html.append("style", css);
     auto body = html.append("body");
     body.append("h3", property.displayName);
+    link(propertyFactory, property.classIdentifier, body);
     body.append("div", property.classIdentifier);
     body.append("div", "", {{"class", "help"}}).append(property.help);
 
@@ -286,11 +314,13 @@ Document makePropertyHelp(const help::HelpProperty& property, std::string_view p
         for (auto&& [idx, subProperty] : util::enumerate(property.properties)) {
             auto li = properties.append("li", "", {{"class", "item"}});
             if (!subProperty.properties.empty()) {
-                li.append("a", "", {{"href", fmt::format("file://{}/{}", path, idx)}})
+                li.append("a", "",
+                          {{"href", fmt::format("file:///{}/{}?type=processor", path, idx)}})
                     .append("span", subProperty.displayName, {{"class", "name"}});
             } else {
                 li.append("span", subProperty.displayName, {{"class", "name"}});
             }
+            link(propertyFactory, subProperty.classIdentifier, li);
             li.append("span", subProperty.classIdentifier, {{"class", "id"}});
             if (!subProperty.help.empty()) {
                 li.append("div", "", {{"class", "help"}}).append(subProperty.help);
@@ -324,7 +354,8 @@ std::tuple<std::string, std::string> loadIdUrl(const QUrl& url, InviwoApplicatio
             const auto& module = findModule(*app, processorClassIdentifier);
 
             if (list.length() == 1) {
-                const auto helpText = makeHtmlHelp(help, processor->getProcessorInfo(), module);
+                const auto helpText =
+                    makeHtmlHelp(help, processor->getProcessorInfo(), module, *app);
                 return {helpText, module.getPath()};
             } else {
                 list.pop_front();
@@ -341,7 +372,8 @@ std::tuple<std::string, std::string> loadIdUrl(const QUrl& url, InviwoApplicatio
                                 ""};
                     }
                 }
-                const auto helpText = makePropertyHelp(*property, utilqt::fromQString(url.path()));
+                const auto helpText = makePropertyHelp(
+                    *property, utilqt::fromQString(list.join('/')), app->getPropertyFactory());
                 return {helpText, module.getPath()};
             }
         } else {
@@ -373,37 +405,54 @@ void HelpBrowser::setCurrent(std::string_view processorClassIdentifier) {
     QUrl url;
     url.setScheme("file");
     url.setPath(utilqt::toQString(fmt::format("/{}", processorClassIdentifier)));
+    url.setQuery(QUrlQuery({{"type", "processor"}}));
     setSource(url);
 }
 
 QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
-    QUrlQuery query(url);
-    if (query.hasQueryItem("classIdentifier")) {
-        const QString cid = query.queryItemValue("classIdentifier");
-        return utilqt::generatePreview(utilqt::fromQString(cid), app_->getProcessorFactory());
-    }
+    const QUrlQuery query(url);
 
-    switch (type) {
-        case QTextDocument::HtmlResource: {
-            if (url.scheme() == "file") {
-                auto [html, mp] = loadIdUrl(url, app_);
-                current_ = url;
-                currentModulePath_ = mp;
-                fmt::print("{}", html);
-                return utilqt::toQString(html);
-            }
+    auto toFilePath = [&](const QUrl& url) {
+        auto filePath = utilqt::fromQString(url.path());
+        replaceInString(filePath, "<modulePath>", currentModulePath_);
+        replaceInString(filePath, "<basePath>", app_->getBasePath());
+        return filePath;
+    };
+
+    if (query.hasQueryItem("type")) {
+        const QString requestType = query.queryItemValue("type");
+
+        if (requestType == "preview") {
+            const QString cid = query.queryItemValue("classIdentifier");
+            return utilqt::generatePreview(utilqt::fromQString(cid), app_->getProcessorFactory());
+        } else if (requestType == "processor") {
+            auto [html, mp] = loadIdUrl(url, app_);
+            fmt::print("HTML\n{}\n", html);
+            current_ = url;
+            currentModulePath_ = mp;
+            return utilqt::toQString(html);
         }
-        case QTextDocument::ImageResource: {
-            auto filepath = fmt::format("{}/docs/images/{}", currentModulePath_,
-                                        utilqt::fromQString(url.path()));
-            if (filesystem::fileExists(filepath)) {
-                const auto maxImgWidth = (95 * width()) / 100;
-                auto img = QImage(utilqt::toQString(filepath));
-                if (img.width() > maxImgWidth) {
-                    return img.scaledToWidth(maxImgWidth);
-                } else {
-                    return img;
-                }
+    }
+    const auto filePath = toFilePath(url);
+    if (filesystem::fileExists(filePath)) {
+        if (filesystem::getFileExtension(filePath) == "inv") {
+            try {
+                util::appendProcessorNetwork(app_->getProcessorNetwork(), filePath, app_);
+            } catch (const Exception& e) {
+                util::log(
+                    e.getContext(),
+                    fmt::format("Unable to append network {} due to {}", filePath, e.getMessage()),
+                    LogLevel::Error);
+            }
+            QTimer::singleShot(0, this, [this]() { backward(); });
+            return {"Workspace loaded"};
+        } else if (type == QTextDocument::ImageResource) {
+            const auto maxImageWidth = (95 * width()) / 100;
+            auto image = QImage(utilqt::toQString(filePath));
+            if (image.width() > maxImageWidth) {
+                return image.scaledToWidth(maxImageWidth);
+            } else {
+                return image;
             }
         }
     }

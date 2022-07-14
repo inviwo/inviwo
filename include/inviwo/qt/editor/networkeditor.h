@@ -94,7 +94,7 @@ public:
     QByteArray copy() const;
     QByteArray cut();
     void paste(QByteArray data);
-    void append(std::istream& is, const std::string& refPath = "");
+    void append(std::string_view workspace);
     void selectAll();
     void deleteSelection();
 

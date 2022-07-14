@@ -46,7 +46,7 @@ const ProcessorInfo NoiseProcessor::processorInfo_{"org.inviwo.NoiseProcessor", 
     A processor to generate noise images.
     Using the Mersenne Twister 19937 generator to generate random numbers.
         
-    ![Image Of Noise Types](noise_types.png)
+    ![Image Of Noise Types](file:///<modulePath>/docs/images/noise_types.png)
     
     ### Available Methods
     * __Random__ Generates a uniform, random value in the range [min,max] for each pixel
@@ -63,7 +63,7 @@ const ProcessorInfo NoiseProcessor::getProcessorInfo() const { return processorI
 
 NoiseProcessor::NoiseProcessor()
     : Processor()
-    , noise_("noise", md("Generated noise image"), DataFloat32::get(), false)
+    , noise_("noise", md("Generated noise image"), DataFloat32::get(), HandleResizeEvents::No)
     , size_("size", "Size", md("Size of the output image."), ivec2(256),
             {ivec2(32), ConstraintBehavior::Editable}, {ivec2(4096), ConstraintBehavior::Editable})
     , type_("type", "Type", md("Type of noise to generate."),

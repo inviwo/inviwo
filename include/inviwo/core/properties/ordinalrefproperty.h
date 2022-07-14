@@ -112,8 +112,9 @@ public:
     using component_type = typename util::value_type<T>::type;
 
     OrdinalRefProperty(
-        std::string_view identifier, std::string_view displayName, Document help,
-        std::function<T()> get, std::function<void(const T&)> set,
+        std::string_view identifier, std::string_view displayName, Document help = {},
+        std::function<T()> get = []() { return T{}; },
+        std::function<void(const T&)> set = [](const T&) {},
         const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
                                                                      ConstraintBehavior::Editable},
         const std::pair<T, ConstraintBehavior>& maxValue = std::pair{Defaultvalues<T>::getMax(),

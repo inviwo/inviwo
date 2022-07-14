@@ -55,11 +55,15 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel, semantics}
     , factory_{InviwoApplication::getPtr()->getCameraFactory()}
-    , cameraType_("cameraType", "Camera Type", factory_->getKeys(),
+    , cameraType_("cameraType", "Camera Type",
                   [&]() {
-                      auto keys = factory_->getKeys();
+                      auto opts = OptionPropertyState<std::string>{};
+                      const auto keys = factory_->getKeyView();
+                      for (auto& key : keys) opts.options.emplace_back(key);
                       auto it = std::find(keys.begin(), keys.end(), "PerspectiveCamera");
-                      return it != keys.end() ? std::distance(keys.begin(), it) : 0;
+                      opts.selectedIndex = it != keys.end() ? std::distance(keys.begin(), it) : 0;
+                      opts.help = md("The type of camera to use, defaults to a Perspective camera");
+                      return opts;
                   }())
     , camera_{factory_->create(cameraType_)}
     , defaultCamera_{}
@@ -70,7 +74,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
           {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f), InvalidationLevel::InvalidOutput,
           PropertySemantics{"SphericalSpinBox"})
     , lookTo_(
-          "lookTo", "Look to", md("Focus point of the cameara in world space"),
+          "lookTo", "Look to", md("Focus point of the camera in world space"),
           []() { return vec3{}; }, [](const vec3&) {}, {-vec3(100.0f), ConstraintBehavior::Ignore},
           {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f), InvalidationLevel::InvalidOutput,
           PropertySemantics::SpinBox)
@@ -88,13 +92,15 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
           {std::numeric_limits<float>::max(), ConstraintBehavior::Immutable}, 0.01f,
           InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , nearPlane_(
-          "near", "Near Plane", []() { return 0.001f; }, [](const float&) {},
-          {0.001f, ConstraintBehavior::Ignore}, {10.0f, ConstraintBehavior::Ignore}, 0.001f)
+          "near", "Near Plane", md("Near plane distance in world coordinates"),
+          []() { return 0.001f; }, [](const float&) {}, {0.001f, ConstraintBehavior::Ignore},
+          {10.0f, ConstraintBehavior::Ignore}, 0.001f)
     , farPlane_(
-          "far", "Far Plane", []() { return 1.0f; }, [](const float&) {},
-          {1.0f, ConstraintBehavior::Ignore}, {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
+          "far", "Far Plane", md("Far plane distance in world coordinates"), []() { return 1.0f; },
+          [](const float&) {}, {1.0f, ConstraintBehavior::Ignore},
+          {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
 
-    , settings_("settings", "Settings")
+    , settings_("settings", "Settings", md("Configure specific camera behaviors"))
     , updateNearFar_("updateNearFar", "Update Near/Far Distances", true)
     , updateLookRanges_("updateLookRanges", "Update Look-to/-from Ranges", true)
     , fittingRatio_("fittingRatio", "Fitting Ratio", 1.05f, 0, 2, 0.01f)
@@ -137,8 +143,8 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                                std::function<std::optional<mat4>()> getBoundingBox, vec3 eye,
                                vec3 center, vec3 lookUp, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
-    : CameraProperty(identifier, displayName, Document{}, std::move(getBoundingBox), eye, center,
-                     lookUp, invalidationLevel, semantics) {}
+    : CameraProperty(identifier, displayName, md("Camera settings"), std::move(getBoundingBox), eye,
+                     center, lookUp, invalidationLevel, semantics) {}
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName, vec3 eye,
                                vec3 center, vec3 lookUp, Inport* inport,

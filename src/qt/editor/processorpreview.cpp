@@ -195,7 +195,7 @@ QImage utilqt::generateProcessorPreview(Processor& processor, double opacity) {
 
 void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
 
-    auto save = [&](const std::string& classIdentifier) {
+    auto save = [&](std::string_view classIdentifier) {
         filesystem::createDirectoryRecursively(path);
         QString imgname = utilqt::toQString(fmt::format("{}/{}.png", path, classIdentifier));
         QImage img = utilqt::generatePreview(classIdentifier, app->getProcessorFactory());
@@ -209,11 +209,11 @@ void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
             writer.write(img);
         } else {
             LogWarnCustom("saveProcessorPreviews",
-                          "No preview generated for: \"" + classIdentifier + "\"");
+                          "No preview generated for: \"" << classIdentifier << "\"");
         }
     };
 
-    for (const auto& classIdentifier : app->getProcessorFactory()->getKeys()) {
+    for (const auto& classIdentifier : app->getProcessorFactory()->getKeyView()) {
         save(classIdentifier);
     }
 }

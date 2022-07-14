@@ -58,30 +58,40 @@ std::vector<std::unique_ptr<Property>> clonePropertyVector(
 
 }  // namespace detail
 
-ListProperty::ListProperty(std::string_view identifier, std::string_view displayName,
+ListProperty::ListProperty(std::string_view identifier, std::string_view displayName, Document help,
+                           std::vector<std::unique_ptr<Property>> prefabs,
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , uiFlags_(uiFlags)
-    , maxNumElements_("maxNumberOfElements", maxNumberOfElements) {}
+    , maxNumElements_("maxNumberOfElements", maxNumberOfElements)
+    , prefabs_{std::move(prefabs)} {}
 
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName,
                            std::vector<std::unique_ptr<Property>> prefabs,
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : ListProperty(identifier, displayName, maxNumberOfElements, uiFlags, invalidationLevel,
-                   semantics) {
-    prefabs_ = std::move(prefabs);
-}
+    : ListProperty(identifier, displayName, Document{}, std::move(prefabs), maxNumberOfElements,
+                   uiFlags, invalidationLevel, semantics) {}
 
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName,
                            std::unique_ptr<Property> prefab, size_t maxNumberOfElements,
                            ListPropertyUIFlags uiFlags, InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
-    : ListProperty(identifier, displayName, maxNumberOfElements, uiFlags, invalidationLevel,
-                   semantics) {
-    prefabs_.emplace_back(std::move(prefab));
-}
+    : ListProperty(
+          identifier, displayName, Document{},
+          [&]() {
+              std::vector<std::unique_ptr<Property>> tmp;
+              tmp.push_back(std::move(prefab));
+              return tmp;
+          }(),
+          maxNumberOfElements, uiFlags, invalidationLevel, semantics) {}
+
+ListProperty::ListProperty(std::string_view identifier, std::string_view displayName,
+                           size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
+                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : ListProperty(identifier, displayName, Document{}, std::vector<std::unique_ptr<Property>>{},
+                   maxNumberOfElements, uiFlags, invalidationLevel, semantics) {}
 
 ListProperty::ListProperty(const ListProperty& rhs)
     : CompositeProperty(rhs)

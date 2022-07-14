@@ -32,20 +32,27 @@
 
 namespace inviwo {
 
-InportFactoryObject::InportFactoryObject(std::string_view className) : className_(className) {
-    if (className_.empty()) {
-        throw Exception("Port must have a non empty class identifier", IVW_CONTEXT);
+InportFactoryObject::InportFactoryObject(std::string_view classIdentifier,
+                                         std::string_view typeName)
+    : classIdentifier_(classIdentifier), typeName_{typeName} {
+    if (classIdentifier.empty()) {
+        throw Exception("Inport must have a non empty class identifier", IVW_CONTEXT);
     }
 }
 
-const std::string& InportFactoryObject::getClassIdentifier() const { return className_; }
+const std::string& InportFactoryObject::getClassIdentifier() const { return classIdentifier_; }
 
-OutportFactoryObject::OutportFactoryObject(std::string_view className) : className_(className) {
-    if (className_.empty()) {
-        throw Exception("Port must have a non empty class identifier", IVW_CONTEXT);
+const std::string& InportFactoryObject::getTypeName() const { return typeName_; }
+
+OutportFactoryObject::OutportFactoryObject(std::string_view classIdentifier,
+                                           std::string_view typeName)
+    : classIdentifier_(classIdentifier), typeName_{typeName} {
+    if (classIdentifier.empty()) {
+        throw Exception("Outport must have a non empty class identifier", IVW_CONTEXT);
     }
 }
 
-const std::string& OutportFactoryObject::getClassIdentifier() const { return className_; }
+const std::string& OutportFactoryObject::getClassIdentifier() const { return classIdentifier_; }
+const std::string& OutportFactoryObject::getTypeName() const { return typeName_; }
 
 }  // namespace inviwo

@@ -52,9 +52,7 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
         prop->setVisible(false);
     }
 
-    auto properties = factory->getKeys();
-    std::sort(properties.begin(), properties.end());
-    for (auto& property : properties) registerProperty(property);
+    for (auto& property : factory->getKeyView()) registerProperty(property);
 
     factory->addObserver(this);
 }
@@ -64,7 +62,7 @@ void LinkSettings::onRegister(PropertyFactoryObject* p) {
     registerProperty(property);
 }
 
-void LinkSettings::registerProperty(std::string property) {
+void LinkSettings::registerProperty(std::string_view property) {
     const bool enabled =
         (property == PropertyTraits<CameraProperty>::classIdentifier()) != 0 ? true : false;
     // Have to check we already have a property from deserialization.

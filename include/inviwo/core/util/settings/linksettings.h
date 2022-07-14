@@ -48,7 +48,7 @@ public:
 
     virtual void onRegister(PropertyFactoryObject* p) override;
 
-    void registerProperty(std::string property);
+    void registerProperty(std::string_view property);
 
     virtual void onUnRegister(PropertyFactoryObject* p) override;
 

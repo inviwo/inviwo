@@ -142,7 +142,7 @@ void exposeProcessors(pybind11::module& m) {
 
     py::class_<ProcessorFactoryObject, ProcessorFactoryObjectTrampoline>(m,
                                                                          "ProcessorFactoryObject")
-        .def(py::init<ProcessorInfo>())
+        .def(py::init<ProcessorInfo, std::string_view>())
         .def("getProcessorInfo", &ProcessorFactoryObject::getProcessorInfo);
 
     py::class_<ProcessorFactory>(m, "ProcessorFactory")

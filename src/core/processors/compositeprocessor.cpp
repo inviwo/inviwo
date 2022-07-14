@@ -115,7 +115,7 @@ void CompositeProcessor::saveSubNetwork(std::string_view file) {
 
     // The CompositeProcessorFactoryObject will deserialize the DisplayName and Tags to use in the
     // ProcessorInfo which will be displayed in the processor list
-    InviwoSetupInfo info(app_);
+    InviwoSetupInfo info(*app_, *subNetwork_);
     s.serialize("InviwoSetup", info);
     s.serialize("DisplayName", getDisplayName());
     s.serialize("Tags", tags.getString());

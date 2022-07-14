@@ -163,6 +163,6 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
 
 PythonProcessorFactoryObjectBase::PythonProcessorFactoryObjectBase(
     PythonProcessorFactoryObjectData data)
-    : ProcessorFactoryObject(data.info), name_(data.name), file_(data.file) {}
+    : ProcessorFactoryObject(data.info, data.name), name_(data.name), file_(data.file) {}
 
 }  // namespace inviwo

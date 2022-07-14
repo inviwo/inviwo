@@ -100,21 +100,31 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    ListProperty(std::string_view identifier, std::string_view displayName,
+    ListProperty(std::string_view identifier, std::string_view displayName, Document help = {},
+                 std::vector<std::unique_ptr<Property>> prefabs = {},
                  size_t maxNumberOfElements = 0,
                  ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
+
     ListProperty(std::string_view identifier, std::string_view displayName,
                  std::vector<std::unique_ptr<Property>> prefabs, size_t maxNumberOfElements = 0,
                  ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
+
     ListProperty(std::string_view identifier, std::string_view displayName,
                  std::unique_ptr<Property> prefab, size_t maxNumberOfElements = 0,
                  ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
+
+    ListProperty(std::string_view identifier, std::string_view displayName,
+                 size_t maxNumberOfElements,
+                 ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                 PropertySemantics semantics = PropertySemantics::Default);
+
     ListProperty(const ListProperty& rhs);
 
     virtual ListProperty* clone() const override;

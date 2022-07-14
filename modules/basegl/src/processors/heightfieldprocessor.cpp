@@ -53,20 +53,36 @@ const ProcessorInfo HeightFieldProcessor::processorInfo_{
     "Heightfield",                     // Category
     CodeState::Stable,                 // Code state
     Tags::GL,                          // Tags
-};
+    md(R"(
+        Maps a height field onto a geometry and renders it to an image.
+        
+        ![](file:///<modulePath>/docs/images/heightfield-network.png)
+        
+        Example Network: [core/heightfield.inv](file:///<basePath>/data/workspaces/heightfield.inv)
+    )"_unindent)};
+
 const ProcessorInfo HeightFieldProcessor::getProcessorInfo() const { return processorInfo_; }
 
 HeightFieldProcessor::HeightFieldProcessor()
     : Processor()
-    , inport_("geometry")
-    , inportHeightfield_("heightfield", true)
-    , inportTexture_("texture", true)
-    , inportNormalMap_("normalmap", true)
-    , imageInport_("imageInport")
-    , outport_("image")
-    , heightScale_("heightScale", "Height Scale", 1.0f, 0.0f, 10.0f)
+    , inport_{"geometry", md("Input geometry which is modified by the height field")}
+    , inportHeightfield_{"heightfield", md(R"(
+                            The height field input (single-channel image).
+                            If the image has multiple channels
+                            only the red channel is used.)"_unindent),
+                         OutportDeterminesSize::Yes}
+    , inportTexture_{"texture", md("Color texture for color mapping (optional)."),
+                     OutportDeterminesSize::Yes}
+    , inportNormalMap_{"normalmap", md("Normal map input (optional)"), OutportDeterminesSize::Yes}
+    , imageInport_{"imageInport", md("Background image (optional)")}
+    , outport_{"image", md("The rendered height field.")}
+    , heightScale_{"heightScale", "Height Scale",
+                   util::ordinalLength(1.0f, 10.0f)
+                       .setHelp(md("Scaling factor for the height field"))}
     , terrainShadingMode_(
           "terrainShadingMode", "Terrain Shading",
+          md("Defines the color mapped onto the height field using either constant color, color "
+             "input texture, or the height field texture"),
           {{"shadingConstant", "Constant Color", HeightFieldShading::ConstantColor},
            {"shadingColorTex", "Color Texture", HeightFieldShading::ColorTexture},
            {"shadingHeightField", "Heightfield Texture", HeightFieldShading::HeightField}},

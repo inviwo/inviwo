@@ -204,10 +204,13 @@ Document help::md2doc(std::string_view markdown) {
                 if (blockDetail->lang.text != nullptr) {
                     StrBuffer buff;
                     renderAttribute(blockDetail->lang, buff, util::htmlEncodeTo);
-                    state->push_back(state->back().append(
-                        "code", "", {{"class", fmt::format("language-{}", buff.view())}}));
+                    state->push_back(
+                        state->back()
+                            .append("code", "",
+                                    {{"class", fmt::format("language-{}", buff.view())}})
+                            .append("pre"));
                 } else {
-                    state->push_back(state->back().append("code"));
+                    state->push_back(state->back().append("code").append("pre"));
                 }
                 break;
             }
