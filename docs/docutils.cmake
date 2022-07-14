@@ -6,7 +6,6 @@ endfunction()
 function(ivw_private_make_doxyfile)
     set(options
         GENERATE_IMG
-        GENERATE_QHP
     )
     set(oneValueArgs
         NAME
@@ -41,7 +40,6 @@ function(ivw_private_make_doxyfile)
     string(TOLOWER ${ARG_NAME} name_lower)
 
     ivw_set_if(COND ARG_GENERATE_IMG TRUEVAL "YES" FALSEVAL "NO" RETVAL generate_images)
-    ivw_set_if(COND ARG_GENERATE_QHP TRUEVAL "YES" FALSEVAL "NO" RETVAL generate_qhp)
 
     if(DOXYGEN_DOT_FOUND)
         get_filename_component(DOXYGEN_DOT_PATH ${DOXYGEN_DOT_EXECUTABLE} PATH)
@@ -126,10 +124,6 @@ DOCSET_BUNDLE_ID       = org.inviwo
 DOCSET_PUBLISHER_ID    = org.inviwo
 DOCSET_PUBLISHER_NAME  = Inviwo
 
-GENERATE_QHP           = ${generate_qhp}
-QHP_NAMESPACE          = org.inviwo.${name_lower}
-QHP_VIRTUAL_FOLDER     = doc
-
 GENERATE_TREEVIEW      = YES
 TREEVIEW_WIDTH         = 300
 
@@ -177,99 +171,6 @@ ${additional_flags}
         file(MAKE_DIRECTORY ${ARG_OUTPUT_DIR})
     endif()
     file(WRITE ${ARG_OUTPUT_DIR}/${name_lower}.doxy ${doxyfile})
-endfunction()
-
-
- # Help, used for the help inside inviwo
-function(ivw_private_make_help)
-    set(options "")
-    set(oneValueArgs
-        NAME
-        HTML_DIR
-        WARNING_FORMAT
-        OUTPUT_DIR
-        DOC_DIR
-        DOXY_DIR
-    )
-    set(multiValueArgs
-        INPUTS
-        IMAGE_PATHS
-        FILTER_PATTERNS
-        INCLUDE_PATHS
-    )
-    cmake_parse_arguments(HARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-    
-    string(TOLOWER ${HARG_NAME} name_lower)
-
-    set(aliases_list
-        "docpage{1}=\"\\page docpage-\\1 \\1\""
-        "docpage{2}=\"\\page docpage-\\1 \\2\""
-    )
-
-    set(additional_flags_list
-        "LAYOUT_FILE            = ${HARG_HTML_DIR}/layout.xml"
-        "HTML_STYLESHEET        = ${HARG_HTML_DIR}/stylesheet.css"
-        "HTML_HEADER            = ${HARG_HTML_DIR}/header.html"
-        "HTML_FOOTER            = ${HARG_HTML_DIR}/footer.html"
-        "AUTOLINK_SUPPORT       = NO"
-        "HIDE_SCOPE_NAMES       = YES"
-        "SHOW_INCLUDE_FILES     = NO"
-        "GENERATE_TODOLIST      = NO"
-        "GENERATE_TESTLIST      = NO"
-        "GENERATE_BUGLIST       = NO"
-        "GENERATE_DEPRECATEDLIST= NO"
-        "SHOW_USED_FILES        = NO"
-        "SHOW_FILES             = NO"
-        "SHOW_NAMESPACES        = NO"
-        "WARN_IF_UNDOCUMENTED   = NO"
-        "SOURCE_BROWSER         = NO"
-        "ALPHABETICAL_INDEX     = NO"
-        "HTML_DYNAMIC_SECTIONS  = NO"
-        "DISABLE_INDEX          = YES"
-        "SEARCHENGINE           = NO"
-        "GENERATE_AUTOGEN_DEF   = NO"
-    )
-
-    ivw_private_make_doxyfile(
-        NAME "${HARG_NAME}"
-        BRIEF "Inviwo ${HARG_NAME} help"
-        OUTPUT_DIR "${HARG_OUTPUT_DIR}"
-        WARNING_FORMAT ${HARG_WARNING_FORMAT}
-        INPUTS ${HARG_INPUTS}
-        INCLUDE_PATHS ${HARG_INCLUDE_PATHS}
-        IMAGE_PATHS ${HARG_IMAGE_PATHS}
-        ALIASES ${aliases_list}
-        FILTER_PATTERNS ${HARG_FILTER_PATTERNS}
-        ADDITIONAL_FLAGS ${additional_flags_list}
-        DOXY_DIR ${HARG_DOXY_DIR}
-        GENERATE_QHP
-    )
-
-    find_program(IVW_DOXYGEN_QHELPGENERATOR "qhelpgenerator")
-
-    add_custom_target("DOXY-HELP-${HARG_NAME}"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running Doxygen for ${HARG_NAME}"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${HARG_OUTPUT_DIR}/${name_lower}/html"
-        COMMAND ${DOXYGEN_EXECUTABLE} "${HARG_OUTPUT_DIR}/${name_lower}.doxy"
-
-        COMMAND ${CMAKE_COMMAND} -DQHP_FILE="${HARG_OUTPUT_DIR}/${name_lower}/html/index.qhp"
-                                 -DSTRIPPED_FILE="${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
-                                 -P "${ivw_doxy_dir}/strip-qhp.cmake"
-
-        COMMAND ${CMAKE_COMMAND} -E echo "Building ${name_lower}.qch"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXYGEN_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch \
-                                 ${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
-        COMMAND ${IVW_DOXYGEN_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch"
-                                            "${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
-
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${HARG_DOC_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy "${HARG_OUTPUT_DIR}/${name_lower}.qch" "${HARG_DOC_DIR}/"
-
-        WORKING_DIRECTORY ${HARG_OUTPUT_DIR}
-        COMMENT "Building Qt QCH files for ${HARG_NAME}"
-        VERBATIM
-    )
-    set_target_properties("DOXY-HELP-${HARG_NAME}" PROPERTIES FOLDER "docs/qch" EXCLUDE_FROM_ALL TRUE)
 endfunction()
 
 function(ivw_get_glsl_dirs retval)
