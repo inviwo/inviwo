@@ -45,6 +45,7 @@
 
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/opengl/texture/samplerobject.h>
 
 namespace inviwo {
 
@@ -86,10 +87,19 @@ AtlasIsosurfaceRenderer::AtlasIsosurfaceRenderer()
     addProperties(showHighlighted_);
     addProperties(volumeSwitch_);
 
+
+    samplerObject1_ = SamplerObject();
+    samplerObject1_.bind(0);
+    samplerObject1_.setFilterModeAll(GL_NEAREST);
+    samplerObject2_ = SamplerObject();
+    samplerObject2_.bind(0);
+    samplerObject2_.setFilterModeAll(GL_LINEAR);
+
     auto updateSampleRate = [this]() { sampleRateValue_ = sampleRate_.get(); };
 }
 
 void AtlasIsosurfaceRenderer::process() {
+   
     if (volumeSwitch_.get()) {
         std::array<uint16_t, 8> sampledata({2, 32767, 1, 2, 3, 1, 2, 3});
         auto volumeram = std::make_shared<VolumeRAMPrecision<uint16_t>>(size3_t{2, 2, 2});
@@ -101,6 +111,7 @@ void AtlasIsosurfaceRenderer::process() {
     } else {
         raycast(*volumeInport_.getData());
     }
+ 
 }
 
 void AtlasIsosurfaceRenderer::raycast(const Volume& volume) {
@@ -111,15 +122,11 @@ void AtlasIsosurfaceRenderer::raycast(const Volume& volume) {
     shader_.activate();
 
     TextureUnitContainer units;
-
     utilgl::bindAndSetUniforms(shader_, units, volume, "volume");
-    GLuint v;
-    glGetTexParameterIuiv(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, &v);
-    LogInfo(v << " " << GL_NEAREST);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
 
-    float scaling = std::powf(2, static_cast<float>(volume.getDataFormat()->getPrecision()))-1.0f;
+    float scaling = std::powf(2, static_cast<float>(volume.getDataFormat()->getPrecision())) - 1.0f;
     shader_.setUniform("scaling", scaling);
     shader_.setUniform("sampleRate", sampleRate_.get());
     shader_.setUniform("selectedColor", showSelected_.getColor());
@@ -133,5 +140,4 @@ void AtlasIsosurfaceRenderer::raycast(const Volume& volume) {
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
-
 }  // namespace inviwo

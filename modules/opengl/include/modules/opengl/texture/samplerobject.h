@@ -28,44 +28,37 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/selectioncolorproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <modules/opengl/texture/samplerobject.h>
-#include <string>
-#include <vector>
+#include <modules/opengl/openglmoduledefine.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/glformats.h>
+#include <modules/opengl/texture/texture.h>
 
 namespace inviwo {
 
 /**
- * Adds an option to render segments in range [0, 3] of type UINT, and render these
- * with or without lighting. See the Atlas Boundary processor for such data.
+ * Sampler objects store parameters that are not specific to textures. Thus, they store filter modes, wrapping mode but not texture width, height, swizzlemask etc. Binding a sampler object to a texture unit takes that textures uniform location in the shader, and multiple different sampler objects can be assigned to the same texture unit without having to copy the texture data.
  */
-class IVW_MODULE_BASEGL_API AtlasIsosurfaceComponent : public ShaderComponent {
+class IVW_MODULE_OPENGL_API SamplerObject {
 public:
-    AtlasIsosurfaceComponent(std::string_view volume);
-    virtual std::string_view getName() const override;
-    virtual void process(Shader& shader, TextureUnitContainer&) override;
-    virtual std::vector<Property*> getProperties() override;
-    virtual std::vector<Segment> getSegments() override;
+    SamplerObject();
+    virtual ~SamplerObject();
+
+    /// <summary>
+    /// Texture unit number is ONLY the number, such as 0, 1,4 or 5. Not GL_TEXTURE0. This is different from how textures are bound.
+    /// </summary>
+    /// <param name="textureUnitNumber"></param>
+    void bind(GLuint textureUnitNumber);
+    void setMinFilterMode(GLenum type);
+    void setMagFilterMode(GLenum type);
+    void setFilterModeAll(GLenum type);
+    void setWrapMode_S(GLenum type);
+    void setWrapMode_T(GLenum type);
+    void setWrapMode_R(GLenum type);
+    void setWrapModeAll(GLenum type);
 
 private:
-    VolumeInport volume_;
-    std::string name_;
-    //std::shared_ptr<const Volume> smoothVolume_;
-
-    BoolCompositeProperty useAtlasBoundary_;
-    BoolProperty applyBoundaryLight_;
-    SelectionColorProperty showHighlighted_;
-    SelectionColorProperty showSelected_;
-    SelectionColorProperty showFiltered_;
-    SamplerObject nearestSampler_;
-    SamplerObject linearSampler_;
+    GLuint id_;
+    GLuint currentlyBoundTextureUnit_;
 };
 
 }  // namespace inviwo

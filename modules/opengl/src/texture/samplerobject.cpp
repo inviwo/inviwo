@@ -26,46 +26,57 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/selectioncolorproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <modules/opengl/texture/samplerobject.h>
-#include <string>
-#include <vector>
 
 namespace inviwo {
 
-/**
- * Adds an option to render segments in range [0, 3] of type UINT, and render these
- * with or without lighting. See the Atlas Boundary processor for such data.
- */
-class IVW_MODULE_BASEGL_API AtlasIsosurfaceComponent : public ShaderComponent {
-public:
-    AtlasIsosurfaceComponent(std::string_view volume);
-    virtual std::string_view getName() const override;
-    virtual void process(Shader& shader, TextureUnitContainer&) override;
-    virtual std::vector<Property*> getProperties() override;
-    virtual std::vector<Segment> getSegments() override;
+SamplerObject::SamplerObject() : currentlyBoundTextureUnit_{0} { glGenSamplers(1, &id_); }
 
-private:
-    VolumeInport volume_;
-    std::string name_;
-    //std::shared_ptr<const Volume> smoothVolume_;
+SamplerObject::~SamplerObject() {
+    /*if (id_ != 0) {
+        glDeleteSamplers(1, &id_);
+    }*/ // Causes "unable to upload renderui.vert"
+}
 
-    BoolCompositeProperty useAtlasBoundary_;
-    BoolProperty applyBoundaryLight_;
-    SelectionColorProperty showHighlighted_;
-    SelectionColorProperty showSelected_;
-    SelectionColorProperty showFiltered_;
-    SamplerObject nearestSampler_;
-    SamplerObject linearSampler_;
-};
+// SamplerObject::SamplerObject(const Texture& tex) {
+//	SamplerObject();
+//	bind(tex.getID); }
+
+void SamplerObject::bind(GLuint textureUnitNumber) {
+    glBindSampler(textureUnitNumber, id_);
+    currentlyBoundTextureUnit_ = textureUnitNumber;
+}
+
+void SamplerObject::setMinFilterMode(GLenum type) {
+    glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, type);
+}
+
+void SamplerObject::setMagFilterMode(GLenum type) {
+    glSamplerParameteri(id_, GL_TEXTURE_MAG_FILTER, type);
+}
+
+void SamplerObject::setFilterModeAll(GLenum type) {
+    glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, type);
+    glSamplerParameteri(id_, GL_TEXTURE_MAG_FILTER, type);
+}
+
+void SamplerObject::setWrapMode_S(GLenum type) {
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, GL_REPEAT);
+}
+
+void SamplerObject::setWrapMode_T(GLenum type) {
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
+}
+
+void SamplerObject::setWrapMode_R(GLenum type) {
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, GL_REPEAT);
+}
+
+void SamplerObject::setWrapModeAll(GLenum type) {
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, GL_REPEAT);
+}
 
 }  // namespace inviwo

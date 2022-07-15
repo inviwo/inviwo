@@ -6,6 +6,7 @@
 
 uniform VolumeParameters volumeParameters;
 uniform sampler3D volume;
+uniform sampler3D linearVolume;
 
 uniform ImageParameters entryParameters;
 uniform sampler2D entryColor;
@@ -24,20 +25,22 @@ uniform bool showFiltered;
 uniform float scaling;
 uniform float sampleRate;
 
+
+
 #define ERT_THRESHOLD 0.99
 
 vec3 gradientCentralDiff(vec4 intensity, sampler3D volume, VolumeParameters volumeParams, vec3 samplePos, int channel) {
     // Of order O(h^2) central differences
     vec3 cDs;
+    float scale = 1.0;
     // Value at f(x+h)
-float s = 1.0;
-    cDs.x = getNormalizedVoxelChannel(volume, volumeParams, samplePos + volumeParams.textureSpaceGradientSpacing[0]*s,channel);
-    cDs.y = getNormalizedVoxelChannel(volume, volumeParams, samplePos + volumeParams.textureSpaceGradientSpacing[1]*s,channel);
-    cDs.z = getNormalizedVoxelChannel(volume, volumeParams, samplePos + volumeParams.textureSpaceGradientSpacing[2]*s,channel);
+    cDs.x = getNormalizedVoxelChannel(volume, volumeParams, samplePos + volumeParams.textureSpaceGradientSpacing[0]*scale,channel);
+    cDs.y = getNormalizedVoxelChannel(volume, volumeParams, samplePos + volumeParams.textureSpaceGradientSpacing[1]*scale,channel);
+    cDs.z = getNormalizedVoxelChannel(volume, volumeParams, samplePos + volumeParams.textureSpaceGradientSpacing[2]*scale,channel);
     // Value at f(x-h)
-    cDs.x = cDs.x - getNormalizedVoxelChannel(volume, volumeParams, samplePos - volumeParams.textureSpaceGradientSpacing[0]*s,channel);
-    cDs.y = cDs.y - getNormalizedVoxelChannel(volume, volumeParams, samplePos - volumeParams.textureSpaceGradientSpacing[1]*s,channel);
-    cDs.z = cDs.z - getNormalizedVoxelChannel(volume, volumeParams, samplePos - volumeParams.textureSpaceGradientSpacing[2]*s,channel);
+    cDs.x = cDs.x - getNormalizedVoxelChannel(volume, volumeParams, samplePos - volumeParams.textureSpaceGradientSpacing[0]*scale,channel);
+    cDs.y = cDs.y - getNormalizedVoxelChannel(volume, volumeParams, samplePos - volumeParams.textureSpaceGradientSpacing[1]*scale,channel);
+    cDs.z = cDs.z - getNormalizedVoxelChannel(volume, volumeParams, samplePos - volumeParams.textureSpaceGradientSpacing[2]*scale,channel);
     // Note that this computation is performed in world space
     // f' = ( f(x+h)-f(x-h) ) / 2*volumeParams.worldSpaceGradientSpacing
     return (cDs)/(2.0*volumeParams.worldSpaceGradientSpacing);
@@ -85,8 +88,13 @@ vec4 raycast(vec3 entryPoint, vec3 exitPoint, float samplingRate)
             //result = compositeDVR(result, color, t - tIncr, tDepth, tIncr);
             color.rgb *= color.a;
             result += (1.0-result.a) * color;
-        vec3 atlasGradient = normalize(gradientCentralDiff(vec4(1.0), volume, volumeParameters, position, 0));
-            return vec4(atlasGradient*0.5 +0.5,1);
+            vec3 atlasGradient = normalize(gradientCentralDiff(vec4(1.0), linearVolume, volumeParameters, position, 0));
+            
+            if(value > prevValue)
+            {
+                
+            }
+            return vec4(atlasGradient, 1.0);
         }
 
 

@@ -56,6 +56,15 @@ AtlasIsosurfaceComponent::AtlasIsosurfaceComponent(std::string_view volume)
     , showFiltered_("showFilteredIndices", "Show Filtered", true, vec3(0.5f, 0.5f, 0.5f)) {
     useAtlasBoundary_.addProperties(applyBoundaryLight_, showHighlighted_, showFiltered_,
                                     showSelected_);
+
+    nearestSampler_ = SamplerObject();
+    nearestSampler_.bind(0);
+    nearestSampler_.setFilterModeAll(GL_NEAREST);
+    nearestSampler_.setWrapModeAll(GL_REPEAT);
+    linearSampler_ = SamplerObject();
+    linearSampler_.bind(0);
+    linearSampler_.setFilterModeAll(GL_LINEAR);
+    linearSampler_.setWrapModeAll(GL_REPEAT);
 }
 
 std::string_view AtlasIsosurfaceComponent::getName() const { return volume_.getIdentifier(); }
@@ -71,7 +80,7 @@ void AtlasIsosurfaceComponent::process(Shader& shader, TextureUnitContainer&) {
     shader.setUniform("filteredColor", showFiltered_.getColor());
     shader.setUniform("showFiltered", showFiltered_.getBoolProperty()->get());
 
-    if (volume_.isChanged()) {
+    /*if (volume_.isChanged()) {
         if (volume_.getData()->getInterpolation() == InterpolationType::Linear) {
             smoothVolume_ = volume_.getData();
         } else {
@@ -79,19 +88,17 @@ void AtlasIsosurfaceComponent::process(Shader& shader, TextureUnitContainer&) {
             in->setInterpolation(InterpolationType::Linear);
             smoothVolume_ = in;
         }
-        smoothVolume_->getRepresentation<VolumeGL>()->bindTexture(2);
-    }
+        GLuint id = smoothVolume_->getRepresentation<VolumeGL>()->getTexture()->getID();
+        smoothVolume_->getRepresentation<VolumeGL>()->bindTexture(id);
+    }*/
 }
 
-
-
-std::vector<Property*> AtlasIsosurfaceComponent::getProperties() {
-    return {&useAtlasBoundary_};
-}
+std::vector<Property*> AtlasIsosurfaceComponent::getProperties() { return {&useAtlasBoundary_}; }
 
 namespace {
 constexpr std::string_view uniforms = util::trim(R"(
-uniform sampler3D smoothAtlas;
+//uniform sampler3D smoothAtlas;
+uniform sampler3D linearAtlas;
 uniform bool useAtlasBoundary;
 uniform bool applyBoundaryLight;
 uniform vec4 selectedColor;
@@ -136,7 +143,7 @@ else if(useAtlasBoundary && (boundaryValue != prevBoundaryValue))
     {
         vec4 atlasGradient = vec4(1);
         
-        atlasGradient.rgb = normalize(COMPUTE_GRADIENT_FOR_CHANNEL(getNormalizedVoxel(atlas, atlasParameters, samplePosition), smoothAtlas, atlasParameters, samplePosition, channel));
+        atlasGradient.rgb = normalize(gradientCentralDiff(getNormalizedVoxel(atlas, atlasParameters, samplePosition), linearAtlas, atlasParameters, samplePosition, channel, gradientOffsetSpacing));
      
         vec3 worldSpacePosition = (atlasParameters.textureToWorldNormalMatrix * vec4(samplePosition, 1.0)).xyz;
 

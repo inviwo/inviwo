@@ -40,9 +40,9 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/selectioncolorproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <modules/opengl/texture/samplerobject.h>
 
 namespace inviwo {
-
 /** \docpage{org.inviwo.AtlasIsosurfaceRenderer, Atlas Isosurface Renderer}
  * ![](org.inviwo.AtlasIsosurfaceRenderer.png?classIdentifier=org.inviwo.AtlasIsosurfaceRenderer)
  * Explanation of how to use the processor.
@@ -85,6 +85,8 @@ private:
     Volume volume_;
     float sampleRateValue_;
     BoolProperty volumeSwitch_;
+    SamplerObject samplerObject1_;
+    SamplerObject samplerObject2_;
 };
 
 }  // namespace inviwo
