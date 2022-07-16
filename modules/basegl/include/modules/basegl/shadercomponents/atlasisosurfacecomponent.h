@@ -57,7 +57,6 @@ public:
 private:
     VolumeInport volume_;
     std::string name_;
-    //std::shared_ptr<const Volume> smoothVolume_;
 
     BoolCompositeProperty useAtlasBoundary_;
     BoolProperty applyBoundaryLight_;
