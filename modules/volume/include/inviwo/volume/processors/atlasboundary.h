@@ -66,6 +66,8 @@ private:
     BrushingAndLinkingInport brushing_;
     VolumeOutport outport_;
     std::shared_ptr<Volume> volume_;
+    std::vector<int> sourceIndices_;
+    std::vector<int> destinationIndices_;
 };
 
 }  // namespace inviwo

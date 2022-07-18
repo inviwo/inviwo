@@ -27,7 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/shadercomponents/atlasisosurfacecomponent.h>
+#include <modules/basegl/shadercomponents/segmentsurfacecomponent.h>
+
+#include <modules/opengl/shader/shaderutils.h>
 
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -43,10 +45,9 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 
 namespace inviwo {
-
-AtlasIsosurfaceComponent::AtlasIsosurfaceComponent(VolumeInport& atlas)
+SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas)
     : ShaderComponent{}
-    , name_{"atlasboundary"}
+    , name_("atlasboundary")
     , useAtlasBoundary_{"useAtlasBoundary", "Render ISO using atlas boundary", true}
     , applyBoundaryLight_{"applyBoundaryLight", "Apply lighting to boundary", true}
     , showHighlighted_("showHighlightedIndices", "Show Highlighted", true,
@@ -55,50 +56,53 @@ AtlasIsosurfaceComponent::AtlasIsosurfaceComponent(VolumeInport& atlas)
     , showFiltered_("showFilteredIndices", "Show Filtered", true, vec3(0.5f, 0.5f, 0.5f))
     , textureSpaceGradientSpacingScale_{"gradientScaling", "Scale gradient spacing", 1.0f, 0.0f,
                                         5.0f}
+    , nearestSampler_{}
+    , linearSampler_{}
     , atlas_{atlas} {
 
-    useAtlasBoundary_.addProperties(applyBoundaryLight_, showHighlighted_, showFiltered_,
-                                    showSelected_, textureSpaceGradientSpacingScale_);
+    useAtlasBoundary_.addProperties(applyBoundaryLight_, textureSpaceGradientSpacingScale_,
+                                    showHighlighted_, showFiltered_, showSelected_);
 
-    //nearestSampler_ = SamplerObject();
-    //nearestSampler_.bind(0);
-    //nearestSampler_.setFilterModeAll(GL_NEAREST);
-    //nearestSampler_.setWrapModeAll(GL_REPEAT);
-    //linearSampler_ = SamplerObject();
-    //linearSampler_.bind(0);
-    //linearSampler_.setFilterModeAll(GL_LINEAR);
-    //linearSampler_.setWrapModeAll(GL_REPEAT);
+
+    nearestSampler_.setFilterModeAll(GL_NEAREST);
+    nearestSampler_.setWrapModeAll(GL_REPEAT);
+
+    linearSampler_.setFilterModeAll(GL_LINEAR);
+    linearSampler_.setWrapModeAll(GL_REPEAT);
 }
+std::string_view SegmentSurfaceComponent::getName() const { return name_; }
 
-std::string_view AtlasIsosurfaceComponent::getName() const { return name_; }
-
-void AtlasIsosurfaceComponent::process(Shader& shader, TextureUnitContainer&) {
-
+void SegmentSurfaceComponent::process(Shader& shader, TextureUnitContainer& cont) {
     shader.setUniform("useAtlasBoundary", useAtlasBoundary_.getBoolProperty()->get());
     shader.setUniform("applyBoundaryLight", applyBoundaryLight_.get());
+    shader.setUniform("gradientSpacingScale", textureSpaceGradientSpacingScale_.get());
     shader.setUniform("selectedColor", showSelected_.getColor());
     shader.setUniform("showSelected", showSelected_.getBoolProperty()->get());
     shader.setUniform("highlightedColor", showHighlighted_.getColor());
     shader.setUniform("showHighlighted", showHighlighted_.getBoolProperty()->get());
     shader.setUniform("filteredColor", showFiltered_.getColor());
     shader.setUniform("showFiltered", showFiltered_.getBoolProperty()->get());
-    shader.setUniform("gradientSpacingScale", textureSpaceGradientSpacingScale_.get());
+    
+    auto& linearUnit = cont.emplace_back();
+    linearUnit.bindSampler(linearSampler_);
+    //linearSampler_.bind(linearUnit.getUnitNumber());
+    shader.setUniform("linearAtlas", linearUnit);
+    utilgl::bindTexture(atlas_, linearUnit);
 }
-
-std::vector<Property*> AtlasIsosurfaceComponent::getProperties() { return {&useAtlasBoundary_}; }
+std::vector<Property*> SegmentSurfaceComponent::getProperties() { return {&useAtlasBoundary_}; }
 
 namespace {
 constexpr std::string_view uniforms = util::trim(R"(
 uniform sampler3D linearAtlas;
 uniform bool useAtlasBoundary;
 uniform bool applyBoundaryLight;
+uniform float gradientSpacingScale;
 uniform vec4 selectedColor;
 uniform vec4 highlightedColor;
 uniform vec4 filteredColor;
 uniform bool showHighlighted; 
 uniform bool showSelected;
 uniform bool showFiltered;
-uniform float gradientSpacingScale;
 )");
 
 constexpr std::string_view first = util::trim(R"(
@@ -133,7 +137,8 @@ else if(useAtlasBoundary && (boundaryValue != prevBoundaryValue))
     {
         vec4 atlasGradient = vec4(1);
         VolumeParameters tempAtlasParameters = atlasParameters;
-        tempAtlasParameters.textureSpaceGradientSpacing *= gradientSpacingScale;
+        tempAtlasParameters.textureSpaceGradientSpacing *= gradientSpacingScale; //setup
+        tempAtlasParameters.worldSpaceGradientSpacing *= gradientSpacingScale; // setup
         atlasGradient.rgb = normalize(COMPUTE_GRADIENT_FOR_CHANNEL(getNormalizedVoxel(atlas, atlasParameters, samplePosition), linearAtlas, tempAtlasParameters, samplePosition, channel));
      
         vec3 worldSpacePosition = (atlasParameters.textureToWorldNormalMatrix * vec4(samplePosition, 1.0)).xyz;
@@ -150,7 +155,7 @@ else if(useAtlasBoundary && (boundaryValue != prevBoundaryValue))
 
 }  // namespace
 
-auto AtlasIsosurfaceComponent::getSegments() -> std::vector<Segment> {
+auto SegmentSurfaceComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
     return {{R"(#include "utils/compositing.glsl")", placeholder::include, 900},

@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo AtlasBoundary::processorInfo_{
     "org.inviwo.atlasboundary",  // Class identifier
     "Atlas Boundary",            // Display name
-    "Volume Rendering",          // Category
+    "Volume Operation",          // Category
     CodeState::Experimental,     // Code state
     "GL, Volume, Atlas",         // Tags
 };
@@ -63,28 +63,27 @@ void AtlasBoundary::process() {
         std::vector<int> highlightedDestination(highlighted.toVector().size(), 3);
 
         // Append to B&L to vectors
-        std::vector<int> sourceIndices;
-        std::vector<int> destinationIndices;
-
-        sourceIndices.insert(sourceIndices.end(), selected.begin(), selected.end());
-        sourceIndices.insert(sourceIndices.end(), filtered.begin(), filtered.end());
-        sourceIndices.insert(sourceIndices.end(), highlighted.begin(), highlighted.end());
-        destinationIndices.insert(destinationIndices.end(), selectedDestination.begin(),
+        sourceIndices_.clear();
+        destinationIndices_.clear();
+        sourceIndices_.insert(sourceIndices_.end(), selected.begin(), selected.end());
+        sourceIndices_.insert(sourceIndices_.end(), filtered.begin(), filtered.end());
+        sourceIndices_.insert(sourceIndices_.end(), highlighted.begin(), highlighted.end());
+        destinationIndices_.insert(destinationIndices_.end(), selectedDestination.begin(),
                                   selectedDestination.end());
-        destinationIndices.insert(destinationIndices.end(), filteredDestination.begin(),
+        destinationIndices_.insert(destinationIndices_.end(), filteredDestination.begin(),
                                   filteredDestination.end());
-        destinationIndices.insert(destinationIndices.end(), highlightedDestination.begin(),
+        destinationIndices_.insert(destinationIndices_.end(), highlightedDestination.begin(),
                                   highlightedDestination.end());
 
-        if (sourceIndices.size() == 0) {
-            sourceIndices.push_back(0);
-            destinationIndices.push_back(0);
+        if (sourceIndices_.size() == 0) {
+            sourceIndices_.push_back(0);
+            destinationIndices_.push_back(0);
         }
 
         // Remap using vectors and cloned volume
         auto volume = volumeInport_.getData();
         volume_ = std::shared_ptr<Volume>(volume->clone());
-        util::remap(*volume_, sourceIndices, destinationIndices, 0, true);
+        util::remap(*volume_, sourceIndices_, destinationIndices_, 0, true);
         // Set volume properties
         volume_->setInterpolation(InterpolationType::Nearest);
         volume_->setSwizzleMask(swizzlemasks::luminance);

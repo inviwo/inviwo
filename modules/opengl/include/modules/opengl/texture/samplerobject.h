@@ -36,18 +36,25 @@
 namespace inviwo {
 
 /**
- * Sampler objects store parameters that are not specific to textures. Thus, they store filter modes, wrapping mode but not texture width, height, swizzlemask etc. Binding a sampler object to a texture unit takes that textures uniform location in the shader, and multiple different sampler objects can be assigned to the same texture unit without having to copy the texture data.
+ * Sampler objects store parameters that are not specific to textures. Thus, they store filter
+ * modes, wrapping mode but not texture width, height, swizzlemask etc. Binding a sampler object to
+ * a texture unit takes that textures uniform location in the shader, and multiple different sampler
+ * objects can be assigned to the same texture unit without having to copy the texture data.
  */
 class IVW_MODULE_OPENGL_API SamplerObject {
 public:
     SamplerObject();
-    virtual ~SamplerObject();
+    SamplerObject(const SamplerObject&) = delete;
+    SamplerObject(SamplerObject&&) noexcept;
+    SamplerObject& operator=(const SamplerObject&) = delete;
+    SamplerObject& operator=(SamplerObject&&) noexcept;
+    ~SamplerObject();
 
     /// <summary>
-    /// Texture unit number is ONLY the number, such as 0, 1,4 or 5. Not GL_TEXTURE0. This is different from how textures are bound.
+    /// Texture unit number is ONLY the number, such as 0, 1,4 or 5. Not GL_TEXTURE0. This is
+    /// different from how textures are bound.
     /// </summary>
     /// <param name="textureUnitNumber"></param>
-    void bind(GLuint textureUnitNumber);
     void setMinFilterMode(GLenum type);
     void setMagFilterMode(GLenum type);
     void setFilterModeAll(GLenum type);
@@ -55,6 +62,7 @@ public:
     void setWrapMode_T(GLenum type);
     void setWrapMode_R(GLenum type);
     void setWrapModeAll(GLenum type);
+    GLint getID() const;
 
 private:
     GLuint id_;

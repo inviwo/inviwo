@@ -80,7 +80,7 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
     , positionIndicator_{}
     , sampleTransform_{}
     , atlas_{this, "color", &time_}
-    , atlasIso_{"atlasiso"} {
+    , segmentSurface_{atlas_.getAtlasInport()} {
 
     volume_.volumePort.onChange([this]() {
         if (volume_.volumePort.hasData()) {
@@ -91,7 +91,7 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
     
 
     registerComponents(volume_, entryExit_, isoTF_, atlas_, background_, sampleTransform_,
-                       raycasting_, camera_, light_, positionIndicator_, time_, atlasIso_);
+                       raycasting_, camera_, light_, positionIndicator_, time_, segmentSurface_);
 }
 
 }  // namespace inviwo

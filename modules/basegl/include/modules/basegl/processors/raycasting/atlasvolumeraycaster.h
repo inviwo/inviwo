@@ -107,7 +107,7 @@ private:
     PositionIndicatorComponent positionIndicator_;
     SampleTransformComponent sampleTransform_;
     AtlasComponent atlas_;
-    AtlasIsosurfaceComponent atlasIso_;
+    SegmentSurfaceComponent segmentSurface_;
 };
 
 }  // namespace inviwo

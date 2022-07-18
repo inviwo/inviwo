@@ -33,19 +33,29 @@ namespace inviwo {
 
 SamplerObject::SamplerObject() : currentlyBoundTextureUnit_{0} { glGenSamplers(1, &id_); }
 
-SamplerObject::~SamplerObject() {
-    /*if (id_ != 0) {
-        glDeleteSamplers(1, &id_);
-    }*/ // Causes "unable to upload renderui.vert"
+SamplerObject::SamplerObject(SamplerObject&& rhs) noexcept
+    : id_{rhs.id_}, currentlyBoundTextureUnit_{rhs.currentlyBoundTextureUnit_} {
+    rhs.currentlyBoundTextureUnit_ = 0;
+    rhs.id_ = 0;
 }
 
-// SamplerObject::SamplerObject(const Texture& tex) {
-//	SamplerObject();
-//	bind(tex.getID); }
+SamplerObject& SamplerObject::operator=(SamplerObject&& that) noexcept {
+    if (this != &that) {
+        if (id_ != 0) {
+            glDeleteSamplers(1, &id_);
+        }
+        id_ = that.id_;
+        that.id_ = 0;
+        currentlyBoundTextureUnit_ = that.currentlyBoundTextureUnit_;
+        that.currentlyBoundTextureUnit_ = 0;
+    }
+    return *this;
+}
 
-void SamplerObject::bind(GLuint textureUnitNumber) {
-    glBindSampler(textureUnitNumber, id_);
-    currentlyBoundTextureUnit_ = textureUnitNumber;
+SamplerObject::~SamplerObject() {
+    if (id_ != 0) {
+        glDeleteSamplers(1, &id_);
+    }
 }
 
 void SamplerObject::setMinFilterMode(GLenum type) {
@@ -78,5 +88,7 @@ void SamplerObject::setWrapModeAll(GLenum type) {
     glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
+
+GLint SamplerObject::getID() const { return id_; }
 
 }  // namespace inviwo

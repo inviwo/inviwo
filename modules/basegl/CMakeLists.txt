@@ -106,6 +106,7 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/positionindicatorcomponent.h
     include/modules/basegl/shadercomponents/raycastingcomponent.h
     include/modules/basegl/shadercomponents/sampletransformcomponent.h
+    include/modules/basegl/shadercomponents/segmentsurfacecomponent.h
     include/modules/basegl/shadercomponents/shadercomponent.h
     include/modules/basegl/shadercomponents/sphericalcomponent.h
     include/modules/basegl/shadercomponents/tfcomponent.h
@@ -225,6 +226,7 @@ set(SOURCE_FILES
     src/shadercomponents/positionindicatorcomponent.cpp
     src/shadercomponents/raycastingcomponent.cpp
     src/shadercomponents/sampletransformcomponent.cpp
+    src/shadercomponents/segmentsurfacecomponent.cpp
     src/shadercomponents/shadercomponent.cpp
     src/shadercomponents/sphericalcomponent.cpp
     src/shadercomponents/tfcomponent.cpp

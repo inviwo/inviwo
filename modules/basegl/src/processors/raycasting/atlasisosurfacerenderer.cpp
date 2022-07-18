@@ -88,12 +88,12 @@ AtlasIsosurfaceRenderer::AtlasIsosurfaceRenderer()
     addProperties(volumeSwitch_);
 
 
-    samplerObject1_ = SamplerObject();
+  /*  samplerObject1_ = SamplerObject();
     samplerObject1_.bind(0);
     samplerObject1_.setFilterModeAll(GL_NEAREST);
     samplerObject2_ = SamplerObject();
     samplerObject2_.bind(0);
-    samplerObject2_.setFilterModeAll(GL_LINEAR);
+    samplerObject2_.setFilterModeAll(GL_LINEAR);*/
 
     auto updateSampleRate = [this]() { sampleRateValue_ = sampleRate_.get(); };
 }
