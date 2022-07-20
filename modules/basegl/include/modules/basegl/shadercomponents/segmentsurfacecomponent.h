@@ -30,39 +30,21 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 
 #include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <modules/opengl/texture/samplerobject.h>
-#include <inviwo/core/properties/selectioncolorproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <modules/opengl/volume/volumeutils.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/selectioncolorproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <modules/opengl/texture/samplerobject.h>
+
 #include <string>
-#include <vector>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.segmentsurfacecomponent, segmentsurfacecomponent}
- * ![](org.inviwo.segmentsurfacecomponent.png?classIdentifier=org.inviwo.segmentsurfacecomponent)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+/**
+ * Takes an atlas volume from the atlascomponent in range [0, 3] of intergral type.
+ * Uses brushing and linking to show filtered, selected and highlighted segments.
  */
 class IVW_MODULE_BASEGL_API SegmentSurfaceComponent : public ShaderComponent {
 public:

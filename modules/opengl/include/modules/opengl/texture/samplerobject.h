@@ -29,9 +29,8 @@
 #pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
+
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glformats.h>
-#include <modules/opengl/texture/texture.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 
 namespace inviwo {
@@ -39,7 +38,7 @@ namespace inviwo {
 /**
  * Sampler objects store parameters that are not specific to textures. Thus, they store filter
  * modes, wrapping mode but not texture width, height, swizzlemask etc. Binding a sampler object to
- * a texture unit takes that textures uniform location in the shader, and multiple different sampler
+ * a texture unit takes a texture's uniform location in the shader, and multiple different sampler
  * objects can be assigned to the same texture unit without having to copy the texture data.
  */
 class IVW_MODULE_OPENGL_API SamplerObject {
