@@ -32,6 +32,7 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/glformats.h>
 #include <modules/opengl/texture/texture.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 namespace inviwo {
 
@@ -55,13 +56,20 @@ public:
     /// different from how textures are bound.
     /// </summary>
     /// <param name="textureUnitNumber"></param>
-    void setMinFilterMode(GLenum type);
-    void setMagFilterMode(GLenum type);
-    void setFilterModeAll(GLenum type);
-    void setWrapMode_S(GLenum type);
-    void setWrapMode_T(GLenum type);
-    void setWrapMode_R(GLenum type);
-    void setWrapModeAll(GLenum type);
+    void setMinFilterMode(GLenum interpolation);
+    void setMinFilterMode(InterpolationType type);
+    void setMagFilterMode(GLenum interpolation);
+    void setMagFilterMode(InterpolationType interpolation);
+    void setFilterModeAll(GLenum interpolation);
+    void setFilterModeAll(InterpolationType interpolation);
+    void setWrapMode_S(GLenum wrap);
+    void setWrapMode_T(GLenum wrap);
+    void setWrapMode_R(GLenum wrap);
+    void setWrapModeAll(GLenum wrap);
+    void setWrapMode_S(Wrapping wrap);
+    void setWrapMode_T(Wrapping wrap);
+    void setWrapMode_R(Wrapping wrap);
+    void setWrapModeAll(Wrapping wrap);
     GLint getID() const;
 
 private:

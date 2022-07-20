@@ -29,6 +29,7 @@
 
 #include <inviwo/volume/processors/atlasboundary.h>
 #include <inviwo/volume/algorithm/volumemap.h>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -58,24 +59,20 @@ void AtlasBoundary::process() {
         highlighted -= filtered;
         selected -= highlighted;
         selected -= filtered;
-        std::vector<int> selectedDestination(selected.toVector().size(), 1);
-        std::vector<int> filteredDestination(filtered.toVector().size(), 2);
-        std::vector<int> highlightedDestination(highlighted.toVector().size(), 3);
 
-        // Append to B&L to vectors
+        // Append B&L to vectors
         sourceIndices_.clear();
-        destinationIndices_.clear();
         sourceIndices_.insert(sourceIndices_.end(), selected.begin(), selected.end());
         sourceIndices_.insert(sourceIndices_.end(), filtered.begin(), filtered.end());
         sourceIndices_.insert(sourceIndices_.end(), highlighted.begin(), highlighted.end());
-        destinationIndices_.insert(destinationIndices_.end(), selectedDestination.begin(),
-                                  selectedDestination.end());
-        destinationIndices_.insert(destinationIndices_.end(), filteredDestination.begin(),
-                                  filteredDestination.end());
-        destinationIndices_.insert(destinationIndices_.end(), highlightedDestination.begin(),
-                                  highlightedDestination.end());
 
-        if (sourceIndices_.size() == 0) {
+        destinationIndices_.clear();
+        destinationIndices_.insert(destinationIndices_.end(), selected.cardinality(), 1);
+        destinationIndices_.insert(destinationIndices_.end(), filtered.cardinality(), 2);
+        destinationIndices_.insert(destinationIndices_.end(), highlighted.cardinality(), 3);
+
+        // util::remap throws exception if vectors are empty
+        if (sourceIndices_.empty()) {
             sourceIndices_.push_back(0);
             destinationIndices_.push_back(0);
         }
@@ -84,8 +81,8 @@ void AtlasBoundary::process() {
         auto volume = volumeInport_.getData();
         volume_ = std::shared_ptr<Volume>(volume->clone());
         util::remap(*volume_, sourceIndices_, destinationIndices_, 0, true);
+
         // Set volume properties
-        volume_->setInterpolation(InterpolationType::Nearest);
         volume_->setSwizzleMask(swizzlemasks::luminance);
         volume_->dataMap_.dataRange = dvec2{0.0, 3.0};
         volume_->dataMap_.valueRange = volume_->dataMap_.dataRange;

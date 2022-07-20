@@ -126,8 +126,6 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProperty<LineSettingsProperty>();
     registerProperty<SplitterProperty>();
     registerProperty<StipplingProperty>();
-
-    registerProcessor<AtlasIsosurfaceRenderer>();
     registerProcessor<AtlasVolumeRaycaster>();
     registerProcessor<AxisAlignedCutPlane>();
     registerProcessor<Background>();

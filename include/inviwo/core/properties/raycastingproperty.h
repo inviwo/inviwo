@@ -79,7 +79,6 @@ public:
     OptionProperty<Classification> classification_;
     OptionProperty<CompositingType> compositing_;
     OptionProperty<GradientComputation> gradientComputation_;
-    FloatProperty gradientSpacingOffset_;
 
     FloatProperty samplingRate_;
 };

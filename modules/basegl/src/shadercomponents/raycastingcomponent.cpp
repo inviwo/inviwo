@@ -60,7 +60,6 @@ const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel
                                                            {"channel2", "Channel 2", 0},
                                                            {"channel3", "Channel 3", 0},
                                                            {"channel4", "Channel 4", 0}};
-
 }
 
 RaycastingComponent::RaycastingComponent(std::string_view volume, IsoTFProperty& isotf)
@@ -85,7 +84,6 @@ RaycastingComponent::RaycastingComponent(std::string_view volume, IsoTFProperty&
 std::string_view RaycastingComponent::getName() const { return raycasting_.getIdentifier(); }
 
 void RaycastingComponent::process(Shader& shader, TextureUnitContainer&) {
-    shader.setUniform("gradientOffsetSpacing", raycasting_.gradientSpacingOffset_.get());
     shader.setUniform("samplingRate", raycasting_.samplingRate_.get());
     shader.setUniform("channel", static_cast<int>(channel_.getSelectedIndex()));
 }
@@ -161,8 +159,7 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
     std::vector<Segment> segments{
         {std::string(R"(#include "raycasting/iso.glsl")"), placeholder::include, 1100},
         {std::string(R"(#include "utils/compositing.glsl")"), placeholder::include, 1100},
-        {std::string(R"(uniform int channel = 0;)"), placeholder::uniform, 1100},
-        {std::string(R"(uniform float gradientOffsetSpacing;)"), placeholder::uniform}};
+        {std::string(R"(uniform int channel = 0;)"), placeholder::uniform, 1100}};
 
     const auto gradient = fmt::format("{}Gradient", volume_);
     const auto gradientPrev = fmt::format("{}GradientPrev", volume_);

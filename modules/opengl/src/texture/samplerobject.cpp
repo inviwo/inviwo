@@ -29,6 +29,8 @@
 
 #include <modules/opengl/texture/samplerobject.h>
 
+#include <modules/opengl/openglutils.h>
+
 namespace inviwo {
 
 SamplerObject::SamplerObject() : currentlyBoundTextureUnit_{0} { glGenSamplers(1, &id_); }
@@ -58,35 +60,73 @@ SamplerObject::~SamplerObject() {
     }
 }
 
-void SamplerObject::setMinFilterMode(GLenum type) {
-    glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, type);
+void SamplerObject::setMinFilterMode(GLenum interpolation) {
+    glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, interpolation);
 }
 
-void SamplerObject::setMagFilterMode(GLenum type) {
-    glSamplerParameteri(id_, GL_TEXTURE_MAG_FILTER, type);
+void SamplerObject::setMinFilterMode(InterpolationType interpolation) {
+    auto filtering = utilgl::convertInterpolationToGL(interpolation);
+    glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, filtering);
 }
 
-void SamplerObject::setFilterModeAll(GLenum type) {
-    glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, type);
-    glSamplerParameteri(id_, GL_TEXTURE_MAG_FILTER, type);
+void SamplerObject::setMagFilterMode(GLenum interpolation) {
+    glSamplerParameteri(id_, GL_TEXTURE_MAG_FILTER, interpolation);
 }
 
-void SamplerObject::setWrapMode_S(GLenum type) {
-    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, GL_REPEAT);
+void SamplerObject::setMagFilterMode(InterpolationType interpolation) {
+    auto filtering = utilgl::convertInterpolationToGL(interpolation);
+    glSamplerParameteri(id_, GL_TEXTURE_MAG_FILTER, filtering);
 }
 
-void SamplerObject::setWrapMode_T(GLenum type) {
-    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
+void SamplerObject::setFilterModeAll(GLenum interpolation) {
+    glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, interpolation);
+    glSamplerParameteri(id_, GL_TEXTURE_MAG_FILTER, interpolation);
 }
 
-void SamplerObject::setWrapMode_R(GLenum type) {
-    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, GL_REPEAT);
+void SamplerObject::setFilterModeAll(InterpolationType interpolation) {
+    auto filtering = utilgl::convertInterpolationToGL(interpolation);
+    glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, filtering);
+    glSamplerParameteri(id_, GL_TEXTURE_MAG_FILTER, filtering);
 }
 
-void SamplerObject::setWrapModeAll(GLenum type) {
-    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, GL_REPEAT);
+void SamplerObject::setWrapMode_S(GLenum wrap) {
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, wrap);
+}
+
+void SamplerObject::setWrapMode_T(GLenum wrap) {
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, wrap);
+}
+
+void SamplerObject::setWrapMode_R(GLenum wrap) {
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, wrap);
+}
+
+void SamplerObject::setWrapModeAll(GLenum wrap) {
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, wrap);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, wrap);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, wrap);
+}
+
+void SamplerObject::setWrapModeAll(Wrapping wrap) {
+    auto wrapMode = utilgl::convertWrappingToGL(wrap);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, wrapMode);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, wrapMode);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, wrapMode);
+}
+
+void SamplerObject::setWrapMode_S(Wrapping wrap) {
+    auto wrapMode = utilgl::convertWrappingToGL(wrap);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, wrapMode);
+}
+
+void SamplerObject::setWrapMode_T(Wrapping wrap) {
+    auto wrapMode = utilgl::convertWrappingToGL(wrap);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, wrapMode);
+}
+
+void SamplerObject::setWrapMode_R(Wrapping wrap) {
+    auto wrapMode = utilgl::convertWrappingToGL(wrap);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, wrapMode);
 }
 
 GLint SamplerObject::getID() const { return id_; }

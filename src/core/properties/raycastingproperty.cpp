@@ -69,11 +69,10 @@ RaycastingProperty::RaycastingProperty(std::string_view identifier, std::string_
            {"precomputedXYZ", "Pre-computed Gradients (xyz)", GradientComputation::PrecomputedXYZ},
            {"precomputedYZW", "Pre-computed Gradients (yzw)", GradientComputation::PrecomputedYZW}},
           3, InvalidationLevel::InvalidResources)
-    , gradientSpacingOffset_{"sampleOffsetScaling", "Sample offset scaling ", 1.0f, 0.0f, 5.0f}
     , samplingRate_("samplingRate", "Sampling rate", 2.0f, 1.0f, 20.0f) {
 
     addProperties(renderingType_, classification_, compositing_, gradientComputation_,
-                  gradientSpacingOffset_, samplingRate_);
+                  samplingRate_);
 }
 
 RaycastingProperty::RaycastingProperty(const RaycastingProperty& rhs)
@@ -82,11 +81,10 @@ RaycastingProperty::RaycastingProperty(const RaycastingProperty& rhs)
     , classification_(rhs.classification_)
     , compositing_(rhs.compositing_)
     , gradientComputation_(rhs.gradientComputation_)
-    , samplingRate_(rhs.samplingRate_)
-    , gradientSpacingOffset_(rhs.gradientSpacingOffset_) {
+    , samplingRate_(rhs.samplingRate_) {
 
     addProperties(renderingType_, classification_, compositing_, gradientComputation_,
-                  gradientSpacingOffset_, samplingRate_);
+                  samplingRate_);
 }
 
 RaycastingProperty* RaycastingProperty::clone() const { return new RaycastingProperty(*this); }

@@ -63,10 +63,8 @@ SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas)
     useAtlasBoundary_.addProperties(applyBoundaryLight_, textureSpaceGradientSpacingScale_,
                                     showHighlighted_, showFiltered_, showSelected_);
 
-
     nearestSampler_.setFilterModeAll(GL_NEAREST);
     nearestSampler_.setWrapModeAll(GL_REPEAT);
-
     linearSampler_.setFilterModeAll(GL_LINEAR);
     linearSampler_.setWrapModeAll(GL_REPEAT);
 }
@@ -85,7 +83,6 @@ void SegmentSurfaceComponent::process(Shader& shader, TextureUnitContainer& cont
     
     auto& linearUnit = cont.emplace_back();
     linearUnit.bindSampler(linearSampler_);
-    //linearSampler_.bind(linearUnit.getUnitNumber());
     shader.setUniform("linearAtlas", linearUnit);
     utilgl::bindTexture(atlas_, linearUnit);
 }
