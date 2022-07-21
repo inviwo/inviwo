@@ -43,7 +43,6 @@ namespace inviwo {
  * - 1 = selected
  * - 2 = filtered
  * - 3 = highlighted
- * 
  * Note: Rendering of selections can be made within Atlas Volume Raycaster processor.
  *
  * ### Inports

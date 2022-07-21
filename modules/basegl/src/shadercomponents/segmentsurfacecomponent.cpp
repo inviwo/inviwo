@@ -36,7 +36,7 @@ namespace inviwo {
 SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas)
     : ShaderComponent{}
     , name_("atlasboundary")
-    , useAtlasBoundary_{"useAtlasBoundary", "Render ISO using atlas boundary", true}
+    , useAtlasBoundary_{"useAtlasBoundary", "Render ISO using atlas boundary", false}
     , applyBoundaryLight_{"applyBoundaryLight", "Apply lighting to boundary", true}
     , showHighlighted_("showHighlightedIndices", "Show Highlighted", true,
                        vec3(1.0f, 0.906f, 0.612f))
@@ -124,14 +124,10 @@ if(useAtlasBoundary && (boundaryValue != prevBoundaryValue))
     if(applyBoundaryLight)
     {
         vec3 atlasGradient = vec3(1);
-       
-        atlasGradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL
-            (getNormalizedVoxel(atlas, atlasParameters, samplePosition),
+        atlasGradient = normalize(gradientCentralDiff(vec4(0),
             linearAtlas, scaledAtlasParameters, samplePosition, channel));
-     
         vec3 worldSpacePosition = 
             (atlasParameters.textureToWorldNormalMatrix * vec4(samplePosition, 1.0)).xyz;
-
         boundaryColor.rgb = APPLY_LIGHTING(lighting, boundaryColor.rgb, boundaryColor.rgb,
             vec3(1.0), worldSpacePosition, -atlasGradient, cameraDir);  
     }   

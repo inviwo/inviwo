@@ -88,7 +88,6 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
             raycasting_.setUsedChannels(channels);
         }
     });
-    
 
     registerComponents(volume_, entryExit_, isoTF_, atlas_, background_, sampleTransform_,
                        raycasting_, camera_, light_, positionIndicator_, time_, segmentSurface_);
