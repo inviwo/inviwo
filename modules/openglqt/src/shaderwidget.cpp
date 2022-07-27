@@ -86,7 +86,7 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
 
     apply_ = toolBar->addAction(QIcon(":/svgicons/run-script.svg"), tr("&Apply Changes"));
     apply_->setToolTip(
-        "Replace the ShaderTesource in the shader with a new one with this contents. The "
+        "Replace the ShaderResource in the shader with a with this content. The "
         "changes will only affect this shader and will not be persistent.");
     apply_->setShortcut(Qt::CTRL | Qt::Key_R);
     apply_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -95,10 +95,10 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
 
     save_ = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save Shader"));
     save_->setToolTip(
-        "If we have a FileShaderResoruce save the changes to disk, the change will be persistent "
-        "and all shaders using the file will be reloaded. If we have a StringShaderResource, "
+        "If a FileShaderResoruce saves changes to disk, changes will be persistent "
+        "and all shaders using the file will be reloaded. If a StringShaderResource, "
         "update the string. The change will affect all shaders using the resource but will not be "
-        "persistent");
+        "persistent.");
     save_->setShortcut(QKeySequence::Save);
     save_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mainWindow->addAction(save_);

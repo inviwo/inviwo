@@ -72,7 +72,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     }
     if (!app->getModuleManager().getModulesByAlias("OpenGLSupplier").empty()) {
         throw ModuleInitException(
-            "OpenGLQt could not be initialized because an other OpenGLSupplier is already used for "
+            "OpenGLQt could not be initialized because another OpenGLSupplier is already used for "
             "OpenGL context.",
             IVW_CONTEXT);
     }
