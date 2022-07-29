@@ -33,13 +33,13 @@
 
 namespace inviwo {
 
-SamplerObject::SamplerObject() : currentlyBoundTextureUnit_{0} { glGenSamplers(1, &id_); }
-
-SamplerObject::SamplerObject(SamplerObject&& rhs) noexcept
-    : id_{rhs.id_}, currentlyBoundTextureUnit_{rhs.currentlyBoundTextureUnit_} {
-    rhs.currentlyBoundTextureUnit_ = 0;
-    rhs.id_ = 0;
+SamplerObject::SamplerObject(InterpolationType type, Wrapping wrap) {
+    glGenSamplers(1, &id_);
+    setFilterModeAll(type);
+    setWrapModeAll(wrap);
 }
+
+SamplerObject::SamplerObject(SamplerObject&& rhs) noexcept : id_{rhs.id_} { rhs.id_ = 0; }
 
 SamplerObject& SamplerObject::operator=(SamplerObject&& that) noexcept {
     if (this != &that) {
@@ -48,8 +48,6 @@ SamplerObject& SamplerObject::operator=(SamplerObject&& that) noexcept {
         }
         id_ = that.id_;
         that.id_ = 0;
-        currentlyBoundTextureUnit_ = that.currentlyBoundTextureUnit_;
-        that.currentlyBoundTextureUnit_ = 0;
     }
     return *this;
 }

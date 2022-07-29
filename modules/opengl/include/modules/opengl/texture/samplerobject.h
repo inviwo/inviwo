@@ -38,23 +38,19 @@ namespace inviwo {
 /**
  * Sampler objects store parameters that are not specific to textures. Thus, they store filter
  * modes, wrapping mode but not texture width, height, swizzlemask etc. Binding a sampler object to
- * a texture unit takes a texture's uniform location in the shader, and multiple different sampler
- * objects can be assigned to the same texture unit without having to copy the texture data.
+ * a texture unit takes a texture's uniform location in the shader. Texture units should have only
+ * one or zero sampler objects and one texture bound at any time.
  */
 class IVW_MODULE_OPENGL_API SamplerObject {
 public:
-    SamplerObject();
+    SamplerObject(InterpolationType type = InterpolationType::Linear,
+                  Wrapping wrap = Wrapping::Repeat);
     SamplerObject(const SamplerObject&) = delete;
     SamplerObject(SamplerObject&&) noexcept;
     SamplerObject& operator=(const SamplerObject&) = delete;
     SamplerObject& operator=(SamplerObject&&) noexcept;
     ~SamplerObject();
 
-    /// <summary>
-    /// Texture unit number is ONLY the number, such as 0, 1,4 or 5. Not GL_TEXTURE0. This is
-    /// different from how textures are bound.
-    /// </summary>
-    /// <param name="textureUnitNumber"></param>
     void setMinFilterMode(GLenum interpolation);
     void setMinFilterMode(InterpolationType type);
     void setMagFilterMode(GLenum interpolation);
@@ -73,7 +69,6 @@ public:
 
 private:
     GLuint id_;
-    GLuint currentlyBoundTextureUnit_;
 };
 
 }  // namespace inviwo

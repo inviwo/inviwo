@@ -48,7 +48,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API SegmentSurfaceComponent : public ShaderComponent {
 public:
-    SegmentSurfaceComponent(VolumeInport& atlas);
+    SegmentSurfaceComponent(VolumeInport& atlas, InterpolationType type, Wrapping wrap);
     virtual std::string_view getName() const override;
     virtual void process(Shader& shader, TextureUnitContainer&) override;
     virtual std::vector<Property*> getProperties() override;
@@ -61,7 +61,6 @@ private:
     SelectionColorProperty showHighlighted_;
     SelectionColorProperty showSelected_;
     SelectionColorProperty showFiltered_;
-    SamplerObject nearestSampler_;
     SamplerObject linearSampler_;
     FloatProperty textureSpaceGradientSpacingScale_;
     VolumeInport& atlas_;

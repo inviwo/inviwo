@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas)
+SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas, InterpolationType type, Wrapping wrap)
     : ShaderComponent{}
     , name_("atlasboundary")
     , useAtlasBoundary_{"useAtlasBoundary", "Render ISO using atlas boundary", false}
@@ -42,7 +42,6 @@ SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas)
                        vec3(1.0f, 0.906f, 0.612f))
     , showSelected_("showSelectedIndices", "Show Selected", true, vec3(1.0f, 0.769f, 0.247f))
     , showFiltered_("showFilteredIndices", "Show Filtered", true, vec3(0.5f, 0.5f, 0.5f))
-    , nearestSampler_{}
     , linearSampler_{}
     , textureSpaceGradientSpacingScale_{"gradientScaling", "Scale gradient spacing", 1.0f, 0.0f,
                                         5.0f}
@@ -51,10 +50,8 @@ SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas)
     useAtlasBoundary_.addProperties(applyBoundaryLight_, textureSpaceGradientSpacingScale_,
                                     showHighlighted_, showFiltered_, showSelected_);
 
-    nearestSampler_.setFilterModeAll(InterpolationType::Nearest);
-    nearestSampler_.setWrapModeAll(Wrapping::Repeat);
-    linearSampler_.setFilterModeAll(InterpolationType::Linear);
-    linearSampler_.setWrapModeAll(Wrapping::Repeat);
+    linearSampler_.setFilterModeAll(type);
+    linearSampler_.setWrapModeAll(wrap);
 }
 std::string_view SegmentSurfaceComponent::getName() const { return name_; }
 
@@ -105,24 +102,19 @@ constexpr std::string_view loop = util::trim(R"(
 prevBoundaryValue = boundaryValue;
 boundaryValue = uint(atlasSegment*3.0f + 0.5f);
 
-if(useAtlasBoundary && (boundaryValue != prevBoundaryValue))
-{
+if(useAtlasBoundary && (boundaryValue != prevBoundaryValue)) {
     vec4 boundaryColor = vec4(0);
-    if(showHighlighted && (boundaryValue == 3 || prevBoundaryValue == 3))
-    {
+    if(showHighlighted && (boundaryValue == 3 || prevBoundaryValue == 3)) {
         boundaryColor = highlightedColor;
     }
-    else if(showSelected && (boundaryValue == 1 || prevBoundaryValue == 1))
-    {
+    else if(showSelected && (boundaryValue == 1 || prevBoundaryValue == 1)) {
         boundaryColor = selectedColor;
     }
-    else if(showFiltered && (boundaryValue == 2 || prevBoundaryValue == 2))
-    {
+    else if(showFiltered && (boundaryValue == 2 || prevBoundaryValue == 2)) {
         boundaryColor = filteredColor;
     }
     #if defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED)
-    if(applyBoundaryLight)
-    {
+    if(applyBoundaryLight) {
         vec3 atlasGradient = vec3(1);
         atlasGradient = normalize(gradientCentralDiff(vec4(0),
             linearAtlas, scaledAtlasParameters, samplePosition, channel));
@@ -132,8 +124,7 @@ if(useAtlasBoundary && (boundaryValue != prevBoundaryValue))
             vec3(1.0), worldSpacePosition, -atlasGradient, cameraDir);  
     }   
     #endif
-    if(boundaryColor.a > 0)
-    {
+    if(boundaryColor.a > 0) {
         boundaryColor.rgb *= boundaryColor.a; 
         result += (1.0f - result.a) * boundaryColor;
     }
