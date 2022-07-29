@@ -307,8 +307,7 @@ inline void ShaderWidget::queryReloadFile() {
         std::any_of(children.begin(), children.end(), [](auto w) { return w->hasFocus(); });
     if (focus && fileChangedInBackground_ && !reloadQueryInProgress_) {
         util::KeepTrueWhileInScope guard{&reloadQueryInProgress_};
-        std::string msg =
-            "The shader source has been modified, do you want to reload its content?";
+        std::string msg = "The shader source has been modified, do you want to reload its content?";
 
         QMessageBox msgBox(QMessageBox::Question, "Shader Editor", utilqt::toQString(msg),
                            QMessageBox::Yes | QMessageBox::No, this);
