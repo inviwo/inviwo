@@ -95,9 +95,9 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
 
     save_ = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save Shader"));
     save_->setToolTip(
-        "If a FileShaderResoruce saves changes to disk, changes will be persistent "
-        "and all shaders using the file will be reloaded. If a StringShaderResource, "
-        "update the string. The change will affect all shaders using the resource but will not be "
+        "If a FileShaderResource saves changes to disk, changes will be persistent "
+        "and all shaders using the file will be reloaded. If a StringShaderResource "
+        "updates the string. The change will affect all shaders using the resource but will not be "
         "persistent.");
     save_->setShortcut(QKeySequence::Save);
     save_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -202,8 +202,8 @@ void ShaderWidget::save() {
         shadercode_->document()->setModified(false);
     } else {
         LogWarn(fmt::format(
-            "Could not save, the ShaderResource \"{}\" was not found in the ShaderManager. The "
-            "ShaderResource needs to be registered with the ShaderManager for saving to work",
+            "Could not save. The ShaderResource \"{}\" was not found in the ShaderManager. It "
+            "needs to be registered with the ShaderManager for saving to work.",
             obj_->getResource()->key()));
     }
 }
@@ -308,7 +308,7 @@ inline void ShaderWidget::queryReloadFile() {
     if (focus && fileChangedInBackground_ && !reloadQueryInProgress_) {
         util::KeepTrueWhileInScope guard{&reloadQueryInProgress_};
         std::string msg =
-            "The shader source has been modified, do you want to reload its contents?";
+            "The shader source has been modified, do you want to reload its content?";
 
         QMessageBox msgBox(QMessageBox::Question, "Shader Editor", utilqt::toQString(msg),
                            QMessageBox::Yes | QMessageBox::No, this);
