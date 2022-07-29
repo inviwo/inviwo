@@ -97,7 +97,7 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     save_->setToolTip(
         "If a FileShaderResource saves changes to disk, changes will be persistent "
         "and all shaders using the file will be reloaded. If a StringShaderResource "
-        "updates the string. The change will affect all shaders using the resource but will not be "
+        "updates the string, changes will affect all shaders using the resource but will not be "
         "persistent.");
     save_->setShortcut(QKeySequence::Save);
     save_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
