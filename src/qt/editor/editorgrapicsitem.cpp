@@ -91,8 +91,27 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     using P = Document::PathComponent;
 
-    auto doc = port->getInfo();
-    auto b = doc.get({P("html"), P("body")});
+    Document desc{};
+    auto html = desc.append("html");
+    html.append("head").append("style", R"(
+        div.name {
+            font-size: 13pt;
+            color: #c8ccd0;;
+            font-weight: bold;
+        }
+        div.help {
+            font-size: 12pt;
+            margin: 10px 0px 10px 0px;
+            padding: 0px 0px 0px 0px;
+        }
+        table {
+            margin: 10px 0px 0px 0px;
+            padding: 0px 0px 0px 0px;
+        }
+        )"_unindent);
+
+    auto body = html.append("body");
+    body.append(port->getInfo());
 
     auto inport = dynamic_cast<const Inport*>(port);
     auto outport = dynamic_cast<Outport*>(port);
@@ -134,7 +153,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 layers.push_back({"", image->getColorLayer(0)});
             }
 
-            auto p = b.append("p");
+            auto p = body.append("p");
             p.append("b", "Port Inspector", {{"style", "color:white;"}});
             auto t = p.append("table");
             auto tableRow = t.append("tr");
@@ -173,8 +192,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     // otherwise we might loose focus and the tooltip will go away...
     qApp->processEvents();
 
-    const std::string info = doc;
-    showToolTipHelper(e, utilqt::toLocalQString(info));
+    showToolTipHelper(e, utilqt::toLocalQString(desc));
 }
 
 }  // namespace inviwo

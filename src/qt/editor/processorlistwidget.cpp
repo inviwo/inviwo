@@ -581,7 +581,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
         auto b = doc.append("html").append("body");
         b.append("b", processor->getDisplayName(), {{"style", "color:white;"}});
         using H = utildoc::TableBuilder::Header;
-        utildoc::TableBuilder tb(b, P::end(), {{"identifier", "propertyInfo"}});
+        utildoc::TableBuilder tb(b, P::end(), {{"class", "propertyInfo"}});
 
         tb(H("Module"), moduleId);
         tb(H("Identifier"), processor->getClassIdentifier());

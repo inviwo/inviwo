@@ -40,45 +40,11 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/rendering/meshdrawer.h>
 
 #include <modules/opengl/shader/shader.h>
 
-#include <vector>
-
 namespace inviwo {
 
-/** \docpage{org.inviwo.GeometryRenderGL, Mesh Renderer}
- * ![](org.inviwo.GeometryRenderGL.png?classIdentifier=org.inviwo.GeometryRenderGL)
- * Renders a set of meshes using OpenGL on top of an image. Different rendering modes can be
- * selected.
- *
- * ### Inports
- *   * __geometry__ Input meshes
- *   * __imageInport__ Optional background image
- *
- * ### Outports
- *   * __image__ output image containing the rendered mesh and the optional input image
- *
- * ### Properties
- *   * __Camera__ Camera used for rendering the mesh
- *   * __Fit View to Mesh__ Contains button properties to set the view of the camera to contain all
- * input meshes
- *   * __Reset Camera__ Reset the camera to its default state
- *   * __Geometry Rendering Properties__
- *       + __Cull Face__ (None, Front, Back, Back and Front)
- *       + __Polygon Mode__  (Points, Lines, Fill)
- *       + __Point Size__ Defines the point size when polygon mode is set to "Points"
- *       + __Line Width__ Defines the line width when polygon mode is set to "Lines" (not supported)
- *       + __Enable Depth Test__ Toggles the depth test during rendering
- *   * __Lighting__ Standard lighting settings
- *   * __Output Layers__
- *       + __Color__ Toggle output of color layer
- *       + __Texture Coordinates__ Toggle output of texture coordinates
- *       + __Normals (World Space)__ Toggle output of normals (world space)
- *       + __Normals (View space)__ Toggle output of view space normals
- *
- */
 class IVW_MODULE_BASEGL_API MeshRenderProcessorGL : public Processor {
 public:
     MeshRenderProcessorGL();
@@ -100,15 +66,15 @@ protected:
     ImageOutport outport_;
 
     CameraProperty camera_;
-    CameraTrackball trackball_;
-
-    BoolProperty overrideColorBuffer_;
-    FloatVec4Property overrideColor_;
 
     CompositeProperty meshProperties_;
     OptionPropertyInt cullFace_;
     BoolProperty enableDepthTest_;
+    BoolProperty overrideColorBuffer_;
+    FloatVec4Property overrideColor_;
+
     SimpleLightingProperty lightingProperty_;
+    CameraTrackball trackball_;
 
     CompositeProperty layers_;
     BoolProperty colorLayer_;

@@ -72,10 +72,8 @@ StringProperty& StringProperty::setDefault(std::string_view value) {
 StringProperty::operator std::string_view() const { return value_.value; }
 
 Document StringProperty::getDescription() const {
-    using P = Document::PathComponent;
     Document doc = TemplateProperty<std::string>::getDescription();
-    auto b = doc.get({P("html"), P("body")});
-    b.append("pre", value_.value);
+    doc.append("pre", value_.value);
     return doc;
 }
 

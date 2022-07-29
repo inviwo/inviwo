@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
+#include <inviwo/core/algorithm/markdown.h>
 
 #include <vector>
 #include <memory>
@@ -182,8 +183,6 @@ protected:
 
     void forEachProperty(std::function<void(Property&)> callback,
                          bool recursiveSearch = false) const;
-
-    static Document md(std::string_view markdown);
 
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);

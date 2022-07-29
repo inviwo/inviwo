@@ -40,29 +40,51 @@ const ProcessorInfo DistanceTransformRAM::processorInfo_{
     "Volume Operation",                 // Category
     CodeState::Stable,                  // Code state
     Tags::CPU,                          // Tags
-};
+    R"(Computes the distance transform of a volume dataset using a threshold value
+    The result is the distance from each voxel to the closest feature. It will only work correctly
+    for volumes with an orthogonal basis. It uses the Saito's algorithm to compute the Euclidean
+    distance.
+    
+    Example Network:
+    [basegl/distance_transform.inv](file:///<modulePath>/tests/regression/distance_transform.inv)
+    )"_unindentHelp};
 const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const { return processorInfo_; }
 
 DistanceTransformRAM::DistanceTransformRAM()
     : PoolProcessor(pool::Option::DelayDispatch)
-    , volumePort_("inputVolume")
-    , outport_("outputVolume")
-    , threshold_("threshold", "Threshold", 0.5, 0.0, 1.0)
-    , flip_("flip", "Flip", false)
-    , normalize_("normalize", "Use normalized threshold", true)
-    , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
-    , resultSquaredDist_("distSquared", "Squared Distance", false)
-    , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
+    , volumePort_("inputVolume", "Input volume"_help)
+    , outport_("outputVolume", "Scalar volume representing the distance transform (float)"_help)
+    , threshold_("threshold", "Threshold",
+                 "Voxels with a value  __larger___ then the then the threshold will be considered "
+                 "as features, i.e. have a zero distance"_help,
+                 0.5, {0.0, ConstraintBehavior::Ignore}, {1.0, ConstraintBehavior::Ignore})
+    , flip_("flip", "Flip",
+            "Consider features as voxels with a values __smaller__ then threshold instead"_help,
+            false)
+    , normalize_("normalize", "Use normalized threshold",
+                 "Use normalized values when comparing to the threshold"_help, true)
+    , resultDistScale_("distScale", "Scaling Factor",
+                       "Scaling factor to apply to the output distance field."_help, 1.0f,
+                       {0.0f, ConstraintBehavior::Ignore}, {1.0e3, ConstraintBehavior::Ignore},
+                       0.05f)
+    , resultSquaredDist_("distSquared", "Squared Distance",
+                         "Output the squared distance field"_help, false)
+    , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling",
+                         "Make the output volume have a higher resolution."_help, false)
     , upsampleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
     , upsampleFactorVec3_("upsampleFactorVec3", "Sampling Factor", size3_t(1), size3_t(1),
                           size3_t(10))
-    , dataRangeOutput_("dataRange", "Output Range", 0.0, 1.0, 0.0,
+    , dataRangeOutput_("dataRange", "Output Range",
+                       "The data range of the output volume. (ReadOnly)"_help, 0.0, 1.0, 0.0,
                        std::numeric_limits<double>::max(), 0.01, 0.0, InvalidationLevel::Valid,
                        PropertySemantics::Text)
-    , dataRangeMode_("dataRangeMode", "Data Range",
+    , dataRangeMode_("dataRangeMode", "Data Range", R"(Data range to use for the output volume:
+        * Diagonal use [0, volume diagonal].
+        * MinMax use the minimal and maximal distance from the result
+        * Custom specify a custom range.)"_unindentHelp,
                      {DataRangeMode::Diagonal, DataRangeMode::MinMax, DataRangeMode::Custom}, 0)
-    , customDataRange_("customDataRange", "Custom Data Range", 0.0, 1.0, 0.0,
-                       std::numeric_limits<double>::max(), 0.01, 0.0,
+    , customDataRange_("customDataRange", "Custom Data Range", "Specify a custom output range"_help,
+                       0.0, 1.0, 0.0, std::numeric_limits<double>::max(), 0.01, 0.0,
                        InvalidationLevel::InvalidOutput, PropertySemantics::Text) {
 
     addPort(volumePort_);

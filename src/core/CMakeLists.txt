@@ -7,6 +7,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/linearmap.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/markdown.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/permutations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/searchdsl.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
@@ -395,6 +396,7 @@ set(SOURCE_FILES
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
     algorithm/linearmap.cpp
+    algorithm/markdown.cpp
     algorithm/permutations.cpp
     algorithm/searchdsl.cpp
     common/inviwoapplication.cpp

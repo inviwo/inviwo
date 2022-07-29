@@ -238,14 +238,13 @@ Document ImageOutport::getInfo() const {
     using H = utildoc::TableBuilder::Header;
 
     auto doc = DataOutport<Image>::getInfo();
-    auto b = doc.get({P{"html"}, P{"body"}});
     {
-        auto t = b.get({P{"table"}});
+        auto t = doc.get({P{"table"}});
         utildoc::TableBuilder tb(t);
         tb(H("Has Editable Data"), hasEditableData());
         tb(H("Handle Resize Events"), handleResizeEvents_);
     }
-    auto p = b.append("p");
+    auto p = doc.append("p");
     p.append("b", "Requested sizes", {{"style", "color:white;"}});
     if (requestedDimensions_.empty()) {
         p += "No requested sizes";

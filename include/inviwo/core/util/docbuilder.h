@@ -87,8 +87,6 @@ struct IVW_CORE_API HelpProcessor {
 
 IVW_CORE_API HelpProcessor buildProcessorHelp(Processor& processor);
 
-IVW_CORE_API Document md2doc(std::string_view markdown);
-
 }  // namespace help
 
 }  // namespace inviwo

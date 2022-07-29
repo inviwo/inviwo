@@ -163,19 +163,17 @@ void DataOutport<T>::clear() {
 
 template <typename T>
 Document DataOutport<T>::getInfo() const {
-    Document doc;
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
-    auto b = doc.append("html").append("body");
-    
-    b.append("b", util::htmlEncode(DataTraits<T>::dataName()) + " Outport",
-             {{"style", "color:white;"}});
-             
+
+    Document doc;
+    doc.append("b", util::htmlEncode(DataTraits<T>::dataName()) + " Outport", {{"class", "name"}});
+
     if (!help_.empty()) {
-        b.append(help_);
+        doc.append("div", "", {{"class", "help"}}).append(help_);
     }
-             
-    utildoc::TableBuilder tb(b, P::end());
+
+    utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());
     tb(H("Ready"), isReady());
@@ -183,9 +181,9 @@ Document DataOutport<T>::getInfo() const {
     tb(H("Connections"), connectedInports_.size());
 
     if (hasData()) {
-        b.append("p").append(DataTraits<T>::info(*getData()));
+        doc.append("p").append(DataTraits<T>::info(*getData()));
     } else {
-        b.append("p", "Port has no data");
+        doc.append("p", "Port has no data");
     }
     return doc;
 }

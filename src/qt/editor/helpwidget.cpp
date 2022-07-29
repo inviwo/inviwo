@@ -315,7 +315,7 @@ Document makePropertyHelp(const help::HelpProperty& property, std::string_view p
             auto li = properties.append("li", "", {{"class", "item"}});
             if (!subProperty.properties.empty()) {
                 li.append("a", "",
-                          {{"href", fmt::format("file:///{}/{}?type=processor", path, idx)}})
+                          {{"href", fmt::format("file://{}/{}?type=processor", path, idx)}})
                     .append("span", subProperty.displayName, {{"class", "name"}});
             } else {
                 li.append("span", subProperty.displayName, {{"class", "name"}});
@@ -373,7 +373,7 @@ std::tuple<std::string, std::string> loadIdUrl(const QUrl& url, InviwoApplicatio
                     }
                 }
                 const auto helpText = makePropertyHelp(
-                    *property, utilqt::fromQString(list.join('/')), app->getPropertyFactory());
+                    *property, utilqt::fromQString(url.path()), app->getPropertyFactory());
                 return {helpText, module.getPath()};
             }
         } else {
@@ -427,7 +427,6 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
             return utilqt::generatePreview(utilqt::fromQString(cid), app_->getProcessorFactory());
         } else if (requestType == "processor") {
             auto [html, mp] = loadIdUrl(url, app_);
-            fmt::print("HTML\n{}\n", html);
             current_ = url;
             currentModulePath_ = mp;
             return utilqt::toQString(html);
@@ -446,9 +445,14 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
             }
             QTimer::singleShot(0, this, [this]() { backward(); });
             return {"Workspace loaded"};
-        } else if (type == QTextDocument::ImageResource) {
+        }
+    }
+
+    if (type == QTextDocument::ImageResource) {
+        auto qFilePath = utilqt::toQString(filePath);
+        if (QFile::exists(qFilePath)) {
             const auto maxImageWidth = (95 * width()) / 100;
-            auto image = QImage(utilqt::toQString(filePath));
+            auto image = QImage(qFilePath);
             if (image.width() > maxImageWidth) {
                 return image.scaledToWidth(maxImageWidth);
             } else {
@@ -456,7 +460,6 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
             }
         }
     }
-
     return {};
 }
 

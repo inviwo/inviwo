@@ -33,25 +33,32 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo {{ file/name }}::processorInfo_{
-    "org.inviwo.{{ file/name }}",      // Class identifier
-    "{{ file/disp_name }}",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
-};
+    "org.inviwo.{{ file/name }}",  // Class identifier
+    "{{ file/disp_name }}",        // Display name
+    "Undefined",                   // Category
+    CodeState::Experimental,       // Code state
+    Tags::None,                    // Tags
+    R"(<Explanation of how to use the processor.>)"_unindentHelp};
+
 const ProcessorInfo {{ file/name }}::getProcessorInfo() const { return processorInfo_; }
 
-{{ file/name }}::{{ file/name }}()
-    : Processor()
-    , outport_("outport")
-    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
+{{ file/name }}::{{file / name}}()
+    : Processor{}
+    , inport_{"inport", "<description of the inport data and any requirements on the data>"_help}
+    , outport_{"outport", "<description of the generated outport data>"_help}
+    , position_{"position",
+                "Position",
+                "<description of the property>"_help,
+                vec3(0.0f),
+                {vec3(-100.0f), ConstraintBehavior::Ignore},
+                {vec3(-100.0f), ConstraintBehavior::Ignore}} {
 
-    addPort(outport_);
-    addProperty(position_);
+    addPorts(inport_, outport_);
+    addProperties(position_);
 }
 
 void {{ file/name }}::process() {
-    // outport_.setData(myImage);
+    // outport_.setData(std::make_shared<SomeOtherData>(position_.get()));
 }
 
 }  // namespace inviwo

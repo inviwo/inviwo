@@ -47,36 +47,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.DistanceTransformRAM, Distance Transform}
-* ![](org.inviwo.DistanceTransformRAM.png?classIdentifier=org.inviwo.DistanceTransformRAM)
-*
-* Computes the distance transform of a volume dataset using a threshold value
-* The result is the distance from each voxel to the closest feature. It will only work correctly for
-* volumes with a orthogonal basis. It uses the Saito's algorithm to compute the Euclidean distance.
-*
-* ### Inports
-*   * __inputVolume__ Input volume
-*
-* ### Outports
-*   * __outputVolume__ Scalar volume representing the distance transform (float)
-*
-* ### Properties
-*   * __Threshold__ Voxles with a value  __larger___ then the then the threshold will be considered
-     as features, i.e. have a zero distance.
-*   * __Flip__ Consider features as voxels with a values __smaller__ then threshold instead.
-*   * __Use normalized threshold__ Use normalized values when comparing to the threshold.
-*   * __Scaling Factor__ Scaling factor to apply to the output distance field.
-*   * __Squared Distance__ Output the squared distance field
-*   * __Up sample__ Make the output volume have a higher resolution.
-*   * __Data Range__ Data range to use for the output volume:
-*       * Diagonal use [0, volume diagonal].
-*       * MinMax use the minimal and maximal distance from the result
-*       * Custom specify a custom range.
-*   * __Data Range__ The data range of the output volume. (ReadOnly)
-*   * __Custom Data Range__ Specify a custom output range.
-*
-*/
-
 class IVW_MODULE_BASE_API DistanceTransformRAM : public PoolProcessor {
 public:
     enum class DataRangeMode { Diagonal, MinMax, Custom };

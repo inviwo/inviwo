@@ -664,9 +664,8 @@ Document OrdinalRefProperty<T>::getDescription() const {
     using H = utildoc::TableBuilder::Header;
 
     Document doc = Property::getDescription();
-    auto b = doc.get({P("html"), P("body")});
 
-    utildoc::TableBuilder tb(b, P::end());
+    utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("#"), H("Value"), H(fmt::format("Min ({})", minConstraint_)),
        H(fmt::format("Max ({})", maxConstraint_)), H("Inc"));
     const auto val = get_();

@@ -47,69 +47,128 @@ namespace inviwo {
 
 CanvasProcessor::CanvasProcessor(InviwoApplication* app)
     : Processor()
-    , inport_("inport")
-    , inputSize_("inputSize", "Input Dimension Parameters")
-    , dimensions_("dimensions", "Canvas Size", size2_t(256, 256), size2_t(1, 1),
-                  size2_t(10000, 10000), size2_t(1, 1), InvalidationLevel::Valid)
-    , enableCustomInputDimensions_("enableCustomInputDimensions", "Separate Image Size", false,
-                                   InvalidationLevel::Valid)
-    , customInputDimensions_("customInputDimensions", "Image Size", size2_t(256, 256),
-                             size2_t(1, 1), size2_t(10000, 10000), size2_t(1, 1),
-                             InvalidationLevel::Valid)
-    , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, InvalidationLevel::Valid)
-    , aspectRatioScaling_("aspectRatioScaling", "Image Scale", 1.f, 0.1f, 4.f, 0.01f,
-                          InvalidationLevel::Valid)
-    , position_("position", "Canvas Position", ivec2(128, 128),
-                ivec2(std::numeric_limits<int>::lowest()), ivec2(std::numeric_limits<int>::max()),
-                ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
-    , visibleLayer_("visibleLayer", "Visible Layer",
+    , inport_{"inport", "Image to render in the processor widget window"_help}
+    , inputSize_{"inputSize", "Input Dimension Parameters",
+                 "Settings for the canvas (window) and image size"_help}
+    , dimensions_{"dimensions",
+                  "Canvas Size",
+                  "The size of the processor widget window"_help,
+                  size2_t(256, 256),
+                  {size2_t(1, 1), ConstraintBehavior::Immutable},
+                  {size2_t(10000, 10000), ConstraintBehavior::Ignore},
+                  size2_t(1, 1),
+                  InvalidationLevel::Valid}
+    , enableCustomInputDimensions_{"enableCustomInputDimensions", "Separate Image Size",
+                                   "Specify a different image size to render into, then what "
+                                   "will be show in the canvas window"_help,
+                                   false, InvalidationLevel::Valid}
+    , customInputDimensions_{"customInputDimensions",
+                             "Image Size",
+                             "The size of the image that will be generated. This can be larger "
+                             "or smaller than the canvas size. A smaller size will generate a "
+                             "blurrier canvas, but render faster. A larger size will render "
+                             "slower."_help,
+                             size2_t(256, 256),
+                             {size2_t(1, 1), ConstraintBehavior::Immutable},
+                             {size2_t(10000, 10000), ConstraintBehavior::Ignore},
+                             size2_t(1, 1),
+                             InvalidationLevel::Valid}
+    , keepAspectRatio_{"keepAspectRatio", "Lock Aspect Ratio",
+                       "Use the same aspect ratio for separate image size as for the canvas"_help,
+                       true, InvalidationLevel::Valid}
+    , aspectRatioScaling_{"aspectRatioScaling",
+                          "Image Scale",
+                          "Scale factor for the separate image size as a factor of canvas size"_help,
+                          1.f,
+                          {0.1f, ConstraintBehavior::Ignore},
+                          {4.f, ConstraintBehavior::Ignore},
+                          0.01f,
+                          InvalidationLevel::Valid}
+    , position_{"position", "Canvas Position",
+                util::ordinalSymmetricVector(ivec2(128, 128), 10000)
+                    .set(InvalidationLevel::Valid)
+                    .set("Position of the canvas on the screen"_help)}
+    , visibleLayer_{"visibleLayer",
+                    "Visible Layer",
+                    "Select which image layer that should be shown in the canvas. defaults to "
+                    "the first color layer"_help,
                     {{"color", "Color layer", LayerType::Color},
                      {"depth", "Depth layer", LayerType::Depth},
                      {"picking", "Picking layer", LayerType::Picking}},
-                    0)
-    , colorLayer_("colorLayer_", "Color Layer ID", 0, 0, 0)
-    , imageTypeExt_(
-          "fileExt", "Image Type",
-          [app]() {
-              const auto exts = app->getDataWriterFactory()->getExtensionsForType<Layer>();
-              std::vector<OptionPropertyOption<FileExtension>> res;
-              std::transform(exts.begin(), exts.end(), std::back_inserter(res), [](auto& ext) {
-                  return OptionPropertyOption<FileExtension>{ext.toString(), ext.toString(), ext};
-              });
-              return res;
-          }(),
-          [app]() {
-              const auto exts = app->getDataWriterFactory()->getExtensionsForType<Layer>();
-              const auto it = std::find_if(exts.begin(), exts.end(),
-                                           [](auto& ext) { return ext.extension_ == "png"; });
-              return it == exts.end() ? 0 : std::distance(exts.begin(), it);
-          }())
-    , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
-    , saveLayerButton_(
-          "saveLayer", "Save Image Layer", [this]() { saveImageLayer(); }, InvalidationLevel::Valid)
-    , saveLayerToFileButton_(
-          "saveLayerToFile", "Save Image Layer to File...",
-          [this]() {
-              if (auto layer = getVisibleLayer()) {
-                  util::saveLayer(*layer);
-              } else {
-                  LogError("Could not find visible layer");
-              }
-          },
-          InvalidationLevel::Valid)
-    , fullScreen_("fullscreen", "Toggle Full Screen", false)
-    , fullScreenEvent_(
-          "fullscreenEvent", "FullScreen", [this](Event*) { fullScreen_.set(!fullScreen_); },
-          IvwKey::F, KeyState::Press, KeyModifier::Shift)
-    , saveLayerEvent_(
-          "saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
-          IvwKey::Undefined, KeyState::Press)
-    , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
-    , evaluateWhenHidden_("evaluateWhenHidden", "Evaluate When Hidden", false)
+                    0}
+    , colorLayer_{"colorLayer",
+                  "Color Layer ID",
+                  "Index of the color layer to show in the canvas"_help,
+                  0,
+                  {0, ConstraintBehavior::Immutable},
+                  {0, ConstraintBehavior::Immutable}}
+    , imageTypeExt_{"fileExt", "Image Type",
+                    [app]() {
+                        OptionPropertyState<FileExtension> opts{};
+                        const auto exts =
+                            app->getDataWriterFactory()->getExtensionsForType<Layer>();
+                        std::transform(exts.begin(), exts.end(), std::back_inserter(opts.options),
+                                       [](auto& ext) {
+                                           return OptionPropertyOption<FileExtension>{
+                                               ext.toString(), ext.toString(), ext};
+                                       });
+                        if (const auto it =
+                                std::find_if(exts.begin(), exts.end(),
+                                             [](auto& ext) { return ext.extension_ == "png"; });
+                            it == exts.end()) {
+                            opts.selectedIndex = std::distance(exts.begin(), it);
+                        }
+
+                        opts.help = "Select an image type for saving, defaults to png"_help;
+                        return opts;
+                    }()}
+    , saveLayerDirectory_{"layerDir", "Output Directory",
+                          "Specify a directory to store snapshots to"_help, "", "image"}
+    , saveLayerButton_{"saveLayer", "Save Image Layer",
+                       "Save an image snapshot to the specified 'Output Directory' using the "
+                       "image format specified by 'Image Type' and the current time as name"_help,
+                       [this]() { saveImageLayer(); }, InvalidationLevel::Valid}
+    , saveLayerToFileButton_{"saveLayerToFile", "Save Image Layer to File...",
+                             "Save the current layer to a file. This will open a save dialog to "
+                             "specify the output file"_help,
+                             [this]() {
+                                 if (auto layer = getVisibleLayer()) {
+                                     util::saveLayer(*layer);
+                                 } else {
+                                     LogError("Could not find visible layer");
+                                 }
+                             },
+                             InvalidationLevel::Valid}
+    , fullScreen_{"fullscreen", "Toggle Full Screen",
+                  "Show the canvas processor widget in fullscreen"_help, false}
+    , fullScreenEvent_{"fullscreenEvent",
+                       "FullScreen",
+                       "Shortcut to toggle fullscreen"_help,
+                       [this](Event*) { fullScreen_.set(!fullScreen_); },
+                       IvwKey::F,
+                       KeyState::Press,
+                       KeyModifier::Shift}
+    , saveLayerEvent_{"saveLayerEvent",
+                      "Save Image Layer",
+                      "Shortcut for saving a snapshot, same as 'Save Image Layer'"_help,
+                      [this](Event*) { saveImageLayer(); },
+                      IvwKey::Undefined,
+                      KeyState::Press}
+    , allowContextMenu_{"allowContextMenu", "Allow Context Menu",
+                        "Show a default context menu in the canvas, can be used to copy the "
+                        "image, fit the view, etc."_help,
+                        true}
+    , evaluateWhenHidden_{"evaluateWhenHidden", "Evaluate When Hidden",
+                          "By default a canvas processor with a hidden canvas will not be "
+                          "evaluated. And any of its predecessors will also not be evaluated "
+                          "unless thy have other successors that are evaluated. This button "
+                          "mean that the processor will always be evaluated even if the result "
+                          "is not visible. Can be enable if you only want to save images and "
+                          "not show the canvas for example"_help,
+                          false}
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{
           createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
-
     addPort(inport_);
     widgetMetaData_->addObserver(this);
 
@@ -261,7 +320,6 @@ void CanvasProcessor::saveImageLayer(std::string_view snapshotPath,
 std::optional<std::string> CanvasProcessor::exportFile(
     std::string_view path, std::string_view name,
     const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
-
     if (auto layer = getVisibleLayer()) {
         return util::saveData(*layer, path, name, candidateExtensions, overwrite);
     } else {

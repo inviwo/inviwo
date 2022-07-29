@@ -116,9 +116,30 @@ template <typename T>
 struct OptionPropertyState {
     std::vector<OptionPropertyOption<T>> options = {};
     size_t selectedIndex = 0;
-    InvalidationLevel invalidation = InvalidationLevel::InvalidOutput;
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
     PropertySemantics semantics = PropertySemantics::Default;
     Document help = {};
+
+    auto set(std::vector<OptionPropertyOption<T>> newOptions) -> OptionPropertyState {
+        options = std::move(newOptions);
+        return *this;
+    }
+    auto set(size_t newSelectedIndex) -> OptionPropertyState {
+        selectedIndex = newSelectedIndex;
+        return *this;
+    }
+    auto set(InvalidationLevel newInvalidationLevel) -> OptionPropertyState {
+        invalidationLevel = newInvalidationLevel;
+        return *this;
+    }
+    auto set(PropertySemantics newSemantics) -> OptionPropertyState {
+        semantics = newSemantics;
+        return *this;
+    }
+    auto set(Document newHelp) -> OptionPropertyState {
+        help = newHelp;
+        return *this;
+    }
 };
 
 /**
@@ -209,7 +230,7 @@ public:
      * Implicit conversion operator. The OptionProperty will implicitly be converted to T when
      * possible.
      */
-    operator const T&() const;
+    operator const T &() const;
 
     template <typename U = T,
               class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
@@ -466,7 +487,7 @@ OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view 
 template <typename T>
 OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
                                   OptionPropertyState<T> state)
-    : BaseOptionProperty(identifier, displayName, std::move(state.help), state.invalidation,
+    : BaseOptionProperty(identifier, displayName, std::move(state.help), state.invalidationLevel,
                          state.semantics)
     , selectedIndex_(state.selectedIndex)
     , options_(std::move(state.options))
@@ -631,7 +652,7 @@ const T& OptionProperty<T>::getSelectedValue() const {
 }
 
 template <typename T>
-OptionProperty<T>::operator const T&() const {
+OptionProperty<T>::operator const T &() const {
     IVW_ASSERT(selectedIndex_ < options_.size(),
                "Index out of range (number of options: " << options_.size()
                                                          << ", index: " << selectedIndex_ << ")");
@@ -977,9 +998,8 @@ Document OptionProperty<T>::getDescription() const {
     using H = utildoc::TableBuilder::Header;
 
     Document doc = BaseOptionProperty::getDescription();
-
     if (options_.size() > 0) {
-        auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
+        auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
         utildoc::TableBuilder tb(table);
         tb(H("Number of Options"), options_.size());
         tb(H("Selected Index"), selectedIndex_);

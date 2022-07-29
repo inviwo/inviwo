@@ -39,68 +39,67 @@ const ProcessorInfo OrientationIndicator::processorInfo_{
     "org.inviwo.OrientationIndicator",  // Class identifier
     "Orientation Indicator",            // Display name
     "Information",                      // Category
-    CodeState::Experimental,            // Code state
-    Tags::None,                         // Tags
-};
+    CodeState::Stable,                  // Code state
+    Tags::CPU,                          // Tags
+    "Generates a mesh with three arrows indicating the direction of the three coordinate axes."_help};
+
 const ProcessorInfo OrientationIndicator::getProcessorInfo() const { return processorInfo_; }
 
 OrientationIndicator::OrientationIndicator()
     : Processor()
-    , outport_("mesh")
-    , baseColor_("baseColor", "Base Color", vec4(1.0f))
-    , xColor_("xColor", "X axis Color", vec4(1.0f, 0.0f, 0.0f, 1.0f))
-    , yColor_("yColor", "Y axis Color", vec4(0.0f, 1.0f, 0.0f, 1.0f))
-    , zColor_("zColor", "Z axis Color", vec4(0.0f, 0.0f, 1.0f, 1.0f))
-    , scale_("scale", "Scale", .05f, 0.001f, 1.f, 0.001f)
-    , axisScale_("axisScale", "Axis scale", vec3(1.0f), vec3(0.001f), vec3(10.f), vec3(0.001f))
-    , radius_("radius", "Radius", 1.0f, 0.001f, 10.f, 0.001f)
+    , outport_{"mesh", "The generated indicator mesh"_help}
+    , baseColor_{"baseColor", "Base Color",
+                 util::ordinalColor(vec4(1.0f)).set("Color of the central sphere"_help)}
+    , xColor_{"xColor", "X axis Color",
+              util::ordinalColor(vec4(1.0f, 0.0f, 0.0f, 1.0f)).set("Color of the first arrow"_help)}
+    , yColor_{"yColor", "Y axis Color",
+              util::ordinalColor(vec4(0.0f, 1.0f, 0.0f, 1.0f))
+                  .set("Color of the second arrow"_help)}
+    , zColor_{"zColor", "Z axis Color",
+              util::ordinalColor(vec4(0.0f, 0.0f, 1.0f, 1.0f)).set("Color of the third arrow"_help)}
+    , scale_{"scale", "Scale",
+             util::ordinalScale(.05f, 1.f).set("Overall scaling factor for the widget"_help)}
+    , axisScale_{"axisScale", "Axis scale",
+                 util::ordinalScale(vec3(1.0f), 10.f).set("scaling factors for each arrow"_help)}
+    , radius_{"radius", "Radius", util::ordinalScale(1.0f, 10.f).set("Radius of arrows"_help)}
 
-    , location_("location", "Location")
-    , locationType_("locationType", "Location Type")
-
-    , viewCoords_("viewCoords", "View Coords", vec2(0.05f), vec2(0.f), vec2(1.f))
-    , cam_("cam", "Camera")
-    , offset_("offset", "Offset", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
+    , location_{"location", "Location"}
+    , locationType_{"locationType",
+                    "Location Type",
+                    "Locate the widget in image space (2D) or world space (3D)"_help,
+                    {{"2d", "2D", Location::TwoD}, {"3d", "3D", Location::ThreeD}},
+                    0}
+    , viewCoords_{"viewCoords",
+                  "View Coords",
+                  "Where to put the widget in normalized image coordinates"_help,
+                  vec2(0.05f),
+                  {vec2(0.f), ConstraintBehavior::Immutable},
+                  {vec2(1.f), ConstraintBehavior::Immutable}}
+    , cam_{"cam", "Camera"}
+    , offset_{"offset", "Offset",
+              util::ordinalSymmetricVector(vec3(0.0f), 100.0f)
+                  .set("Where to put the widget in world space"_help)} {
 
     addPort(outport_);
-    addProperty(baseColor_);
-    addProperty(xColor_);
-    addProperty(yColor_);
-    addProperty(zColor_);
-    addProperty(scale_);
-    addProperty(radius_);
-    addProperty(axisScale_);
-    addProperty(location_);
-    location_.addProperty(locationType_);
-    location_.addProperty(viewCoords_);
-    location_.addProperty(cam_);
-    location_.addProperty(offset_);
+    addProperties(baseColor_, xColor_, yColor_, zColor_, scale_, radius_, axisScale_, location_);
+    location_.addProperties(locationType_, viewCoords_, cam_, offset_);
 
     cam_.setCurrentStateAsDefault();
 
-    locationType_.addOption("2d", "2D", Location::TwoD);
-    locationType_.addOption("3d", "3D", Location::ThreeD);
-
     auto setVisibility = [&]() {
-        bool twod = locationType_.get() == Location::TwoD;
-        bool threed = locationType_.get() == Location::ThreeD;
-        viewCoords_.setVisible(twod);
-        cam_.setVisible(twod);
-        offset_.setVisible(threed);
+        bool twoD = locationType_.get() == Location::TwoD;
+        bool threeD = locationType_.get() == Location::ThreeD;
+        viewCoords_.setVisible(twoD);
+        cam_.setVisible(twoD);
+        offset_.setVisible(threeD);
     };
 
     locationType_.onChange(setVisibility);
     setVisibility();
-    locationType_.setCurrentStateAsDefault();
-
-    baseColor_.setSemantics(PropertySemantics::Color);
-    xColor_.setSemantics(PropertySemantics::Color);
-    yColor_.setSemantics(PropertySemantics::Color);
-    zColor_.setSemantics(PropertySemantics::Color);
 }
 
 void OrientationIndicator::process() {
-    if (!mesh_ || axisScale_.isModified()) {
+    if (!mesh_ || axisScale_.isModified(), radius_.isModified()) {
         updateMesh();
     }
 

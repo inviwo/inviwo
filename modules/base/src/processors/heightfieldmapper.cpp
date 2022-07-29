@@ -39,21 +39,34 @@ const ProcessorInfo HeightFieldMapper::processorInfo_{
     "Heightfield",                   // Category
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
-};
+    R"(Maps a heightfield onto a geometry and renders it to an image.
+    The Height Field Mapper converts an arbitrary 2D input image to a grayscale float
+    image to be used in the Height Field Renderer processor. Additionally, data values
+    are mapped to either an user-defined range or are scaled to fit in a given maximum
+    height based on the sea level.)"_unindentHelp};
 const ProcessorInfo HeightFieldMapper::getProcessorInfo() const { return processorInfo_; }
 
 HeightFieldMapper::HeightFieldMapper()
     : Processor()
-    , inport_("image", true)
-    , outport_("heightfield", DataFloat32::get())
+    , inport_("image",
+              "The heightfield input. If the image has multiple channels "
+              "only the red channel is used."_help,
+              OutportDeterminesSize::Yes)
+    , outport_("heightfield", "The scaled height field (single channel)."_help, DataFloat32::get())
     , scalingModeProp_("scalingmode", "Scaling Mode",
+                       R"(The heightfield is scaled to either a fixed range (0 to 1),
+                          to a user-specified range (__Height Range__), or based on
+                          the sea level (__Sea Level__ and __Maximum Height__).)"_unindentHelp,
                        {{"scaleFixed", "Fixed Range [0:1]", HeightFieldScaling::FixedRange},
                         {"scaleRange", "Data Range", HeightFieldScaling::DataRange},
                         {"scaleSeaLevel", "Sea Level", HeightFieldScaling::SeaLevel}},
                        0)
-    , heightRange_("heightrange", "Height Range", 0.0f, 1.0f, -1.0e1f, 1.0e1f)
-    , maxHeight_("maxheight", "Maximum Height", 1.0f, 0.0f, 1.0e1f)
-    , seaLevel_("sealevel", "Sea Level", 0.0f, -1.0e1f, 1.0e1f) {
+    , heightRange_("heightrange", "Height Range", "Min/max range for data range scaling."_help,
+                   0.0f, 1.0f, -1.0e1f, 1.0e1f)
+    , maxHeight_("maxheight", "Maximum Height", "Max height used in sea level scaling."_help, 1.0f,
+                 {0.0f, ConstraintBehavior::Immutable}, {1.0e1f, ConstraintBehavior::Ignore})
+    , seaLevel_("sealevel", "Sea Level", "Sea level around which the heightfield is scaled."_help,
+                0.0f, {-1.0e1f, ConstraintBehavior::Ignore}, {1.0e1f, ConstraintBehavior::Ignore}) {
     addPort(inport_);
     addPort(outport_);
 

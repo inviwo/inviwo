@@ -500,12 +500,11 @@ Document MinMaxProperty<T>::getDescription() const {
 
     Document doc = Property::getDescription();
 
-    auto b = doc.get({P("html"), P("body")});
-    utildoc::TableBuilder tb(b, P::end());
+    utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("Min"), H("Start"), H("Stop"), H("Max"));
     tb(range_.value[0], value_.value[0], value_.value[1], range_.value[1]);
 
-    utildoc::TableBuilder tb2(b, P::end());
+    utildoc::TableBuilder tb2(doc.handle(), P::end());
     util::for_each_argument([&tb2](auto p) { tb2(H(camelCaseToHeader(p.name)), p.value); },
                             increment_, minSeparation_);
 

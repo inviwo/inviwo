@@ -37,26 +37,6 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 
 namespace inviwo {
-/** \docpage{org.inviwo.CubeProxyGeometry, Cube Proxy Geometry}
- * ![](org.inviwo.CubeProxyGeometry.png?classIdentifier=org.inviwo.CubeProxyGeometry)
- *
- * Constructs a proxy geometry based on the model and world matrix of the input volume.
- * The gemetry will be shaped as a parallelepiped. If clipping is enabled the geometry
- * will be cut along the corresponding axes.
- *
- * ### Inports
- *   * __Inport__ Input Volume
- *
- * ### Outports
- *   * __Outport__ Output proxy geometry.
- *
- * ### Properties
- *   * __Enable Normals__ Face normals are included in the mesh
- *   * __Enable Clipping__ Enable axis aligned clipping of the mesh
- *   * __Clip X Slices__ Clip X axis
- *   * __Clip Y Slices__ Clip Y axis
- *   * __Clip Z Slices__ Clip Z axis
- */
 
 class IVW_MODULE_BASE_API CubeProxyGeometry : public Processor {
 public:

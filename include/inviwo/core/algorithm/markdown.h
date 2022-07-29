@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/util/document.h>
+
+#include <string_view>
 
 namespace inviwo {
 
-/**
- * \ingroup properties
- * \brief A CompositeProperty with an additional check box.
- */
-class IVW_CORE_API BoolCompositeProperty : public CompositeProperty {
-public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+namespace util {
 
-    BoolCompositeProperty(std::string_view identifier, std::string_view displayName, Document help,
-                          bool checked = false,
-                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                          PropertySemantics semantics = PropertySemantics::Default);
+IVW_CORE_API Document md2doc(std::string_view markdown);
+IVW_CORE_API Document unindentMd2doc(std::string_view markdown);
 
-    BoolCompositeProperty(std::string_view identifier, std::string_view displayName,
-                          bool checked = false,
-                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                          PropertySemantics semantics = PropertySemantics::Default);
+}  // namespace help
 
-    BoolCompositeProperty(const BoolCompositeProperty& rhs);
-
-    virtual BoolCompositeProperty* clone() const override;
-    virtual ~BoolCompositeProperty();
-    virtual std::string getClassIdentifierForWidget() const override;
-
-    virtual bool isChecked() const;
-    virtual void setChecked(bool checked);
-
-    virtual operator bool() const;
-
-    virtual BoolProperty* getBoolProperty();
-
-private:
-    BoolProperty checked_;
-};
+inline Document operator"" _md(const char* str, size_t len) {
+    return util::md2doc(std::string_view(str, len));
+}
+inline Document operator"" _help(const char* str, size_t len) {
+    return util::md2doc(std::string_view(str, len));
+}
+inline Document operator"" _unindentHelp(const char* str, size_t len) {
+    return util::unindentMd2doc(std::string_view(str, len));
+}
 
 }  // namespace inviwo

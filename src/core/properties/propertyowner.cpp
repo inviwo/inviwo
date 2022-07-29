@@ -38,7 +38,6 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/network/networkvisitor.h>
 #include <inviwo/core/network/lambdanetworkvisitor.h>
-#include <inviwo/core/util/docbuilder.h>
 
 #include <iterator>
 
@@ -338,7 +337,5 @@ void PropertyOwner::invokeEvent(Event* event) {
         if (event->hasBeenUsed()) return;
     }
 }
-
-Document PropertyOwner::md(std::string_view markdown) { return help::md2doc(markdown); }
 
 }  // namespace inviwo

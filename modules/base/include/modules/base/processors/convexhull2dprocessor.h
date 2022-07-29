@@ -36,23 +36,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ConvexHull2DProcessor, Convex Hull2DProcessor}
- * ![](org.inviwo.ConvexHull2DProcessor.png?classIdentifier=org.inviwo.ConvexHull2DProcessor)
- * Computes the convex hull of a 2D mesh.
- *
- * ### Inports
- *   * __Inport__  Input geometry, only the first two dimensions are considered
- *
- * ### Outports
- *   * __Geometry__ 2D convex hull of the input geometry
- *
- * ### Properties
- *   * __Normal__ Normal of the plane onto which all points are projected prior to computing the
- *                convex hull
- */
-
 /**
- * \class ConvexHull2DProcessor
  * \brief Processor computing the convex hull of a given 2D input geometry
  */
 class IVW_MODULE_BASE_API ConvexHull2DProcessor : public Processor {

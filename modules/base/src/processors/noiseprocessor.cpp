@@ -63,52 +63,43 @@ const ProcessorInfo NoiseProcessor::getProcessorInfo() const { return processorI
 
 NoiseProcessor::NoiseProcessor()
     : Processor()
-    , noise_("noise", md("Generated noise image"), DataFloat32::get(), HandleResizeEvents::No)
-    , size_("size", "Size", md("Size of the output image."), ivec2(256),
+    , noise_("noise", "Generated noise image"_help, DataFloat32::get(), HandleResizeEvents::No)
+    , size_("size", "Size", "Size of the output image."_help, ivec2(256),
             {ivec2(32), ConstraintBehavior::Editable}, {ivec2(4096), ConstraintBehavior::Editable})
-    , type_("type", "Type", md("Type of noise to generate."),
+    , type_("type", "Type", "Type of noise to generate."_help,
             {{"random", "Random", NoiseType::Random},
              {"perlin", "Perlin", NoiseType::Perlin},
              {"poissonDisk", "Poisson Disk", NoiseType::PoissonDisk},
              {"haltonSequence", "Halton Sequence", NoiseType::HaltonSequence}})
-    , range_("range", "Range", md("The min/max values of the output values (default: [0 1])."),
+    , range_("range", "Range", "The min/max values of the output values (default: [0 1])."_help,
              0.0f, 1.0f, 0.0f, 1.0f)
     , levels_("levels", "Levels",
-              md("Numbers of levels used in the generation of the Perlin noise"), 2, 8, 1, 16)
-    , persistence_("persistence", "Persistence", md("Controls the sharpens in Perlin noise"), 0.5f,
+              "Numbers of levels used in the generation of the Perlin noise"_help, 2, 8, 1, 16)
+    , persistence_("persistence", "Persistence", "Controls the sharpens in Perlin noise"_help, 0.5f,
                    {0.001f, ConstraintBehavior::Editable}, {1.0f, ConstraintBehavior::Editable},
                    0.001f)
     , poissonDotsAlongX_("poissonDotsAlongX", "Dots Along X",
-                         md("Average number of points along the x-axis."), 100,
+                         "Average number of points along the x-axis."_help, 100,
                          {1, ConstraintBehavior::Immutable}, {1024, ConstraintBehavior::Ignore})
     , poissonMaxPoints_("poissonMaxPoints", "Max Points",
-                        md("Maximum number of output points (total)."), 10000000,
+                        "Maximum number of output points (total)."_help, 10000000,
                         {1, ConstraintBehavior::Immutable}, {10000000, ConstraintBehavior::Ignore})
 
     , haltonNumPoints_("numPoints", "Number of points", 100, 1, 1000)
     , haltonXBase_("haltonXBase", "Base for x values", 2, 2, 32)
     , haltonYBase_("haltonYBase", "Base for y values", 3, 2, 32)
 
-    , randomness_("randomness", "Randomness", md("Random number generation settings"))
+    , randomness_("randomness", "Randomness", "Random number generation settings"_help)
     , useSameSeed_("useSameSeed", "Use same seed",
-                   md("Use the same seed for each call to process."), true)
-    , seed_("seed", "Seed", md("The seed used to initialize the random sequence"), 1,
+                   "Use the same seed for each call to process."_help, true)
+    , seed_("seed", "Seed", "The seed used to initialize the random sequence"_help, 1,
             {0, ConstraintBehavior::Immutable}, {1000, ConstraintBehavior::Ignore})
     , rd_()
     , mt_(rd_()) {
 
     addPort(noise_);
-    addProperty(size_);
-
-    addProperty(type_);
-    addProperty(range_);
-    addProperty(levels_);
-    addProperty(persistence_);
-    addProperty(poissonDotsAlongX_);
-    addProperty(poissonMaxPoints_);
-    addProperty(haltonNumPoints_);
-    addProperty(haltonXBase_);
-    addProperty(haltonYBase_);
+    addProperties(size_, type_, range_, levels_, persistence_, poissonDotsAlongX_, poissonMaxPoints_,
+                  haltonNumPoints_, haltonXBase_, haltonYBase_);
 
     auto typeOnChange = [&]() {
         range_.setVisible(type_.getSelectedValue() == NoiseType::Random);
@@ -125,8 +116,7 @@ NoiseProcessor::NoiseProcessor()
     type_.onChange(typeOnChange);
 
     addProperty(randomness_);
-    randomness_.addProperty(useSameSeed_);
-    randomness_.addProperty(seed_);
+    randomness_.addProperties(useSameSeed_, seed_);
     useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
 
     size_.onChange([&]() {

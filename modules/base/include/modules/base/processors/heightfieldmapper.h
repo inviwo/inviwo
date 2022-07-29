@@ -47,34 +47,6 @@ enum Mode {
 };
 }
 
-/** \docpage{org.inviwo.HeightFieldMapper, Height Field Mapper}
- * Maps a heightfield onto a geometry and renders it to an image.
- * The Height Field Mapper converts an arbitrary 2D input image to a grayscale float
- * image to be used in the Height Field Renderer processor. Additionally, data values
- * are mapped to either an user-defined range or are scaled to fit in a given maximum
- * height based on the sea level.
- * ![](org.inviwo.HeightFieldMapper.png?classIdentifier=org.inviwo.HeightFieldMapper)
- *
- *
- * ### Inports
- *   * __ImageInport__ The heightfield input. If the image has multiple channels only
- *                     the red channel is used.
- *
- * ### Outports
- *   * __ImageOutport__ The scaled height field (single channel).
- *
- * ### Properties
- *   * __Scaling Mode__    The heightfield is scaled to either a fixed range (0 to 1), to a
- *                         user-specified range (__Height Range__), or based on the sea level
- *                         (__Sea Level__ and __Maximum Height__).
- *   * __Height Range__    Min/max range for data range scaling.
- *   * __Maximum Height__  Max height used in sea level scaling.
- *   * __Sea Level__       Sea level around which the heightfield is scaled.
- *
- * ### Example Network
- *   ![](heightfield-network.png)
- */
-
 /**
  * \brief Maps a 2D input texture to a single channel heightfield and scales the data values.
  *

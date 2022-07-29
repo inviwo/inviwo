@@ -37,7 +37,6 @@
 #include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/datastructures/datatraits.h>
-#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/network/networkutils.h>
@@ -222,7 +221,6 @@ DataInport<T, N, Flat>::getSourceVectorData() const {
 
     for (auto outport : connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
-
         if (Flat) {
             if (auto iterable = dynamic_cast<OutportIterable<T>*>(outport)) {
                 for (auto elem : *iterable) res.emplace_back(outport, elem);
@@ -238,42 +236,41 @@ DataInport<T, N, Flat>::getSourceVectorData() const {
 
 template <typename T, size_t N, bool Flat>
 Document DataInport<T, N, Flat>::getInfo() const {
-    auto name = []() {
-        switch (N) {
-            case 0:
-                return std::string(Flat ? " Flat" : "") + " Multi Inport";
-            case 1:
-                return std::string(Flat ? " Flat" : "") + " Inport";
-            default:
-                return std::string(Flat ? " Flat " : " ") + toString(N) + " Inport";
-        }
-    };
+    StrBuffer name;
+    name.append("{}", DataTraits<T>::dataName());
+    if constexpr (Flat) {
+        name.append(" Flat");
+    }
+    if constexpr (N == 0) {
+        name.append(" Multi");
+    } else if constexpr (N != 1) {
+        name.append(" {}", N);
+    }
+    name.append(" Inport");
 
     Document doc;
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
-    auto b = doc.append("html").append("body");
-    b.append("b", DataTraits<T>::dataName() + name(), {{"style", "color:white;"}});
+    doc.append("b", name.view(), {{"class", "name"}});
 
     if (!help_.empty()) {
-        b.append(help_);
+        doc.append("div", "", {{"class", "help"}}).append(help_);
     }
 
-    utildoc::TableBuilder tb(b, P::end());
+    utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());
     tb(H("Ready"), isReady());
     tb(H("Connected"), isConnected());
 
-    std::stringstream ss;
-    ss << getNumberOfConnections() << " (" << getMaxNumberOfConnections() << ")";
-    tb(H("Connections"), ss.str());
+    tb(H("Connections"),
+       fmt::format("{} ({})", getNumberOfConnections(), getMaxNumberOfConnections()));
     tb(H("Optional"), isOptional());
 
     if (hasData()) {
-        b.append("p").append(DataTraits<T>::info(*getData()));
+        doc.append("p").append(DataTraits<T>::info(*getData()));
     } else {
-        b.append("p", "Port has no data");
+        doc.append("p", "Port has no data");
     }
     return doc;
 }

@@ -109,7 +109,9 @@ public:
     virtual ButtonGroupProperty& resetToDefaultState() override;
 
 private:
+    void updateHelp();
     std::vector<Button> buttons_;
+    Document partialHelp_;
 
     size_t buttonPressed_ = std::numeric_limits<size_t>::max();
 };

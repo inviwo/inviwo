@@ -55,20 +55,18 @@ const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
     "Mesh Rendering",               // Category
     CodeState::Stable,              // Code state
     Tags::GL,                       // Tags
-};
+    "Renders a set of meshes using OpenGL on top of an image. "
+    "Different rendering modes can be selected."_help};
+
 const ProcessorInfo MeshRenderProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()
-    , inport_("geometry")
-    , imageInport_("imageInport")
-    , outport_("image")
+    , inport_("geometry", "Input meshes"_help)
+    , imageInport_("imageInport", "background image (optional)"_help)
+    , outport_("image",
+               "output image containing the rendered mesh and the optional input image"_help)
     , camera_("camera", "Camera", util::boundingBox(inport_))
-    , trackball_(&camera_)
-    , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
-                           InvalidationLevel::InvalidResources)
-    , overrideColor_("overrideColor", "Override Color", vec4(0.75f, 0.75f, 0.75f, 1.0f), vec4(0.0f),
-                     vec4(1.0f))
     , meshProperties_("geometry", "Geometry Rendering Properties")
     , cullFace_("cullFace", "Cull Face",
                 {{"culldisable", "Disable", GL_NONE},
@@ -76,15 +74,24 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
                  {"cullback", "Back", GL_BACK},
                  {"cullfrontback", "Front & Back", GL_FRONT_AND_BACK}},
                 0)
-    , enableDepthTest_("enableDepthTest_", "Enable Depth Test", true)
+    , enableDepthTest_("enableDepthTest_", "Enable Depth Test",
+                       "Toggles the depth test during rendering"_help, true)
+    , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
+                           InvalidationLevel::InvalidResources)
+    , overrideColor_("overrideColor", "Override Color", util::ordinalColor(0.75f, 0.75f, 0.75f))
     , lightingProperty_("lighting", "Lighting", &camera_)
+    , trackball_(&camera_)
     , layers_("layers", "Output Layers")
-    , colorLayer_("colorLayer", "Color", true, InvalidationLevel::InvalidResources)
-    , texCoordLayer_("texCoordLayer", "Texture Coordinates", false,
+    , colorLayer_("colorLayer", "Color", "Toggle output of color layer"_help, true,
+                  InvalidationLevel::InvalidResources)
+    , texCoordLayer_("texCoordLayer", "Texture Coordinates",
+                     "Toggle output of texture coordinates"_help, false,
                      InvalidationLevel::InvalidResources)
-    , normalsLayer_("normalsLayer", "Normals (World Space)", false,
+    , normalsLayer_("normalsLayer", "Normals (World Space)",
+                    "Toggle output of normals (world space)"_help, false,
                     InvalidationLevel::InvalidResources)
-    , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)", false,
+    , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)",
+                        "Toggle output of view space normals"_help, false,
                         InvalidationLevel::InvalidResources)
     , shader_("meshrendering.vert", "meshrendering.frag", Shader::Build::No) {
 

@@ -30,18 +30,14 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/defaultvalues.h>
 
 #include <limits>
 #include <string>
 #include <array>
 #include <memory>
 
-/*! \brief Defines general useful formats and new data types
- * Non-virtual, meaning no dynamic_cast as string comparison is as fast/faster
- */
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -121,10 +117,13 @@ public:
     virtual ~DataFormatException() = default;
 };
 
+/*! \brief Defines general useful formats and new data types
+ * Non-virtual, meaning no dynamic_cast as string comparison is as fast/faster
+ */
 class IVW_CORE_API DataFormatBase {
 public:
     DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min,
-                   double lowest, NumericType nt, const std::string& s);
+                   double lowest, NumericType nt, std::string_view s);
     virtual ~DataFormatBase();
 
     static const DataFormatBase* get();
@@ -230,7 +229,8 @@ public:
     static constexpr double maxToDouble();
     static constexpr double minToDouble();
     static constexpr double lowestToDouble();
-    static std::string str();
+    static std::string_view str();
+    static constexpr const auto& staticStr();
 
     // Converter functions
     virtual double valueToDouble(void* val) const override;
@@ -340,19 +340,54 @@ constexpr NumericType DataFormat<T>::numericType() {
 }
 
 template <typename T>
-std::string DataFormat<T>::str() {
-    const std::string prefix = comp > 1 ? "Vec" + std::to_string(comp) : "";
-    switch (numtype) {
-        case NumericType::Float:
-            return prefix + "FLOAT" + std::to_string(precision());
-        case NumericType::SignedInteger:
-            return prefix + "INT" + std::to_string(precision());
-        case NumericType::UnsignedInteger:
-            return prefix + "UINT" + std::to_string(precision());
-        case NumericType::NotSpecialized:
-        default:
+constexpr const auto& DataFormat<T>::staticStr() {
+    constexpr auto pre = []() {
+        if constexpr (components() == 0) {
+            return StaticString{""};
+        } else if constexpr (components() == 1) {
+            return StaticString{"Vec1"};
+        } else if constexpr (components() == 2) {
+            return StaticString{"Vec2"};
+        } else if constexpr (components() == 3) {
+            return StaticString{"Vec3"};
+        } else {
             throw DataFormatException("Invalid format", IVW_CONTEXT_CUSTOM("DataFormat"));
-    }
+        }
+    };
+
+    constexpr auto type = []() {
+        if constexpr (numericType() == NumericType::Float) {
+            return StaticString{"FLOAT"};
+        } else if constexpr (numericType() == NumericType::SignedInteger) {
+            return StaticString{"INT"};
+        } else if constexpr (numericType() == NumericType::UnsignedInteger) {
+            return StaticString{"UINT"};
+        } else {
+            throw DataFormatException("Invalid format", IVW_CONTEXT_CUSTOM("DataFormat"));
+        }
+    };
+
+    constexpr auto prec = []() {
+        if constexpr (precision() == 8) {
+            return StaticString{"8"};
+        } else if constexpr (precision() == 16) {
+            return StaticString{"16"};
+        } else if constexpr (precision() == 32) {
+            return StaticString{"32"};
+        } else if constexpr (precision() == 64) {
+            return StaticString{"64"};
+        } else {
+            throw DataFormatException("Invalid format", IVW_CONTEXT_CUSTOM("DataFormat"));
+        }
+    };
+
+    return pre() + type() + prec();
+}
+
+template <typename T>
+std::string_view DataFormat<T>::str() {
+    static constexpr auto string = staticStr();
+    return string.view();
 }
 
 template <typename T>

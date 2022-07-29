@@ -44,22 +44,6 @@ namespace inviwo {
 
 class ImageGL;
 
-/** \docpage{org.inviwo.EntryExitPoints, Entry exit points}
- * ![](org.inviwo.EntryExitPoints.png?classIdentifier=org.inviwo.EntryExitPoints)
- * Computes the entry and exit points of a triangle mesh from the camera position in texture space.
- * The output color will be zero if no intersection is found, otherwise.
- *
- * ### Inports
- *   * __geometry__   The input mesh used for determining entry and exit points
- *
- * ### Outports
- *   * __entry__ The first hit point in texture coordinates [0,1]
- *   * __exit__  The last hit point in texture coordinates [0,1]
- *
- * ### Properties
- *   * __Camera__   Scene camera
- */
-
 class IVW_MODULE_BASEGL_API EntryExitPoints : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;

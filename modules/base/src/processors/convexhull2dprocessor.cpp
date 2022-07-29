@@ -43,16 +43,24 @@ const ProcessorInfo ConvexHull2DProcessor::processorInfo_{
     "Geometry",                          // Category
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
-};
+    R"(Computes the convex hull of a 2D mesh.
+    
+    Example Workspace: [core/convexhull.inv](file:///<basePath>/data/workspaces/convexhull.inv)
+    )"_unindentHelp};
+
 const ProcessorInfo ConvexHull2DProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ConvexHull2DProcessor::ConvexHull2DProcessor()
     : Processor()
-    , inport_("geometry")
-    , outport_("convexhull")
-    , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f)) {
-    addPort(inport_);
-    addPort(outport_);
+    , inport_("geometry", "Input geometry, only the first two dimensions are considered"_help)
+    , outport_("convexhull", "2D convex hull of the input geometry"_help)
+    , normal_("normal", "Normal",
+              "Normal of the plane onto which all points are projected prior to computing "
+              "the convex hull"_help,
+              vec3(0.0f, 0.0f, 1.0f), {vec3(-1.0f), ConstraintBehavior::Immutable},
+              {vec3(1.0f), ConstraintBehavior::Immutable}) {
+
+    addPorts(inport_, outport_);
     addProperty(normal_);
 }
 

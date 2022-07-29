@@ -42,23 +42,6 @@ namespace inviwo {
 
 class DiffuseLight;
 
-/** \docpage{org.inviwo.Diffuselightsource, Diffuse light source}
- * ![](org.inviwo.Diffuselightsource.png?classIdentifier=org.inviwo.Diffuselightsource)
- *
- * Produces a planar area light source, spreading light in all directions from the plane.
- * The direction of the plane will be computed as glm::normalize(vec3(0) - lightPos)
- * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in
- * view space.
- *
- * ### Outports
- *   * __DiffuseLightSource__ Planar area light source
- *
- * ### Properties
- *   * __Light Source Position__ Center point of the plane
- *   * __Light power__ Increases/decreases light strength
- *   * __Light size__ Width and height in world space
- *   * __Color__ Flux density per solid angle, W*s*r^-1 (intensity)
- */
 class IVW_MODULE_BASE_API DiffuseLightSourceProcessor : public Processor {
 public:
     DiffuseLightSourceProcessor();

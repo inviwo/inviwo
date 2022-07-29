@@ -286,23 +286,25 @@ Document& Property::getHelp() { return help_; }
 Document Property::getDescription() const {
     Document doc;
     using P = Document::PathComponent;
-    auto b = doc.append("html").append("body");
 
-    b.append("b", displayName_.value, {{"style", "color:white;"}});
+    doc.append("div", displayName_.value, {{"class", "name"}});
 
     if (!help_.empty()) {
-        b.append("div").append(help_);
+        doc.append("div", "", {{"class", "help"}}).append(help_);
     }
 
     using H = utildoc::TableBuilder::Header;
 
-    utildoc::TableBuilder tb(b, P::end(), {{"identifier", "propertyInfo"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end(), {{"class", "propertyInfo"}});
     tb(H("Identifier"), identifier_);
     tb(H("Class Identifier"), getClassIdentifier());
     tb(H("Path"), getPath());
     util::for_each_argument([&tb](auto p) { tb(H(camelCaseToHeader(p.name)), p.value); }, readOnly_,
                             semantics_, usageMode_, visible_);
     tb(H("Validation Level"), invalidationLevel_);
+
+    auto str = doc.str();
+    fmt::print("{}", str);
 
     return doc;
 }

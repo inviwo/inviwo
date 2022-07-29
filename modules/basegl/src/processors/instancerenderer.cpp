@@ -58,7 +58,7 @@ const ProcessorInfo InstanceRenderer::processorInfo_{
     "Mesh Rendering",               // Category
     CodeState::Stable,              // Code state
     Tags::GL,                       // Tags
-    md(R"(
+    R"(
         Renders multiple instances of a mesh.
         Each instance can be modified using uniform data provided from a set of dynamic inports
         holding vectors of data. The the number of inport and types can be controlled using
@@ -77,7 +77,7 @@ const ProcessorInfo InstanceRenderer::processorInfo_{
         
         Example network:
         [basegl/instance_renderer.inv](file:///<modulePath>/data/workspaces/instance_renderer.inv)
-    )"_unindent)};
+    )"_unindentHelp};
 
 const ProcessorInfo InstanceRenderer::getProcessorInfo() const { return processorInfo_; }
 
@@ -235,32 +235,49 @@ DynPortManager createDynPortManager(InstanceRenderer* theRenderer, std::string_v
 
 InstanceRenderer::InstanceRenderer()
     : Processor()
-    , inport_("mesh", md("Mesh to be drawn multiple times"))
-    , background_("background", md("Optional background image"))
-    , outport_("image", md("The rendered image"))
-    , ports_{"ports", "Ports",
-             md(R"(Add and remove vector ports for the instance rendering. The rendering will render as many instances as there are elements in the port will the least elements. Ports of different types can be added.)"),
+    , inport_("mesh", "Mesh to be drawn multiple times"_help)
+    , background_("background", "Optional background image"_help)
+    , outport_("image", "The rendered image"_help)
+    , ports_{"ports", "Ports", R"(
+        Add and remove vector ports for the instance rendering. The rendering will render as many
+        instances as there are elements in the port will the least elements. Ports of different
+        types can be added.)"_unindentHelp,
              prefabs()}
     , vecPorts_{}
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , transforms_{{{"color", "Color",
-                    md("Equation for the vertex color, defaults to the mesh color i.e. "
-                       "'in_Color')"),
+                    "Equation for the vertex color, defaults to the mesh color i.e. "
+                    "'in_Color'. Expects a vec4.)"_help,
                     "in_Color", InvalidationLevel::InvalidResources, PropertySemantics::Multiline},
                    {"texCoord", "Texture Coordinate",
-                    md("Equation for the vertex texture coordinate, defaults to the mesh "
-                       "texture coordinate i.e. 'in_TexCoord'"),
+                    "Equation for the vertex texture coordinate, defaults to the mesh "
+                    "texture coordinate i.e. 'in_TexCoord'. Expects a vec3."_help,
                     "in_TexCoord", InvalidationLevel::InvalidResources,
                     PropertySemantics::Multiline},
-                   {"worldPosition", "World Position", "geometry.dataToWorld * in_Vertex",
+                   {"worldPosition", "World Position",
+                    "Equation for the vertex world position, defaults to ´geometry.dataToWorld "
+                    "* in_Vertex'. Apply a translation based on a data from a port here to move "
+                    "each instance to a unique position for example. Expects a vec4."_help,
+                    "geometry.dataToWorld * in_Vertex", InvalidationLevel::InvalidResources,
+                    PropertySemantics::Multiline},
+                   {"normal", "Normal",
+                    "Equation for the vertex normal, defaults to "
+                    "'geometry.dataToWorldNormalMatrix * in_Normal'. Expects a vec3."_help,
+                    "geometry.dataToWorldNormalMatrix * in_Normal",
                     InvalidationLevel::InvalidResources, PropertySemantics::Multiline},
-                   {"normal", "Normal", "geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0)",
-                    InvalidationLevel::InvalidResources, PropertySemantics::Multiline},
-                   {"picking", "Picking", "vec4(pickingIndexToColor(in_PickId), 1.0)",
+                   {"picking", "Picking",
+                    "Equation for the vertex picking color, defaults to "
+                    "vec4(pickingIndexToColor(in_PickId), 1.0). Expects a vec4."_help,
+                    "vec4(pickingIndexToColor(in_PickId), 1.0)",
                     InvalidationLevel::InvalidResources, PropertySemantics::Multiline}}}
-    , setupVert_{"setupVert", "Setup Vertex Shader", "", InvalidationLevel::InvalidResources,
+    , setupVert_{"setupVert",
+                 "Setup Vertex Shader",
+                 "Extra vertex shader code can be added here, for example to include other "
+                 "files, or to add short functions."_help,
+                 "",
+                 InvalidationLevel::InvalidResources,
                  PropertySemantics::Multiline}
 
     , vert_{std::make_shared<StringShaderResource>("InstanceRenderer.vert", vertexShader)}

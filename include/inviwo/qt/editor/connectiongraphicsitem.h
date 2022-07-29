@@ -37,6 +37,7 @@
 #include <QEvent>
 #include <QColor>
 #include <QPointF>
+#include <QGraphicsTextItem>
 #include <warn/pop>
 
 #include <inviwo/qt/editor/editorgrapicsitem.h>
@@ -71,6 +72,9 @@ public:
     void resetBorderColors();
     void setBorderColor(QColor borderColor);
     void setSelectedBorderColor(QColor selectedBorderColor);
+    
+    void setHoverInfo(const QString& info);
+    void resetHoverInfo();
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + CurveGraphicsType };
@@ -93,6 +97,8 @@ protected:
 
     QPainterPath path_;
     QRectF rect_;
+    
+    QGraphicsTextItem* infoLabel_;
 };
 
 class IVW_QTEDITOR_API ConnectionDragGraphicsItem : public CurveGraphicsItem {

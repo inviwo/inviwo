@@ -122,7 +122,6 @@ struct StaticString {
     std::string string() const { return {str.data(), N}; }
     operator std::string() const noexcept {
         return {str.data(), N};
-        ;
     }
 
     constexpr const char* c_str() const { return str.data(); }

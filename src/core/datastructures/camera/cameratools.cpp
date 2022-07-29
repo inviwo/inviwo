@@ -29,7 +29,7 @@
 
 #include <inviwo/core/datastructures/camera/cameratools.h>
 #include <inviwo/core/properties/cameraproperty.h>
-
+#include <inviwo/core/util/docbuilder.h>
 #include <inviwo/core/util/glm.h>
 
 namespace inviwo::util {
@@ -39,7 +39,7 @@ FloatRefProperty* getCameraFovProperty(CameraProperty& comp) {
 std::unique_ptr<FloatRefProperty> createCameraFovProperty(std::function<float()> get,
                                                           std::function<void(const float&)> set) {
     return std::make_unique<FloatRefProperty>(
-        "fov", "FOV", get, set,
+        "fov", "FOV", "The perspective field of view in the vertical direction"_help, get, set,
         std::pair<float, ConstraintBehavior>{0.0f, ConstraintBehavior::Immutable},
         std::pair<float, ConstraintBehavior>{180.0f, ConstraintBehavior::Immutable}, 0.1f);
 }
@@ -65,7 +65,7 @@ FloatRefProperty* getCameraWidthProperty(CameraProperty& comp) {
 std::unique_ptr<FloatRefProperty> createCameraWidthProperty(std::function<float()> get,
                                                             std::function<void(const float&)> set) {
     return std::make_unique<FloatRefProperty>(
-        "width", "Width", get, set,
+        "width", "Width", "The viewport width in world space"_help, get, set,
         std::pair<float, ConstraintBehavior>{0.0f, ConstraintBehavior::Immutable},
         std::pair<float, ConstraintBehavior>{1000.0f, ConstraintBehavior::Ignore}, 0.1f);
 }
@@ -92,8 +92,8 @@ FloatVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& comp) {
 std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty(
     std::function<vec2()> get, std::function<void(const vec2&)> set) {
     return std::make_unique<FloatVec2RefProperty>(
-        "offset", "Eye Offset", get, set,
-        std::pair<vec2, ConstraintBehavior>{vec2(-10.0f), ConstraintBehavior::Ignore},
+        "offset", "Eye Offset", "Offset from the view direction to the eye in world space"_help,
+        get, set, std::pair<vec2, ConstraintBehavior>{vec2(-10.0f), ConstraintBehavior::Ignore},
         std::pair<vec2, ConstraintBehavior>{vec2(10.0f), ConstraintBehavior::Ignore}, vec2(0.01f));
 }
 

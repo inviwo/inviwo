@@ -57,6 +57,11 @@ util::span<const std::string_view, N> defaultValues() {
 template <size_t N>
 class StringsProperty : public CompositeProperty {
 public:
+    StringsProperty(std::string_view identifier, std::string_view displayName, Document help,
+                    util::span<const std::string_view, N> values = util::defaultValues<N>(),
+                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                    PropertySemantics semantics = PropertySemantics::Default);
+
     StringsProperty(std::string_view identifier, std::string_view displayName,
                     util::span<const std::string_view, N> values = util::defaultValues<N>(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -93,10 +98,10 @@ std::string StringsProperty<N>::getClassIdentifierForWidget() const {
 
 template <size_t N>
 StringsProperty<N>::StringsProperty(std::string_view identifier, std::string_view displayName,
-                                    util::span<const std::string_view, N> values,
+                                    Document help, util::span<const std::string_view, N> values,
                                     InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , strings{util::make_array<N>([&](auto i) {
         return StringProperty{util::defaultAxesNames[i], util::defaultAxesNames[i], values[i]};
     })} {
@@ -105,6 +110,13 @@ StringsProperty<N>::StringsProperty(std::string_view identifier, std::string_vie
         addProperty(prop);
     }
 }
+
+template <size_t N>
+StringsProperty<N>::StringsProperty(std::string_view identifier, std::string_view displayName,
+                                    util::span<const std::string_view, N> values,
+                                    InvalidationLevel invalidationLevel,
+                                    PropertySemantics semantics)
+    : StringsProperty(identifier, displayName, Document(), values, invalidationLevel, semantics) {}
 
 template <size_t N>
 StringsProperty<N>::StringsProperty(const StringsProperty& rhs)
@@ -125,9 +137,8 @@ Document StringsProperty<N>::getDescription() const {
 
     using P = Document::PathComponent;
     Document doc = Property::getDescription();
-    auto b = doc.get({P("html"), P("body")});
 
-    utildoc::TableBuilder tb(b, P::end(), {{"String", "Value"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end(), {{"String", "Value"}});
     for (const auto& prop : strings) {
         tb(prop.getIdentifier(), prop.get());
     }

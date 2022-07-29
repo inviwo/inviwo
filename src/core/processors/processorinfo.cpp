@@ -62,7 +62,7 @@ ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayN
     , category{std::move(aCategory)}
     , codeState(aCodeState)
     , tags{std::move(someTags)}
-    , help{help::md2doc(help)}
+    , help{util::md2doc(help)}
     , visible{isVisible} {}
 
 }  // namespace inviwo

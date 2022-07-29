@@ -37,33 +37,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BufferToMeshProcessor, Buffer To Mesh Processor}
- * ![](org.inviwo.BufferToMeshProcessor.png?classIdentifier=org.inviwo.BufferToMeshProcessor)
- * Takes input buffers and puts them into a mesh without copying data.
- * All buffers must be of same size except the index buffer.
- * Unspecified draw type will render the mesh as points by default.
- * See https://www.khronos.org/opengl/wiki/Primitive for more information about draw types and
- * connectivity.
- *
- * ### Inports
- *   * __Vertices__ Mesh positions of type vec3 or vec2.
- *   * __Indices__ Vertex connectivity, integer type (optional).
- *   * __VertexColors__ Color at each vertex, usually vec4 or uvec4 type (optional).
- *   * __TextureCoordinates__ Texture coordinates at each vertex, usually vec2 type (optional).
- *   * __Normals__ Vertex normals, of vec3 type  (optional).
- *   * __Curvature__ Vertex curvature, usually float type  (optional).
- *
- * ### Outports
- *   * __Mesh__ Mesh with all specified buffers.
- *
- * ### Properties
- *   * __DrawType__ Default way to draw the mesh.
- *   * __Connectivity__ Describes how the indices connect vertices together.
- */
-
 /**
- * \class BufferToMeshProcessor
- * \brief Put buffers into mesh without copying data.
+ * @brief Put buffers into mesh without copying data.
  * Supported buffer types are specified in BufferType
  */
 class IVW_MODULE_BASE_API BufferToMeshProcessor : public Processor {

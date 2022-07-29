@@ -38,24 +38,31 @@ const ProcessorInfo DirectionalLightSourceProcessor::processorInfo_{
     "Light source",                       // Category
     CodeState::Experimental,              // Code state
     Tags::CPU,                            // Tags
-};
+    R"(Produces a light source with parallel light rays, spreading light in the direction from an
+    infinite plane. The direction of the plane will be computed as
+    glm::normalize(vec3(0) - lightPos) when specified in world space and
+    normalize(camera_.getLookTo() - lightPos) when specified in view space.)"_unindentHelp};
+
 const ProcessorInfo DirectionalLightSourceProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 
 DirectionalLightSourceProcessor::DirectionalLightSourceProcessor()
     : Processor()
-    , outport_("DirectionalLightSource")
+    , outport_("DirectionalLightSource", "Directional light source"_help)
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
     , lightPosition_(
-          "lightPosition", "Light Source Position",
+          "lightPosition", "Light Source Position", "Origin of the light source"_help,
           FloatVec3Property("position", "Position", vec3(100.f), vec3(-100.f), vec3(100.f)),
           &camera_)
     , lighting_("lighting", "Light Parameters")
-    , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
-    , lightDiffuse_("lightDiffuse", "Color", vec3(1.0f))
-    , lightEnabled_("lightEnabled", "Enabled", true)
+    , lightPowerProp_("lightPower", "Light power (%)", "Increases/decreases light strength"_help,
+                      50.f, {0.f, ConstraintBehavior::Immutable},
+                      {100.f, ConstraintBehavior::Immutable})
+    , lightDiffuse_("lightDiffuse", "Color",
+                    "Flux density per solid angle, W*s*r^-1 (intensity)"_help, vec3(1.0f))
+    , lightEnabled_("lightEnabled", "Enabled", "Turns light on or off"_help, true)
     , lightSource_{std::make_shared<DirectionalLight>()} {
     addPort(outport_);
 

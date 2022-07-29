@@ -12,6 +12,14 @@ Functions and structs moved from `core/util/stdextensions.h` include
 Added `core/util/glmmat.h` containing light-weight forward declarations of glm matrices similar to `glmvec.h`, which no longer includes `glm.hpp`. 
 This means that it might be necessary to include `core/util/glm.h` where needed.
 In addition, the glm utility functions `util::rank()`, `util::extent()`, and `util::is_floating_point()` are now part of `core/util/glmutils.h`.
+## 2022-08-11 InviwoSetupInfo
+The module setup info in a workspace file will not only save information about processors and modules used in the workspace.
+
+## 2022-07-11 Help
+Alt/Option clicking a processor in the processor network will now show the help for the given processor.
+
+## 2022-07-11 Append workspace
+The file manu gained an "Append" function to append a workspace into an existing workspace. Holding down Alt/Option in the file lists (Recent/Examples/Tests) will also append the workspace instead of opening it.
 
 ## 2022-06-27 New processor: Volume Region Mapper
 The `Volume Region Mapper` processor maps each unique voxel value of a Volume to another integer value. The value mapping is provided by two DataFrame columns.
