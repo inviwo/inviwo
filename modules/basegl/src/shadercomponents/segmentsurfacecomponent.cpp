@@ -33,7 +33,8 @@
 
 namespace inviwo {
 
-SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas, InterpolationType type, Wrapping wrap)
+SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas, InterpolationType type,
+                                                 Wrapping wrap)
     : ShaderComponent{}
     , name_("atlasboundary")
     , useAtlasBoundary_{"useAtlasBoundary", "Render ISO using atlas boundary", false}
