@@ -33,10 +33,10 @@
 
 namespace inviwo {
 
-SamplerObject::SamplerObject(InterpolationType type, Wrapping wrap) {
+SamplerObject::SamplerObject(InterpolationType type, Wrapping3D wrap) {
     glGenSamplers(1, &id_);
     setFilterModeAll(type);
-    setWrapModeAll(wrap);
+    setWrapMode(wrap);
 }
 
 SamplerObject::SamplerObject(SamplerObject&& rhs) noexcept : id_{rhs.id_} { rhs.id_ = 0; }
@@ -105,11 +105,11 @@ void SamplerObject::setWrapModeAll(GLenum wrap) {
     glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, wrap);
 }
 
-void SamplerObject::setWrapModeAll(Wrapping wrap) {
+void SamplerObject::setWrapMode(Wrapping3D wrap) {
     auto wrapMode = utilgl::convertWrappingToGL(wrap);
-    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, wrapMode);
-    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, wrapMode);
-    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, wrapMode);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, wrapMode[0]);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, wrapMode[1]);
+    glSamplerParameteri(id_, GL_TEXTURE_WRAP_R, wrapMode[2]);
 }
 
 void SamplerObject::setWrapMode_S(Wrapping wrap) {

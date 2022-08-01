@@ -80,7 +80,7 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
     , positionIndicator_{}
     , sampleTransform_{}
     , atlas_{this, "color", &time_}
-    , segmentSurface_{atlas_.getAtlasInport(), InterpolationType::Linear, Wrapping::Repeat} {
+    , segmentSurface_{atlas_.getAtlasInport()} {
 
     volume_.volumePort.onChange([this]() {
         if (volume_.volumePort.hasData()) {

@@ -48,7 +48,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API SegmentSurfaceComponent : public ShaderComponent {
 public:
-    SegmentSurfaceComponent(VolumeInport& atlas, InterpolationType type, Wrapping wrap);
+    SegmentSurfaceComponent(VolumeInport& atlas);
     virtual std::string_view getName() const override;
     virtual void process(Shader& shader, TextureUnitContainer&) override;
     virtual std::vector<Property*> getProperties() override;

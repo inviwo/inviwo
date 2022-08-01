@@ -33,8 +33,7 @@
 
 namespace inviwo {
 
-SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas, InterpolationType type,
-                                                 Wrapping wrap)
+SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas)
     : ShaderComponent{}
     , name_("atlasboundary")
     , useAtlasBoundary_{"useAtlasBoundary", "Render ISO using atlas boundary", false}
@@ -43,16 +42,13 @@ SegmentSurfaceComponent::SegmentSurfaceComponent(VolumeInport& atlas, Interpolat
                        vec3(1.0f, 0.906f, 0.612f))
     , showSelected_("showSelectedIndices", "Show Selected", true, vec3(1.0f, 0.769f, 0.247f))
     , showFiltered_("showFilteredIndices", "Show Filtered", true, vec3(0.5f, 0.5f, 0.5f))
-    , linearSampler_{}
+    , linearSampler_{InterpolationType::Linear}
     , textureSpaceGradientSpacingScale_{"gradientScaling", "Scale gradient spacing", 1.0f, 0.0f,
                                         5.0f}
     , atlas_{atlas} {
 
     useAtlasBoundary_.addProperties(applyBoundaryLight_, textureSpaceGradientSpacingScale_,
                                     showHighlighted_, showFiltered_, showSelected_);
-
-    linearSampler_.setFilterModeAll(type);
-    linearSampler_.setWrapModeAll(wrap);
 }
 std::string_view SegmentSurfaceComponent::getName() const { return name_; }
 
@@ -66,6 +62,8 @@ void SegmentSurfaceComponent::process(Shader& shader, TextureUnitContainer& cont
     shader.setUniform("showHighlighted", showHighlighted_.getBoolProperty()->get());
     shader.setUniform("filteredColor", showFiltered_.getColor());
     shader.setUniform("showFiltered", showFiltered_.getBoolProperty()->get());
+
+    linearSampler_.setWrapMode(atlas_.getData()->getWrapping());
 
     auto& linearUnit = cont.emplace_back();
     linearUnit.bindSampler(linearSampler_);

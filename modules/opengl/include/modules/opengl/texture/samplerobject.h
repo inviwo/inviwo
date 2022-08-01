@@ -44,7 +44,7 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API SamplerObject {
 public:
     SamplerObject(InterpolationType type = InterpolationType::Linear,
-                  Wrapping wrap = Wrapping::Repeat);
+                  Wrapping3D wrap = {Wrapping::Clamp, Wrapping::Clamp, Wrapping::Clamp});
     SamplerObject(const SamplerObject&) = delete;
     SamplerObject(SamplerObject&&) noexcept;
     SamplerObject& operator=(const SamplerObject&) = delete;
@@ -64,7 +64,7 @@ public:
     void setWrapMode_S(Wrapping wrap);
     void setWrapMode_T(Wrapping wrap);
     void setWrapMode_R(Wrapping wrap);
-    void setWrapModeAll(Wrapping wrap);
+    void setWrapMode(Wrapping3D wrap);
     GLint getID() const;
 
 private:
