@@ -490,7 +490,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
         {
             auto autoloadWorkspace = new QCheckBox("&Auto-load last workspace", rightColumn);
-            autoloadWorkspace->setChecked(getSetting("autoloadLastWorkspace", true).toBool());
+            autoloadWorkspace->setChecked(getSetting("autoloadLastWorkspace", false).toBool());
             QObject::connect(autoloadWorkspace, &QCheckBox::toggled, this, [this](bool checked) {
                 setSetting("autoloadLastWorkspace", checked);
             });
