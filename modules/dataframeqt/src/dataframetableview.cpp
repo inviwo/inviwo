@@ -47,14 +47,32 @@
 #include <QHeaderView>
 #include <QSortFilterProxyModel>
 #include <QAbstractButton>
+#include <QStyledItemDelegate>
 #include <warn/pop>
 
 namespace inviwo {
+
+// Custom style delegate to prevent the drawing of the default selection, which is drawn on top of
+// the background of the table cells
+class HideSelectionDelegate : public QStyledItemDelegate {
+public:
+    HideSelectionDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    virtual void paint(QPainter* painter, const QStyleOptionViewItem& option,
+                       const QModelIndex& index) const override {
+        QStyleOptionViewItem style(option);
+        // get rid of selected state so that the default selection overlay is not drawn
+        style.state &= ~QStyle::State_Selected;
+        QStyledItemDelegate::paint(painter, style, index);
+    }
+};
 
 DataFrameTableView::DataFrameTableView(QWidget* parent)
     : QTableView(parent)
     , model_(new DataFrameModel(this))
     , sortProxy_(new DataFrameSortFilterProxy(this)) {
+
+    setItemDelegate(new HideSelectionDelegate(this));
 
     sortProxy_->setSourceModel(model_);
     setModel(sortProxy_);
