@@ -68,7 +68,7 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
                                      opts) {
 
     const auto makeMT = [](const auto& opts) {
-        std::mt19937 mt;
+        std::mt19937_64 mt;
         if (opts.seed) {
             mt.seed(*opts.seed);
         } else {
@@ -125,7 +125,7 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
                     const auto phi = std::acos(cosPhiGen());
 
                     auto r = std::pow(rGen(), T{1.0} / T{3.0});
-                    r = opts.radius.x + r * (opts.radius.y - opts.radius.x);
+                    r = static_cast<T>(opts.radius.x + r * (opts.radius.y - opts.radius.x));
 
                     const auto ct = std::cos(theta);
                     const auto st = std::sin(theta);
