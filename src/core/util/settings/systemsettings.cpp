@@ -30,6 +30,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/logstream.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 

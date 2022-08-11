@@ -29,6 +29,7 @@
 
 #include <inviwo/core/interaction/pickingaction.h>
 #include <inviwo/core/interaction/pickingmanager.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 

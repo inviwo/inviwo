@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,54 @@
  *
  *********************************************************************************/
 
-#include "inviwosplashscreen.h"
-#include <inviwo/core/inviwocommondefines.h>
-#include <inviwo/core/util/commandlineparser.h>
-#include <inviwo/core/util/stringconversion.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QApplication>
-#include <QPainter>
-#include <QSplashScreen>
-#include <QTextStream>
-#include <warn/pop>
+#include <inviwo/core/util/chronoutils.h>
+#include <sstream>
+#include <iomanip>
 
 namespace inviwo {
 
-InviwoSplashScreen::InviwoSplashScreen(bool enable)
-    : QSplashScreen(QPixmap(":/images/splashscreen.png")), showSplashScreen_(enable) {}
+namespace util {
 
-InviwoSplashScreen::~InviwoSplashScreen() = default;
+std::string msToString(double ms, bool includeZeros, bool spacing) {
+    const std::string space = (spacing ? " " : "");
+    std::stringstream ss;
+    bool follows = false;
 
-void InviwoSplashScreen::show() {
-    if (showSplashScreen_) QSplashScreen::show();
+    size_t days = static_cast<size_t>(ms / (1000.0 * 3600.0 * 24.0));
+    if (days > 0 || (follows && includeZeros)) {
+        follows = true;
+        ss << days << space << "d";
+        ms -= 3600 * 1000 * 24 * days;
+    }
+    size_t hours = static_cast<size_t>(ms / (1000.0 * 3600.0));
+    if (hours > 0 || (follows && includeZeros)) {
+        if (follows) ss << " ";
+        follows = true;
+        ss << hours << space << "h";
+        ms -= 3600 * 1000 * hours;
+    }
+    size_t minutes = static_cast<size_t>(ms / (1000.0 * 60.0));
+    if (minutes > 0 || (follows && includeZeros)) {
+        if (follows) ss << " ";
+        follows = true;
+        ss << minutes << space << "min";
+        ms -= 60 * 1000 * minutes;
+    }
+    size_t seconds = static_cast<size_t>(ms / 1000.0);
+    // combine seconds and milliseconds, iff there already something added to the string stream
+    // _or_ there are more than one second
+    if (seconds > 0 || (follows && includeZeros)) {
+        if (follows) ss << " ";
+        follows = true;
+        ss << std::setprecision(4) << (ms / 1000.0) << space << "s";
+    } else {
+        // less than one second, no leading minutes/hours
+        ss << std::setprecision(4) << ms << space << "ms";
+    }
+
+    return ss.str();
 }
 
-void InviwoSplashScreen::drawContents(QPainter* painter) {
-    QString versionLabel;
-    QTextStream labelStream(&versionLabel);
-    labelStream << "Version " << QString::fromStdString(toString(build::version));
-    painter->setPen(Qt::black);
-    painter->drawText(12, 326, versionLabel);
-    auto font = painter->font();
-    font.setPointSizeF(font.pointSizeF() * 0.8f);
-    painter->setFont(font);
-    painter->drawText(12, 346, message());
-}
-
-void InviwoSplashScreen::showMessage(std::string message) {
-    if (showSplashScreen_) QSplashScreen::showMessage(QString::fromStdString(message));
-}
-
-void InviwoSplashScreen::finish(QWidget* waitFor) {
-    if (showSplashScreen_) QSplashScreen::finish(waitFor);
-}
+}  // namespace util
 
 }  // namespace inviwo

@@ -32,6 +32,7 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/clock.h>
+#include <inviwo/core/util/typeid.h>
 
 #include <chrono>
 #include <vector>
@@ -201,10 +202,10 @@ using ScopedClockGL = ScopedClock<ClockGL>;
  */
 
 #if IVW_PROFILING
-#define IVW_OPENGL_PROFILING(message)                                                     \
-    std::ostringstream IVW_ADDLINE(__stream);                                             \
-    IVW_ADDLINE(__stream) << message;                                                     \
-    ScopedClockGL IVW_ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
+#define IVW_OPENGL_PROFILING(message)                                                           \
+    std::ostringstream IVW_ADDLINE(__stream);                                                   \
+    IVW_ADDLINE(__stream) << message;                                                           \
+    ScopedClockGL IVW_ADDLINE(__clock)(util::parseTypeIdName(std::string(typeid(this).name())), \
                                        IVW_ADDLINE(__stream).str());
 #else
 #define IVW_OPENGL_PROFILING(message)
@@ -220,10 +221,10 @@ using ScopedClockGL = ScopedClock<ClockGL>;
 #endif
 
 #if IVW_PROFILING
-#define IVW_OPENGL_PROFILING_IF(time, message)                                            \
-    std::ostringstream IVW_ADDLINE(__stream);                                             \
-    IVW_ADDLINE(__stream) << message;                                                     \
-    ScopedClockGL IVW_ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
+#define IVW_OPENGL_PROFILING_IF(time, message)                                                  \
+    std::ostringstream IVW_ADDLINE(__stream);                                                   \
+    IVW_ADDLINE(__stream) << message;                                                           \
+    ScopedClockGL IVW_ADDLINE(__clock)(util::parseTypeIdName(std::string(typeid(this).name())), \
                                        IVW_ADDLINE(__stream).str(), time);
 #else
 #define IVW_OPENGL_PROFILING_IF(time, message)

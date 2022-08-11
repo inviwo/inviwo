@@ -30,7 +30,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/chronoutils.h>
+#include <inviwo/core/util/typeid.h>
 #include <inviwo/core/util/logcentral.h>
 
 #include <sstream>
@@ -172,7 +173,7 @@ template <typename Clock>
 void ScopedClock<Clock>::print() {
     if (Clock::getElapsedTime() > logIfAtLeast_) {
         std::stringstream message;
-        message << logMessage_ << ": " << msToString(Clock::getElapsedMilliseconds());
+        message << logMessage_ << ": " << util::msToString(Clock::getElapsedMilliseconds());
         LogCentral::getPtr()->log(logSource_, logLevel_, LogAudience::Developer, __FILE__,
                                   __FUNCTION__, __LINE__, message.str());
     }
@@ -233,10 +234,10 @@ using ScopedClockCPU = ScopedClock<Clock>;
  */
 
 #if IVW_PROFILING
-#define IVW_CPU_PROFILING(message)                                                         \
-    std::ostringstream IVW_ADDLINE(__stream);                                              \
-    IVW_ADDLINE(__stream) << message;                                                      \
-    ScopedClockCPU IVW_ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
+#define IVW_CPU_PROFILING(message)                                                               \
+    std::ostringstream IVW_ADDLINE(__stream);                                                    \
+    IVW_ADDLINE(__stream) << message;                                                            \
+    ScopedClockCPU IVW_ADDLINE(__clock)(util::parseTypeIdName(std::string(typeid(this).name())), \
                                         IVW_ADDLINE(__stream).str());
 #else
 #define IVW_CPU_PROFILING(message)
@@ -252,10 +253,10 @@ using ScopedClockCPU = ScopedClock<Clock>;
 #endif
 
 #if IVW_PROFILING
-#define IVW_CPU_PROFILING_IF(time, message)                                                \
-    std::ostringstream IVW_ADDLINE(__stream);                                              \
-    IVW_ADDLINE(__stream) << message;                                                      \
-    ScopedClockCPU IVW_ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
+#define IVW_CPU_PROFILING_IF(time, message)                                                      \
+    std::ostringstream IVW_ADDLINE(__stream);                                                    \
+    IVW_ADDLINE(__stream) << message;                                                            \
+    ScopedClockCPU IVW_ADDLINE(__clock)(util::parseTypeIdName(std::string(typeid(this).name())), \
                                         IVW_ADDLINE(__stream).str(), time);
 #else
 #define IVW_CPU_PROFILING_IF(time, message)

@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/typeid.h>
 
 #include <sstream>
 #include <vector>
@@ -101,7 +101,7 @@ public:
     };
 
 private:
-    static std::string name() { return parseTypeIdName(typeid(T).name()); }
+    static std::string name() { return util::parseTypeIdName(typeid(T).name()); }
 };
 
 }  // namespace inviwo

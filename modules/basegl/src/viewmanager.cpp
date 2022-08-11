@@ -34,6 +34,7 @@
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
 

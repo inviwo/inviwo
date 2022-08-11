@@ -43,6 +43,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/typeid.h>
 
 #include <fmt/format.h>
 
@@ -126,7 +127,7 @@ void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
         throw Exception(
             fmt::format("exposing standard DataPorts to python for '{0}' failed due to missing "
                         "class identifier. Have you provided a DataTraits<{0}> specialization?",
-                        parseTypeIdName(std::string(typeid(T).name()))),
+                        util::parseTypeIdName(std::string(typeid(T).name()))),
             IVW_CONTEXT_CUSTOM("exposeStandardDataPorts"));
     }
 

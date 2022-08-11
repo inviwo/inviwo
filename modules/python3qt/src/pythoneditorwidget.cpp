@@ -37,7 +37,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/clock.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/chronoutils.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
@@ -367,7 +367,7 @@ void PythonEditorWidget::run() {
 
     std::stringstream ss;
     ss << (ok ? "Executed Successfully" : "Failed");
-    ss << " (" << durationToString(c.getElapsedTime()) << ")";
+    ss << " (" << util::durationToString(c.getElapsedTime()) << ")";
     mainWindow_->statusBar()->showMessage(utilqt::toQString(ss.str()));
 }
 

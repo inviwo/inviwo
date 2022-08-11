@@ -29,6 +29,8 @@
 
 #include <modules/base/algorithm/cohensutherland.h>
 
+#include <inviwo/core/util/glm.h>
+
 namespace inviwo {
 
 namespace algorithm {

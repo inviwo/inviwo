@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <algorithm>
 #include <iterator>

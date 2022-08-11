@@ -285,6 +285,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/callback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/canvas.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/chronoutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/clock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/cloneableptr.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer-generated.h
@@ -318,6 +319,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmmat.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmvec.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/hashcombine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
@@ -370,6 +373,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/typeid.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
@@ -616,6 +620,7 @@ set(SOURCE_FILES
     util/bufferutils.cpp
     util/canvas.cpp
     util/capabilities.cpp
+    util/chronoutils.cpp
     util/clock.cpp
     util/colorbrewer-generated.cpp
     util/colorbrewer.cpp
@@ -641,6 +646,8 @@ set(SOURCE_FILES
     util/formatdispatching.cpp
     util/formats.cpp
     util/glm.cpp
+    util/glmmat.cpp
+    util/glmutils.cpp
     util/glmvec.cpp
     util/hashcombine.cpp
     util/imagecache.cpp
@@ -682,6 +689,7 @@ set(SOURCE_FILES
     util/threadutil.cpp
     util/timer.cpp
     util/tinydirinterface.cpp
+    util/typeid.cpp
     util/typetraits.cpp
     util/unindent.cpp
     util/utilities.cpp

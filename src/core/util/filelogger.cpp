@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/filelogger.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/inviwocommondefines.h>
 
 namespace inviwo {

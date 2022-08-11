@@ -32,7 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/stringconversion.h>
+//#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/typeid.h>
 
 #include <ostream>
 #include <string>
@@ -114,7 +115,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     {                                                                                           \
         std::ostringstream stream__;                                                            \
         stream__ << message;                                                                    \
-        logger->log(inviwo::parseTypeIdName(                                                    \
+        logger->log(inviwo::util::parseTypeIdName(                                              \
                         std::string(typeid(std::remove_const_t<decltype(*this)>).name())),      \
                     logLevel, inviwo::LogAudience::Developer, __FILE__, __FUNCTION__, __LINE__, \
                     stream__.str());                                                            \

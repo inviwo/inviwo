@@ -34,6 +34,7 @@
 #include <inviwo/core/util/introspection.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/enumtraits.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <type_traits>
 #include <iterator>
