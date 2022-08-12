@@ -37,6 +37,7 @@
 #include <string>
 #include <charconv>
 #include <array>
+#include <sstream>
 
 namespace ticpp {
 class Element;

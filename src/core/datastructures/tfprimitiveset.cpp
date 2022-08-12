@@ -521,7 +521,7 @@ void util::alignPositionToMean(std::vector<TFPrimitive*> selection) {
 
     const auto pos =
         std::accumulate(selection.begin(), selection.end(), 0.0,
-                        [](const float sum, TFPrimitive* p) { return sum + p->getPosition(); }) /
+                        [](const double sum, TFPrimitive* p) { return sum + p->getPosition(); }) /
         selection.size();
 
     std::stable_sort(selection.begin(), selection.end(),

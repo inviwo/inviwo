@@ -3,8 +3,11 @@ Here we document changes that affect the public API or changes that needs to be 
 ## 2022-08-12 Include changes in core/util/
 Optimized includes in `core/util` with some functions being moved to separate header files.
 Functions moved from `core/util/stringconversion.h` include
-+ `std::string parseTypeIdName()`, now in `namespace util` in `core/util/demangle.h`
-+ `std::string msToString()` and `std::string durationToString()`, now in `namespace util` in `core/util/chronoutils.h`
++ `parseTypeIdName()`, now in `namespace util` in `core/util/demangle.h`
++ `msToString()` and `durationToString()`, now in `namespace util` in `core/util/chronoutils.h`
+Functions and structs moved from `core/util/stdextensions.h` include
++ `is_future_ready()` moved to `core/util/stdfuture.h`
++ `struct identifier`, `struct identity`, `struct alwaysTrue`, and `struct is_string` moved to `core/util/typetraits.h`
 
 Added `core/util/glmmat.h` containing light-weight forward declarations of glm matrices similar to `glmvec.h`, which no longer includes `glm.hpp`. 
 This means that it might be necessary to include `core/util/glm.h` where needed.

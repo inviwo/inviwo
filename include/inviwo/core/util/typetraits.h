@@ -35,11 +35,60 @@
 #include <warn/ignore/all>
 #include <type_traits>
 #include <ostream>
+#include <string>
 #include <warn/pop>
 
 namespace inviwo {
 
 namespace util {
+
+struct identifier {
+    template <typename T>
+    constexpr decltype(auto) operator()(T&& item) const noexcept {
+        return item.getIdentifier();
+    }
+    template <typename T>
+    constexpr decltype(auto) operator()(T* item) const noexcept {
+        return item->getIdentifier();
+    }
+    template <typename T>
+    constexpr decltype(auto) operator()(const std::unique_ptr<T>& item) const noexcept {
+        return item->getIdentifier();
+    }
+    template <typename T>
+    constexpr decltype(auto) operator()(const std::shared_ptr<T>& item) const noexcept {
+        return item->getIdentifier();
+    }
+};
+
+struct identity {
+    template <typename T>
+    constexpr decltype(auto) operator()(T&& t) const noexcept {
+        return std::forward<T>(t);
+    }
+};
+
+struct alwaysTrue {
+    template <typename T>
+    constexpr bool operator()(T&&) const noexcept {
+        return true;
+    }
+};
+
+// type trait to check if T is derived from std::basic_string
+namespace detail {
+template <typename T, class Enable = void>
+struct is_string : std::false_type {};
+
+template <typename T>
+struct is_string<
+    T, std::void_t<typename T::value_type, typename T::traits_type, typename T::allocator_type>>
+    : std::is_base_of<std::basic_string<typename T::value_type, typename T::traits_type,
+                                        typename T::allocator_type>,
+                      T> {};
+}  // namespace detail
+template <typename T>
+struct is_string : detail::is_string<T> {};
 
 /**
  * A type trait for std container types

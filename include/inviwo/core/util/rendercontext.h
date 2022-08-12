@@ -34,6 +34,9 @@
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/canvas.h>
 
+#include <thread>
+#include <mutex>
+
 namespace inviwo {
 
 /**

@@ -365,6 +365,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/statecoordinator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/staticstring.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/stdfuture.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringlogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
@@ -683,6 +684,7 @@ set(SOURCE_FILES
     util/statecoordinator.cpp
     util/staticstring.cpp
     util/stdextensions.cpp
+    util/stdfuture.cpp
     util/stringconversion.cpp
     util/stringlogger.cpp
     util/systemcapabilities.cpp
