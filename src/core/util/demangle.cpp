@@ -30,6 +30,11 @@
 #include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#if defined(__clang__) || defined(__GNUC__)
+#include <cstdlib>
+#include <cxxabi.h>
+#endif
+
 namespace inviwo {
 
 namespace util {
