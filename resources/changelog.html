@@ -26,6 +26,16 @@
 </style>
 </head>
 <body>
+<h2>2022-08-12 Include changes in core/util/</h2>
+<p>Optimized includes in <code class="notranslate">core/util</code> with some functions being moved to separate header files.<br>
+Functions moved from <code class="notranslate">core/util/stringconversion.h</code> include</p>
+<ul>
+<li><code class="notranslate">std::string parseTypeIdName()</code>, now in <code class="notranslate">namespace util</code> in <code class="notranslate">core/util/demangle.h</code></li>
+<li><code class="notranslate">std::string msToString()</code> and <code class="notranslate">std::string durationToString()</code>, now in <code class="notranslate">namespace util</code> in <code class="notranslate">core/util/chronoutils.h</code></li>
+</ul>
+<p>Added <code class="notranslate">core/util/glmmat.h</code> containing light-weight forward declarations of glm matrices similar to <code class="notranslate">glmvec.h</code>, which no longer includes <code class="notranslate">glm.hpp</code>.<br>
+This means that it might be necessary to include <code class="notranslate">core/util/glm.h</code> where needed.<br>
+In addition, the glm utility functions <code class="notranslate">util::rank()</code>, <code class="notranslate">util::extent()</code>, and <code class="notranslate">util::is_floating_point()</code> are now part of <code class="notranslate">core/util/glmutils.h</code>.</p>
 <h2>2022-06-27 New processor: Volume Region Mapper</h2>
 <p>The <code class="notranslate">Volume Region Mapper</code> processor maps each unique voxel value of a Volume to another integer value. The value mapping is provided by two DataFrame columns.</p>
 <h2>2022-04-14 TemplateOptionProperty renamed to OptionProperty</h2>

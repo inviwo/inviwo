@@ -1,5 +1,14 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-08-12 Include changes in core/util/
+Optimized includes in `core/util` with some functions being moved to separate header files.
+Functions moved from `core/util/stringconversion.h` include
++ `std::string parseTypeIdName()`, now in `namespace util` in `core/util/demangle.h`
++ `std::string msToString()` and `std::string durationToString()`, now in `namespace util` in `core/util/chronoutils.h`
+
+Added `core/util/glmmat.h` containing light-weight forward declarations of glm matrices similar to `glmvec.h`, which no longer includes `glm.hpp`. 
+This means that it might be necessary to include `core/util/glm.h` where needed.
+In addition, the glm utility functions `util::rank()`, `util::extent()`, and `util::is_floating_point()` are now part of `core/util/glmutils.h`.
 
 ## 2022-06-27 New processor: Volume Region Mapper
 The `Volume Region Mapper` processor maps each unique voxel value of a Volume to another integer value. The value mapping is provided by two DataFrame columns.
