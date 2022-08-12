@@ -34,6 +34,7 @@
 #include <modules/opencl/cl.hpp>
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/demangle.h>
 
 namespace inviwo {
 
@@ -68,11 +69,11 @@ private:
 };
 
 #if IVW_PROFILING
-#define IVW_OPENCL_PROFILING(var, message)                                                     \
-    std::ostringstream IVW_ADDLINE(__stream);                                                  \
-    IVW_ADDLINE(__stream) << message;                                                          \
-    cl::Event* var = new cl::Event();                                                          \
-    ScopedClockCL IVW_ADDLINE(__clock)(var, parseTypeIdName(std::string(typeid(this).name())), \
+#define IVW_OPENCL_PROFILING(var, message)                                              \
+    std::ostringstream IVW_ADDLINE(__stream);                                           \
+    IVW_ADDLINE(__stream) << message;                                                   \
+    cl::Event* var = new cl::Event();                                                   \
+    ScopedClockCL IVW_ADDLINE(__clock)(var, util::parseTypeIdName(typeid(this).name()), \
                                        IVW_ADDLINE(__stream).str());
 #else
 #define IVW_OPENCL_PROFILING(var, message) cl::Event* var = nullptr;

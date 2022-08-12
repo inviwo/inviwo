@@ -31,7 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/chronoutils.h>
-#include <inviwo/core/util/typeid.h>
+#include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/logcentral.h>
 
 #include <sstream>
@@ -234,10 +234,10 @@ using ScopedClockCPU = ScopedClock<Clock>;
  */
 
 #if IVW_PROFILING
-#define IVW_CPU_PROFILING(message)                                                               \
-    std::ostringstream IVW_ADDLINE(__stream);                                                    \
-    IVW_ADDLINE(__stream) << message;                                                            \
-    ScopedClockCPU IVW_ADDLINE(__clock)(util::parseTypeIdName(std::string(typeid(this).name())), \
+#define IVW_CPU_PROFILING(message)                                                  \
+    std::ostringstream IVW_ADDLINE(__stream);                                       \
+    IVW_ADDLINE(__stream) << message;                                               \
+    ScopedClockCPU IVW_ADDLINE(__clock)(util::parseTypeIdName(typeid(this).name()), \
                                         IVW_ADDLINE(__stream).str());
 #else
 #define IVW_CPU_PROFILING(message)
@@ -253,10 +253,10 @@ using ScopedClockCPU = ScopedClock<Clock>;
 #endif
 
 #if IVW_PROFILING
-#define IVW_CPU_PROFILING_IF(time, message)                                                      \
-    std::ostringstream IVW_ADDLINE(__stream);                                                    \
-    IVW_ADDLINE(__stream) << message;                                                            \
-    ScopedClockCPU IVW_ADDLINE(__clock)(util::parseTypeIdName(std::string(typeid(this).name())), \
+#define IVW_CPU_PROFILING_IF(time, message)                                         \
+    std::ostringstream IVW_ADDLINE(__stream);                                       \
+    IVW_ADDLINE(__stream) << message;                                               \
+    ScopedClockCPU IVW_ADDLINE(__clock)(util::parseTypeIdName(typeid(this).name()), \
                                         IVW_ADDLINE(__stream).str(), time);
 #else
 #define IVW_CPU_PROFILING_IF(time, message)

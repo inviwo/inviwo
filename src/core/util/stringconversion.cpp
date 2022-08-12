@@ -31,6 +31,9 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/safecstr.h>
 
+#include <inviwo/core/util/demangle.h>
+#include <inviwo/core/util/chronoutils.h>
+
 #include <random>
 #include <iomanip>
 #include <clocale>
@@ -349,6 +352,12 @@ std::string removeSubString(std::string_view str, std::string_view strToRemove) 
 
 bool CaseInsensitiveCompare::operator()(std::string_view a, std::string_view b) const {
     return iCaseLess(a, b);
+}
+
+std::string parseTypeIdName(const char* name) { return util::parseTypeIdName(name); }
+
+std::string msToString(double ms, bool includeZeros, bool spacing) {
+    return util::msToString(ms, includeZeros, spacing);
 }
 
 }  // namespace inviwo

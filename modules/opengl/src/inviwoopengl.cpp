@@ -29,7 +29,7 @@
 
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/typeid.h>
+#include <inviwo/core/util/demangle.h>
 #include <sstream>
 
 #if defined(_WIN32)
@@ -111,9 +111,9 @@ void LogGLError(const std::type_info& source, std::string_view fileName,
     // There might be several errors, call glGetError in a loop:
     // https://www.opengl.org/sdk/docs/man2/xhtml/glGetError.xml
     while ((err = glGetError()) != GL_NO_ERROR && maxErrors--) {
-        LogCentral::getPtr()->log(util::parseTypeIdName(std::string(source.name())),
-                                  LogLevel::Error, LogAudience::Developer, fileName, functionName,
-                                  lineNumber, getGLErrorString(err));
+        LogCentral::getPtr()->log(util::parseTypeIdName(source.name()), LogLevel::Error,
+                                  LogAudience::Developer, fileName, functionName, lineNumber,
+                                  getGLErrorString(err));
     }
 }
 

@@ -60,8 +60,7 @@
 
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/dialogfactoryobject.h>
-#include <inviwo/core/util/typeid.h>
-//#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/demangle.h>
 
 #include <type_traits>
 #include <fmt/format.h>
@@ -412,7 +411,7 @@ void InviwoModule::registerPort() {
         LogError(fmt::format(
             "Error registering port '{0}' in module {1}. Reason: {2}. Have you provided a "
             "DataTraits<{0}> specialization?",
-            util::parseTypeIdName(std::string(typeid(typename T::type).name())), getIdentifier(),
+            util::parseTypeIdName(typeid(typename T::type).name()), getIdentifier(),
             e.getMessage()));
     }
 }

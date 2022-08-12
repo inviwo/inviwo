@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/typeid.h>
+#include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/hashcombine.h>
 
 #include <string_view>
@@ -95,16 +95,16 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-#define IVW_CONTEXT                                                                               \
-    SourceContext(util::parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
+#define IVW_CONTEXT                                                                  \
+    SourceContext(util::parseTypeIdName(typeid(this).name()), std::string(__FILE__), \
                   std::string(__FUNCTION__), __LINE__)
 
 #define IVW_CONTEXT_CUSTOM(source) \
     SourceContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
 
 // Old deprecated macro, use uppercase
-#define IvwContext                                                                                \
-    SourceContext(util::parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
+#define IvwContext                                                                   \
+    SourceContext(util::parseTypeIdName(typeid(this).name()), std::string(__FILE__), \
                   std::string(__FUNCTION__), __LINE__)
 // Old deprecated macro, use uppercase
 #define IvwContextCustom(source) \

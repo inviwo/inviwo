@@ -26,22 +26,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-
-#include <string>
+#include <inviwo/core/util/demangle.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
 namespace util {
 
-/**
- * Parse and demangle the type ID given in @p str
- * @param str   mangled type ID name
- * @return demangled type ID name without `class`, `const`, `inviwo::`, or white space
- */
-IVW_CORE_API std::string parseTypeIdName(std::string str);
+std::string parseTypeIdName(const char* name) {
+    std::string str(name);
+
+#if defined(__clang__) || defined(__GNUC__)
+    struct handle {
+        char* p;
+        handle(char* ptr) : p(ptr) {}
+        ~handle() { std::free(p); }
+    };
+    const char* cstr = str.c_str();
+    int status = -4;
+    handle result(abi::__cxa_demangle(cstr, nullptr, nullptr, &status));
+    if (status == 0) str = result.p;
+#else
+    replaceInString(str, "class", "");
+    replaceInString(str, "const", "");
+#if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64)
+    replaceInString(str, "__ptr64", "");
+#endif
+#endif
+    replaceInString(str, "inviwo::", "");
+    return removeFromString(removeFromString(str, '*'), ' ');
+}
 
 }  // namespace util
 

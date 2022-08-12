@@ -296,6 +296,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/constexprhash.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/defaultvalues.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/demangle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/detected.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
@@ -373,7 +374,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/typeid.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
@@ -628,6 +628,7 @@ set(SOURCE_FILES
     util/commandlineparser.cpp
     util/consolelogger.cpp
     util/defaultvalues.cpp
+    util/demangle.cpp
     util/detected.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
@@ -689,7 +690,6 @@ set(SOURCE_FILES
     util/threadutil.cpp
     util/timer.cpp
     util/tinydirinterface.cpp
-    util/typeid.cpp
     util/typetraits.cpp
     util/unindent.cpp
     util/utilities.cpp
