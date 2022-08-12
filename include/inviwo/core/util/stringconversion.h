@@ -355,10 +355,10 @@ struct IVW_CORE_API CaseInsensitiveCompare {
     bool operator()(std::string_view a, std::string_view b) const;
 };
 
-[[deprecated("use util::parseTypeIdName() in demangle.h instead")]]
-IVW_CORE_API std::string parseTypeIdName(const char* name);
+[[deprecated("use util::parseTypeIdName() in demangle.h instead")]] IVW_CORE_API std::string
+parseTypeIdName(const char* name);
 
-[[deprecated("use util::msToString() in chronoutils.h instead")]]
-IVW_CORE_API std::string msToString(double ms, bool includeZeros = true, bool spacing = false);
+[[deprecated("use util::msToString() in chronoutils.h instead")]] IVW_CORE_API std::string
+msToString(double ms, bool includeZeros = true, bool spacing = false);
 
 }  // namespace inviwo
