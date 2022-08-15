@@ -31,14 +31,15 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
-#include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/fmtutils.h>
+
 #include <flags/flags.h>
 
 #include <map>
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <iosfwd>
 
 namespace inviwo {
 class InviwoApplication;
@@ -110,29 +111,19 @@ private:
     std::vector<Preset> workspacePresets_;
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             PropertyPresetType p) {
-    switch (p) {
-        case PropertyPresetType::Property:
-            ss << "Property";
-            break;
-        case PropertyPresetType::Workspace:
-            ss << "Workspace";
-            break;
-        case PropertyPresetType::Application:
-            ss << "Application";
-            break;
-        default:
-            break;
-    }
-    return ss;
-}
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             PropertyPresetTypes ps) {
-    std::copy(ps.begin(), ps.end(), util::make_ostream_joiner(ss, ", "));
-    return ss;
+namespace util {
+IVW_CORE_API std::string_view name(PropertyPresetType p);
 }
 
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PropertyPresetType p);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PropertyPresetTypes ps);
+
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::PropertyPresetType>
+    : inviwo::FlagFormatter<inviwo::PropertyPresetType> {};
+
+template <>
+struct fmt::formatter<inviwo::PropertyPresetTypes>
+    : inviwo::FlagsFormatter<inviwo::PropertyPresetTypes> {};

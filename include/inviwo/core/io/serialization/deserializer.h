@@ -263,6 +263,7 @@ public:
               typename = std::enable_if_t<util::is_detected_exact_v<void, HasDeserialize, T>>>
     void deserialize(std::string_view key, T& sObj);
 
+    using ExceptionHandler = std::function<void(ExceptionContext)>;
     void setExceptionHandler(ExceptionHandler handler);
     void handleError(const ExceptionContext& context);
 

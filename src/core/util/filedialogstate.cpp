@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,41 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/exception.h>
 
 #include <ostream>
 
 namespace inviwo {
 
-PropertySemantics::PropertySemantics() : semantic_("Default") {}
-PropertySemantics::PropertySemantics(std::string semantic) : semantic_(std::move(semantic)) {}
-
-const std::string& PropertySemantics::getString() const { return semantic_; }
-
-void PropertySemantics::serialize(Serializer& s) const {
-    s.serialize("semantics", semantic_, SerializationTarget::Attribute);
+std::string_view util::name(AcceptMode mode) {
+    switch (mode) {
+        case AcceptMode::Open:
+            return "Open";
+        case AcceptMode::Save:
+            return "Save";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid AcceptMode enum value '{}'",
+                    static_cast<int>(mode));
+}
+std::string_view util::name(FileMode mode) {
+    switch (mode) {
+        case FileMode::AnyFile:
+            return "Any File";
+        case FileMode::ExistingFile:
+            return "Existing File";
+        case FileMode::Directory:
+            return "Directory";
+        case FileMode::ExistingFiles:
+            return "Existing Files";
+        case FileMode::DirectoryOnly:
+            return "Directory Only";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid FileMode enum value '{}'",
+                    static_cast<int>(mode));
 }
 
-void PropertySemantics::deserialize(Deserializer& d) {
-    d.deserialize("semantics", semantic_, SerializationTarget::Attribute);
-}
-
-const PropertySemantics PropertySemantics::Default("Default");
-const PropertySemantics PropertySemantics::Text("Text");
-const PropertySemantics PropertySemantics::SpinBox("SpinBox");
-const PropertySemantics PropertySemantics::Color("Color");
-const PropertySemantics PropertySemantics::LightPosition("LightPosition");
-const PropertySemantics PropertySemantics::Multiline("Multiline");
-const PropertySemantics PropertySemantics::TextEditor("TextEditor");
-const PropertySemantics PropertySemantics::PythonEditor("PythonEditor");
-const PropertySemantics PropertySemantics::ImageEditor("ImageEditor");
-const PropertySemantics PropertySemantics::ShaderEditor("ShaderEditor");
-
-std::ostream& operator<<(std::ostream& ss, const PropertySemantics& obj) {
-    ss << obj.getString();
-    return ss;
-}
+std::ostream& operator<<(std::ostream& ss, AcceptMode& mode) { return ss << util::name(mode); }
+std::ostream& operator<<(std::ostream& ss, FileMode& mode) { return ss << util::name(mode); }
 
 }  // namespace inviwo

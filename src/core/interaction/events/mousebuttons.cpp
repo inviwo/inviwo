@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2021 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,50 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
 
+#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/exception.h>
 #include <ostream>
 
 namespace inviwo {
 
-PropertySemantics::PropertySemantics() : semantic_("Default") {}
-PropertySemantics::PropertySemantics(std::string semantic) : semantic_(std::move(semantic)) {}
-
-const std::string& PropertySemantics::getString() const { return semantic_; }
-
-void PropertySemantics::serialize(Serializer& s) const {
-    s.serialize("semantics", semantic_, SerializationTarget::Attribute);
+std::string_view util::name(MouseButton b) {
+    switch (b) {
+        case MouseButton::None:
+            return "None";
+        case MouseButton::Left:
+            return "Left";
+        case MouseButton::Middle:
+            return "Middle";
+        case MouseButton::Right:
+            return "Right";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseButton enum value '{}'", static_cast<int>(b));
 }
 
-void PropertySemantics::deserialize(Deserializer& d) {
-    d.deserialize("semantics", semantic_, SerializationTarget::Attribute);
+std::string_view util::name(MouseState s) {
+    switch (s) {
+        case MouseState::Move:
+            return "Move";
+        case MouseState::Press:
+            return "Press";
+        case MouseState::Release:
+            return "Release";
+        case MouseState::DoubleClick:
+            return "DoubleClick";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseState enum value '{}'", static_cast<int>(s));
 }
 
-const PropertySemantics PropertySemantics::Default("Default");
-const PropertySemantics PropertySemantics::Text("Text");
-const PropertySemantics PropertySemantics::SpinBox("SpinBox");
-const PropertySemantics PropertySemantics::Color("Color");
-const PropertySemantics PropertySemantics::LightPosition("LightPosition");
-const PropertySemantics PropertySemantics::Multiline("Multiline");
-const PropertySemantics PropertySemantics::TextEditor("TextEditor");
-const PropertySemantics PropertySemantics::PythonEditor("PythonEditor");
-const PropertySemantics PropertySemantics::ImageEditor("ImageEditor");
-const PropertySemantics PropertySemantics::ShaderEditor("ShaderEditor");
-
-std::ostream& operator<<(std::ostream& ss, const PropertySemantics& obj) {
-    ss << obj.getString();
+std::ostream& operator<<(std::ostream& ss, MouseButton b) { return ss << util::name(b); }
+std::ostream& operator<<(std::ostream& ss, MouseState s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, MouseButtons bs) {
+    std::copy(bs.begin(), bs.end(), util::make_ostream_joiner(ss, "+"));
+    return ss;
+}
+std::ostream& operator<<(std::ostream& ss, MouseStates s) {
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 

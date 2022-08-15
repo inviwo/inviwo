@@ -29,6 +29,8 @@
 
 #include <inviwo/core/common/version.h>
 
+#include <ostream>
+
 namespace inviwo {
 
 namespace {
@@ -38,5 +40,10 @@ static_assert(ver.minor == 8);
 static_assert(ver.patch == 3);
 static_assert(ver.build == 21);
 }  // namespace
+
+std::ostream& operator<<(std::ostream& ss, const Version& v) {
+    ss << v.major << "." << v.minor << "." << v.patch << "." << v.build;
+    return ss;
+}
 
 }  // namespace inviwo

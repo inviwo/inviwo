@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
+#include <inviwo/core/util/fmtutils.h>
 #include <iosfwd>
 
 namespace inviwo {
@@ -45,25 +45,14 @@ enum class InvalidationLevel {
     InvalidResources  // Trigger a call to initializeResources and then process.
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const InvalidationLevel& level) {
-    switch (level) {
-        case InvalidationLevel::Valid:
-            ss << "Valid";
-            break;
-        case InvalidationLevel::InvalidOutput:
-            ss << "Invalid output";
-            break;
-        case InvalidationLevel::InvalidResources:
-            ss << "Invalid resources";
-            break;
-        default:
-            ss << "Unknown";
-            break;
-    }
-
-    return ss;
+namespace util {
+IVW_CORE_API std::string_view name(InvalidationLevel level);
 }
 
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, InvalidationLevel level);
+
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::InvalidationLevel>
+    : inviwo::FlagFormatter<inviwo::InvalidationLevel> {};

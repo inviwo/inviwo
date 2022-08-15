@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,34 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/interaction/events/touchstate.h>
+#include <inviwo/core/util/ostreamjoiner.h>
 
+#include <inviwo/core/util/exception.h>
 #include <ostream>
 
 namespace inviwo {
 
-PropertySemantics::PropertySemantics() : semantic_("Default") {}
-PropertySemantics::PropertySemantics(std::string semantic) : semantic_(std::move(semantic)) {}
-
-const std::string& PropertySemantics::getString() const { return semantic_; }
-
-void PropertySemantics::serialize(Serializer& s) const {
-    s.serialize("semantics", semantic_, SerializationTarget::Attribute);
+std::string_view util::name(TouchState s) {
+    switch (s) {
+        case TouchState::None:
+            return "None";
+        case TouchState::Started:
+            return "Started";
+        case TouchState::Updated:
+            return "Updated";
+        case TouchState::Stationary:
+            return "Stationary";
+        case TouchState::Finished:
+            return "Finished";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid TouchState enum value '{}'", static_cast<int>(s));
 }
 
-void PropertySemantics::deserialize(Deserializer& d) {
-    d.deserialize("semantics", semantic_, SerializationTarget::Attribute);
-}
+std::ostream& operator<<(std::ostream& ss, TouchState s) { return ss << util::name(s); }
 
-const PropertySemantics PropertySemantics::Default("Default");
-const PropertySemantics PropertySemantics::Text("Text");
-const PropertySemantics PropertySemantics::SpinBox("SpinBox");
-const PropertySemantics PropertySemantics::Color("Color");
-const PropertySemantics PropertySemantics::LightPosition("LightPosition");
-const PropertySemantics PropertySemantics::Multiline("Multiline");
-const PropertySemantics PropertySemantics::TextEditor("TextEditor");
-const PropertySemantics PropertySemantics::PythonEditor("PythonEditor");
-const PropertySemantics PropertySemantics::ImageEditor("ImageEditor");
-const PropertySemantics PropertySemantics::ShaderEditor("ShaderEditor");
-
-std::ostream& operator<<(std::ostream& ss, const PropertySemantics& obj) {
-    ss << obj.getString();
+std::ostream& operator<<(std::ostream& ss, TouchStates s) {
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 

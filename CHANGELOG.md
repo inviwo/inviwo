@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-08-15 FMT Version 9.0.0
+The fmt library was updated to the recent version 9.0.0. There are major breaking change in the update with respect to using ostream operators and fmt. Previosly you could just include `fmt/ostream.h` and any type that was streamable was not also printable with fmt. That behavious as removed and now you either as to wrapp the object with `fmt::streamed(x)` or add a specialization of fmt::formatter for the type. Most core types in inviwo that used std::ostream operators has been updated with fmt formatters. 
+
 ## 2022-08-12 Include changes in core/util/
 Optimized includes in `core/util` with some functions being moved to separate header files.
 Functions moved from `core/util/stringconversion.h` include

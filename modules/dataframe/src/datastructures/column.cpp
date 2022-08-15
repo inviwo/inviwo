@@ -34,6 +34,7 @@
 #include <inviwo/core/util/exception.h>
 
 #include <unordered_map>
+#include <ostream>
 
 namespace inviwo {
 
@@ -232,5 +233,19 @@ std::shared_ptr<Buffer<std::uint32_t>> CategoricalColumn::getTypedBuffer() { ret
 std::shared_ptr<const Buffer<std::uint32_t>> CategoricalColumn::getTypedBuffer() const {
     return buffer_;
 }
+
+std::string_view util::name(ColumnType type) {
+    switch (type) {
+        case ColumnType::Index:
+            return "Index";
+        case ColumnType::Ordinal:
+            return "Ordinal";
+        case ColumnType::Categorical:
+            return "Categorical";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid ColumnType enum value '{}'",
+                    static_cast<int>(type));
+}
+std::ostream& operator<<(std::ostream& ss, ColumnType type) { return ss << util::name(type); }
 
 }  // namespace inviwo

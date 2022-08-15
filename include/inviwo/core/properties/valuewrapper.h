@@ -49,7 +49,7 @@ struct ValueWrapper {
         return *this;
     }
 
-    operator const T&() const { return value; }
+    operator const T &() const { return value; }
 
     bool isDefault() const { return value == defaultValue; }
 
@@ -138,3 +138,11 @@ struct ValueWrapper {
 };
 
 }  // namespace inviwo
+
+template <typename T>
+struct fmt::formatter<inviwo::ValueWrapper<T>> : fmt::formatter<T> {
+    template <typename FormatContext>
+    auto format(const inviwo::ValueWrapper<T>& val, FormatContext& ctx) const {
+        return fmt::formatter<T>::format(val.value, ctx);
+    }
+};

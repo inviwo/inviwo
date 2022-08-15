@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -34,6 +34,9 @@
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/fmtutils.h>
+
+#include <iosfwd>
 
 namespace inviwo {
 // clang-format off
@@ -48,7 +51,7 @@ namespace inviwo {
  * View    view space coordinates    (-inf, inf)
  * Clip    clip space coordinates    [-1,1]
  * Index   voxel index coordinates   [0, number of voxels)
- * 
+ *
  * From Space   To Space   Transform          Entity                           Member
  * ===================================================================================
  * Data         Model      ModelMatrix        const SpatialEntity<N>*          entity_
@@ -56,26 +59,26 @@ namespace inviwo {
  * World        View       ViewMatrix         const CameraND<N>*               camera_
  * View         Clip       ProjectionMatrix   const CameraND<N>*               camera_
  * Data         Index      IndexMatrix        const StructuredGridEntity<N>*   entity_
- *                                                                                                                                                                             
- *                                                                                        
- *  ┌───────────────────────────────────────────────────────────┐                         
- *  │                          Spatial                          │                         
- *  │               ModelM.               WorldM.               │                         
- *  │   ┌────────┐──────────▶┌────────┐───────────▶┌────────┐   │                         
- *  │   │        │           │        │            │        │   │                         
- *  │   │  Data  │           │ Model  │            │ World  │   │                         
- *  │   │        │ ModelM.-1 │        │  WorldM.-1 │        │   │                         
- *  │   └────────┘◀──────────└────────┘◀───────────└────────┘   │                         
- *  │   │        ▲                                 │        ▲   │                         
- *  └───┼────────┼─────────────────────────────────┼─────   ┼───┘                         
- *      │      I │                                 │      V │                             
- *    I │      n │                               V │      i │                             
- *    n │      d │                               i │      e │                             
- *    d │      e │                               e │      w │                             
- *    e │      x │                               w │      M │                             
- *    x │      M │                               M │      - │                             
- *    M │      - │                                 │      1 │                             
- *      │      1 │                                 │        │                             
+ *
+ *
+ *  ┌───────────────────────────────────────────────────────────┐
+ *  │                          Spatial                          │
+ *  │               ModelM.               WorldM.               │
+ *  │   ┌────────┐──────────▶┌────────┐───────────▶┌────────┐   │
+ *  │   │        │           │        │            │        │   │
+ *  │   │  Data  │           │ Model  │            │ World  │   │
+ *  │   │        │ ModelM.-1 │        │  WorldM.-1 │        │   │
+ *  │   └────────┘◀──────────└────────┘◀───────────└────────┘   │
+ *  │   │        ▲                                 │        ▲   │
+ *  └───┼────────┼─────────────────────────────────┼─────   ┼───┘
+ *      │      I │                                 │      V │
+ *    I │      n │                               V │      i │
+ *    n │      d │                               i │      e │
+ *    d │      e │                               e │      w │
+ *    e │      x │                               w │      M │
+ *    x │      M │                               M │      - │
+ *    M │      - │                                 │      1 │
+ *      │      1 │                                 │        │
  *  ┌───┼────────┼────┐                        ┌───┼────────┼────────────────────────────┐
  *  │   │        │    │                        │   │        │                            │
  *  │   ▼        │    │                        │   ▼        │  ProjectionM               │
@@ -128,31 +131,10 @@ enum class CoordinateSpace {
     Data, Model, World, Index, Clip, View
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             CoordinateSpace s) {
-    switch (s) {
-        case CoordinateSpace::Data:
-            ss << "Data";
-            break;
-        case CoordinateSpace::Model:
-            ss << "Model";
-            break;
-        case CoordinateSpace::World:
-            ss << "World";
-            break;
-        case CoordinateSpace::Index:
-            ss << "Index";
-            break;
-        case CoordinateSpace::Clip:
-            ss << "Clip";
-            break;
-        case CoordinateSpace::View:
-            ss << "View";
-            break;
-    }
-    return ss;
+namespace util {
+IVW_CORE_API std::string_view name(CoordinateSpace s);
 }
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, CoordinateSpace s);
 
 template<unsigned int N>
 class SpatialCoordinateTransformer {
@@ -639,40 +621,40 @@ extern template class IVW_CORE_TMPL_EXP StructuredCameraCoordinateTransformer<3>
 template<unsigned int N>
 Matrix<N + 1, float> SpatialCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
     switch (from) {
-        case CoordinateSpace::Data: 
+        case CoordinateSpace::Data:
             switch (to) {
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getDataToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getDataToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::Model: 
+        case CoordinateSpace::Model:
             switch (to) {
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getModelToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::World: 
+        case CoordinateSpace::World:
             switch (to) {
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getWorldToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return Matrix<N + 1, float>(1.0f);
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
             }
         default:
@@ -683,60 +665,60 @@ Matrix<N + 1, float> SpatialCoordinateTransformer<N>::getMatrix(CoordinateSpace 
 template<unsigned int N>
 Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
     switch (from) {
-        case CoordinateSpace::Index: 
+        case CoordinateSpace::Index:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getIndexToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getIndexToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getIndexToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Index) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::Data: 
+        case CoordinateSpace::Data:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return getDataToIndexMatrix();
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getDataToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getDataToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::Model: 
+        case CoordinateSpace::Model:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return getModelToIndexMatrix();
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getModelToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::World: 
+        case CoordinateSpace::World:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return getWorldToIndexMatrix();
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getWorldToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return Matrix<N + 1, float>(1.0f);
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
             }
         default:
@@ -747,84 +729,84 @@ Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpa
 template<unsigned int N>
 Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
     switch (from) {
-        case CoordinateSpace::Data: 
+        case CoordinateSpace::Data:
             switch (to) {
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getDataToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getDataToWorldMatrix();
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return getDataToViewMatrix();
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return getDataToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::Model: 
+        case CoordinateSpace::Model:
             switch (to) {
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getModelToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getModelToWorldMatrix();
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return getModelToViewMatrix();
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return getModelToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::World: 
+        case CoordinateSpace::World:
             switch (to) {
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getWorldToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return getWorldToViewMatrix();
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return getWorldToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::View: 
+        case CoordinateSpace::View:
             switch (to) {
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getViewToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getViewToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getViewToWorldMatrix();
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return getViewToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::View) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::Clip: 
+        case CoordinateSpace::Clip:
             switch (to) {
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getClipToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getClipToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getClipToWorldMatrix();
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return getClipToViewMatrix();
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return Matrix<N + 1, float>(1.0f);
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Clip) + " to " + toString(to), IVW_CONTEXT);
             }
         default:
@@ -835,112 +817,112 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
 template<unsigned int N>
 Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
     switch (from) {
-        case CoordinateSpace::Index: 
+        case CoordinateSpace::Index:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getIndexToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getIndexToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getIndexToWorldMatrix();
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return getIndexToViewMatrix();
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return getIndexToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Index) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::Data: 
+        case CoordinateSpace::Data:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return getDataToIndexMatrix();
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getDataToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getDataToWorldMatrix();
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return getDataToViewMatrix();
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return getDataToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::Model: 
+        case CoordinateSpace::Model:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return getModelToIndexMatrix();
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getModelToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getModelToWorldMatrix();
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return getModelToViewMatrix();
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return getModelToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::World: 
+        case CoordinateSpace::World:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return getWorldToIndexMatrix();
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getWorldToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return getWorldToViewMatrix();
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return getWorldToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::View: 
+        case CoordinateSpace::View:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return getViewToIndexMatrix();
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getViewToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getViewToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getViewToWorldMatrix();
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return Matrix<N + 1, float>(1.0f);
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return getViewToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::View) + " to " + toString(to), IVW_CONTEXT);
             }
-        case CoordinateSpace::Clip: 
+        case CoordinateSpace::Clip:
             switch (to) {
-                case CoordinateSpace::Index: 
+                case CoordinateSpace::Index:
                     return getClipToIndexMatrix();
-                case CoordinateSpace::Data: 
+                case CoordinateSpace::Data:
                     return getClipToDataMatrix();
-                case CoordinateSpace::Model: 
+                case CoordinateSpace::Model:
                     return getClipToModelMatrix();
-                case CoordinateSpace::World: 
+                case CoordinateSpace::World:
                     return getClipToWorldMatrix();
-                case CoordinateSpace::View: 
+                case CoordinateSpace::View:
                     return getClipToViewMatrix();
-                case CoordinateSpace::Clip: 
+                case CoordinateSpace::Clip:
                     return Matrix<N + 1, float>(1.0f);
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " + 
+                    throw Exception("getMatrix is not available for the given spaces: " +
                                     toString(CoordinateSpace::Clip) + " to " + toString(to), IVW_CONTEXT);
             }
         default:
@@ -1703,3 +1685,6 @@ const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldT
 // clang-format on
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::CoordinateSpace> : inviwo::FlagFormatter<inviwo::CoordinateSpace> {};

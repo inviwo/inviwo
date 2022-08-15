@@ -369,7 +369,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
     }
 
     // use additional unused attribute locations for extra color channels and texture coords
-    int auxLocation = static_cast<int>(BufferType::NumberOfBufferTypes);
+    int auxLocation = static_cast<int>(BufferType::Unknown);
     for (size_t i = 0; i < color_channels; ++i) {
         int location = (i == 0 ? static_cast<int>(BufferType::ColorAttrib) : auxLocation++);
         mesh->addBuffer(Mesh::BufferInfo(BufferType::ColorAttrib, location), cbuff[i]);

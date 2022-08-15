@@ -30,12 +30,11 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/fmtutils.h>
 
 #include <flags/flags.h>
-
-#include <iterator>
-#include <ostream>
+#include <string_view>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -50,31 +49,17 @@ enum class TouchState {
 ALLOW_FLAGS_FOR_ENUM(TouchState)
 using TouchStates = flags::flags<TouchState>;
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, TouchState s) {
-    switch (s) {
-        case TouchState::None:
-            ss << "None";
-            break;
-        case TouchState::Started:
-            ss << "Started";
-            break;
-        case TouchState::Updated:
-            ss << "Updated";
-            break;
-        case TouchState::Stationary:
-            ss << "Stationary";
-            break;
-        case TouchState::Finished:
-            ss << "Finished";
-            break;
-    }
-    return ss;
-}
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, TouchStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, TouchState s);
+
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, TouchStates s);
+
+namespace util {
+IVW_CORE_API std::string_view name(TouchState b);
+}  // namespace util
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::TouchState> : inviwo::FlagFormatter<inviwo::TouchState> {};
+template <>
+struct fmt::formatter<inviwo::TouchStates> : inviwo::FlagsFormatter<inviwo::TouchStates> {};

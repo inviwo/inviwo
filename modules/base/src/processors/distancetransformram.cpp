@@ -32,6 +32,8 @@
 #include <modules/base/algorithm/volume/volumeramdistancetransform.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
+#include <ostream>
+
 namespace inviwo {
 
 const ProcessorInfo DistanceTransformRAM::processorInfo_{
@@ -162,6 +164,23 @@ void DistanceTransformRAM::process() {
         outport_.setData(result);
         newResults();
     });
+}
+
+std::ostream& operator<<(std::ostream& ss, DistanceTransformRAM::DataRangeMode m) {
+    switch (m) {
+        case DistanceTransformRAM::DataRangeMode::Diagonal:
+            ss << "Diagonal";
+            break;
+        case DistanceTransformRAM::DataRangeMode::MinMax:
+            ss << "MinMax";
+            break;
+        case DistanceTransformRAM::DataRangeMode::Custom:
+            ss << "Custom";
+            break;
+        default:
+            break;
+    }
+    return ss;
 }
 
 }  // namespace inviwo

@@ -315,6 +315,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystemobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/fmtutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreach.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreacharg.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
@@ -423,6 +424,7 @@ set(SOURCE_FILES
     datastructures/datarepresentation.cpp
     datastructures/datatraits.cpp
     datastructures/geometry/basicmesh.cpp
+    datastructures/geometry/geometrytype.cpp
     datastructures/geometry/mesh.cpp
     datastructures/geometry/meshram.cpp
     datastructures/geometry/meshrepresentation.cpp
@@ -434,6 +436,7 @@ set(SOURCE_FILES
     datastructures/image/image.cpp
     datastructures/image/imageram.cpp
     datastructures/image/imagerepresentation.cpp
+    datastructures/image/imagetypes.cpp
     datastructures/image/layer.cpp
     datastructures/image/layerdisk.cpp
     datastructures/image/layerram.cpp
@@ -473,14 +476,18 @@ set(SOURCE_FILES
     interaction/events/eventmatcher.cpp
     interaction/events/eventutil.cpp
     interaction/events/gestureevent.cpp
+    interaction/events/gesturestate.cpp
     interaction/events/interactionevent.cpp
     interaction/events/keyboardevent.cpp
+    interaction/events/keyboardkeys.cpp
+    interaction/events/mousebuttons.cpp
     interaction/events/mousecursors.cpp
     interaction/events/mouseevent.cpp
     interaction/events/mouseinteractionevent.cpp
     interaction/events/pickingevent.cpp
     interaction/events/resizeevent.cpp
     interaction/events/touchevent.cpp
+    interaction/events/touchstate.cpp
     interaction/events/viewevent.cpp
     interaction/events/wheelevent.cpp
     interaction/interactionhandler.cpp
@@ -490,6 +497,7 @@ set(SOURCE_FILES
     interaction/pickingcontrollertouchstate.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
+    interaction/pickingstate.cpp
     interaction/trackball.cpp
     io/bytereaderutil.cpp
     io/datareader.cpp
@@ -561,6 +569,7 @@ set(SOURCE_FILES
     processors/processorfactory.cpp
     processors/processorinfo.cpp
     processors/processorpair.cpp
+    processors/processorstate.cpp
     processors/processortags.cpp
     processors/processorutils.cpp
     processors/processorwidget.cpp
@@ -581,6 +590,7 @@ set(SOURCE_FILES
     properties/eventproperty.cpp
     properties/filepatternproperty.cpp
     properties/fileproperty.cpp
+    properties/invalidationlevel.cpp
     properties/imageeditorproperty.cpp
     properties/isotfproperty.cpp
     properties/isovalueproperty.cpp
@@ -642,11 +652,13 @@ set(SOURCE_FILES
     util/exception.cpp
     util/factory.cpp
     util/filedialog.cpp
+    util/filedialogstate.cpp
     util/fileextension.cpp
     util/filelogger.cpp
     util/fileobserver.cpp
     util/filesystem.cpp
     util/filesystemobserver.cpp
+    util/fmtutils.cpp
     util/foreacharg.cpp
     util/formatconversion.cpp
     util/formatdispatching.cpp

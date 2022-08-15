@@ -30,14 +30,10 @@
 #pragma once
 
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/fmtutils.h>
 
-#include <flags/flags.h>
-
-#include <iterator>
-#include <ostream>
+#include <iosfwd>
 #include <string_view>
-
-#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -59,187 +55,44 @@ enum class BufferType {
     RadiiAttrib,
     PickingAttrib,
     ScalarMetaAttrib,
-    NumberOfBufferTypes
+    Unknown
 };
-
-ALLOW_FLAGS_FOR_ENUM(BufferType)
-using BufferTypes = flags::flags<BufferType>;
 
 enum class BufferUsage { Static, Dynamic };
 
 enum class BufferTarget {
-    Data,
-    Index
-};  // Index maps to GL_ELEMENT_ARRAY_BUFFER, Data maps to GL_ARRAY_BUFFER
-
-enum class DrawType { NotSpecified = 0, Points, Lines, Triangles, NumberOfDrawTypes };
-
-enum class ConnectivityType {
-    None = 0,
-    Strip,
-    Loop,
-    Fan,
-    Adjacency,
-    StripAdjacency,
-    NumberOfConnectivityTypes
+    Data,  // Data maps to GL_ARRAY_BUFFER
+    Index  // Index maps to GL_ELEMENT_ARRAY_BUFFER
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, DrawType dt) {
-    switch (dt) {
-        case DrawType::Points:
-            ss << "Points";
-            break;
-        case DrawType::Lines:
-            ss << "Lines";
-            break;
-        case DrawType::Triangles:
-            ss << "Triangles";
-            break;
-        case DrawType::NotSpecified:
-        case DrawType::NumberOfDrawTypes:
-        default:
-            ss << "Not specified";
-    }
-    return ss;
-}
+enum class DrawType { NotSpecified = 0, Points, Lines, Triangles };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             ConnectivityType ct) {
-    switch (ct) {
-        case ConnectivityType::None:
-            ss << "None";
-            break;
-        case ConnectivityType::Strip:
-            ss << "Strip";
-            break;
-        case ConnectivityType::Loop:
-            ss << "Loop";
-            break;
-        case ConnectivityType::Fan:
-            ss << "Fan";
-            break;
-        case ConnectivityType::Adjacency:
-            ss << "Adjacency";
-            break;
-        case ConnectivityType::StripAdjacency:
-            ss << "Strip adjacency";
-            break;
-        case ConnectivityType::NumberOfConnectivityTypes:
-        default:
-            ss << "Not specified";
-    }
-    return ss;
-}
+enum class ConnectivityType { None = 0, Strip, Loop, Fan, Adjacency, StripAdjacency };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BufferType bt) {
-    switch (bt) {
-        case BufferType::PositionAttrib:
-            ss << "Position";
-            break;
-        case BufferType::NormalAttrib:
-            ss << "Normal";
-            break;
-        case BufferType::ColorAttrib:
-            ss << "Color";
-            break;
-        case BufferType::TexCoordAttrib:
-            ss << "TexCoord";
-            break;
-        case BufferType::CurvatureAttrib:
-            ss << "Curvature";
-            break;
-        case BufferType::IndexAttrib:
-            ss << "Index";
-            break;
-        case BufferType::RadiiAttrib:
-            ss << "Radii";
-            break;
-        case BufferType::PickingAttrib:
-            ss << "Picking";
-            break;
-        case BufferType::ScalarMetaAttrib:
-            ss << "ScalarMeta";
-            break;
-        case BufferType::NumberOfBufferTypes:
-            ss << "NumberOfBufferTypes";
-            break;
-        default:
-            ss << "Type not specified";
-            break;
-    }
-    return ss;
-}
+namespace util {
+IVW_CORE_API std::string_view name(DrawType dt);
+IVW_CORE_API std::string_view name(ConnectivityType ct);
+IVW_CORE_API std::string_view name(BufferType bt);
+IVW_CORE_API std::string_view name(BufferUsage bu);
+IVW_CORE_API std::string_view name(BufferTarget bt);
+}  // namespace util
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BufferUsage bu) {
-    switch (bu) {
-        case BufferUsage::Static:
-            ss << "Static";
-            break;
-        case BufferUsage::Dynamic:
-            ss << "Dynamic";
-            break;
-        default:
-            ss << "Usage not specified";
-    }
-    return ss;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             BufferTarget bt) {
-    switch (bt) {
-        case BufferTarget::Data:
-            ss << "Data";
-            break;
-        case BufferTarget::Index:
-            ss << "Index";
-            break;
-        default:
-            ss << "Target not specified";
-    }
-    return ss;
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, DrawType dt);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ConnectivityType ct);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BufferType bt);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BufferUsage bu);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BufferTarget bt);
 
 }  // namespace inviwo
 
-namespace fmt {
 template <>
-struct formatter<::inviwo::BufferType> : formatter<string_view> {
-    // parse is inherited from formatter<string_view>.
-    template <typename FormatContext>
-    auto format(::inviwo::BufferType bt, FormatContext& ctx) {
-        using namespace std::literals;
-        const std::string_view str = [&]() {
-            switch (bt) {
-                case ::inviwo::BufferType::PositionAttrib:
-                    return "Position"sv;
-                case ::inviwo::BufferType::NormalAttrib:
-                    return "Normal"sv;
-                case ::inviwo::BufferType::ColorAttrib:
-                    return "Color"sv;
-                case ::inviwo::BufferType::TexCoordAttrib:
-                    return "TexCoord"sv;
-                case ::inviwo::BufferType::CurvatureAttrib:
-                    return "Curvature"sv;
-                case ::inviwo::BufferType::IndexAttrib:
-                    return "Index"sv;
-                case ::inviwo::BufferType::RadiiAttrib:
-                    return "Radii"sv;
-                case ::inviwo::BufferType::PickingAttrib:
-                    return "Picking"sv;
-                case ::inviwo::BufferType::ScalarMetaAttrib:
-                    return "ScalarMeta"sv;
-                case ::inviwo::BufferType::NumberOfBufferTypes:
-                    return "NumberOfBufferTypes"sv;
-                default:
-                    return "Type not specified"sv;
-            }
-        }();
-        return formatter<string_view>::format(str, ctx);
-    }
+struct fmt::formatter<inviwo::DrawType> : inviwo::FlagFormatter<inviwo::DrawType> {};
+template <>
+struct fmt::formatter<inviwo::ConnectivityType> : inviwo::FlagFormatter<inviwo::ConnectivityType> {
 };
-}  // namespace fmt
+template <>
+struct fmt::formatter<inviwo::BufferType> : inviwo::FlagFormatter<inviwo::BufferType> {};
+template <>
+struct fmt::formatter<inviwo::BufferUsage> : inviwo::FlagFormatter<inviwo::BufferUsage> {};
+template <>
+struct fmt::formatter<inviwo::BufferTarget> : inviwo::FlagFormatter<inviwo::BufferTarget> {};

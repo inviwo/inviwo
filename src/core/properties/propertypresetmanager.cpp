@@ -37,6 +37,11 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
+#include <inviwo/core/util/ostreamjoiner.h>
+
+#include <algorithm>
+#include <ostream>
+#include <sstream>
 
 namespace inviwo {
 
@@ -281,6 +286,26 @@ void PropertyPresetManager::Preset::deserialize(Deserializer& d) {
 std::map<std::string, std::string>& PropertyPresetManager::getPropertyPresets(Property* property) {
     using MT = StdUnorderedMapMetaData<std::string, std::string>;
     return property->createMetaData<MT>("SavedState")->getMap();
+}
+
+std::string_view util::name(PropertyPresetType p) {
+    switch (p) {
+        case PropertyPresetType::Property:
+            return "Property";
+        case PropertyPresetType::Workspace:
+            return "Workspace";
+        case PropertyPresetType::Application:
+            return "Application";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+                    "Found invalid PropertyPresetType enum value '{}'", static_cast<int>(p));
+}
+
+std::ostream& operator<<(std::ostream& ss, PropertyPresetType p) { return ss << util::name(p); }
+
+std::ostream& operator<<(std::ostream& ss, PropertyPresetTypes ps) {
+    std::copy(ps.begin(), ps.end(), util::make_ostream_joiner(ss, ", "));
+    return ss;
 }
 
 }  // namespace inviwo

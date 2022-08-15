@@ -47,6 +47,8 @@
 
 #include <modules/base/datastructures/imagereusecache.h>
 
+#include <iosfwd>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.LayerDistanceTransformRAM, Layer Distance Transform}
@@ -107,23 +109,7 @@ private:
     IntSize2Property upsampleFactorVec2_;  // non-uniform upscaling of the output field
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             LayerDistanceTransformRAM::DataRangeMode m) {
-    switch (m) {
-        case LayerDistanceTransformRAM::DataRangeMode::Diagonal:
-            ss << "Diagonal";
-            break;
-        case LayerDistanceTransformRAM::DataRangeMode::MinMax:
-            ss << "MinMax";
-            break;
-        case LayerDistanceTransformRAM::DataRangeMode::Custom:
-            ss << "Custom";
-            break;
-        default:
-            break;
-    }
-    return ss;
-}
+IVW_MODULE_BASE_API std::ostream& operator<<(std::ostream& ss,
+                                             LayerDistanceTransformRAM::DataRangeMode m);
 
 }  // namespace inviwo

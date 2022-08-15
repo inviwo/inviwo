@@ -98,7 +98,8 @@ struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
         using intype = typename InportType::type;
         using outtype = typename InportType::type;
         static_assert(std::is_same<intype, outtype>::value, "type mismatch");
-        auto name = util::cleanIdentifier(DataTraits<intype>::dataName() + " Meta Sink", " ");
+        auto name =
+            util::cleanIdentifier(fmt::format("{} Meta Sink", DataTraits<intype>::dataName()), " ");
         auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(), ".metasink");
         return {
             id,                 // Class identifier

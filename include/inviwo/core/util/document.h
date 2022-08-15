@@ -126,9 +126,7 @@ public:
 
         ElemVec::const_iterator operator()(const ElemVec& elements) const;
 
-        template <class Elem, class Traits>
-        friend std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                                            const Document::PathComponent& path) {
+        friend std::ostream& operator<<(std::ostream& ss, const Document::PathComponent& path) {
             ss << path.strrep_;
             return ss;
         }
@@ -215,40 +213,7 @@ public:
         for (const auto& e : root_->children_) traverser(e.get(), stack);
     }
 
-    template <class Elem, class Traits>
-    friend std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                                        const Document& doc) {
-        doc.visit(
-            [&](Element* elem, std::vector<Element*>& stack) {
-                if (elem->isNode()) {
-                    ss << std::setw(stack.size() * 4) << ' ' << '<' << elem->name();
-                    for (const auto& item : elem->attributes()) {
-                        ss << ' ' << item.first << "='" << item.second << '\'';
-                    }
-                    ss << '>';
-                    if (!elem->noIndent()) ss << '\n';
-                } else if (elem->isText() && !elem->content().empty()) {
-                    if (!stack.empty() && !stack.back()->noIndent()) {
-                        ss << std::setw(stack.size() * 4) << ' ' << elem->content() << '\n';
-                    } else if (!stack.empty() && stack.back()->noIndent()) {
-                        ss << elem->content();
-                    } else {
-                        ss << elem->content() << '\n';
-                    }
-                }
-            },
-            [&](Element* elem, std::vector<Element*>& stack) {
-                if (elem->isNode() && !elem->emptyTag()) {
-                    if (!elem->noIndent()) {
-                        ss << std::setw(stack.size() * 4) << ' ' << "</" << elem->name() << ">\n";
-                    } else {
-                        ss << "</" << elem->name() << ">\n";
-                    }
-                }
-            });
-
-        return ss;
-    }
+    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Document& doc);
 
     std::string str() const;
     operator std::string() const;

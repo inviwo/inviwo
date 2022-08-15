@@ -39,7 +39,6 @@
 #include <array>
 #include <memory>
 
-
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #define M_PI_2 1.57079632679489661923
@@ -231,7 +230,7 @@ public:
     static constexpr double minToDouble();
     static constexpr double lowestToDouble();
     static std::string_view str();
-    static constexpr const auto& staticStr();
+    static constexpr auto staticStr();
 
     // Converter functions
     virtual double valueToDouble(void* val) const override;
@@ -341,16 +340,16 @@ constexpr NumericType DataFormat<T>::numericType() {
 }
 
 template <typename T>
-constexpr const auto& DataFormat<T>::staticStr() {
-    constexpr auto pre = []() {
-        if constexpr (components() == 0) {
+constexpr auto DataFormat<T>::staticStr() {
+    constexpr auto prefix = []() {
+        if constexpr (components() == 1) {
             return StaticString{""};
-        } else if constexpr (components() == 1) {
-            return StaticString{"Vec1"};
         } else if constexpr (components() == 2) {
             return StaticString{"Vec2"};
         } else if constexpr (components() == 3) {
             return StaticString{"Vec3"};
+        } else if constexpr (components() == 4) {
+            return StaticString{"Vec4"};
         } else {
             throw DataFormatException("Invalid format", IVW_CONTEXT_CUSTOM("DataFormat"));
         }
@@ -382,7 +381,7 @@ constexpr const auto& DataFormat<T>::staticStr() {
         }
     };
 
-    return pre() + type() + prec();
+    return prefix() + type() + prec();
 }
 
 template <typename T>

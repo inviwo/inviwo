@@ -32,6 +32,8 @@
 
 #include <modules/base/algorithm/dataminmax.h>
 
+#include <ostream>
+
 namespace inviwo {
 
 const std::string ColormapProperty::classIdentifier = "org.inviwo.ColormapProperty";
@@ -182,6 +184,14 @@ void ColormapProperty::updateColormaps() {
         diverging = false;
         discrete = true;
     }
+}
+
+std::ostream& operator<<(std::ostream& os, ColormapType colormap) {
+    switch (colormap) {
+        case ColormapType::Continuous: os << "Continuous"; break;
+        case ColormapType::Categorical: os << "Categorical"; break;
+    }
+    return os;
 }
 
 }  // namespace inviwo

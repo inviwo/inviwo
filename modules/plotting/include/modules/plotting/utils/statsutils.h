@@ -32,7 +32,7 @@
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/util/formatdispatching.h>
-#include <ostream>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -46,13 +46,7 @@ struct RegresionResult {
 
 IVW_MODULE_PLOTTING_API RegresionResult linearRegresion(const BufferBase& X, const BufferBase& Y);
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
-                                             RegresionResult res) {
-    os << "y = " << res.k << "x + " << res.m << "(r2: " << res.r2 << ", corr: " << res.corr;
-
-    return os;
-}
+IVW_MODULE_PLOTTING_API std::ostream& operator<<(std::ostream& os, RegresionResult res);
 
 /**
  * \brief Compute value below a percentage of observations in the data.

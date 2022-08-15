@@ -53,19 +53,21 @@ class IVW_CORE_API Mesh : public DataGroup<Mesh, MeshRepresentation>,
                           public SpatialEntity<3>,
                           public MetaDataOwner {
 public:
-    struct MeshInfo {
+    struct IVW_CORE_API MeshInfo {
         MeshInfo() : dt(DrawType::Points), ct(ConnectivityType::None) {}
         MeshInfo(DrawType d, ConnectivityType c) : dt(d), ct(c) {}
         DrawType dt;
         ConnectivityType ct;
     };
-    struct BufferInfo {
+    struct IVW_CORE_API BufferInfo {
         BufferInfo(BufferType atype) : type(atype), location(static_cast<int>(atype)) {}
         BufferInfo() : BufferInfo(BufferType::PositionAttrib) {}
         BufferInfo(BufferType atype, int alocation) : type(atype), location(alocation) {}
 
         BufferType type;
         int location;  //<! attribute location of buffer in GLSL shader
+
+        IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, Mesh::BufferInfo info);
     };
 
     using IndexVector = std::vector<std::pair<MeshInfo, std::shared_ptr<IndexBuffer>>>;
@@ -273,13 +275,6 @@ inline bool operator==(const Mesh::MeshInfo& a, const Mesh::MeshInfo& b) {
     return (a.ct == b.ct) && (a.dt == b.dt);
 }
 inline bool operator!=(const Mesh::MeshInfo& a, const Mesh::MeshInfo& b) { return !(a == b); }
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             Mesh::BufferInfo info) {
-    ss << info.type << " (location = " << info.location << ")";
-    return ss;
-}
 
 namespace meshutil {
 

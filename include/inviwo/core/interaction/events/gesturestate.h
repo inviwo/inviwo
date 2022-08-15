@@ -30,12 +30,10 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/fmtutils.h>
 
 #include <flags/flags.h>
-
-#include <iterator>
-#include <ostream>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -55,53 +53,23 @@ enum class GestureState {
 ALLOW_FLAGS_FOR_ENUM(GestureState)
 using GestureStates = flags::flags<GestureState>;
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, GestureType t) {
-    switch (t) {
-        case GestureType::Pan:
-            ss << "Pan";
-            break;
-        case GestureType::Pinch:
-            ss << "Pinch";
-            break;
-        case GestureType::Swipe:
-            ss << "Swipe";
-            break;
-    }
-    return ss;
-}
+namespace util {
+IVW_CORE_API std::string_view name(GestureType b);
+IVW_CORE_API std::string_view name(GestureState b);
+}  // namespace util
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, GestureState s) {
-    switch (s) {
-        case GestureState::NoGesture:
-            ss << "NoGesture";
-            break;
-        case GestureState::Started:
-            ss << "Started";
-            break;
-        case GestureState::Updated:
-            ss << "Updated";
-            break;
-        case GestureState::Finished:
-            ss << "Finished";
-            break;
-        case GestureState::Canceled:
-            ss << "Canceled";
-            break;
-    }
-    return ss;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, GestureTypes s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             GestureStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureType t);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureState s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureTypes s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureStates s);
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::GestureType> : inviwo::FlagFormatter<inviwo::GestureType> {};
+template <>
+struct fmt::formatter<inviwo::GestureTypes> : inviwo::FlagsFormatter<inviwo::GestureTypes> {};
+template <>
+struct fmt::formatter<inviwo::GestureState> : inviwo::FlagFormatter<inviwo::GestureState> {};
+template <>
+struct fmt::formatter<inviwo::GestureStates> : inviwo::FlagsFormatter<inviwo::GestureStates> {};

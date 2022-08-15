@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,41 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/io/serialization/serialization.h>
-
-#include <ostream>
+#include <fmt/format.h>
 
 namespace inviwo {
 
-PropertySemantics::PropertySemantics() : semantic_("Default") {}
-PropertySemantics::PropertySemantics(std::string semantic) : semantic_(std::move(semantic)) {}
+template <typename T>
+struct FlagsFormatter : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(T val, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+        fmt::format_to(std::back_inserter(buff), "{}", fmt::join(val, "+"));
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
+    }
+};
+template <typename T>
+struct FlagFormatter : fmt::formatter<fmt::string_view> {
+    template <typename U>
+    static std::string_view name(U val) {
+        return name(val);
+    }
 
-const std::string& PropertySemantics::getString() const { return semantic_; }
-
-void PropertySemantics::serialize(Serializer& s) const {
-    s.serialize("semantics", semantic_, SerializationTarget::Attribute);
-}
-
-void PropertySemantics::deserialize(Deserializer& d) {
-    d.deserialize("semantics", semantic_, SerializationTarget::Attribute);
-}
-
-const PropertySemantics PropertySemantics::Default("Default");
-const PropertySemantics PropertySemantics::Text("Text");
-const PropertySemantics PropertySemantics::SpinBox("SpinBox");
-const PropertySemantics PropertySemantics::Color("Color");
-const PropertySemantics PropertySemantics::LightPosition("LightPosition");
-const PropertySemantics PropertySemantics::Multiline("Multiline");
-const PropertySemantics PropertySemantics::TextEditor("TextEditor");
-const PropertySemantics PropertySemantics::PythonEditor("PythonEditor");
-const PropertySemantics PropertySemantics::ImageEditor("ImageEditor");
-const PropertySemantics PropertySemantics::ShaderEditor("ShaderEditor");
-
-std::ostream& operator<<(std::ostream& ss, const PropertySemantics& obj) {
-    ss << obj.getString();
-    return ss;
-}
+    template <typename FormatContext>
+    auto format(T val, FormatContext& ctx) const {
+        return formatter<fmt::string_view>::format(name<T>(val), ctx);
+    }
+};
 
 }  // namespace inviwo

@@ -32,10 +32,12 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/fmtutils.h>
 #include <inviwo/core/util/demangle.h>
 
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace inviwo {
@@ -61,54 +63,15 @@ IVW_CORE_API bool operator>(const LogVerbosity& lhs, const LogLevel& rhs);
 IVW_CORE_API bool operator<=(const LogVerbosity& lhs, const LogLevel& rhs);
 IVW_CORE_API bool operator>=(const LogVerbosity& lhs, const LogLevel& rhs);
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, LogLevel ll) {
-    switch (ll) {
-        case LogLevel::Info:
-            ss << "Info";
-            break;
-        case LogLevel::Warn:
-            ss << "Warn";
-            break;
-        case LogLevel::Error:
-            ss << "Error";
-            break;
-    }
-    return ss;
-}
+namespace util {
+IVW_CORE_API std::string_view name(LogLevel ll);
+IVW_CORE_API std::string_view name(LogAudience la);
+IVW_CORE_API std::string_view name(MessageBreakLevel ll);
+}  // namespace util
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, LogAudience la) {
-    switch (la) {
-        case LogAudience::User:
-            ss << "User";
-            break;
-        case LogAudience::Developer:
-            ss << "Developer";
-            break;
-    }
-    return ss;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             MessageBreakLevel ll) {
-    switch (ll) {
-        case MessageBreakLevel::Info:
-            ss << "Info";
-            break;
-        case MessageBreakLevel::Warn:
-            ss << "Warn";
-            break;
-        case MessageBreakLevel::Error:
-            ss << "Error";
-            break;
-        case MessageBreakLevel::Off:
-            ss << "Off";
-            break;
-    }
-    return ss;
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LogLevel ll);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LogAudience la);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll);
 
 #define LogSpecial(logger, logLevel, message)                                                   \
     {                                                                                           \
@@ -254,3 +217,11 @@ IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string_view
 }  // namespace util
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::LogLevel> : inviwo::FlagFormatter<inviwo::LogLevel> {};
+template <>
+struct fmt::formatter<inviwo::LogAudience> : inviwo::FlagFormatter<inviwo::LogAudience> {};
+template <>
+struct fmt::formatter<inviwo::MessageBreakLevel>
+    : inviwo::FlagFormatter<inviwo::MessageBreakLevel> {};

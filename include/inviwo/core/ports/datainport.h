@@ -91,19 +91,21 @@ using FlatMultiDataInport = DataInport<T, 0, true>;
 template <typename T, size_t N, bool Flat>
 struct PortTraits<DataInport<T, N, Flat>> {
     static std::string classIdentifier() {
-        std::string postfix = +(Flat ? ".flat" : "");
-        switch (N) {
-            case 0:
-                postfix += ".multi.inport";
-                break;
-            case 1:
-                postfix += ".inport";
-                break;
-            default:
-                postfix += "." + toString(N) + ".inport";
-                break;
+        auto&& classId = DataTraits<T>::classIdentifier();
+        if (classId.empty()) return {};
+
+        StrBuffer name;
+        name.append("{}", classId);
+        if constexpr (Flat) {
+            name.append(".flat");
         }
-        return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), postfix);
+        if constexpr (N == 0) {
+            name.append(".multi");
+        } else if constexpr (N != 1) {
+            name.append(".{}", N);
+        }
+        name.append(".inport");
+        return std::string{name.view()};
     }
 };
 

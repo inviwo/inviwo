@@ -34,6 +34,8 @@
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/logcentral.h>
 
+#include <iosfwd>
+
 namespace inviwo {
 
 namespace utilgl {
@@ -94,47 +96,9 @@ inline LogLevel toLogLevel(Severity s) {
     }
 }
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, Mode m) {
-    switch (m) {
-        case Mode::Off:
-            ss << "Off";
-            break;
-        case Mode::Debug:
-            ss << "Debug";
-            break;
-        case Mode::DebugSynchronous:
-            ss << "DebugSynchronous";
-            break;
-        default:
-            break;
-    }
-    return ss;
-}
+IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Mode m);
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BreakLevel b) {
-    switch (b) {
-        case BreakLevel::Off:
-            ss << "Off";
-            break;
-        case BreakLevel::High:
-            ss << "High";
-            break;
-        case BreakLevel::Medium:
-            ss << "Medium";
-            break;
-        case BreakLevel::Low:
-            ss << "Low";
-            break;
-        case BreakLevel::Notification:
-            ss << "Notification";
-            break;
-        default:
-            break;
-    }
-    return ss;
-}
+IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, BreakLevel b);
 
 namespace detail {
 
@@ -195,98 +159,11 @@ inline bool operator<=(const BreakLevel& b, const Severity& s) { return s >= b; 
 inline bool operator>(const BreakLevel& b, const Severity& s) { return s < b; }
 inline bool operator>=(const BreakLevel& b, const Severity& s) { return s <= b; }
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, Source s) {
-    switch (s) {
-        case Source::Api:
-            ss << "Api";
-            break;
-        case Source::WindowSystem:
-            ss << "WindowSystem";
-            break;
-        case Source::ShaderCompiler:
-            ss << "ShaderCompiler";
-            break;
-        case Source::ThirdParty:
-            ss << "ThirdParty";
-            break;
-        case Source::Application:
-            ss << "Application";
-            break;
-        case Source::Other:
-            ss << "Other";
-            break;
-        case Source::DontCare:
-            ss << "DontCare";
-            break;
-        default:
-            break;
-    }
-    return ss;
-}
+IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Source s);
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, Type t) {
-    switch (t) {
-        case Type::Error:
-            ss << "Error";
-            break;
-        case Type::DeprecatedBehavior:
-            ss << "DeprecatedBehavior";
-            break;
-        case Type::UndefinedBehavior:
-            ss << "UndefinedBehavior";
-            break;
-        case Type::Portability:
-            ss << "Portability";
-            break;
-        case Type::Performance:
-            ss << "Performance";
-            break;
-        case Type::Marker:
-            ss << "Marker";
-            break;
-        case Type::PushGroup:
-            ss << "PushGroup";
-            break;
-        case Type::PopGroup:
-            ss << "PopGroup";
-            break;
-        case Type::Other:
-            ss << "Other";
-            break;
-        case Type::DontCare:
-            ss << "DontCare";
-            break;
-        default:
-            break;
-    }
-    return ss;
-}
+IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Type t);
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, Severity s) {
-    switch (s) {
-        case Severity::Low:
-            ss << "Low";
-            break;
-        case Severity::Medium:
-            ss << "Medium";
-            break;
-        case Severity::High:
-            ss << "High";
-            break;
-        case Severity::Notification:
-            ss << "Notification";
-            break;
-        case Severity::DontCare:
-            ss << "DontCare";
-            break;
-        default:
-            break;
-    }
-    return ss;
-}
+IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Severity s);
 
 }  // namespace debug
 

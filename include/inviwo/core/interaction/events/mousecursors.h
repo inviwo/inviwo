@@ -30,9 +30,10 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/fmtutils.h>
 
-#include <iterator>
-#include <ostream>
+#include <string_view>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -59,68 +60,13 @@ enum class MouseCursor {
     Busy
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, MouseCursor c) {
-    switch (c) {
-        case MouseCursor::Arrow:
-            ss << "Arrow";
-            break;
-        case MouseCursor::UpArrow:
-            ss << "UpArrow";
-            break;
-        case MouseCursor::Cross:
-            ss << "Cross";
-            break;
-        case MouseCursor::Wait:
-            ss << "Wait";
-            break;
-        case MouseCursor::IBeam:
-            ss << "IBeam";
-            break;
-        case MouseCursor::SizeVer:
-            ss << "SizeVer";
-            break;
-        case MouseCursor::SizeHor:
-            ss << "SizeHor";
-            break;
-        case MouseCursor::SizeBDiag:
-            ss << "SizeBDiag";
-            break;
-        case MouseCursor::SizeFDiag:
-            ss << "SizeFDiag";
-            break;
-        case MouseCursor::SizeAll:
-            ss << "SizeAll";
-            break;
-        case MouseCursor::Blank:
-            ss << "Blank";
-            break;
-        case MouseCursor::SplitV:
-            ss << "SplitV";
-            break;
-        case MouseCursor::SplitH:
-            ss << "SplitH";
-            break;
-        case MouseCursor::PointingHand:
-            ss << "PointingHand";
-            break;
-        case MouseCursor::Forbidden:
-            ss << "Forbidden";
-            break;
-        case MouseCursor::OpenHand:
-            ss << "OpenHand";
-            break;
-        case MouseCursor::ClosedHand:
-            ss << "ClosedHand";
-            break;
-        case MouseCursor::WhatsThis:
-            ss << "WhatsThis";
-            break;
-        case MouseCursor::Busy:
-            ss << "Busy";
-            break;
-    }
-    return ss;
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseCursor c);
+
+namespace util {
+IVW_CORE_API std::string_view name(MouseCursor b);
+}  // namespace util
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::MouseCursor> : inviwo::FlagFormatter<inviwo::MouseCursor> {};

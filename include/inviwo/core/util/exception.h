@@ -32,12 +32,10 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/sourcecontext.h>
 
+#include <stdexcept>
 #include <string_view>
 #include <string>
-#include <exception>
-#include <stdexcept>
 #include <vector>
-#include <ostream>
 
 #include <fmt/format.h>
 
@@ -48,7 +46,6 @@
 namespace inviwo {
 
 using ExceptionContext = SourceContext;
-using ExceptionHandler = std::function<void(ExceptionContext)>;
 
 class IVW_CORE_API Exception : public std::runtime_error {
 public:
@@ -56,7 +53,7 @@ public:
     Exception(std::string_view format, fmt::format_args&& args, ExceptionContext context);
     template <typename... Args>
     Exception(ExceptionContext context, std::string_view format, Args&&... args)
-        : Exception{format, fmt::make_args_checked<Args...>(format, std::forward<Args>(args)...),
+        : Exception{format, fmt::make_format_args(format, std::forward<Args>(args)...),
                     std::move(context)} {}
     virtual ~Exception() noexcept;
     virtual std::string getMessage() const;
@@ -66,17 +63,12 @@ public:
     const std::vector<std::string>& getStack() const;
     void getStack(std::ostream& os, int maxFrames = -1) const;
 
+    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Exception& e);
+
 private:
     ExceptionContext context_;
     std::vector<std::string> stack_;
 };
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const Exception& e) {
-    e.getFullMessage(ss);
-    return ss;
-}
 
 class IVW_CORE_API RangeException : public Exception {
 public:

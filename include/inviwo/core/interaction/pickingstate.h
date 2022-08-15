@@ -30,12 +30,11 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/fmtutils.h>
 
 #include <flags/flags.h>
 
-#include <iterator>
-#include <ostream>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -71,110 +70,46 @@ enum class PickingHoverState { None = 0, Enter = 1 << 0, Move = 1 << 1, Exit = 1
 ALLOW_FLAGS_FOR_ENUM(PickingHoverState)
 using PickingHoverStates = flags::flags<PickingHoverState>;
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, PickingState s) {
-    switch (s) {
-        case PickingState::None:
-            ss << "None";
-            break;
-        case PickingState::Started:
-            ss << "Started";
-            break;
-        case PickingState::Updated:
-            ss << "Updated";
-            break;
-        case PickingState::Finished:
-            ss << "Finished";
-            break;
-    }
-    return ss;
-}
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             PickingStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
+namespace util {
+IVW_CORE_API std::string_view name(PickingState b);
+IVW_CORE_API std::string_view name(PickingPressItem b);
+IVW_CORE_API std::string_view name(PickingPressState b);
+IVW_CORE_API std::string_view name(PickingHoverState b);
+}  // namespace util
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             PickingPressItem s) {
-    switch (s) {
-        case PickingPressItem::None:
-            ss << "None";
-            break;
-        case PickingPressItem::Primary:
-            ss << "Primary";
-            break;
-        case PickingPressItem::Secondary:
-            ss << "Secondary";
-            break;
-        case PickingPressItem::Tertiary:
-            ss << "Tertiary";
-            break;
-    }
-    return ss;
-}
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             PickingPressItems s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             PickingPressState s) {
-    switch (s) {
-        case PickingPressState::None:
-            ss << "None";
-            break;
-        case PickingPressState::Press:
-            ss << "Press";
-            break;
-        case PickingPressState::Move:
-            ss << "Move";
-            break;
-        case PickingPressState::Release:
-            ss << "Release";
-            break;
-        case PickingPressState::DoubleClick:
-            ss << "DoubleClick";
-            break;
-    }
-    return ss;
-}
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             PickingPressStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             PickingHoverState s) {
-    switch (s) {
-        case PickingHoverState::None:
-            ss << "None";
-            break;
-        case PickingHoverState::Enter:
-            ss << "Enter";
-            break;
-        case PickingHoverState::Move:
-            ss << "Move";
-            break;
-        case PickingHoverState::Exit:
-            ss << "Exit";
-            break;
-    }
-    return ss;
-}
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             PickingHoverStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingState s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingStates s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingPressItem s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingPressItems s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingPressState s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingPressStates s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingHoverState s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingHoverStates s);
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::PickingState> : inviwo::FlagFormatter<inviwo::PickingState> {};
+template <>
+struct fmt::formatter<inviwo::PickingStates> : inviwo::FlagsFormatter<inviwo::PickingStates> {};
+
+template <>
+struct fmt::formatter<inviwo::PickingPressItem> : inviwo::FlagFormatter<inviwo::PickingPressItem> {
+};
+template <>
+struct fmt::formatter<inviwo::PickingPressItems>
+    : inviwo::FlagsFormatter<inviwo::PickingPressItems> {};
+
+template <>
+struct fmt::formatter<inviwo::PickingPressState>
+    : inviwo::FlagFormatter<inviwo::PickingPressState> {};
+template <>
+struct fmt::formatter<inviwo::PickingPressStates>
+    : inviwo::FlagsFormatter<inviwo::PickingPressStates> {};
+
+template <>
+struct fmt::formatter<inviwo::PickingHoverState>
+    : inviwo::FlagFormatter<inviwo::PickingHoverState> {};
+template <>
+struct fmt::formatter<inviwo::PickingHoverStates>
+    : inviwo::FlagsFormatter<inviwo::PickingHoverStates> {};

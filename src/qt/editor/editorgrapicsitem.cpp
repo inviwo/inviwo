@@ -89,8 +89,6 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     bool inspector = settings->enablePortInspectors_.get();
     size_t portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
 
-    using P = Document::PathComponent;
-
     Document desc{};
     auto html = desc.append("html");
     html.append("head").append("style", R"(

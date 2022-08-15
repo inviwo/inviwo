@@ -36,7 +36,7 @@
 #include <string_view>
 #include <string>
 #include <cstring>
-#include <iostream>
+#include <iosfwd>
 
 #include <fmt/format.h>
 
@@ -90,12 +90,7 @@ private:
     int line_ = 0;
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const SourceContext& ec) {
-    ss << ec.getCaller() << " (" << ec.getFile() << ":" << ec.getLine() << ")";
-    return ss;
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, const SourceContext& ec);
 
 #define IVW_CONTEXT                                                               \
     ::inviwo::SourceContext(::inviwo::util::parseTypeIdName(typeid(this).name()), \
@@ -161,21 +156,36 @@ private:
     int line_;
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const SourceLocation& ec) {
-    ss << ec.getFunction() << " (" << ec.getFile() << ":" << ec.getLine() << ")";
-    return ss;
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, const SourceLocation& ec);
 
 #define IVW_SOURCE_LOCATION ::inviwo::SourceLocation(__FILE__, __FUNCTION__, __LINE__)
 
 }  // namespace inviwo
 
-namespace std {
+template <>
+struct fmt::formatter<inviwo::SourceContext> : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(const inviwo::SourceContext& sc, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+        fmt::format_to(std::back_inserter(buff), "{} ({}:{})", sc.getCaller(), sc.getFile(),
+                       sc.getLine());
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
+    }
+};
 
 template <>
-struct hash<::inviwo::SourceLocation> {
+struct fmt::formatter<inviwo::SourceLocation> : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(const inviwo::SourceLocation& sl, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+        fmt::format_to(std::back_inserter(buff), "{} ({}:{})", sl.getFunction(), sl.getFile(),
+                       sl.getLine());
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
+    }
+};
+
+template <>
+struct std::hash<::inviwo::SourceLocation> {
     constexpr size_t operator()(const ::inviwo::SourceLocation& sl) const noexcept {
         size_t h = 0;
         ::inviwo::util::hash_combine(h, sl.getFile());
@@ -186,7 +196,7 @@ struct hash<::inviwo::SourceLocation> {
 };
 
 template <>
-struct hash<::inviwo::SourceContext> {
+struct std::hash<::inviwo::SourceContext> {
     size_t operator()(const ::inviwo::SourceContext& sl) const noexcept {
         size_t h = 0;
         ::inviwo::util::hash_combine(h, sl.getCaller());
@@ -196,5 +206,3 @@ struct hash<::inviwo::SourceContext> {
         return h;
     }
 };
-
-}  // namespace std

@@ -96,7 +96,9 @@ protected:
 template <typename T>
 struct PortTraits<DataOutport<T>> {
     static std::string classIdentifier() {
-        return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".outport");
+        auto&& classId = DataTraits<T>::classIdentifier();
+        if (classId.empty()) return {};
+        return fmt::format("{}.outport", classId);
     }
 };
 

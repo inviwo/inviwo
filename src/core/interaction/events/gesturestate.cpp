@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,51 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/interaction/events/gesturestate.h>
+#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/exception.h>
 
+#include <iterator>
 #include <ostream>
 
 namespace inviwo {
 
-PropertySemantics::PropertySemantics() : semantic_("Default") {}
-PropertySemantics::PropertySemantics(std::string semantic) : semantic_(std::move(semantic)) {}
-
-const std::string& PropertySemantics::getString() const { return semantic_; }
-
-void PropertySemantics::serialize(Serializer& s) const {
-    s.serialize("semantics", semantic_, SerializationTarget::Attribute);
+std::string_view util::name(GestureType t) {
+    switch (t) {
+        case GestureType::Pan:
+            return "Pan";
+        case GestureType::Pinch:
+            return "Pinch";
+        case GestureType::Swipe:
+            return "Swipe";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid GestureType enum value '{}'", static_cast<int>(t));
+}
+std::string_view util::name(GestureState s) {
+    switch (s) {
+        case GestureState::NoGesture:
+            return "NoGesture";
+        case GestureState::Started:
+            return "Started";
+        case GestureState::Updated:
+            return "Updated";
+        case GestureState::Finished:
+            return "Finished";
+        case GestureState::Canceled:
+            return "Canceled";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid GestureState enum value '{}'",
+                    static_cast<int>(s));
 }
 
-void PropertySemantics::deserialize(Deserializer& d) {
-    d.deserialize("semantics", semantic_, SerializationTarget::Attribute);
+std::ostream& operator<<(std::ostream& ss, GestureType t) { return ss << util::name(t); }
+std::ostream& operator<<(std::ostream& ss, GestureState s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, GestureTypes s) {
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
+    return ss;
 }
-
-const PropertySemantics PropertySemantics::Default("Default");
-const PropertySemantics PropertySemantics::Text("Text");
-const PropertySemantics PropertySemantics::SpinBox("SpinBox");
-const PropertySemantics PropertySemantics::Color("Color");
-const PropertySemantics PropertySemantics::LightPosition("LightPosition");
-const PropertySemantics PropertySemantics::Multiline("Multiline");
-const PropertySemantics PropertySemantics::TextEditor("TextEditor");
-const PropertySemantics PropertySemantics::PythonEditor("PythonEditor");
-const PropertySemantics PropertySemantics::ImageEditor("ImageEditor");
-const PropertySemantics PropertySemantics::ShaderEditor("ShaderEditor");
-
-std::ostream& operator<<(std::ostream& ss, const PropertySemantics& obj) {
-    ss << obj.getString();
+std::ostream& operator<<(std::ostream& ss, GestureStates s) {
+    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 

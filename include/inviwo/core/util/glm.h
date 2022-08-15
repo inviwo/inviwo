@@ -66,6 +66,9 @@
 #include <type_traits>
 #include <utility>
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 namespace inviwo {
 
 static_assert(std::is_standard_layout<half_float::half>::value, "");
@@ -990,3 +993,12 @@ template <std::size_t N, glm::length_t L, typename T, glm::qualifier Q>
 struct std::tuple_element<N, glm::vec<L, T, Q>> {
     using type = T;
 };
+
+template <glm::length_t L, typename T, glm::qualifier Q>
+struct fmt::formatter<glm::vec<L, T, Q>> : fmt::ostream_formatter {};
+
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct fmt::formatter<glm::mat<C, R, T, Q>> : fmt::ostream_formatter {};
+
+template <typename T, glm::qualifier Q>
+struct fmt::formatter<glm::qua<T, Q>> : fmt::ostream_formatter {};

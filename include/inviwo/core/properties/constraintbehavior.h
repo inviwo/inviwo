@@ -30,8 +30,9 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
-#include <ostream>
+#include <inviwo/core/util/fmtutils.h>
+#include <iosfwd>
+#include <string_view>
 
 namespace inviwo {
 
@@ -72,26 +73,14 @@ enum class ConstraintBehavior {
 
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             ConstraintBehavior cb) {
-    switch (cb) {
-        case ConstraintBehavior::Editable:
-            ss << "Editable";
-            break;
-        case ConstraintBehavior::Mutable:
-            ss << "Mutable";
-            break;
-        case ConstraintBehavior::Immutable:
-            ss << "Immutable";
-            break;
-        case ConstraintBehavior::Ignore:
-            ss << "Ignore";
-            break;
-        default:
-            break;
-    }
-    return ss;
+namespace util {
+IVW_CORE_API std::string_view name(ConstraintBehavior cb);
 }
 
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ConstraintBehavior cb);
+
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::ConstraintBehavior>
+    : inviwo::FlagFormatter<inviwo::ConstraintBehavior> {};

@@ -62,6 +62,9 @@ using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
  * The workspace manager is owned by the InviwoApplication.
  */
 class IVW_CORE_API WorkspaceManager {
+public:
+    using ExceptionHandler = std::function<void(ExceptionContext)>;
+private:
     using ClearDispatcher = Dispatcher<void()>;
     using SerializationDispatcher =
         Dispatcher<void(Serializer&, const ExceptionHandler&, WorkspaceSaveMode mode)>;
@@ -76,7 +79,7 @@ public:
 
     using DeserializationCallback = std::function<void(Deserializer&)>;
     using DeserializationHandle = typename DeserializationDispatcher::Handle;
-
+    
     WorkspaceManager(InviwoApplication* app);
     ~WorkspaceManager();
 

@@ -321,6 +321,40 @@ Document::operator std::string() const { return str(); }
 void Document::serialize(Serializer& s) const { s.serialize("root", root_); }
 void Document::deserialize(Deserializer& d) { d.deserialize("root", root_); }
 
+std::ostream& operator<<(std::ostream& ss, const Document& doc) {
+    using Element = Document::Element;
+    doc.visit(
+        [&](Element* elem, std::vector<Element*>& stack) {
+            if (elem->isNode()) {
+                ss << std::setw(stack.size() * 4) << ' ' << '<' << elem->name();
+                for (const auto& item : elem->attributes()) {
+                    ss << ' ' << item.first << "='" << item.second << '\'';
+                }
+                ss << '>';
+                if (!elem->noIndent()) ss << '\n';
+            } else if (elem->isText() && !elem->content().empty()) {
+                if (!stack.empty() && !stack.back()->noIndent()) {
+                    ss << std::setw(stack.size() * 4) << ' ' << elem->content() << '\n';
+                } else if (!stack.empty() && stack.back()->noIndent()) {
+                    ss << elem->content();
+                } else {
+                    ss << elem->content() << '\n';
+                }
+            }
+        },
+        [&](Element* elem, std::vector<Element*>& stack) {
+            if (elem->isNode() && !elem->emptyTag()) {
+                if (!elem->noIndent()) {
+                    ss << std::setw(stack.size() * 4) << ' ' << "</" << elem->name() << ">\n";
+                } else {
+                    ss << "</" << elem->name() << ">\n";
+                }
+            }
+        });
+
+    return ss;
+}
+
 utildoc::TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
                                     const std::unordered_map<std::string, std::string>& attributes)
     : table_(handle.insert(pos, "table", "", attributes)) {}

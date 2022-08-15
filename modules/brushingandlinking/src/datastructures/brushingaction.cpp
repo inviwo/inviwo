@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
+#include <inviwo/core/util/exception.h>
 
 #include <iostream>
 #include <mutex>
@@ -50,6 +51,52 @@ std::string_view BrushingTarget::findOrAdd(std::string_view target) {
     } else {
         return std::string_view{**it};
     }
+}
+
+std::string_view util::name(BrushingAction action) {
+    switch (action) {
+        case BrushingAction::Filter:
+            return "Filter";
+        case BrushingAction::Select:
+            return "Select";
+        case BrushingAction::Highlight:
+            return "Highlight";
+        case BrushingAction::NumberOfActions:
+            break;
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid BrushingAction enum value '{}'",
+                    static_cast<int>(action));
+}
+
+std::string_view util::name(BrushingModification bm) {
+    switch (bm) {
+        case BrushingModification::Filtered:
+            return "Filtered";
+        case BrushingModification::Selected:
+            return "Selected";
+        case BrushingModification::Highlighted:
+            return "Highlighted";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+                    "Found invalid BrushingModification enum value '{}'", static_cast<int>(bm));
+}
+
+std::ostream& operator<<(std::ostream& ss, BrushingAction action) {
+    return ss << util::name(action);
+}
+std::ostream& operator<<(std::ostream& ss, BrushingModification action) {
+    return ss << util::name(action);
+}
+std::ostream& operator<<(std::ostream& ss, BrushingModifications action) {
+    std::copy(action.begin(), action.end(), util::make_ostream_joiner(ss, "+"));
+    return ss;
+}
+
+std::istream& operator>>(std::istream& ss, BrushingTarget& bt) {
+    std::string str;
+    ss >> str;
+    bt = BrushingTarget(str);
+    return ss;
 }
 
 }  // namespace inviwo

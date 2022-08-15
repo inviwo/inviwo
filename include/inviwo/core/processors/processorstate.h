@@ -30,31 +30,20 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <ostream>
+#include <inviwo/core/util/fmtutils.h>
+#include <iosfwd>
 
 namespace inviwo {
 
 enum class CodeState { Broken, Experimental, Stable, Deprecated };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, CodeState cs) {
-    switch (cs) {
-        case CodeState::Broken:
-            ss << "Broken";
-            break;
-        case CodeState::Experimental:
-            ss << "Experimental";
-            break;
-        case CodeState::Stable:
-            ss << "Stable";
-            break;
-        case CodeState::Deprecated:
-            ss << "Deprecated";
-            break;
-        default:
-            ss << "Not specified";
-    }
-    return ss;
+namespace util {
+IVW_CORE_API std::string_view name(CodeState cs);
 }
 
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, CodeState cs);
+
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::CodeState> : inviwo::FlagFormatter<inviwo::CodeState> {};

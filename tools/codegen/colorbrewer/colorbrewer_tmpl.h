@@ -35,10 +35,12 @@ tools/codegen/colorbrewer/colorbrewer.py
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <vector>
 #include <ostream>
+#include <fmt/core.h>
+#include <fmt/ostream.h>
 
 namespace inviwo {
 namespace colorbrewer {
@@ -46,37 +48,10 @@ namespace colorbrewer {
 // clang-format off
 ##PLACEHOLDER##
 // clang-format on
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
-                                             Colormap colormap) {
-    switch (colormap) {
-        // clang-format off
-##PLACEHOLDER_NAMES##
-            // clang-format on
-    }
-    return os;
-}
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
-                                             Category category) {
-    switch (category) {
-        // clang-format off
-##PLACEHOLDER_CATEGORIES##
-            // clang-format on
-    }
-    return os;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os, Family family) {
-    switch (family) {
-        // clang-format off
-##PLACEHOLDER_FAMILIES##
-            // clang-format on
-    }
-    return os;
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& os, Colormap colormap);
+IVW_CORE_API std::ostream& operator<<(std::ostream& os, Category category);
+IVW_CORE_API std::ostream& operator<<(std::ostream& os, Family family);
 
 /**
  * Returns the specified colormap. For reference see http://colorbrewer2.org/
@@ -100,3 +75,7 @@ IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category &category
 
 }  // namespace colorbrewer
 }  // namespace inviwo
+
+template <> struct fmt::formatter<inviwo::colorbrewer::Colormap> : ostream_formatter {};
+template <> struct fmt::formatter<inviwo::colorbrewer::Category> : ostream_formatter {};
+template <> struct fmt::formatter<inviwo::colorbrewer::Family> : ostream_formatter {};

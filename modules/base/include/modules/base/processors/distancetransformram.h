@@ -45,6 +45,8 @@
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
+#include <iosfwd>
+
 namespace inviwo {
 
 class IVW_MODULE_BASE_API DistanceTransformRAM : public PoolProcessor {
@@ -77,23 +79,7 @@ private:
     DoubleMinMaxProperty customDataRange_;
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             DistanceTransformRAM::DataRangeMode m) {
-    switch (m) {
-        case DistanceTransformRAM::DataRangeMode::Diagonal:
-            ss << "Diagonal";
-            break;
-        case DistanceTransformRAM::DataRangeMode::MinMax:
-            ss << "MinMax";
-            break;
-        case DistanceTransformRAM::DataRangeMode::Custom:
-            ss << "Custom";
-            break;
-        default:
-            break;
-    }
-    return ss;
-}
+IVW_MODULE_BASE_API std::ostream& operator<<(std::ostream& ss,
+                                             DistanceTransformRAM::DataRangeMode m);
 
 }  // namespace inviwo

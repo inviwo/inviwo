@@ -29,4 +29,56 @@
 
 #include <inviwo/core/interaction/events/mousecursors.h>
 
-namespace inviwo {}
+#include <inviwo/core/util/exception.h>
+#include <ostream>
+
+namespace inviwo {
+
+std::string_view util::name(MouseCursor b) {
+    switch (b) {
+        case MouseCursor::Arrow:
+            return "Arrow";
+        case MouseCursor::UpArrow:
+            return "UpArrow";
+        case MouseCursor::Cross:
+            return "Cross";
+        case MouseCursor::Wait:
+            return "Wait";
+        case MouseCursor::IBeam:
+            return "IBeam";
+        case MouseCursor::SizeVer:
+            return "SizeVer";
+        case MouseCursor::SizeHor:
+            return "SizeHor";
+        case MouseCursor::SizeBDiag:
+            return "SizeBDiag";
+        case MouseCursor::SizeFDiag:
+            return "SizeFDiag";
+        case MouseCursor::SizeAll:
+            return "SizeAll";
+        case MouseCursor::Blank:
+            return "Blank";
+        case MouseCursor::SplitV:
+            return "SplitV";
+        case MouseCursor::SplitH:
+            return "SplitH";
+        case MouseCursor::PointingHand:
+            return "PointingHand";
+        case MouseCursor::Forbidden:
+            return "Forbidden";
+        case MouseCursor::OpenHand:
+            return "OpenHand";
+        case MouseCursor::ClosedHand:
+            return "ClosedHand";
+        case MouseCursor::WhatsThis:
+            return "WhatsThis";
+        case MouseCursor::Busy:
+            return "Busy";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseCursor enum value '{}'",
+                    static_cast<int>(b));
+}
+
+std::ostream& operator<<(std::ostream& ss, MouseCursor c) { return ss << util::name(c); }
+
+}  // namespace inviwo

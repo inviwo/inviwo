@@ -135,7 +135,7 @@ void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
     }
 }
 
-IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
+void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
     if (RenderContext::getPtr()->hasDefaultRenderContext()) {
         RenderContext::getPtr()->forEachContext(
             [severity](Canvas::ContextID id, const std::string& /*name*/, ContextHolder* canvas,
@@ -154,7 +154,7 @@ IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severi
     }
 }
 
-IVW_MODULE_OPENGL_API void configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
+void configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
     if (!glDebugMessageControl) return;
 
     using namespace debug;
@@ -198,6 +198,136 @@ void handleOpenGLDebugMode(Canvas::ContextID context) {
         logDebugMode(mode, severity, context);
     }
 }
+
+namespace debug {
+
+std::ostream& operator<<(std::ostream& ss, Mode m) {
+    switch (m) {
+        case Mode::Off:
+            ss << "Off";
+            break;
+        case Mode::Debug:
+            ss << "Debug";
+            break;
+        case Mode::DebugSynchronous:
+            ss << "DebugSynchronous";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+std::ostream& operator<<(std::ostream& ss, BreakLevel b) {
+    switch (b) {
+        case BreakLevel::Off:
+            ss << "Off";
+            break;
+        case BreakLevel::High:
+            ss << "High";
+            break;
+        case BreakLevel::Medium:
+            ss << "Medium";
+            break;
+        case BreakLevel::Low:
+            ss << "Low";
+            break;
+        case BreakLevel::Notification:
+            ss << "Notification";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+std::ostream& operator<<(std::ostream& ss, Source s) {
+    switch (s) {
+        case Source::Api:
+            ss << "Api";
+            break;
+        case Source::WindowSystem:
+            ss << "WindowSystem";
+            break;
+        case Source::ShaderCompiler:
+            ss << "ShaderCompiler";
+            break;
+        case Source::ThirdParty:
+            ss << "ThirdParty";
+            break;
+        case Source::Application:
+            ss << "Application";
+            break;
+        case Source::Other:
+            ss << "Other";
+            break;
+        case Source::DontCare:
+            ss << "DontCare";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+std::ostream& operator<<(std::ostream& ss, Type t) {
+    switch (t) {
+        case Type::Error:
+            ss << "Error";
+            break;
+        case Type::DeprecatedBehavior:
+            ss << "DeprecatedBehavior";
+            break;
+        case Type::UndefinedBehavior:
+            ss << "UndefinedBehavior";
+            break;
+        case Type::Portability:
+            ss << "Portability";
+            break;
+        case Type::Performance:
+            ss << "Performance";
+            break;
+        case Type::Marker:
+            ss << "Marker";
+            break;
+        case Type::PushGroup:
+            ss << "PushGroup";
+            break;
+        case Type::PopGroup:
+            ss << "PopGroup";
+            break;
+        case Type::Other:
+            ss << "Other";
+            break;
+        case Type::DontCare:
+            ss << "DontCare";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+std::ostream& operator<<(std::ostream& ss, Severity s) {
+    switch (s) {
+        case Severity::Low:
+            ss << "Low";
+            break;
+        case Severity::Medium:
+            ss << "Medium";
+            break;
+        case Severity::High:
+            ss << "High";
+            break;
+        case Severity::Notification:
+            ss << "Notification";
+            break;
+        case Severity::DontCare:
+            ss << "DontCare";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+
+}  // namespace debug
 
 }  // namespace utilgl
 
