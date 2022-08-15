@@ -372,6 +372,7 @@ public:
 
     const Document& getHelp() const;
     Document& getHelp();
+    Property& setHelp(Document help);
 
     virtual Document getDescription() const;
 

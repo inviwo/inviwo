@@ -283,6 +283,11 @@ Property& Property::setVisible(bool visible) {
 const Document& Property::getHelp() const { return help_; }
 Document& Property::getHelp() { return help_; }
 
+Property& Property::setHelp(Document help) {
+    help_ = std::move(help);
+    return *this;
+}
+
 Document Property::getDescription() const {
     Document doc;
     using P = Document::PathComponent;
