@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <algorithm>
 #include <limits>

@@ -556,14 +556,15 @@ std::vector<std::uint32_t> selectRows(const Column& col,
                     for (auto&& [row, value] :
                          util::enumerate<std::uint32_t>(typedBuf->getDataContainer())) {
                         auto test = util::overloaded{
-                            [&v = value](const std::function<bool(std::int64_t)>& func) {
+                            [&v = value](
+                                [[maybe_unused]] const std::function<bool(std::int64_t)>& func) {
                                 if constexpr (std::is_integral_v<ValueType>) {
                                     return func(static_cast<std::int64_t>(v));
                                 }
                                 (void)v;
                                 return false;
                             },
-                            [v = value](const std::function<bool(double)>& func) {
+                            [v = value]([[maybe_unused]] const std::function<bool(double)>& func) {
                                 if constexpr (std::is_floating_point_v<ValueType>) {
                                     return func(v);
                                 }

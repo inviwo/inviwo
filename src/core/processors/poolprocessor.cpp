@@ -31,6 +31,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdfuture.h>
 
 #include <fmt/format.h>
 

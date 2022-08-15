@@ -31,6 +31,9 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/safecstr.h>
 
+#include <inviwo/core/util/demangle.h>
+#include <inviwo/core/util/chronoutils.h>
+
 #include <random>
 #include <iomanip>
 #include <clocale>
@@ -245,29 +248,6 @@ std::string htmlEncode(std::string_view data) {
     return buffer;
 }
 
-std::string parseTypeIdName(std::string str) {
-
-#if defined(__clang__) || defined(__GNUC__)
-    struct handle {
-        char* p;
-        handle(char* ptr) : p(ptr) {}
-        ~handle() { std::free(p); }
-    };
-    const char* cstr = str.c_str();
-    int status = -4;
-    handle result(abi::__cxa_demangle(cstr, nullptr, nullptr, &status));
-    if (status == 0) str = result.p;
-#else
-    replaceInString(str, "class", "");
-    replaceInString(str, "const", "");
-#if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64)
-    replaceInString(str, "__ptr64", "");
-#endif
-#endif
-    replaceInString(str, "inviwo::", "");
-    return removeFromString(removeFromString(str, '*'), ' ');
-}
-
 std::string toUpper(std::string_view str) {
     std::string res;
     res.reserve(str.size());
@@ -370,48 +350,14 @@ std::string removeSubString(std::string_view str, std::string_view strToRemove) 
     return newString;
 }
 
-std::string msToString(double ms, bool includeZeros, bool spacing) {
-    const std::string space = (spacing ? " " : "");
-    std::stringstream ss;
-    bool follows = false;
-
-    size_t days = static_cast<size_t>(ms / (1000.0 * 3600.0 * 24.0));
-    if (days > 0 || (follows && includeZeros)) {
-        follows = true;
-        ss << days << space << "d";
-        ms -= 3600 * 1000 * 24 * days;
-    }
-    size_t hours = static_cast<size_t>(ms / (1000.0 * 3600.0));
-    if (hours > 0 || (follows && includeZeros)) {
-        if (follows) ss << " ";
-        follows = true;
-        ss << hours << space << "h";
-        ms -= 3600 * 1000 * hours;
-    }
-    size_t minutes = static_cast<size_t>(ms / (1000.0 * 60.0));
-    if (minutes > 0 || (follows && includeZeros)) {
-        if (follows) ss << " ";
-        follows = true;
-        ss << minutes << space << "min";
-        ms -= 60 * 1000 * minutes;
-    }
-    size_t seconds = static_cast<size_t>(ms / 1000.0);
-    // combine seconds and milliseconds, iff there already something added to the string stream
-    // _or_ there are more than one second
-    if (seconds > 0 || (follows && includeZeros)) {
-        if (follows) ss << " ";
-        follows = true;
-        ss << std::setprecision(4) << (ms / 1000.0) << space << "s";
-    } else {
-        // less than one second, no leading minutes/hours
-        ss << std::setprecision(4) << ms << space << "ms";
-    }
-
-    return ss.str();
-}
-
 bool CaseInsensitiveCompare::operator()(std::string_view a, std::string_view b) const {
     return iCaseLess(a, b);
+}
+
+std::string parseTypeIdName(const char* name) { return util::parseTypeIdName(name); }
+
+std::string msToString(double ms, bool includeZeros, bool spacing) {
+    return util::msToString(ms, includeZeros, spacing);
 }
 
 }  // namespace inviwo

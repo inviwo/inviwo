@@ -34,7 +34,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/logfilter.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/detected.h>
 #include <inviwo/core/util/glm.h>
 

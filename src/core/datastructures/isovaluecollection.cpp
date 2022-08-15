@@ -33,6 +33,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/io/datareaderexception.h>
 

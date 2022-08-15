@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/hashcombine.h>
 
 #include <string_view>
@@ -95,20 +95,20 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-#define IVW_CONTEXT                                                                         \
-    SourceContext(parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
-                  std::string(__FUNCTION__), __LINE__)
+#define IVW_CONTEXT                                                               \
+    ::inviwo::SourceContext(::inviwo::util::parseTypeIdName(typeid(this).name()), \
+                            std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
 
 #define IVW_CONTEXT_CUSTOM(source) \
-    SourceContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
+    ::inviwo::SourceContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
 
 // Old deprecated macro, use uppercase
-#define IvwContext                                                                          \
-    SourceContext(parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
-                  std::string(__FUNCTION__), __LINE__)
+#define IvwContext                                                                \
+    ::inviwo::SourceContext(::inviwo::util::parseTypeIdName(typeid(this).name()), \
+                            std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
 // Old deprecated macro, use uppercase
 #define IvwContextCustom(source) \
-    SourceContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
+    ::inviwo::SourceContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
 
 /**
  * Represents a location in source code, similar to SourceContext but much more lightweight.
@@ -166,7 +166,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-#define IVW_SOURCE_LOCATION SourceLocation(__FILE__, __FUNCTION__, __LINE__)
+#define IVW_SOURCE_LOCATION ::inviwo::SourceLocation(__FILE__, __FUNCTION__, __LINE__)
 
 }  // namespace inviwo
 

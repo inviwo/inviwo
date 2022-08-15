@@ -256,7 +256,7 @@ InstanceRenderer::InstanceRenderer()
 std::vector<std::unique_ptr<Property>> InstanceRenderer::prefabs() {
     std::vector<std::unique_ptr<Property>> res;
 
-    for (size_t i = 1; i <= 4; ++i) {
+    for (int i = 1; i <= 4; ++i) {
         auto comp = std::make_unique<CompositeProperty>(fmt::format("floatVec{}Port", i),
                                                         fmt::format("Float Vec{} Port", i));
         comp->addProperty(std::make_unique<IntProperty>("components", "Components", i))
@@ -275,7 +275,7 @@ std::vector<std::unique_ptr<Property>> InstanceRenderer::prefabs() {
 
 InstanceRenderer::~InstanceRenderer() { ports_.PropertyOwnerObservable::removeObserver(this); }
 
-void InstanceRenderer::onDidAddProperty(Property* property, size_t index) {
+void InstanceRenderer::onDidAddProperty(Property* property, size_t) {
     auto comp = dynamic_cast<CompositeProperty*>(property);
     IVW_ASSERT(comp, "should always exist");
     auto components = dynamic_cast<IntProperty*>(comp->getPropertyByIdentifier("components"));
@@ -318,7 +318,7 @@ void InstanceRenderer::onDidAddProperty(Property* property, size_t index) {
     invalidate(InvalidationLevel::InvalidResources);
 }
 
-void InstanceRenderer::onWillRemoveProperty(Property* property, size_t index) {
+void InstanceRenderer::onWillRemoveProperty(Property*, size_t index) {
     vecPorts_.erase(vecPorts_.begin() + index);
 
     invalidate(InvalidationLevel::InvalidResources);

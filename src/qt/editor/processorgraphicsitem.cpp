@@ -33,8 +33,8 @@
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/metadata/processormetadata.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/clock.h>
+#include <inviwo/core/util/chronoutils.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/stdextensions.h>
 
@@ -493,10 +493,11 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
 
 #if IVW_PROFILING
     tb(H("Eval Count"), processCount_);
-    tb(H("Eval Time"), msToString(evalTime_, true, true));
+    tb(H("Eval Time"), util::msToString(evalTime_, true, true));
     tb(H("Mean Time"),
-       msToString(totEvalTime_ / std::max(static_cast<double>(processCount_), 1.0), true, true));
-    tb(H("Max Time"), msToString(maxEvalTime_, true, true));
+       util::msToString(totEvalTime_ / std::max(static_cast<double>(processCount_), 1.0), true,
+                        true));
+    tb(H("Max Time"), util::msToString(maxEvalTime_, true, true));
 #endif
 
     showToolTipHelper(e, utilqt::toLocalQString(doc));

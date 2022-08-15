@@ -285,6 +285,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/callback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/canvas.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/chronoutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/clock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/cloneableptr.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer-generated.h
@@ -295,6 +296,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/constexprhash.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/defaultvalues.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/demangle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/detected.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
@@ -318,6 +320,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmmat.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmvec.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/hashcombine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
@@ -361,6 +365,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/statecoordinator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/staticstring.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/stdfuture.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringlogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
@@ -616,6 +621,7 @@ set(SOURCE_FILES
     util/bufferutils.cpp
     util/canvas.cpp
     util/capabilities.cpp
+    util/chronoutils.cpp
     util/clock.cpp
     util/colorbrewer-generated.cpp
     util/colorbrewer.cpp
@@ -623,6 +629,7 @@ set(SOURCE_FILES
     util/commandlineparser.cpp
     util/consolelogger.cpp
     util/defaultvalues.cpp
+    util/demangle.cpp
     util/detected.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
@@ -641,6 +648,8 @@ set(SOURCE_FILES
     util/formatdispatching.cpp
     util/formats.cpp
     util/glm.cpp
+    util/glmmat.cpp
+    util/glmutils.cpp
     util/glmvec.cpp
     util/hashcombine.cpp
     util/imagecache.cpp
@@ -675,6 +684,7 @@ set(SOURCE_FILES
     util/statecoordinator.cpp
     util/staticstring.cpp
     util/stdextensions.cpp
+    util/stdfuture.cpp
     util/stringconversion.cpp
     util/stringlogger.cpp
     util/systemcapabilities.cpp
