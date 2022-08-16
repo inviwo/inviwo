@@ -373,7 +373,7 @@ public:
     /**
      * The help should describe what state the property represents and how it is used.
      * This will be shown in the Processor help, and as part of the property description in the
-     * property tooltip in the GUI
+     * property tooltip in the GUI.
      */
     const Document& getHelp() const;
     Document& getHelp();
@@ -381,7 +381,7 @@ public:
 
     /**
      * This function should describe the state of the property
-     * By default this will return a document with describing all the
+     * By default this will return a document describing all the
      * state. i.e. Identifier, DisplayName, Help, InvalidationLevel,
      * PropertySemantics, etc.
      * Derived properties should extend this function and add their

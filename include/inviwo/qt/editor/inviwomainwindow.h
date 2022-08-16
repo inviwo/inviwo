@@ -67,6 +67,7 @@ class ResourceManagerDockWidget;
 class FileAssociations;
 class ToolsMenu;
 class TextLabelOverlay;
+struct MenuKeyboardEventFilter;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -217,6 +218,7 @@ private:
     void updateWindowTitle();
 
     InviwoApplicationQt* app_;
+    MenuKeyboardEventFilter* menuEventFilter_;
     InviwoEditMenu* editMenu_ = nullptr;
     ToolsMenu* toolsMenu_ = nullptr;
     QMenu* exampleMenu_ = nullptr;

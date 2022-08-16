@@ -30,6 +30,8 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <algorithm>
+#include <iomanip>
+#include <ostream>
 
 namespace inviwo {
 
@@ -167,6 +169,11 @@ Document::PathComponent::PathComponent(
             return true;
         });
     }} {}
+
+std::ostream& operator<<(std::ostream& ss, const Document::PathComponent& path) {
+    ss << path.strrep_;
+    return ss;
+}
 
 Document::PathComponent Document::PathComponent::last() {
     return PathComponent("<last>", [](const ElemVec& elements) -> ElemVec::const_iterator {

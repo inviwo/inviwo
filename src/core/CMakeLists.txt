@@ -323,6 +323,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmconvert.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmmat.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmvec.h
@@ -590,8 +591,8 @@ set(SOURCE_FILES
     properties/eventproperty.cpp
     properties/filepatternproperty.cpp
     properties/fileproperty.cpp
-    properties/invalidationlevel.cpp
     properties/imageeditorproperty.cpp
+    properties/invalidationlevel.cpp
     properties/isotfproperty.cpp
     properties/isovalueproperty.cpp
     properties/listproperty.cpp
@@ -664,6 +665,7 @@ set(SOURCE_FILES
     util/formatdispatching.cpp
     util/formats.cpp
     util/glm.cpp
+    util/glmconvert.cpp
     util/glmmat.cpp
     util/glmutils.cpp
     util/glmvec.cpp

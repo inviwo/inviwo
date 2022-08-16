@@ -116,6 +116,98 @@ struct flat_extent : detail::flat_extent_impl<T, util::rank<T>::value> {};
 template <class T>
 constexpr size_t flat_extent_v = flat_extent<T>::value;
 
+/**
+ * Extract the value_type from a scalar or glm type
+ */
+template <typename T>
+struct value_type {
+    using type = T;
+};
+template <glm::length_t L, typename T, glm::qualifier Q>
+struct value_type<glm::vec<L, T, Q>> {
+    using type = typename glm::vec<L, T, Q>::value_type;
+};
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct value_type<glm::mat<C, R, T, Q>> {
+    using type = typename glm::mat<C, R, T, Q>::value_type;
+};
+template <typename T, glm::qualifier Q>
+struct value_type<glm::tquat<T, Q>> {
+    using type = typename glm::tquat<T, Q>::value_type;
+};
+
+template <typename T>
+using value_type_t = typename value_type<T>::type;
+
+/**
+ * Construct a type with the same extents as the given type but with a different value type
+ */
+template <typename T, typename U>
+struct same_extent {
+    using type = U;
+};
+template <glm::length_t L, typename T, glm::qualifier Q, typename U>
+struct same_extent<glm::vec<L, T, Q>, U> {
+    using type = glm::vec<L, U, Q>;
+};
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q, typename U>
+struct same_extent<glm::mat<C, R, T, Q>, U> {
+    using type = glm::mat<C, R, U, Q>;
+};
+template <typename T, glm::qualifier Q, typename U>
+struct same_extent<glm::tquat<T, Q>, U> {
+    using type = glm::tquat<U, Q>;
+};
+
+template <typename T, typename U>
+using same_extent_t = typename same_extent<T, U>::type;
+
+// GLM element access wrapper functions. Useful in template functions with scalar and vec types
+
+// vector like access
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
+constexpr auto glmcomp(T& elem, size_t) -> T& {
+    return elem;
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
+constexpr auto glmcomp(T& elem, size_t i) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
+    return elem[i];
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+constexpr auto glmcomp(T& elem, size_t i) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
+    return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+constexpr auto glmcomp(const T& elem, size_t i) -> const typename T::value_type& {
+    return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
+}
+
+// matrix like access
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
+constexpr auto glmcomp(T& elem, size_t, size_t) -> T& {
+    return elem;
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
+constexpr auto glmcomp(T& elem, size_t i, size_t) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
+    return elem[i];
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+constexpr auto glmcomp(T& elem, size_t i, size_t j) ->
+    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
+                              typename T::value_type&>::type {
+    return elem[i][j];
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+constexpr auto glmcomp(const T& elem, size_t i, size_t j) -> const typename T::value_type& {
+    return elem[i][j];
+}
+
 }  // namespace util
 
 }  // namespace inviwo

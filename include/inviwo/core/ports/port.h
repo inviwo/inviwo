@@ -74,7 +74,7 @@ public:
 
     /**
      * This function should describe the state of the port and the data it holds.
-     * Derived ports should extend this function and add information about their state,
+     * Derived ports should extend this function and add information about their state.
      * The port help is usually included in this information.
      * The description is usually shown as a tooltip in the GUI.
      */

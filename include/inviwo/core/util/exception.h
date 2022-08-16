@@ -53,7 +53,7 @@ public:
     Exception(std::string_view format, fmt::format_args&& args, ExceptionContext context);
     template <typename... Args>
     Exception(ExceptionContext context, std::string_view format, Args&&... args)
-        : Exception{format, fmt::make_format_args(format, std::forward<Args>(args)...),
+        : Exception{format, fmt::make_format_args(std::forward<Args>(args)...),
                     std::move(context)} {}
     virtual ~Exception() noexcept;
     virtual std::string getMessage() const;

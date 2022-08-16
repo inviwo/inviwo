@@ -34,7 +34,6 @@
 
 #include <functional>
 #include <sstream>
-#include <iomanip>
 #include <type_traits>
 #include <string>
 #include <unordered_map>
@@ -126,10 +125,8 @@ public:
 
         ElemVec::const_iterator operator()(const ElemVec& elements) const;
 
-        friend std::ostream& operator<<(std::ostream& ss, const Document::PathComponent& path) {
-            ss << path.strrep_;
-            return ss;
-        }
+        IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss,
+                                                     const Document::PathComponent& path);
 
     private:
         std::string strrep_;
@@ -199,18 +196,23 @@ public:
 
     template <typename BeforVisitor, typename AfterVisitor>
     void visit(BeforVisitor before, AfterVisitor after) const {
-        const std::function<void(Element*, std::vector<Element*>&)> traverser =
-            [&](Element* elem, std::vector<Element*>& stack) {
-                before(elem, stack);
-                stack.push_back(elem);
+        const auto traverser = [&](auto& self, Element* elem,
+                                   std::vector<Element*>& stack) -> void {
+            before(elem, stack);
+            stack.push_back(elem);
 
-                for (const auto& e : elem->children_) traverser(e.get(), stack);
+            for (const auto& child : elem->children_) {
+                self(self, child.get(), stack);
+            }
 
-                stack.pop_back();
-                after(elem, stack);
-            };
+            stack.pop_back();
+            after(elem, stack);
+        };
+
         std::vector<Element*> stack;
-        for (const auto& e : root_->children_) traverser(e.get(), stack);
+        for (const auto& e : root_->children_) {
+            traverser(traverser, e.get(), stack);
+        }
     }
 
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Document& doc);
