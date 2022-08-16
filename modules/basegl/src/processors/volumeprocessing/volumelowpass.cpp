@@ -44,7 +44,7 @@ const ProcessorInfo VolumeLowPass::processorInfo_{
     "Volume Operation",          // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
-    Document{"Applies a low pass filter on the input volume."}};
+    "Applies a low pass filter on the input volume."_help};
 const ProcessorInfo VolumeLowPass::getProcessorInfo() const { return processorInfo_; }
 
 VolumeLowPass::VolumeLowPass()

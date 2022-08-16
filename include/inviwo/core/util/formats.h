@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/staticstring.h>
 
 #include <limits>
 #include <string>

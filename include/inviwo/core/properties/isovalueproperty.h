@@ -55,6 +55,11 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
+    IsoValueProperty(std::string_view identifier, std::string_view displayName, Document help,
+                     const IsoValueCollection& value = {}, VolumeInport* volumeInport = nullptr,
+                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                     PropertySemantics semantics = PropertySemantics::Default);
+
     IsoValueProperty(std::string_view identifier, std::string_view displayName,
                      const IsoValueCollection& value = {}, VolumeInport* volumeInport = nullptr,
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

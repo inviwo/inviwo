@@ -26,6 +26,8 @@
 </style>
 </head>
 <body>
+<h2>2022-08-15 FMT Version 9.0.0</h2>
+<p>The fmt library was updated to the recent version 9.0.0. There are major breaking change in the update with respect to using ostream operators and fmt. Previosly you could just include <code class="notranslate">fmt/ostream.h</code> and any type that was streamable was not also printable with fmt. That behavious as removed and now you either as to wrapp the object with <code class="notranslate">fmt::streamed(x)</code> or add a specialization of fmt::formatter for the type. Most core types in inviwo that used std::ostream operators has been updated with fmt formatters.</p>
 <h2>2022-08-12 Include changes in core/util/</h2>
 <p>Optimized includes in <code class="notranslate">core/util</code> with some functions being moved to separate header files.<br>
 Functions moved from <code class="notranslate">core/util/stringconversion.h</code> include</p>
@@ -39,6 +41,12 @@ Functions and structs moved from <code class="notranslate">core/util/stdextensio
 <p>Added <code class="notranslate">core/util/glmmat.h</code> containing light-weight forward declarations of glm matrices similar to <code class="notranslate">glmvec.h</code>, which no longer includes <code class="notranslate">glm.hpp</code>.<br>
 This means that it might be necessary to include <code class="notranslate">core/util/glm.h</code> where needed.<br>
 In addition, the glm utility functions <code class="notranslate">util::rank()</code>, <code class="notranslate">util::extent()</code>, and <code class="notranslate">util::is_floating_point()</code> are now part of <code class="notranslate">core/util/glmutils.h</code>.</p>
+<h2>2022-08-11 InviwoSetupInfo</h2>
+<p>The module setup info in a workspace file will not only save information about processors and modules used in the workspace.</p>
+<h2>2022-07-11 Help</h2>
+<p>Alt/Option clicking a processor in the processor network will now show the help for the given processor.</p>
+<h2>2022-07-11 Append workspace</h2>
+<p>The file manu gained an "Append" function to append a workspace into an existing workspace. Holding down Alt/Option in the file lists (Recent/Examples/Tests) will also append the workspace instead of opening it.</p>
 <h2>2022-06-27 New processor: Volume Region Mapper</h2>
 <p>The <code class="notranslate">Volume Region Mapper</code> processor maps each unique voxel value of a Volume to another integer value. The value mapping is provided by two DataFrame columns.</p>
 <h2>2022-04-14 TemplateOptionProperty renamed to OptionProperty</h2>

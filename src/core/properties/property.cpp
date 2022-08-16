@@ -308,9 +308,6 @@ Document Property::getDescription() const {
                             semantics_, usageMode_, visible_);
     tb(H("Validation Level"), invalidationLevel_);
 
-    auto str = doc.str();
-    fmt::print("{}", str);
-
     return doc;
 }
 

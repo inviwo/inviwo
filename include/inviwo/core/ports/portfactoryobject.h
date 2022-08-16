@@ -34,7 +34,7 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/porttraits.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/demangle.h>
 
 #include <memory>
 #include <string>

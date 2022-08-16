@@ -38,6 +38,8 @@
 #include <cstring>
 #include <iostream>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 /**

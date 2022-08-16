@@ -67,10 +67,13 @@ void TFPropertyObservable::notifyHistogramSelectionChange(HistogramSelection sel
     forEachObserver([&](TFPropertyObserver* o) { o->onHistogramSelectionChange(selection); });
 }
 
-TransferFunctionProperty::TransferFunctionProperty(
-    std::string_view identifier, std::string_view displayName, const TransferFunction& value,
-    VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics)
+TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
+                                                   std::string_view displayName, Document help,
+                                                   const TransferFunction& value,
+                                                   VolumeInport* volumeInport,
+                                                   InvalidationLevel invalidationLevel,
+                                                   PropertySemantics semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , tf_{"TransferFunction", value}
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
@@ -80,6 +83,12 @@ TransferFunctionProperty::TransferFunctionProperty(
 
     tf_.value.addObserver(this);
 }
+
+TransferFunctionProperty::TransferFunctionProperty(
+    std::string_view identifier, std::string_view displayName, const TransferFunction& value,
+    VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : TransferFunctionProperty(identifier, displayName, Document{}, value, volumeInport,
+                               invalidationLevel, semantics) {}
 
 TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
                                                    std::string_view displayName,

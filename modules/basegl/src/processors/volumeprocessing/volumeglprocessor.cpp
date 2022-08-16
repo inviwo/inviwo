@@ -40,8 +40,8 @@ namespace inviwo {
 VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
                                      bool buildShader)
     : Processor()
-    , inport_("inputVolume", Document{"Input volume"})
-    , outport_("outputVolume", Document{"Output volume"})
+    , inport_("inputVolume", "Input volume"_help)
+    , outport_("outputVolume", "Output volume"_help)
     , dataFormat_(nullptr)
     , internalInvalid_(true)
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},

@@ -376,7 +376,8 @@ void exposeProperties(py::module& m) {
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
         .def_property("visible", &Property::getVisible, &Property::setVisible)
         .def_property("semantics", &Property::getSemantics, &Property::setSemantics)
-        .def_property("help", &Property::getHelp, &Property::setHelp)
+        .def_property(
+            "help", [](const Property& p) { return p.getHelp(); }, &Property::setHelp)
         .def_property_readonly("classIdentifier", &Property::getClassIdentifier)
         .def_property_readonly("classIdentifierForWidget", &Property::getClassIdentifierForWidget)
         .def_property_readonly("path", &Property::getPath)

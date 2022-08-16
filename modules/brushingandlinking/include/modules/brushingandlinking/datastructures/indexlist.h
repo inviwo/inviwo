@@ -52,14 +52,12 @@ public:
      *
      * @return true if the indexlist was modified that is \p this and \p indices were different
      */
-
     bool set(std::string_view src, const BitSet& indices);
     bool contains(uint32_t idx) const;
 
     const BitSet& getIndices() const;
 
     bool removeSources(const std::vector<std::string>& sources);
-
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

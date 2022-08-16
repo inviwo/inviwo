@@ -29,20 +29,22 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
 #include <string>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
- * Parse and demangle the type ID given in @p name
- * @param name   mangled type ID name
- * @return demangled type ID name without `class`, `const`, `inviwo::`, or white space
+ * Demangle the type ID given in @p name
+ * @param name mangled type ID name
+ * @return demangled type name without `class`
+ */
+IVW_CORE_API std::string demangle(const char* name);
+
+/**
+ * Demangle and strip the type ID given in @p name
+ * @param name mangled type ID name
+ * @return demangled type name without `class`, `const`, `inviwo::`, or white space
  */
 IVW_CORE_API std::string parseTypeIdName(const char* name);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util
