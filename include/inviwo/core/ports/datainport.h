@@ -237,7 +237,7 @@ DataInport<T, N, Flat>::getSourceVectorData() const {
 template <typename T, size_t N, bool Flat>
 Document DataInport<T, N, Flat>::getInfo() const {
     StrBuffer name;
-    name.append("{}", DataTraits<T>::dataName());
+    name.append("{}", util::htmlEncode(DataTraits<T>::dataName()));
     if constexpr (Flat) {
         name.append(" Flat");
     }

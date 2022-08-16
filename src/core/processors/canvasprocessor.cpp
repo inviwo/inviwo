@@ -59,7 +59,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                   size2_t(1, 1),
                   InvalidationLevel::Valid}
     , enableCustomInputDimensions_{"enableCustomInputDimensions", "Separate Image Size",
-                                   "Specify a different image size to render into, then what "
+                                   "Specify a different image size to render into than what "
                                    "will be show in the canvas window"_help,
                                    false, InvalidationLevel::Valid}
     , customInputDimensions_{"customInputDimensions",

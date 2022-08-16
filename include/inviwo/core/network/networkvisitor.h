@@ -49,7 +49,7 @@ public:
 
     /**
      * @brief Visit a Processor
-     * Adding and removing processors while visiting are not supported
+     * Adding and removing processors while visiting is not supported
      * @return visit all child properties if true else go to next processor
      */
     virtual bool enter(Processor&) { return true; }
@@ -57,7 +57,7 @@ public:
 
     /**
      * @brief Visit a CompositeProperty
-     * Adding and removing properties while visiting are not supported
+     * Adding and removing properties while visiting is not supported
      * @return visit all child properties if true else go to next CompositeProperty
      */
     virtual bool enter(CompositeProperty&) { return true; }

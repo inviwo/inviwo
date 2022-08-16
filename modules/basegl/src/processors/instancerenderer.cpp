@@ -240,7 +240,7 @@ InstanceRenderer::InstanceRenderer()
     , outport_("image", "The rendered image"_help)
     , ports_{"ports", "Ports", R"(
         Add and remove vector ports for the instance rendering. The rendering will render as many
-        instances as there are elements in the port will the least elements. Ports of different
+        instances as there are elements in the port with the least elements. Ports of different
         types can be added.)"_unindentHelp,
              prefabs()}
     , vecPorts_{}

@@ -170,7 +170,7 @@ IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
 
 /**
  * Append a PartialProcessorNetwork to the network
- * @param network the network to append to
+ * @param network the network to append to the current one
  * @param is a stream of a serialized PartialProcessorNetwork
  * @param refPath a possible path to the original file of the PartialProcessorNetwork, for error
  * reporting

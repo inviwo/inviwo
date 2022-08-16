@@ -42,12 +42,12 @@ BasisProperty::BasisProperty(std::string_view identifier, std::string_view displ
     : CompositeProperty(identifier, displayName, "Show and modify volume basis data"_help,
                         invalidationLevel, semantics)
     , mode_("mode", "Mode",
-            "Select interaction mode. Using the Orthogonal mode, presents a simpler interface"_help,
+            "Select interaction mode. Using the Orthogonal mode presents a simpler interface"_help,
             {{"general", "General Basis", BasisPropertyMode::General},
              {"orthogonal", "Orthogonal Basis", BasisPropertyMode::Orthogonal}},
             0, InvalidationLevel::Valid)
     , reference_("reference", "Reference",
-                 "The values for (a,b,c) is for either the whole volume of a voxel"_help,
+                 "The values for (a,b,c) are for either the whole volume of a voxel"_help,
                  {{"Volume", "Volume", BasisPropertyReference::Volume},
                   {"Voxel", "Voxel", BasisPropertyReference::Voxel}},
                  0, InvalidationLevel::Valid)

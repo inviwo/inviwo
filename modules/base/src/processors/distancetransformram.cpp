@@ -55,11 +55,11 @@ DistanceTransformRAM::DistanceTransformRAM()
     , volumePort_("inputVolume", "Input volume"_help)
     , outport_("outputVolume", "Scalar volume representing the distance transform (float)"_help)
     , threshold_("threshold", "Threshold",
-                 "Voxels with a value  __larger___ then the then the threshold will be considered "
+                 "Voxels with a value  __larger___ than the threshold will be considered "
                  "as features, i.e. have a zero distance"_help,
                  0.5, {0.0, ConstraintBehavior::Ignore}, {1.0, ConstraintBehavior::Ignore})
     , flip_("flip", "Flip",
-            "Consider features as voxels with a values __smaller__ then threshold instead"_help,
+            "Consider features as voxels with a values __smaller__ than threshold instead"_help,
             false)
     , normalize_("normalize", "Use normalized threshold",
                  "Use normalized values when comparing to the threshold"_help, true)
@@ -79,9 +79,9 @@ DistanceTransformRAM::DistanceTransformRAM()
                        std::numeric_limits<double>::max(), 0.01, 0.0, InvalidationLevel::Valid,
                        PropertySemantics::Text)
     , dataRangeMode_("dataRangeMode", "Data Range", R"(Data range to use for the output volume:
-        * Diagonal use [0, volume diagonal].
-        * MinMax use the minimal and maximal distance from the result
-        * Custom specify a custom range.)"_unindentHelp,
+        * __Diagonal__ use [0, volume diagonal].
+        * __MinMax__ use the minimal and maximal distance from the result
+        * __Custom__ specify a custom range.)"_unindentHelp,
                      {DataRangeMode::Diagonal, DataRangeMode::MinMax, DataRangeMode::Custom}, 0)
     , customDataRange_("customDataRange", "Custom Data Range", "Specify a custom output range"_help,
                        0.0, 1.0, 0.0, std::numeric_limits<double>::max(), 0.01, 0.0,
