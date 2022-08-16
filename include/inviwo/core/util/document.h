@@ -32,8 +32,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/typetraits.h>
 
-#include <inviwo/core/io/serialization/serializable.h>
-
 #include <functional>
 #include <sstream>
 #include <iomanip>
@@ -44,6 +42,9 @@
 #include <vector>
 
 namespace inviwo {
+
+class Serializer;
+class Deserializer;
 
 /**
  * @brief A class to represent a structured document, usually some html

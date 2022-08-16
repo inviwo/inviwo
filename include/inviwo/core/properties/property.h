@@ -370,10 +370,24 @@ public:
         return *this;
     }
 
+    /**
+     * The help should describe what state the property represents and how it is used.
+     * This will be shown in the Processor help, and as part of the property description in the
+     * property tooltip in the GUI
+     */
     const Document& getHelp() const;
     Document& getHelp();
     Property& setHelp(Document help);
 
+    /**
+     * This function should describe the state of the property
+     * By default this will return a document with describing all the
+     * state. i.e. Identifier, DisplayName, Help, InvalidationLevel,
+     * PropertySemantics, etc.
+     * Derived properties should extend this function and add their
+     * state, usually values etc.
+     * The description is usually shown as a tooltip in the GUI.
+     */
     virtual Document getDescription() const;
 
     template <typename T, typename U>

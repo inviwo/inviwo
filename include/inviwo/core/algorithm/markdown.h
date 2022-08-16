@@ -37,17 +37,44 @@ namespace inviwo {
 
 namespace util {
 
+/**
+ * Parse a markdown string and convert to a inviwo document.
+ * @see Document
+ *
+ * @param markdown A string that will be interpreted as markdown
+ * @return an inviwo Document with an html representation of the parsed markdown
+ */
 IVW_CORE_API Document md2doc(std::string_view markdown);
+
+/**
+ * Parse a markdown string and convert to an inviwo document.
+ * Before the string is parsed as markdown, any leading indentation is removed from the string
+ * @see Document, indent::unindent
+ *
+ * @param markdown A string that will be interpreted as markdown
+ * @return an inviwo Document with an html representation of the parsed markdown
+ */
 IVW_CORE_API Document unindentMd2doc(std::string_view markdown);
 
-}  // namespace help
+}  // namespace util
 
+/**
+ * Parse a markdown string and convert to an inviwo document.
+ */
 inline Document operator"" _md(const char* str, size_t len) {
     return util::md2doc(std::string_view(str, len));
 }
+
+/**
+ * Parse a markdown string and convert to an inviwo document.
+ */
 inline Document operator"" _help(const char* str, size_t len) {
     return util::md2doc(std::string_view(str, len));
 }
+
+/**
+ * Unindent and parse a markdown string and convert to an inviwo document.
+ */
 inline Document operator"" _unindentHelp(const char* str, size_t len) {
     return util::unindentMd2doc(std::string_view(str, len));
 }

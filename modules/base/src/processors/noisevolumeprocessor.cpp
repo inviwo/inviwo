@@ -57,7 +57,7 @@ const ProcessorInfo NoiseVolumeProcessor::processorInfo_{
       
     Example workspace:
     [base/noise_volume_generation.inv](file:///<modulePath>/data/workspaces/noise_volume_generation.inv)
-)"_unindent};
+    )"_unindentHelp};
 
 const ProcessorInfo NoiseVolumeProcessor::getProcessorInfo() const { return processorInfo_; }
 

@@ -53,6 +53,10 @@ void Port::setProcessor(Processor* processor) { processor_ = processor; }
 
 const Document& Port::getHelp() const { return help_; }
 Document& Port::getHelp() { return help_; }
+Port& Port::setHelp(Document help) {
+    help_ = std::move(help);
+    return *this;
+}
 
 void Port::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);

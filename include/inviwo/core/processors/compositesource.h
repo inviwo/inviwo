@@ -108,7 +108,7 @@ struct ProcessorTraits<CompositeSource<InportType, OutportType>> {
             "Meta",             // Category
             CodeState::Stable,  // Code state
             "Meta",             // Tags
-            "Internal processor for composites processors",
+            "Internal processor for composites processors"_help,
             false  // Visible
         };
     }

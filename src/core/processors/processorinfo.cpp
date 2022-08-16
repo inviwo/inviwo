@@ -53,16 +53,4 @@ ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayN
     , help{std::move(help)}
     , visible{isVisible} {}
 
-ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
-                             std::string aCategory, CodeState aCodeState, Tags someTags,
-                             std::string_view help, bool isVisible)
-
-    : classIdentifier{std::move(aClassIdentifier)}
-    , displayName{std::move(aDisplayName)}
-    , category{std::move(aCategory)}
-    , codeState(aCodeState)
-    , tags{std::move(someTags)}
-    , help{util::md2doc(help)}
-    , visible{isVisible} {}
-
 }  // namespace inviwo

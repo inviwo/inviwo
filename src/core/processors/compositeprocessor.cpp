@@ -50,7 +50,7 @@ const ProcessorInfo CompositeProcessor::processorInfo_{
     "Meta",                           // Category
     CodeState::Stable,                // Code state
     "Composites",                     // Tags
-    "A processor for wrapping ProcessorNetworks",
+    "A processor for wrapping ProcessorNetworks"_help,
     false};
 
 const ProcessorInfo CompositeProcessor::getProcessorInfo() const { return processorInfo_; }

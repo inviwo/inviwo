@@ -265,15 +265,14 @@ Document util::md2doc(std::string_view markdown) {
 
     Document doc;
     State state{doc.handle()};
-    md_parse(markdown.data(), markdown.size(), &parser, static_cast<void*>(&state));
+    md_parse(markdown.data(), static_cast<MD_SIZE>(markdown.size()), &parser,
+             static_cast<void*>(&state));
 
     return doc;
 };
 
 Document util::unindentMd2doc(std::string_view markdown) {
     return util::md2doc(indent::unindent(markdown));
-
 }
-
 
 }  // namespace inviwo

@@ -61,7 +61,7 @@ struct OrdinalRefPropertyState {
         min = newMin;
         return *this;
     }
-    auto setMinConstraint(ConstraintBehavior newMinConstraint) -> OrdinalRefPropertyState {
+    auto setMin(ConstraintBehavior newMinConstraint) -> OrdinalRefPropertyState {
         minConstraint = newMinConstraint;
         return *this;
     }
@@ -69,7 +69,7 @@ struct OrdinalRefPropertyState {
         max = newMax;
         return *this;
     }
-    auto setMaxConstraint(ConstraintBehavior newMaxConstraint) -> OrdinalRefPropertyState {
+    auto setMax(ConstraintBehavior newMaxConstraint) -> OrdinalRefPropertyState {
         maxConstraint = newMaxConstraint;
         return *this;
     }
@@ -77,15 +77,15 @@ struct OrdinalRefPropertyState {
         increment = newIncrement;
         return *this;
     }
-    auto setInvalidationLevel(InvalidationLevel newInvalidationLevel) -> OrdinalRefPropertyState {
+    auto set(InvalidationLevel newInvalidationLevel) -> OrdinalRefPropertyState {
         invalidationLevel = newInvalidationLevel;
         return *this;
     }
-    auto setSemantics(PropertySemantics newSemantics) -> OrdinalRefPropertyState {
+    auto set(PropertySemantics newSemantics) -> OrdinalRefPropertyState {
         semantics = newSemantics;
         return *this;
     }
-    auto setHelp(Document newHelp) -> OrdinalRefPropertyState {
+    auto set(Document newHelp) -> OrdinalRefPropertyState {
         help = newHelp;
         return *this;
     }

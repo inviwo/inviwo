@@ -57,7 +57,7 @@ const ProcessorInfo NoiseProcessor::processorInfo_{"org.inviwo.NoiseProcessor", 
       constructed using two [Halton Sequence](https://en.wikipedia.org/wiki/Halton_sequence)
       of different bases (base 2 and base 3 gives good results)
       
-)"_unindent};
+    )"_unindentHelp};
 
 const ProcessorInfo NoiseProcessor::getProcessorInfo() const { return processorInfo_; }
 
@@ -98,8 +98,8 @@ NoiseProcessor::NoiseProcessor()
     , mt_(rd_()) {
 
     addPort(noise_);
-    addProperties(size_, type_, range_, levels_, persistence_, poissonDotsAlongX_, poissonMaxPoints_,
-                  haltonNumPoints_, haltonXBase_, haltonYBase_);
+    addProperties(size_, type_, range_, levels_, persistence_, poissonDotsAlongX_,
+                  poissonMaxPoints_, haltonNumPoints_, haltonXBase_, haltonYBase_);
 
     auto typeOnChange = [&]() {
         range_.setVisible(type_.getSelectedValue() == NoiseType::Random);

@@ -51,9 +51,7 @@ public:
                   CodeState aCodeState, Tags someTags);
     ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
                   CodeState aCodeState, Tags someTags, Document help, bool visible = true);
-    ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
-                  CodeState aCodeState, Tags someTags, std::string_view markdownHelp,
-                  bool visible = true);
+
     /// Identifier must be unique for all processors, example org.inviwo.yourprocessor
     std::string classIdentifier;
     std::string displayName;  ///< Processor::getDisplayName

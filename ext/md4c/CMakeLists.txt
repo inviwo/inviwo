@@ -22,6 +22,5 @@ add_library(md4c ${HEADER_FILES} ${SOURCE_FILES})
 add_library(inviwo::md4c ALIAS md4c)
 
 target_include_directories(md4c INTERFACE include PRIVATE include/md4c)
-target_compile_definitions(md4c PRIVATE FOO)
 
 ivw_folder(md4c ext)

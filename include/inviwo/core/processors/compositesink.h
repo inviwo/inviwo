@@ -106,7 +106,7 @@ struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
             "Composite",        // Category
             CodeState::Stable,  // Code state
             "Composite",        // Tags
-            "Internal processor for composites processors",
+            "Internal processor for composites processors"_help,
             false  // Visible
         };
     }

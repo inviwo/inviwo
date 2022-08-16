@@ -266,8 +266,8 @@ private:
     std::shared_ptr<Image> image_;
 
     const DataFormatBase* format_;
-    HandleResizeEvents handleResizeEvents_;  // True if data should be resized during a resize
-                                             // propagation, otherwise false
+    HandleResizeEvents handleResizeEvents_;  // Yes if data should be resized during a resize
+                                             // propagation, otherwise No
     ImageCache cache_;
 };
 
