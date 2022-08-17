@@ -32,7 +32,10 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/unindent.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <md4c/md4c.h>
+#include <warn/pop>
 
 #include <utf8/checked.h>
 
@@ -164,10 +167,9 @@ Document util::md2doc(std::string_view markdown) {
 
         return 0;
     };
-    auto leave_block_callback = [](MD_BLOCKTYPE type, void* detail, void* userdata) -> int {
+    auto leave_block_callback = [](MD_BLOCKTYPE, void*, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
         state->pop_back();
-
         return 0;
     };
     auto enter_span_callback = [](MD_SPANTYPE type, void* detail, void* userdata) -> int {
@@ -233,7 +235,7 @@ Document util::md2doc(std::string_view markdown) {
 
         return 0;
     };
-    auto leave_span_callback = [](MD_SPANTYPE type, void* detail, void* userdata) -> int {
+    auto leave_span_callback = [](MD_SPANTYPE, void*, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
         state->pop_back();
         return 0;
@@ -248,7 +250,7 @@ Document util::md2doc(std::string_view markdown) {
         }
         return 0;
     };
-    auto debug_log_callback = [](const char* msg, void* userdata) -> void {
+    auto debug_log_callback = [](const char* msg, void*) -> void {
         LogInfoCustom("Markdown", "Error: " << msg);
     };
 

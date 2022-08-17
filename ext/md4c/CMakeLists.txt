@@ -18,7 +18,8 @@ set(SOURCE_FILES
 ivw_group("Header Files" ${HEADER_FILES} )
 ivw_group("Source Files" ${SOURCE_FILES} )
 
-add_library(md4c ${HEADER_FILES} ${SOURCE_FILES})
+# shared libs are not supported
+add_library(md4c STATIC ${HEADER_FILES} ${SOURCE_FILES})
 add_library(inviwo::md4c ALIAS md4c)
 
 target_include_directories(md4c INTERFACE include PRIVATE include/md4c)

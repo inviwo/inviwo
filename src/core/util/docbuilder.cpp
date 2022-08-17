@@ -117,7 +117,7 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor) {
 
             return true;
         },
-        [&](CompositeProperty& property, NetworkVisitorExit) { stack.pop_back(); }};
+        [&](CompositeProperty&, NetworkVisitorExit) { stack.pop_back(); }};
 
     processor.accept(visitor);
 
