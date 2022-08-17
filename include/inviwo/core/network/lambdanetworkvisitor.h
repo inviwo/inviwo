@@ -142,7 +142,7 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
             return true;
         } else if constexpr (util::is_detected_exact_v<bool, CompositeOverload, decltype(*this)>) {
             return this->operator()(compositeProperty);
-        } else if constexpr (util::is_detected_v<bool, CompositeOverload, decltype(*this)>) {
+        } else if constexpr (util::is_detected_v<CompositeOverload, decltype(*this)>) {
             this->operator()(compositeProperty);
             return true;
         } else if constexpr (util::is_detected_exact_v<bool, PropertyOverload, decltype(*this)>) {
