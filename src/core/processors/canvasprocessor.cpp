@@ -96,12 +96,12 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                      {"depth", "Depth layer", LayerType::Depth},
                      {"picking", "Picking layer", LayerType::Picking}},
                     0}
-    , colorLayer_{"colorLayer",
+    , colorLayer_{"colorLayer_",
                   "Color Layer ID",
                   "Index of the color layer to show in the canvas"_help,
                   0,
                   {0, ConstraintBehavior::Immutable},
-                  {0, ConstraintBehavior::Immutable}}
+                  {0, ConstraintBehavior::Mutable}}
     , imageTypeExt_{"fileExt", "Image Type",
                     [app]() {
                         OptionPropertyState<FileExtension> opts{};

@@ -61,7 +61,7 @@ One can refer to images like so:</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>![](file:///&lt;modulePath&gt;/docs/images/heightfield-network.png)<span class="pl-pds">"</span></span></pre></div>
 <p>or networks</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>[basegl/instance_renderer.inv](file:///&lt;modulePath&gt;/data/workspaces/instance_renderer.inv)<span class="pl-pds">"</span></span></pre></div>
-<p>Images will be shown inline, and clicking on processor networks will append them to the current network.<br>
+<p>Images will be shown inline, and clicking on processor network will append them to the current network.<br>
 To be able to refer to files there are two placeholder <code class="notranslate">&lt;basePath&gt;</code> and <code class="notranslate">&lt;modulePath&gt;</code> the former will refer to the base path of the inviwo installation and the later to the current module. Make sure that any resources linked are also included in the installer. By default the <code class="notranslate">data</code> directory and the <code class="notranslate">docs</code> are always included in the installer.</p>
 <p>For Ports a second constructor argument has been added for a help Document like so</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-en">inport_</span>(<span class="pl-s"><span class="pl-pds">"</span>mesh<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Mesh to be drawn multiple times<span class="pl-pds">"</span></span>_help)</pre></div>

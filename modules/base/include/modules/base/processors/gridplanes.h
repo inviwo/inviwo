@@ -56,7 +56,7 @@ public:
         , props{util::make_array<size_t{N}>([&](auto index) {
             constexpr std::array<std::string_view, 4> names = {"x", "y", "z", "w"};
 
-            return Prop(fmt::format("{}_{}", identifier, names[index]),
+            return Prop(fmt::format("axis_{}", names[index]),
                         fmt::format("{} {}", displayName, names[index]), defaultArgs...);
         })} {
 
