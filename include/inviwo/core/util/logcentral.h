@@ -63,12 +63,9 @@ IVW_CORE_API bool operator>(const LogVerbosity& lhs, const LogLevel& rhs);
 IVW_CORE_API bool operator<=(const LogVerbosity& lhs, const LogLevel& rhs);
 IVW_CORE_API bool operator>=(const LogVerbosity& lhs, const LogLevel& rhs);
 
-namespace util {
-IVW_CORE_API std::string_view name(LogLevel ll);
-IVW_CORE_API std::string_view name(LogAudience la);
-IVW_CORE_API std::string_view name(MessageBreakLevel ll);
-}  // namespace util
-
+IVW_CORE_API std::string_view enumToStr(LogLevel ll);
+IVW_CORE_API std::string_view enumToStr(LogAudience la);
+IVW_CORE_API std::string_view enumToStr(MessageBreakLevel ll);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LogLevel ll);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LogAudience la);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll);

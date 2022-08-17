@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(CodeState cs) {
+std::string_view enumToStr(CodeState cs) {
     switch (cs) {
         case CodeState::Broken:
             return "Broken";
@@ -48,6 +48,6 @@ std::string_view util::name(CodeState cs) {
                     static_cast<int>(cs));
 }
 
-std::ostream& operator<<(std::ostream& ss, CodeState cs) { return ss << util::name(cs); }
+std::ostream& operator<<(std::ostream& ss, CodeState cs) { return ss << enumToStr(cs); }
 
 }  // namespace inviwo

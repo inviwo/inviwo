@@ -43,7 +43,7 @@ template class IVW_CORE_TMPL_INST StructuredCoordinateTransformer<3>;
 template class IVW_CORE_TMPL_INST StructuredCameraCoordinateTransformer<2>;
 template class IVW_CORE_TMPL_INST StructuredCameraCoordinateTransformer<3>;
 
-std::string_view util::name(CoordinateSpace s) {
+std::string_view enumToStr(CoordinateSpace s) {
     switch (s) {
         case CoordinateSpace::Data:
             return "Data";
@@ -62,6 +62,6 @@ std::string_view util::name(CoordinateSpace s) {
                     static_cast<int>(s));
 }
 
-std::ostream& operator<<(std::ostream& ss, CoordinateSpace s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, CoordinateSpace s) { return ss << enumToStr(s); }
 
 }  // namespace inviwo

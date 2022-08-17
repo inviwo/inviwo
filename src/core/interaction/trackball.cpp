@@ -136,8 +136,7 @@ Trackball::Trackball(std::string_view identifier, std::string_view displayName,
     movementSpeed_.visibilityDependsOn(trackballMethod_,
                                        [](const OptionPropertyInt& opt) { return opt == 2; });
 
-    mouseReset_.setVisible(false);
-    wheelZoom_.setVisible(false);     // Is not displayed properly
+    mouseReset_.setVisible(false);    // Should not be changed
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
@@ -206,8 +205,7 @@ Trackball::Trackball(const Trackball& rhs)
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, eventprops());
 
-    mouseReset_.setVisible(false);
-    wheelZoom_.setVisible(false);     // Is not displayed properly
+    mouseReset_.setVisible(false);    // Should not be changed
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);

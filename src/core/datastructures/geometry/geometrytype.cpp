@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(DrawType dt) {
+std::string_view enumToStr(DrawType dt) {
     switch (dt) {
         case DrawType::Points:
             return "Points";
@@ -46,7 +46,7 @@ std::string_view util::name(DrawType dt) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid DrawType enum value '{}'",
                     static_cast<int>(dt));
 }
-std::string_view util::name(ConnectivityType ct) {
+std::string_view enumToStr(ConnectivityType ct) {
     switch (ct) {
         case ConnectivityType::None:
             return "None";
@@ -64,7 +64,7 @@ std::string_view util::name(ConnectivityType ct) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
                     "Found invalid ConnectivityType enum value '{}'", static_cast<int>(ct));
 }
-std::string_view util::name(BufferType bt) {
+std::string_view enumToStr(BufferType bt) {
     switch (bt) {
         case BufferType::PositionAttrib:
             return "Position";
@@ -90,7 +90,7 @@ std::string_view util::name(BufferType bt) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid BufferType enum value '{}'",
                     static_cast<int>(bt));
 }
-std::string_view util::name(BufferUsage bu) {
+std::string_view enumToStr(BufferUsage bu) {
     switch (bu) {
         case BufferUsage::Static:
             return "Static";
@@ -100,7 +100,7 @@ std::string_view util::name(BufferUsage bu) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid BufferUsage enum value '{}'",
                     static_cast<int>(bu));
 }
-std::string_view util::name(BufferTarget bt) {
+std::string_view enumToStr(BufferTarget bt) {
     switch (bt) {
         case BufferTarget::Data:
             return "Data";
@@ -111,10 +111,10 @@ std::string_view util::name(BufferTarget bt) {
                     static_cast<int>(bt));
 }
 
-std::ostream& operator<<(std::ostream& ss, DrawType dt) { return ss << util::name(dt); }
-std::ostream& operator<<(std::ostream& ss, ConnectivityType ct) { return ss << util::name(ct); }
-std::ostream& operator<<(std::ostream& ss, BufferType bt) { return ss << util::name(bt); }
-std::ostream& operator<<(std::ostream& ss, BufferUsage bu) { return ss << util::name(bu); }
-std::ostream& operator<<(std::ostream& ss, BufferTarget bt) { return ss << util::name(bt); }
+std::ostream& operator<<(std::ostream& ss, DrawType dt) { return ss << enumToStr(dt); }
+std::ostream& operator<<(std::ostream& ss, ConnectivityType ct) { return ss << enumToStr(ct); }
+std::ostream& operator<<(std::ostream& ss, BufferType bt) { return ss << enumToStr(bt); }
+std::ostream& operator<<(std::ostream& ss, BufferUsage bu) { return ss << enumToStr(bu); }
+std::ostream& operator<<(std::ostream& ss, BufferTarget bt) { return ss << enumToStr(bt); }
 
 }  // namespace inviwo

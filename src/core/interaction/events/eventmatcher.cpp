@@ -96,6 +96,14 @@ void KeyboardEventMatcher::deserialize(Deserializer& d) {
     util::for_each_argument([&d](auto& x) { x.deserialize(d); }, key_, states_, modifiers_);
 }
 
+std::string KeyboardEventMatcher::displayString() const {
+    if (modifiers_ != KeyModifier::None) {
+        return fmt::format("{}+{}", modifiers_, key_);
+    } else {
+        return fmt::format("{}", key_);
+    }
+}
+
 MouseEventMatcher::MouseEventMatcher(MouseButtons buttons, MouseStates states,
                                      KeyModifiers modifiers)
     : EventMatcher()
@@ -167,6 +175,22 @@ void MouseEventMatcher::deserialize(Deserializer& d) {
     util::for_each_argument([&d](auto& x) { x.deserialize(d); }, buttons_, states_, modifiers_);
 }
 
+std::string MouseEventMatcher::displayString() const {
+    if (buttons_ == MouseButtons{flags::any}) {
+        if (modifiers_ != KeyModifier::None) {
+            return fmt::format("{}+Any", modifiers_);
+        } else {
+            return "Any";
+        }
+    } else {
+        if (modifiers_ != KeyModifier::None) {
+            return fmt::format("{}+{}", modifiers_, buttons_);
+        } else {
+            return fmt::format("{}", buttons_);
+        }
+    }
+}
+
 WheelEventMatcher::WheelEventMatcher(KeyModifiers modifiers)
     : EventMatcher(), modifiers_("modifiers", modifiers) {}
 
@@ -202,6 +226,14 @@ void WheelEventMatcher::serialize(Serializer& s) const {
 void WheelEventMatcher::deserialize(Deserializer& d) {
     EventMatcher::deserialize(d);
     util::for_each_argument([&d](auto& x) { x.deserialize(d); }, modifiers_);
+}
+
+std::string WheelEventMatcher::displayString() const {
+    if (modifiers_ != KeyModifier::None) {
+        return fmt::format("{}+Wheel", modifiers_);
+    } else {
+        return "Wheel";
+    }
 }
 
 GestureEventMatcher::GestureEventMatcher(GestureTypes types, GestureStates states, int numFingers,
@@ -267,6 +299,14 @@ void GestureEventMatcher::deserialize(Deserializer& d) {
                             modifiers_);
 }
 
+std::string GestureEventMatcher::displayString() const {
+    if (modifiers_ != KeyModifier::None) {
+        return fmt::format("{}+{}", modifiers_, types_);
+    } else {
+        return fmt::format("{}", types_);
+    }
+}
+
 GeneralEventMatcher::GeneralEventMatcher(std::function<bool(Event*)> matcher)
     : EventMatcher(), matcher_{std::move(matcher)} {}
 
@@ -275,5 +315,10 @@ GeneralEventMatcher* GeneralEventMatcher::clone() const { return new GeneralEven
 bool GeneralEventMatcher::operator()(Event* e) { return matcher_(e); }
 
 bool GeneralEventMatcher::isDefaultState() const { return true; }
+
+std::string GeneralEventMatcher::displayString() const {
+    return "Custom trigger";
+}
+
 
 }  // namespace inviwo

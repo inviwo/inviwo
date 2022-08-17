@@ -58,9 +58,7 @@ public:
 };
 
 enum class ColumnType { Index, Ordinal, Categorical };
-namespace util {
-IVW_CORE_API std::string_view name(ColumnType b);
-}  // namespace util
+IVW_CORE_API std::string_view enumToStr(ColumnType b);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ColumnType type);
 
 /**

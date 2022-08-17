@@ -37,7 +37,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(PickingState s) {
+std::string_view enumToStr(PickingState s) {
     switch (s) {
         case PickingState::None:
             return "None";
@@ -51,7 +51,7 @@ std::string_view util::name(PickingState s) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid PickingState enum value '{}'",
                     static_cast<int>(s));
 }
-std::string_view util::name(PickingPressItem s) {
+std::string_view enumToStr(PickingPressItem s) {
     switch (s) {
         case PickingPressItem::None:
             return "None";
@@ -65,7 +65,7 @@ std::string_view util::name(PickingPressItem s) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
                     "Found invalid PickingPressItem enum value '{}'", static_cast<int>(s));
 }
-std::string_view util::name(PickingPressState s) {
+std::string_view enumToStr(PickingPressState s) {
     switch (s) {
         case PickingPressState::None:
             return "None";
@@ -81,7 +81,7 @@ std::string_view util::name(PickingPressState s) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
                     "Found invalid PickingPressState enum value '{}'", static_cast<int>(s));
 }
-std::string_view util::name(PickingHoverState s) {
+std::string_view enumToStr(PickingHoverState s) {
     switch (s) {
         case PickingHoverState::None:
             return "None";
@@ -96,25 +96,25 @@ std::string_view util::name(PickingHoverState s) {
                     "Found invalid PickingHoverState enum value '{}'", static_cast<int>(s));
 }
 
-std::ostream& operator<<(std::ostream& ss, PickingState s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, PickingState s) { return ss << enumToStr(s); }
 std::ostream& operator<<(std::ostream& ss, PickingStates s) {
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 
-std::ostream& operator<<(std::ostream& ss, PickingPressItem s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, PickingPressItem s) { return ss << enumToStr(s); }
 std::ostream& operator<<(std::ostream& ss, PickingPressItems s) {
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 
-std::ostream& operator<<(std::ostream& ss, PickingPressState s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, PickingPressState s) { return ss << enumToStr(s); }
 std::ostream& operator<<(std::ostream& ss, PickingPressStates s) {
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 
-std::ostream& operator<<(std::ostream& ss, PickingHoverState s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, PickingHoverState s) { return ss << enumToStr(s); }
 std::ostream& operator<<(std::ostream& ss, PickingHoverStates s) {
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;

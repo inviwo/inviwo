@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(AcceptMode mode) {
+std::string_view enumToStr(AcceptMode mode) {
     switch (mode) {
         case AcceptMode::Open:
             return "Open";
@@ -44,7 +44,7 @@ std::string_view util::name(AcceptMode mode) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid AcceptMode enum value '{}'",
                     static_cast<int>(mode));
 }
-std::string_view util::name(FileMode mode) {
+std::string_view enumToStr(FileMode mode) {
     switch (mode) {
         case FileMode::AnyFile:
             return "Any File";
@@ -61,7 +61,7 @@ std::string_view util::name(FileMode mode) {
                     static_cast<int>(mode));
 }
 
-std::ostream& operator<<(std::ostream& ss, AcceptMode& mode) { return ss << util::name(mode); }
-std::ostream& operator<<(std::ostream& ss, FileMode& mode) { return ss << util::name(mode); }
+std::ostream& operator<<(std::ostream& ss, AcceptMode& mode) { return ss << enumToStr(mode); }
+std::ostream& operator<<(std::ostream& ss, FileMode& mode) { return ss << enumToStr(mode); }
 
 }  // namespace inviwo

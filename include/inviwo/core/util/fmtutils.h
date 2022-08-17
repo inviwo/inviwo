@@ -29,8 +29,27 @@
 #pragma once
 
 #include <fmt/format.h>
+#include <inviwo/core/util/detected.h>
 
 namespace inviwo {
+
+template <typename T>
+struct FlagFormatter : fmt::formatter<fmt::string_view> {
+    template <typename U>
+    using HasEnumToStr = decltype(enumToStr(std::declval<U>()));
+
+    template <typename FormatContext>
+    auto format(T val, FormatContext& ctx) const {
+        if constexpr (util::is_detected_exact_v<std::string_view, HasEnumToStr, T>) {
+            return fmt::formatter<fmt::string_view>::format(enumToStr(val), ctx);
+        } else {
+            static_assert(util::alwaysFalse<T>(),
+                          "Missing enumToStr(T val) overload for type T "
+                          "FlagFormatter requires that a std::string_view enumToStr(T val) "
+                          "overload exists in the namespace of T");
+        }
+    }
+};
 
 template <typename T>
 struct FlagsFormatter : fmt::formatter<fmt::string_view> {
@@ -39,18 +58,6 @@ struct FlagsFormatter : fmt::formatter<fmt::string_view> {
         fmt::memory_buffer buff;
         fmt::format_to(std::back_inserter(buff), "{}", fmt::join(val, "+"));
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
-    }
-};
-template <typename T>
-struct FlagFormatter : fmt::formatter<fmt::string_view> {
-    template <typename U>
-    static std::string_view name(U val) {
-        return name(val);
-    }
-
-    template <typename FormatContext>
-    auto format(T val, FormatContext& ctx) const {
-        return formatter<fmt::string_view>::format(name<T>(val), ctx);
     }
 };
 

@@ -78,11 +78,8 @@ constexpr BrushingModification fromAction(BrushingAction action) {
 ALLOW_FLAGS_FOR_ENUM(BrushingModification)
 using BrushingModifications = flags::flags<BrushingModification>;
 
-namespace util {
-IVW_CORE_API std::string_view name(BrushingAction dt);
-IVW_CORE_API std::string_view name(BrushingModification dt);
-}  // namespace util
-
+IVW_CORE_API std::string_view enumToStr(BrushingAction dt);
+IVW_CORE_API std::string_view enumToStr(BrushingModification dt);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BrushingAction action);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BrushingModification action);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BrushingModifications action);

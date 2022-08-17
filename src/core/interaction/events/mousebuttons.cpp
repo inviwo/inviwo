@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(MouseButton b) {
+std::string_view enumToStr(MouseButton b) {
     switch (b) {
         case MouseButton::None:
             return "None";
@@ -49,7 +49,7 @@ std::string_view util::name(MouseButton b) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseButton enum value '{}'", static_cast<int>(b));
 }
 
-std::string_view util::name(MouseState s) {
+std::string_view enumToStr(MouseState s) {
     switch (s) {
         case MouseState::Move:
             return "Move";
@@ -63,8 +63,8 @@ std::string_view util::name(MouseState s) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseState enum value '{}'", static_cast<int>(s));
 }
 
-std::ostream& operator<<(std::ostream& ss, MouseButton b) { return ss << util::name(b); }
-std::ostream& operator<<(std::ostream& ss, MouseState s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, MouseButton b) { return ss << enumToStr(b); }
+std::ostream& operator<<(std::ostream& ss, MouseState s) { return ss << enumToStr(s); }
 std::ostream& operator<<(std::ostream& ss, MouseButtons bs) {
     std::copy(bs.begin(), bs.end(), util::make_ostream_joiner(ss, "+"));
     return ss;

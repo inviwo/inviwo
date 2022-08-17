@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(ConstraintBehavior cb) {
+std::string_view enumToStr(ConstraintBehavior cb) {
     switch (cb) {
         case ConstraintBehavior::Editable:
             return "Editable";
@@ -48,6 +48,6 @@ std::string_view util::name(ConstraintBehavior cb) {
                     "Found invalid ConstraintBehavior enum value '{}'", static_cast<int>(cb));
 }
 
-std::ostream& operator<<(std::ostream& ss, ConstraintBehavior cb) { return ss << util::name(cb); }
+std::ostream& operator<<(std::ostream& ss, ConstraintBehavior cb) { return ss << enumToStr(cb); }
 
 }  // namespace inviwo

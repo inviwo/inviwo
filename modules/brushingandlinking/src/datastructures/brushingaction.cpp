@@ -53,7 +53,7 @@ std::string_view BrushingTarget::findOrAdd(std::string_view target) {
     }
 }
 
-std::string_view util::name(BrushingAction action) {
+std::string_view enumToStr(BrushingAction action) {
     switch (action) {
         case BrushingAction::Filter:
             return "Filter";
@@ -68,7 +68,7 @@ std::string_view util::name(BrushingAction action) {
                     static_cast<int>(action));
 }
 
-std::string_view util::name(BrushingModification bm) {
+std::string_view enumToStr(BrushingModification bm) {
     switch (bm) {
         case BrushingModification::Filtered:
             return "Filtered";
@@ -82,10 +82,10 @@ std::string_view util::name(BrushingModification bm) {
 }
 
 std::ostream& operator<<(std::ostream& ss, BrushingAction action) {
-    return ss << util::name(action);
+    return ss << enumToStr(action);
 }
 std::ostream& operator<<(std::ostream& ss, BrushingModification action) {
-    return ss << util::name(action);
+    return ss << enumToStr(action);
 }
 std::ostream& operator<<(std::ostream& ss, BrushingModifications action) {
     std::copy(action.begin(), action.end(), util::make_ostream_joiner(ss, "+"));

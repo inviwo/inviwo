@@ -58,6 +58,8 @@ public:
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
+    
+    virtual std::string displayString() const = 0;
 
 protected:
     EventMatcher(const EventMatcher&) = default;
@@ -90,6 +92,7 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+     virtual std::string displayString() const override;
 protected:
     KeyboardEventMatcher(const KeyboardEventMatcher&) = default;
     KeyboardEventMatcher& operator=(const KeyboardEventMatcher&) = default;
@@ -126,6 +129,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual std::string displayString() const override;
+    
 protected:
     MouseEventMatcher(const MouseEventMatcher&) = default;
     MouseEventMatcher& operator=(const MouseEventMatcher&) = default;
@@ -154,6 +159,8 @@ public:
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
+    
+    virtual std::string displayString() const override;
 
 protected:
     WheelEventMatcher(const WheelEventMatcher&) = default;
@@ -192,6 +199,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual std::string displayString() const override;
+
 protected:
     GestureEventMatcher(const GestureEventMatcher&) = default;
     GestureEventMatcher& operator=(const GestureEventMatcher&) = default;
@@ -215,6 +224,8 @@ public:
     static std::unique_ptr<GeneralEventMatcher> create();
 
     virtual bool isDefaultState() const override;
+
+    virtual std::string displayString() const override;
 
 protected:
     GeneralEventMatcher(const GeneralEventMatcher&) = default;

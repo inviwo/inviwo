@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(KeyModifier m) {
+std::string_view enumToStr(KeyModifier m) {
     switch (m) {
         case KeyModifier::None:
             return "None";
@@ -54,7 +54,7 @@ std::string_view util::name(KeyModifier m) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid KeyModifier enum value '{}'",
                     static_cast<int>(m));
 }
-std::string_view util::name(KeyState s) {
+std::string_view enumToStr(KeyState s) {
     switch (s) {
         case KeyState::Press:
             return "Press";
@@ -64,7 +64,7 @@ std::string_view util::name(KeyState s) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid KeyState enum value '{}'",
                     static_cast<int>(s));
 }
-std::string_view util::name(IvwKey k) {
+std::string_view enumToStr(IvwKey k) {
     switch (k) {
         case IvwKey::Undefined:
             return "Undefined";
@@ -359,16 +359,16 @@ std::string_view util::name(IvwKey k) {
                     static_cast<int>(k));
 }
 
-std::ostream& operator<<(std::ostream& ss, KeyModifier m) { return ss << util::name(m); }
+std::ostream& operator<<(std::ostream& ss, KeyModifier m) { return ss << enumToStr(m); }
 std::ostream& operator<<(std::ostream& ss, KeyModifiers ms) {
     std::copy(ms.begin(), ms.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
-std::ostream& operator<<(std::ostream& ss, KeyState s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, KeyState s) { return ss << enumToStr(s); }
 std::ostream& operator<<(std::ostream& ss, KeyStates s) {
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
-std::ostream& operator<<(std::ostream& ss, IvwKey k) { return ss << util::name(k); }
+std::ostream& operator<<(std::ostream& ss, IvwKey k) { return ss << enumToStr(k); }
 
 }  // namespace inviwo

@@ -288,7 +288,7 @@ std::map<std::string, std::string>& PropertyPresetManager::getPropertyPresets(Pr
     return property->createMetaData<MT>("SavedState")->getMap();
 }
 
-std::string_view util::name(PropertyPresetType p) {
+std::string_view enumToStr(PropertyPresetType p) {
     switch (p) {
         case PropertyPresetType::Property:
             return "Property";
@@ -301,7 +301,7 @@ std::string_view util::name(PropertyPresetType p) {
                     "Found invalid PropertyPresetType enum value '{}'", static_cast<int>(p));
 }
 
-std::ostream& operator<<(std::ostream& ss, PropertyPresetType p) { return ss << util::name(p); }
+std::ostream& operator<<(std::ostream& ss, PropertyPresetType p) { return ss << enumToStr(p); }
 
 std::ostream& operator<<(std::ostream& ss, PropertyPresetTypes ps) {
     std::copy(ps.begin(), ps.end(), util::make_ostream_joiner(ss, ", "));

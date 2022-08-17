@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(ImageType type) {
+std::string_view enumToStr(ImageType type) {
     switch (type) {
         case ImageType::ColorOnly:
             return "Color Only";
@@ -46,7 +46,7 @@ std::string_view util::name(ImageType type) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid ImageType enum value '{}'",
                     static_cast<int>(type));
 }
-std::string_view util::name(LayerType type) {
+std::string_view enumToStr(LayerType type) {
     switch (type) {
         case LayerType::Color:
             return "Color";
@@ -58,7 +58,7 @@ std::string_view util::name(LayerType type) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid LayerType enum value '{}'",
                     static_cast<int>(type));
 }
-std::string_view util::name(ImageChannel channel) {
+std::string_view enumToStr(ImageChannel channel) {
     switch (channel) {
         case ImageChannel::Red:
             return "r";
@@ -77,7 +77,7 @@ std::string_view util::name(ImageChannel channel) {
                     static_cast<int>(channel));
 }
 
-std::string_view util::name(InterpolationType type) {
+std::string_view enumToStr(InterpolationType type) {
     switch (type) {
         case InterpolationType::Nearest:
             return "Nearest";
@@ -87,7 +87,7 @@ std::string_view util::name(InterpolationType type) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
                     "Found invalid InterpolationType enum value '{}'", static_cast<int>(type));
 }
-std::string_view util::name(Wrapping type) {
+std::string_view enumToStr(Wrapping type) {
     switch (type) {
         case Wrapping::Mirror:
             return "Mirror";
@@ -100,12 +100,12 @@ std::string_view util::name(Wrapping type) {
                     static_cast<int>(type));
 }
 
-std::ostream& operator<<(std::ostream& ss, ImageType type) { return ss << util::name(type); }
+std::ostream& operator<<(std::ostream& ss, ImageType type) { return ss << enumToStr(type); }
 
-std::ostream& operator<<(std::ostream& ss, LayerType type) { return ss << util::name(type); }
+std::ostream& operator<<(std::ostream& ss, LayerType type) { return ss << enumToStr(type); }
 
 std::ostream& operator<<(std::ostream& ss, ImageChannel channel) {
-    return ss << util::name(channel);
+    return ss << enumToStr(channel);
 }
 
 std::istream& operator>>(std::istream& ss, ImageChannel& channel) {
@@ -153,7 +153,7 @@ std::istream& operator>>(std::istream& ss, SwizzleMask& mask) {
 }
 
 std::ostream& operator<<(std::ostream& ss, InterpolationType type) {
-    return ss << util::name(type);
+    return ss << enumToStr(type);
 }
 
 std::istream& operator>>(std::istream& ss, InterpolationType& interpolation) {
@@ -172,7 +172,7 @@ std::istream& operator>>(std::istream& ss, InterpolationType& interpolation) {
     return ss;
 }
 
-std::ostream& operator<<(std::ostream& ss, Wrapping type) { return ss << util::name(type); }
+std::ostream& operator<<(std::ostream& ss, Wrapping type) { return ss << enumToStr(type); }
 
 std::istream& operator>>(std::istream& ss, Wrapping& wrapping) {
     std::string str;

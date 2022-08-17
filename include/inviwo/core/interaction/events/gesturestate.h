@@ -53,10 +53,8 @@ enum class GestureState {
 ALLOW_FLAGS_FOR_ENUM(GestureState)
 using GestureStates = flags::flags<GestureState>;
 
-namespace util {
-IVW_CORE_API std::string_view name(GestureType b);
-IVW_CORE_API std::string_view name(GestureState b);
-}  // namespace util
+IVW_CORE_API std::string_view enumToStr(GestureType b);
+IVW_CORE_API std::string_view enumToStr(GestureState b);
 
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureType t);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureState s);

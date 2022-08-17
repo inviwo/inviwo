@@ -73,10 +73,7 @@ enum class ConstraintBehavior {
 
 };
 
-namespace util {
-IVW_CORE_API std::string_view name(ConstraintBehavior cb);
-}
-
+IVW_CORE_API std::string_view enumToStr(ConstraintBehavior cb);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ConstraintBehavior cb);
 
 }  // namespace inviwo

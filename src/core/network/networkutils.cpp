@@ -35,6 +35,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/autolinker.h>
@@ -535,7 +536,7 @@ std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetw
                                                std::string_view workspaceFile,
                                                InviwoApplication* app) {
 
-    std::ifstream fs(workspaceFile);
+    auto fs = filesystem::ifstream(workspaceFile);
     if (!fs) {
         throw Exception(IVW_CONTEXT_CUSTOM("util::appendProcessorNetwork"),
                         "Could not open workspace file: {}", workspaceFile);

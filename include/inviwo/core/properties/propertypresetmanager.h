@@ -111,10 +111,7 @@ private:
     std::vector<Preset> workspacePresets_;
 };
 
-namespace util {
-IVW_CORE_API std::string_view name(PropertyPresetType p);
-}
-
+IVW_CORE_API std::string_view enumToStr(PropertyPresetType p);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PropertyPresetType p);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PropertyPresetTypes ps);
 

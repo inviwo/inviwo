@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(GestureType t) {
+std::string_view enumToStr(GestureType t) {
     switch (t) {
         case GestureType::Pan:
             return "Pan";
@@ -47,7 +47,7 @@ std::string_view util::name(GestureType t) {
     }
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid GestureType enum value '{}'", static_cast<int>(t));
 }
-std::string_view util::name(GestureState s) {
+std::string_view enumToStr(GestureState s) {
     switch (s) {
         case GestureState::NoGesture:
             return "NoGesture";
@@ -64,8 +64,8 @@ std::string_view util::name(GestureState s) {
                     static_cast<int>(s));
 }
 
-std::ostream& operator<<(std::ostream& ss, GestureType t) { return ss << util::name(t); }
-std::ostream& operator<<(std::ostream& ss, GestureState s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, GestureType t) { return ss << enumToStr(t); }
+std::ostream& operator<<(std::ostream& ss, GestureState s) { return ss << enumToStr(s); }
 std::ostream& operator<<(std::ostream& ss, GestureTypes s) {
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;

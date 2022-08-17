@@ -70,12 +70,10 @@ enum class PickingHoverState { None = 0, Enter = 1 << 0, Move = 1 << 1, Exit = 1
 ALLOW_FLAGS_FOR_ENUM(PickingHoverState)
 using PickingHoverStates = flags::flags<PickingHoverState>;
 
-namespace util {
-IVW_CORE_API std::string_view name(PickingState b);
-IVW_CORE_API std::string_view name(PickingPressItem b);
-IVW_CORE_API std::string_view name(PickingPressState b);
-IVW_CORE_API std::string_view name(PickingHoverState b);
-}  // namespace util
+IVW_CORE_API std::string_view enumToStr(PickingState b);
+IVW_CORE_API std::string_view enumToStr(PickingPressItem b);
+IVW_CORE_API std::string_view enumToStr(PickingPressState b);
+IVW_CORE_API std::string_view enumToStr(PickingHoverState b);
 
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingState s);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingStates s);

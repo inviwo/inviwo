@@ -236,7 +236,7 @@ DynPortManager createDynPortManager(InstanceRenderer* theRenderer, std::string_v
 InstanceRenderer::InstanceRenderer()
     : Processor()
     , inport_("mesh", "Mesh to be drawn multiple times"_help)
-    , background_("background", "Optional background image"_help)
+    , background_("background", "Background image (optional)"_help)
     , outport_("image", "The rendered image"_help)
     , ports_{"ports", "Ports", R"(
         Add and remove vector ports for the instance rendering. The rendering will render as many

@@ -54,10 +54,8 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseState s);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseButtons bs);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseStates s);
 
-namespace util {
-IVW_CORE_API std::string_view name(MouseButton b);
-IVW_CORE_API std::string_view name(MouseState b);
-}  // namespace util
+IVW_CORE_API std::string_view enumToStr(MouseButton b);
+IVW_CORE_API std::string_view enumToStr(MouseState b);
 
 }  // namespace inviwo
 

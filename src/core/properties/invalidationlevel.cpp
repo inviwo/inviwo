@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(InvalidationLevel level) {
+std::string_view enumToStr(InvalidationLevel level) {
     switch (level) {
         case InvalidationLevel::Valid:
             return "Valid";
@@ -47,7 +47,7 @@ std::string_view util::name(InvalidationLevel level) {
 }
 
 std::ostream& operator<<(std::ostream& ss, InvalidationLevel level) {
-    return ss << util::name(level);
+    return ss << enumToStr(level);
 }
 
 }  // namespace inviwo

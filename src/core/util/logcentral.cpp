@@ -203,7 +203,7 @@ void util::log(Logger* logger, ExceptionContext context, std::string_view messag
                 context.getLine(), message);
 }
 
-std::string_view util::name(LogLevel ll) {
+std::string_view enumToStr(LogLevel ll) {
     switch (ll) {
         case LogLevel::Info:
             return "Info";
@@ -216,7 +216,7 @@ std::string_view util::name(LogLevel ll) {
                     static_cast<int>(ll));
 }
 
-std::string_view util::name(LogAudience la) {
+std::string_view enumToStr(LogAudience la) {
     switch (la) {
         case LogAudience::User:
             return "User";
@@ -227,7 +227,7 @@ std::string_view util::name(LogAudience la) {
                     static_cast<int>(la));
 }
 
-std::string_view util::name(MessageBreakLevel ll) {
+std::string_view enumToStr(MessageBreakLevel ll) {
     switch (ll) {
         case MessageBreakLevel::Info:
             return "Info";
@@ -242,8 +242,8 @@ std::string_view util::name(MessageBreakLevel ll) {
                     "Found invalid MessageBreakLevel enum value '{}'", static_cast<int>(ll));
 }
 
-std::ostream& operator<<(std::ostream& ss, LogLevel ll) { return ss << util::name(ll); }
-std::ostream& operator<<(std::ostream& ss, LogAudience la) { return ss << util::name(la); }
-std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll) { return ss << util::name(ll); }
+std::ostream& operator<<(std::ostream& ss, LogLevel ll) { return ss << enumToStr(ll); }
+std::ostream& operator<<(std::ostream& ss, LogAudience la) { return ss << enumToStr(la); }
+std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll) { return ss << enumToStr(ll); }
 
 }  // namespace inviwo

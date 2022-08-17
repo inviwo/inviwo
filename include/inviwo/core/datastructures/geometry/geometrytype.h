@@ -69,13 +69,12 @@ enum class DrawType { NotSpecified = 0, Points, Lines, Triangles };
 
 enum class ConnectivityType { None = 0, Strip, Loop, Fan, Adjacency, StripAdjacency };
 
-namespace util {
-IVW_CORE_API std::string_view name(DrawType dt);
-IVW_CORE_API std::string_view name(ConnectivityType ct);
-IVW_CORE_API std::string_view name(BufferType bt);
-IVW_CORE_API std::string_view name(BufferUsage bu);
-IVW_CORE_API std::string_view name(BufferTarget bt);
-}  // namespace util
+
+IVW_CORE_API std::string_view enumToStr(DrawType dt);
+IVW_CORE_API std::string_view enumToStr(ConnectivityType ct);
+IVW_CORE_API std::string_view enumToStr(BufferType bt);
+IVW_CORE_API std::string_view enumToStr(BufferUsage bu);
+IVW_CORE_API std::string_view enumToStr(BufferTarget bt);
 
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, DrawType dt);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ConnectivityType ct);

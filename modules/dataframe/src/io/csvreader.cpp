@@ -37,6 +37,7 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/detected.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 
 #include <fstream>
@@ -211,11 +212,6 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::string_view fileName) {
 }
 
 namespace util {
-
-template <typename T>
-constexpr bool alwaysFalse() {
-    return false;
-}
 
 template <typename Func>
 size_t parse(std::string_view str, std::string_view delimiters, std::optional<size_t> expectedParts,

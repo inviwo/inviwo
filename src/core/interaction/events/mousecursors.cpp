@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(MouseCursor b) {
+std::string_view enumToStr(MouseCursor b) {
     switch (b) {
         case MouseCursor::Arrow:
             return "Arrow";
@@ -79,6 +79,6 @@ std::string_view util::name(MouseCursor b) {
                     static_cast<int>(b));
 }
 
-std::ostream& operator<<(std::ostream& ss, MouseCursor c) { return ss << util::name(c); }
+std::ostream& operator<<(std::ostream& ss, MouseCursor c) { return ss << enumToStr(c); }
 
 }  // namespace inviwo

@@ -45,10 +45,7 @@ enum class InvalidationLevel {
     InvalidResources  // Trigger a call to initializeResources and then process.
 };
 
-namespace util {
-IVW_CORE_API std::string_view name(InvalidationLevel level);
-}
-
+IVW_CORE_API std::string_view enumToStr(InvalidationLevel level);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, InvalidationLevel level);
 
 }  // namespace inviwo

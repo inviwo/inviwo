@@ -49,13 +49,9 @@ enum class TouchState {
 ALLOW_FLAGS_FOR_ENUM(TouchState)
 using TouchStates = flags::flags<TouchState>;
 
+IVW_CORE_API std::string_view enumToStr(TouchState b);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, TouchState s);
-
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, TouchStates s);
-
-namespace util {
-IVW_CORE_API std::string_view name(TouchState b);
-}  // namespace util
 
 }  // namespace inviwo
 

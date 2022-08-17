@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-std::string_view util::name(TouchState s) {
+std::string_view enumToStr(TouchState s) {
     switch (s) {
         case TouchState::None:
             return "None";
@@ -51,7 +51,7 @@ std::string_view util::name(TouchState s) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid TouchState enum value '{}'", static_cast<int>(s));
 }
 
-std::ostream& operator<<(std::ostream& ss, TouchState s) { return ss << util::name(s); }
+std::ostream& operator<<(std::ostream& ss, TouchState s) { return ss << enumToStr(s); }
 
 std::ostream& operator<<(std::ostream& ss, TouchStates s) {
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));

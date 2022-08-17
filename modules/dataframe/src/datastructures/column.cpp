@@ -234,7 +234,7 @@ std::shared_ptr<const Buffer<std::uint32_t>> CategoricalColumn::getTypedBuffer()
     return buffer_;
 }
 
-std::string_view util::name(ColumnType type) {
+std::string_view enumToStr(ColumnType type) {
     switch (type) {
         case ColumnType::Index:
             return "Index";
@@ -246,6 +246,6 @@ std::string_view util::name(ColumnType type) {
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid ColumnType enum value '{}'",
                     static_cast<int>(type));
 }
-std::ostream& operator<<(std::ostream& ss, ColumnType type) { return ss << util::name(type); }
+std::ostream& operator<<(std::ostream& ss, ColumnType type) { return ss << enumToStr(type); }
 
 }  // namespace inviwo

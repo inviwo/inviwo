@@ -131,9 +131,8 @@ enum class CoordinateSpace {
     Data, Model, World, Index, Clip, View
 };
 
-namespace util {
-IVW_CORE_API std::string_view name(CoordinateSpace s);
-}
+IVW_CORE_API std::string_view enumToStr(CoordinateSpace s);
+
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, CoordinateSpace s);
 
 template<unsigned int N>

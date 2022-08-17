@@ -37,10 +37,7 @@ namespace inviwo {
 
 enum class CodeState { Broken, Experimental, Stable, Deprecated };
 
-namespace util {
-IVW_CORE_API std::string_view name(CodeState cs);
-}
-
+IVW_CORE_API std::string_view enumToStr(CodeState cs);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, CodeState cs);
 
 }  // namespace inviwo

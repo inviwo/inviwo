@@ -220,11 +220,9 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, KeyState s);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, KeyStates s);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, IvwKey k);
 
-namespace util {
-IVW_CORE_API std::string_view name(KeyModifier m);
-IVW_CORE_API std::string_view name(KeyState s);
-IVW_CORE_API std::string_view name(IvwKey k);
-}  // namespace util
+IVW_CORE_API std::string_view enumToStr(KeyModifier m);
+IVW_CORE_API std::string_view enumToStr(KeyState s);
+IVW_CORE_API std::string_view enumToStr(IvwKey k);
 
 }  // namespace inviwo
 

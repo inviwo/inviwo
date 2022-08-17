@@ -60,11 +60,8 @@ enum class MouseCursor {
     Busy
 };
 
+IVW_CORE_API std::string_view enumToStr(MouseCursor b);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseCursor c);
-
-namespace util {
-IVW_CORE_API std::string_view name(MouseCursor b);
-}  // namespace util
 
 }  // namespace inviwo
 

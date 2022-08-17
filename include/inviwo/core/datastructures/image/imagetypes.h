@@ -60,13 +60,11 @@ enum class ImageChannel : unsigned char { Red, Green, Blue, Alpha, Zero, One };
 
 using SwizzleMask = std::array<ImageChannel, 4>;
 
-namespace util {
-IVW_CORE_API std::string_view name(ImageType b);
-IVW_CORE_API std::string_view name(LayerType b);
-IVW_CORE_API std::string_view name(ImageChannel b);
-IVW_CORE_API std::string_view name(InterpolationType b);
-IVW_CORE_API std::string_view name(Wrapping b);
-}  // namespace util
+IVW_CORE_API std::string_view enumToStr(ImageType b);
+IVW_CORE_API std::string_view enumToStr(LayerType b);
+IVW_CORE_API std::string_view enumToStr(ImageChannel b);
+IVW_CORE_API std::string_view enumToStr(InterpolationType b);
+IVW_CORE_API std::string_view enumToStr(Wrapping b);
 
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ImageType type);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LayerType type);
