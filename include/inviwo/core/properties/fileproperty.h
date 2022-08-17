@@ -77,7 +77,7 @@ public:
                  std::string_view value = "", std::string_view contentType = "default",
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
-                 
+
     /**
      * \brief Constructor for the FileProperty
      *

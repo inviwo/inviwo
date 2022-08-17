@@ -152,9 +152,7 @@ std::istream& operator>>(std::istream& ss, SwizzleMask& mask) {
     return ss;
 }
 
-std::ostream& operator<<(std::ostream& ss, InterpolationType type) {
-    return ss << enumToStr(type);
-}
+std::ostream& operator<<(std::ostream& ss, InterpolationType type) { return ss << enumToStr(type); }
 
 std::istream& operator>>(std::istream& ss, InterpolationType& interpolation) {
     std::string str;

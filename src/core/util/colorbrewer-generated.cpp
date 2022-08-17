@@ -38,7 +38,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 namespace inviwo {
 namespace colorbrewer {
 
-const std::vector<dvec4> &getColormap(Colormap colormap) {
+const std::vector<dvec4>& getColormap(Colormap colormap) {
     switch (colormap) {
         // clang-format off
         case Colormap::Accent_1: {
@@ -2822,15 +2822,15 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
             return ylorrd_8;
         }
 
-        // clang-format on
+            // clang-format on
     }
     IVW_ASSERT(false, "Unhandled enum value");
     static const std::vector<dvec4> dummy{};
     return dummy;
 }
 
-glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { 
-        // clang-format off
+glm::uint8 getMinNumberOfColorsForFamily(const Family& family) {
+    // clang-format off
     if (family == Family::Accent || family == Family::Paired || 
         family == Family::Set1 || family == Family::Set2) {
         return 1;
@@ -2857,7 +2857,7 @@ glm::uint8 getMinNumberOfColorsForFamily(const Family &family) {
     return 0;
 }
 
-glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
+glm::uint8 getMaxNumberOfColorsForFamily(const Family& family) {
     // clang-format off
     if (family == Family::Accent || family == Family::Dark2 || 
         family == Family::Pastel2 || family == Family::Set2 || 
@@ -2891,7 +2891,7 @@ glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
     return 0;
 }
 
-std::vector<Family> getFamiliesForCategory(const Category &category) {
+std::vector<Family> getFamiliesForCategory(const Category& category) {
     std::vector<Family> v;
     switch (category) {
         // clang-format off
@@ -3218,7 +3218,7 @@ std::ostream& operator<<(std::ostream& os, Colormap colormap) {
         case Colormap::YlOrRd_6: os << "YlOrRd_6"; break;
         case Colormap::YlOrRd_7: os << "YlOrRd_7"; break;
         case Colormap::YlOrRd_8: os << "YlOrRd_8"; break;
-        // clang-format on
+            // clang-format on
     }
     return os;
 }
@@ -3231,7 +3231,7 @@ std::ostream& operator<<(std::ostream& os, Category category) {
         case Category::Sequential: os << "Sequential"; break;
         case Category::NumberOfColormapCategories: os << "NumberOfColormapCategories"; break;
         case Category::Undefined: os << "Undefined"; break;
-        // clang-format on
+            // clang-format on
     }
     return os;
 }
@@ -3276,7 +3276,7 @@ std::ostream& operator<<(std::ostream& os, Family family) {
         case Family::YlOrRd: os << "YlOrRd"; break;
         case Family::NumberOfColormapFamilies: os << "NumberOfColormapFamilies"; break;
         case Family::Undefined: os << "Undefined"; break;
-        // clang-format on
+            // clang-format on
     }
     return os;
 }

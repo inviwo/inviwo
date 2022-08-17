@@ -106,7 +106,7 @@ PYBIND11_MODULE(inviwopy, m) {
     // Note the order is important here, we need to load all base classes before any derived clases
     exposeGLMTypes(glmModule);
     exposeGLMMatTypes(glmModule);
-    
+
     exposeDocument(m);
 
     exposeLogging(m);

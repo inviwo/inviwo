@@ -38,7 +38,6 @@
 
 #include <fmt/core.h>
 
-
 namespace inviwo {
 
 enum class KeyModifier {

@@ -72,7 +72,7 @@ public:
     void resetBorderColors();
     void setBorderColor(QColor borderColor);
     void setSelectedBorderColor(QColor selectedBorderColor);
-    
+
     void setHoverInfo(const QString& info);
     void resetHoverInfo();
 
@@ -97,7 +97,7 @@ protected:
 
     QPainterPath path_;
     QRectF rect_;
-    
+
     QGraphicsTextItem* infoLabel_;
 };
 

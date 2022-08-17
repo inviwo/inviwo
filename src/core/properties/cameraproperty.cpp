@@ -228,7 +228,7 @@ void CameraProperty::set(const Property* srcProperty) {
     }
 }
 
-CameraProperty::operator const Camera &() const { return *camera_; }
+CameraProperty::operator const Camera&() const { return *camera_; }
 
 CameraProperty* CameraProperty::clone() const { return new CameraProperty(*this); }
 

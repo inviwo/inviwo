@@ -104,26 +104,29 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& os, Family family);
 /**
  * Returns the specified colormap. For reference see http://colorbrewer2.org/
  **/
-IVW_CORE_API const std::vector<dvec4> &getColormap(Colormap colormap);
+IVW_CORE_API const std::vector<dvec4>& getColormap(Colormap colormap);
 
 /**
  * Returns the minimum number of colors for which the requested family is available.
  **/
-IVW_CORE_API glm::uint8 getMinNumberOfColorsForFamily(const Family &family);
+IVW_CORE_API glm::uint8 getMinNumberOfColorsForFamily(const Family& family);
 
 /**
  * Returns the maximum number of colors for which the requested family is available.
  **/
-IVW_CORE_API glm::uint8 getMaxNumberOfColorsForFamily(const Family &family);
+IVW_CORE_API glm::uint8 getMaxNumberOfColorsForFamily(const Family& family);
 
 /**
  * Returns all families contained in the specified category.
  **/
-IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category &category);
+IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category& category);
 
 }  // namespace colorbrewer
 }  // namespace inviwo
 
-template <> struct fmt::formatter<inviwo::colorbrewer::Colormap> : ostream_formatter {};
-template <> struct fmt::formatter<inviwo::colorbrewer::Category> : ostream_formatter {};
-template <> struct fmt::formatter<inviwo::colorbrewer::Family> : ostream_formatter {};
+template <>
+struct fmt::formatter<inviwo::colorbrewer::Colormap> : ostream_formatter {};
+template <>
+struct fmt::formatter<inviwo::colorbrewer::Category> : ostream_formatter {};
+template <>
+struct fmt::formatter<inviwo::colorbrewer::Family> : ostream_formatter {};

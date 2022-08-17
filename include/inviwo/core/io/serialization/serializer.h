@@ -39,7 +39,6 @@
 #include <inviwo/core/io/serialization/serializationexception.h>
 #include <inviwo/core/util/detected.h>
 
-
 #include <flags/flags.h>
 
 #include <type_traits>

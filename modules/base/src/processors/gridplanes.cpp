@@ -53,8 +53,8 @@ GridPlanes::GridPlanes()
     , grid_{"grid",
             "A mesh containing the grid planes, can be rendered using, "
             "for example, the Mesh Renderer, Line Renderer or Tube Renderer."_help}
-    , enable_{"enable", "Enable", "Toggles whether or not a given grid plane should be visible"_help,
-              true}
+    , enable_{"enable", "Enable",
+              "Toggles whether or not a given grid plane should be visible"_help, true}
     , spacing_{"spacing", "Spacing",
                "Set the distance between the each line along the given axis"_help, 0.1f}
     , extent_{"extent", "Extent", "Set the extent of the grid along the given axis."_help,

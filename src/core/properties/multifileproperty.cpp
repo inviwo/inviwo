@@ -298,7 +298,7 @@ Document MultiFileProperty::getDescription() const {
 
     std::string currentPath = "";
     // compile compact list of selected files, binning all files of the same directory
-    
+
     StrBuffer buff;
     for (const auto& elem : value_.value) {
         auto dir = filesystem::getFileDirectory(elem);

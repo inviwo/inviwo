@@ -132,7 +132,7 @@ public:
      * @see askToSaveWorkspaceChanges
      */
     bool openWorkspace();
-    
+
     /**
      * shows a file dialog for appending a workspace.
      *
@@ -140,7 +140,6 @@ public:
      * @see askToSaveWorkspaceChanges
      */
     bool appendWorkspace();
-    
 
     void saveWorkspace();
     void saveWorkspaceAs();

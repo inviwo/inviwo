@@ -149,7 +149,7 @@ public:
     virtual OrdinalProperty<T>* clone() const override;
     virtual ~OrdinalProperty();
 
-    operator const T &() const;
+    operator const T&() const;
     const T& operator*() const;
     const T* operator->() const;
 
@@ -370,7 +370,7 @@ OrdinalPropertyState<T> ordinalScale(const T& value = T{0}, const U& max = U{100
             ConstraintBehavior::Immutable,
             std::decay_t<decltype(value)>{max},
             ConstraintBehavior::Ignore,
-            std::decay_t<decltype(value)>{max/U{256}},
+            std::decay_t<decltype(value)>{max / U{256}},
             InvalidationLevel::InvalidOutput,
             PropertySemantics::Default};
 }
@@ -516,7 +516,7 @@ std::string OrdinalProperty<T>::getClassIdentifier() const {
 }
 
 template <typename T>
-OrdinalProperty<T>::operator const T &() const {
+OrdinalProperty<T>::operator const T&() const {
     return value_.value;
 }
 

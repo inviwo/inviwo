@@ -316,9 +316,6 @@ bool GeneralEventMatcher::operator()(Event* e) { return matcher_(e); }
 
 bool GeneralEventMatcher::isDefaultState() const { return true; }
 
-std::string GeneralEventMatcher::displayString() const {
-    return "Custom trigger";
-}
-
+std::string GeneralEventMatcher::displayString() const { return "Custom trigger"; }
 
 }  // namespace inviwo

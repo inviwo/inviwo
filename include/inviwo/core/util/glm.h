@@ -154,7 +154,6 @@ template <typename T = double, glm::length_t C = 1, glm::length_t R = 1,
           glm::qualifier Q = glm::defaultp>
 using glmtype_t = typename glmtype<T, C, R, Q>::type;
 
-
 }  // namespace util
 
 template <unsigned int Dim, typename Type>

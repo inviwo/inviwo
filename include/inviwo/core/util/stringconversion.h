@@ -288,7 +288,6 @@ constexpr auto fmtHelp = IVW_UNINDENT(R"(
     or "breakpoint set -M fmt::v7::detail::error_handler::on_error".
     )");
 
-
 IVW_CORE_API void urlEncodeTo(std::string_view text, StrBuffer& strBuffer);
 IVW_CORE_API void htmlEncodeTo(std::string_view data, StrBuffer& strBuffer);
 IVW_CORE_API std::string urlEncode(std::string_view text);

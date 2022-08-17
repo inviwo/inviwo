@@ -49,7 +49,7 @@ public:
     virtual ~CompositeProcessorFactoryObject() = default;
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
-    
+
     virtual Document getMetaInformation() const override;
 
 private:

@@ -58,7 +58,7 @@ public:
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-    
+
     virtual std::string displayString() const = 0;
 
 protected:
@@ -92,7 +92,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-     virtual std::string displayString() const override;
+    virtual std::string displayString() const override;
+
 protected:
     KeyboardEventMatcher(const KeyboardEventMatcher&) = default;
     KeyboardEventMatcher& operator=(const KeyboardEventMatcher&) = default;
@@ -130,7 +131,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     virtual std::string displayString() const override;
-    
+
 protected:
     MouseEventMatcher(const MouseEventMatcher&) = default;
     MouseEventMatcher& operator=(const MouseEventMatcher&) = default;
@@ -159,7 +160,7 @@ public:
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-    
+
     virtual std::string displayString() const override;
 
 protected:

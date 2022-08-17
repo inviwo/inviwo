@@ -60,7 +60,7 @@ EntryExitPoints::EntryExitPoints()
           "from the inside of the geometry"_help,
           true)
     , trackball_(&camera_) {
-    
+
     addPort(inport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");

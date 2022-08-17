@@ -69,7 +69,6 @@ enum class DrawType { NotSpecified = 0, Points, Lines, Triangles };
 
 enum class ConnectivityType { None = 0, Strip, Loop, Fan, Adjacency, StripAdjacency };
 
-
 IVW_CORE_API std::string_view enumToStr(DrawType dt);
 IVW_CORE_API std::string_view enumToStr(ConnectivityType ct);
 IVW_CORE_API std::string_view enumToStr(BufferType bt);

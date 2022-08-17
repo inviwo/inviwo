@@ -49,7 +49,7 @@ struct ValueWrapper {
         return *this;
     }
 
-    operator const T &() const { return value; }
+    operator const T&() const { return value; }
 
     bool isDefault() const { return value == defaultValue; }
 

@@ -45,7 +45,8 @@ std::string_view enumToStr(GestureType t) {
         case GestureType::Swipe:
             return "Swipe";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid GestureType enum value '{}'", static_cast<int>(t));
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid GestureType enum value '{}'",
+                    static_cast<int>(t));
 }
 std::string_view enumToStr(GestureState s) {
     switch (s) {

@@ -333,7 +333,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<StringProperty>();
     registerProperty<Trackball>();
     registerProperty<CameraTrackball>();
-    
 
     registerProperty<StringsProperty<1>>();
     registerProperty<StringsProperty<2>>();

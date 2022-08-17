@@ -46,7 +46,8 @@ std::string_view enumToStr(MouseButton b) {
         case MouseButton::Right:
             return "Right";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseButton enum value '{}'", static_cast<int>(b));
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseButton enum value '{}'",
+                    static_cast<int>(b));
 }
 
 std::string_view enumToStr(MouseState s) {
@@ -60,7 +61,8 @@ std::string_view enumToStr(MouseState s) {
         case MouseState::DoubleClick:
             return "DoubleClick";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseState enum value '{}'", static_cast<int>(s));
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseState enum value '{}'",
+                    static_cast<int>(s));
 }
 
 std::ostream& operator<<(std::ostream& ss, MouseButton b) { return ss << enumToStr(b); }

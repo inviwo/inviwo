@@ -188,8 +188,12 @@ void ColormapProperty::updateColormaps() {
 
 std::ostream& operator<<(std::ostream& os, ColormapType colormap) {
     switch (colormap) {
-        case ColormapType::Continuous: os << "Continuous"; break;
-        case ColormapType::Categorical: os << "Categorical"; break;
+        case ColormapType::Continuous:
+            os << "Continuous";
+            break;
+        case ColormapType::Categorical:
+            os << "Categorical";
+            break;
     }
     return os;
 }

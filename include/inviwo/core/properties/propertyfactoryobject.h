@@ -34,7 +34,6 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <string_view>
 
-
 namespace inviwo {
 
 class IVW_CORE_API PropertyFactoryObject {

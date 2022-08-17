@@ -74,7 +74,7 @@ public:
 
     const value_type& get() const;
     MinMaxProperty<T>& set(const value_type& value);
-    operator const value_type &() const;
+    operator const value_type&() const;
     const value_type& operator*() const;
     const value_type* operator->() const;
 
@@ -254,7 +254,7 @@ MinMaxProperty<T>& MinMaxProperty<T>::set(const value_type& value) {
 }
 
 template <typename T>
-MinMaxProperty<T>::operator const value_type &() const {
+MinMaxProperty<T>::operator const value_type&() const {
     return value_.value;
 }
 

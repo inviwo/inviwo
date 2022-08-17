@@ -64,6 +64,7 @@ using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 class IVW_CORE_API WorkspaceManager {
 public:
     using ExceptionHandler = std::function<void(ExceptionContext)>;
+
 private:
     using ClearDispatcher = Dispatcher<void()>;
     using SerializationDispatcher =
@@ -79,7 +80,7 @@ public:
 
     using DeserializationCallback = std::function<void(Deserializer&)>;
     using DeserializationHandle = typename DeserializationDispatcher::Handle;
-    
+
     WorkspaceManager(InviwoApplication* app);
     ~WorkspaceManager();
 

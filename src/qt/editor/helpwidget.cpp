@@ -372,8 +372,8 @@ std::tuple<std::string, std::string> loadIdUrl(const QUrl& url, InviwoApplicatio
                                 ""};
                     }
                 }
-                const auto helpText = makePropertyHelp(
-                    *property, utilqt::fromQString(url.path()), app->getPropertyFactory());
+                const auto helpText = makePropertyHelp(*property, utilqt::fromQString(url.path()),
+                                                       app->getPropertyFactory());
                 return {helpText, module.getPath()};
             }
         } else {

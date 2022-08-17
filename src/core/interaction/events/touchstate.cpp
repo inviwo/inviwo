@@ -48,7 +48,8 @@ std::string_view enumToStr(TouchState s) {
         case TouchState::Finished:
             return "Finished";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid TouchState enum value '{}'", static_cast<int>(s));
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid TouchState enum value '{}'",
+                    static_cast<int>(s));
 }
 
 std::ostream& operator<<(std::ostream& ss, TouchState s) { return ss << enumToStr(s); }

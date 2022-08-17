@@ -31,7 +31,6 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmutils.h>
 
-
 namespace inviwo::util {
 
 // Type conversion
@@ -391,6 +390,5 @@ To glm_convert_normalized(From x) {
 }
 
 #include <warn/pop>
-
 
 }  // namespace inviwo::util

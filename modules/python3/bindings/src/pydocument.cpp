@@ -43,9 +43,8 @@ void exposeDocument(pybind11::module& m) {
         .def(py::init<std::string_view>())
         .def("str", &Document::str)
         .def("empty", &Document::empty);
-        
-    
-    m.def("md2doc", &util::md2doc);    
+
+    m.def("md2doc", &util::md2doc);
 }
 
 }  // namespace inviwo

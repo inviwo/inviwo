@@ -106,7 +106,7 @@ public:
 
     CameraProperty& setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
-    
+
     /**
      * Sets given camera properties while respecting their min/max ranges.
      * Locks and unlocks processor network before and after changing property values.
@@ -119,7 +119,7 @@ public:
 
     CameraProperty& setNearPlaneDist(float v);
     CameraProperty& setFarPlaneDist(float v);
-    
+
     /**
      * Set near and far plane distance values and adjust their min/max ranges.
      * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value.
