@@ -20,7 +20,7 @@ def update(paths, year):
     copyright_replacements = {
         f"(\\s*[*#]\\s+Copyright \\(c\\) 20\\d\\d-)(?!{year})20\\d\\d( Inviwo Foundation\\s*)":
         f"\\g<1>{year}\\g<2>",
-        f"(\\s*[*#]\\s+Copyright \\(c\\) )(?!{year})20\\d\\d( Inviwo Foundation\\s*)":
+        f"(\\s*[*#]\\s+Copyright \\(c\\) )((?!{year})20\\d\\d)( Inviwo Foundation\\s*)":
         f"\\g<1>\\g<2>-{year}\\g<3>"
     }
 
