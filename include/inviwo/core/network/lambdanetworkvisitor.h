@@ -46,14 +46,41 @@ class NetworkVisitorExit {};
 /**
  * @brief A Helper class to construct a NetworkVisitor from a set of lambda functions
  *
+ * The a number of lambdas can be given.
+ * Processors will be visited before children in order of priority:
+ * * [](Processor&, NetworkVisitorEnter) -> bool
+ * * [](Processor&, NetworkVisitorEnter)
+ * * [](Processor&) -> bool
+ * * [](Processor&)
+ *
+ * Processors will be visited after children:
+ * * [](Processor&, NetworkVisitorExit)
+ *
+ * CompositeProperties will be visited before children in order of priority:
+ * * [](CompositeProperty&, NetworkVisitorEnter) -> bool
+ * * [](CompositeProperty&, NetworkVisitorEnter)
+ * * [](CompositeProperty&) -> bool
+ * * [](CompositeProperty&)
+ * * [](Property&) -> bool
+ * * [](Property&)
+ *
+ * CompositeProperties will be visited after children:
+ * * [](CompositeProperty&, NetworkVisitorExit) -> void
+ *
+ * Properties will be visited by:
+ * * [](Property&)
+ *
  * ```{.cpp}
  * LambdaNetworkVisitor visitor{[](Property& property) {
- *                                  // Do something for a properties
- *                                  return true;
+ *                                  // Do something for all properties
+ *                                  return true; // visit all children
  *                              },
- *                              [](Processor&) {
- *                                  // Do something for a processor
- *                                  return true;
+ *                              [](Processor&, NetworkVisitorEnter) {
+ *                                  // Do something for a processor before properties
+ *                                  return true; // Visit children
+ *                              },
+ *                              [](Processor&, NetworkVisitorExit) {
+ *                                  // Do something for a processor after properties
  *                              }};
  * processorNetwork->accept(visitor);
  * ```
@@ -64,6 +91,9 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     using Funcs::operator()...;
 
     template <typename T>
+    using ProcessorOverload = decltype(std::declval<T>()(std::declval<Processor&>()));
+
+    template <typename T>
     using ProcessorEnter = decltype(
         std::declval<T>()(std::declval<Processor&>(), std::declval<NetworkVisitorEnter>()));
     template <typename T>
@@ -71,19 +101,29 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
         decltype(std::declval<T>()(std::declval<Processor&>(), std::declval<NetworkVisitorExit>()));
 
     template <typename T>
-    using PropertyOverload = decltype(std::declval<T>()(std::declval<Property&>()));
+    using CompositeOverload = decltype(std::declval<T>()(std::declval<CompositeProperty&>()));
 
     template <typename T>
     using CompositeEnter = decltype(
         std::declval<T>()(std::declval<CompositeProperty&>(), std::declval<NetworkVisitorEnter>()));
-
     template <typename T>
     using CompositeExit = decltype(
         std::declval<T>()(std::declval<CompositeProperty&>(), std::declval<NetworkVisitorExit>()));
 
+    template <typename T>
+    using PropertyOverload = decltype(std::declval<T>()(std::declval<Property&>()));
+
     virtual bool enter([[maybe_unused]] Processor& processor) override {
         if constexpr (util::is_detected_exact_v<bool, ProcessorEnter, decltype(*this)>) {
             return this->operator()(processor, NetworkVisitorEnter{});
+        } else if constexpr (util::is_detected_v<ProcessorEnter, decltype(*this)>) {
+            this->operator()(processor, NetworkVisitorEnter{});
+            return true;
+        } else if constexpr (util::is_detected_exact_v<bool, ProcessorOverload, decltype(*this)>) {
+            return this->operator()(processor);
+        } else if constexpr (util::is_detected_v<ProcessorOverload, decltype(*this)>) {
+            this->operator()(processor);
+            return true;
         } else {
             return true;
         }
@@ -97,21 +137,32 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     virtual bool enter([[maybe_unused]] CompositeProperty& compositeProperty) override {
         if constexpr (util::is_detected_exact_v<bool, CompositeEnter, decltype(*this)>) {
             return this->operator()(compositeProperty, NetworkVisitorEnter{});
+        } else if constexpr (util::is_detected_v<CompositeEnter, decltype(*this)>) {
+            this->operator()(compositeProperty, NetworkVisitorEnter{});
+            return true;
+        } else if constexpr (util::is_detected_exact_v<bool, CompositeOverload, decltype(*this)>) {
+            return this->operator()(compositeProperty);
+        } else if constexpr (util::is_detected_v<bool, CompositeOverload, decltype(*this)>) {
+            this->operator()(compositeProperty);
+            return true;
         } else if constexpr (util::is_detected_exact_v<bool, PropertyOverload, decltype(*this)>) {
             return this->operator()(compositeProperty);
+        } else if constexpr (util::is_detected_v<PropertyOverload, decltype(*this)>) {
+            this->operator()(compositeProperty);
+            return true;
         } else {
             return true;
         }
     }
 
     virtual void exit([[maybe_unused]] CompositeProperty& compositeProperty) override {
-        if constexpr (util::is_detected_exact_v<void, CompositeExit, decltype(*this)>) {
+        if constexpr (util::is_detected_v<CompositeExit, decltype(*this)>) {
             this->operator()(compositeProperty, NetworkVisitorExit{});
         }
     }
 
     virtual void visit([[maybe_unused]] Property& property) override {
-        if constexpr (util::is_detected_exact_v<void, PropertyOverload, decltype(*this)>) {
+        if constexpr (util::is_detected_v<PropertyOverload, decltype(*this)>) {
             this->operator()(property);
         }
     }

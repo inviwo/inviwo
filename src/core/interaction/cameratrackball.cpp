@@ -41,6 +41,8 @@ CameraTrackball::CameraTrackball(std::string_view identifier, std::string_view d
                                  CameraProperty* cameraProp)
     : Trackball(identifier, displayName, cameraProp) {}
 
+CameraTrackball* CameraTrackball::clone() const { return new CameraTrackball(*this); }
+
 CameraTrackball::~CameraTrackball() = default;
 
 }  // namespace inviwo

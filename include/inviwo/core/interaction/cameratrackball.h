@@ -53,6 +53,8 @@ public:
     CameraTrackball(std::string_view identifier, std::string_view displayName,
                     CameraProperty* cameraProp = nullptr);
 
+    virtual CameraTrackball* clone() const override;
+
     virtual ~CameraTrackball();
 };
 
