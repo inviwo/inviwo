@@ -85,7 +85,8 @@ const DataFormatBase* getDataFormat(size_t components, pybind11::array& arr) {
     }();
     auto format = DataFormatBase::get(numType, components, arr.itemsize() * 8);
     if (!format) {
-        throw pybind11::value_error("Could not map the type of the given array to an inviwo format");
+        throw pybind11::value_error(
+            "Could not map the type of the given array to an inviwo format");
     }
     return format;
 }
