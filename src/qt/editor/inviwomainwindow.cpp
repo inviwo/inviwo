@@ -121,7 +121,7 @@ public:
 
     // This will not trigger on MacOS, so we also trigger update on hovered and aboutToShow.
     virtual bool eventFilter(QObject*, QEvent* ev) override {
-        if (ev->type() == QEvent::KeyPress) {
+        if (ev->type() == QEvent::KeyPress || ev->type() == QEvent::KeyRelease) {
             const auto ctrl =
                 QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
             update(ctrl);

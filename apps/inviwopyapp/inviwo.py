@@ -26,7 +26,7 @@ def make_cmd_parser():
 
 def main(workspace=None, properties=None, screenshot=None, run=False, ipython=False,
          list_processors=False, list_properties=None):
-    """ Constructs a Inviwo application and loads a workspace.
+    """ Constructs an Inviwo application and loads a workspace.
 
     :param workspace: Path to workspace to load, defaults load boron.inv
     :param properties: List of processor identifiers and property paths to show in the

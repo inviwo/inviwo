@@ -56,7 +56,7 @@ Tags::GL,                       <span class="pl-c"><span class="pl-c">//</span> 
 <span class="pl-s">    Example network:</span>
 <span class="pl-s">    [basegl/instance_renderer.inv](file:///&lt;modulePath&gt;/data/workspaces/instance_renderer.inv)</span>
 <span class="pl-s"><span class="pl-pds">)"</span></span>_unindentHelp};</pre></div>
-<p>The <code class="notranslate">_unindentHelp</code>  suffix will remove any leading indent and parse the string as a markdown document and then convert it to a inviwo document, which is what is expected by the <code class="notranslate">ProcessorInfo</code> struct.<br>
+<p>The <code class="notranslate">_unindentHelp</code>  suffix will remove any leading indent and parse the string as a markdown document and then convert it to an inviwo document, which is what is expected by the <code class="notranslate">ProcessorInfo</code> struct.<br>
 One can refer to images like so:</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>![](file:///&lt;modulePath&gt;/docs/images/heightfield-network.png)<span class="pl-pds">"</span></span></pre></div>
 <p>or networks</p>
@@ -65,7 +65,7 @@ One can refer to images like so:</p>
 To be able to refer to files there are two placeholder <code class="notranslate">&lt;basePath&gt;</code> and <code class="notranslate">&lt;modulePath&gt;</code> the former will refer to the base path of the inviwo installation and the later to the current module. Make sure that any resources linked are also included in the installer. By default the <code class="notranslate">data</code> directory and the <code class="notranslate">docs</code> are always included in the installer.</p>
 <p>For Ports a second constructor argument has been added for a help Document like so</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-en">inport_</span>(<span class="pl-s"><span class="pl-pds">"</span>mesh<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Mesh to be drawn multiple times<span class="pl-pds">"</span></span>_help)</pre></div>
-<p>the <code class="notranslate">_help</code> suffix will parse the string as markdown and convert it to a inviwo Document.</p>
+<p>the <code class="notranslate">_help</code> suffix will parse the string as markdown and convert it to an inviwo Document.</p>
 <p>For Properties a new constructor with a new third help argument after the identifier and display name has been added. For example the customInputDimensions in the CanvasProcessor:</p>
 <div class="highlight highlight-source-c++"><pre>customInputDimensions_{<span class="pl-s"><span class="pl-pds">"</span>customInputDimensions<span class="pl-pds">"</span></span>,
                        <span class="pl-s"><span class="pl-pds">"</span>Image Size<span class="pl-pds">"</span></span>,

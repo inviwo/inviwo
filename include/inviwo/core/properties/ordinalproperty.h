@@ -239,6 +239,7 @@ public:
 private:
     ValueWrapper<T> value_;
     ValueWrapper<T> minValue_;
+    
     ValueWrapper<T> maxValue_;
     ValueWrapper<T> increment_;
     ValueWrapper<ConstraintBehavior> minConstraint_;

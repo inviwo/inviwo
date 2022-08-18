@@ -46,7 +46,7 @@ class NetworkVisitorExit {};
 /**
  * @brief A Helper class to construct a NetworkVisitor from a set of lambda functions
  *
- * The a number of lambdas can be given.
+ * A number of different overloads can be given.
  * Processors will be visited before children in order of priority:
  * * [](Processor&, NetworkVisitorEnter) -> bool
  * * [](Processor&, NetworkVisitorEnter)

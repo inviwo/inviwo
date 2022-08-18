@@ -32,7 +32,7 @@ R"(
     [basegl/instance_renderer.inv](file:///<modulePath>/data/workspaces/instance_renderer.inv)
 )"_unindentHelp};
 ```
-The `_unindentHelp`  suffix will remove any leading indent and parse the string as a markdown document and then convert it to a inviwo document, which is what is expected by the `ProcessorInfo` struct. 
+The `_unindentHelp`  suffix will remove any leading indent and parse the string as a markdown document and then convert it to an inviwo document, which is what is expected by the `ProcessorInfo` struct.
 One can refer to images like so:
 ```c++
 "![](file:///<modulePath>/docs/images/heightfield-network.png)"
@@ -48,7 +48,7 @@ For Ports a second constructor argument has been added for a help Document like 
 ```cpp
 inport_("mesh", "Mesh to be drawn multiple times"_help)
 ```
-the `_help` suffix will parse the string as markdown and convert it to a inviwo Document.
+the `_help` suffix will parse the string as markdown and convert it to an inviwo Document.
 
 For Properties a new constructor with a new third help argument after the identifier and display name has been added. For example the customInputDimensions in the CanvasProcessor:
 ```cpp

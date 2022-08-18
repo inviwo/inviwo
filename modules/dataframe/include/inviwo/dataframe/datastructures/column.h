@@ -58,8 +58,8 @@ public:
 };
 
 enum class ColumnType { Index, Ordinal, Categorical };
-IVW_CORE_API std::string_view enumToStr(ColumnType b);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ColumnType type);
+IVW_MODULE_DATAFRAME_API std::string_view enumToStr(ColumnType b);
+IVW_MODULE_DATAFRAME_API std::ostream& operator<<(std::ostream& ss, ColumnType type);
 
 /**
  * @brief Pure interface for representing a data column with a header, optional units, and data

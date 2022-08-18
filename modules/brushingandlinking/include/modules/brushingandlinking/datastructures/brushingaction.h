@@ -78,11 +78,11 @@ constexpr BrushingModification fromAction(BrushingAction action) {
 ALLOW_FLAGS_FOR_ENUM(BrushingModification)
 using BrushingModifications = flags::flags<BrushingModification>;
 
-IVW_CORE_API std::string_view enumToStr(BrushingAction dt);
-IVW_CORE_API std::string_view enumToStr(BrushingModification dt);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BrushingAction action);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BrushingModification action);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BrushingModifications action);
+IVW_MODULE_BRUSHINGANDLINKING_API std::string_view enumToStr(BrushingAction dt);
+IVW_MODULE_BRUSHINGANDLINKING_API std::string_view enumToStr(BrushingModification dt);
+IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss, BrushingAction action);
+IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss, BrushingModification action);
+IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss, BrushingModifications action);
 
 /**
  * Represents a target for brushing and linking actions.

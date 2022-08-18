@@ -240,7 +240,7 @@ Document util::md2doc(std::string_view markdown) {
         state->pop_back();
         return 0;
     };
-    auto text_callback = [](MD_TEXTTYPE type, const MD_CHAR* text, MD_SIZE size,
+    auto text_callback = [](MD_TEXTTYPE, const MD_CHAR* text, MD_SIZE size,
                             void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
         if (state->back().element().name() == "img") {

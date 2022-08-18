@@ -38,7 +38,7 @@ namespace inviwo {
 namespace util {
 
 /**
- * Parse a markdown string and convert to a inviwo document.
+ * Parse a markdown string and convert to an inviwo document.
  * @see Document
  *
  * @param markdown A string that will be interpreted as markdown

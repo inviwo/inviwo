@@ -67,7 +67,7 @@ class ResourceManagerDockWidget;
 class FileAssociations;
 class ToolsMenu;
 class TextLabelOverlay;
-struct MenuKeyboardEventFilter;
+class MenuKeyboardEventFilter;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
