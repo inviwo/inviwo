@@ -48,7 +48,6 @@ Property::Property(std::string_view identifier, std::string_view displayName, Do
     , displayName_("displayName", std::string(displayName))
     , readOnly_("readonly", false)
     , semantics_("semantics", semantics)
-    , usageMode_("usageMode", UsageMode::Development)
     , visible_("visible", true)
     , propertyModified_(true)
     , invalidationLevel_(invalidationLevel)
@@ -71,7 +70,6 @@ Property::Property(const Property& rhs)
     , displayName_(rhs.displayName_)
     , readOnly_(rhs.readOnly_)
     , semantics_(rhs.semantics_)
-    , usageMode_(rhs.usageMode_)
     , visible_(rhs.visible_)
     , propertyModified_(rhs.propertyModified_)
     , invalidationLevel_(rhs.invalidationLevel_)
@@ -218,7 +216,6 @@ void Property::serialize(Serializer& s) const {
     s.serialize("identifier", identifier_, SerializationTarget::Attribute);
     displayName_.serialize(s, serializationMode_);
     semantics_.serialize(s, serializationMode_);
-    usageMode_.serialize(s, serializationMode_);
     visible_.serialize(s, serializationMode_);
     readOnly_.serialize(s, serializationMode_);
 
@@ -248,9 +245,6 @@ void Property::deserialize(Deserializer& d) {
     if (semantics_.deserialize(d, serializationMode_)) {
         notifyObserversOnSetSemantics(this, semantics_);
     }
-    if (usageMode_.deserialize(d, serializationMode_)) {
-        notifyObserversOnSetUsageMode(this, usageMode_);
-    }
     if (visible_.deserialize(d, serializationMode_)) {
         notifyObserversOnSetVisible(this, visible_);
     }
@@ -259,16 +253,6 @@ void Property::deserialize(Deserializer& d) {
     }
 
     MetaDataOwner::deserialize(d);
-}
-
-inviwo::UsageMode Property::getUsageMode() const { return usageMode_; }
-Property& Property::setUsageMode(UsageMode usageMode) {
-    if (usageMode_ != usageMode) {
-        usageMode_ = usageMode;
-        notifyObserversOnSetUsageMode(this, usageMode_);
-        notifyAboutChange();
-    }
-    return *this;
 }
 
 bool Property::getVisible() const { return visible_; }
@@ -306,7 +290,7 @@ Document Property::getDescription() const {
     tb(H("Class Identifier"), getClassIdentifier());
     tb(H("Path"), getPath());
     util::for_each_argument([&tb](auto p) { tb(H(camelCaseToHeader(p.name)), p.value); }, readOnly_,
-                            semantics_, usageMode_, visible_);
+                            semantics_, visible_);
     tb(H("Validation Level"), invalidationLevel_);
 
     return doc;
@@ -336,7 +320,6 @@ Property& Property::setCurrentStateAsDefault() {
     readOnly_.setAsDefault();
     semantics_.setAsDefault();
     visible_.setAsDefault();
-    usageMode_.setAsDefault();
     return *this;
 }
 

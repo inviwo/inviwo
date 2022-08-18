@@ -523,12 +523,6 @@ void CollapsibleGroupBoxWidgetQt::onSetVisible(Property* property, bool visible)
     }
 }
 
-void CollapsibleGroupBoxWidgetQt::onSetUsageMode(Property* property, UsageMode usageMode) {
-    if (property == property_) {
-        PropertyWidgetQt::onSetUsageMode(property, usageMode);
-    }
-}
-
 void CollapsibleGroupBoxWidgetQt::setPropertyOwner(PropertyOwner* propertyOwner) {
     propertyOwner_ = propertyOwner;
 }

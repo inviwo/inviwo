@@ -142,9 +142,7 @@ void CompositeProcessor::loadSubNetwork(std::string_view file) {
 
 void CompositeProcessor::registerProperty(Property* orgProp) {
     orgProp->addObserver(this);
-    if (orgProp->getUsageMode() == UsageMode::Application) {
-        addSuperProperty(orgProp);
-    } else if (orgProp->getMetaData<BoolMetaData>("CompositeProcessorExposed", false)) {
+    if (orgProp->getMetaData<BoolMetaData>("CompositeProcessorExposed", false)) {
         addSuperProperty(orgProp);
     }
 }
@@ -313,14 +311,6 @@ void CompositeProcessor::onSetReadOnly(Property* orgProp, bool readonly) {
 void CompositeProcessor::onSetVisible(Property* orgProp, bool visible) {
     if (auto superProperty = getSuperProperty(orgProp)) {
         superProperty->setVisible(visible);
-    }
-}
-
-void CompositeProcessor::onSetUsageMode(Property* orgProp, UsageMode) {
-    if (orgProp->getUsageMode() == UsageMode::Application) {
-        addSuperProperty(orgProp);
-    } else {
-        removeSuperProperty(orgProp);
     }
 }
 

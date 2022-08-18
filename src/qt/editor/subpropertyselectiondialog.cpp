@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,50 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/qt/editor/subpropertyselectiondialog.h>
 
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/lambdanetworkvisitor.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/compositeprocessor.h>
+#include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <QHBoxLayout>
+#include <QPlainTextEdit>
 
 namespace inviwo {
 
-class InviwoApplication;
-class LogStream;
+SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* processor,
+                                                       QWidget* parent)
+    : InviwoDockWidget("Add Sub Properties", parent, "SubPropertySelectionWidget") {
 
-/**
- * System settings, owned by the application, loaded before all the factories so we can't use any
- * dynamic properties here
- */
-class IVW_CORE_API SystemSettings : public Settings {
-public:
-    SystemSettings(InviwoApplication* app);
-    virtual ~SystemSettings();
-    StringProperty workspaceAuthor_;
-    IntSizeTProperty poolSize_;
-    BoolProperty enablePortInspectors_;
-    IntProperty portInspectorSize_;
-    BoolProperty enableTouchProperty_;
-    BoolProperty enableGesturesProperty_;
-    BoolProperty enablePickingProperty_;
-    BoolProperty enableSoundProperty_;
-    BoolProperty logStackTraceProperty_;
-    BoolProperty runtimeModuleReloading_;
-    BoolProperty enableResourceManager_;
-    OptionProperty<MessageBreakLevel> breakOnMessage_;
-    BoolProperty breakOnException_;
-    BoolProperty stackTraceInException_;
+    setFloating(true);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAllowedAreas(Qt::NoDockWidgetArea);
+    //setMinimumWidth(utilqt::emToPx(this, 50));
+    //setMinimumHeight(utilqt::emToPx(this, 50));
 
-    BoolProperty redirectCout_;
-    BoolProperty redirectCerr_;
+    loadState();
 
-    static size_t defaultPoolSize();
+    auto& net = processor->getSubNetwork();
 
-    std::unique_ptr<LogStream> cout_;
-    std::unique_ptr<LogStream> cerr_;
-};
+    auto layout = new QHBoxLayout();
+    auto text = new QPlainTextEdit(this);
+    QSizePolicy sp = text->sizePolicy();
+    sp.setHorizontalStretch(3);
+    sp.setVerticalStretch(3);
+    sp.setVerticalPolicy(QSizePolicy::Preferred);
+    text->setSizePolicy(sp);
+
+    layout->addWidget(text);
+    setContents(layout);
+
+    LambdaNetworkVisitor visitor{
+        [&](Property& property) { text->appendPlainText(utilqt::toQString(property.getPath())); }};
+
+    net.accept(visitor);
+}
 
 }  // namespace inviwo

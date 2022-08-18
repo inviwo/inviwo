@@ -43,7 +43,6 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/network/workspacemanager.h>
-#include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/common/inviwoapplicationutil.h>
 
 #include <warn/push>
@@ -420,16 +419,6 @@ public:
     const std::string& getDisplayName() const;
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
-
-    /**
-     * Convenience method to get the current ApplicationUsageMode from the system settings
-     */
-    UsageMode getApplicationUsageMode() const;
-
-    /**
-     * Convenience method to set the current ApplicationUsageMode in the system settings
-     */
-    void setApplicationUsageMode(UsageMode mode);
 
     /**
      * Get the current LayerRamResizer

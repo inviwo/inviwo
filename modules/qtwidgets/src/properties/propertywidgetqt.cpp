@@ -81,11 +81,6 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
 
     if (property_) {
         property_->addObserver(this);
-        if (auto app = util::getInviwoApplication(property_)) {
-            auto& settings = app->getSystemSettings();
-            appModeCallback_ = settings.applicationUsageMode_.onChange(
-                [this]() { onSetUsageMode(property_, property_->getUsageMode()); });
-        }
     }
 
     setNestedDepth(nestedDepth_);
@@ -93,13 +88,7 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
     setContextMenuPolicy(Qt::PreventContextMenu);
 }
 
-PropertyWidgetQt::~PropertyWidgetQt() {
-    if (property_) {
-        if (auto app = util::getInviwoApplication(property_)) {
-            app->getSystemSettings().applicationUsageMode_.removeOnChange(appModeCallback_);
-        }
-    }
-}
+PropertyWidgetQt::~PropertyWidgetQt() = default;
 
 void PropertyWidgetQt::initState() {
     if (property_) {
@@ -110,13 +99,7 @@ void PropertyWidgetQt::initState() {
 
 void PropertyWidgetQt::setVisible(bool visible) {
     bool wasVisible = QWidget::isVisible();
-    UsageMode appMode = getApplicationUsageMode();
-    if (visible && property_ && property_->getUsageMode() == UsageMode::Development &&
-        appMode == UsageMode::Application)
-        visible = false;
-
     QWidget::setVisible(visible);
-
     if (visible != wasVisible && parent_) parent_->onChildVisibilityChange(this);
 }
 
@@ -130,11 +113,6 @@ void PropertyWidgetQt::setReadOnly(bool readonly) { setDisabled(readonly); }
 
 void PropertyWidgetQt::onSetVisible(Property*, bool visible) {
     setVisible(visible);
-    RenderContext::getPtr()->activateDefaultRenderContext();
-}
-
-void PropertyWidgetQt::onSetUsageMode(Property*, UsageMode) {
-    setVisible(property_->getVisible());
     RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
@@ -198,36 +176,6 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
         }
 
         menu->addSeparator();
-
-        {  // View mode actions (Developer / Application)
-            auto usageModeItem = menu->addMenu(tr("&Usage mode"));
-            auto developerUsageModeAction = usageModeItem->addAction(tr("&Developer"));
-            developerUsageModeAction->setCheckable(true);
-            auto applicationUsageModeAction = usageModeItem->addAction(tr("&Application"));
-            applicationUsageModeAction->setCheckable(true);
-            auto usageModeActionGroup = new QActionGroup(usageModeItem);
-            usageModeActionGroup->addAction(developerUsageModeAction);
-            usageModeActionGroup->addAction(applicationUsageModeAction);
-
-            // Set the current selection.
-            if (property_->getUsageMode() == UsageMode::Development) {
-                developerUsageModeAction->setChecked(true);
-            } else if (property_->getUsageMode() == UsageMode::Application) {
-                applicationUsageModeAction->setChecked(true);
-            }
-
-            // Disable the view mode buttons in Application mode
-            developerUsageModeAction->setEnabled(getApplicationUsageMode() ==
-                                                 UsageMode::Development);
-            applicationUsageModeAction->setEnabled(getApplicationUsageMode() ==
-                                                   UsageMode::Development);
-
-            connect(developerUsageModeAction, &QAction::triggered, this,
-                    [this]() { property_->setUsageMode(UsageMode::Development); });
-
-            connect(applicationUsageModeAction, &QAction::triggered, this,
-                    [this]() { property_->setUsageMode(UsageMode::Application); });
-        }
 
         {
             auto factory = app->getPropertyWidgetFactory();
@@ -436,10 +384,6 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             }
         }
     }
-}
-
-UsageMode PropertyWidgetQt::getApplicationUsageMode() {
-    return InviwoApplication::getPtr()->getApplicationUsageMode();
 }
 
 bool PropertyWidgetQt::event(QEvent* event) {

@@ -156,13 +156,6 @@ protected:
      * @see setPropertyObserverCallback
      */
     virtual void onSetVisible(Property* property, bool visible) override;
-    /**
-     * Calls the currently set propertyObserverCallback function in javascript with the JSON
-     * encoded changed value as parameter.
-     * The propertyObserverCallback javascript function must be in global scope.
-     * @see setPropertyObserverCallback
-     */
-    virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
 
     std::unique_ptr<PropertyJSONConverter> converter_;
 

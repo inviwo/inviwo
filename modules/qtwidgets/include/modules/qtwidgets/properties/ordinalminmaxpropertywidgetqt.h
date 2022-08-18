@@ -287,7 +287,6 @@ std::unique_ptr<QMenu> OrdinalMinMaxPropertyWidgetQt<T>::getContextMenu() {
     connect(settingsAction, &QAction::triggered, this,
             &OrdinalMinMaxPropertyWidgetQt<T>::showSettings);
     settingsAction->setEnabled(!property_->getReadOnly());
-    settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);
     return menu;
 }
 

@@ -258,7 +258,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyownerobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertypresetmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertysemantics.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyvisibility.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactoryobject.h

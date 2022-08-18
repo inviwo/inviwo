@@ -54,10 +54,6 @@ void PropertyObservable::notifyObserversOnSetVisible(Property* property, bool vi
     forEachObserver([&](PropertyObserver* o) { o->onSetVisible(property, visible); });
 }
 
-void PropertyObservable::notifyObserversOnSetUsageMode(Property* property, UsageMode usageMode) {
-    forEachObserver([&](PropertyObserver* o) { o->onSetUsageMode(property, usageMode); });
-}
-
 void PropertyObserver::onSetIdentifier(Property*, const std::string&) {}
 
 void PropertyObserver::onSetDisplayName(Property*, const std::string&) {}
@@ -68,6 +64,5 @@ void PropertyObserver::onSetReadOnly(Property*, bool) {}
 
 void PropertyObserver::onSetVisible(Property*, bool) {}
 
-void PropertyObserver::onSetUsageMode(Property*, UsageMode) {}
 
 }  // namespace inviwo

@@ -34,7 +34,6 @@
 #include <inviwo/core/properties/propertyobserver.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/util/callback.h>
@@ -114,10 +113,7 @@ class PropertyOwner;
  *  * __PropertySemantics__: A property can be set to one or several different semantics, which is
  *    often used to display different PropertyWidets. For example using a color picker for Color
  *    Semantic or a text field for Text Semantics.
- *
- *  * __UsageMode__: A property can have different usage modes. Either Development or Application.
- *    Only properties with Application mode will show up when running Inviwo in Application mode.
- *
+ * *
  *  * __Reset__: A property has a default state specified in the constructor, or optionally be
  *    calling Property::setCurrentStateAsDefault. The property can then also be reset to it's
  *    default state  by calling Property::resetToDefaultState. Both these functions are virtual and
@@ -320,9 +316,6 @@ public:
      */
     void removeOnChange(const BaseCallBack* callback);
 
-    virtual Property& setUsageMode(UsageMode usageMode);
-    virtual UsageMode getUsageMode() const;
-
     virtual Property& setVisible(bool val);
     virtual bool getVisible() const;
 
@@ -444,7 +437,6 @@ private:
     ValueWrapper<std::string> displayName_;
     ValueWrapper<bool> readOnly_;
     ValueWrapper<PropertySemantics> semantics_;
-    ValueWrapper<UsageMode> usageMode_;
     ValueWrapper<bool> visible_;
 
     bool propertyModified_;

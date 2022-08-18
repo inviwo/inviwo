@@ -48,6 +48,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorstatusgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/subpropertyselectiondialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspaceannotationsqt.h
@@ -97,6 +98,7 @@ set(SOURCE_FILES
     processorstatusgraphicsitem.cpp
     resourcemanager/resourcemanagerdockwidget.cpp
     settingswidget.cpp
+    subpropertyselectiondialog.cpp
     toolsmenu.cpp
     undomanager.cpp
     welcomewidget.cpp

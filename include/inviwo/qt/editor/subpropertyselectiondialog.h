@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,29 +26,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <ostream>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
 namespace inviwo {
 
-enum class UsageMode {
-    Application = 0,  // Always show property
-    Development = 1,  // Default, Only show in developer mode
-};
+class CompositeProcessor;
 
-inline std::ostream& operator<<(std::ostream& ss, const UsageMode& mode) {
-    switch (mode) {
-        case UsageMode::Application:
-            ss << "Application";
-            break;
-        case UsageMode::Development:
-            ss << "Development";
-            break;
-    }
-    return ss;
-}
+class IVW_QTEDITOR_API SubPropertySelectionDialog : public InviwoDockWidget {
+public:
+    SubPropertySelectionDialog(CompositeProcessor* processor, QWidget* parent);
+    virtual ~SubPropertySelectionDialog() = default;
+};
 
 }  // namespace inviwo
