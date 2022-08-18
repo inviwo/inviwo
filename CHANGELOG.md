@@ -13,7 +13,7 @@ R"(
     Renders multiple instances of a mesh.
     Each instance can be modified using uniform data provided 
     from a set of dynamic inports holding vectors of data. 
-    The the number of inport and types can be controlled using
+    The number of inports and types can be controlled using
     a List Property.
     
     The rendering will happen along these lines:
@@ -42,7 +42,7 @@ or networks
 "[basegl/instance_renderer.inv](file:///<modulePath>/data/workspaces/instance_renderer.inv)"
 ```
 Images will be shown inline, and clicking on processor network will append them to the current network. 
-To be able to refer to files there are two placeholder `<basePath>` and `<modulePath>` the former will refer to the base path of the inviwo installation and the later to the current module. Make sure that any resources linked are also included in the installer. By default the `data` directory and the `docs` are always included in the installer. 
+To be able to refer to files there are two placeholder `<basePath>` and `<modulePath>` the former will refer to the base path of the inviwo installation and the latter to the current module. Make sure that any resources linked are also included in the installer. By default the `data` directory and the `docs` folders are always included in the installer. 
 
 For Ports a second constructor argument has been added for a help Document like so
 ```cpp
@@ -65,7 +65,7 @@ customInputDimensions_{"customInputDimensions",
                        InvalidationLevel::Valid}
 ```
 
-The Help widget will automatically show the help text for the processor and combine the with the help text for the ports and properties in a standard way.  The help text for Ports and Properties will also be shown in relevant tooltips.
+The Help widget will automatically show the help text for the processor and combine it with the help text for the ports and properties in a standard way.  The help text for Ports and Properties will also be shown in relevant tooltips.
 
 ## 2022-08-15 FMT Version 9.0.0
 The fmt library was updated to the recent version 9.0.0. There are major breaking changes in the update with respect to using ostream operators and fmt. Previously you could just include `fmt/ostream.h` and any type that was streamable was not also printable with fmt. That behavior was removed and now you either have to wrap the object with `fmt::streamed(x)` or add a specialization of fmt::formatter for the type. Most core types in Inviwo that used std::ostream operators have been updated with fmt formatters. For enums we have added two helper classes in `ìnviwo/core/util/fmtutils.h`, 

@@ -276,7 +276,7 @@ IVW_CORE_API OrdinalPropertyState<vec3> ordinalLight(
 
 /**
  * A factory function for configuring a OrdinalProperty representing a generic vector, with a
- * symmetric range around zero, and Ignored boundary constraints. The invalidation level default to
+ * symmetric range around zero, and Ignored boundary constraints. The invalidation level defaults to
  * InvalidOutput, and the property semantics to SpinBox.
  * @param value the default value for the property
  * @param minMax used to construct the range of the property like min = T{-minMax}, max = T{minMax}.
@@ -318,7 +318,7 @@ OrdinalPropertyState<T> ordinalSymmetricVector(const T& value = {0}, const U& mi
 /**
  * A factory function for configuring a OrdinalProperty representing a count. It will have a
  * Immutable min at zero and an upper Ignored max. The increment will be one. The invalidation level
- * default to InvalidOutput, and the property semantics to SpinBox.
+ * defaults to InvalidOutput, and the property semantics to SpinBox.
  * @param value the default value for the property
  * @param max used to construct the max value. The max constraint behavior will be Ignore.
 
@@ -337,7 +337,7 @@ OrdinalPropertyState<T> ordinalCount(const T& value = T{0}, const U& max = U{100
 
 /**
  * A factory function for configuring a OrdinalProperty representing a length. It will have a
- * Immutable min at zero and an upper Ignored max. The invalidation level default to InvalidOutput,
+ * Immutable min at zero and an upper Ignored max. The invalidation level defaults to InvalidOutput,
  * and the property semantics to SpinBox.
  * @param value the default value for the property
  * @param max used to construct the max value. The max constraint behavior will be Ignore.
