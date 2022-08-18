@@ -92,7 +92,6 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
     setWidget(mainWindow_);
-    mainWindow_->statusBar();
 
     QSplitter* splitter = new QSplitter(nullptr);
     splitter->setOrientation(Qt::Vertical);

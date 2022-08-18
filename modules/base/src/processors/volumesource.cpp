@@ -53,16 +53,22 @@ const ProcessorInfo VolumeSource::processorInfo_{
     "Data Input",               // Category
     CodeState::Stable,          // Code state
     Tags::CPU,                  // Tags
-};
+    "Loads a Volume or Volume Sequence from a given file. "
+    "If the 'Resource Manager' is active the Volume is cached and loaded from the manager if found."
+    "Various information of the volume is displayed in the property pane. If a volume sequence is "
+    "loaded a slider to select a volume is shown. "
+    "The current filename is stored in the loaded volume as 'filename' MetaData."_help};
+
 const ProcessorInfo VolumeSource::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     : Processor()
     , app_(app)
-    , outport_("data")
-    , file_("filename", "Volume file", file, "volume")
-    , reader_("reader", "Data Reader")
-    , reload_("reload", "Reload data")
+    , outport_("data", "The loaded volume"_help)
+    , file_("filename", "Volume file", "File to load"_help, file, "volume")
+    , reader_("reader", "Data Reader", "The selected reader used for loading the Volume"_help)
+    , reload_("reload", "Reload data",
+              "Reload the date from disk, will not use the resource manager"_help)
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
     , volumeSequence_("Sequence", "Sequence") {

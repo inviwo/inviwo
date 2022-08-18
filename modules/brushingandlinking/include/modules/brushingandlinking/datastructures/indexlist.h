@@ -52,7 +52,6 @@ public:
      *
      * @return true if the indexlist was modified that is \p this and \p indices were different
      */
-
     bool set(std::string_view src, const BitSet& indices);
     bool contains(uint32_t idx) const;
 

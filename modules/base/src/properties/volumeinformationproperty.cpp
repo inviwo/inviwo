@@ -56,19 +56,23 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
                                                      std::string_view displayName,
                                                      InvalidationLevel invalidationLevel,
                                                      PropertySemantics semantics)
-    : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, semantics)
-    , dimensions_("dimensions", "Dimensions", size3_t(0), size3_t(0),
-                  size3_t(std::numeric_limits<size_t>::max()), size3_t(1), InvalidationLevel::Valid,
-                  PropertySemantics("Text"))
+    : BoolCompositeProperty(identifier, displayName,
+                            "Various information and statistics about a volume"_help, false,
+                            invalidationLevel, semantics)
+    , dimensions_(
+          "dimensions", "Dimensions",
+          util::ordinalCount(size3_t{0}).set(InvalidationLevel::Valid).set(PropertySemantics::Text))
     , format_("format", "Format", "")
-    , channels_("channels", "Channels", 0, 0, std::numeric_limits<size_t>::max(), 1,
-                InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
-    , numVoxels_("numVoxels", "Number of Voxels", 0, 0, std::numeric_limits<size_t>::max(), 1,
-                 InvalidationLevel::Valid, PropertySemantics::Text)
+    , channels_(
+          "channels", "Channels",
+          util::ordinalCount(size_t{0}).set(InvalidationLevel::Valid).set(PropertySemantics::Text))
+    , numVoxels_(
+          "numVoxels", "Number of Voxels",
+          util::ordinalCount(size_t{0}).set(InvalidationLevel::Valid).set(PropertySemantics::Text))
     , dataRange_("dataRange", "Data range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(), 0.0,
-                 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
+                 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , valueRange_("valueRange", "Value range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
-                  0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
+                  0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , valueName_("valueName", "Value name", "")
     , valueUnit_("valueUnit", "Value unit", "")
     , axesNames_{"axesNames", "Axes Names"}

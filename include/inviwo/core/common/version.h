@@ -34,7 +34,7 @@
 #include <inviwo/core/util/exception.h>
 
 #include <string>
-#include <ostream>
+#include <iosfwd>
 #include <tuple>
 #include <array>
 
@@ -114,12 +114,7 @@ public:
         return (lhs < rhs) || (lhs == rhs);
     }
 
-    template <class Elem, class Traits>
-    friend std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                                        const Version& v) {
-        ss << v.major << "." << v.minor << "." << v.patch << "." << v.build;
-        return ss;
-    }
+    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Version& v);
 
     unsigned int major = 0;  ///< Increases when you make incompatible API changes
     unsigned int minor =

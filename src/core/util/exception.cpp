@@ -129,4 +129,9 @@ void StandardExceptionHandler::operator()(ExceptionContext context) {
     }
 }
 
+std::ostream& operator<<(std::ostream& ss, const Exception& e) {
+    e.getFullMessage(ss);
+    return ss;
+}
+
 }  // namespace inviwo

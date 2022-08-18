@@ -381,13 +381,31 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
     return QGraphicsItem::itemChange(change, value);
 }
 
+void ProcessorGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
+    if (auto editor = getNetworkEditor()) {
+        if (QApplication::keyboardModifiers() & Qt::AltModifier) {
+            editor->showProcessorHelp(processor_->getClassIdentifier(), true);
+            return;
+        }
+    }
+    QGraphicsItem::mousePressEvent(e);
+}
+void ProcessorGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
+    if (auto editor = getNetworkEditor()) {
+        if (QApplication::keyboardModifiers() & Qt::AltModifier) {
+            editor->showProcessorHelp(processor_->getClassIdentifier(), true);
+            return;
+        }
+    }
+    QGraphicsItem::mouseReleaseEvent(e);
+}
+
 void ProcessorGraphicsItem::updateWidgets() {
     if (isSelected()) {
         setZValue(SELECTED_PROCESSORGRAPHICSITEM_DEPTH);
         if (!highlight_) {
             if (auto editor = getNetworkEditor()) {
                 editor->addPropertyWidgets(processor_);
-                editor->showProcessorHelp(processor_->getClassIdentifier());
             }
         }
     } else {

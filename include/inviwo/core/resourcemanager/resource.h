@@ -82,10 +82,10 @@ public:
         using H = utildoc::TableBuilder::Header;
         Document doc;
         utildoc::TableBuilder tb(doc.handle(), P::end());
-        tb(H("Key"), htmlEncode(key()));
+        tb(H("Key"), util::htmlEncode(key()));
         auto typeName = typeDisplayName();
         if (typeName != "") {
-            tb(H("Type"), htmlEncode(typeName));
+            tb(H("Type"), util::htmlEncode(typeName));
         }
         std::string dataInfo = DataTraits<T>::info(*resource_);
         if (dataInfo != "") {

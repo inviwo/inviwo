@@ -74,6 +74,8 @@
 #include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/interaction/trackball.h>
+#include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/filepatternproperty.h>
@@ -116,8 +118,8 @@ namespace {
 struct OrdinalReghelper {
     template <typename T>
     auto operator()(InviwoModule& qm) {
-        using PropertyType = OrdinalProperty<T>;
-        qm.registerProperty<PropertyType>();
+        qm.registerProperty<OrdinalProperty<T>>();
+        qm.registerProperty<OrdinalRefProperty<T>>();
     }
 };
 
@@ -329,6 +331,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<ButtonProperty>();
     registerProperty<CameraProperty>();
     registerProperty<StringProperty>();
+    registerProperty<Trackball>();
+    registerProperty<CameraTrackball>();
 
     registerProperty<StringsProperty<1>>();
     registerProperty<StringsProperty<2>>();

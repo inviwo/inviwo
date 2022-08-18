@@ -49,6 +49,11 @@ struct detector<Default, std::void_t<Op<Args...>>, Op, Args...> {
 
 }  // namespace detail
 
+template <typename T>
+constexpr bool alwaysFalse() {
+    return false;
+}
+
 struct IVW_CORE_API nonesuch {
     ~nonesuch() = delete;
     nonesuch(nonesuch const&) = delete;

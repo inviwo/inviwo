@@ -88,6 +88,22 @@ struct OrdinalPropertyHelper {
                  py::arg("increment") = Defaultvalues<T>::getInc(),
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
+            .def(py::init([](std::string_view identifier, std::string_view name, Document help,
+                             const T& value, const std::pair<T, ConstraintBehavior>& min,
+                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, std::move(help), value, min, max, increment,
+                                  invalidationLevel, semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"), py::arg("help") = Document{},
+                 py::arg("value") = Defaultvalues<T>::getVal(),
+                 py::arg("min") =
+                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                 py::arg("max") =
+                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
+                 py::arg("increment") = Defaultvalues<T>::getInc(),
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
             .def(py::init([](std::string_view identifier, std::string_view name, const T& value,
                              const std::pair<T, ConstraintBehavior>& min,
                              const std::pair<T, ConstraintBehavior>& max, const T& increment,
@@ -140,6 +156,23 @@ struct OrdinalRefPropertyHelper {
                  py::arg("increment") = Defaultvalues<T>::getInc(),
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
+            .def(py::init([](std::string_view identifier, std::string_view name, Document help,
+                             std::function<T()> get, std::function<void(const T&)> set,
+                             const std::pair<T, ConstraintBehavior>& min,
+                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, std::move(help), std::move(get), std::move(set),
+                                  min, max, increment, invalidationLevel, semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"), py::arg("help"), py::arg("get"),
+                 py::arg("set"),
+                 py::arg("min") =
+                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                 py::arg("max") =
+                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
+                 py::arg("increment") = Defaultvalues<T>::getInc(),
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
 
             .def_property(
                 "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
@@ -163,7 +196,22 @@ struct MinMaxHelper {
         auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
 
         py::class_<P, Property> prop(m, classname.c_str());
-        prop.def(py::init([](std::string_view identifier, std::string_view name, const T& valueMin,
+        prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,
+                             const T& valueMin, const T& valueMax, const T& rangeMin,
+                             const T& rangeMax, const T& increment, const T& minSeperation,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, std::move(help), valueMin, valueMax, rangeMin,
+                                  rangeMax, increment, minSeperation, invalidationLevel, semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"), py::arg("help") = Document{},
+                 py::arg("valueMin") = Defaultvalues<T>::getMin(),
+                 py::arg("valueMax") = Defaultvalues<T>::getMax(),
+                 py::arg("rangeMin") = Defaultvalues<T>::getMin(),
+                 py::arg("rangeMax") = Defaultvalues<T>::getMax(),
+                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeperation") = 0,
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+            .def(py::init([](std::string_view identifier, std::string_view name, const T& valueMin,
                              const T& valueMax, const T& rangeMin, const T& rangeMax,
                              const T& increment, const T& minSeperation,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -209,7 +257,19 @@ struct OptionPropertyHelper {
             .def_readwrite("value", &O::value_);
 
         py::class_<P, BaseOptionProperty> prop(m, classname.c_str());
-        prop.def(py::init([](std::string_view identifier, std::string_view name,
+        prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,
+                             std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, std::move(help), options, selectedIndex,
+                                  invalidationLevel, semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"), py::arg("help") = Document{},
+                 py::arg("options") = std::vector<OptionPropertyOption<T>>{},
+                 py::arg("selectedIndex") = 0,
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+
+            .def(py::init([](std::string_view identifier, std::string_view name,
                              std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, options, selectedIndex, invalidationLevel,
@@ -316,6 +376,8 @@ void exposeProperties(py::module& m) {
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
         .def_property("visible", &Property::getVisible, &Property::setVisible)
         .def_property("semantics", &Property::getSemantics, &Property::setSemantics)
+        .def_property(
+            "help", [](const Property& p) { return p.getHelp(); }, &Property::setHelp)
         .def_property_readonly("classIdentifier", &Property::getClassIdentifier)
         .def_property_readonly("classIdentifierForWidget", &Property::getClassIdentifierForWidget)
         .def_property_readonly("path", &Property::getPath)
@@ -366,6 +428,17 @@ void exposeProperties(py::module& m) {
     util::for_each_type<MinMaxPropertyTypes>{}(MinMaxHelper{}, m);
 
     py::class_<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         const TransferFunction& value, VolumeInport* volumeInport,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new TransferFunctionProperty(identifier, displayName, std::move(help),
+                                                     value, volumeInport, invalidationLevel,
+                                                     semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value"),
+             py::arg("inport") = nullptr,
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          const TransferFunction& value, VolumeInport* volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -420,6 +493,16 @@ void exposeProperties(py::module& m) {
         });
 
     py::class_<IsoValueProperty, Property>(m, "IsoValueProperty")
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         const IsoValueCollection& value, VolumeInport* volumeInport,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new IsoValueProperty(identifier, displayName, std::move(help), value,
+                                             volumeInport, invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value"),
+             py::arg("inport") = nullptr,
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          const IsoValueCollection& value, VolumeInport* volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -464,15 +547,25 @@ void exposeProperties(py::module& m) {
         });
 
     py::class_<StringProperty, Property> strProperty(m, "StringProperty");
-    strProperty.def(py::init([](std::string_view identifier, std::string_view displayName,
-                                std::string_view value, InvalidationLevel invalidationLevel,
-                                PropertySemantics semantics) {
-                        return new StringProperty(identifier, displayName, value, invalidationLevel,
-                                                  semantics);
-                    }),
-                    py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
-                    py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                    py::arg("semantics") = PropertySemantics::Default);
+    strProperty
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         std::string_view value, InvalidationLevel invalidationLevel,
+                         PropertySemantics semantics) {
+                 return new StringProperty(identifier, displayName, std::move(help), value,
+                                           invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value") = "",
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def(py::init([](std::string_view identifier, std::string_view displayName,
+                         std::string_view value, InvalidationLevel invalidationLevel,
+                         PropertySemantics semantics) {
+                 return new StringProperty(identifier, displayName, value, invalidationLevel,
+                                           semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default);
     pyTemplateProperty<std::string, StringProperty>(strProperty);
 
     py::enum_<AcceptMode>(m, "AcceptMode")
@@ -499,6 +592,16 @@ void exposeProperties(py::module& m) {
 
     py::class_<FileProperty, Property> fileProperty(m, "FileProperty");
     fileProperty
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         std::string_view value, std::string_view contentType,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new FileProperty(identifier, displayName, std::move(help), value,
+                                         contentType, invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help") = Document{},
+             py::arg("value") = "", py::arg("contentType") = "default",
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          std::string_view value, std::string_view contentType,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -525,20 +628,41 @@ void exposeProperties(py::module& m) {
     pyTemplateProperty<std::string, FileProperty>(fileProperty);
 
     py::class_<DirectoryProperty, FileProperty> dirProperty(m, "DirectoryProperty");
-    dirProperty.def(py::init([](std::string_view identifier, std::string_view displayName,
-                                std::string_view value, std::string_view contentType,
-                                InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                        return new DirectoryProperty(identifier, displayName, value, contentType,
-                                                     invalidationLevel, semantics);
-                    }),
-                    py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
-                    py::arg("contentType") = "default",
-                    py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                    py::arg("semantics") = PropertySemantics::Default);
+    dirProperty
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         std::string_view value, std::string_view contentType,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new DirectoryProperty(identifier, displayName, std::move(help), value,
+                                              contentType, invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value") = "",
+             py::arg("contentType") = "default",
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def(py::init([](std::string_view identifier, std::string_view displayName,
+                         std::string_view value, std::string_view contentType,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new DirectoryProperty(identifier, displayName, value, contentType,
+                                              invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
+             py::arg("contentType") = "default",
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default);
     pyTemplateProperty<std::string, DirectoryProperty>(dirProperty);
 
     py::class_<BoolProperty, Property> boolProperty(m, "BoolProperty");
     boolProperty
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         bool value, InvalidationLevel invalidationLevel,
+                         PropertySemantics semantics) {
+                 return new BoolProperty(identifier, displayName, std::move(help), value,
+                                         invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help") = Document{},
+             py::arg("value") = false,
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName, bool value,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new BoolProperty(identifier, displayName, value, invalidationLevel,
@@ -557,6 +681,15 @@ void exposeProperties(py::module& m) {
                  return new ButtonProperty(identifier, displayName, invalidationLevel, semantics);
              }),
              py::arg("identifier"), py::arg("displayName"),
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         std::function<void()> action, InvalidationLevel invalidationLevel,
+                         PropertySemantics semantics) {
+                 return new ButtonProperty(identifier, displayName, std::move(help), action,
+                                           invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("action"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName,
@@ -581,6 +714,15 @@ void exposeProperties(py::module& m) {
                                                 semantics);
              }),
              py::arg("identifier"), py::arg("displayName"),
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         std::vector<ButtonGroupProperty::Button> buttons,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new ButtonGroupProperty(identifier, displayName, std::move(help),
+                                                std::move(buttons), invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("buttons"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName,

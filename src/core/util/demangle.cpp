@@ -39,20 +39,37 @@ namespace inviwo {
 
 namespace util {
 
-std::string parseTypeIdName(const char* name) {
-    std::string str(name);
-
+std::string demangle(const char* name) {
 #if defined(__clang__) || defined(__GNUC__)
     struct handle {
         char* p;
         handle(char* ptr) : p(ptr) {}
         ~handle() { std::free(p); }
     };
-    const char* cstr = str.c_str();
     int status = -4;
-    handle result(abi::__cxa_demangle(cstr, nullptr, nullptr, &status));
-    if (status == 0) str = result.p;
+    handle result(abi::__cxa_demangle(name, nullptr, nullptr, &status));
+    return {status == 0 ? result.p : name};
 #else
+    std::string str{name};
+#if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64)
+    replaceInString(str, "__ptr64", "");
+#endif
+    return str;
+#endif
+}
+
+std::string parseTypeIdName(const char* name) {
+#if defined(__clang__) || defined(__GNUC__)
+    struct handle {
+        char* p;
+        handle(char* ptr) : p(ptr) {}
+        ~handle() { std::free(p); }
+    };
+    int status = -4;
+    handle result(abi::__cxa_demangle(name, nullptr, nullptr, &status));
+    std::string str{status == 0 ? result.p : name};
+#else
+    std::string str(name);
     replaceInString(str, "class", "");
     replaceInString(str, "const", "");
 #if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64)

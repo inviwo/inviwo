@@ -31,29 +31,33 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/property.h>
-
+#include <inviwo/core/util/stringconversion.h>
 #include <string_view>
 
 namespace inviwo {
 
 class IVW_CORE_API PropertyFactoryObject {
 public:
-    PropertyFactoryObject(std::string_view className);
+    PropertyFactoryObject(std::string_view className, std::string_view typeName);
     virtual ~PropertyFactoryObject();
 
     virtual std::unique_ptr<Property> create(std::string_view identifier,
                                              std::string_view displayName) = 0;
 
     const std::string& getClassIdentifier() const;
+    const std::string& getTypeName() const;
 
 private:
-    std::string className_;
+    std::string classIdentifier_;
+    std::string typeName_;
 };
 
 template <typename T>
 class PropertyFactoryObjectTemplate : public PropertyFactoryObject {
 public:
-    PropertyFactoryObjectTemplate() : PropertyFactoryObject(PropertyTraits<T>::classIdentifier()) {}
+    PropertyFactoryObjectTemplate()
+        : PropertyFactoryObject(PropertyTraits<T>::classIdentifier(),
+                                util::demangle(typeid(T).name())) {}
 
     virtual ~PropertyFactoryObjectTemplate() = default;
 

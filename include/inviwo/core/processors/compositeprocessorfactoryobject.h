@@ -50,6 +50,8 @@ public:
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
 
+    virtual Document getMetaInformation() const override;
+
 private:
     static ProcessorInfo makeProcessorInfo(const std::string& file);
     std::string file_;

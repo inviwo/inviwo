@@ -32,6 +32,7 @@
 #include <inviwo/core/util/stdextensions.h>
 
 #include <sstream>
+#include <iostream>
 #include <iomanip>
 #include <chrono>
 #include <array>

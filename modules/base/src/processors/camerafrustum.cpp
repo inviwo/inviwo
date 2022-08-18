@@ -38,21 +38,26 @@ const ProcessorInfo CameraFrustum::processorInfo_{
     "org.inviwo.CameraFrustum",  // Class identifier
     "Camera Frustum",            // Display name
     "Information",               // Category
-    CodeState::Experimental,     // Code state
-    Tags::None,                  // Tags
-};
+    CodeState::Stable,           // Code state
+    Tags::CPU,                   // Tags
+    R"(Creates a line mesh of a frustum for a given camera.
+    
+    Example Workspace:
+    [base/camera_frustum.inv](file:///<modulePath>/data/workspaces/camera_frustum.inv)
+    )"_unindentHelp};
+
 const ProcessorInfo CameraFrustum::getProcessorInfo() const { return processorInfo_; }
 
 CameraFrustum::CameraFrustum()
     : Processor()
-    , mesh_("mesh")
-    , camera_("camera", "Camera", util::boundingBox(mesh_))
-    , color_("color", "Color", vec4(1.f), vec4(0.f), vec4(1.f), vec4(.01f),
-             InvalidationLevel::InvalidOutput, PropertySemantics::Color) {
+    , mesh_("mesh", "Line mesh (GL_LINES)"_help)
+    , camera_("camera", "Camera", "Color of the lines"_help, util::boundingBox(mesh_))
+    , color_("color", "Color",
+             util::ordinalColor(1.0f, 1.0f, 1.0f)
+                 .set("Camera for which to create the frustum."_help)) {
 
     addPort(mesh_);
-    addProperty(color_);
-    addProperty(camera_);
+    addProperties(color_, camera_);
 }
 
 void CameraFrustum::process() { mesh_.setData(meshutil::cameraFrustum(camera_, color_)); }

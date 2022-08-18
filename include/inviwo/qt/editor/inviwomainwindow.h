@@ -67,6 +67,7 @@ class ResourceManagerDockWidget;
 class FileAssociations;
 class ToolsMenu;
 class TextLabelOverlay;
+class MenuKeyboardEventFilter;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -132,6 +133,14 @@ public:
      */
     bool openWorkspace();
 
+    /**
+     * shows a file dialog for appending a workspace.
+     *
+     * @return true if the workspace was appended, otherwise false.
+     * @see askToSaveWorkspaceChanges
+     */
+    bool appendWorkspace();
+
     void saveWorkspace();
     void saveWorkspaceAs();
 
@@ -183,7 +192,7 @@ private:
      */
     bool openWorkspace(QString workspaceFileName, bool isExample);
     void saveWorkspace(QString workspaceFileName);
-    void appendWorkspace(const std::string& workspaceFileName);
+    void appendWorkspace(const QString& workspaceFileName);
 
     std::optional<QString> askForWorkspaceToOpen();
 
@@ -208,6 +217,7 @@ private:
     void updateWindowTitle();
 
     InviwoApplicationQt* app_;
+    MenuKeyboardEventFilter* menuEventFilter_;
     InviwoEditMenu* editMenu_ = nullptr;
     ToolsMenu* toolsMenu_ = nullptr;
     QMenu* exampleMenu_ = nullptr;

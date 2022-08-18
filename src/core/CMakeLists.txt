@@ -7,6 +7,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/linearmap.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/markdown.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/permutations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/searchdsl.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
@@ -302,6 +303,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dispatcher.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/docbuilder.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/document.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/enumtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
@@ -313,6 +315,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystemobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/fmtutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreach.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreacharg.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
@@ -320,6 +323,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmconvert.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmmat.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmvec.h
@@ -394,6 +398,7 @@ set(SOURCE_FILES
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
     algorithm/linearmap.cpp
+    algorithm/markdown.cpp
     algorithm/permutations.cpp
     algorithm/searchdsl.cpp
     common/inviwoapplication.cpp
@@ -420,6 +425,7 @@ set(SOURCE_FILES
     datastructures/datarepresentation.cpp
     datastructures/datatraits.cpp
     datastructures/geometry/basicmesh.cpp
+    datastructures/geometry/geometrytype.cpp
     datastructures/geometry/mesh.cpp
     datastructures/geometry/meshram.cpp
     datastructures/geometry/meshrepresentation.cpp
@@ -431,6 +437,7 @@ set(SOURCE_FILES
     datastructures/image/image.cpp
     datastructures/image/imageram.cpp
     datastructures/image/imagerepresentation.cpp
+    datastructures/image/imagetypes.cpp
     datastructures/image/layer.cpp
     datastructures/image/layerdisk.cpp
     datastructures/image/layerram.cpp
@@ -470,14 +477,18 @@ set(SOURCE_FILES
     interaction/events/eventmatcher.cpp
     interaction/events/eventutil.cpp
     interaction/events/gestureevent.cpp
+    interaction/events/gesturestate.cpp
     interaction/events/interactionevent.cpp
     interaction/events/keyboardevent.cpp
+    interaction/events/keyboardkeys.cpp
+    interaction/events/mousebuttons.cpp
     interaction/events/mousecursors.cpp
     interaction/events/mouseevent.cpp
     interaction/events/mouseinteractionevent.cpp
     interaction/events/pickingevent.cpp
     interaction/events/resizeevent.cpp
     interaction/events/touchevent.cpp
+    interaction/events/touchstate.cpp
     interaction/events/viewevent.cpp
     interaction/events/wheelevent.cpp
     interaction/interactionhandler.cpp
@@ -487,6 +498,7 @@ set(SOURCE_FILES
     interaction/pickingcontrollertouchstate.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
+    interaction/pickingstate.cpp
     interaction/trackball.cpp
     io/bytereaderutil.cpp
     io/datareader.cpp
@@ -558,6 +570,7 @@ set(SOURCE_FILES
     processors/processorfactory.cpp
     processors/processorinfo.cpp
     processors/processorpair.cpp
+    processors/processorstate.cpp
     processors/processortags.cpp
     processors/processorutils.cpp
     processors/processorwidget.cpp
@@ -579,6 +592,7 @@ set(SOURCE_FILES
     properties/filepatternproperty.cpp
     properties/fileproperty.cpp
     properties/imageeditorproperty.cpp
+    properties/invalidationlevel.cpp
     properties/isotfproperty.cpp
     properties/isovalueproperty.cpp
     properties/listproperty.cpp
@@ -633,21 +647,25 @@ set(SOURCE_FILES
     util/detected.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
+    util/docbuilder.cpp
     util/document.cpp
     util/enumtraits.cpp
     util/exception.cpp
     util/factory.cpp
     util/filedialog.cpp
+    util/filedialogstate.cpp
     util/fileextension.cpp
     util/filelogger.cpp
     util/fileobserver.cpp
     util/filesystem.cpp
     util/filesystemobserver.cpp
+    util/fmtutils.cpp
     util/foreacharg.cpp
     util/formatconversion.cpp
     util/formatdispatching.cpp
     util/formats.cpp
     util/glm.cpp
+    util/glmconvert.cpp
     util/glmmat.cpp
     util/glmutils.cpp
     util/glmvec.cpp
@@ -835,6 +853,8 @@ target_link_libraries(inviwo-core
         units::units
     PRIVATE
         roaring::roaring
+        inviwo::md4c
+        utf8::cpp
 )
 
 #Optimize compiliation with PCH etc

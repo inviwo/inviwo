@@ -37,13 +37,20 @@ const std::string BoolCompositeProperty::classIdentifier = "org.inviwo.BoolCompo
 std::string BoolCompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
 BoolCompositeProperty::BoolCompositeProperty(std::string_view identifier,
-                                             std::string_view displayName, bool checked,
-                                             InvalidationLevel invalidationLevel,
+                                             std::string_view displayName, Document help,
+                                             bool checked, InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , checked_("checked", "", checked, invalidationLevel, semantics) {
     addProperty(checked_);
 }
+
+BoolCompositeProperty::BoolCompositeProperty(std::string_view identifier,
+                                             std::string_view displayName, bool checked,
+                                             InvalidationLevel invalidationLevel,
+                                             PropertySemantics semantics)
+    : BoolCompositeProperty(identifier, displayName, Document{}, checked, invalidationLevel,
+                            semantics) {}
 
 BoolCompositeProperty::BoolCompositeProperty(const BoolCompositeProperty& rhs)
     : CompositeProperty(rhs), checked_{rhs.checked_} {

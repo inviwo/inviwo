@@ -114,15 +114,21 @@ IVW_CORE_API uvec3 getDataFormatColor(NumericType t, size_t comp, size_t size);
  * Appends b to a if a is not empty and returns a.
  * Useful if an empty a is considered an error and we want to propagate that error.
  */
-IVW_CORE_API std::string appendIfNotEmpty(const std::string& a, const std::string& b);
+IVW_CORE_API std::string appendIfNotEmpty(std::string_view a, std::string_view b);
 
 }  // namespace util
 
 // Specializations for data format types
 template <typename T>
 struct DataTraits<T, std::enable_if_t<util::HasDataFormat<T>::value>> {
-    static std::string classIdentifier() { return "org.inviwo." + DataFormat<T>::str(); }
-    static std::string dataName() { return DataFormat<T>::str(); }
+    static const std::string& classIdentifier() {
+        static const std::string classId{"org.inviwo." + DataFormat<T>::staticStr()};
+        return classId;
+    }
+    static std::string_view dataName() {
+        static const std::string name{DataFormat<T>::str()};
+        return name;
+    }
     static uvec3 colorCode() {
         return util::getDataFormatColor(DataFormat<T>::numtype, DataFormat<T>::comp,
                                         DataFormat<T>::compsize);
@@ -162,7 +168,7 @@ struct DataTraits<std::vector<T, A>> {
     static std::string classIdentifier() {
         return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".vector");
     }
-    static std::string dataName() { return "vector<" + DataTraits<T>::dataName() + ">"; }
+    static std::string dataName() { return fmt::format("vector<{}>", DataTraits<T>::dataName()); }
     static uvec3 colorCode() { return color::lighter(DataTraits<T>::colorCode(), 1.12f); }
     static Document info(const std::vector<T, A>& data) {
         return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : &data.front(),
@@ -174,7 +180,7 @@ struct DataTraits<std::vector<T*, A>> {
     static std::string classIdentifier() {
         return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".ptr.vector");
     }
-    static std::string dataName() { return "vector<" + DataTraits<T>::dataName() + "*>"; }
+    static std::string dataName() { return fmt::format("vector<{}*>", DataTraits<T>::dataName()); }
     static uvec3 colorCode() {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
@@ -189,7 +195,7 @@ struct DataTraits<std::vector<std::unique_ptr<T, D>, A>> {
         return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".unique_ptr.vector");
     }
     static std::string dataName() {
-        return "vector<unique_ptr<" + DataTraits<T>::dataName() + ">>";
+        return fmt::format("vector<unique_ptr<{}>>", DataTraits<T>::dataName());
     }
     static uvec3 colorCode() {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
@@ -205,7 +211,7 @@ struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
         return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".shared_ptr.vector");
     }
     static std::string dataName() {
-        return "vector<shared_ptr<" + DataTraits<T>::dataName() + ">>";
+        return fmt::format("vector<shared_ptr<{}>>", DataTraits<T>::dataName());
     }
     static uvec3 colorCode() {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));

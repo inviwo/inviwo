@@ -28,5 +28,26 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/util/exception.h>
+#include <ostream>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+std::string_view enumToStr(ConstraintBehavior cb) {
+    switch (cb) {
+        case ConstraintBehavior::Editable:
+            return "Editable";
+        case ConstraintBehavior::Mutable:
+            return "Mutable";
+        case ConstraintBehavior::Immutable:
+            return "Immutable";
+        case ConstraintBehavior::Ignore:
+            return "Ignore";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+                    "Found invalid ConstraintBehavior enum value '{}'", static_cast<int>(cb));
+}
+
+std::ostream& operator<<(std::ostream& ss, ConstraintBehavior cb) { return ss << enumToStr(cb); }
+
+}  // namespace inviwo

@@ -161,10 +161,11 @@ Outport* Processor::removePort(Outport* port) {
 }
 
 void Processor::accept(NetworkVisitor& visitor) {
-    if (visitor.visit(*this)) {
+    if (visitor.enter(*this)) {
         for (auto* elem : properties_) {
             elem->accept(visitor);
         }
+        visitor.exit(*this);
     }
 }
 

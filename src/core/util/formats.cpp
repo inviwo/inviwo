@@ -57,7 +57,7 @@ DataFormatException::DataFormatException(const std::string& message, ExceptionCo
     : Exception(message, context) {}
 
 DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max, double min,
-                               double lowest, NumericType nt, const std::string& s)
+                               double lowest, NumericType nt, std::string_view s)
     : formatId_(t)
     , components_(c)
     , size_(size)

@@ -103,4 +103,21 @@ void LayerDistanceTransformRAM::process() {
     });
 }
 
+std::ostream& operator<<(std::ostream& ss, LayerDistanceTransformRAM::DataRangeMode m) {
+    switch (m) {
+        case LayerDistanceTransformRAM::DataRangeMode::Diagonal:
+            ss << "Diagonal";
+            break;
+        case LayerDistanceTransformRAM::DataRangeMode::MinMax:
+            ss << "MinMax";
+            break;
+        case LayerDistanceTransformRAM::DataRangeMode::Custom:
+            ss << "Custom";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+
 }  // namespace inviwo

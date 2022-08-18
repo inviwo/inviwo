@@ -34,6 +34,8 @@
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/autolinker.h>
@@ -41,6 +43,8 @@
 
 #include <iterator>
 #include <unordered_set>
+#include <vector>
+#include <fstream>
 
 namespace inviwo {
 
@@ -226,8 +230,9 @@ void serializeSelected(ProcessorNetwork* network, std::ostream& os, const std::s
     serializer.writeFile(os);
 }
 
-std::vector<Processor*> appendDeserialized(ProcessorNetwork* network, std::istream& is,
-                                           const std::string& refPath, InviwoApplication* app) {
+std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network, std::istream& is,
+                                                      const std::string& refPath,
+                                                      InviwoApplication* app) {
     NetworkLock lock(network);
     auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(is, refPath);
 
@@ -525,6 +530,53 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
     for (auto& con : newConnections) network->addConnection(con);
 
     return old;
+}
+
+std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetwork,
+                                               std::string_view workspaceFile,
+                                               InviwoApplication* app) {
+
+    auto fs = filesystem::ifstream(workspaceFile);
+    if (!fs) {
+        throw Exception(IVW_CONTEXT_CUSTOM("util::appendProcessorNetwork"),
+                        "Could not open workspace file: {}", workspaceFile);
+    }
+
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
+    auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(fs, workspaceFile);
+
+    ProcessorNetwork network{app};
+    deserializer.deserialize("ProcessorNetwork", network);
+
+    NetworkLock lock(destinationNetwork);
+
+    std::vector<PortConnection> connections;
+    network.forEachConnection([&](const PortConnection& c) { connections.push_back(c); });
+    std::vector<PropertyLink> links;
+    network.forEachLink([&](const PropertyLink& l) { links.push_back(l); });
+    std::vector<Processor*> processors;
+    network.forEachProcessor([&](Processor* p) { processors.push_back(p); });
+
+    // add to top right
+    const auto orgBounds = util::getBoundingBox(destinationNetwork);
+    const auto bounds = util::getBoundingBox(processors);
+    const auto offset = ivec2{orgBounds.second.x, orgBounds.first.y} + ivec2{25, 0} +
+                        ivec2{150, 0} - ivec2{bounds.first.x, bounds.first.y};
+    util::offsetPosition(processors, offset);
+
+    for (auto p : processors) {
+        auto proc = network.removeProcessor(p);
+        destinationNetwork->addProcessor(proc);
+    }
+    for (auto c : connections) {
+        destinationNetwork->addConnection(c);
+    }
+    for (auto l : links) {
+        destinationNetwork->addLink(l);
+    }
+
+    return processors;
 }
 
 }  // namespace util

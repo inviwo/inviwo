@@ -1,5 +1,76 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-08-16 New help system
+The old processor help system based on doxygen and qhp has been removed in favor of a runtime system where help text is added to processor/port/properties at runtime. To add a help text to a processor now you add a new element to the ProcessorInfo for that processor like this
+```c++
+const ProcessorInfo InstanceRenderer::processorInfo_{
+"org.inviwo.InstanceRenderer",  // Class identifier
+"Instance Renderer",            // Display name
+"Mesh Rendering",               // Category
+CodeState::Stable,              // Code state
+Tags::GL,                       // Tags
+R"(
+    Renders multiple instances of a mesh.
+    Each instance can be modified using uniform data provided 
+    from a set of dynamic inports holding vectors of data. 
+    The number of inports and types can be controlled using
+    a List Property.
+    
+    The rendering will happen along these lines:
+    
+        for (auto uniforms : zip(dynamic vector data ports)) {
+            for(uniform : uniforms) {
+                shader.setUniform(uniform.name, uniform.value);
+            }
+            shader.draw();
+        }
+    
+    How the uniforms are applied in the shader can be specified
+    in a set of properties.
+    
+    Example network:
+    [basegl/instance_renderer.inv](file:///<modulePath>/data/workspaces/instance_renderer.inv)
+)"_unindentHelp};
+```
+The `_unindentHelp`  suffix will remove any leading indent and parse the string as a markdown document and then convert it to an inviwo document, which is what is expected by the `ProcessorInfo` struct.
+One can refer to images like so:
+```c++
+"![](file:///<modulePath>/docs/images/heightfield-network.png)"
+```
+or networks
+```c++
+"[basegl/instance_renderer.inv](file:///<modulePath>/data/workspaces/instance_renderer.inv)"
+```
+Images will be shown inline, and clicking on processor network will append them to the current network. 
+To be able to refer to files there are two placeholder `<basePath>` and `<modulePath>` the former will refer to the base path of the inviwo installation and the latter to the current module. Make sure that any resources linked are also included in the installer. By default the `data` directory and the `docs` folders are always included in the installer. 
+
+For Ports a second constructor argument has been added for a help Document like so
+```cpp
+inport_("mesh", "Mesh to be drawn multiple times"_help)
+```
+the `_help` suffix will parse the string as markdown and convert it to an inviwo Document.
+
+For Properties a new constructor with a new third help argument after the identifier and display name has been added. For example the customInputDimensions in the CanvasProcessor:
+```cpp
+customInputDimensions_{"customInputDimensions",
+                       "Image Size",
+                       "The size of the image that will be generated. This can be larger "
+                       "or smaller than the canvas size. A smaller size will generate a "
+                       "blurrier canvas, but render faster. A larger size will render "
+                       "slower."_help,
+                       size2_t(256, 256),
+                       {size2_t(1, 1), ConstraintBehavior::Immutable},
+                       {size2_t(10000, 10000), ConstraintBehavior::Ignore},
+                       size2_t(1, 1),
+                       InvalidationLevel::Valid}
+```
+
+The Help widget will automatically show the help text for the processor and combine it with the help text for the ports and properties in a standard way.  The help text for Ports and Properties will also be shown in relevant tooltips.
+
+## 2022-08-15 FMT Version 9.0.0
+The fmt library was updated to the recent version 9.0.0. There are major breaking changes in the update with respect to using ostream operators and fmt. Previously you could just include `fmt/ostream.h` and any type that was streamable was not also printable with fmt. That behavior was removed and now you either have to wrap the object with `fmt::streamed(x)` or add a specialization of fmt::formatter for the type. Most core types in Inviwo that used std::ostream operators have been updated with fmt formatters. For enums we have added two helper classes in `ìnviwo/core/util/fmtutils.h`, 
+`FlagFormatter` and `FlagsFormatter` the former for enums and the later for enum flags. See `include/inviwo/core/interaction/events/mousebuttons.h` for an example. The `FlagFormatter` class requires that a `std::string_view enumToStr(T val)` overload exists in the namespace of T.
+
 ## 2022-08-12 Include changes in core/util/
 Optimized includes in `core/util` with some functions being moved to separate header files.
 Functions moved from `core/util/stringconversion.h` include
@@ -12,6 +83,15 @@ Functions and structs moved from `core/util/stdextensions.h` include
 Added `core/util/glmmat.h` containing light-weight forward declarations of glm matrices similar to `glmvec.h`, which no longer includes `glm.hpp`. 
 This means that it might be necessary to include `core/util/glm.h` where needed.
 In addition, the glm utility functions `util::rank()`, `util::extent()`, and `util::is_floating_point()` are now part of `core/util/glmutils.h`.
+
+## 2022-08-11 InviwoSetupInfo
+The module setup info in a workspace file will now only save information about processors and modules used in the workspace.
+
+## 2022-07-11 Help
+Alt/Option clicking a processor in the processor network will now show the help for the given processor.
+
+## 2022-07-11 Append workspace
+An "Append" function was added to the File menu to append a workspace into an existing workspace. Holding down Control/Command in the file lists (Recent/Examples/Tests) will also append the workspace instead of opening it.
 
 ## 2022-06-27 New processor: Volume Region Mapper
 The `Volume Region Mapper` processor maps each unique voxel value of a Volume to another integer value. The value mapping is provided by two DataFrame columns.

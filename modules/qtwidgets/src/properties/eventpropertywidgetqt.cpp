@@ -32,6 +32,7 @@
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
@@ -146,22 +147,7 @@ void EventPropertyWidgetQt::keyReleaseEvent(QKeyEvent* event) {
 }
 
 void EventPropertyWidgetQt::setButtonText() {
-    std::stringstream ss;
-
-    if (auto keyMatcher = dynamic_cast<KeyboardEventMatcher*>(eventproperty_->getEventMatcher())) {
-        if (keyMatcher->modifiers() != KeyModifier::None) {
-            ss << keyMatcher->modifiers() << "+";
-        }
-        ss << keyMatcher->key();
-    } else if (auto mouseMatcher =
-                   dynamic_cast<MouseEventMatcher*>(eventproperty_->getEventMatcher())) {
-        if (mouseMatcher->modifiers() != KeyModifier::None) {
-            ss << mouseMatcher->modifiers() << "+";
-        }
-        ss << mouseMatcher->buttons();
-    }
-
-    button_->setText(QString::fromStdString(ss.str()));
+    button_->setText(utilqt::toQString(eventproperty_->getEventMatcher()->displayString()));
 }
 
 void EventPropertyWidgetQt::focusOutEvent(QFocusEvent*) {

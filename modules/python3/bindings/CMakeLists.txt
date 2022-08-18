@@ -7,6 +7,7 @@ set(HEADER_FILES
     include/inviwopy/pycompositeproperties.h
     include/inviwopy/pydataformat.h
     include/inviwopy/pydatamapper.h
+    include/inviwopy/pydocument.h
     include/inviwopy/pyevent.h
     include/inviwopy/pyflags.h
     include/inviwopy/pyglmmattypes.h
@@ -38,6 +39,7 @@ set(SOURCE_FILES
     src/pycompositeproperties.cpp
     src/pydataformat.cpp
     src/pydatamapper.cpp
+    src/pydocument.cpp
     src/pyevent.cpp
     src/pyflags.cpp
     src/pyglmmattypes.cpp

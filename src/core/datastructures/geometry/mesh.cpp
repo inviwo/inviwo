@@ -31,6 +31,7 @@
 #include <inviwo/core/util/document.h>
 
 #include <fmt/format.h>
+#include <ostream>
 
 namespace inviwo {
 
@@ -402,6 +403,11 @@ Document Mesh::getInfo() const {
     }
 
     return doc;
+}
+
+std::ostream& operator<<(std::ostream& ss, Mesh::BufferInfo info) {
+    ss << info.type << " (location = " << info.location << ")";
+    return ss;
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Mesh>;

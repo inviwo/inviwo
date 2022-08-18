@@ -51,15 +51,25 @@ class TrackballObject;
 
 class IVW_CORE_API Trackball : public CompositeProperty {
 public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     /**
      * Rotates and moves object around a sphere.
      * The trackball does not take ownership of pointers handed to it.
      * @see CameraTrackball
      */
     Trackball(TrackballObject* object);
+
+    Trackball(std::string_view identifier, std::string_view displayName,
+              TrackballObject* object = nullptr);
+
     Trackball(const Trackball& rhs);
     virtual Trackball* clone() const override;
     virtual ~Trackball();
+
+    TrackballObject* getTrackballObject() const;
+    void setTrackballObject(TrackballObject* obj);
 
     virtual void invokeEvent(Event* event) override;
 

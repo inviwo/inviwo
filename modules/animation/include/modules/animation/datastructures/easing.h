@@ -33,6 +33,8 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/assertion.h>
 
+#include <iosfwd>
+
 namespace inviwo {
 
 namespace animation {
@@ -95,114 +97,7 @@ IVW_MODULE_ANIMATION_API EasingType& operator++(EasingType& e);
 
 IVW_MODULE_ANIMATION_API EasingType operator++(EasingType& e, int);
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
-                                             EasingType type) {
-    switch (type) {
-        case inviwo::animation::easing::EasingType::None:
-            os << "None";
-            break;
-        case inviwo::animation::easing::EasingType::Linear:
-            os << "Linear";
-            break;
-        case inviwo::animation::easing::EasingType::InQuadratic:
-            os << "InQuadratic";
-            break;
-        case inviwo::animation::easing::EasingType::InCubic:
-            os << "InCubic";
-            break;
-        case inviwo::animation::easing::EasingType::InQuartic:
-            os << "InQuartic";
-            break;
-        case inviwo::animation::easing::EasingType::InQuintic:
-            os << "InQuintic";
-            break;
-        case inviwo::animation::easing::EasingType::OutQuadratic:
-            os << "OutQuadratic";
-            break;
-        case inviwo::animation::easing::EasingType::OutCubic:
-            os << "OutCubic";
-            break;
-        case inviwo::animation::easing::EasingType::OutQuartic:
-            os << "OutQuartic";
-            break;
-        case inviwo::animation::easing::EasingType::OutQuintic:
-            os << "OutQuintic";
-            break;
-        case inviwo::animation::easing::EasingType::InOutQuadratic:
-            os << "InOutQuadratic";
-            break;
-        case inviwo::animation::easing::EasingType::InOutCubic:
-            os << "InOutCubic";
-            break;
-        case inviwo::animation::easing::EasingType::InOutQuartic:
-            os << "InOutQuartic";
-            break;
-        case inviwo::animation::easing::EasingType::InOutQuintic:
-            os << "InOutQuintic";
-            break;
-        case inviwo::animation::easing::EasingType::InSine:
-            os << "InSine";
-            break;
-        case inviwo::animation::easing::EasingType::OutSine:
-            os << "OutSine";
-            break;
-        case inviwo::animation::easing::EasingType::InOutSine:
-            os << "InOutSine";
-            break;
-        case inviwo::animation::easing::EasingType::InExp:
-            os << "InExp";
-            break;
-        case inviwo::animation::easing::EasingType::OutExp:
-            os << "OutExp";
-            break;
-        case inviwo::animation::easing::EasingType::InOutExp:
-            os << "InOutExp";
-            break;
-        case inviwo::animation::easing::EasingType::InCircular:
-            os << "InCircular";
-            break;
-        case inviwo::animation::easing::EasingType::OutCircular:
-            os << "OutCircular";
-            break;
-        case inviwo::animation::easing::EasingType::InOutCircular:
-            os << "InOutCircular";
-            break;
-        case inviwo::animation::easing::EasingType::InBack:
-            os << "InBack";
-            break;
-        case inviwo::animation::easing::EasingType::OutBack:
-            os << "OutBack";
-            break;
-        case inviwo::animation::easing::EasingType::InOutBack:
-            os << "InOutBack";
-            break;
-        case inviwo::animation::easing::EasingType::InElastic:
-            os << "InElastic";
-            break;
-        case inviwo::animation::easing::EasingType::OutElastic:
-            os << "OutElastic";
-            break;
-        case inviwo::animation::easing::EasingType::InOutElastic:
-            os << "InOutElastic";
-            break;
-        case inviwo::animation::easing::EasingType::InBounce:
-            os << "InBounce";
-            break;
-        case inviwo::animation::easing::EasingType::OutBounce:
-            os << "OutBounce";
-            break;
-        case inviwo::animation::easing::EasingType::InOutBounce:
-            os << "InOutBounce";
-            break;
-        default:
-            throw inviwo::Exception("Unknown Easing type",
-                                    IVW_CONTEXT_CUSTOM("Easing::operator<<"));
-            break;
-    }
-
-    return os;
-}
+IVW_MODULE_ANIMATION_API std::ostream& operator<<(std::ostream& os, EasingType type);
 
 /// Polynomial In-Easing
 inline double inPolynomial(const double t, const double Exponent) { return pow(t, Exponent); }

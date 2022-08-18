@@ -30,11 +30,12 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/io/serialization/serialization.h>
 
+#include <ostream>
+
 namespace inviwo {
 
-PropertySemantics::PropertySemantics() : Serializable(), semantic_("Default") {}
-PropertySemantics::PropertySemantics(std::string semantic)
-    : Serializable(), semantic_(std::move(semantic)) {}
+PropertySemantics::PropertySemantics() : semantic_("Default") {}
+PropertySemantics::PropertySemantics(std::string semantic) : semantic_(std::move(semantic)) {}
 
 const std::string& PropertySemantics::getString() const { return semantic_; }
 
@@ -56,5 +57,10 @@ const PropertySemantics PropertySemantics::TextEditor("TextEditor");
 const PropertySemantics PropertySemantics::PythonEditor("PythonEditor");
 const PropertySemantics PropertySemantics::ImageEditor("ImageEditor");
 const PropertySemantics PropertySemantics::ShaderEditor("ShaderEditor");
+
+std::ostream& operator<<(std::ostream& ss, const PropertySemantics& obj) {
+    ss << obj.getString();
+    return ss;
+}
 
 }  // namespace inviwo

@@ -78,12 +78,12 @@ protected:
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 struct DataTraits<SpatialSampler<SpatialDims, DataDims, T>> {
     static std::string classIdentifier() {
-        return "org.inviwo.SpatialSampler." + toString(SpatialDims) + "D." +
-               DataFormat<Vector<DataDims, T>>::str();
+        return fmt::format("org.inviwo.SpatialSampler.{}D.{}", SpatialDims,
+                           DataFormat<Vector<DataDims, T>>::str());
     }
     static std::string dataName() {
-        return "SpatialSampler<" + toString(SpatialDims) + "D" +
-               DataFormat<Vector<DataDims, T>>::str() + ">";
+        return fmt::format("SpatialSampler<{}D{}>", SpatialDims,
+                           DataFormat<Vector<DataDims, T>>::str());
     }
     static uvec3 colorCode() { return uvec3(153, 0, 76); }
     static Document info(const SpatialSampler<SpatialDims, DataDims, T>&) {

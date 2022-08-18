@@ -38,9 +38,9 @@ struct DataFormatHelper {
     template <typename DataFormat>
     auto operator()(pybind11::module& m) {
         namespace py = pybind11;
-        m.attr(("Data" + DataFormat::str()).c_str()) =
-            py::cast(static_cast<const DataFormatBase*>(DataFormat::get()),
-                     py::return_value_policy::reference);
+        constexpr auto name = StaticString{"Data"} + DataFormat::staticStr();
+        m.attr(name.c_str()) = py::cast(static_cast<const DataFormatBase*>(DataFormat::get()),
+                                        py::return_value_policy::reference);
     }
 };
 

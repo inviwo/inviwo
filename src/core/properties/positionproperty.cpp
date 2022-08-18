@@ -35,9 +35,10 @@ const std::string PositionProperty::classIdentifier = "org.inviwo.PositionProper
 std::string PositionProperty::getClassIdentifier() const { return classIdentifier; }
 
 PositionProperty::PositionProperty(std::string_view identifier, std::string_view displayName,
-                                   FloatVec3Property position, CameraProperty* camera,
-                                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+                                   Document help, FloatVec3Property position,
+                                   CameraProperty* camera, InvalidationLevel invalidationLevel,
+                                   PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , referenceFrame_("referenceFrame", "Space")
     , position_(position)
     , positionWorldSpace_(position_.get())
@@ -62,6 +63,12 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
         camera_->onChange([this]() { cameraChanged(); });
     }
 }
+
+PositionProperty::PositionProperty(std::string_view identifier, std::string_view displayName,
+                                   FloatVec3Property position, CameraProperty* camera,
+                                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : PositionProperty(identifier, displayName, Document{}, std::move(position), camera,
+                       invalidationLevel, semantics) {}
 
 PositionProperty::PositionProperty(const PositionProperty& rhs)
     : CompositeProperty(rhs)

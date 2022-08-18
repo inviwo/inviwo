@@ -33,6 +33,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <ostream>
+
 namespace inviwo {
 
 FileExtension::FileExtension() : extension_(), description_() {}
@@ -127,5 +129,18 @@ bool operator<=(const FileExtension& lhs, const FileExtension& rhs) { return !op
 bool operator>=(const FileExtension& lhs, const FileExtension& rhs) { return !operator<(lhs, rhs); }
 
 FileExtension FileExtension::all() { return FileExtension("*", "All Files"); }
+
+std::ostream& operator<<(std::ostream& ss, const FileExtension& ext) {
+    if (ext.extension_.empty()) {
+        return ss;
+    }
+    ss << ext.description_ << " ";
+    if (ext.extension_ == "*") {
+        ss << "(*)";
+    } else {
+        ss << "(*." << ext.extension_ << ")";
+    }
+    return ss;
+}
 
 }  // namespace inviwo

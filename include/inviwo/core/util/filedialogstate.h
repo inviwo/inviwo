@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
+#include <inviwo/core/util/fmtutils.h>
 #include <iosfwd>
 
 namespace inviwo {
@@ -38,40 +38,14 @@ namespace inviwo {
 enum class AcceptMode { Open, Save };
 enum class FileMode { AnyFile, ExistingFile, Directory, ExistingFiles, DirectoryOnly };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             AcceptMode& mode) {
-    switch (mode) {
-        case AcceptMode::Open:
-            ss << "Open";
-            break;
-        case AcceptMode::Save:
-            ss << "Save";
-            break;
-    }
-    return ss;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, FileMode& mode) {
-    switch (mode) {
-        case FileMode::AnyFile:
-            ss << "Any File";
-            break;
-        case FileMode::ExistingFile:
-            ss << "Existing File";
-            break;
-        case FileMode::Directory:
-            ss << "Directory";
-            break;
-        case FileMode::ExistingFiles:
-            ss << "Existing Files";
-            break;
-        case FileMode::DirectoryOnly:
-            ss << "Directory Only";
-            break;
-    }
-    return ss;
-}
+IVW_CORE_API std::string_view enumToStr(AcceptMode mode);
+IVW_CORE_API std::string_view enumToStr(FileMode mode);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, AcceptMode& mode);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, FileMode& mode);
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::AcceptMode> : inviwo::FlagFormatter<inviwo::AcceptMode> {};
+template <>
+struct fmt::formatter<inviwo::FileMode> : inviwo::FlagFormatter<inviwo::FileMode> {};

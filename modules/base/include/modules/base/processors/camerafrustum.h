@@ -36,22 +36,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.CameraFrustum, Camera Frustum}
- * ![](org.inviwo.CameraFrustum.png?classIdentifier=org.inviwo.CameraFrustum)
- *
- * Creates a line mesh of a frustum for a given camera. See Example Workspace
- * Base/camera_furstum.inv
- *
- *
- * ### Outports
- *   * __mesh__ Line mesh (GL_LINES).
- *
- * ### Properties
- *   * __Color__ Color of the lines.
- *   * __Camera__ Camera for which to create the frustum.
- *
- */
-
 class IVW_MODULE_BASE_API CameraFrustum : public Processor {
 public:
     CameraFrustum();

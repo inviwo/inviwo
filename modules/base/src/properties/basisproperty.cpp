@@ -39,28 +39,30 @@ std::string BasisProperty::getClassIdentifier() const { return classIdentifier; 
 
 BasisProperty::BasisProperty(std::string_view identifier, std::string_view displayName,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, "Show and modify volume basis data"_help,
+                        invalidationLevel, semantics)
     , mode_("mode", "Mode",
+            "Select interaction mode. Using the Orthogonal mode presents a simpler interface"_help,
             {{"general", "General Basis", BasisPropertyMode::General},
              {"orthogonal", "Orthogonal Basis", BasisPropertyMode::Orthogonal}},
             0, InvalidationLevel::Valid)
     , reference_("reference", "Reference",
+                 "The values for (a,b,c) are for either the whole volume of a voxel"_help,
                  {{"Volume", "Volume", BasisPropertyReference::Volume},
                   {"Voxel", "Voxel", BasisPropertyReference::Voxel}},
                  0, InvalidationLevel::Valid)
-    , overRideDefaults_("override", "Override", false)
+    , overRideDefaults_("override", "Override", "Override the default basis values"_help, false)
     , updateForNewEntry_("update", "Update On New Data", true, InvalidationLevel::Valid)
-    , size_("size", "Size", vec3(1.0f), vec3(0.0), vec3(std::numeric_limits<float>::max()),
-            vec3{0.001f}, InvalidationLevel::Valid)
-    , a_("a", "A", vec3(1.0f, 0.0f, 0.0f), vec3(std::numeric_limits<float>::lowest()),
-         vec3(std::numeric_limits<float>::max()), vec3{0.001f}, InvalidationLevel::Valid)
-    , b_("b", "B", vec3(0.0f, 1.0f, 0.0f), vec3(std::numeric_limits<float>::lowest()),
-         vec3(std::numeric_limits<float>::max()), vec3{0.001f}, InvalidationLevel::Valid)
-    , c_("c", "C", vec3(0.0f, 0.0f, 1.0f), vec3(std::numeric_limits<float>::lowest()),
-         vec3(std::numeric_limits<float>::max()), vec3{0.001f}, InvalidationLevel::Valid)
+    , size_("size", "Size", util::ordinalSymmetricVector(vec3(1.0f)).set(InvalidationLevel::Valid))
+    , a_("a", "A",
+         util::ordinalSymmetricVector(vec3(1.0f, 0.0f, 0.0f)).set(InvalidationLevel::Valid))
+    , b_("b", "B",
+         util::ordinalSymmetricVector(vec3(0.0f, 1.0f, 0.0f)).set(InvalidationLevel::Valid))
+    , c_("c", "C",
+         util::ordinalSymmetricVector(vec3(0.0f, 0.0f, 1.0f)).set(InvalidationLevel::Valid))
     , autoCenter_("autoCenter", "Center Automatically", true, InvalidationLevel::Valid)
-    , offset_("offset", "Offset", vec3(-0.5f), vec3(std::numeric_limits<float>::lowest()),
-              vec3(std::numeric_limits<float>::max()), vec3{0.001f}, InvalidationLevel::Valid)
+    , offset_("offset", "Offset",
+              util::ordinalSymmetricVector(vec3(-0.5f)).set(InvalidationLevel::Valid))
     , resetOverride_("restore", "Revert Override", InvalidationLevel::Valid)
     , overrideModel_("overrideModel", mat4{1}) {
 
@@ -78,7 +80,6 @@ BasisProperty::BasisProperty(std::string_view identifier, std::string_view displ
         [this](auto& elem) {
             elem.setReadOnly(true);
             elem.setSerializationMode(PropertySerializationMode::None);
-            elem.setSemantics(PropertySemantics::SpinBox);
             elem.onChange([this]() { this->save(); });
         },
         size_, a_, b_, c_, offset_);

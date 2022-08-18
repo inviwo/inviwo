@@ -1,31 +1,31 @@
- #################################################################################
- #
- # Inviwo - Interactive Visualization Workshop
- #
- # Copyright (c) 2014-2019 Inviwo Foundation
- # All rights reserved.
- #
- # Redistribution and use in source and binary forms, with or without
- # modification, are permitted provided that the following conditions are met:
- #
- # 1. Redistributions of source code must retain the above copyright notice, this
- # list of conditions and the following disclaimer.
- # 2. Redistributions in binary form must reproduce the above copyright notice,
- # this list of conditions and the following disclaimer in the documentation
- # and/or other materials provided with the distribution.
- #
- # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- #
- #################################################################################
+#################################################################################
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2014-2022 Inviwo Foundation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#################################################################################
 
 include(CMakeParseArguments)
 include(CMakeDependentOption)
@@ -202,42 +202,3 @@ add_custom_target("DOXY-Python"
 add_dependencies(DOXY-Python ${pymodules} ${pyapps})
 set_target_properties("DOXY-Python" PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
 add_dependencies("DOXY-ALL" "DOXY-Python")
-
-add_custom_target("DOXY-generate-processor-previews"
-    COMMAND inviwo --save-previews "${output_dir}/inviwo/html" --quit
-    WORKING_DIRECTORY ${output_dir}
-    COMMENT "Generate preview images of processors to be used in Inviwo Doxygen API documentation"
-    VERBATIM
-)
-add_dependencies("DOXY-generate-processor-previews" "DOXY-Clear")
-set_target_properties("DOXY-generate-processor-previews"
-                       PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
-add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews")
-
-# Help, used for the help inside inviwo
-set(module_bases "")
-foreach(mod IN LISTS modules)
-    # Only include enabled modules, skip the core module
-    if(${${mod}_opt} AND (NOT ${mod} STREQUAL "INVIWOCOREMODULE")) 
-        ivw_set_if(COND EXISTS "${${mod}_path}/docs/images" 
-                   TRUEVAL "${${mod}_path}/docs/images" 
-                   FALSEVAL "" 
-                   RETVAL image_path)
-
-        ivw_get_include_dirs(incpaths ${${mod}_target})
-        ivw_get_glsl_dirs(glslpaths ${mod})
-        ivw_private_make_help(
-            NAME ${${mod}_name}
-            OUTPUT_DIR "${output_dir}/help"
-            HTML_DIR "${ivw_doxy_dir}/help"
-            DOC_DIR "${${mod}_path}/docs"
-            DOXY_DIR "${ivw_doxy_dir}"
-            INPUTS "${${mod}_path}"
-            INCLUDE_PATHS ${incpaths} ${glslpaths}
-            IMAGE_PATHS "${image_path}"
-            FILTER_PATTERNS ${filer_patterns_list}
-            WARNING_FORMAT ${warn_format}
-        )
-        add_dependencies("DOXY-ALL" "DOXY-HELP-${${mod}_name}")
-    endif()
-endforeach()

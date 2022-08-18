@@ -47,7 +47,8 @@ namespace inviwo {
 
 class IVW_CORE_API ProcessorFactoryObject {
 public:
-    ProcessorFactoryObject(ProcessorInfo info) : info_(std::move(info)) {}
+    ProcessorFactoryObject(ProcessorInfo info, std::string_view typeName)
+        : info_(std::move(info)), typeName_{typeName} {}
     virtual ~ProcessorFactoryObject() = default;
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) = 0;
@@ -65,8 +66,11 @@ public:
      */
     virtual Document getMetaInformation() const { return Document(); }
 
+    const std::string& getTypeName() const { return typeName_; }
+
 private:
-    const ProcessorInfo info_;
+    ProcessorInfo info_;
+    std::string typeName_;
 };
 
 #include <warn/push>
@@ -75,7 +79,8 @@ template <typename T>
 class ProcessorFactoryObjectTemplate : public ProcessorFactoryObject {
 public:
     ProcessorFactoryObjectTemplate()
-        : ProcessorFactoryObject(ProcessorTraits<T>::getProcessorInfo()) {}
+        : ProcessorFactoryObject(ProcessorTraits<T>::getProcessorInfo(),
+                                 util::demangle(typeid(T).name())) {}
     virtual ~ProcessorFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Processor> create([[maybe_unused]] InviwoApplication* app) {

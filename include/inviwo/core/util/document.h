@@ -42,11 +42,12 @@
 
 namespace inviwo {
 
-/**
- * \class Document
- * \brief A helper class to represent a document
- */
+class Serializer;
+class Deserializer;
 
+/**
+ * @brief A class to represent a structured document, usually some html
+ */
 class IVW_CORE_API Document {
 public:
     class DocumentHandle;
@@ -58,8 +59,8 @@ public:
         friend Document;
         friend DocumentHandle;
 
-        Element(const Element&) = delete;
-        Element& operator=(const Element&) = delete;
+        Element(const Element&);
+        Element& operator=(const Element&);
         Element(Element&&) noexcept = default;
         Element& operator=(Element&&) = default;
 
@@ -68,19 +69,30 @@ public:
                 const std::unordered_map<std::string, std::string>& attributes = {});
 
         const std::string& name() const;
+        std::string& name();
+
         const std::unordered_map<std::string, std::string>& attributes() const;
+        std::unordered_map<std::string, std::string>& attributes();
+
         const std::string& content() const;
+        std::string& content();
 
         ElementType type() const;
         bool isText() const;
         bool isNode() const;
 
-        std::string& name();
-        std::unordered_map<std::string, std::string>& attributes();
-        std::string& content();
-
         bool emptyTag() const;
         bool noIndent() const;
+
+        friend void swap(Element& lhs, Element& rhs) {
+            std::swap(lhs.type_, rhs.type_);
+            std::swap(lhs.children_, rhs.children_);
+            std::swap(lhs.data_, rhs.data_);
+            std::swap(lhs.attributes_, rhs.attributes_);
+        }
+
+        void serialize(Serializer& s) const;
+        void deserialize(Deserializer& d);
 
     private:
         ElementType type_;
@@ -113,12 +125,8 @@ public:
 
         ElemVec::const_iterator operator()(const ElemVec& elements) const;
 
-        template <class Elem, class Traits>
-        friend std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                                            const Document::PathComponent& path) {
-            ss << path.strrep_;
-            return ss;
-        }
+        IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss,
+                                                     const Document::PathComponent& path);
 
     private:
         std::string strrep_;
@@ -141,8 +149,11 @@ public:
 
         DocumentHandle append(std::string_view name, std::string_view content = "",
                               const std::unordered_map<std::string, std::string>& attributes = {});
-
         DocumentHandle insert(PathComponent pos, Document doc);
+
+        DocumentHandle insertText(PathComponent pos, std::string_view text);
+        DocumentHandle appendText(std::string_view text);
+
         DocumentHandle append(Document doc);
 
         const Element& element() const;
@@ -159,10 +170,12 @@ public:
     };
 
     Document();
-    Document(const Document&) = delete;
-    Document& operator=(const Document&) = delete;
+    Document(std::string_view text);
+    Document(const Document&);
+    Document& operator=(const Document&);
     Document(Document&&) = default;
     Document& operator=(Document&&) = default;
+    virtual ~Document() = default;
 
     bool empty() const { return root_->children_.empty(); };
 
@@ -175,53 +188,42 @@ public:
     DocumentHandle append(std::string_view name, std::string_view content = "",
                           const std::unordered_map<std::string, std::string>& attributes = {});
 
+    DocumentHandle insertText(PathComponent pos, std::string_view text);
+    DocumentHandle appendText(std::string_view text);
+
     DocumentHandle insert(PathComponent pos, Document doc);
     DocumentHandle append(Document doc);
 
     template <typename BeforVisitor, typename AfterVisitor>
     void visit(BeforVisitor before, AfterVisitor after) const {
-        const std::function<void(Element*, std::vector<Element*>&)> traverser =
-            [&](Element* elem, std::vector<Element*>& stack) {
-                before(elem, stack);
-                stack.push_back(elem);
+        const auto traverser = [&](auto& self, Element* elem,
+                                   std::vector<Element*>& stack) -> void {
+            before(elem, stack);
+            stack.push_back(elem);
 
-                for (const auto& e : elem->children_) traverser(e.get(), stack);
+            for (const auto& child : elem->children_) {
+                self(self, child.get(), stack);
+            }
 
-                stack.pop_back();
-                after(elem, stack);
-            };
+            stack.pop_back();
+            after(elem, stack);
+        };
+
         std::vector<Element*> stack;
-        for (const auto& e : root_->children_) traverser(e.get(), stack);
+        for (const auto& e : root_->children_) {
+            traverser(traverser, e.get(), stack);
+        }
     }
 
-    template <class Elem, class Traits>
-    friend std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                                        const Document& doc) {
-        doc.visit(
-            [&](Element* elem, std::vector<Element*>& stack) {
-                if (elem->isNode()) {
-                    ss << std::string(stack.size() * 4, ' ') << "<" << elem->name();
-                    for (const auto& item : elem->attributes()) {
-                        ss << " " << item.first << "='" << item.second << "'";
-                    }
-                    ss << ">\n";
-                } else if (elem->isText() && !elem->content().empty()) {
-                    if (!stack.empty() && !stack.back()->noIndent()) {
-                        ss << std::string((stack.size()) * 4, ' ');
-                    }
-                    ss << elem->content() << "\n";
-                }
-            },
-            [&](Element* elem, std::vector<Element*>& stack) {
-                if (elem->isNode() && !elem->emptyTag()) {
-                    ss << std::string(stack.size() * 4, ' ') << "</" << elem->name() << ">\n";
-                }
-            });
+    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Document& doc);
 
-        return ss;
-    }
-
+    std::string str() const;
     operator std::string() const;
+
+    friend void swap(Document& lhs, Document& rhs) { std::swap(lhs.root_, rhs.root_); }
+
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
 
 private:
     std::unique_ptr<Element> root_;

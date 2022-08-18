@@ -32,9 +32,9 @@
 namespace inviwo {
 
 BaseOptionProperty::BaseOptionProperty(std::string_view identifier, std::string_view displayName,
-                                       InvalidationLevel invalidationLevel,
+                                       Document help, InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics) {}
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics) {}
 
 BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) = default;
 

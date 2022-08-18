@@ -30,23 +30,23 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/util/timer.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/util/timer.h>
 
 #include <glm/vector_relational.hpp>
-
+#include <iosfwd>
 #include <tuple>
 
 namespace inviwo {
 
-class BaseOrdinalAnimationProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API BaseOrdinalAnimationProperty : public CompositeProperty {
 public:
     using CompositeProperty::CompositeProperty;
     virtual ~BaseOrdinalAnimationProperty() = default;
@@ -54,6 +54,7 @@ public:
 };
 
 enum class BoundaryType { Stop, Periodic, Mirror };
+IVW_MODULE_BASE_API std::ostream& operator<<(std::ostream& ss, BoundaryType bt);
 
 template <typename T>
 class OrdinalAnimationProperty : public BaseOrdinalAnimationProperty {
@@ -76,25 +77,6 @@ public:
     OptionProperty<BoundaryType> boundary_;
     BoolProperty active_;
 };
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             BoundaryType bt) {
-    switch (bt) {
-        case BoundaryType::Stop:
-            ss << "Stop";
-            break;
-        case BoundaryType::Periodic:
-            ss << "Periodic";
-            break;
-        case BoundaryType::Mirror:
-            ss << "Mirror";
-            break;
-        default:
-            break;
-    }
-    return ss;
-}
 
 template <typename T>
 OrdinalAnimationProperty<T>::OrdinalAnimationProperty(std::string_view identifier,

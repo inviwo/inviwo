@@ -82,10 +82,11 @@ extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<4, float>;
 template <unsigned DataDims, typename T>
 struct DataTraits<Spatial4DSampler<DataDims, T>> {
     static std::string classIdentifier() {
-        return "org.inviwo.Spatial4DSampler." + DataFormat<Vector<DataDims, T>>::str();
+        return fmt::format("org.inviwo.Spatial4DSampler.{}",
+                           DataFormat<Vector<DataDims, T>>::str());
     }
     static std::string dataName() {
-        return "Spatial4DSampler<" + DataFormat<Vector<DataDims, T>>::str() + ">";
+        return fmt::format("Spatial4DSampler<{}>", DataFormat<Vector<DataDims, T>>::str());
     }
     static uvec3 colorCode() { return uvec3(153, 0, 76); }
     static Document info(const Spatial4DSampler<DataDims, T>&) {

@@ -37,52 +37,69 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo NoiseProcessor::processorInfo_{
-    "org.inviwo.NoiseProcessor",  // Class identifier
-    "Noise Generator 2D",         // Display name
-    "Data Creation",              // Category
-    CodeState::Experimental,      // Code state
-    Tags::CPU,                    // Tags
-};
+const ProcessorInfo NoiseProcessor::processorInfo_{"org.inviwo.NoiseProcessor",  // Class identifier
+                                                   "Noise Generator 2D",         // Display name
+                                                   "Data Creation",              // Category
+                                                   CodeState::Experimental,      // Code state
+                                                   Tag::CPU | Tag("Image"),      // Tags
+                                                   R"(
+    A processor to generate noise images.
+    Using the Mersenne Twister 19937 generator to generate random numbers.
+        
+    ![Image Of Noise Types](file:///<modulePath>/docs/images/noise_types.png)
+    
+    ### Available Methods
+    * __Random__ Generates a uniform, random value in the range [min,max] for each pixel
+    * __Perlin Noise__ Generates a perlin noise image
+    * __PoissonDisk__ Create a binary image of points uniformly distributed over the image.
+      Read more at [devmag](http://devmag.org.za/2009/05/03/poisson-disk-sampling/)
+    * __Halton Sequence__ Create a binary image of based on semi-random pairs (deterministic)
+      constructed using two [Halton Sequence](https://en.wikipedia.org/wiki/Halton_sequence)
+      of different bases (base 2 and base 3 gives good results)
+      
+    )"_unindentHelp};
+
 const ProcessorInfo NoiseProcessor::getProcessorInfo() const { return processorInfo_; }
 
 NoiseProcessor::NoiseProcessor()
     : Processor()
-    , noise_("noise", DataFloat32::get(), false)
-    , size_("size", "Size", ivec2(256), ivec2(32), ivec2(4096))
-    , type_("type", "Type",
+    , noise_("noise", "Generated noise image"_help, DataFloat32::get(), HandleResizeEvents::No)
+    , size_("size", "Size", "Size of the output image."_help, ivec2(256),
+            {ivec2(32), ConstraintBehavior::Editable}, {ivec2(4096), ConstraintBehavior::Editable})
+    , type_("type", "Type", "Type of noise to generate."_help,
             {{"random", "Random", NoiseType::Random},
              {"perlin", "Perlin", NoiseType::Perlin},
              {"poissonDisk", "Poisson Disk", NoiseType::PoissonDisk},
              {"haltonSequence", "Halton Sequence", NoiseType::HaltonSequence}})
-    , range_("range_", "Range", 0.0f, 1.0f, 0.0f, 1.0f)
-    , levels_("levels", "Levels", 2, 8, 1, 16)
-    , persistence_("persistence", "Persistence", 0.5f, 0.001f, 1.0f, 0.001f)
-    , poissonDotsAlongX_("poissonDotsAlongX", "Dots Along X", 100, 1, 1024)
-    , poissonMaxPoints_("poissonMaxPoints", "Max Points", 10000000, 1, 10000000)
+    , range_("range", "Range", "The min/max values of the output values (default: [0 1])."_help,
+             0.0f, 1.0f, 0.0f, 1.0f)
+    , levels_("levels", "Levels",
+              "Numbers of levels used in the generation of the Perlin noise"_help, 2, 8, 1, 16)
+    , persistence_("persistence", "Persistence", "Controls the sharpens in Perlin noise"_help, 0.5f,
+                   {0.001f, ConstraintBehavior::Editable}, {1.0f, ConstraintBehavior::Editable},
+                   0.001f)
+    , poissonDotsAlongX_("poissonDotsAlongX", "Dots Along X",
+                         "Average number of points along the x-axis."_help, 100,
+                         {1, ConstraintBehavior::Immutable}, {1024, ConstraintBehavior::Ignore})
+    , poissonMaxPoints_("poissonMaxPoints", "Max Points",
+                        "Maximum number of output points (total)."_help, 10000000,
+                        {1, ConstraintBehavior::Immutable}, {10000000, ConstraintBehavior::Ignore})
 
     , haltonNumPoints_("numPoints", "Number of points", 100, 1, 1000)
     , haltonXBase_("haltonXBase", "Base for x values", 2, 2, 32)
     , haltonYBase_("haltonYBase", "Base for y values", 3, 2, 32)
 
-    , randomness_("randomness", "Randomness")
-    , useSameSeed_("useSameSeed", "Use same seed", true)
-    , seed_("seed", "Seed", 1, 0, 1000)
+    , randomness_("randomness", "Randomness", "Random number generation settings"_help)
+    , useSameSeed_("useSameSeed", "Use same seed",
+                   "Use the same seed for each call to process."_help, true)
+    , seed_("seed", "Seed", "The seed used to initialize the random sequence"_help, 1,
+            {0, ConstraintBehavior::Immutable}, {1000, ConstraintBehavior::Ignore})
     , rd_()
     , mt_(rd_()) {
 
     addPort(noise_);
-    addProperty(size_);
-
-    addProperty(type_);
-    addProperty(range_);
-    addProperty(levels_);
-    addProperty(persistence_);
-    addProperty(poissonDotsAlongX_);
-    addProperty(poissonMaxPoints_);
-    addProperty(haltonNumPoints_);
-    addProperty(haltonXBase_);
-    addProperty(haltonYBase_);
+    addProperties(size_, type_, range_, levels_, persistence_, poissonDotsAlongX_,
+                  poissonMaxPoints_, haltonNumPoints_, haltonXBase_, haltonYBase_);
 
     auto typeOnChange = [&]() {
         range_.setVisible(type_.getSelectedValue() == NoiseType::Random);
@@ -99,8 +116,7 @@ NoiseProcessor::NoiseProcessor()
     type_.onChange(typeOnChange);
 
     addProperty(randomness_);
-    randomness_.addProperty(useSameSeed_);
-    randomness_.addProperty(seed_);
+    randomness_.addProperties(useSameSeed_, seed_);
     useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
 
     size_.onChange([&]() {

@@ -34,36 +34,43 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/porttraits.h>
+#include <inviwo/core/util/demangle.h>
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 namespace inviwo {
 
 class IVW_CORE_API InportFactoryObject {
 public:
-    InportFactoryObject(std::string_view className);
+    InportFactoryObject(std::string_view classIdentifier, std::string_view typeName);
     virtual ~InportFactoryObject() = default;
 
     virtual std::unique_ptr<Inport> create() = 0;
     virtual std::unique_ptr<Inport> create(std::string_view identifier) = 0;
     const std::string& getClassIdentifier() const;
+    const std::string& getTypeName() const;
 
 protected:
-    std::string className_;
+    std::string classIdentifier_;
+    std::string typeName_;
 };
 
 template <typename T>
 class InportFactoryObjectTemplate : public InportFactoryObject {
 public:
-    InportFactoryObjectTemplate() : InportFactoryObject(PortTraits<T>::classIdentifier()) {
+    InportFactoryObjectTemplate()
+        : InportFactoryObject(PortTraits<T>::classIdentifier(), util::demangle(typeid(T).name())) {
         static_assert(std::is_base_of<Inport, T>::value, "All inports must derive from Inport");
     }
 
     virtual ~InportFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Inport> create() override { return std::make_unique<T>(className_); }
+    virtual std::unique_ptr<Inport> create() override {
+        return std::make_unique<T>(classIdentifier_);
+    }
 
     virtual std::unique_ptr<Inport> create(std::string_view identifier) override {
         return std::make_unique<T>(identifier);
@@ -72,27 +79,32 @@ public:
 
 class IVW_CORE_API OutportFactoryObject {
 public:
-    OutportFactoryObject(std::string_view className);
+    OutportFactoryObject(std::string_view classIdentifier, std::string_view typeName);
     virtual ~OutportFactoryObject() = default;
 
     virtual std::unique_ptr<Outport> create() = 0;
     virtual std::unique_ptr<Outport> create(std::string_view identifier) = 0;
     const std::string& getClassIdentifier() const;
+    const std::string& getTypeName() const;
 
 protected:
-    std::string className_;
+    std::string classIdentifier_;
+    std::string typeName_;
 };
 
 template <typename T>
 class OutportFactoryObjectTemplate : public OutportFactoryObject {
 public:
-    OutportFactoryObjectTemplate() : OutportFactoryObject(PortTraits<T>::classIdentifier()) {
+    OutportFactoryObjectTemplate()
+        : OutportFactoryObject(PortTraits<T>::classIdentifier(), util::demangle(typeid(T).name())) {
         static_assert(std::is_base_of<Outport, T>::value, "All outports must derive from Outport");
     }
 
     virtual ~OutportFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Outport> create() override { return std::make_unique<T>(className_); }
+    virtual std::unique_ptr<Outport> create() override {
+        return std::make_unique<T>(classIdentifier_);
+    }
 
     virtual std::unique_ptr<Outport> create(std::string_view identifier) override {
         if constexpr (std::is_constructible_v<T, std::string_view>) {

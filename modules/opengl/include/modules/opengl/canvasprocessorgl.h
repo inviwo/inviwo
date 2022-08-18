@@ -39,22 +39,7 @@ namespace inviwo {
 
 class InviwoApplication;
 
-/** \docpage{org.inviwo.CanvasGL, Canvas}
- * ![](org.inviwo.CanvasGL.png?classIdentifier=org.inviwo.CanvasGL)
- *
- * Show a image
- *
- * ### Inports
- *   * __Inport__ Input image
- *
- *
- * ### Properties
- *   * __Canvas Size__ Size of canvas
- */
-
 /**
- * \class CanvasProcessorGL
- *
  * \brief Takes an Image Inport and renders it into a OpenGL window i.e. a canvas.
  */
 class IVW_MODULE_OPENGL_API CanvasProcessorGL : public CanvasProcessor {

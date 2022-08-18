@@ -67,6 +67,25 @@ public:
      *
      * @param identifier identifier for the property
      * @param displayName displayName for the property
+     * @param help descriptive text
+     * @param value the path to the file
+     * @param contentType
+     * @param invalidationLevel
+     * @param semantics Can be set to Editor
+     */
+    FileProperty(std::string_view identifier, std::string_view displayName, Document help,
+                 std::string_view value = "", std::string_view contentType = "default",
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                 PropertySemantics semantics = PropertySemantics::Default);
+
+    /**
+     * \brief Constructor for the FileProperty
+     *
+     * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used instead
+     * of a FilePropertyWidget
+     *
+     * @param identifier identifier for the property
+     * @param displayName displayName for the property
      * @param value the path to the file
      * @param contentType
      * @param invalidationLevel

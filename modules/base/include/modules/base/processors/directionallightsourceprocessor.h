@@ -42,23 +42,7 @@
 namespace inviwo {
 
 class DirectionalLight;
-/** \docpage{org.inviwo.Directionallightsource, Directional light source}
- * ![](org.inviwo.Directionallightsource.png?classIdentifier=org.inviwo.Directionallightsource)
- *
- * Produces a light source with parallel light rays, spreading light in the direction from an
- * infinite plane. The direction of the plane will be computed as glm::normalize(vec3(0) - lightPos)
- * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in
- * view space.
- *
- * ### Outports
- *   * __DirectionalLightSource__ Directional light source
- *
- * ### Properties
- *   * __Light power__ Increases/decreases light strength
- *   * __Color__ Flux density per solid angle, W*s*r^-1 (intensity)
- *   * __Light Source Position__ Origin of the light source
- *   * __Enabled__ Turns light on or off
- */
+
 class IVW_MODULE_BASE_API DirectionalLightSourceProcessor : public Processor {
 public:
     DirectionalLightSourceProcessor();

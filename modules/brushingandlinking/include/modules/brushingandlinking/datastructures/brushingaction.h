@@ -31,12 +31,11 @@
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/fmtutils.h>
 
 #include <string_view>
 #include <array>
-#include <functional>
-#include <ostream>
-#include <istream>
+#include <iosfwd>
 
 #include <flags/flags.h>
 
@@ -56,26 +55,6 @@ enum class BrushingAction {
 
 constexpr std::array<BrushingAction, 3> BrushingActions{
     BrushingAction::Filter, BrushingAction::Select, BrushingAction::Highlight};
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             BrushingAction action) {
-    switch (action) {
-        case BrushingAction::Filter:
-            ss << "Filter";
-            break;
-        case BrushingAction::Select:
-            ss << "Select";
-            break;
-        case BrushingAction::Highlight:
-            ss << "Highlight";
-            break;
-        case BrushingAction::NumberOfActions:
-        default:
-            ss << "Not specified";
-    }
-    return ss;
-}
 
 enum class BrushingModification {
     Filtered = 0x01,
@@ -98,6 +77,14 @@ constexpr BrushingModification fromAction(BrushingAction action) {
 
 ALLOW_FLAGS_FOR_ENUM(BrushingModification)
 using BrushingModifications = flags::flags<BrushingModification>;
+
+IVW_MODULE_BRUSHINGANDLINKING_API std::string_view enumToStr(BrushingAction dt);
+IVW_MODULE_BRUSHINGANDLINKING_API std::string_view enumToStr(BrushingModification dt);
+IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss, BrushingAction action);
+IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss,
+                                                           BrushingModification action);
+IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss,
+                                                           BrushingModifications action);
 
 /**
  * Represents a target for brushing and linking actions.
@@ -140,14 +127,7 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
         return os;
     }
 
-    template <class Elem, class Traits>
-    friend std::basic_istream<Elem, Traits>& operator>>(std::basic_istream<Elem, Traits>& ss,
-                                                        BrushingTarget& bt) {
-        std::string str;
-        ss >> str;
-        bt = BrushingTarget(str);
-        return ss;
-    }
+    IVW_CORE_API friend std::istream& operator>>(std::istream& ss, BrushingTarget& bt);
 
     std::string_view getString() const { return target_; }
 
@@ -162,12 +142,20 @@ private:
 
 }  // namespace inviwo
 
-namespace std {
 template <>
-struct hash<typename inviwo::BrushingTarget> {
+struct std::hash<typename inviwo::BrushingTarget> {
     size_t operator()(typename inviwo::BrushingTarget const& val) const {
         return std::hash<std::string_view>{}(val.getString());
     }
 };
 
-}  // namespace std
+template <>
+struct fmt::formatter<inviwo::BrushingAction> : inviwo::FlagFormatter<inviwo::BrushingAction> {};
+
+template <>
+struct fmt::formatter<inviwo::BrushingModification>
+    : inviwo::FlagFormatter<inviwo::BrushingModification> {};
+
+template <>
+struct fmt::formatter<inviwo::BrushingModifications>
+    : inviwo::FlagsFormatter<inviwo::BrushingModifications> {};

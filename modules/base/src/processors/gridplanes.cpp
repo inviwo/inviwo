@@ -39,15 +39,33 @@ const ProcessorInfo GridPlanes::processorInfo_{
     "Grid Planes",            // Display name
     "Information",            // Category
     CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
-};
+    Tags::CPU,                // Tags
+    R"(Creates a mesh that can be used to draw grid planes for the current coordinate system.
+    )"_unindentHelp};
+
 const ProcessorInfo GridPlanes::getProcessorInfo() const { return processorInfo_; }
 
-GridPlanes::GridPlanes() : Processor() {
-    basis_.setOptional(true);
-    addPort(basis_);
-    addPort(grid_);
+GridPlanes::GridPlanes()
+    : Processor()
+    , basis_{"basis",
+             "Optional volume inport. If a volume is connected the grid "
+             "will be aligned to that volume."_help}
+    , grid_{"grid",
+            "A mesh containing the grid planes, can be rendered using, "
+            "for example, the Mesh Renderer, Line Renderer or Tube Renderer."_help}
+    , enable_{"enable", "Enable",
+              "Toggles whether or not a given grid plane should be visible"_help, true}
+    , spacing_{"spacing", "Spacing",
+               "Set the distance between the each line along the given axis"_help, 0.1f}
+    , extent_{"extent", "Extent", "Set the extent of the grid along the given axis."_help,
+              -1.05f,   1.05f,    -100.f,
+              100.f}
+    , color_{"color", "Color",
+             util::ordinalColor(vec4{0.5f, 0.5f, 0.5f, 1.f})
+                 .set("Set the color of each grid plane."_help)} {
 
+    basis_.setOptional(true);
+    addPorts(basis_, grid_);
     addProperties(enable_, spacing_, extent_, color_);
 }
 

@@ -38,7 +38,6 @@ class Processor;
 class PropertyOwner;
 class Property;
 class CompositeProperty;
-class CanvasProcessor;
 
 /**
  * @brief Visitor pattern base for visiting an Inviwo ProcessorNetwork
@@ -49,31 +48,39 @@ public:
 
     /**
      * @brief Visit a Processor
-     * Adding and removing processors while visiting are not supported
+     * Adding or removing processors while visiting is not supported
+     * Called before visiting children.
      * @return visit all child properties if true else go to next processor
      */
-    virtual bool visit(Processor&) { return true; }
+    virtual bool enter(Processor&) { return true; }
 
     /**
-     * @brief Visit a CanvasProcessor
+     * @brief Visit a Processor
      * Adding and removing processors while visiting are not supported
-     * @return visit all child properties if true else go to next processor
+     * Called after visiting children.
      */
-    virtual bool visit(CanvasProcessor&) { return true; }
+    virtual void exit(Processor&) {}
+
+    /**
+     * @brief Visit a CompositeProperty
+     * Adding or removing properties while visiting is not supported
+     * Called before visiting children.
+     * @return visit all child properties if true else go to next CompositeProperty
+     */
+    virtual bool enter(CompositeProperty&) { return true; }
 
     /**
      * @brief Visit a CompositeProperty
      * Adding and removing properties while visiting are not supported
-     * @return visit all child properties if true else go to next CompositeProperty
+     * Called after visiting children.
      */
-    virtual bool visit(CompositeProperty&) { return true; }
+    virtual void exit(CompositeProperty&) {}
 
     /**
      * @brief Visit a Property
      * Adding and removing properties while visiting are not supported
-     * @return not used for Properties
      */
-    virtual bool visit(Property&) { return true; }
+    virtual void visit(Property&) {}
 };
 
 }  // namespace inviwo

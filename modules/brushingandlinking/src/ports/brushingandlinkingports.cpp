@@ -35,7 +35,13 @@ namespace inviwo {
 
 BrushingAndLinkingInport::BrushingAndLinkingInport(
     std::string_view identifier, std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
-    : Inport(identifier), manager_(this, invalidationLevels) {
+    : Inport(identifier, Document{}), manager_(this, invalidationLevels) {
+    setOptional(true);
+}
+BrushingAndLinkingInport::BrushingAndLinkingInport(
+    std::string_view identifier, Document help,
+    std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
+    : Inport(identifier, Document{std::move(help)}), manager_(this, invalidationLevels) {
     setOptional(true);
 }
 
@@ -171,6 +177,11 @@ Document BrushingAndLinkingInport::getInfo() const {
     using H = utildoc::TableBuilder::Header;
     Document doc;
     doc.append("b", "Brushing & Linking Inport", {{"style", "color:white;"}});
+
+    if (!help_.empty()) {
+        doc.append(help_);
+    }
+
     utildoc::TableBuilder tb(doc.handle(), P::end());
     for (auto& [action, targets] : manager_.getTargets()) {
         for (auto& target : targets) {
@@ -195,8 +206,8 @@ void BrushingAndLinkingInport::invalidate(InvalidationLevel) {
     Inport::invalidate(manager_.getInvalidationLevel());
 }
 
-BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string_view identifier)
-    : Outport(identifier), manager_(this) {
+BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string_view identifier, Document help)
+    : Outport(identifier, std::move(help)), manager_(this) {
     isReady_.setUpdate([this]() { return invalidationLevel_ == InvalidationLevel::Valid; });
 }
 
@@ -242,6 +253,11 @@ Document BrushingAndLinkingOutport::getInfo() const {
     using H = utildoc::TableBuilder::Header;
     Document doc;
     doc.append("b", "Brushing & Linking Outport", {{"style", "color:white;"}});
+
+    if (!help_.empty()) {
+        doc.append(help_);
+    }
+
     utildoc::TableBuilder tb(doc.handle(), P::end());
     for (auto& [action, targets] : manager_.getTargets()) {
         for (auto& target : targets) {

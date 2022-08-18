@@ -101,6 +101,9 @@ protected:
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
+
     void updateWidgets();
 
     void addInport(Inport* port);

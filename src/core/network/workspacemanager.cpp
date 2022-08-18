@@ -111,10 +111,10 @@ struct ErrorHandle {
         } catch (SerializationException& error) {
             auto key = error.getKey();
             if (key == "Processor") {
-                std::string module = info_.getModuleForProcessor(error.getType());
-                if (!module.empty()) {
+                if (auto moduleInfo = info_.getModuleForProcessor(error.getType())) {
                     messages.push_back(fmt::format("{} ({})\nProcessor was in module: \"{}\".",
-                                                   error.getMessage(), error.getContext(), module));
+                                                   error.getMessage(), error.getContext(),
+                                                   moduleInfo->name));
                 } else {
                     messages.push_back(
                         fmt::format("{} ({})", error.getMessage(), error.getContext()));
@@ -147,7 +147,7 @@ void WorkspaceManager::save(std::ostream& stream, std::string_view refPath,
     Serializer serializer(refPath);
 
     if (mode != WorkspaceSaveMode::Undo) {
-        InviwoSetupInfo info(app_);
+        InviwoSetupInfo info(*app_, *app_->getProcessorNetwork());
         serializer.serialize("InviwoSetup", info);
     }
 
@@ -211,15 +211,15 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
     deserializer.deserialize("InviwoSetup", info);
 
     for (const auto& module : app_->getModuleManager().getModules()) {
-        if (auto minfo = info.getModuleInfo(module->getIdentifier())) {
-            if (minfo->version_ < module->getVersion()) {
-                auto converter = module->getConverter(minfo->version_);
+        if (auto moduleInfo = info.getModuleInfo(module->getIdentifier())) {
+            if (moduleInfo->version < module->getVersion()) {
+                auto converter = module->getConverter(moduleInfo->version);
                 deserializer.convertVersion(converter.get());
                 LogNetworkSpecial((&deserializer), LogLevel::Warn,
                                   "Loading old workspace ("
                                       << deserializer.getFileName() << ") "
                                       << module->getIdentifier()
-                                      << "Module version: " << minfo->version_
+                                      << "Module version: " << moduleInfo->version
                                       << ". Updating to version: " << module->getVersion() << ".");
             }
         }

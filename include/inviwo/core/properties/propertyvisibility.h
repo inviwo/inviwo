@@ -30,8 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
-#include <iosfwd>
+#include <ostream>
 
 namespace inviwo {
 
@@ -40,9 +39,7 @@ enum class UsageMode {
     Development = 1,  // Default, Only show in developer mode
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const UsageMode& mode) {
+inline std::ostream& operator<<(std::ostream& ss, const UsageMode& mode) {
     switch (mode) {
         case UsageMode::Application:
             ss << "Application";

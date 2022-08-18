@@ -47,8 +47,14 @@
 namespace inviwo {
 
 CurveGraphicsItem::CurveGraphicsItem(QColor color, QColor borderColor, QColor selectedBorderColor)
-    : color_(color), borderColor_(borderColor), selectedBorderColor_(selectedBorderColor) {
+    : color_(color)
+    , borderColor_(borderColor)
+    , selectedBorderColor_(selectedBorderColor)
+    , infoLabel_{new QGraphicsTextItem(this)} {
     setZValue(DRAGING_ITEM_DEPTH);
+
+    infoLabel_->setVisible(false);
+    infoLabel_->setTextInteractionFlags(Qt::NoTextInteraction);
 }
 
 CurveGraphicsItem::~CurveGraphicsItem() = default;
@@ -109,6 +115,13 @@ void CurveGraphicsItem::resetBorderColors() {
     update();
 }
 
+void CurveGraphicsItem::setHoverInfo(const QString& info) {
+    infoLabel_->setVisible(true);
+    infoLabel_->setHtml(info);
+}
+
+void CurveGraphicsItem::resetHoverInfo() { infoLabel_->setVisible(false); }
+
 void CurveGraphicsItem::updateShape() {
     path_ = obtainCurvePath();
     const auto p = path_.boundingRect();
@@ -145,18 +158,47 @@ QPointF ConnectionDragGraphicsItem::getStartPoint() const {
 QPointF ConnectionDragGraphicsItem::getEndPoint() const { return endPoint_; }
 void ConnectionDragGraphicsItem::setEndPoint(QPointF endPoint) {
     endPoint_ = endPoint;
+    infoLabel_->setPos(endPoint_);
     updateShape();
 }
 
 void ConnectionDragGraphicsItem::reactToPortHover(ProcessorInportGraphicsItem* inport) {
     if (inport != nullptr) {
-        if (inport->getPort()->canConnectTo(outport_->getPort())) {
+        auto* port = inport->getPort();
+
+        Document desc{};
+        auto html = desc.append("html");
+        html.append("head").append("style", R"(
+            body {
+                color: #9d9995;
+                background: #323235;
+            }
+            div.name {
+                font-size: 13pt;
+                color: #c8ccd0;
+                font-weight: bold;
+            }
+            div.help {
+                font-size: 12pt;
+            }
+        )"_unindent);
+
+        auto content = html.append("body");
+        content.append("div", port->getIdentifier(), {{"class", "name"}});
+        if (!port->getHelp().empty()) {
+            content.append("div", "", {{"class", "help"}}).append(port->getHelp());
+        }
+
+        setHoverInfo(utilqt::toQString(desc.str()));
+
+        if (port->canConnectTo(outport_->getPort())) {
             setBorderColor(Qt::green);
         } else {
             setBorderColor(Qt::red);
         }
     } else {
         resetBorderColors();
+        resetHoverInfo();
     }
 }
 

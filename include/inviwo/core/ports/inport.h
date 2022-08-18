@@ -136,7 +136,7 @@ public:
     void setIsReadyUpdater(std::function<bool()> updater);
 
 protected:
-    Inport(std::string_view identifier);
+    Inport(std::string_view identifier, Document help);
 
     /**
      * Called by Outport::invalidate on its connected inports, which is call by

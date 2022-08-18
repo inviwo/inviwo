@@ -117,6 +117,12 @@ RegresionResult linearRegresion(const BufferBase& X, const BufferBase& Y) {
         });
 }
 
+std::ostream& operator<<(std::ostream& os, RegresionResult res) {
+    os << "y = " << res.k << "x + " << res.m << "(r2: " << res.r2 << ", corr: " << res.corr;
+
+    return os;
+}
+
 }  // namespace statsutil
 
 }  // namespace inviwo

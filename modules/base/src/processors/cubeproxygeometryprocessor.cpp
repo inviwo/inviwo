@@ -41,21 +41,25 @@ const ProcessorInfo CubeProxyGeometry::processorInfo_{
     "Mesh Creation",                 // Category
     CodeState::Stable,               // Code state
     Tags::CPU,                       // Tags
-};
+    R"(Constructs a proxy geometry based on the model and world matrix of the input volume.
+    The geometry will be shaped as a parallelepiped. If clipping is enabled the geometry
+    will be cut along the corresponding axes.)"_unindentHelp};
+
 const ProcessorInfo CubeProxyGeometry::getProcessorInfo() const { return processorInfo_; }
 
 CubeProxyGeometry::CubeProxyGeometry()
     : Processor()
-    , inport_("volume")
-    , outport_("proxyGeometry")
-    , addFaceNormals_("addFaceNormals", "Add Face Normals", true)
-    , clippingEnabled_("clippingEnabled", "Enable Clipping", true)
-    , clipX_("clipX", "Clip X Slices", 0, 256, 0, 256, 1, 1)
-    , clipY_("clipY", "Clip Y Slices", 0, 256, 0, 256, 1, 1)
-    , clipZ_("clipZ", "Clip Z Slices", 0, 256, 0, 256, 1, 1) {
+    , inport_("volume", "Input Volume"_help)
+    , outport_("proxyGeometry", "Output proxy geometry"_help)
+    , addFaceNormals_("addFaceNormals", "Add Face Normals",
+                      "Face normals are included in the mesh"_help, true)
+    , clippingEnabled_("clippingEnabled", "Enable Clipping",
+                       "Enable axis aligned clipping of the mesh"_help, true)
+    , clipX_("clipX", "Clip X Slices", "Clip X axis"_help, 0, 256, 0, 256, 1, 1)
+    , clipY_("clipY", "Clip Y Slices", "Clip Y axis"_help, 0, 256, 0, 256, 1, 1)
+    , clipZ_("clipZ", "Clip Z Slices", "Clip Z axis"_help, 0, 256, 0, 256, 1, 1) {
 
-    addPort(inport_);
-    addPort(outport_);
+    addPorts(inport_, outport_);
     addProperties(addFaceNormals_, clippingEnabled_, clipX_, clipY_, clipZ_);
 
     // Since the clips depend on the input volume dimensions, we make sure to always
@@ -85,7 +89,7 @@ CubeProxyGeometry::CubeProxyGeometry()
     });
 }
 
-CubeProxyGeometry::~CubeProxyGeometry() {}
+CubeProxyGeometry::~CubeProxyGeometry() = default;
 
 void CubeProxyGeometry::process() {
     auto normals = addFaceNormals_ ? meshutil::IncludeNormals::Yes : meshutil::IncludeNormals::No;
