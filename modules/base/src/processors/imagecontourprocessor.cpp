@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <modules/base/processors/imagecontourprocessor.h>
+#include <modules/base/algorithm/image/imagecontour.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 
 namespace inviwo {
 
@@ -37,25 +39,24 @@ const ProcessorInfo ImageContourProcessor::processorInfo_{
     "Image Contour",                     // Display name
     "Image Processing",                  // Category
     CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
-};
+    Tags::CPU,                           // Tags
+    R"(Does marching squares on the image to extract a contour mesh.)"_unindentHelp};
+
 const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ImageContourProcessor::ImageContourProcessor()
     : Processor()
-    , image_("image", true)
-    , mesh_("mesh")
-    , channel_("channel", "Channel", 0, 0, 4)
-    , isoValue_("iso", "ISO Value", 0.5, 0, 1)
-    , color_("color", "Color", vec4(1.0)) {
+    , image_("image", "Input image"_help, OutportDeterminesSize::Yes)
+    , mesh_("mesh", "Contour mesh"_help)
+    , channel_("channel", "Channel", "The image channel to use compare the iso value to"_help, 0,
+               {0, ConstraintBehavior::Immutable}, {4, ConstraintBehavior::Editable})
+    , isoValue_("iso", "ISO Value", "The contour iso value"_help, 0.5,
+                {0, ConstraintBehavior::Ignore}, {1, ConstraintBehavior::Ignore})
+    , color_("color", "Color",
+             util::ordinalColor(vec4(1.0)).set("The color of the resulting mesh"_help)) {
 
-    addPort(image_);
-    addPort(mesh_);
-    addProperty(channel_);
-    addProperty(isoValue_);
-    addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    color_.setCurrentStateAsDefault();
+    addPorts(image_, mesh_);
+    addProperties(channel_, isoValue_, color_);
 }
 
 void ImageContourProcessor::process() {

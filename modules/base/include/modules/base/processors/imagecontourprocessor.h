@@ -35,25 +35,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
 
-#include <modules/base/algorithm/image/imagecontour.h>
-
 namespace inviwo {
-
-/** \docpage{org.inviwo.ImageContourProcessor, Image Contour Processor}
- * ![](org.inviwo.ImageContourProcessor.png?classIdentifier=org.inviwo.ImageContourProcessor)
- * Does marching squares on the image to extract a contour mesh.
- *
- * ### Inports
- *   * __Image__ Input image
- *
- * ### Outports
- *   * __Mesh__ Contour mesh
- *
- * ### Properties
- *   * __Channel__ The image channel to use compare the iso value to
- *   * __IsoValue__ The contour iso value
- *   * __Color__ The color of the resulting mesh
- */
 
 class IVW_MODULE_BASE_API ImageContourProcessor : public Processor {
 public:
