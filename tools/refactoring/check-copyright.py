@@ -4,7 +4,7 @@ from enum import Enum
 import refactoring  # Note: refactoring.py need to be in the current working directory
 
 # NOTE: update copyright year here
-currentYear = 2021
+currentYear = 2022
 
 excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking2/*",
                     "*/genetree/*", "*.DS_Store", "*DS_mapp", ".md", "*.suo", "*.h5", "*.gz",
