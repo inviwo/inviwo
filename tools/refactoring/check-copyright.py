@@ -15,7 +15,7 @@ excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking
                     "*/.git*", "*/.clang-format", "*/LICENSE", ".git", "Jenkinsfile",
                     ".gitattributes", "*/AUTHORS", "" "*/tools/meta/templates/*", "*.natvis",
                     "*/depends.cmake", "*moduledefine.h", "*moduledefine.hpp", "*/config.json",
-                    "*.js", "*/CMakeLists.txt"]
+                    "*.js", "*/CMakeLists.txt", "*.monopic"]
 
 try:
     import colorama
