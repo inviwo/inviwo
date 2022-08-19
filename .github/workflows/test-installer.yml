@@ -11,14 +11,15 @@ jobs:
   test-installer:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [windows-latest] # macos-latest,
         include:
           - os: 'windows-latest'
             installer: 'inviwo-installer-win'
-            app: 
-          - os: 'macos-latest'
-            installer: 'inviwo-installer-macos'
+          #- os: 'macos-latest'
+          #  installer: 'inviwo-installer-macos'
+        
     runs-on: ${{ matrix.os }}
     steps:
     - name: Download artifact

@@ -94,7 +94,7 @@ private:
     BoolProperty fullScreen_;
     BoolProperty onTop_;
 
-    TemplateOptionProperty<LayerType> layerType_;
+    OptionProperty<LayerType> layerType_;
     IntSizeTProperty layerIndex_;
 
     StringProperty paths_;

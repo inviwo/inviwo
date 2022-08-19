@@ -203,4 +203,47 @@ void util::log(Logger* logger, ExceptionContext context, std::string_view messag
                 context.getLine(), message);
 }
 
+std::string_view enumToStr(LogLevel ll) {
+    switch (ll) {
+        case LogLevel::Info:
+            return "Info";
+        case LogLevel::Warn:
+            return "Warn";
+        case LogLevel::Error:
+            return "Error";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid LogLevel enum value '{}'",
+                    static_cast<int>(ll));
+}
+
+std::string_view enumToStr(LogAudience la) {
+    switch (la) {
+        case LogAudience::User:
+            return "User";
+        case LogAudience::Developer:
+            return "Developer";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid LogAudience enum value '{}'",
+                    static_cast<int>(la));
+}
+
+std::string_view enumToStr(MessageBreakLevel ll) {
+    switch (ll) {
+        case MessageBreakLevel::Info:
+            return "Info";
+        case MessageBreakLevel::Warn:
+            return "Warn";
+        case MessageBreakLevel::Error:
+            return "Error";
+        case MessageBreakLevel::Off:
+            return "Off";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+                    "Found invalid MessageBreakLevel enum value '{}'", static_cast<int>(ll));
+}
+
+std::ostream& operator<<(std::ostream& ss, LogLevel ll) { return ss << enumToStr(ll); }
+std::ostream& operator<<(std::ostream& ss, LogAudience la) { return ss << enumToStr(la); }
+std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll) { return ss << enumToStr(ll); }
+
 }  // namespace inviwo

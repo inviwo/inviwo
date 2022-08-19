@@ -45,6 +45,11 @@ class TemplateProperty : public Property {
 public:
     using value_type = T;
 
+    TemplateProperty(std::string_view identifier, std::string_view displayName, Document help,
+                     const T& value = T(),
+                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                     PropertySemantics semantics = PropertySemantics::Default);
+
     TemplateProperty(std::string_view identifier, std::string_view displayName,
                      const T& value = T(),
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -82,6 +87,14 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
                                          const TemplateProperty<T>& prop) {
     return os << prop.get();
 }
+
+template <typename T>
+TemplateProperty<T>::TemplateProperty(std::string_view identifier, std::string_view displayName,
+                                      Document help, const T& value,
+                                      InvalidationLevel invalidationLevel,
+                                      PropertySemantics semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    , value_("value", value) {}
 
 template <typename T>
 TemplateProperty<T>::TemplateProperty(std::string_view identifier, std::string_view displayName,

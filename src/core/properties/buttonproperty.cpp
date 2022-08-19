@@ -36,18 +36,29 @@ const std::string ButtonProperty::classIdentifier = "org.inviwo.ButtonProperty";
 std::string ButtonProperty::getClassIdentifier() const { return classIdentifier; }
 
 ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view displayName,
+                               Document help, std::function<void()> callback,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics) {
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics) {
     setValid();  // the initial state for a button should be valid
+    if (callback) {
+        onChange(std::move(callback));
+    }
 }
+
+ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view displayName,
+                               InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : ButtonProperty(identifier, displayName, Document{}, {}, invalidationLevel, semantics) {}
+
+ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view displayName,
+                               Document help, InvalidationLevel invalidationLevel,
+                               PropertySemantics semantics)
+    : ButtonProperty(identifier, displayName, std::move(help), {}, invalidationLevel, semantics) {}
 
 ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view displayName,
                                std::function<void()> callback, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics) {
-    setValid();  // the initial state for a button should be valid
-    onChange(std::move(callback));
-}
+    : ButtonProperty(identifier, displayName, Document{}, std::move(callback), invalidationLevel,
+                     semantics) {}
 
 ButtonProperty::ButtonProperty(const ButtonProperty& rhs) : Property(rhs) {}
 

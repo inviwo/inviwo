@@ -26,6 +26,85 @@
 </style>
 </head>
 <body>
+<h2>2022-08-16 New help system</h2>
+<p>The old processor help system based on doxygen and qhp has been removed in favor of a runtime system where help text is added to processor/port/properties at runtime. To add a help text to a processor now you add a new element to the ProcessorInfo for that processor like this</p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">const</span> ProcessorInfo InstanceRenderer::processorInfo_{
+<span class="pl-s"><span class="pl-pds">"</span>org.inviwo.InstanceRenderer<span class="pl-pds">"</span></span>,  <span class="pl-c"><span class="pl-c">//</span> Class identifier</span>
+<span class="pl-s"><span class="pl-pds">"</span>Instance Renderer<span class="pl-pds">"</span></span>,            <span class="pl-c"><span class="pl-c">//</span> Display name</span>
+<span class="pl-s"><span class="pl-pds">"</span>Mesh Rendering<span class="pl-pds">"</span></span>,               <span class="pl-c"><span class="pl-c">//</span> Category</span>
+CodeState::Stable,              <span class="pl-c"><span class="pl-c">//</span> Code state</span>
+Tags::GL,                       <span class="pl-c"><span class="pl-c">//</span> Tags</span>
+<span class="pl-s"><span class="pl-pds">R"(</span></span>
+<span class="pl-s">    Renders multiple instances of a mesh.</span>
+<span class="pl-s">    Each instance can be modified using uniform data provided </span>
+<span class="pl-s">    from a set of dynamic inports holding vectors of data. </span>
+<span class="pl-s">    The the number of inport and types can be controlled using</span>
+<span class="pl-s">    a List Property.</span>
+<span class="pl-s">    </span>
+<span class="pl-s">    The rendering will happen along these lines:</span>
+<span class="pl-s">    </span>
+<span class="pl-s">        for (auto uniforms : zip(dynamic vector data ports)) {</span>
+<span class="pl-s">            for(uniform : uniforms) {</span>
+<span class="pl-s">                shader.setUniform(uniform.name, uniform.value);</span>
+<span class="pl-s">            }</span>
+<span class="pl-s">            shader.draw();</span>
+<span class="pl-s">        }</span>
+<span class="pl-s">    </span>
+<span class="pl-s">    How the uniforms are applied in the shader can be specified</span>
+<span class="pl-s">    in a set of properties.</span>
+<span class="pl-s">    </span>
+<span class="pl-s">    Example network:</span>
+<span class="pl-s">    [basegl/instance_renderer.inv](file:///&lt;modulePath&gt;/data/workspaces/instance_renderer.inv)</span>
+<span class="pl-s"><span class="pl-pds">)"</span></span>_unindentHelp};</pre></div>
+<p>The <code class="notranslate">_unindentHelp</code>  suffix will remove any leading indent and parse the string as a markdown document and then convert it to an inviwo document, which is what is expected by the <code class="notranslate">ProcessorInfo</code> struct.<br>
+One can refer to images like so:</p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>![](file:///&lt;modulePath&gt;/docs/images/heightfield-network.png)<span class="pl-pds">"</span></span></pre></div>
+<p>or networks</p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>[basegl/instance_renderer.inv](file:///&lt;modulePath&gt;/data/workspaces/instance_renderer.inv)<span class="pl-pds">"</span></span></pre></div>
+<p>Images will be shown inline, and clicking on processor network will append them to the current network.<br>
+To be able to refer to files there are two placeholder <code class="notranslate">&lt;basePath&gt;</code> and <code class="notranslate">&lt;modulePath&gt;</code> the former will refer to the base path of the inviwo installation and the later to the current module. Make sure that any resources linked are also included in the installer. By default the <code class="notranslate">data</code> directory and the <code class="notranslate">docs</code> are always included in the installer.</p>
+<p>For Ports a second constructor argument has been added for a help Document like so</p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-en">inport_</span>(<span class="pl-s"><span class="pl-pds">"</span>mesh<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Mesh to be drawn multiple times<span class="pl-pds">"</span></span>_help)</pre></div>
+<p>the <code class="notranslate">_help</code> suffix will parse the string as markdown and convert it to an inviwo Document.</p>
+<p>For Properties a new constructor with a new third help argument after the identifier and display name has been added. For example the customInputDimensions in the CanvasProcessor:</p>
+<div class="highlight highlight-source-c++"><pre>customInputDimensions_{<span class="pl-s"><span class="pl-pds">"</span>customInputDimensions<span class="pl-pds">"</span></span>,
+                       <span class="pl-s"><span class="pl-pds">"</span>Image Size<span class="pl-pds">"</span></span>,
+                       <span class="pl-s"><span class="pl-pds">"</span>The size of the image that will be generated. This can be larger <span class="pl-pds">"</span></span>
+                       <span class="pl-s"><span class="pl-pds">"</span>or smaller than the canvas size. A smaller size will generate a <span class="pl-pds">"</span></span>
+                       <span class="pl-s"><span class="pl-pds">"</span>blurrier canvas, but render faster. A larger size will render <span class="pl-pds">"</span></span>
+                       <span class="pl-s"><span class="pl-pds">"</span>slower.<span class="pl-pds">"</span></span>_help,
+                       <span class="pl-c1">size2_t</span>(<span class="pl-c1">256</span>, <span class="pl-c1">256</span>),
+                       {<span class="pl-c1">size2_t</span>(<span class="pl-c1">1</span>, <span class="pl-c1">1</span>), ConstraintBehavior::Immutable},
+                       {<span class="pl-c1">size2_t</span>(<span class="pl-c1">10000</span>, <span class="pl-c1">10000</span>), ConstraintBehavior::Ignore},
+                       <span class="pl-c1">size2_t</span>(<span class="pl-c1">1</span>, <span class="pl-c1">1</span>),
+                       InvalidationLevel::Valid}</pre></div>
+<p>The Help widget will automatically show the help text for the processor and combine the with the help text for the ports and properties in a standard way.  The help text for Ports and Properties will also be shown in relevant tooltips.</p>
+<h2>2022-08-15 FMT Version 9.0.0</h2>
+<p>The fmt library was updated to the recent version 9.0.0. There are major breaking changes in the update with respect to using ostream operators and fmt. Previously you could just include <code class="notranslate">fmt/ostream.h</code> and any type that was streamable was not also printable with fmt. That behavior was removed and now you either have to wrap the object with <code class="notranslate">fmt::streamed(x)</code> or add a specialization of fmt::formatter for the type. Most core types in Inviwo that used std::ostream operators have been updated with fmt formatters. For enums we have added two helper classes in <code class="notranslate">ìnviwo/core/util/fmtutils.h</code>,<br>
+<code class="notranslate">FlagFormatter</code> and <code class="notranslate">FlagsFormatter</code> the former for enums and the later for enum flags. See <code class="notranslate">include/inviwo/core/interaction/events/mousebuttons.h</code> for an example. The <code class="notranslate">FlagFormatter</code> class requires that a <code class="notranslate">std::string_view enumToStr(T val)</code> overload exists in the namespace of T.</p>
+<h2>2022-08-12 Include changes in core/util/</h2>
+<p>Optimized includes in <code class="notranslate">core/util</code> with some functions being moved to separate header files.<br>
+Functions moved from <code class="notranslate">core/util/stringconversion.h</code> include</p>
+<ul>
+<li><code class="notranslate">parseTypeIdName()</code>, now in <code class="notranslate">namespace util</code> in <code class="notranslate">core/util/demangle.h</code></li>
+<li><code class="notranslate">msToString()</code> and <code class="notranslate">durationToString()</code>, now in <code class="notranslate">namespace util</code> in <code class="notranslate">core/util/chronoutils.h</code><br>
+Functions and structs moved from <code class="notranslate">core/util/stdextensions.h</code> include</li>
+<li><code class="notranslate">is_future_ready()</code> moved to <code class="notranslate">core/util/stdfuture.h</code></li>
+<li><code class="notranslate">struct identifier</code>, <code class="notranslate">struct identity</code>, <code class="notranslate">struct alwaysTrue</code>, and <code class="notranslate">struct is_string</code> moved to <code class="notranslate">core/util/typetraits.h</code></li>
+</ul>
+<p>Added <code class="notranslate">core/util/glmmat.h</code> containing light-weight forward declarations of glm matrices similar to <code class="notranslate">glmvec.h</code>, which no longer includes <code class="notranslate">glm.hpp</code>.<br>
+This means that it might be necessary to include <code class="notranslate">core/util/glm.h</code> where needed.<br>
+In addition, the glm utility functions <code class="notranslate">util::rank()</code>, <code class="notranslate">util::extent()</code>, and <code class="notranslate">util::is_floating_point()</code> are now part of <code class="notranslate">core/util/glmutils.h</code>.</p>
+<h2>2022-08-11 InviwoSetupInfo</h2>
+<p>The module setup info in a workspace file will now only save information about processors and modules used in the workspace.</p>
+<h2>2022-07-11 Help</h2>
+<p>Alt/Option clicking a processor in the processor network will now show the help for the given processor.</p>
+<h2>2022-07-11 Append workspace</h2>
+<p>An "Append" function was added to the File menu to append a workspace into an existing workspace. Holding down Control/Command in the file lists (Recent/Examples/Tests) will also append the workspace instead of opening it.</p>
+<h2>2022-06-27 New processor: Volume Region Mapper</h2>
+<p>The <code class="notranslate">Volume Region Mapper</code> processor maps each unique voxel value of a Volume to another integer value. The value mapping is provided by two DataFrame columns.</p>
+<h2>2022-04-14 TemplateOptionProperty renamed to OptionProperty</h2>
+<p>The old name still works but is now deprecated.</p>
 <h2>2022-03-09 DataFrame filtering and CSV filtering</h2>
 <p>DataFrames can now be filtered with the <code class="notranslate">DataFrame Filter</code> processor or when loading a CSV file with the <code class="notranslate">CSV Source</code> processor. The <code class="notranslate">DataFrame Filter</code> also supports brushing &amp; linking filtering. Filters exist for matching values (<code class="notranslate">int64</code> and <code class="notranslate">double</code> as well as categorical values), ranges, and commented lines.</p>
 <h2>2022-03-04 DataFrame &amp; CategoricalColumn clean-up</h2>

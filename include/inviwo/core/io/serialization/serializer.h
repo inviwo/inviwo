@@ -32,9 +32,12 @@
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
+#include <inviwo/core/util/detected.h>
 
 #include <flags/flags.h>
 
@@ -154,6 +157,14 @@ public:
     // unique_ptr to something of the above.
     template <class T, class D>
     void serialize(std::string_view key, const std::unique_ptr<T, D>& data);
+
+    template <typename T>
+    using HasSerialize = decltype(std::declval<const T>().serialize(std::declval<Serializer&>()));
+
+    // serializable classes
+    template <typename T,
+              typename = std::enable_if_t<util::is_detected_exact_v<void, HasSerialize, T>>>
+    void serialize(std::string_view key, const T& sObj);
 
 protected:
     friend class NodeSwitch;
@@ -303,6 +314,13 @@ void Serializer::serialize(std::string_view key, const Mat& data) {
 template <size_t N>
 void Serializer::serialize(std::string_view key, const std::bitset<N>& bits) {
     serialize(key, bits.to_string());
+}
+
+// serializable classes
+template <typename T, typename>
+void Serializer::serialize(std::string_view key, const T& sObj) {
+    auto nodeSwitch = switchToNewNode(key);
+    sObj.serialize(*this);
 }
 
 }  // namespace inviwo

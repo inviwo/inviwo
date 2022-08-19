@@ -59,11 +59,11 @@ using FilterTypes = flags::flags<FilterType>;
  *
  * Item filters own an IntProperty @c column defining the target column. Identifiers begin with:
  *  - @c stringItem:      StringProperty @c match for matching strings and a
- *                        TemplateOptionProperty<filters::StringComp> @c comp for the comparison
- *  - @c intItem:         Int64Property @c value, TemplateOptionProperty<filters::NumberComp>
+ *                        OptionProperty<filters::StringComp> @c comp for the comparison
+ *  - @c intItem:         Int64Property @c value, OptionProperty<filters::NumberComp>
  *                        @c comp for the comparison
  *  - @c doubleItem:      DoubleProperty @c value and DoubleProperty @c epsilon,
- *                        TemplateOptionProperty<filters::NumberComp> @c comp for the comparison
+ *                        OptionProperty<filters::NumberComp> @c comp for the comparison
  *  - @c intRangeItem:    Int64MinMaxProperty @c range for an inclusive range [min, max]
  *  - @c doubleRangeItem: DoubleMinMaxProperty @c range for an inclusive range [min, max]
  *

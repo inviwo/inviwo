@@ -80,7 +80,7 @@ private:
     VolumeInport atlas_;
     DataFrameOutport dataFrame_;
 
-    TemplateOptionProperty<CoordinateSpace> space_;
+    OptionProperty<CoordinateSpace> space_;
 };
 
 }  // namespace inviwo

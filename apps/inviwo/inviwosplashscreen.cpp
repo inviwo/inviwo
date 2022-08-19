@@ -30,6 +30,7 @@
 #include "inviwosplashscreen.h"
 #include <inviwo/core/inviwocommondefines.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

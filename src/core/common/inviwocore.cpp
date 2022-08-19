@@ -74,6 +74,8 @@
 #include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/interaction/trackball.h>
+#include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/filepatternproperty.h>
@@ -116,8 +118,8 @@ namespace {
 struct OrdinalReghelper {
     template <typename T>
     auto operator()(InviwoModule& qm) {
-        using PropertyType = OrdinalProperty<T>;
-        qm.registerProperty<PropertyType>();
+        qm.registerProperty<OrdinalProperty<T>>();
+        qm.registerProperty<OrdinalRefProperty<T>>();
     }
 };
 
@@ -132,7 +134,7 @@ struct MinMaxReghelper {
 struct OptionReghelper {
     template <typename T>
     auto operator()(InviwoModule& qm) {
-        using PropertyType = TemplateOptionProperty<T>;
+        using PropertyType = OptionProperty<T>;
         qm.registerProperty<PropertyType>();
     }
 };
@@ -186,24 +188,21 @@ enum class OptionRegEnumUInt : unsigned int {};
 struct OptionStringConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(
-            std::make_unique<OptionToStringConverter<TemplateOptionProperty<T>>>());
+        m.registerPropertyConverter(std::make_unique<OptionToStringConverter<OptionProperty<T>>>());
     }
 };
 
 struct OptionIntConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(
-            std::make_unique<OptionToIntConverter<TemplateOptionProperty<T>>>());
+        m.registerPropertyConverter(std::make_unique<OptionToIntConverter<OptionProperty<T>>>());
     }
 };
 
 struct IntOptionConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(
-            std::make_unique<IntToOptionConverter<TemplateOptionProperty<T>>>());
+        m.registerPropertyConverter(std::make_unique<IntToOptionConverter<OptionProperty<T>>>());
     }
 };
 
@@ -218,8 +217,8 @@ struct DataTypeRegFunctor {
 
 }  // namespace
 
-template class TemplateOptionProperty<OptionRegEnumInt>;
-template class TemplateOptionProperty<OptionRegEnumUInt>;
+template class OptionProperty<OptionRegEnumInt>;
+template class OptionProperty<OptionRegEnumUInt>;
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}
@@ -332,6 +331,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<ButtonProperty>();
     registerProperty<CameraProperty>();
     registerProperty<StringProperty>();
+    registerProperty<Trackball>();
+    registerProperty<CameraTrackball>();
 
     registerProperty<StringsProperty<1>>();
     registerProperty<StringsProperty<2>>();

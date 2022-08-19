@@ -37,7 +37,7 @@ namespace inviwo {
 
 /**
  * Converts an ColumnOptionProperty to a JSON object.
- * Produces layout according to the members of TemplateOptionProperty:
+ * Produces layout according to the members of OptionProperty:
  * { {"value": val}, {"selectedIndex": selectedIndex},
  *   {"options": [OptionPropertyOption ... ]}
  * }
@@ -52,16 +52,16 @@ namespace inviwo {
 IVW_MODULE_DATAFRAME_API void to_json(nlohmann::json& j, const ColumnOptionProperty& p);
 
 /**
- * Converts a JSON object to an TemplateOptionProperty.
- * Expects object layout according to the members of TemplateOptionProperty:
+ * Converts a JSON object to an OptionProperty.
+ * Expects object layout according to the members of OptionProperty:
  * { {"value": val}, {"selectedIndex": selectedIndex},
  *   {"options": [OptionPropertyOption ... ]}
  * }
- * @see TemplateOptionProperty
+ * @see OptionProperty
  *
  * Usage example:
  * \code{.cpp}
- * auto p = j.get<TemplateOptionProperty<double>>();
+ * auto p = j.get<OptionProperty<double>>();
  * \endcode
  */
 IVW_MODULE_DATAFRAME_API void from_json(const nlohmann::json& j, ColumnOptionProperty& p);

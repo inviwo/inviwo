@@ -294,36 +294,34 @@ Document MultiFileProperty::getDescription() const {
     using H = utildoc::TableBuilder::Header;
 
     Document doc = TemplateProperty<std::vector<std::string>>::getDescription();
-    auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
+    auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
 
-    std::ostringstream stream;
-    // std::copy(value_.value.begin(), value_.value.end(),
-    //          std::ostream_iterator<std::string>(stream, "<br/>"));
     std::string currentPath = "";
     // compile compact list of selected files, binning all files of the same directory
-    for (auto elem : value_.value) {
+
+    StrBuffer buff;
+    for (const auto& elem : value_.value) {
         auto dir = filesystem::getFileDirectory(elem);
         auto filename = filesystem::getFileNameWithExtension(elem);
         if (dir != currentPath) {
             currentPath = dir;
-            stream << "<b>" << dir << "</b><br/>";
+            buff.append("<b>{}</b><br/>", dir);
         }
-        stream << filename << "<br/>";
+        buff.append("{}<br/>", filename);
     }
-    std::string files = stream.str();
 
     utildoc::TableBuilder tb(table);
     switch (fileMode_) {
         case FileMode::AnyFile:
         case FileMode::ExistingFile:
         case FileMode::ExistingFiles: {
-            tb(H("Files"), files);
+            tb(H("Files"), buff.view());
             break;
         }
 
         case FileMode::Directory:
         case FileMode::DirectoryOnly: {
-            tb(H("Directories"), files);
+            tb(H("Directories"), buff.view());
             break;
         }
     }

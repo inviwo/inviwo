@@ -119,7 +119,7 @@ private:
     ImageMultiInport multiinport_;
     ImageOutport outport_;
 
-    TemplateOptionProperty<Layout> layout_;
+    OptionProperty<Layout> layout_;
     FloatProperty horizontalSplitter_;
     FloatProperty verticalSplitter_;
     FloatProperty vertical3Left1RightSplitter_;

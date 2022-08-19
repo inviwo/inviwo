@@ -84,6 +84,20 @@ void BoolCompositePropertyWidgetQt::initState() {
     updateFromProperty();
 }
 
+// hack since we don't add the first special "bool" property
+void BoolCompositePropertyWidgetQt::onDidAddProperty(Property* property, size_t index) {
+    if (index > 0) {
+        CollapsibleGroupBoxWidgetQt::onDidAddProperty(property, --index);
+    }
+}
+
+// hack since we don't add the first special "bool" property
+void BoolCompositePropertyWidgetQt::onWillRemoveProperty(Property* property, size_t index) {
+    if (index > 0) {
+        CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(property, --index);
+    }
+}
+
 void BoolCompositePropertyWidgetQt::updateFromProperty() {
     CollapsibleGroupBoxWidgetQt::updateFromProperty();
     CollapsibleGroupBoxWidgetQt::setCollapsed(boolCompProperty_->isCollapsed());

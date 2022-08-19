@@ -208,7 +208,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
         Reghelper<MinMaxProperty>{}, *this);
 
     util::for_each_type<std::tuple<float, double, int, unsigned int, size_t, std::string>>{}(
-        Reghelper<TemplateOptionProperty>{}, *this);
+        Reghelper<OptionProperty>{}, *this);
 
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
         PropertyValueKeyframeReghelper{}, *this);

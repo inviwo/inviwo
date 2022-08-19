@@ -41,7 +41,7 @@ public:
     static const std::string classIdentifier;
 
     /**
-     * Convenience clas for trackball using camera properties. Calls propertyModified() on camera
+     * Convenience class for trackball using camera properties. Calls propertyModified() on camera
      * when any of the positions or vectors change.
      * Rotates and moves the camera around a sphere.
      * This object does not take ownership of pointers handed to it.
@@ -49,6 +49,12 @@ public:
      * @param cameraProp Pointer to the camera that will be controlled.
      */
     CameraTrackball(CameraProperty* cameraProp);
+
+    CameraTrackball(std::string_view identifier, std::string_view displayName,
+                    CameraProperty* cameraProp = nullptr);
+
+    virtual CameraTrackball* clone() const override;
+
     virtual ~CameraTrackball();
 };
 

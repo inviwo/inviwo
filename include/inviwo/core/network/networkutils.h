@@ -168,10 +168,24 @@ IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool se
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::string& refPath);
 
+/**
+ * Append a PartialProcessorNetwork to the network
+ * @param network the network to append to the current one
+ * @param is a stream of a serialized PartialProcessorNetwork
+ * @param refPath a possible path to the original file of the PartialProcessorNetwork, for error
+ * reporting
+ * @param app The inviwo application
+ */
 // return the appended processors.
-IVW_CORE_API std::vector<Processor*> appendDeserialized(ProcessorNetwork* network, std::istream& is,
-                                                        const std::string& refPath,
-                                                        InviwoApplication* app);
+
+IVW_CORE_API std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network,
+                                                                   std::istream& is,
+                                                                   const std::string& refPath,
+                                                                   InviwoApplication* app);
+
+IVW_CORE_API std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetwork,
+                                                            std::string_view workspaceFile,
+                                                            InviwoApplication* app);
 
 IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork* network,
                                            std::shared_ptr<Processor> processor,

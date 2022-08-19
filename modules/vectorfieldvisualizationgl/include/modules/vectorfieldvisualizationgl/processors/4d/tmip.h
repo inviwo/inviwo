@@ -67,7 +67,7 @@ private:
     DataInport<std::vector<std::shared_ptr<Volume>>> inport_;
     VolumeOutport outport_;
 
-    TemplateOptionProperty<OutputType> outputType_;
+    OptionProperty<OutputType> outputType_;
 
     std::shared_ptr<Volume> volume0_;
     std::shared_ptr<Volume> volume1_;

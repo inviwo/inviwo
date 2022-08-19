@@ -32,7 +32,7 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -45,88 +45,52 @@
 
 namespace inviwo {
 
-enum class ListOrSingleValuePropertyState { Single, List };
-
 template <typename Prop, unsigned N>
-class ListOrSingleValueProperty : public CompositeProperty {
+class SyncedListProperty : public BoolCompositeProperty {
 public:
-    using State = ListOrSingleValuePropertyState;
-
     template <typename... DefaultArgs>
-    ListOrSingleValueProperty(const std::string& identifier, const std::string& displayName,
-                              State initState, DefaultArgs... defaultArgs)
-        : CompositeProperty(identifier, displayName)
-        , state_{"state",
-                 "State",
-                 {{"single", "Single", State::Single}, {"list", "List", State::List}},
-                 initState == State::Single ? size_t{0} : size_t{1}}
-        , single_{"single", displayName, defaultArgs...}
-        , list_{util::make_array<size_t{N}>([&](auto index) {
-            auto id = [](auto i) {
-                if constexpr (N <= 4) {
-                    return xyzwAxisNames[i];
-                } else {
-                    return i;
+    SyncedListProperty(std::string_view identifier, std::string_view displayName,
+                       DefaultArgs... defaultArgs)
+        : BoolCompositeProperty(identifier, displayName)
+
+        , props{util::make_array<size_t{N}>([&](auto index) {
+            constexpr std::array<std::string_view, 4> names = {"x", "y", "z", "w"};
+
+            return Prop(fmt::format("axis_{}", names[index]),
+                        fmt::format("{} {}", displayName, names[index]), defaultArgs...);
+        })} {
+
+        getBoolProperty()->setDisplayName("Sync");
+
+        auto sync = [&](Prop* current) {
+            return [this, current]() {
+                if (!getBoolProperty()->get()) return;
+                for (auto& prop : props) {
+                    if (&prop != current) {
+                        OnChangeBlocker block(prop);
+                        prop.set(current->get());
+                    }
                 }
-            }(index);
+            };
+        };
 
-            return Prop(fmt::format("axis_{}", id), fmt::format("{} {}", displayName, id),
-                        defaultArgs...);
-        })}
-
-    {
-        addProperties(state_, single_);
-
-        for (auto& prop : list_) {
+        for (auto& prop : props) {
+            prop.onChange(sync(&prop));
             addProperty(prop);
-            prop.visibilityDependsOn(state_, [](auto& p) { return p.get() == State::List; });
         }
-
-        single_.visibilityDependsOn(state_, [](auto& p) { return p.get() == State::Single; });
 
         setAllPropertiesCurrentStateAsDefault();
     }
 
-    auto get(unsigned i) const {
-        if (state_.get() == State::Single) {
-            return single_.get();
-        } else {
-            return list_[i].get();
-        }
-    }
+    auto get(unsigned i) const { return props[i].get(); }
 
-    virtual ~ListOrSingleValueProperty() = default;
+    virtual ~SyncedListProperty() = default;
 
-    TemplateOptionProperty<State> state_;
-    Prop single_;
-    std::array<Prop, N> list_;
+    std::array<Prop, N> props;
 
 private:
-    const static constexpr std::array<std::string_view, 4> xyzwAxisNames = {"x", "y", "z", "w"};
 };
 
-/** \docpage{org.inviwo.GridPlanes, Grid Planes}
- * ![](org.inviwo.GridSystem.png?classIdentifier=org.inviwo.GridPlanes)
- *
- * Creates a mesh that can be used to draw grid planes for the current coordinate system.
- *
- * ### Inports
- *   * __transform__ Optional volume inport. If a volume is connected the grid will be aligned to
- * that volume.
- *
- * ### Outports
- *   * __grid__ A mesh containing the grid planes, can be rendered using, for example, the Mesh
- * Renderer, Line Renderer or Tube Renderer.
- *
- * ### Properties
- * Each property can be toggled between having one value for each individual plane or a single value
- * used for all planes
- *   * __Enable__ Toggles wether or not a given grid plane should be visible
- *   * __Spacing__ Set the distance between the each line along the given axis
- *   * __Extent__ Set the extent of the grid along the given axis.
- *   * __Color__ Set the color of each grid plane.
- *
- */
 class IVW_MODULE_BASE_API GridPlanes : public Processor {
 public:
     GridPlanes();
@@ -138,27 +102,14 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    VolumeInport basis_{"basis"};
-    MeshOutport grid_{"grid"};
+    VolumeInport basis_;
+    MeshOutport grid_;
 
-    ListOrSingleValueProperty<BoolProperty, 3> enable_{"enable", "Enable",
-                                                       ListOrSingleValuePropertyState::List, true};
+    SyncedListProperty<BoolProperty, 3> enable_;
+    SyncedListProperty<FloatProperty, 3> spacing_;
 
-    ListOrSingleValueProperty<FloatProperty, 3> spacing_{
-        "spacing", "Spacing", ListOrSingleValuePropertyState::Single, 0.1f};
-
-    ListOrSingleValueProperty<FloatMinMaxProperty, 3> extent_{
-        "extent", "Extent", ListOrSingleValuePropertyState::Single, -1.05f, 1.05f, -100.f, 100.f};
-
-    ListOrSingleValueProperty<FloatVec4Property, 3> color_{"color",
-                                                           "Color",
-                                                           ListOrSingleValuePropertyState::Single,
-                                                           vec4{0.5f, 0.5f, 0.5f, 1.f},
-                                                           vec4(0.f),
-                                                           vec4(1.f),
-                                                           vec4(0.05f),
-                                                           InvalidationLevel::InvalidOutput,
-                                                           PropertySemantics::Color};
+    SyncedListProperty<FloatMinMaxProperty, 3> extent_;
+    SyncedListProperty<FloatVec4Property, 3> color_;
 };
 
 }  // namespace inviwo

@@ -30,6 +30,7 @@
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <unordered_set>
 

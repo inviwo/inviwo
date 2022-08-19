@@ -67,7 +67,7 @@ private:
     VolumeInport inport_;
     VolumeOutport outport_;
 
-    TemplateOptionProperty<util::VolumeLaplacianPostProcessing> postProcessing_;
+    OptionProperty<util::VolumeLaplacianPostProcessing> postProcessing_;
     DoubleProperty scale_;
 
     VolumeInformationProperty inVolume_;

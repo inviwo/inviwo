@@ -93,13 +93,6 @@ public:
         std::string_view path, std::string_view name,
         const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const override;
 
-    /**
-     * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the
-     * Processor in an undefined order. The Visitor will then visit each Properties's properties and
-     * so on.
-     */
-    virtual void accept(NetworkVisitor& visitor) override;
-
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
@@ -117,9 +110,9 @@ public:
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
     IntVec2Property position_;
-    TemplateOptionProperty<LayerType> visibleLayer_;
+    OptionProperty<LayerType> visibleLayer_;
     IntProperty colorLayer_;
-    TemplateOptionProperty<FileExtension> imageTypeExt_;
+    OptionProperty<FileExtension> imageTypeExt_;
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
     ButtonProperty saveLayerToFileButton_;

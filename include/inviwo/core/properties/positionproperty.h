@@ -52,6 +52,15 @@ public:
 
     enum class Space : int { WORLD, VIEW };
 
+    PositionProperty(std::string_view identifier, std::string_view displayName, Document help,
+                     FloatVec3Property position = FloatVec3Property("position", "Position",
+                                                                    vec3(0.0f, 0.0f, 0.0f),
+                                                                    vec3(-10, -10, -10),
+                                                                    vec3(10, 10, 10)),
+                     CameraProperty* camera = nullptr,
+                     InvalidationLevel = InvalidationLevel::InvalidResources,
+                     PropertySemantics semantics = PropertySemantics::Default);
+
     PositionProperty(std::string_view identifier, std::string_view displayName,
                      FloatVec3Property position = FloatVec3Property("position", "Position",
                                                                     vec3(0.0f, 0.0f, 0.0f),

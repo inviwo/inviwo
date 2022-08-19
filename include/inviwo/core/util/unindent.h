@@ -139,6 +139,13 @@ constexpr auto unindent(std::string_view str) {
     return res;
 }
 
+inline std::string unindent(std::string_view str) {
+    const auto newlen = indent::length(str.begin(), str.end());
+    std::string res(newlen, char{});
+    indent::copy(str.begin(), str.end(), res.begin());
+    return res;
+}
+
 }  // namespace indent
 
 /**

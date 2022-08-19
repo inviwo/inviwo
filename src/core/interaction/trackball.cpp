@@ -46,8 +46,14 @@
 
 namespace inviwo {
 
-Trackball::Trackball(TrackballObject* object)
-    : CompositeProperty("trackball", "Trackball")
+const std::string Trackball::classIdentifier = "org.inviwo.Trackball";
+std::string Trackball::getClassIdentifier() const { return classIdentifier; }
+
+Trackball::Trackball(TrackballObject* object) : Trackball{"trackball", "Trackball", object} {}
+
+Trackball::Trackball(std::string_view identifier, std::string_view displayName,
+                     TrackballObject* object)
+    : CompositeProperty(identifier, displayName)
     , object_(object)
     , isMouseBeingPressedAndHold_(false)
     , lastNDC_(vec3(0.0f))
@@ -130,8 +136,7 @@ Trackball::Trackball(TrackballObject* object)
     movementSpeed_.visibilityDependsOn(trackballMethod_,
                                        [](const OptionPropertyInt& opt) { return opt == 2; });
 
-    mouseReset_.setVisible(false);
-    wheelZoom_.setVisible(false);     // Is not displayed properly
+    mouseReset_.setVisible(false);    // Should not be changed
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
@@ -200,8 +205,7 @@ Trackball::Trackball(const Trackball& rhs)
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, eventprops());
 
-    mouseReset_.setVisible(false);
-    wheelZoom_.setVisible(false);     // Is not displayed properly
+    mouseReset_.setVisible(false);    // Should not be changed
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
@@ -212,6 +216,9 @@ Trackball::Trackball(const Trackball& rhs)
 Trackball* Trackball::clone() const { return new Trackball(*this); }
 
 Trackball::~Trackball() = default;
+
+TrackballObject* Trackball::getTrackballObject() const { return object_; }
+void Trackball::setTrackballObject(TrackballObject* obj) { object_ = obj; }
 
 void Trackball::invokeEvent(Event* event) {
     if (!handleInteractionEvents_) return;

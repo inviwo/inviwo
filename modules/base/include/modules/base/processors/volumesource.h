@@ -44,18 +44,6 @@ namespace inviwo {
 
 class InviwoApplication;
 
-/** \docpage{org.inviwo.VolumeSource, Volume Source}
- * ![](org.inviwo.VolumeSource.png?classIdentifier=org.inviwo.VolumeSource)
- *
- * Loads a Volume from a given file. The filename of the source data is
- * available via MetaData.
- *
- * ### Outports
- *   * __Outport__ The loaded volume
- *
- * ### Properties
- *   * __File name__ File to load.
- */
 class IVW_MODULE_BASE_API VolumeSource : public Processor {
 public:
     using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
@@ -76,7 +64,7 @@ private:
 
     VolumeOutport outport_;
     FileProperty file_;
-    TemplateOptionProperty<FileExtension> reader_;
+    OptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
 
     BasisProperty basis_;

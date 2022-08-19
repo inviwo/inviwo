@@ -113,7 +113,7 @@ public:
 
     virtual mat4 getMatrix() const override;
 
-    TemplateOptionProperty<AngleMeasure> mode;
+    OptionProperty<AngleMeasure> mode;
     FloatVec3Property axis;
     FloatProperty angle;
 };

@@ -34,7 +34,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/logfilter.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/detected.h>
 #include <inviwo/core/util/glm.h>
 
@@ -257,6 +257,13 @@ public:
     template <class Base, class T>
     void deserializeAs(std::string_view key, std::unique_ptr<T>& data);
 
+    template <typename T>
+    using HasDeserialize = decltype(std::declval<T>().deserialize(std::declval<Deserializer&>()));
+    template <typename T,
+              typename = std::enable_if_t<util::is_detected_exact_v<void, HasDeserialize, T>>>
+    void deserialize(std::string_view key, T& sObj);
+
+    using ExceptionHandler = std::function<void(ExceptionContext)>;
     void setExceptionHandler(ExceptionHandler handler);
     void handleError(const ExceptionContext& context);
 
@@ -1320,6 +1327,13 @@ void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data)
                 fmt::format("Could not deserialize \"{}\" types does not match", key), IVW_CONTEXT);
         }
     }
+}
+
+template <typename T, typename>
+void Deserializer::deserialize(std::string_view key, T& sObj) {
+    NodeSwitch nodeSwitch(*this, key);
+    if (!nodeSwitch) return;
+    sObj.deserialize(*this);
 }
 
 }  // namespace inviwo

@@ -114,8 +114,6 @@ void tortuosity(IntegralLine& line, dmat4 toWorld) {
     if (line.hasMetaData("tortuosity")) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
     if (positions.size() <= 1) return;
-    float dt = static_cast<float>(positions.size() - 1);
-    dt = 1 / dt;
 
     std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
         dvec4 P = toWorld * dvec4(pos, 1);

@@ -42,6 +42,7 @@
 #include <inviwopy/pydatareaders.h>
 #include <inviwopy/pyinviwoapplication.h>
 #include <inviwopy/pyinviwomodule.h>
+#include <inviwopy/pydocument.h>
 #include <inviwopy/pyimage.h>
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyprocessors.h>
@@ -106,6 +107,8 @@ PYBIND11_MODULE(inviwopy, m) {
     // Note the order is important here, we need to load all base classes before any derived clases
     exposeGLMTypes(glmModule);
     exposeGLMMatTypes(glmModule);
+
+    exposeDocument(m);
 
     exposeLogging(m);
     exposeInviwoApplication(m);

@@ -34,6 +34,7 @@
 #include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/transformiterator.h>
 
 #include <string>
 #include <string_view>
@@ -129,6 +130,14 @@ public:
 
     bool hasKey(LookUpKey key) const;
     std::vector<Key> getKeys() const;
+
+    auto getKeyView() const {
+        constexpr auto getFirst = [](auto&& pair) -> decltype(auto) { return pair.first; };
+        return util::as_range(util::makeTransformIterator(getFirst, map_.begin()),
+                              util::makeTransformIterator(getFirst, map_.end()));
+    }
+
+    FactoryObject* getFactoryObject(LookUpKey key) const;
 
 protected:
     std::map<Key, FactoryObject*, std::less<>> map_;
@@ -243,6 +252,15 @@ bool FactoryRegister<M, Key, K>::unRegisterObject(M* obj) {
 template <typename M, typename Key, typename K>
 bool FactoryRegister<M, Key, K>::hasKey(K key) const {
     return map_.find(key) != map_.end();
+}
+
+template <typename M, typename Key, typename K>
+M* FactoryRegister<M, Key, K>::getFactoryObject(K key) const {
+    if (auto it = map_.find(key); it != map_.end()) {
+        return it->second;
+    } else {
+        return nullptr;
+    }
 }
 
 template <typename M, typename Key, typename K>

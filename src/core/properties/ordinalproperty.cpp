@@ -74,8 +74,10 @@ OrdinalPropertyState<vec4> util::ordinalColor(float r, float g, float b, float a
 OrdinalPropertyState<vec4> util::ordinalColor(const vec4& value,
                                               InvalidationLevel invalidationLevel) {
     return {value,
-            {vec4{0.0f}, ConstraintBehavior::Immutable},
-            {vec4{1.0f}, ConstraintBehavior::Immutable},
+            vec4{0.0f},
+            ConstraintBehavior::Immutable,
+            vec4{1.0f},
+            ConstraintBehavior::Immutable,
             vec4{0.01f},
             invalidationLevel,
             PropertySemantics::Color};
@@ -84,8 +86,10 @@ OrdinalPropertyState<vec4> util::ordinalColor(const vec4& value,
 OrdinalPropertyState<vec3> util::ordinalColor(const vec3& value,
                                               InvalidationLevel invalidationLevel) {
     return {value,
-            {vec3{0.0f}, ConstraintBehavior::Immutable},
-            {vec3{1.0f}, ConstraintBehavior::Immutable},
+            vec3{0.0f},
+            ConstraintBehavior::Immutable,
+            vec3{1.0f},
+            ConstraintBehavior::Immutable,
             vec3{0.01f},
             invalidationLevel,
             PropertySemantics::Color};
@@ -94,8 +98,10 @@ OrdinalPropertyState<vec3> util::ordinalColor(const vec3& value,
 OrdinalPropertyState<vec3> util::ordinalLight(const vec3& pos, float min, float max,
                                               InvalidationLevel invalidationLevel) {
     return {pos,
-            {vec3{min}, ConstraintBehavior::Ignore},
-            {vec3{max}, ConstraintBehavior::Ignore},
+            vec3{min},
+            ConstraintBehavior::Ignore,
+            vec3{max},
+            ConstraintBehavior::Ignore,
             vec3{0.1f},
             invalidationLevel,
             PropertySemantics::LightPosition};

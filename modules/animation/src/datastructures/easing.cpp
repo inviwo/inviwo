@@ -29,6 +29,8 @@
 
 #include <modules/animation/datastructures/easing.h>
 
+#include <ostream>
+
 namespace inviwo {
 namespace animation {
 
@@ -44,6 +46,111 @@ EasingType operator++(EasingType& e, int) {
     EasingType result = e;
     ++e;
     return result;
+}
+
+std::ostream& operator<<(std::ostream& os, EasingType type) {
+    switch (type) {
+        case EasingType::None:
+            os << "None";
+            break;
+        case EasingType::Linear:
+            os << "Linear";
+            break;
+        case EasingType::InQuadratic:
+            os << "InQuadratic";
+            break;
+        case EasingType::InCubic:
+            os << "InCubic";
+            break;
+        case EasingType::InQuartic:
+            os << "InQuartic";
+            break;
+        case EasingType::InQuintic:
+            os << "InQuintic";
+            break;
+        case EasingType::OutQuadratic:
+            os << "OutQuadratic";
+            break;
+        case EasingType::OutCubic:
+            os << "OutCubic";
+            break;
+        case EasingType::OutQuartic:
+            os << "OutQuartic";
+            break;
+        case EasingType::OutQuintic:
+            os << "OutQuintic";
+            break;
+        case EasingType::InOutQuadratic:
+            os << "InOutQuadratic";
+            break;
+        case EasingType::InOutCubic:
+            os << "InOutCubic";
+            break;
+        case EasingType::InOutQuartic:
+            os << "InOutQuartic";
+            break;
+        case EasingType::InOutQuintic:
+            os << "InOutQuintic";
+            break;
+        case EasingType::InSine:
+            os << "InSine";
+            break;
+        case EasingType::OutSine:
+            os << "OutSine";
+            break;
+        case EasingType::InOutSine:
+            os << "InOutSine";
+            break;
+        case EasingType::InExp:
+            os << "InExp";
+            break;
+        case EasingType::OutExp:
+            os << "OutExp";
+            break;
+        case EasingType::InOutExp:
+            os << "InOutExp";
+            break;
+        case EasingType::InCircular:
+            os << "InCircular";
+            break;
+        case EasingType::OutCircular:
+            os << "OutCircular";
+            break;
+        case EasingType::InOutCircular:
+            os << "InOutCircular";
+            break;
+        case EasingType::InBack:
+            os << "InBack";
+            break;
+        case EasingType::OutBack:
+            os << "OutBack";
+            break;
+        case EasingType::InOutBack:
+            os << "InOutBack";
+            break;
+        case EasingType::InElastic:
+            os << "InElastic";
+            break;
+        case EasingType::OutElastic:
+            os << "OutElastic";
+            break;
+        case EasingType::InOutElastic:
+            os << "InOutElastic";
+            break;
+        case EasingType::InBounce:
+            os << "InBounce";
+            break;
+        case EasingType::OutBounce:
+            os << "OutBounce";
+            break;
+        case EasingType::InOutBounce:
+            os << "InOutBounce";
+            break;
+        default:
+            throw Exception("Unknown Easing type", IVW_CONTEXT_CUSTOM("Easing::operator<<"));
+    }
+
+    return os;
 }
 
 }  // namespace easing

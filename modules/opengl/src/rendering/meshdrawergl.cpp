@@ -120,7 +120,6 @@ MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType c
                     return DrawMode::TriangleStripAdjacency;
 
                 case ConnectivityType::Loop:
-                case ConnectivityType::NumberOfConnectivityTypes:
                 default:
                     return DrawMode::Points;
             }
@@ -143,14 +142,12 @@ MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType c
                     return DrawMode::LineStripAdjacency;
 
                 case ConnectivityType::Fan:
-                case ConnectivityType::NumberOfConnectivityTypes:
                 default:
                     return DrawMode::Points;
             }
 
         case DrawType::Points:
         case DrawType::NotSpecified:
-        case DrawType::NumberOfDrawTypes:
         default:
             return DrawMode::Points;
     }

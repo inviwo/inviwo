@@ -446,8 +446,29 @@ bool PropertyWidgetQt::event(QEvent* event) {
     if (event->type() == QEvent::ToolTip && property_) {
         event->accept();
         auto helpEvent = static_cast<QHelpEvent*>(event);
-        const std::string info = property_->getDescription();
-        QToolTip::showText(helpEvent->globalPos(), utilqt::toQString(info));
+
+        Document desc{};
+        auto html = desc.append("html");
+        html.append("head").append("style", R"(
+            div.name {
+                font-size: 13pt;
+                color: #c8ccd0;;
+                font-weight: bold;
+            }
+            div.help {
+                font-size: 12pt;
+                margin: 10px 0px 10px 0px;
+                padding: 0px 0px 0px 0px;
+            }
+            table {
+                margin: 10px 0px 0px 0px;
+                padding: 0px 0px 0px 0px;
+            }
+        )"_unindent);
+
+        html.append("body").append(property_->getDescription());
+
+        QToolTip::showText(helpEvent->globalPos(), utilqt::toQString(desc));
         return true;
     } else if (event->type() == QEvent::MouseButtonRelease) {
         auto mouseEvent = static_cast<QMouseEvent*>(event);

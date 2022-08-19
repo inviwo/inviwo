@@ -319,7 +319,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
                     auto f = filesystem::ifstream(fallbackLicensePath);
                     buffer << f.rdbuf();
                 } else {
-                    buffer << "License file not found";
+                    buffer << "License file not found.";
                 }
 
                 li.append("pre", escape(buffer.str()), {{"style", "font: 12px;"}});

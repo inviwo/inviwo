@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/util/document.h>
 
 #include <glm/fwd.hpp>
 #include <string>
@@ -70,10 +71,26 @@ public:
      * this method should be overloaded in derived classes.
      */
     virtual glm::uvec3 getColorCode() const = 0;
+
+    /**
+     * This function should describe the state of the port and the data it holds.
+     * Derived ports should extend this function and add information about their state.
+     * The port help is usually included in this information.
+     * The description is usually shown as a tooltip in the GUI.
+     */
     virtual Document getInfo() const = 0;
 
     virtual bool isConnected() const = 0;
     virtual bool isReady() const = 0;
+
+    /**
+     * The help should describe what data the port expects/produces and how it is used.
+     * This will be shown in the Processor help, and as part of the port info in the
+     * port tooltip in the GUI
+     */
+    const Document& getHelp() const;
+    Document& getHelp();
+    Port& setHelp(Document help);
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -87,12 +104,13 @@ protected:
      *                   characters, "-" and "_".
      * @see Processor::addPort()
      */
-    Port(std::string_view identifier);
+    Port(std::string_view identifier, Document help);
 
     void setProcessor(Processor* processor);
 
     std::string identifier_;
     Processor* processor_;  //< non-owning reference
+    Document help_;
 };
 
 }  // namespace inviwo

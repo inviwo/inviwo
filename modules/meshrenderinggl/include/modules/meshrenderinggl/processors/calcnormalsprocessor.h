@@ -72,7 +72,7 @@ public:
 private:
     MeshInport inport_;
     MeshOutport outport_;
-    TemplateOptionProperty<meshutil::CalculateMeshNormalsMode> mode_;
+    OptionProperty<meshutil::CalculateMeshNormalsMode> mode_;
 };
 
 }  // namespace inviwo

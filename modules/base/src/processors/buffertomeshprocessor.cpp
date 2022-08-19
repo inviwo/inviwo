@@ -38,25 +38,32 @@ const ProcessorInfo BufferToMeshProcessor::processorInfo_{
     "Mesh Creation",                     // Category
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
-};
+    R"(Takes input buffers and puts them into a mesh without copying data. All buffers must be of
+    same size except the index buffer. Unspecified draw type will render the mesh as points by
+    default. See https://www.khronos.org/opengl/wiki/Primitive for more information about draw
+    types and connectivity.)"_unindentHelp};
+
 const ProcessorInfo BufferToMeshProcessor::getProcessorInfo() const { return processorInfo_; }
 
 BufferToMeshProcessor::BufferToMeshProcessor()
     : Processor()
-    , vertices_("Vertices")
-    , indices_("Indices")
-    , vertexColors_("VertexColors")
-    , textureCoordinates_("TextureCoordinates")
-    , normals_("Normals")
-    , curvature_("Curvature")
-    , outport_("Mesh")
-    , drawType_("drawType", "Draw type",
+    , vertices_("Vertices", "Mesh positions of type vec3 or vec2"_help)
+    , indices_("Indices", "Vertex connectivity, integer type (optional)"_help)
+    , vertexColors_("VertexColors",
+                    "Color at each vertex, usually vec4 or uvec4 type (optional)"_help)
+    , textureCoordinates_("TextureCoordinates",
+                          "Texture coordinates at each vertex, usually vec2 type (optional)"_help)
+    , normals_("Normals", "Vertex normals, of vec3 type  (optional)"_help)
+    , curvature_("Curvature", "Vertex curvature, usually float type  (optional)"_help)
+    , outport_("Mesh", "Mesh with all specified buffers"_help)
+    , drawType_("drawType", "Draw type", "Default way to draw the mesh"_help,
                 {{"Unspecified", "Unspecified", DrawType::NotSpecified},
                  {"Points", "Points", DrawType::Points},
                  {"Lines", "Lines", DrawType::Lines},
                  {"Triangles", "Triangles", DrawType::Triangles}},
                 0)
     , connectivity_("connectivity", "Connectivity",
+                    "Describes how the indices connect vertices together"_help,
                     {{"None", "None", ConnectivityType::None},
                      {"Strip", "Strip", ConnectivityType::Strip},
                      {"Loop", "Loop", ConnectivityType::Loop},

@@ -86,6 +86,11 @@ public:
                                  {BrushingAndLinkingManager::AnyBrushingTarget,
                                   BrushingModifications(flags::any),
                                   InvalidationLevel::InvalidOutput}});
+    BrushingAndLinkingInport(std::string_view identifier, Document help,
+                             std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
+                                 {BrushingAndLinkingManager::AnyBrushingTarget,
+                                  BrushingModifications(flags::any),
+                                  InvalidationLevel::InvalidOutput}});
     virtual ~BrushingAndLinkingInport() = default;
 
     /**
@@ -234,7 +239,7 @@ private:
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport : public Outport {
 public:
     using type = void;
-    BrushingAndLinkingOutport(std::string_view identifier);
+    BrushingAndLinkingOutport(std::string_view identifier, Document help = {});
     virtual ~BrushingAndLinkingOutport() = default;
 
     BrushingAndLinkingManager& getManager();

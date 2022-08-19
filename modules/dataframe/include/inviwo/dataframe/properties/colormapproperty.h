@@ -38,6 +38,8 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/util/colorbrewer.h>
 
+#include <iosfwd>
+
 namespace inviwo {
 /**
  * Continuous is suitable for ordered/sequential data.
@@ -46,18 +48,7 @@ namespace inviwo {
  */
 enum class ColormapType { Continuous, Categorical };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
-                                             ColormapType colormap) {
-    // clang-format off
-    switch (colormap) {
-        case ColormapType::Continuous: os << "Continuous"; break;
-        case ColormapType::Categorical: os << "Categorical"; break;
-    }
-    // clang-format on
-    return os;
-}
-
+IVW_MODULE_DATAFRAME_API std::ostream& operator<<(std::ostream& os, ColormapType colormap);
 /**
  * \brief Selection of pre-defined color maps based on data type.
  *
@@ -111,8 +102,8 @@ public:
      */
     TransferFunction getTransferFunction() const;
 
-    TemplateOptionProperty<ColormapType> type;
-    TemplateOptionProperty<colorbrewer::Family> colormap;
+    OptionProperty<ColormapType> type;
+    OptionProperty<colorbrewer::Family> colormap;
     BoolProperty diverging;
     DoubleProperty divergenceMidPoint;
     BoolProperty discrete;

@@ -134,7 +134,12 @@ public:
     virtual std::string getClassIdentifier() const = 0;
 
     Property(std::string_view identifier = "", std::string_view displayName = "",
+             Document help = {},
              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+             PropertySemantics semantics = PropertySemantics::Default);
+
+    Property(std::string_view identifier, std::string_view displayName,
+             InvalidationLevel invalidationLevel,
              PropertySemantics semantics = PropertySemantics::Default);
 
     /**
@@ -365,6 +370,24 @@ public:
         return *this;
     }
 
+    /**
+     * The help should describe what state the property represents and how it is used.
+     * This will be shown in the Processor help, and as part of the property description in the
+     * property tooltip in the GUI.
+     */
+    const Document& getHelp() const;
+    Document& getHelp();
+    Property& setHelp(Document help);
+
+    /**
+     * This function should describe the state of the property
+     * By default this will return a document describing all the
+     * state. i.e. Identifier, DisplayName, Help, InvalidationLevel,
+     * PropertySemantics, etc.
+     * Derived properties should extend this function and add their
+     * state, usually values etc.
+     * The description is usually shown as a tooltip in the GUI.
+     */
     virtual Document getDescription() const;
 
     template <typename T, typename U>
@@ -432,6 +455,7 @@ private:
     PropertyWidget* initiatingWidget_;
 
     std::vector<std::pair<std::string, std::string>> autoLinkTo_;
+    Document help_;
 };
 
 namespace util {

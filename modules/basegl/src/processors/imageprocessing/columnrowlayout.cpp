@@ -215,13 +215,10 @@ void Layout::updateSplitters(bool connect) {
     for (ptrdiff_t i = 1; i < numViews; ++i) {
         count++;
         if (splitters_.size() < count) {
-            auto prop = new FloatProperty(fmt::format("splitter{}", count - 1),
-                                          fmt::format("Splitter {}", count),
-                                          {i / static_cast<float>(numViews),
-                                           {0.0f, ConstraintBehavior::Immutable},
-                                           {1.0f, ConstraintBehavior::Immutable},
-                                           0.01f,
-                                           InvalidationLevel::InvalidOutput});
+            auto prop = new FloatProperty(
+                fmt::format("splitter{}", count - 1), fmt::format("Splitter {}", count),
+                {i / static_cast<float>(numViews), 0.0f, ConstraintBehavior::Immutable, 1.0f,
+                 ConstraintBehavior::Immutable, 0.01f, InvalidationLevel::InvalidOutput});
             prop->onChange([idx = static_cast<int>(i), this]() { updateSliders(idx - 1); });
             splitters_.addProperty(prop);
         } else if (!deserialized_ && connect) {

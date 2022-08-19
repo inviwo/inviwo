@@ -217,12 +217,17 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
         }
     } else if ((role == Qt::ToolTipRole) && (orientation == Qt::Horizontal)) {
         const Column* col = data_->getColumn(section).get();
-        auto tooltip = [col]() {
+        auto tooltip = [col, section]() {
             if (col->getColumnType() == ColumnType::Categorical) {
-                return QString("Categorical (%0 categories)")
+                return QString("<b>%0</b> (Column %1)\nCategorical (%2 categories)")
+                    .arg(utilqt::toQString(col->getHeader()))
+                    .arg(section)
                     .arg(static_cast<const CategoricalColumn*>(col)->getCategories().size());
             } else {
-                return QString("Ordinal (%0)").arg(col->getBuffer()->getDataFormat()->getString());
+                return QString("<b>%0</b> (Column %1)\nOrdinal (%2)")
+                    .arg(utilqt::toQString(col->getHeader()))
+                    .arg(section)
+                    .arg(col->getBuffer()->getDataFormat()->getString());
             }
         }();
         if (col->getCustomRange()) {

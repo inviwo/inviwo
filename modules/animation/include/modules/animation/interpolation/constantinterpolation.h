@@ -31,6 +31,8 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/interpolation/interpolation.h>
 
+#include <inviwo/core/util/defaultvalues.h>
+
 #include <algorithm>
 
 namespace inviwo {

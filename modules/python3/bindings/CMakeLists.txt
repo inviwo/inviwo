@@ -8,6 +8,7 @@ set(HEADER_FILES
     include/inviwopy/pydataformat.h
     include/inviwopy/pydatamapper.h
     include/inviwopy/pydatareaders.h
+    include/inviwopy/pydocument.h
     include/inviwopy/pyevent.h
     include/inviwopy/pyflags.h
     include/inviwopy/pyglmmattypes.h
@@ -40,6 +41,7 @@ set(SOURCE_FILES
     src/pydataformat.cpp
     src/pydatamapper.cpp
     src/pydatareaders.cpp
+    src/pydocument.cpp
     src/pyevent.cpp
     src/pyflags.cpp
     src/pyglmmattypes.cpp

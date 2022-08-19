@@ -94,7 +94,7 @@ public:
     QByteArray copy() const;
     QByteArray cut();
     void paste(QByteArray data);
-    void append(std::istream& is, const std::string& refPath = "");
+    void append(std::string_view workspace);
     void selectAll();
     void deleteSelection();
 
@@ -151,7 +151,7 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
-    void progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent);
+    void propagateEventToSelectedProcessors(KeyboardEvent& pressKeyEvent);
 
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;

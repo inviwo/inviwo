@@ -40,25 +40,24 @@ namespace inviwo {
 class InviwoModule;
 class InviwoApplication;
 
-struct IVW_CORE_API InviwoSetupInfo : public Serializable {
-    struct ModuleSetupInfo : public Serializable {
-        ModuleSetupInfo() = default;
-        ModuleSetupInfo(const InviwoModule* module);
-        virtual void serialize(Serializer& s) const;
-        virtual void deserialize(Deserializer& d);
-        std::string name_;
-        int version_ = 0;
-        std::vector<std::string> processors_;
+struct IVW_CORE_API InviwoSetupInfo {
+    struct ModuleSetupInfo {
+        void serialize(Serializer& s) const;
+        void deserialize(Deserializer& d);
+        std::string name;
+        int version = 0;
+        std::vector<std::string> processors;
     };
 
     InviwoSetupInfo() = default;
-    InviwoSetupInfo(const InviwoApplication* app);
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork& network);
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
     std::vector<ModuleSetupInfo> modules_;
 
     const InviwoSetupInfo::ModuleSetupInfo* getModuleInfo(const std::string& module) const;
-    std::string getModuleForProcessor(const std::string& processor) const;
+    const InviwoSetupInfo::ModuleSetupInfo* getModuleForProcessor(
+        const std::string& processorClassIdentifier) const;
 };
 
 }  // namespace inviwo

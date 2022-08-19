@@ -33,28 +33,34 @@
 #include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
-InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const InviwoModule* module)
-    : name_(module->getIdentifier()), version_(module->getVersion()) {
-    for (const auto& processor : module->getProcessors()) {
-        processors_.push_back((processor)->getClassIdentifier());
-    }
-}
 
 void InviwoSetupInfo::ModuleSetupInfo::serialize(Serializer& s) const {
-    s.serialize("name", name_, SerializationTarget::Attribute);
-    s.serialize("version", version_, SerializationTarget::Attribute);
-    s.serialize("Processors", processors_, "Processor");
+    s.serialize("name", name, SerializationTarget::Attribute);
+    s.serialize("version", version, SerializationTarget::Attribute);
+    s.serialize("Processors", processors, "Processor");
 }
 void InviwoSetupInfo::ModuleSetupInfo::deserialize(Deserializer& d) {
-    d.deserialize("name", name_, SerializationTarget::Attribute);
-    d.deserialize("version", version_, SerializationTarget::Attribute);
-    d.deserialize("Processors", processors_, "Processor");
+    d.deserialize("name", name, SerializationTarget::Attribute);
+    d.deserialize("version", version, SerializationTarget::Attribute);
+    d.deserialize("Processors", processors, "Processor");
 }
 
-InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication* app) {
-    auto& modules = app->getModules();
-    for (auto& module : modules) {
-        modules_.push_back(ModuleSetupInfo(module.get()));
+InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork& network) {
+    std::unordered_set<std::string> usedProcessorClassIdentifiers;
+    network.forEachProcessor(
+        [&](const Processor* p) { usedProcessorClassIdentifiers.insert(p->getClassIdentifier()); });
+
+    for (auto& module : app.getModules()) {
+        ModuleSetupInfo info{module->getIdentifier(), module->getVersion(), {}};
+        for (const auto& processor : module->getProcessors()) {
+            const auto& id = processor->getClassIdentifier();
+            if (usedProcessorClassIdentifiers.count(id) > 0) {
+                info.processors.push_back(id);
+            }
+        }
+        if (!info.processors.empty()) {
+            modules_.push_back(std::move(info));
+        }
     }
 }
 
@@ -64,7 +70,7 @@ void InviwoSetupInfo::deserialize(Deserializer& d) { d.deserialize("Modules", mo
 const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleInfo(
     const std::string& module) const {
     auto it =
-        util::find_if(modules_, [&](const ModuleSetupInfo& info) { return info.name_ == module; });
+        util::find_if(modules_, [&](const ModuleSetupInfo& info) { return info.name == module; });
     if (it != modules_.end()) {
         return &(*it);
     } else {
@@ -72,15 +78,16 @@ const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleInfo(
     }
 }
 
-std::string InviwoSetupInfo::getModuleForProcessor(const std::string& processor) const {
-    for (const auto& elem : modules_) {
-        for (auto pit = elem.processors_.cbegin(); pit != elem.processors_.cend(); ++pit) {
-            if (*pit == processor) {
-                return elem.name_;
-            }
+const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleForProcessor(
+    const std::string& processorClassIdentifier) const {
+    for (const auto& module : modules_) {
+        auto it =
+            std::find(module.processors.begin(), module.processors.end(), processorClassIdentifier);
+        if (it != module.processors.end()) {
+            return &module;
         }
     }
-    return "";
+    return nullptr;
 }
 
 }  // namespace inviwo

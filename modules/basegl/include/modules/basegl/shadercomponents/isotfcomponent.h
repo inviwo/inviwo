@@ -52,7 +52,7 @@ template <size_t N>
 class IsoTFComponent : public ShaderComponent {
 public:
     IsoTFComponent(VolumeInport& volumeInport)
-        : ShaderComponent(), isotfs{util::make_array<N>([&](size_t i) {
+        : ShaderComponent(), isotfs{util::make_array<N>([&]([[maybe_unused]] size_t i) {
             if constexpr (N > 1) {
                 auto prop =
                     IsoTFProperty{fmt::format("isotf{}", i), fmt::format("TF & Iso Values #{}", i),

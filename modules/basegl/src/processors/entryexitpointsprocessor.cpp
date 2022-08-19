@@ -40,23 +40,31 @@ const ProcessorInfo EntryExitPoints::processorInfo_{
     "Mesh Rendering",              // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
-};
+    R"(Computes the entry and exit points of a triangle mesh from the camera position
+    in texture space. The output color will be zero if no intersection is found,
+    otherwise.)"_unindentHelp};
+
 const ProcessorInfo EntryExitPoints::getProcessorInfo() const { return processorInfo_; }
 
 EntryExitPoints::EntryExitPoints()
     : Processor()
-    , inport_("geometry")
-    , entryPort_("entry", DataVec4UInt16::get())
-    , exitPort_("exit", DataVec4UInt16::get())
+    , inport_("geometry", "The input mesh used for determining entry and exit points"_help)
+    , entryPort_("entry", "The first hit point in texture coordinates [0,1]"_help,
+                 DataVec4UInt16::get())
+    , exitPort_("exit", "The last hit point in texture coordinates [0,1]"_help,
+                DataVec4UInt16::get())
     , camera_("camera", "Camera", util::boundingBox(inport_))
-    , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
+    , capNearClipping_(
+          "capNearClipping", "Cap near plane clipping",
+          "Insert a plane at the near plane clip point to avoid generating entry points "
+          "from the inside of the geometry"_help,
+          true)
     , trackball_(&camera_) {
+
     addPort(inport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
-    addProperty(capNearClipping_);
-    addProperty(camera_);
-    addProperty(trackball_);
+    addProperties(capNearClipping_, camera_, trackball_);
 
     onReloadCallback_ =
         entryExitHelper_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });

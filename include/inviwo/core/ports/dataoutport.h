@@ -51,7 +51,7 @@ template <typename T>
 class DataOutport : public Outport, public OutportIterableImpl<DataOutport<T>, T> {
 public:
     using type = T;
-    DataOutport(std::string_view identifier);
+    DataOutport(std::string_view identifier, Document help = {});
     virtual ~DataOutport() = default;
 
     virtual std::string getClassIdentifier() const override;
@@ -96,13 +96,15 @@ protected:
 template <typename T>
 struct PortTraits<DataOutport<T>> {
     static std::string classIdentifier() {
-        return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".outport");
+        auto&& classId = DataTraits<T>::classIdentifier();
+        if (classId.empty()) return {};
+        return fmt::format("{}.outport", classId);
     }
 };
 
 template <typename T>
-DataOutport<T>::DataOutport(std::string_view identifier)
-    : Outport(identifier), OutportIterableImpl<DataOutport<T>, T>{}, data_() {
+DataOutport<T>::DataOutport(std::string_view identifier, Document help)
+    : Outport(identifier, std::move(help)), OutportIterableImpl<DataOutport<T>, T>{}, data_() {
 
     isReady_.setUpdate([this]() {
         return invalidationLevel_ == InvalidationLevel::Valid && data_.get() != nullptr;
@@ -163,13 +165,17 @@ void DataOutport<T>::clear() {
 
 template <typename T>
 Document DataOutport<T>::getInfo() const {
-    Document doc;
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
-    auto b = doc.append("html").append("body");
-    auto p = b.append("p");
-    p.append("b", htmlEncode(DataTraits<T>::dataName()) + " Outport", {{"style", "color:white;"}});
-    utildoc::TableBuilder tb(p, P::end());
+
+    Document doc;
+    doc.append("b", util::htmlEncode(DataTraits<T>::dataName()) + " Outport", {{"class", "name"}});
+
+    if (!help_.empty()) {
+        doc.append("div", "", {{"class", "help"}}).append(help_);
+    }
+
+    utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());
     tb(H("Ready"), isReady());
@@ -177,9 +183,9 @@ Document DataOutport<T>::getInfo() const {
     tb(H("Connections"), connectedInports_.size());
 
     if (hasData()) {
-        b.append("p").append(DataTraits<T>::info(*getData()));
+        doc.append("p").append(DataTraits<T>::info(*getData()));
     } else {
-        b.append("p", "Port has no data");
+        doc.append("p", "Port has no data");
     }
     return doc;
 }

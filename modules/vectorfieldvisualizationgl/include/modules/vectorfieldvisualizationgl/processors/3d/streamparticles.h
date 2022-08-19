@@ -102,7 +102,7 @@ private:
     VolumeInport volume_;
     SeedPoints3DInport seeds_;
     MeshOutport meshPort_;
-    TemplateOptionProperty<SeedingSpace> seedingSpace_;
+    OptionProperty<SeedingSpace> seedingSpace_;
 
     FloatProperty advectionSpeed_;
     IntProperty internalSteps_;

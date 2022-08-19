@@ -47,12 +47,12 @@ public:
 
     BoolProperty shaderReloadingProperty_;
     ButtonProperty btnOpenGLInfo_;
-    TemplateOptionProperty<Shader::UniformWarning> uniformWarnings_;
-    TemplateOptionProperty<Shader::OnError> shaderObjectErrors_;
+    OptionProperty<Shader::UniformWarning> uniformWarnings_;
+    OptionProperty<Shader::OnError> shaderObjectErrors_;
 
-    TemplateOptionProperty<utilgl::debug::Mode> debugMessages_;
-    TemplateOptionProperty<utilgl::debug::Severity> debugSeverity_;
-    TemplateOptionProperty<utilgl::debug::BreakLevel> breakOnMessage_;
+    OptionProperty<utilgl::debug::Mode> debugMessages_;
+    OptionProperty<utilgl::debug::Severity> debugSeverity_;
+    OptionProperty<utilgl::debug::BreakLevel> breakOnMessage_;
 };
 
 }  // namespace inviwo

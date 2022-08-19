@@ -82,7 +82,7 @@ private:
     EigenMatrixInport in_;
     EigenMatrixOutport out_;
 
-    TemplateOptionProperty<Method> method_;
+    OptionProperty<Method> method_;
 };
 
 }  // namespace inviwo

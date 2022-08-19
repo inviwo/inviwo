@@ -32,6 +32,8 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/network/networklock.h>
 
+#include <ostream>
+
 namespace inviwo {
 
 const ProcessorInfo OrdinalPropertyAnimator::processorInfo_{
@@ -107,6 +109,23 @@ void OrdinalPropertyAnimator::deserialize(Deserializer& d) {
             props_.push_back(p);
         }
     }
+}
+
+std::ostream& operator<<(std::ostream& ss, BoundaryType bt) {
+    switch (bt) {
+        case BoundaryType::Stop:
+            ss << "Stop";
+            break;
+        case BoundaryType::Periodic:
+            ss << "Periodic";
+            break;
+        case BoundaryType::Mirror:
+            ss << "Mirror";
+            break;
+        default:
+            break;
+    }
+    return ss;
 }
 
 }  // namespace inviwo

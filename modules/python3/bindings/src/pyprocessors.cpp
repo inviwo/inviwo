@@ -129,10 +129,10 @@ void exposeProcessors(pybind11::module& m) {
         .def_readonly_static("PY", &Tags::PY);
 
     py::class_<ProcessorInfo>(m, "ProcessorInfo")
-        .def(py::init<std::string, std::string, std::string, CodeState, Tags, bool>(),
+        .def(py::init<std::string, std::string, std::string, CodeState, Tags, Document>(),
              py::arg("classIdentifier"), py::arg("displayName"), py::arg("category") = "Python",
              py::arg("codeState") = CodeState::Stable, py::arg("tags") = Tags::PY,
-             py::arg("visible") = true)
+             py::arg("help") = Document{})
         .def_readonly("classIdentifier", &ProcessorInfo::classIdentifier)
         .def_readonly("displayName", &ProcessorInfo::displayName)
         .def_readonly("category", &ProcessorInfo::category)
@@ -142,7 +142,7 @@ void exposeProcessors(pybind11::module& m) {
 
     py::class_<ProcessorFactoryObject, ProcessorFactoryObjectTrampoline>(m,
                                                                          "ProcessorFactoryObject")
-        .def(py::init<ProcessorInfo>())
+        .def(py::init<ProcessorInfo, std::string_view>())
         .def("getProcessorInfo", &ProcessorFactoryObject::getProcessorInfo);
 
     py::class_<ProcessorFactory>(m, "ProcessorFactory")

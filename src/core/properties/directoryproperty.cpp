@@ -36,13 +36,22 @@ const std::string DirectoryProperty::classIdentifier = "org.inviwo.DirectoryProp
 std::string DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
 
 DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_view displayName,
-                                     std::string_view value, std::string_view contentType,
+                                     Document help, std::string_view value,
+                                     std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
+    : FileProperty(identifier, displayName, std::move(help), value, contentType, invalidationLevel,
+                   semantics) {
     setAcceptMode(AcceptMode::Open);
     setFileMode(FileMode::DirectoryOnly);
 }
+
+DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_view displayName,
+                                     std::string_view value, std::string_view contentType,
+                                     InvalidationLevel invalidationLevel,
+                                     PropertySemantics semantics)
+    : DirectoryProperty(identifier, displayName, Document{}, value, contentType, invalidationLevel,
+                        semantics) {}
 
 DirectoryProperty::DirectoryProperty(const DirectoryProperty& rhs) = default;
 DirectoryProperty* DirectoryProperty::clone() const { return new DirectoryProperty(*this); }

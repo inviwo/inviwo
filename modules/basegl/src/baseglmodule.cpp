@@ -62,6 +62,7 @@
 #include <modules/basegl/processors/imageprocessing/imagescaling.h>
 #include <modules/basegl/processors/imageprocessing/imagesubsetgl.h>
 #include <modules/basegl/processors/imageprocessing/jacobian2d.h>
+#include <modules/basegl/processors/instancerenderer.h>
 #include <modules/basegl/processors/isoraycaster.h>
 #include <modules/basegl/processors/lightingraycaster.h>
 #include <modules/basegl/processors/lightvolumegl.h>
@@ -138,6 +139,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<MeshRenderProcessorGL>();
     registerProcessor<MultiChannelVolumeRaycaster>();
     registerProcessor<MultichannelRaycaster>();
+    registerProcessor<InstanceRenderer>();
     registerProcessor<PointRenderer>();
     registerProcessor<RedGreenProcessor>();
     registerProcessor<SphereRenderer>();

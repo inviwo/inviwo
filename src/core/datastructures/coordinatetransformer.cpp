@@ -29,6 +29,8 @@
 
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 
+#include <ostream>
+
 namespace inviwo {
 
 template class IVW_CORE_TMPL_INST SpatialCoordinateTransformer<2>;
@@ -40,5 +42,26 @@ template class IVW_CORE_TMPL_INST StructuredCoordinateTransformer<2>;
 template class IVW_CORE_TMPL_INST StructuredCoordinateTransformer<3>;
 template class IVW_CORE_TMPL_INST StructuredCameraCoordinateTransformer<2>;
 template class IVW_CORE_TMPL_INST StructuredCameraCoordinateTransformer<3>;
+
+std::string_view enumToStr(CoordinateSpace s) {
+    switch (s) {
+        case CoordinateSpace::Data:
+            return "Data";
+        case CoordinateSpace::Model:
+            return "Model";
+        case CoordinateSpace::World:
+            return "World";
+        case CoordinateSpace::Index:
+            return "Index";
+        case CoordinateSpace::Clip:
+            return "Clip";
+        case CoordinateSpace::View:
+            return "View";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid CoordinateSpace enum value '{}'",
+                    static_cast<int>(s));
+}
+
+std::ostream& operator<<(std::ostream& ss, CoordinateSpace s) { return ss << enumToStr(s); }
 
 }  // namespace inviwo

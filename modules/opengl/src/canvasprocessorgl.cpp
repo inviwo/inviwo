@@ -42,6 +42,10 @@ const ProcessorInfo CanvasProcessorGL::processorInfo_{
     "Data Output",          // Category
     CodeState::Stable,      // Code state
     Tags::GL,               // Tags
+    R"(The canvas processor has an associated processor widget window to render an
+       image. The processor tracks the window size and position, and can also render
+       different image layers. By default the first color layer is rendered.
+       The processor also has functionality to save images to disk.)"_unindentHelp  // Help
 };
 const ProcessorInfo CanvasProcessorGL::getProcessorInfo() const { return processorInfo_; }
 

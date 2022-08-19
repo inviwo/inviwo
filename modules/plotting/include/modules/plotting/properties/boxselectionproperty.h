@@ -56,7 +56,7 @@ public:
     virtual BoxSelectionProperty* clone() const override;
     virtual ~BoxSelectionProperty() = default;
 
-    TemplateOptionProperty<BoxSelectionSettingsInterface::Mode> mode_;
+    OptionProperty<BoxSelectionSettingsInterface::Mode> mode_;
     FloatVec4Property lineColor_;
     FloatProperty lineWidth_;  //!< Line width in pixels
 

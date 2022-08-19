@@ -48,13 +48,47 @@ namespace inviwo {
  */
 template <typename T>
 struct OrdinalRefPropertyState {
-    std::pair<T, ConstraintBehavior> minValue =
-        std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable};
-    std::pair<T, ConstraintBehavior> maxValue =
-        std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable};
+    T min = Defaultvalues<T>::getMin();
+    ConstraintBehavior minConstraint = ConstraintBehavior::Editable;
+    T max = Defaultvalues<T>::getMax();
+    ConstraintBehavior maxConstraint = ConstraintBehavior::Editable;
     T increment = Defaultvalues<T>::getInc();
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
     PropertySemantics semantics = defaultSemantics();
+    Document help = {};
+
+    auto setMin(T newMin) -> OrdinalRefPropertyState {
+        min = newMin;
+        return *this;
+    }
+    auto setMin(ConstraintBehavior newMinConstraint) -> OrdinalRefPropertyState {
+        minConstraint = newMinConstraint;
+        return *this;
+    }
+    auto setMax(T newMax) -> OrdinalRefPropertyState {
+        max = newMax;
+        return *this;
+    }
+    auto setMax(ConstraintBehavior newMaxConstraint) -> OrdinalRefPropertyState {
+        maxConstraint = newMaxConstraint;
+        return *this;
+    }
+    auto setInc(T newIncrement) -> OrdinalRefPropertyState {
+        increment = newIncrement;
+        return *this;
+    }
+    auto set(InvalidationLevel newInvalidationLevel) -> OrdinalRefPropertyState {
+        invalidationLevel = newInvalidationLevel;
+        return *this;
+    }
+    auto set(PropertySemantics newSemantics) -> OrdinalRefPropertyState {
+        semantics = newSemantics;
+        return *this;
+    }
+    auto set(Document newHelp) -> OrdinalRefPropertyState {
+        help = newHelp;
+        return *this;
+    }
 
     static PropertySemantics defaultSemantics() {
         if constexpr (util::extent<T, 1>::value > 1) {
@@ -76,6 +110,18 @@ class OrdinalRefProperty : public Property {
 public:
     using value_type = T;
     using component_type = typename util::value_type<T>::type;
+
+    OrdinalRefProperty(
+        std::string_view identifier, std::string_view displayName, Document help = {},
+        std::function<T()> get = []() { return T{}; },
+        std::function<void(const T&)> set = [](const T&) {},
+        const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
+                                                                     ConstraintBehavior::Editable},
+        const std::pair<T, ConstraintBehavior>& maxValue = std::pair{Defaultvalues<T>::getMax(),
+                                                                     ConstraintBehavior::Editable},
+        const T& increment = Defaultvalues<T>::getInc(),
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        PropertySemantics semantics = OrdinalRefPropertyState<T>::defaultSemantics());
 
     OrdinalRefProperty(
         std::string_view identifier, std::string_view displayName, std::function<T()> get,
@@ -263,12 +309,13 @@ std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
 
 template <typename T>
 OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
-                                          std::function<T()> get, std::function<void(const T&)> set,
+                                          Document help, std::function<T()> get,
+                                          std::function<void(const T&)> set,
                                           const std::pair<T, ConstraintBehavior>& minValue,
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
                                           PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , get_{std::move(get)}
     , set_{std::move(set)}
     , minValue_("minvalue", minValue.first)
@@ -291,15 +338,26 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
 
 template <typename T>
 OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
+                                          std::function<T()> get, std::function<void(const T&)> set,
+                                          const std::pair<T, ConstraintBehavior>& minValue,
+                                          const std::pair<T, ConstraintBehavior>& maxValue,
+                                          const T& increment, InvalidationLevel invalidationLevel,
+                                          PropertySemantics semantics)
+    : OrdinalRefProperty{identifier, displayName, {},        std::move(get),    std::move(set),
+                         minValue,   maxValue,    increment, invalidationLevel, semantics} {}
+
+template <typename T>
+OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
                                           std::function<const T&()> get,
                                           std::function<void(const T&)> set,
                                           OrdinalRefPropertyState<T> state)
     : OrdinalRefProperty{identifier,
                          displayName,
-                         get,
-                         set,
-                         state.minValue,
-                         state.maxValue,
+                         std::move(state.help),
+                         std::move(get),
+                         std::move(set),
+                         std::pair{state.min, state.minConstraint},
+                         std::pair{state.max, state.maxConstraint},
                          state.increment,
                          state.invalidationLevel,
                          state.semantics} {}
@@ -606,9 +664,8 @@ Document OrdinalRefProperty<T>::getDescription() const {
     using H = utildoc::TableBuilder::Header;
 
     Document doc = Property::getDescription();
-    auto b = doc.get({P("html"), P("body")});
 
-    utildoc::TableBuilder tb(b, P::end());
+    utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("#"), H("Value"), H(fmt::format("Min ({})", minConstraint_)),
        H(fmt::format("Max ({})", maxConstraint_)), H("Inc"));
     const auto val = get_();

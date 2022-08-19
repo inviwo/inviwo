@@ -86,7 +86,7 @@ private:
 
     ImageReuseCache imageCache_;
 
-    TemplateOptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
+    OptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
     IntSizeTProperty sliceNumber_;
 
     BoolProperty handleInteractionEvents_;

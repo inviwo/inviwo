@@ -29,6 +29,7 @@
 
 #include <inviwo/core/network/processornetworkconverter.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <fmt/format.h>
 

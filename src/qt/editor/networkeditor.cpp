@@ -414,7 +414,7 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
         KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
                                     utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                     utilqt::fromQString(keyEvent->text()));
-        progagateEventToSelecedProcessors(pressKeyEvent);
+        propagateEventToSelectedProcessors(pressKeyEvent);
     }
 }
 
@@ -425,7 +425,7 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
         KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
                                       utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                       utilqt::fromQString(keyEvent->text()));
-        progagateEventToSelecedProcessors(releaseKeyEvent);
+        propagateEventToSelectedProcessors(releaseKeyEvent);
     }
 }
 
@@ -750,14 +750,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
 void NetworkEditor::showProcessorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
     auto help = mainwindow_->getHelpWidget();
-    help->showDocForClassName(classIdentifier);
     if (raise) {
         if (!help->isVisible()) help->show();
         help->raise();
     }
+    help->showDocForClassName(classIdentifier);
 }
 
-void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent) {
+void NetworkEditor::propagateEventToSelectedProcessors(KeyboardEvent& pressKeyEvent) {
     try {
         for (auto& item : selectedItems()) {
             if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
@@ -851,8 +851,8 @@ void NetworkEditor::paste(QByteArray mimeData) {
         for (auto d : mimeData) ss << d;
         // Activate the default context, might be needed in processor constructors.
         RenderContext::getPtr()->activateDefaultRenderContext();
-        auto added =
-            util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
+        auto added = util::appendPartialProcessorNetwork(network_, ss, "",
+                                                         mainwindow_->getInviwoApplication());
 
         auto center = util::getCenterPosition(added);
         auto bounds = util::getBoundingBox(added);
@@ -894,23 +894,11 @@ void NetworkEditor::paste(QByteArray mimeData) {
     }
 }
 
-void NetworkEditor::append(std::istream& is, const std::string& refPath) {
+void NetworkEditor::append(std::string_view workspace) {
     NetworkLock lock(network_);
     try {
-        const auto orgBounds = util::getBoundingBox(network_);
-
-        RenderContext::getPtr()->activateDefaultRenderContext();
         const auto added =
-            util::appendDeserialized(network_, is, refPath, mainwindow_->getInviwoApplication());
-
-        const auto bounds = util::getBoundingBox(added);
-
-        // add to top right
-        const auto offset = ivec2{orgBounds.second.x, orgBounds.first.y} + ivec2{gridSpacing_, 0} +
-                            ivec2{ProcessorGraphicsItem::size_.width(), 0} -
-                            ivec2{bounds.first.x, bounds.first.y};
-
-        util::offsetPosition(added, offset);
+            util::appendProcessorNetwork(network_, workspace, mainwindow_->getInviwoApplication());
 
         // Make sure the pasted processors are in the view
         auto selection = selectedItems();
@@ -928,7 +916,8 @@ void NetworkEditor::append(std::istream& is, const std::string& refPath) {
         }
 
     } catch (const Exception& e) {
-        util::log(e.getContext(), "Unable to load network " + refPath + " due to " + e.getMessage(),
+        util::log(e.getContext(),
+                  fmt::format("Unable to append network {} due to {}", workspace, e.getMessage()),
                   LogLevel::Error);
     }
 

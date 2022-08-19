@@ -28,7 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <algorithm>
+#include <iomanip>
+#include <ostream>
 
 namespace inviwo {
 
@@ -64,6 +67,21 @@ bool Document::Element::isText() const { return type_ == ElementType::Text; }
 
 bool Document::Element::isNode() const { return type_ == ElementType::Node; }
 
+Document::Element::Element(const Element& rhs)
+    : type_{rhs.type_}, children_{}, data_{rhs.data_}, attributes_{rhs.attributes_} {
+    for (const auto& child : rhs.children_) {
+        children_.push_back(std::make_unique<Element>(*child));
+    }
+}
+
+Document::Element& Document::Element::operator=(const Element& that) {
+    if (this != &that) {
+        Element tmp(that);
+        swap(*this, tmp);
+    }
+    return *this;
+}
+
 Document::Element::Element(ElementType type, std::string_view content)
     : type_{type}, data_{content} {}
 Document::Element::Element(std::string_view name, std::string_view content,
@@ -77,6 +95,19 @@ Document::Element::Element(std::string_view name, std::string_view content,
 std::string& Document::Element::name() { return data_; }
 
 const std::string& Document::Element::name() const { return data_; }
+
+void Document::Element::serialize(Serializer& s) const {
+    s.serialize("type", type_, SerializationTarget::Attribute);
+    s.serialize("data", data_, SerializationTarget::Attribute);
+    s.serialize("children", children_);
+    s.serialize("attributes", attributes_);
+}
+void Document::Element::deserialize(Deserializer& d) {
+    d.deserialize("type", type_, SerializationTarget::Attribute);
+    d.deserialize("data", data_, SerializationTarget::Attribute);
+    d.deserialize("children", children_);
+    d.deserialize("attributes", attributes_);
+}
 
 Document::PathComponent Document::PathComponent::first() {
     return PathComponent("<first>", [](const ElemVec& elements) -> ElemVec::const_iterator {
@@ -139,6 +170,11 @@ Document::PathComponent::PathComponent(
         });
     }} {}
 
+std::ostream& operator<<(std::ostream& ss, const Document::PathComponent& path) {
+    ss << path.strrep_;
+    return ss;
+}
+
 Document::PathComponent Document::PathComponent::last() {
     return PathComponent("<last>", [](const ElemVec& elements) -> ElemVec::const_iterator {
         if (!elements.empty())
@@ -190,6 +226,16 @@ Document::DocumentHandle Document::DocumentHandle::append(
     return insert(PathComponent::end(), name, content, attributes);
 }
 
+Document::DocumentHandle Document::DocumentHandle::insertText(PathComponent pos,
+                                                              std::string_view text) {
+    auto iter = pos(elem_->children_);
+    auto it = elem_->children_.insert(iter, std::make_unique<Element>(ElementType::Text, text));
+    return DocumentHandle(doc_, it->get());
+}
+Document::DocumentHandle Document::DocumentHandle::appendText(std::string_view text) {
+    return insertText(PathComponent::end(), text);
+}
+
 Document::DocumentHandle Document::DocumentHandle::insert(PathComponent pos, Document doc) {
     auto iter = pos(elem_->children_);
 
@@ -226,6 +272,20 @@ Document::DocumentHandle& Document::DocumentHandle::operator+=(std::string_view 
 
 Document::Document() : root_{std::make_unique<Element>("root")} {}
 
+Document::Document(std::string_view text) : root_{std::make_unique<Element>("root")} {
+    root_->children_.push_back(std::make_unique<Element>(ElementType::Text, text));
+}
+
+Document::Document(const Document& rhs) : root_{std::make_unique<Element>(*rhs.root_)} {}
+
+Document& Document::operator=(const Document& that) {
+    if (this != &that) {
+        Document tmp(that);
+        std::swap(*this, tmp);
+    }
+    return *this;
+}
+
 Document::DocumentHandle Document::handle() const { return DocumentHandle(this, root_.get()); }
 
 Document::DocumentHandle Document::get(const std::vector<PathComponent>& path) {
@@ -247,12 +307,59 @@ Document::DocumentHandle Document::append(
 Document::DocumentHandle Document::insert(PathComponent pos, Document doc) {
     return handle().insert(pos, std::move(doc));
 }
+
+Document::DocumentHandle Document::insertText(PathComponent pos, std::string_view text) {
+    return handle().insertText(pos, text);
+}
+Document::DocumentHandle Document::appendText(std::string_view text) {
+    return handle().appendText(text);
+}
+
 Document::DocumentHandle Document::append(Document doc) { return handle().append(std::move(doc)); }
 
-Document::operator std::string() const {
+std::string Document::str() const {
     std::stringstream ss;
     ss << *this;
-    return ss.str();
+    return std::move(ss).str();
+}
+
+Document::operator std::string() const { return str(); }
+
+void Document::serialize(Serializer& s) const { s.serialize("root", root_); }
+void Document::deserialize(Deserializer& d) { d.deserialize("root", root_); }
+
+std::ostream& operator<<(std::ostream& ss, const Document& doc) {
+    using Element = Document::Element;
+    doc.visit(
+        [&](Element* elem, std::vector<Element*>& stack) {
+            if (elem->isNode()) {
+                ss << std::setw(stack.size() * 4) << ' ' << '<' << elem->name();
+                for (const auto& item : elem->attributes()) {
+                    ss << ' ' << item.first << "='" << item.second << '\'';
+                }
+                ss << '>';
+                if (!elem->noIndent()) ss << '\n';
+            } else if (elem->isText() && !elem->content().empty()) {
+                if (!stack.empty() && !stack.back()->noIndent()) {
+                    ss << std::setw(stack.size() * 4) << ' ' << elem->content() << '\n';
+                } else if (!stack.empty() && stack.back()->noIndent()) {
+                    ss << elem->content();
+                } else {
+                    ss << elem->content() << '\n';
+                }
+            }
+        },
+        [&](Element* elem, std::vector<Element*>& stack) {
+            if (elem->isNode() && !elem->emptyTag()) {
+                if (!elem->noIndent()) {
+                    ss << std::setw(stack.size() * 4) << ' ' << "</" << elem->name() << ">\n";
+                } else {
+                    ss << "</" << elem->name() << ">\n";
+                }
+            }
+        });
+
+    return ss;
 }
 
 utildoc::TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,

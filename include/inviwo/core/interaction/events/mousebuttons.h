@@ -30,12 +30,14 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/fmtutils.h>
+
+#include <string_view>
+#include <iosfwd>
+#include <array>
 
 #include <flags/flags.h>
-
-#include <iterator>
-#include <ostream>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -47,53 +49,21 @@ enum class MouseState { Press = 1 << 0, Move = 1 << 1, Release = 1 << 2, DoubleC
 ALLOW_FLAGS_FOR_ENUM(MouseState)
 using MouseStates = flags::flags<MouseState>;
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, MouseButton b) {
-    switch (b) {
-        case MouseButton::None:
-            ss << "None";
-            break;
-        case MouseButton::Left:
-            ss << "Left";
-            break;
-        case MouseButton::Middle:
-            ss << "Middle";
-            break;
-        case MouseButton::Right:
-            ss << "Right";
-            break;
-    }
-    return ss;
-}
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, MouseState s) {
-    switch (s) {
-        case MouseState::Move:
-            ss << "Move";
-            break;
-        case MouseState::Press:
-            ss << "Press";
-            break;
-        case MouseState::Release:
-            ss << "Release";
-            break;
-        case MouseState::DoubleClick:
-            ss << "DoubleClick";
-            break;
-    }
-    return ss;
-}
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseButton b);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseState s);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseButtons bs);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseStates s);
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             MouseButtons bs) {
-    std::copy(bs.begin(), bs.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, MouseStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
+IVW_CORE_API std::string_view enumToStr(MouseButton b);
+IVW_CORE_API std::string_view enumToStr(MouseState b);
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::MouseButton> : inviwo::FlagFormatter<inviwo::MouseButton> {};
+template <>
+struct fmt::formatter<inviwo::MouseButtons> : inviwo::FlagsFormatter<inviwo::MouseButtons> {};
+template <>
+struct fmt::formatter<inviwo::MouseState> : inviwo::FlagFormatter<inviwo::MouseState> {};
+template <>
+struct fmt::formatter<inviwo::MouseStates> : inviwo::FlagsFormatter<inviwo::MouseStates> {};

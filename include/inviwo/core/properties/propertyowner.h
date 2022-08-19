@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
+#include <inviwo/core/algorithm/markdown.h>
 
 #include <vector>
 #include <memory>

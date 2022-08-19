@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/volume/processors/volumeregionstatistics.h>
+#include <inviwo/volume/processors/volumeregionmapper.h>
 #include <inviwo/volume/processors/volumevoronoisegmentation.h>
 #include <inviwo/volume/volumemodule.h>
 
@@ -40,7 +41,7 @@ VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume")
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
-    // registerProcessor<VolumeProcessor>();
+    registerProcessor<VolumeRegionMapper>();
     registerProcessor<VolumeRegionStatistics>();
     registerProcessor<VolumeVoronoiSegmentation>();
 

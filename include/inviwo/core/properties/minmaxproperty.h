@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <algorithm>
 #include <limits>
@@ -50,6 +51,13 @@ public:
     using value_type = glm::tvec2<T, glm::defaultp>;
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
+
+    MinMaxProperty(std::string_view identifier, std::string_view displayName, Document help,
+                   T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
+                   T rangeMin = Defaultvalues<T>::getMin(), T rangeMax = Defaultvalues<T>::getMax(),
+                   T increment = Defaultvalues<T>::getInc(), T minSeperation = 0,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                   PropertySemantics semantics = PropertySemantics::Default);
 
     MinMaxProperty(std::string_view identifier, std::string_view displayName,
                    T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
@@ -160,10 +168,10 @@ struct PropertyTraits<MinMaxProperty<T>> {
 
 template <typename T>
 MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
-                                  T valueMin, T valueMax, T rangeMin, T rangeMax, T increment,
-                                  T minSeparation, InvalidationLevel invalidationLevel,
+                                  Document help, T valueMin, T valueMax, T rangeMin, T rangeMax,
+                                  T increment, T minSeparation, InvalidationLevel invalidationLevel,
                                   PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , value_("value", value_type(valueMin, valueMax))
     , range_("range", value_type(rangeMin, rangeMax))
     , increment_("increment", increment)
@@ -174,6 +182,14 @@ MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view 
     value_.value.y = std::max(value_.value.y, value_.value.x + minSeparation_.value);
     range_.value.y = std::max(range_.value.y, value_.value.y);
 }
+
+template <typename T>
+MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
+                                  T valueMin, T valueMax, T rangeMin, T rangeMax, T increment,
+                                  T minSeparation, InvalidationLevel invalidationLevel,
+                                  PropertySemantics semantics)
+    : MinMaxProperty(identifier, displayName, {}, valueMin, valueMax, rangeMin, rangeMax, increment,
+                     minSeparation, invalidationLevel, semantics) {}
 
 template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::operator=(const value_type& value) {
@@ -484,12 +500,11 @@ Document MinMaxProperty<T>::getDescription() const {
 
     Document doc = Property::getDescription();
 
-    auto b = doc.get({P("html"), P("body")});
-    utildoc::TableBuilder tb(b, P::end());
+    utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("Min"), H("Start"), H("Stop"), H("Max"));
     tb(range_.value[0], value_.value[0], value_.value[1], range_.value[1]);
 
-    utildoc::TableBuilder tb2(b, P::end());
+    utildoc::TableBuilder tb2(doc.handle(), P::end());
     util::for_each_argument([&tb2](auto p) { tb2(H(camelCaseToHeader(p.name)), p.value); },
                             increment_, minSeparation_);
 

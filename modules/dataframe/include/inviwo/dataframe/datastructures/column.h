@@ -37,12 +37,13 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/transformiterator.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/fmtutils.h>
 #include <inviwo/core/metadata/metadataowner.h>
 
 #include <modules/base/algorithm/dataminmax.h>
 
 #include <optional>
-#include <iostream>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -57,25 +58,8 @@ public:
 };
 
 enum class ColumnType { Index, Ordinal, Categorical };
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             ColumnType type) {
-    switch (type) {
-        case ColumnType::Index:
-            ss << "Index";
-            break;
-        case ColumnType::Ordinal:
-            ss << "Ordinal";
-            break;
-        case ColumnType::Categorical:
-            ss << "Categorical";
-            break;
-        default:
-            ss << "Invalid";
-    }
-    return ss;
-}
+IVW_MODULE_DATAFRAME_API std::string_view enumToStr(ColumnType b);
+IVW_MODULE_DATAFRAME_API std::ostream& operator<<(std::ostream& ss, ColumnType type);
 
 /**
  * @brief Pure interface for representing a data column with a header, optional units, and data
@@ -725,3 +709,6 @@ inline auto CategoricalColumn::values() const -> util::iter_range<ConstIterator>
 #endif
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::ColumnType> : inviwo::FlagFormatter<inviwo::ColumnType> {};

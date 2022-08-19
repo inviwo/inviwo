@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/filelogger.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/inviwocommondefines.h>
 
 namespace inviwo {
@@ -90,10 +91,10 @@ void FileLogger::log(std::string_view logSource, LogLevel logLevel, LogAudience 
             break;
     }
 
-    auto msg = htmlEncode(logMsg);
+    auto msg = util::htmlEncode(logMsg);
     replaceInString(msg, "\n", "<br/>");
 
-    fileStream_ << "(" << htmlEncode(logSource) << ":" << lineNumber << ") " << msg;
+    fileStream_ << "(" << util::htmlEncode(logSource) << ":" << lineNumber << ") " << msg;
     fileStream_ << "</div>" << std::endl;
 }
 

@@ -54,7 +54,7 @@ protected:
     DataInport<T> inport_;
     DataOutport<T> outport_;
 
-    TemplateOptionProperty<CoordinateSpace> space_;
+    OptionProperty<CoordinateSpace> space_;
     BoolProperty replace_;
     TransformListProperty transforms_;
 };

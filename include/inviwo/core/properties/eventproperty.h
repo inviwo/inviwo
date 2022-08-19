@@ -60,6 +60,24 @@ public:
      *
      * @param identifier
      * @param displayName
+     * @param help
+     * @param matcher The selection of events to bind to an action
+     * @param action The action to executed upon the event.
+     * @param invalidationLevel
+     * @param semantics
+     */
+    EventProperty(std::string_view identifier, std::string_view displayName, Document help,
+                  Action action, std::unique_ptr<EventMatcher> matcher,
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                  PropertySemantics semantics = PropertySemantics::Default);
+
+    /**
+     * \brief Constructor used to create a new action-key binding.
+     *
+     * The constructor creates a new binding between a specified action and event.
+     *
+     * @param identifier
+     * @param displayName
      * @param matcher The selection of events to bind to an action
      * @param action The action to executed upon the event.
      * @param invalidationLevel
@@ -70,9 +88,21 @@ public:
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                   PropertySemantics semantics = PropertySemantics::Default);
 
+    EventProperty(std::string_view identifier, std::string_view displayName, Document help,
+                  Action action, IvwKey key, KeyStates states = KeyState::Press,
+                  KeyModifiers modifier = KeyModifiers(flags::none),
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                  PropertySemantics semantics = PropertySemantics::Default);
+
     EventProperty(std::string_view identifier, std::string_view displayName, Action action,
                   IvwKey key, KeyStates states = KeyState::Press,
                   KeyModifiers modifier = KeyModifiers(flags::none),
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                  PropertySemantics semantics = PropertySemantics::Default);
+
+    EventProperty(std::string_view identifier, std::string_view displayName, Document help,
+                  Action action, MouseButtons buttons, MouseStates states = MouseState::Press,
+                  KeyModifiers modifiers = KeyModifiers(flags::none),
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                   PropertySemantics semantics = PropertySemantics::Default);
 

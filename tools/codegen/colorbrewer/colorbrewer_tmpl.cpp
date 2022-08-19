@@ -73,6 +73,33 @@ std::vector<Family> getFamiliesForCategory(const Category &category) {
     return v;
 }
 
+std::ostream& operator<<(std::ostream& os, Colormap colormap) {
+    switch (colormap) {
+        // clang-format off
+##PLACEHOLDER_NAMES##
+        // clang-format on
+    }
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, Category category) {
+    switch (category) {
+        // clang-format off
+##PLACEHOLDER_CATEGORIES##
+        // clang-format on
+    }
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, Family family) {
+    switch (family) {
+        // clang-format off
+##PLACEHOLDER_FAMILIES##
+        // clang-format on
+    }
+    return os;
+}
+
 }  // namespace colorbrewer
 
 }  // namespace inviwo

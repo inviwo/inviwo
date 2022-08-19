@@ -385,7 +385,8 @@ void ImageGL::reAttachAllLayers() {
 std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }
 
 bool ImageGL::isValid() const {
-    return depthLayerGL_->isValid() && pickingLayerGL_->isValid() &&
+    return depthLayerGL_ && pickingLayerGL_ && depthLayerGL_->isValid() &&
+           pickingLayerGL_->isValid() &&
            util::all_of(colorLayersGL_, [](const auto& l) { return l->isValid(); });
 }
 

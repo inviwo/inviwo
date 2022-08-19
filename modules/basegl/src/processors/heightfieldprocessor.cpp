@@ -53,20 +53,33 @@ const ProcessorInfo HeightFieldProcessor::processorInfo_{
     "Heightfield",                     // Category
     CodeState::Stable,                 // Code state
     Tags::GL,                          // Tags
-};
+    R"(
+        Maps a height field onto a geometry and renders it to an image.
+        
+        ![](file:///<modulePath>/docs/images/heightfield-network.png)
+        
+        Example Network: [core/heightfield.inv](file:///<basePath>/data/workspaces/heightfield.inv)
+    )"_unindentHelp};
+
 const ProcessorInfo HeightFieldProcessor::getProcessorInfo() const { return processorInfo_; }
 
 HeightFieldProcessor::HeightFieldProcessor()
     : Processor()
-    , inport_("geometry")
-    , inportHeightfield_("heightfield", true)
-    , inportTexture_("texture", true)
-    , inportNormalMap_("normalmap", true)
-    , imageInport_("imageInport")
-    , outport_("image")
-    , heightScale_("heightScale", "Height Scale", 1.0f, 0.0f, 10.0f)
+    , inport_{"geometry", "Input geometry which is modified by the height field"_help}
+    , inportHeightfield_{"heightfield", R"(
+        The height field input (single-channel image).
+        If the image has multiple channels only the red channel is used.)"_unindentHelp,
+                         OutportDeterminesSize::Yes}
+    , inportTexture_{"texture", "Color texture for color mapping (optional)."_help,
+                     OutportDeterminesSize::Yes}
+    , inportNormalMap_{"normalmap", "Normal map input (optional)"_help, OutportDeterminesSize::Yes}
+    , imageInport_{"imageInport", "Background image (optional)"_help}
+    , outport_{"image", "The rendered height field."_help}
+    , heightScale_{"heightScale", "Height Scale",
+                   util::ordinalLength(1.0f, 10.0f).set("Scaling factor for the height field"_help)}
     , terrainShadingMode_(
           "terrainShadingMode", "Terrain Shading",
+          "Defines the color mapped onto the height field using either constant color, color input texture, or the height field texture"_help,
           {{"shadingConstant", "Constant Color", HeightFieldShading::ConstantColor},
            {"shadingColorTex", "Color Texture", HeightFieldShading::ColorTexture},
            {"shadingHeightField", "Heightfield Texture", HeightFieldShading::HeightField}},
@@ -75,7 +88,6 @@ HeightFieldProcessor::HeightFieldProcessor()
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , shader_("heightfield.vert", "heightfield.frag", Shader::Build::No) {
-
     addPort(inport_);
     addPort(inportHeightfield_).setOptional(true);
     addPort(inportTexture_).setOptional(true);

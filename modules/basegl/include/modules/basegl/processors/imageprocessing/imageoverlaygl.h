@@ -84,11 +84,11 @@ private:
 
     FloatVec2Property anchorPos_;
 
-    TemplateOptionProperty<BlendMode> blendMode_;
+    OptionProperty<BlendMode> blendMode_;
 
     // consider absolute positioning
-    TemplateOptionProperty<Positioning> positioningMode_;
-    TemplateOptionProperty<Positioning> sizeMode_;
+    OptionProperty<Positioning> positioningMode_;
+    OptionProperty<Positioning> sizeMode_;
 
     ivec2 viewDimensions_;
     ivec4 viewport_;

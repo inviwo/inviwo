@@ -17,6 +17,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/mesh/meshclipping.h
     include/modules/base/algorithm/mesh/meshconverter.h
     include/modules/base/algorithm/meshutils.h
+    include/modules/base/algorithm/pointgeneration.h
     include/modules/base/algorithm/randomutils.h
     include/modules/base/algorithm/volume/marchingcubes.h
     include/modules/base/algorithm/volume/marchingcubesopt.h
@@ -84,6 +85,7 @@ set(HEADER_FILES
     include/modules/base/processors/orientationindicator.h
     include/modules/base/processors/pixeltobufferprocessor.h
     include/modules/base/processors/pixelvalue.h
+    include/modules/base/processors/pointgenerationprocessor.h
     include/modules/base/processors/pointlightsourceprocessor.h
     include/modules/base/processors/randommeshgenerator.h
     include/modules/base/processors/randomspheregenerator.h
@@ -95,6 +97,7 @@ set(HEADER_FILES
     include/modules/base/processors/transform.h
     include/modules/base/processors/trianglestowireframe.h
     include/modules/base/processors/vectorelementselectorprocessor.h
+    include/modules/base/processors/vectortobuffer.h
     include/modules/base/processors/volumebasistransformer.h
     include/modules/base/processors/volumeboundaryplanes.h
     include/modules/base/processors/volumeboundingbox.h
@@ -145,6 +148,7 @@ set(SOURCE_FILES
     src/algorithm/mesh/meshclipping.cpp
     src/algorithm/mesh/meshconverter.cpp
     src/algorithm/meshutils.cpp
+    src/algorithm/pointgeneration.cpp
     src/algorithm/volume/marchingcubes.cpp
     src/algorithm/volume/marchingcubesopt.cpp
     src/algorithm/volume/marchingtetrahedron.cpp
@@ -207,6 +211,7 @@ set(SOURCE_FILES
     src/processors/orientationindicator.cpp
     src/processors/pixeltobufferprocessor.cpp
     src/processors/pixelvalue.cpp
+    src/processors/pointgenerationprocessor.cpp
     src/processors/pointlightsourceprocessor.cpp
     src/processors/randommeshgenerator.cpp
     src/processors/randomspheregenerator.cpp
@@ -217,6 +222,7 @@ set(SOURCE_FILES
     src/processors/tfselector.cpp
     src/processors/transform.cpp
     src/processors/trianglestowireframe.cpp
+    src/processors/vectortobuffer.cpp
     src/processors/volumeboundaryplanes.cpp
     src/processors/volumeboundingbox.cpp
     src/processors/volumeconverter.cpp

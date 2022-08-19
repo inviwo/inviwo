@@ -100,7 +100,8 @@ struct ProcessorTraits<CompositeSource<InportType, OutportType>> {
         using intype = typename InportType::type;
         using outtype = typename InportType::type;
         static_assert(std::is_same<intype, outtype>::value, "type mismatch");
-        auto name = util::cleanIdentifier(DataTraits<intype>::dataName() + " Meta Source", " ");
+        auto name = util::cleanIdentifier(
+            fmt::format("{} Meta Source", DataTraits<intype>::dataName()), " ");
         auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(), ".metasource");
         return {
             id,                 // Class identifier
@@ -108,7 +109,8 @@ struct ProcessorTraits<CompositeSource<InportType, OutportType>> {
             "Meta",             // Category
             CodeState::Stable,  // Code state
             "Meta",             // Tags
-            false               // Visible
+            "Internal processor for composites processors"_help,
+            false  // Visible
         };
     }
 };

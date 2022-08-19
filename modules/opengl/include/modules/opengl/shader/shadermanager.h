@@ -49,7 +49,7 @@ class ShaderResource;
 class OpenGLCapabilities;
 
 template <typename T>
-class TemplateOptionProperty;
+class OptionProperty;
 
 class IVW_MODULE_OPENGL_API ShaderManager : public Singleton<ShaderManager> {
 
@@ -97,8 +97,8 @@ private:
     std::vector<std::shared_ptr<ShaderResource>> ownedResources_;
     std::map<std::string, std::weak_ptr<ShaderResource>, std::less<>> shaderResources_;
 
-    TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_;  // non-owning reference
-    TemplateOptionProperty<Shader::OnError>* shaderObjectErrors_;      // non-owning reference
+    OptionProperty<Shader::UniformWarning>* uniformWarnings_;  // non-owning reference
+    OptionProperty<Shader::OnError>* shaderObjectErrors_;      // non-owning reference
 
     Dispatcher<void(GLuint)> shaderAddCallbacks_;
     Dispatcher<void(GLuint)> shaderRemoveCallbacks_;

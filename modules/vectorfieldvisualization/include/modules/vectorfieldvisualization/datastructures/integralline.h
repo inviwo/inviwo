@@ -37,6 +37,7 @@
 #include <inviwo/core/util/interpolation.h>
 
 #include <map>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -198,29 +199,7 @@ T IntegralLine::getMetaDataAtDistance(std::string md, double d) const {
         Interpolation<TV, double>::linear(static_cast<TV>(*prevMD), static_cast<TV>(*nextMD), x));
 }
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
-                                             IntegralLine::TerminationReason reason) {
-    switch (reason) {
-        case IntegralLine::TerminationReason::StartPoint:
-            os << "Seed Point";
-            break;
-        case IntegralLine::TerminationReason::OutOfBounds:
-            os << "Out of Bounds";
-            break;
-        case IntegralLine::TerminationReason::ZeroVelocity:
-            os << "Zero Velocity";
-            break;
-        case IntegralLine::TerminationReason::Steps:
-            os << "Steps";
-            break;
-        default:
-        case IntegralLine::TerminationReason::Unknown:
-            os << "Unknown";
-            break;
-    }
-
-    return os;
-}
+IVW_MODULE_VECTORFIELDVISUALIZATION_API std::ostream& operator<<(
+    std::ostream& os, IntegralLine::TerminationReason reason);
 
 }  // namespace inviwo

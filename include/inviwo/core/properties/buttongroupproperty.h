@@ -67,6 +67,15 @@ public:
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
 
+    ButtonGroupProperty(std::string_view identifier, std::string_view displayName, Document help,
+                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                        PropertySemantics semantics = PropertySemantics::Default);
+
+    ButtonGroupProperty(std::string_view identifier, std::string_view displayName, Document help,
+                        std::vector<Button> buttons,
+                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                        PropertySemantics semantics = PropertySemantics::Default);
+
     ButtonGroupProperty(const ButtonGroupProperty& rhs);
     ButtonGroupProperty(const ButtonGroupProperty& rhs, std::vector<Button> buttons);
     virtual ButtonGroupProperty* clone() const override;
@@ -100,7 +109,9 @@ public:
     virtual ButtonGroupProperty& resetToDefaultState() override;
 
 private:
+    void updateHelp();
     std::vector<Button> buttons_;
+    Document partialHelp_;
 
     size_t buttonPressed_ = std::numeric_limits<size_t>::max();
 };

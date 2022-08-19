@@ -87,33 +87,20 @@ public:
 
     std::string extension_;  ///< File extension in lower case letters.
     std::string description_;
+
+    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const FileExtension& ext);
+
+    IVW_CORE_API friend bool operator==(const FileExtension&, const FileExtension&);
+    IVW_CORE_API friend bool operator!=(const FileExtension&, const FileExtension&);
+
+    IVW_CORE_API friend bool operator<(const FileExtension&, const FileExtension&);
+    IVW_CORE_API friend bool operator<=(const FileExtension&, const FileExtension&);
+    IVW_CORE_API friend bool operator>(const FileExtension&, const FileExtension&);
+    IVW_CORE_API friend bool operator>=(const FileExtension&, const FileExtension&);
 };
 
-IVW_CORE_API bool operator==(const FileExtension&, const FileExtension&);
-IVW_CORE_API bool operator!=(const FileExtension&, const FileExtension&);
-
-IVW_CORE_API bool operator<(const FileExtension&, const FileExtension&);
-IVW_CORE_API bool operator<=(const FileExtension&, const FileExtension&);
-IVW_CORE_API bool operator>(const FileExtension&, const FileExtension&);
-IVW_CORE_API bool operator>=(const FileExtension&, const FileExtension&);
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const FileExtension& ext) {
-    if (ext.extension_.empty()) {
-        return ss;
-    }
-    ss << ext.description_ << " ";
-    if (ext.extension_ == "*") {
-        ss << "(*)";
-    } else {
-        ss << "(*." << ext.extension_ << ")";
-    }
-    return ss;
-}
-
 template <>
-struct PropertyTraits<TemplateOptionProperty<FileExtension>> {
+struct PropertyTraits<OptionProperty<FileExtension>> {
     static std::string classIdentifier() { return "org.inviwo.OptionPropertyFileExtension"; }
 };
 

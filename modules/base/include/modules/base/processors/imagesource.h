@@ -70,7 +70,7 @@ private:
     DataReaderFactory* rf_;
     ImageOutport outport_;
     FileProperty file_;
-    TemplateOptionProperty<FileExtension> reader_;
+    OptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
     IntSize2Property imageDimension_;
     bool loadingFailed_ = false;

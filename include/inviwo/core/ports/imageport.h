@@ -49,6 +49,9 @@ public:
     virtual void setOutportDeterminesSize(bool outportDeterminesSize) = 0;
 };
 
+enum class OutportDeterminesSize { Yes, No };
+enum class HandleResizeEvents { Yes, No };
+
 /**
  * \ingroup ports
  * BaseImageInport extends  DataInport<Image> with extra functionality for handing
@@ -91,7 +94,10 @@ public:
 template <size_t N = 1>
 class BaseImageInport : public DataInport<Image, N>, public ImagePortBase {
 public:
-    BaseImageInport(std::string_view identifier, bool outportDeterminesSize = false);
+    BaseImageInport(std::string_view identifier, Document help = {},
+                    OutportDeterminesSize value = OutportDeterminesSize::No);
+    BaseImageInport(std::string_view identifier, bool outportDeterminesSize);
+
     virtual ~BaseImageInport();
     virtual std::string getClassIdentifier() const override;
 
@@ -102,6 +108,7 @@ public:
 
     virtual bool isOutportDeterminingSize() const override;
     virtual void setOutportDeterminesSize(bool outportDeterminesSize) override;
+    void setOutportDeterminesSize(OutportDeterminesSize outportDeterminesSize);
 
     void passOnDataToOutport(ImageOutport* outport) const;
 
@@ -109,7 +116,7 @@ public:
 
 private:
     std::shared_ptr<const Image> getImage(ImageOutport* port) const;
-    bool outportDeterminesSize_;
+    OutportDeterminesSize outportDeterminesSize_;
 };
 
 /**
@@ -192,6 +199,9 @@ class IVW_CORE_API ImageOutport : public DataOutport<Image> {
     friend class BaseImageInport;
 
 public:
+    ImageOutport(std::string_view identifier, Document help,
+                 const DataFormatBase* format = DataVec4UInt8::get(),
+                 HandleResizeEvents value = HandleResizeEvents::Yes);
     ImageOutport(std::string_view identifier, const DataFormatBase* format = DataVec4UInt8::get(),
                  bool handleResizeEvents = true);
     ImageOutport(std::string_view identifier, bool handleResizeEvents);
@@ -256,8 +266,8 @@ private:
     std::shared_ptr<Image> image_;
 
     const DataFormatBase* format_;
-    bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
-                               // otherwise false
+    HandleResizeEvents handleResizeEvents_;  // Yes if data should be resized during a resize
+                                             // propagation, otherwise No
     ImageCache cache_;
 };
 
@@ -270,8 +280,16 @@ struct PortTraits<ImageOutport> {
 
 // Image Inport
 template <size_t N>
+BaseImageInport<N>::BaseImageInport(std::string_view identifier, Document help,
+                                    OutportDeterminesSize value)
+    : DataInport<Image, N>(identifier, help), outportDeterminesSize_(value) {}
+
+template <size_t N>
 BaseImageInport<N>::BaseImageInport(std::string_view identifier, bool outportDeterminesSize)
-    : DataInport<Image, N>(identifier), outportDeterminesSize_(outportDeterminesSize) {}
+    : BaseImageInport<N>{
+          identifier,
+          {},
+          outportDeterminesSize ? OutportDeterminesSize::Yes : OutportDeterminesSize::No} {}
 
 template <size_t N>
 BaseImageInport<N>::~BaseImageInport() = default;
@@ -327,12 +345,18 @@ std::shared_ptr<const Image> BaseImageInport<N>::getImage(ImageOutport* port) co
 
 template <size_t N>
 bool BaseImageInport<N>::isOutportDeterminingSize() const {
-    return outportDeterminesSize_;
+    return outportDeterminesSize_ == OutportDeterminesSize::Yes;
+}
+
+template <size_t N>
+void BaseImageInport<N>::setOutportDeterminesSize(OutportDeterminesSize outportDeterminesSize) {
+    outportDeterminesSize_ = outportDeterminesSize;
 }
 
 template <size_t N>
 void BaseImageInport<N>::setOutportDeterminesSize(bool outportDeterminesSize) {
-    outportDeterminesSize_ = outportDeterminesSize;
+    outportDeterminesSize_ =
+        (outportDeterminesSize ? OutportDeterminesSize::Yes : OutportDeterminesSize::No);
 }
 
 template <size_t N>
@@ -351,8 +375,7 @@ Document BaseImageInport<N>::getInfo() const {
 
     auto doc = DataInport<Image, N>::getInfo();
 
-    auto b = doc.get({P{"html"}, P{"body"}});
-    auto t = b.get({P{"p"}, P{"table"}});
+    auto t = doc.get({P{"table"}});
 
     utildoc::TableBuilder tb(t);
     tb(H("Outport Determining Size"), isOutportDeterminingSize());

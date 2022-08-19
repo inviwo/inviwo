@@ -105,9 +105,89 @@
 
 namespace inviwo {
 
+namespace {
+QString addAppendSuffix(const QString& str, bool append) {
+    if (append) {
+        return QString{str}.append(" (Append)");
+    } else {
+        return str;
+    }
+}
+}  // namespace
+
+class MenuKeyboardEventFilter : public QObject {
+public:
+    MenuKeyboardEventFilter(QObject* parent) : QObject(parent) {}
+
+    // This will not trigger on MacOS, so we also trigger update on hovered and aboutToShow.
+    virtual bool eventFilter(QObject*, QEvent* ev) override {
+        if (ev->type() == QEvent::KeyPress || ev->type() == QEvent::KeyRelease) {
+            const auto ctrl =
+                QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
+            update(ctrl);
+        }
+        return false;
+    }
+
+    void update(bool ctrl) {
+        if (ctrl != ctrlPressed) {
+            ctrlPressed = ctrl;
+            for (auto& action : actions_) {
+                action.action->setText(addAppendSuffix(action.text, ctrl));
+            }
+        }
+    }
+
+    void add(QAction* action, const QString& text) {
+        auto sig = connect(action, &QAction::hovered, this, [this]() {
+            const auto ctrl =
+                QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
+            update(ctrl);
+        });
+        actions_.push_back({action, text, sig});
+    }
+
+    void add(QMenu* menu) {
+        auto sig = connect(menu, &QMenu::aboutToShow, this, [this]() {
+            const auto ctrl =
+                QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
+            update(ctrl);
+        });
+        menus_.push_back({menu, sig});
+    }
+
+    void clear() {
+        for (auto& action : actions_) {
+            disconnect(action.connection);
+        }
+        actions_.clear();
+        for (auto& menu : menus_) {
+            disconnect(menu.connection);
+        }
+        menus_.clear();
+    }
+
+    struct Action {
+        QAction* action;
+        QString text;
+        QMetaObject::Connection connection;
+    };
+
+    struct Menu {
+        QMenu* menu;
+        QMetaObject::Connection connection;
+    };
+
+private:
+    bool ctrlPressed = false;
+    std::vector<Action> actions_;
+    std::vector<Menu> menus_;
+};
+
 InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     : QMainWindow()
     , app_(app)
+    , menuEventFilter_{new MenuKeyboardEventFilter(this)}
     , editMenu_{new InviwoEditMenu(this)}  // needed in ConsoleWidget
     , toolsMenu_{new ToolsMenu(this)}
     , consoleWidget_{[this]() {
@@ -170,7 +250,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
         {{"Open", "-w \"%1\"", "open",
           [this](const std::string& file) { openWorkspaceAskToSave(utilqt::toQString(file)); }},
          {"Append", "-w \"%1\"", "append",
-          [this](const std::string& file) { appendWorkspace(file); }}});
+          [this](const std::string& file) { appendWorkspace(utilqt::toQString(file)); }}});
 
     fileAssociations_->registerFileType(
         "Inviwo.volume", "Inviwo Volume", ".dat", 0,
@@ -471,6 +551,18 @@ void InviwoMainWindow::addActions() {
     }
 
     {
+        auto appendAction =
+            new QAction(QIcon(":/svgicons/open-append.svg"), tr("&Append Workspace"), this);
+        addAction(appendAction);
+        connect(appendAction, &QAction::triggered, this, [this]() {
+            if (appendWorkspace()) {
+                hideWelcomeScreen();
+            }
+        });
+        fileMenuItem->addAction(appendAction);
+    }
+
+    {
         auto exportNetworkMenu = fileMenuItem->addMenu("&Export Network");
 
         auto backgroundVisibleAction = exportNetworkMenu->addAction("Background Visible");
@@ -519,7 +611,10 @@ void InviwoMainWindow::addActions() {
             action->setVisible(false);
             recentWorkspaceMenu->addAction(action);
             connect(action, &QAction::triggered, this, [this, action]() {
-                if (askToSaveWorkspaceChanges()) {
+                if (app_->keyboardModifiers() == Qt::ControlModifier) {
+                    appendWorkspace(action->data().toString());
+                    hideWelcomeScreen();
+                } else if (askToSaveWorkspaceChanges()) {
                     if (openWorkspace(action->data().toString())) {
                         hideWelcomeScreen();
                     }
@@ -538,12 +633,15 @@ void InviwoMainWindow::addActions() {
             clearRecentWorkspaces_->setEnabled(false);
         });
 
-        connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [this]() {
+        connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [recentWorkspaceMenu, this]() {
+            app_->installEventFilter(menuEventFilter_);
+            menuEventFilter_->add(recentWorkspaceMenu);
+
             for (auto elem : workspaceActionRecent_) {
                 elem->setVisible(false);
             }
 
-            QStringList recentFiles{getRecentWorkspaceList()};
+            auto recentFiles = getRecentWorkspaceList();
             for (int i = 0; i < recentFiles.size(); ++i) {
                 if (!recentFiles[i].isEmpty()) {
                     const bool exists = QFileInfo(recentFiles[i]).exists();
@@ -555,45 +653,69 @@ void InviwoMainWindow::addActions() {
                     workspaceActionRecent_[i]->setText(menuEntry);
                     workspaceActionRecent_[i]->setEnabled(exists);
                     workspaceActionRecent_[i]->setData(recentFiles[i]);
+                    menuEventFilter_->add(workspaceActionRecent_[i], menuEntry);
                 }
             }
             clearRecentWorkspaces_->setEnabled(!recentFiles.isEmpty());
+        });
+        connect(recentWorkspaceMenu, &QMenu::aboutToHide, this, [this]() {
+            app_->removeEventFilter(menuEventFilter_);
+            menuEventFilter_->clear();
         });
     }
 
     // create list of all example workspaces
     exampleMenu_ = fileMenuItem->addMenu(tr("&Example Workspaces"));
+
     connect(exampleMenu_, &QMenu::aboutToShow, this, [this]() {
+        app_->installEventFilter(menuEventFilter_);
+        menuEventFilter_->add(exampleMenu_);
+
         exampleMenu_->clear();
         for (const auto& module : app_->getModules()) {
             auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
             if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
             auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
-            for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+            for (auto file : filesystem::getDirectoryContents(moduleWorkspacePath)) {
                 // only accept inviwo workspace files
-                if (filesystem::getFileExtension(item) != "inv") continue;
-                auto action = menu->addAction(QString::fromStdString(item));
-                auto path = QString::fromStdString(moduleWorkspacePath + "/" + item);
+                if (filesystem::getFileExtension(file) != "inv") continue;
+                auto qFile = QString::fromStdString(file);
+                auto action = menu->addAction(qFile);
+                menuEventFilter_->add(action, qFile);
+                auto path = QString::fromStdString(moduleWorkspacePath + "/" + file);
                 connect(action, &QAction::triggered, this, [this, path]() {
                     // open as regular workspace with proper filename if control is pressed
-                    bool controlPressed = (app_->keyboardModifiers() == Qt::ControlModifier);
-                    if (askToSaveWorkspaceChanges()) {
+                    if (app_->keyboardModifiers() == Qt::ControlModifier) {
+                        appendWorkspace(path);
+                        hideWelcomeScreen();
+                    } else if (askToSaveWorkspaceChanges()) {
+                        bool controlPressed = (app_->keyboardModifiers() == Qt::AltModifier);
                         if (openWorkspace(path, !controlPressed)) {
                             hideWelcomeScreen();
                         }
                     }
                 });
             }
-            if (!menu->isEmpty()) exampleMenu_->addMenu(menu.release());
+            if (!menu->isEmpty()) {
+                menuEventFilter_->add(menu.get());
+                exampleMenu_->addMenu(menu.release());
+            }
         }
         if (exampleMenu_->isEmpty()) {
             exampleMenu_->addAction("No example workspaces found")->setEnabled(false);
         }
     });
+    connect(exampleMenu_, &QMenu::aboutToHide, this, [this]() {
+        app_->removeEventFilter(menuEventFilter_);
+        menuEventFilter_->clear();
+    });
 
     // create list of all test workspaces
     testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
     connect(testMenu_, &QMenu::aboutToShow, this, [this]() {
+        app_->installEventFilter(menuEventFilter_);
+        menuEventFilter_->add(testMenu_);
+
         testMenu_->clear();
         for (const auto& module : app_->getModules()) {
             auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
@@ -601,15 +723,20 @@ void InviwoMainWindow::addActions() {
             auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
             for (auto test : filesystem::getDirectoryContents(moduleTestPath,
                                                               filesystem::ListMode::Directories)) {
-                std::string testdir = moduleTestPath + "/" + test;
-                if (!filesystem::directoryExists(testdir)) continue;
-                for (auto item : filesystem::getDirectoryContents(testdir)) {
+                std::string testDir = moduleTestPath + "/" + test;
+                if (!filesystem::directoryExists(testDir)) continue;
+                for (auto file : filesystem::getDirectoryContents(testDir)) {
                     // only accept inviwo workspace files
-                    if (filesystem::getFileExtension(item) != "inv") continue;
-                    auto action = menu->addAction(QString::fromStdString(item));
-                    auto path = QString::fromStdString(testdir + "/" + item);
+                    if (filesystem::getFileExtension(file) != "inv") continue;
+                    auto qFile = QString::fromStdString(file);
+                    auto action = menu->addAction(qFile);
+                    menuEventFilter_->add(action, qFile);
+                    auto path = QString::fromStdString(testDir + "/" + file);
                     connect(action, &QAction::triggered, this, [this, path]() {
-                        if (askToSaveWorkspaceChanges()) {
+                        if (app_->keyboardModifiers() == Qt::ControlModifier) {
+                            appendWorkspace(path);
+                            hideWelcomeScreen();
+                        } else if (askToSaveWorkspaceChanges()) {
                             if (openWorkspace(path)) {
                                 hideWelcomeScreen();
                             }
@@ -617,11 +744,19 @@ void InviwoMainWindow::addActions() {
                     });
                 }
             }
-            if (!menu->isEmpty()) testMenu_->addMenu(menu.release());
+            if (!menu->isEmpty()) {
+                menuEventFilter_->add(menu.get());
+                testMenu_->addMenu(menu.release());
+            }
         }
         if (testMenu_->isEmpty()) {
             testMenu_->addAction("No test workspaces found")->setEnabled(false);
         }
+    });
+
+    connect(testMenu_, &QMenu::aboutToHide, this, [this]() {
+        app_->removeEventFilter(menuEventFilter_);
+        menuEventFilter_->clear();
     });
 
     if (app_->getModuleManager().isRuntimeModuleReloadingEnabled()) {
@@ -1029,8 +1164,8 @@ bool InviwoMainWindow::openExample(QString exampleFileName) {
 void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     QSettings settings;
     const bool showWelcomePage = settings.value("WelcomeWidget/showWelcomePage", true).toBool();
-    settings.beginGroup(objectName());
-    const bool loadlastWorkspace = settings.value("autoloadLastWorkspace", true).toBool();
+    const bool loadlastWorkspace =
+        settings.value("WelcomeWidget/autoloadLastWorkspace", false).toBool();
 
     const auto loadSuccessful = [&]() {
         workspace = filesystem::cleanupPath(workspace);
@@ -1068,6 +1203,14 @@ std::optional<QString> InviwoMainWindow::askForWorkspaceToOpen() {
 bool InviwoMainWindow::openWorkspace() {
     if (auto path = askForWorkspaceToOpen()) {
         return openWorkspace(*path);
+    }
+    return false;
+}
+
+bool InviwoMainWindow::appendWorkspace() {
+    if (auto path = askForWorkspaceToOpen()) {
+        appendWorkspace(*path);
+        return true;
     }
     return false;
 }
@@ -1118,14 +1261,9 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
     return true;
 }
 
-void InviwoMainWindow::appendWorkspace(const std::string& file) {
+void InviwoMainWindow::appendWorkspace(const QString& file) {
     NetworkLock lock(app_->getProcessorNetwork());
-    std::ifstream fs(file);
-    if (!fs) {
-        LogError("Could not open workspace file: " << file);
-        return;
-    }
-    networkEditor_->append(fs, file);
+    networkEditor_->append(utilqt::fromQString(file));
     app_->processEvents();  // make sure the gui is ready before we unlock.
 }
 
@@ -1461,7 +1599,7 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
 
                 if (toLower(filesystem::getFileExtension(utilqt::fromQString(filename))) == "inv") {
                     if (!first || keyModifiers & Qt::ControlModifier) {
-                        appendWorkspace(utilqt::fromQString(filename));
+                        appendWorkspace(filename);
                     } else {
                         openWorkspaceAskToSave(filename);
                     }

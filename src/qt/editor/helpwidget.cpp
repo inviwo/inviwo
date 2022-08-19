@@ -36,6 +36,13 @@
 #include <inviwo/core/util/fileobserver.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <inviwo/core/util/docbuilder.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/network/networkutils.h>
+
+#include <fmt/format.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFrame>
@@ -55,55 +62,29 @@
 #include <QUrlQuery>
 #include <QTextBrowser>
 #include <QTabWidget>
+#include <QToolBar>
+#include <QDesktopServices>
+#include <QTimer>
 #include <warn/pop>
 
 namespace inviwo {
 
 class HelpBrowser : public QTextBrowser {
 public:
-    HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine);
+    HelpBrowser(HelpWidget* parent, InviwoApplication* app);
     virtual ~HelpBrowser() = default;
+
+    void setCurrent(std::string_view processorClassIdentifier);
 
 protected:
     QVariant loadResource(int type, const QUrl& name);
 
 private:
-    QHelpEngineCore* helpEngine_;
-};
+    InviwoApplication* app_;
 
-class QCHFileObserver : public FileObserver {
-public:
-    QCHFileObserver(QHelpEngineCore* engine)
-        : FileObserver(util::getInviwoApplication()), engine_(engine) {}
-    virtual ~QCHFileObserver() = default;
+    QUrl current_;
 
-    void addFile(const std::string& fileName) {
-        reload(fileName);
-        if (!isObserved(fileName)) {
-            startFileObservation(fileName);
-        }
-    }
-    void removeAll() {
-        stopAllObservation();
-        for (const auto& ns : engine_->registeredDocumentations()) {
-            engine_->unregisterDocumentation(ns);
-        }
-    }
-    virtual void fileChanged(const std::string& fileName) override { reload(fileName); }
-
-private:
-    void reload(const std::string& fileName) {
-        const auto file = utilqt::toQString(fileName);
-        const auto ns = QHelpEngineCore::namespaceName(file);
-
-        engine_->unregisterDocumentation(ns);
-
-        if (!engine_->registerDocumentation(file)) {
-            LogWarn("Problem loading help file : " << fileName << " "
-                                                   << engine_->error().toStdString());
-        }
-    }
-    QHelpEngineCore* engine_;
+    std::string currentModulePath_;
 };
 
 /*
@@ -123,85 +104,58 @@ private:
  * Inviwo\Inviwo-dev\data\help> qcollectiongenerator.exe inviwo.qhcp -o inviwo.qhc
  */
 
-HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
-    : InviwoDockWidget(tr("Help"), mainwindow, "HelpWidget")
-    , mainwindow_(mainwindow)
-    , helpEngine_(nullptr)
+HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
+    : InviwoDockWidget(tr("Help"), mainWindow, "HelpWidget")
+    , mainWindow_(mainWindow)
     , helpBrowser_(nullptr) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
-    QWidget* centralWidget = new QWidget();
-    QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
-    vLayout->setSpacing(utilqt::refSpacePx(this));
-    vLayout->setContentsMargins(0, 0, 0, 0);
+    auto* centralWidget = new QMainWindow();
+    QToolBar* toolBar = new QToolBar();
+    centralWidget->addToolBar(toolBar);
+    toolBar->setFloatable(false);
+    toolBar->setMovable(false);
 
-    auto app = mainwindow->getInviwoApplication();
-
-    // The help engine needs a file backed db "inviwo.qhc", this file is created on demand in the
-    // settings folder, we will create the folder if it does not exists
-    const std::string helpfile = app->getPath(PathType::Settings, "/inviwo.qhc", true);
-
-    helpEngine_ = new QHelpEngineCore(utilqt::toQString(helpfile), this);
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    helpEngine_->setReadOnly(false);
-#endif
-
-    // Any old data will be left in the since last time, we want to clear that so we can load the
-    // new qch files.
-    for (const auto& ns : helpEngine_->registeredDocumentations()) {
-        helpEngine_->unregisterDocumentation(ns);
-    }
-
-    helpBrowser_ = new HelpBrowser(this, helpEngine_);
-    helpBrowser_->setHtml(QString("Hello world"));
-    vLayout->addWidget(helpBrowser_);
-    centralWidget->setLayout(vLayout);
+    helpBrowser_ = new HelpBrowser(this, mainWindow_->getInviwoApplication());
+    centralWidget->setCentralWidget(helpBrowser_);
     setWidget(centralWidget);
 
-    connect(helpEngine_, &QHelpEngineCore::setupFinished, this, [&]() {
-        if (!helpEngine_) return;
-        if (current_.empty()) {
-            helpBrowser_->setText("Select a processor in the processor list to see help");
-        } else {
-            showDocForClassName(current_);
-        }
-    });
+    {
+        auto action = toolBar->addAction(QIcon(":/svgicons/link-left.svg"), tr("&Back"));
+        action->setShortcut(QKeySequence::Back);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setToolTip("Back");
+        centralWidget->addAction(action);
+        connect(action, &QAction::triggered, this, [this]() { helpBrowser_->backward(); });
 
-    if (!helpEngine_->setupData()) {
-        const std::string error = utilqt::fromQString(helpEngine_->error());
-        delete helpEngine_;
-        throw Exception("Failed to setup the help engine:" + error, IVW_CONTEXT);
+        connect(helpBrowser_, &QTextBrowser::backwardAvailable, action, &QAction::setEnabled);
     }
+    {
+        auto action = toolBar->addAction(QIcon(":/svgicons/link-right.svg"), tr("&Back"));
+        action->setShortcut(QKeySequence::Back);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setToolTip("Forward");
+        centralWidget->addAction(action);
+        connect(action, &QAction::triggered, this, [this]() { helpBrowser_->forward(); });
 
-    fileObserver_ = std::make_unique<QCHFileObserver>(helpEngine_);
-
-    onModulesDidRegister_ =
-        app->getModuleManager().onModulesDidRegister([this]() { registerQCHFiles(); });
-    onModulesWillUnregister_ =
-        app->getModuleManager().onModulesWillUnregister([this]() { fileObserver_->removeAll(); });
-
-    connect(this, &HelpWidget::visibilityChanged, this, &HelpWidget::updateDoc);
+        connect(helpBrowser_, &QTextBrowser::forwardAvailable, action, &QAction::setEnabled);
+    }
+    {
+        auto action = toolBar->addAction(QIcon(":/svgicons/revert.svg"), tr("&Reload"));
+        action->setShortcut(QKeySequence::Back);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setToolTip("Reload");
+        centralWidget->addAction(action);
+        connect(action, &QAction::triggered, this, [this]() { helpBrowser_->reload(); });
+    }
 }
 
 HelpWidget::~HelpWidget() = default;
 
-void HelpWidget::registerQCHFiles() {
-    auto app = mainwindow_->getInviwoApplication();
-    for (const auto& module : app->getModules()) {
-        const auto moduleQchFile =
-            module->getPath(ModulePath::Docs) + "/" + module->getIdentifier() + ".qch";
-        if (filesystem::fileExists(moduleQchFile)) {
-            fileObserver_->addFile(moduleQchFile);
-        }
-    }
-}
-
-void HelpWidget::showDocForClassName(std::string classIdentifier) {
-    if (!helpEngine_) return;
-    requested_ = classIdentifier;
-    updateDoc();
+void HelpWidget::showDocForClassName(std::string_view classIdentifier) {
+    helpBrowser_->setCurrent(classIdentifier);
 }
 
 void HelpWidget::resizeEvent(QResizeEvent* event) {
@@ -209,92 +163,304 @@ void HelpWidget::resizeEvent(QResizeEvent* event) {
     InviwoDockWidget::resizeEvent(event);
 }
 
-void HelpWidget::updateDoc() {
-    if (current_ == requested_) return;
+namespace {
 
-    if (visibleRegion().isEmpty()) return;
-    current_ = requested_;
-
-    const QString path("qthelp://org.inviwo.base/doc/docpage-%1.html");
-    QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(utilqt::toQString(requested_))));
-
-    if (foundUrl.isValid() && !helpEngine_->fileData(foundUrl).isEmpty()) {
-        helpBrowser_->setSource(foundUrl);
-        return;
+constexpr std::string_view css = R"(
+    h1,h2,h3 {
+        color: #CdC9C5;
     }
-
-    std::string classIdentifier = requested_;
-    replaceInString(classIdentifier, ".", "_8");
-    foundUrl = helpEngine_->findFile(QUrl(path.arg(utilqt::toQString(classIdentifier))));
-    if (foundUrl.isValid() && !helpEngine_->fileData(foundUrl).isEmpty()) {
-        helpBrowser_->setSource(foundUrl);
-        return;
+    h4 {
+        margin-bottom: 0px;
+        color: #BdB9B5;
     }
+    ul, ol {
+        margin: 0px 0px 0px 0px;
+    }
+    li {
+        margin: 7px 0px 0px -10px;
+    }
+    a {
+        text-decoration: underline
+    }
+    span.name {
+        font-weight: 600;
+        color: #CdC9C5;
+    }
+    span.id {
+        font-style: italic;
+        font-weight: 100;
+    }
+    div.help {
+        margin: 5px 0px 5px 0px;
+    }
+    div.help p {
+        margin: 0px 0px 5px 0px;
+    }
+    )";
 
-    helpBrowser_->setText(utilqt::toQString("No documentation available for: " + requested_));
+template <typename T>
+void link(T& factory, std::string_view id, Document::DocumentHandle& handle) {
+    std::string base = "https://inviwo.org/inviwo/cpp-api/class";
+    if (auto* fo = factory->getFactoryObject(id)) {
+        auto& typeName = fo->getTypeName();
+        std::string name{typeName.substr(0, typeName.find_first_of('<'))};
+        std::string doxyName{name};
+        replaceInString(doxyName, ":", "_1");
+        handle.append("a", "", {{"href", base + doxyName}}).append("span", name, {{"class", "id"}});
+    }
 }
 
-HelpBrowser::HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine)
-    : QTextBrowser(parent), helpEngine_(helpEngine) {
+Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo& info,
+                      const InviwoModule& module, InviwoApplication& app) {
+
+    auto processorFactory = app.getProcessorFactory();
+    auto propertyFactory = app.getPropertyFactory();
+    auto inportFactory = app.getInportFactory();
+    auto outportFactory = app.getOutportFactory();
+
+    Document doc;
+
+    auto html = doc.append("html");
+    html.append("style", css);
+    auto body = html.append("body");
+    body.append("h3", fmt::format("{}", processor.displayName));
+
+    auto tr = body.append("table").append("tr");
+    tr.append("td").append("img", "",
+                           {{"src", fmt::format("{0}.png?type=preview&classIdentifier={0}",
+                                                processor.classIdentifier)}});
+    auto td = tr.append("td");
+    link(processorFactory, processor.classIdentifier, td);
+    td.append("i", processor.classIdentifier);
+
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    utildoc::TableBuilder tb(td, P::end());
+    tb(H("Module"), module.getIdentifier());
+    tb(H("Category"), info.category);
+    tb(H("State"), info.codeState);
+    tb(H("Tags"), info.tags);
+
+    body.append("div", "", {{"class", "help"}}).append(processor.help);
+
+    if (!processor.inports.empty()) {
+        body.append("h4", "Inports");
+        auto inports = body.append("ol", "", {{"class", "list"}});
+        for (const auto& inport : processor.inports) {
+            auto li = inports.append("li", "", {{"class", "item"}});
+            li.append("span", inport.displayName, {{"class", "name"}});
+            link(inportFactory, inport.classIdentifier, li);
+            li.append("span", inport.classIdentifier, {{"class", "id"}});
+            if (!inport.help.empty()) {
+                li.append("div", "", {{"class", "help"}}).append(inport.help);
+            }
+        }
+    }
+
+    if (!processor.outports.empty()) {
+        body.append("h4", "Outports");
+        auto outports = body.append("ol", "", {{"class", "list"}});
+        for (const auto& outport : processor.outports) {
+            auto li = outports.append("li", "", {{"class", "item"}});
+            li.append("span", outport.displayName, {{"class", "name"}});
+            link(outportFactory, outport.classIdentifier, li);
+            li.append("span", outport.classIdentifier, {{"class", "id"}});
+            if (!outport.help.empty()) {
+                li.append("div", "", {{"class", "help"}}).append(outport.help);
+            }
+        }
+    }
+
+    if (!processor.properties.empty()) {
+        body.append("h4", "Properties");
+        auto properties = body.append("ul", "", {{"class", "list"}});
+        for (auto&& [idx, property] : util::enumerate(processor.properties)) {
+            auto li = properties.append("li", "", {{"class", "item"}});
+            if (!property.properties.empty()) {
+                li.append("a", "",
+                          {{"href", fmt::format("file:///{}/{}?type=processor",
+                                                processor.classIdentifier, idx)}})
+                    .append("span", property.displayName, {{"class", "name"}});
+            } else {
+                li.append("span", property.displayName, {{"class", "name"}});
+            }
+            link(propertyFactory, property.classIdentifier, li);
+            li.append("span", property.classIdentifier, {{"class", "id"}});
+
+            if (!property.help.empty()) {
+                li.append("div", "", {{"class", "help"}}).append(property.help);
+            }
+        }
+    }
+
+    return doc;
+}
+
+Document makePropertyHelp(const help::HelpProperty& property, std::string_view path,
+                          PropertyFactory* propertyFactory) {
+    Document doc;
+
+    auto html = doc.append("html");
+    html.append("style", css);
+    auto body = html.append("body");
+    body.append("h3", property.displayName);
+    link(propertyFactory, property.classIdentifier, body);
+    body.append("div", property.classIdentifier);
+    body.append("div", "", {{"class", "help"}}).append(property.help);
+
+    if (!property.properties.empty()) {
+        body.append("h4", "Properties");
+        auto properties = body.append("ul", "", {{"class", "list"}});
+        for (auto&& [idx, subProperty] : util::enumerate(property.properties)) {
+            auto li = properties.append("li", "", {{"class", "item"}});
+            if (!subProperty.properties.empty()) {
+                li.append("a", "",
+                          {{"href", fmt::format("file://{}/{}?type=processor", path, idx)}})
+                    .append("span", subProperty.displayName, {{"class", "name"}});
+            } else {
+                li.append("span", subProperty.displayName, {{"class", "name"}});
+            }
+            link(propertyFactory, subProperty.classIdentifier, li);
+            li.append("span", subProperty.classIdentifier, {{"class", "id"}});
+            if (!subProperty.help.empty()) {
+                li.append("div", "", {{"class", "help"}}).append(subProperty.help);
+            }
+        }
+    }
+
+    return doc;
+}
+
+InviwoModule& findModule(InviwoApplication& app, std::string_view processorClassIdentifier) {
+    for (auto& module : app.getModules()) {
+        for (auto& pfo : module->getProcessors()) {
+            if (pfo->getClassIdentifier() == processorClassIdentifier) {
+                return *module;
+            }
+        }
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("findModule"),
+                    "ProcessorClassIdentifier {} is not registered", processorClassIdentifier);
+}
+
+std::tuple<std::string, std::string> loadIdUrl(const QUrl& url, InviwoApplication* app) {
+    auto list = url.path().split('/');
+    if (list.front().isEmpty()) list.pop_front();
+
+    const auto processorClassIdentifier = utilqt::fromQString(list.front());
+    try {
+        if (auto processor = app->getProcessorFactory()->create(processorClassIdentifier, app)) {
+            auto help = help::buildProcessorHelp(*processor);
+            const auto& module = findModule(*app, processorClassIdentifier);
+
+            if (list.length() == 1) {
+                const auto helpText =
+                    makeHtmlHelp(help, processor->getProcessorInfo(), module, *app);
+                return {helpText, module.getPath()};
+            } else {
+                list.pop_front();
+                auto* properties = &help.properties;
+                help::HelpProperty* property = nullptr;
+                for (const auto& elem : list) {
+                    bool ok = true;
+                    if (auto num = elem.toULongLong(&ok); ok && num < properties->size()) {
+                        property = &(*properties)[num];
+                        properties = &property->properties;
+                    } else {
+                        return {fmt::format("Could not create help for subproperty in: {}",
+                                            processorClassIdentifier),
+                                ""};
+                    }
+                }
+                const auto helpText = makePropertyHelp(*property, utilqt::fromQString(url.path()),
+                                                       app->getPropertyFactory());
+                return {helpText, module.getPath()};
+            }
+        } else {
+            return {fmt::format("Could not crate help for: {}", processorClassIdentifier), ""};
+        }
+    } catch (const Exception& e) {
+        return {fmt::format("Could not crate help for: {}, {}", processorClassIdentifier,
+                            e.getMessage()),
+                ""};
+    }
+}
+
+}  // namespace
+
+HelpBrowser::HelpBrowser(HelpWidget* parent, InviwoApplication* app)
+    : QTextBrowser(parent), app_(app) {
     setReadOnly(true);
     setUndoRedoEnabled(false);
     setContextMenuPolicy(Qt::NoContextMenu);
     setAcceptRichText(false);
+    setOpenExternalLinks(true);
+
+    setText("Select a processor in the processor list to see help");
 }
 
-QVariant HelpBrowser::loadResource(int type, const QUrl& name) {
-    QUrl url(name);
-    if (name.isRelative()) url = source().resolved(url);
+void HelpBrowser::setCurrent(std::string_view processorClassIdentifier) {
+    if (visibleRegion().isEmpty()) return;
 
-    QUrlQuery query(url);
-    if (query.hasQueryItem("classIdentifier")) {
-        QString cid = query.queryItemValue("classIdentifier");
+    QUrl url;
+    url.setScheme("file");
+    url.setPath(utilqt::toQString(fmt::format("/{}", processorClassIdentifier)));
+    url.setQuery(QUrlQuery({{"type", "processor"}}));
+    setSource(url);
+}
 
-        auto img = utilqt::generatePreview(cid);
-        if (img.isNull()) return QVariant();
-        QByteArray imgData;
-        QBuffer buffer(&imgData);
-        buffer.open(QIODevice::WriteOnly);
-        img.save(&buffer, "PNG");
+QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
+    const QUrlQuery query(url);
 
-        return imgData;
-    }
+    auto toFilePath = [&](const QUrl& url) {
+        auto filePath = utilqt::fromQString(url.path());
+        replaceInString(filePath, "<modulePath>", currentModulePath_);
+        replaceInString(filePath, "<basePath>", app_->getBasePath());
+        return filePath;
+    };
 
-    QByteArray fileData = helpEngine_->fileData(url);
-    switch (type) {
-        case QTextDocument::HtmlResource:
-            return fileData;
-        case QTextDocument::StyleSheetResource:
-            return fileData;
-        case QTextDocument::ImageResource: {
-            auto image =
-                QImage::fromData(fileData, QFileInfo(url.path()).suffix().toLatin1().data());
-            QImage resized{
-                image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio)};
+    if (query.hasQueryItem("type")) {
+        const QString requestType = query.queryItemValue("type");
 
-            if (name.toString().contains("form_")) {
-
-                for (int y = 0; y < resized.height(); y++) {
-                    for (int x = 0; x < resized.width(); x++) {
-                        auto p = resized.pixelColor(x, y);
-                        if (p.alpha() > 0) {
-                            p.setRed(0x9d);
-                            p.setGreen(0x99);
-                            p.setBlue(0x95);
-                            resized.setPixelColor(x, y, p);
-                        }
-                    }
-                }
-            }
-
-            QByteArray smalldata;
-            QBuffer buffer(&smalldata);
-            resized.save(&buffer, QFileInfo(url.path()).suffix().toLatin1().data());
-
-            return smalldata;
+        if (requestType == "preview") {
+            const QString cid = query.queryItemValue("classIdentifier");
+            return utilqt::generatePreview(utilqt::fromQString(cid), app_->getProcessorFactory());
+        } else if (requestType == "processor") {
+            auto [html, mp] = loadIdUrl(url, app_);
+            current_ = url;
+            currentModulePath_ = mp;
+            return utilqt::toQString(html);
         }
     }
-    return QTextBrowser::loadResource(type, url);
+    const auto filePath = toFilePath(url);
+    if (filesystem::fileExists(filePath)) {
+        if (filesystem::getFileExtension(filePath) == "inv") {
+            try {
+                util::appendProcessorNetwork(app_->getProcessorNetwork(), filePath, app_);
+            } catch (const Exception& e) {
+                util::log(
+                    e.getContext(),
+                    fmt::format("Unable to append network {} due to {}", filePath, e.getMessage()),
+                    LogLevel::Error);
+            }
+            QTimer::singleShot(0, this, [this]() { backward(); });
+            return {"Workspace loaded"};
+        }
+    }
+
+    if (type == QTextDocument::ImageResource) {
+        auto qFilePath = utilqt::toQString(filePath);
+        if (QFile::exists(qFilePath)) {
+            const auto maxImageWidth = (95 * width()) / 100;
+            auto image = QImage(qFilePath);
+            if (image.width() > maxImageWidth) {
+                return image.scaledToWidth(maxImageWidth);
+            } else {
+                return image;
+            }
+        }
+    }
+    return {};
 }
 
 }  // namespace inviwo

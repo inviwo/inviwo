@@ -33,13 +33,13 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
+#include <string_view>
+
 class QObject;
-class QHelpEngineCore;
 class QResizeEvent;
 
 namespace inviwo {
 
-class QCHFileObserver;
 class HelpBrowser;
 
 class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
@@ -49,26 +49,14 @@ public:
     HelpWidget(const HelpWidget&) = delete;
     HelpWidget& operator=(const HelpWidget&) = delete;
 
-    void showDocForClassName(std::string className);
-    void registerQCHFiles();
+    void showDocForClassName(std::string_view className);
 
 protected:
     virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
-    void updateDoc();
-
-    InviwoMainWindow* mainwindow_;
-    QHelpEngineCore* helpEngine_;
+    InviwoMainWindow* mainWindow_;
     HelpBrowser* helpBrowser_;
-    std::string requested_;
-    std::string current_;
-    std::unique_ptr<QCHFileObserver> fileObserver_;
-
-    // Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-    // Called before modules have been unregistered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
 
 }  // namespace inviwo

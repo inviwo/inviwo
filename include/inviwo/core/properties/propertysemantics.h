@@ -32,11 +32,11 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <string>
-#include <ostream>
+#include <iosfwd>
 
 namespace inviwo {
 
-class IVW_CORE_API PropertySemantics : public Serializable {
+class IVW_CORE_API PropertySemantics {
 public:
     PropertySemantics();
     PropertySemantics(std::string semantic);
@@ -44,10 +44,10 @@ public:
     PropertySemantics(PropertySemantics&& rhs) noexcept = default;
     PropertySemantics& operator=(const PropertySemantics& that) = default;
     PropertySemantics& operator=(PropertySemantics&& that) noexcept = default;
-    virtual ~PropertySemantics() noexcept = default;
+    ~PropertySemantics() noexcept = default;
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
 
     const std::string& getString() const;
 
@@ -81,15 +81,10 @@ public:
         return !operator<(lhs, rhs);
     }
 
+    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const PropertySemantics& obj);
+
 private:
     std::string semantic_;
 };
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const PropertySemantics& obj) {
-    ss << obj.getString();
-    return ss;
-}
 
 }  // namespace inviwo

@@ -89,12 +89,12 @@ private:
 
     VolumeSequenceOutport outport_;
 
-    TemplateOptionProperty<InputType> inputType_;
+    OptionProperty<InputType> inputType_;
     FileProperty file_;
     DirectoryProperty folder_;
     StringProperty filter_;
 
-    TemplateOptionProperty<FileExtension> reader_;
+    OptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
 
     BasisProperty basis_;

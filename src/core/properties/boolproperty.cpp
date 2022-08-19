@@ -34,6 +34,12 @@ namespace inviwo {
 const std::string BoolProperty::classIdentifier = "org.inviwo.BoolProperty";
 std::string BoolProperty::getClassIdentifier() const { return classIdentifier; }
 
+BoolProperty::BoolProperty(std::string_view identifier, std::string_view displayName, Document help,
+                           bool value, InvalidationLevel invalidationLevel,
+                           PropertySemantics semantics)
+    : TemplateProperty<bool>(identifier, displayName, std::move(help), value, invalidationLevel,
+                             semantics) {}
+
 BoolProperty::BoolProperty(std::string_view identifier, std::string_view displayName, bool value,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : TemplateProperty<bool>(identifier, displayName, value, invalidationLevel, semantics) {}

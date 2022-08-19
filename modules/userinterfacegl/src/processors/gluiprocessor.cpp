@@ -96,7 +96,7 @@ GLUIProcessor::GLUIProcessor(InviwoApplication* app)
               auto& factory = app->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
               auto propertyFactory = app->getPropertyFactory();
 
-              for (auto key : factory.getKeys()) {
+              for (auto&& key : factory.getKeyView()) {
                   auto displayName = std::string{util::splitByLast(key, '.').second};
                   auto identifier = displayName;
                   identifier[0] = static_cast<char>(std::tolower(identifier[0]));

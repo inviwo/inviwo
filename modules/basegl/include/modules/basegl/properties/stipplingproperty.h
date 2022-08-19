@@ -59,7 +59,7 @@ public:
     virtual float getOffset() const override { return offset_.get(); };
     virtual float getWorldScale() const override { return worldScale_.get(); };
 
-    TemplateOptionProperty<StipplingSettingsInterface::Mode> mode_;
+    OptionProperty<StipplingSettingsInterface::Mode> mode_;
     FloatProperty length_;
     FloatProperty spacing_;
     FloatProperty offset_;

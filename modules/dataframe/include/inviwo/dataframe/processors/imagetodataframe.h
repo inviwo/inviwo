@@ -75,8 +75,8 @@ private:
 
     ImageInport inport_;
     DataOutport<DataFrame> outport_;
-    TemplateOptionProperty<Mode> mode_;
-    TemplateOptionProperty<LayerType> layer_;
+    OptionProperty<Mode> mode_;
+    OptionProperty<LayerType> layer_;
     IntSizeTProperty layerIndex_;
 
     IntSizeTMinMaxProperty range_;

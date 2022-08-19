@@ -34,18 +34,26 @@
 
 namespace inviwo {
 
-ImageOutport::ImageOutport(std::string_view identifier, const DataFormatBase* format,
-                           bool handleResizeEvents)
-    : DataOutport<Image>(identifier), format_(format), handleResizeEvents_(handleResizeEvents) {
+ImageOutport::ImageOutport(std::string_view identifier, Document help, const DataFormatBase* format,
+                           HandleResizeEvents handleResizeEvents)
+    : DataOutport<Image>(identifier, std::move(help))
+    , format_(format)
+    , handleResizeEvents_(handleResizeEvents) {
 
     // create a default image
-    if (handleResizeEvents) {
+    if (handleResizeEvents == HandleResizeEvents::Yes) {
         setData(std::make_shared<Image>(size2_t{1, 1}, format));
     }
 }
 
+ImageOutport::ImageOutport(std::string_view identifier, const DataFormatBase* format,
+                           bool handleResizeEvents)
+    : ImageOutport(identifier, {}, format,
+                   handleResizeEvents ? HandleResizeEvents::Yes : HandleResizeEvents::No) {}
+
 ImageOutport::ImageOutport(std::string_view identifier, bool handleResizeEvents)
-    : ImageOutport(identifier, DataVec4UInt8::get(), handleResizeEvents) {}
+    : ImageOutport(identifier, {}, DataVec4UInt8::get(),
+                   handleResizeEvents ? HandleResizeEvents::Yes : HandleResizeEvents::No) {}
 
 std::string ImageOutport::getClassIdentifier() const {
     return PortTraits<ImageOutport>::classIdentifier();
@@ -121,7 +129,7 @@ void ImageOutport::disconnectFrom(Inport* inport) {
     pruneCache();
 
     const auto newDimensions = getLargestReqDim();
-    if (handleResizeEvents_) {
+    if (handleResizeEvents_ == HandleResizeEvents::Yes) {
         setDimensions(newDimensions);  // resize data.
 
         // Make sure that all ImageOutports in the same group that has the same size.
@@ -155,7 +163,7 @@ void ImageOutport::propagateEvent(Event* event, Inport* source) {
 
     const auto newDimensions = getLargestReqDim();
 
-    if (handleResizeEvents_) {
+    if (handleResizeEvents_ == HandleResizeEvents::Yes) {
         setDimensions(newDimensions);  // resize data.
 
         // Make sure that all ImageOutports in the same group that has the same size.
@@ -218,24 +226,25 @@ std::shared_ptr<Image> ImageOutport::getEditableData() const {
 }
 
 void ImageOutport::setHandleResizeEvents(bool handleResizeEvents) {
-    handleResizeEvents_ = handleResizeEvents;
+    handleResizeEvents_ = handleResizeEvents ? HandleResizeEvents::Yes : HandleResizeEvents::No;
 }
 
-bool ImageOutport::isHandlingResizeEvents() const { return handleResizeEvents_ && image_; }
+bool ImageOutport::isHandlingResizeEvents() const {
+    return (handleResizeEvents_ == HandleResizeEvents::Yes) && image_;
+}
 
 Document ImageOutport::getInfo() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
 
     auto doc = DataOutport<Image>::getInfo();
-    auto b = doc.get({P{"html"}, P{"body"}});
     {
-        auto t = b.get({P{"p"}, P{"table"}});
+        auto t = doc.get({P{"table"}});
         utildoc::TableBuilder tb(t);
         tb(H("Has Editable Data"), hasEditableData());
         tb(H("Handle Resize Events"), handleResizeEvents_);
     }
-    auto p = b.append("p");
+    auto p = doc.append("p");
     p.append("b", "Requested sizes", {{"style", "color:white;"}});
     if (requestedDimensions_.empty()) {
         p += "No requested sizes";

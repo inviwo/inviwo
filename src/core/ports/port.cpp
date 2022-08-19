@@ -35,7 +35,8 @@
 
 namespace inviwo {
 
-Port::Port(std::string_view identifier) : identifier_(identifier), processor_(nullptr) {}
+Port::Port(std::string_view identifier, Document help)
+    : identifier_(identifier), processor_(nullptr), help_{std::move(help)} {}
 
 Processor* Port::getProcessor() const { return processor_; }
 
@@ -49,6 +50,13 @@ const std::string& Port::getIdentifier() const { return identifier_; }
 void Port::setIdentifier(const std::string& name) { identifier_ = name; }
 
 void Port::setProcessor(Processor* processor) { processor_ = processor; }
+
+const Document& Port::getHelp() const { return help_; }
+Document& Port::getHelp() { return help_; }
+Port& Port::setHelp(Document help) {
+    help_ = std::move(help);
+    return *this;
+}
 
 void Port::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);

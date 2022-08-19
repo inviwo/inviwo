@@ -54,6 +54,17 @@ class IVW_CORE_API StringProperty : public TemplateProperty<std::string> {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
+
+    /**
+     *  \brief Constructor for the StringProperty
+     *  The PropertySemantics can be set to Editor.
+     *  Then a TextEditorWidget will be used instead of a StringPropertyWidget
+     */
+    StringProperty(std::string_view identifier, std::string_view displayName, Document help,
+                   std::string_view value = "",
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                   PropertySemantics semantics = PropertySemantics::Default);
+
     /**
      *  \brief Constructor for the StringProperty
      *  The PropertySemantics can be set to Editor.

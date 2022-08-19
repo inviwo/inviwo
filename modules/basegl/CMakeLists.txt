@@ -52,6 +52,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/imageprocessing/imagescaling.h
     include/modules/basegl/processors/imageprocessing/imagesubsetgl.h
     include/modules/basegl/processors/imageprocessing/jacobian2d.h
+    include/modules/basegl/processors/instancerenderer.h
     include/modules/basegl/processors/isoraycaster.h
     include/modules/basegl/processors/lightingraycaster.h
     include/modules/basegl/processors/lightvolumegl.h
@@ -158,6 +159,7 @@ set(SOURCE_FILES
     src/processors/imageprocessing/imagescaling.cpp
     src/processors/imageprocessing/imagesubsetgl.cpp
     src/processors/imageprocessing/jacobian2d.cpp
+    src/processors/instancerenderer.cpp
     src/processors/isoraycaster.cpp
     src/processors/lightingraycaster.cpp
     src/processors/lightvolumegl.cpp

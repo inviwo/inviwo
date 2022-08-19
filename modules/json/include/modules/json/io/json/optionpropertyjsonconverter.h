@@ -86,21 +86,21 @@ void from_json(const json& j, OptionPropertyOption<T>& o) {
 }
 
 /**
- * Converts an TemplateOptionProperty to a JSON object.
- * Produces layout according to the members of TemplateOptionProperty:
+ * Converts an OptionProperty to a JSON object.
+ * Produces layout according to the members of OptionProperty:
  * { {"value": val}, {"selectedIndex": selectedIndex},
  *   {"options": [OptionPropertyOption ... ]}
  * }
- * @see TemplateOptionProperty
+ * @see OptionProperty
  *
  * Usage example:
  * \code{.cpp}
- * TemplateOptionProperty<double> p;
+ * OptionProperty<double> p;
  * json j = p;
  * \endcode
  */
 template <typename T>
-void to_json(json& j, const TemplateOptionProperty<T>& p) {
+void to_json(json& j, const OptionProperty<T>& p) {
     if (!p.getOptions().empty()) {
         j = json{{"value", p.get()},
                  {"selectedIndex", p.getSelectedIndex()},
@@ -109,20 +109,20 @@ void to_json(json& j, const TemplateOptionProperty<T>& p) {
 }
 
 /**
- * Converts a JSON object to an TemplateOptionProperty.
- * Expects object layout according to the members of TemplateOptionProperty:
+ * Converts a JSON object to an OptionProperty.
+ * Expects object layout according to the members of OptionProperty:
  * { {"value": val}, {"selectedIndex": selectedIndex},
  *   {"options": [OptionPropertyOption ... ]}
  * }
- * @see TemplateOptionProperty
+ * @see OptionProperty
  *
  * Usage example:
  * \code{.cpp}
- * auto p = j.get<TemplateOptionProperty<double>>();
+ * auto p = j.get<OptionProperty<double>>();
  * \endcode
  */
 template <typename T>
-void from_json(const json& j, TemplateOptionProperty<T>& p) {
+void from_json(const json& j, OptionProperty<T>& p) {
     if (j.count("options") > 0) {
         auto options = j.at("options").get<std::vector<OptionPropertyOption<T>>>();
         p.replaceOptions(options);

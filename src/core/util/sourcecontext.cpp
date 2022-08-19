@@ -28,5 +28,18 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/sourcecontext.h>
+#include <ostream>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+std::ostream& operator<<(std::ostream& ss, const SourceContext& ec) {
+    ss << ec.getCaller() << " (" << ec.getFile() << ":" << ec.getLine() << ")";
+    return ss;
+}
+
+std::ostream& operator<<(std::ostream& ss, const SourceLocation& ec) {
+    ss << ec.getFunction() << " (" << ec.getFile() << ":" << ec.getLine() << ")";
+    return ss;
+}
+
+}  // namespace inviwo

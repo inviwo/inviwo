@@ -119,9 +119,9 @@ private:
 
     // style customization properties
     AxisStyleProperty axisStyle_;
-    TemplateOptionProperty<LabelType> labelType_;
+    OptionProperty<LabelType> labelType_;
     StringProperty title_;
-    TemplateOptionProperty<BackgroundStyle> backgroundStyle_;
+    OptionProperty<BackgroundStyle> backgroundStyle_;
     FloatProperty checkerBoardSize_;
     FloatVec4Property bgColor_;
     IntProperty borderWidth_;

@@ -32,28 +32,14 @@
 #include <{{ module/define_include }}>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.{{ file/name }}, {{ file/disp_name }}}
- * ![](org.inviwo.{{ file/name }}.png?classIdentifier=org.inviwo.{{ file/name }})
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class {{ module/api }} {{ file/name }} : public Processor {
 public:
     {{ file/name }}();
-    virtual ~{{ file/name }}() override = default;
 
     virtual void process() override;
 
@@ -61,7 +47,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    ImageOutport outport_;
+    DataInport<SomeType> inport_;
+    DataOutport<SomeOtherType> outport_;
     FloatVec3Property position_;
 };
 

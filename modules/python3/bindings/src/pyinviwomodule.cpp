@@ -45,7 +45,8 @@ namespace inviwo {
 class ProcessorFactoryObjectPythonWrapper : public ProcessorFactoryObject {
 public:
     ProcessorFactoryObjectPythonWrapper(pybind11::object pfo)
-        : ProcessorFactoryObject{pfo.cast<ProcessorFactoryObject*>()->getProcessorInfo()}
+        : ProcessorFactoryObject{pfo.cast<ProcessorFactoryObject*>()->getProcessorInfo(),
+                                 "PythonProcessor"}
         , pfo_(pfo) {}
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) override {

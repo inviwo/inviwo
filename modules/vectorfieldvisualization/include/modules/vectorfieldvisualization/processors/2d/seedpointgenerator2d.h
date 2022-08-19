@@ -57,7 +57,7 @@ public:
 private:
     SeedPoints2DOutport seeds_;
 
-    TemplateOptionProperty<Generator> generator_;
+    OptionProperty<Generator> generator_;
 
     IntSizeTProperty numPoints_;
     IntSizeTProperty haltonXBase_;

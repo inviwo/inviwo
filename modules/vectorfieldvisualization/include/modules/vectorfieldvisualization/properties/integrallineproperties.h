@@ -70,9 +70,9 @@ public:
     FloatProperty stepSize_;
     BoolProperty normalizeSamples_;
 
-    TemplateOptionProperty<IntegralLineProperties::Direction> stepDirection_;
-    TemplateOptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
-    TemplateOptionProperty<CoordinateSpace> seedPointsSpace_;
+    OptionProperty<IntegralLineProperties::Direction> stepDirection_;
+    OptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
+    OptionProperty<CoordinateSpace> seedPointsSpace_;
 };
 
 template <unsigned int N>

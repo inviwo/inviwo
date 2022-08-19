@@ -32,9 +32,9 @@
 namespace inviwo {
 
 BaseOptionProperty::BaseOptionProperty(std::string_view identifier, std::string_view displayName,
-                                       InvalidationLevel invalidationLevel,
+                                       Document help, InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics) {}
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics) {}
 
 BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) = default;
 
@@ -62,12 +62,12 @@ template class IVW_CORE_TMPL_INST OptionPropertyOption<float>;
 template class IVW_CORE_TMPL_INST OptionPropertyOption<double>;
 template class IVW_CORE_TMPL_INST OptionPropertyOption<std::string>;
 
-template class IVW_CORE_TMPL_INST TemplateOptionProperty<unsigned int>;
-template class IVW_CORE_TMPL_INST TemplateOptionProperty<int>;
-template class IVW_CORE_TMPL_INST TemplateOptionProperty<size_t>;
-template class IVW_CORE_TMPL_INST TemplateOptionProperty<float>;
-template class IVW_CORE_TMPL_INST TemplateOptionProperty<double>;
-template class IVW_CORE_TMPL_INST TemplateOptionProperty<std::string>;
+template class IVW_CORE_TMPL_INST OptionProperty<unsigned int>;
+template class IVW_CORE_TMPL_INST OptionProperty<int>;
+template class IVW_CORE_TMPL_INST OptionProperty<size_t>;
+template class IVW_CORE_TMPL_INST OptionProperty<float>;
+template class IVW_CORE_TMPL_INST OptionProperty<double>;
+template class IVW_CORE_TMPL_INST OptionProperty<std::string>;
 /// @endcond
 
 }  // namespace inviwo

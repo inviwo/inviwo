@@ -112,7 +112,7 @@ struct OptionReghelper {
     template <typename T>
     auto operator()(AnimationModule& am) {
         using namespace animation;
-        using PropertyType = TemplateOptionProperty<T>;
+        using PropertyType = OptionProperty<T>;
         using ValueType = typename PropertyType::value_type;
         propTrackRegHelper<PropertyType>(am);
         interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);

@@ -490,7 +490,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
         {
             auto autoloadWorkspace = new QCheckBox("&Auto-load last workspace", rightColumn);
-            autoloadWorkspace->setChecked(getSetting("autoloadLastWorkspace", true).toBool());
+            autoloadWorkspace->setChecked(getSetting("autoloadLastWorkspace", false).toBool());
             QObject::connect(autoloadWorkspace, &QCheckBox::toggled, this, [this](bool checked) {
                 setSetting("autoloadLastWorkspace", checked);
             });
@@ -627,7 +627,7 @@ std::string formatTitle(std::string str) {
 }
 
 std::string formatDescription(std::string_view str) {
-    auto string = htmlEncode(str);
+    auto string = util::htmlEncode(str);
     replaceInString(string, "\n", "<br/>");
     return string;
 }
@@ -671,7 +671,7 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
         if (value.empty()) return;
         auto tr = table.append("tr");
         tr.append("td", name, {{"style", "text-align:right;"}});
-        tr.append("td", htmlEncode(value), {{"style", "color:#ebe5df; font-weight:500;"}});
+        tr.append("td", util::htmlEncode(value), {{"style", "color:#ebe5df; font-weight:500;"}});
     };
 
     addRow("File", utilqt::fromQString(info.fileName()));

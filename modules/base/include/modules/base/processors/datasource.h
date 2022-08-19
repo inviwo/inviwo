@@ -43,8 +43,7 @@
 namespace inviwo {
 
 namespace util {
-inline void updateReaderFromFile(const FileProperty& file,
-                                 TemplateOptionProperty<FileExtension>& reader) {
+inline void updateReaderFromFile(const FileProperty& file, OptionProperty<FileExtension>& reader) {
     if ((file.getSelectedExtension() == FileExtension::all() &&
          !reader.getSelectedValue().matches(file)) ||
         file.getSelectedExtension().empty()) {
@@ -61,7 +60,7 @@ inline void updateReaderFromFile(const FileProperty& file,
 
 template <typename... Types>
 void updateFilenameFilters(const DataReaderFactory& rf, FileProperty& file,
-                           TemplateOptionProperty<FileExtension>& reader) {
+                           OptionProperty<FileExtension>& reader) {
     std::vector<FileExtension> extensions;
 
     util::append(extensions, rf.getExtensionsForType<Types>()...);
@@ -115,7 +114,7 @@ protected:
     DataReaderFactory* rf_;
     PortType port_;
     FileProperty file_;
-    TemplateOptionProperty<FileExtension> reader_;
+    OptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
     std::shared_ptr<DataType> loadedData_;
     bool loadingFailed_ = false;
