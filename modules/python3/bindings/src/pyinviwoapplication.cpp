@@ -32,7 +32,8 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/io/datareaderfactory.h>                #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/io/datareaderfactory.h>                
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/commandlineparser.h>
 
 namespace inviwo {
