@@ -1,14 +1,12 @@
-import sys 
-import os
-import re
 import colorama
-colorama.init()
+import refactoring  # Note: refactoring.py need to be in the current working directory
 
-import refactoring # Note: refactoring.py need to be in the current working directory
+colorama.init()
 
 paths = ["C:/Users/petst55/Work/Inviwo/Inviwo-dev", "C:/Users/petst55/Work/Inviwo/Inviwo-research"]
 
-excludespatterns = ["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*", "*/vrnbase/*"];
+excludespatterns = ["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*",
+                    "*/proteindocking2/*", "*/genetree/*", "*/vrnbase/*"]
 
 files = refactoring.find_files(paths, ['*.h', '*.cpp'], excludes=excludespatterns)
 
