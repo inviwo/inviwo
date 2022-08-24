@@ -85,7 +85,9 @@ public:
     flags(enum_type e, Args... args) noexcept : flags{e, args...} {}
 
     template <class FwIter>
-    flags(FwIter b, FwIter e, typename convertible<decltype(*b)>::type = nullptr) noexcept(
+    flags(FwIter b, FwIter e,
+          typename convertible<decltype(*std::declval<FwIter>())>::type =
+              nullptr) noexcept(
         noexcept(std::declval<flags>().insert(std::declval<FwIter>(), std::declval<FwIter>())))
         : val_(0) {
         insert(b, e);
