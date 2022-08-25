@@ -18,7 +18,7 @@
     url = https://github.com/google/benchmark.git
 [submodule "ext/gtest/gtest"]
     path = ext/gtest/gtest
-    url = https://github.com/google/googletest.git
+    url = https://github.com/inviwo/googletest.git
 [submodule "modules/glfw/ext/glfw/glfw"]
     path = modules/glfw/ext/glfw/glfw
     url = https://github.com/inviwo/glfw.git
