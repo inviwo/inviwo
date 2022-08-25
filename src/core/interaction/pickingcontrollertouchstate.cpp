@@ -218,7 +218,7 @@ struct Fsm {
         };
         const auto zeroId = [](const auto& e) -> bool { return e.globalId == 0; };
         const auto nonZeroId = [](const auto& e) -> bool { return e.globalId != 0; };
-        
+
         const auto zeroMB = [](const FsmState&, const auto& e) -> bool {
             return touchToPressItems(e.event, e.event->touchPoints()) == PickingPressItem::None;
         };
