@@ -217,8 +217,13 @@ struct Fsm {
             return e.globalId != state.active_globalId && e.globalId != PickingManager::VoidId;
         };
         const auto zeroId = [](const auto& e) -> bool { return e.globalId == 0; };
+        const auto nonZeroId = [](const auto& e) -> bool { return e.globalId != 0; };
+
         const auto zeroMB = [](const FsmState&, const auto& e) -> bool {
             return touchToPressItems(e.event, e.event->touchPoints()) == PickingPressItem::None;
+        };
+        const auto nonZeroMB = [](const FsmState&, const auto& e) -> bool {
+            return touchToPressItems(e.event, e.event->touchPoints()) != PickingPressItem::None;
         };
 
         // Keep track of states related to entering/moving/exiting picking objects
@@ -230,32 +235,32 @@ struct Fsm {
 
         // clang-format off
         return sml::make_transition_table(
-           *idle + event<Started>  [!zeroId && zeroMB]  / (uids, send<Started>(S::Started, P::None, H::Enter)) = hasId,
-            idle + event<Started>  [!zeroId && !zeroMB] / (uids, ups, send<Started>(S::Started, P::Press, H::Enter)) = pressing,
-            idle + event<Started>  [zeroId && !zeroMB]  / (updatePressedOutside) = pressingOutside,
-            idle + event<Updated>  [!zeroId && zeroMB]  / (uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
-            idle + event<Updated>  [zeroId && !zeroMB]  / (updatePressedOutside) = pressingOutside,
+           *idle + event<Started>  [nonZeroId && zeroMB]  / (uids, send<Started>(S::Started, P::None, H::Enter)) = hasId,
+            idle + event<Started>  [nonZeroId && nonZeroMB] / (uids, ups, send<Started>(S::Started, P::Press, H::Enter)) = pressing,
+            idle + event<Started>  [zeroId && nonZeroMB]  / (updatePressedOutside) = pressingOutside,
+            idle + event<Updated>  [nonZeroId && zeroMB]  / (uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
+            idle + event<Updated>  [zeroId && nonZeroMB]  / (updatePressedOutside) = pressingOutside,
             idle + event<Finished> = idle,
             idle + sml::on_entry<_> / rps,
 
             hasId + event<Updated> [sameId && zeroMB] / (send<Updated>(S::Updated, P::None, H::Move)),
             hasId + event<Updated> [zeroId && zeroMB] / (send<Updated>(S::Finished, P::None, H::Exit), uidu) = idle,
             hasId + event<Updated> [diffId && zeroMB] / (send<Updated>(S::Finished, P::None, H::Exit, false, false), uidu, send<Updated>(S::Started, P::None, H::Enter)),
-            hasId + event<Updated>  [sameId && !zeroMB] / (ups, send<Updated>(S::Updated, P::Press, H::None)) = pressing,
-            hasId + event<Updated>  [diffId && !zeroMB] / (send<Updated>(S::Finished, P::None, H::Exit, false, false), ups, uidu, send<Updated>(S::Updated, P::Press, H::Enter)) = pressing,
+            hasId + event<Updated>  [sameId && nonZeroMB] / (ups, send<Updated>(S::Updated, P::Press, H::None)) = pressing,
+            hasId + event<Updated>  [diffId && nonZeroMB] / (send<Updated>(S::Finished, P::None, H::Exit, false, false), ups, uidu, send<Updated>(S::Updated, P::Press, H::Enter)) = pressing,
             hasId + event<Finished> / (send<Finished>(S::Finished, P::None, H::Exit)) = idle,
             hasId + sml::on_entry<_> / rps,
 
             pressing + event<Updated> [sameId && zeroMB] / (send<Updated>(S::Updated, P::Release, H::None)) = hasId,
             pressing + event<Updated> [zeroId && zeroMB] / (send<Updated>(S::Finished, P::Release, H::Exit), uidu) = idle,
             pressing + event<Updated> [diffId && zeroMB] / (send<Updated>(S::Finished, P::Release, H::Exit, true, false), uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
-            pressing + event<Updated> [sameId && !zeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
-            pressing + event<Updated> [zeroId && !zeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
-            pressing + event<Updated>  [diffId && !zeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
+            pressing + event<Updated> [sameId && nonZeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
+            pressing + event<Updated> [zeroId && nonZeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
+            pressing + event<Updated>  [diffId && nonZeroMB] / (send<Updated>(S::Updated, P::Move, H::Move)),
             pressing + event<Finished> / (send<Finished>(S::Finished, P::Release, H::Exit)) = idle,
             
             // Store the press state (Mouse events keep this state internally, but touch do not)
-            pressingOutside + event<Updated> [!zeroId && zeroMB] / (uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
+            pressingOutside + event<Updated> [nonZeroId && zeroMB] / (uidu, send<Updated>(S::Started, P::None, H::Enter)) = hasId,
             pressingOutside + event<Updated> [zeroMB] = idle,
             pressingOutside + event<Finished> = idle
         );

@@ -147,6 +147,7 @@ auto uid() {
 struct Fsm {
     auto operator()() const noexcept {
         using namespace sml;
+
         const auto idle = sml::state<Idle>;
         const auto hasId = sml::state<HasId>;
         const auto pressing = sml::state<Pressing>;
@@ -169,22 +170,28 @@ struct Fsm {
         };
 
         // guards
-        const auto sameId = [](const FsmState& state, const auto& e) -> bool {
-            return e.globalId == state.active_globalId;
+        const auto sameId = [](const FsmState& fsmState, const auto& e) -> bool {
+            return e.globalId == fsmState.active_globalId;
         };
-        const auto diffId = [](const FsmState& state, const auto& e) -> bool {
-            return e.globalId != state.active_globalId && e.globalId != 0;
+        const auto diffId = [](const FsmState& fsmState, const auto& e) -> bool {
+            return e.globalId != fsmState.active_globalId && e.globalId != 0;
         };
         const auto zeroId = [](const auto& e) -> bool { return e.globalId == 0; };
+        const auto nonZeroId = [](const auto& e) -> bool { return e.globalId != 0; };
+
         const auto zeroMB = [](const FsmState&, const auto& e) -> bool {
             return e.event->buttonState().empty();
         };
 
+        const auto nonZeroMB = [](const FsmState&, const auto& e) -> bool {
+            return !e.event->buttonState().empty();
+        };
+
         // clang-format off
         return sml::make_transition_table(
-           *idle + event<Move>  [!zeroId && zeroMB] / (uidm, send<Move>(S::Started, P::None, H::Enter)) = hasId,
-            idle + event<Press> [!zeroId] / (uidp, send<Press>(S::Updated, P::Press, H::Enter)) = pressing,
-            idle + event<Release> [!zeroId] / (uidr,  send<Release>(S::Started, P::None, H::Enter)) = hasId,
+           *idle + event<Move>  [nonZeroId && zeroMB] / (uidm, send<Move>(S::Started, P::None, H::Enter)) = hasId,
+            idle + event<Press> [nonZeroId] / (uidp, send<Press>(S::Updated, P::Press, H::Enter)) = pressing,
+            idle + event<Release> [nonZeroId] / (uidr,  send<Release>(S::Started, P::None, H::Enter)) = hasId,
             idle + sml::on_entry<_> / rps,
              
             hasId + event<Move>  [sameId] / (send<Move>(S::Updated,  P::None, H::Move)),
@@ -201,7 +208,7 @@ struct Fsm {
             pressing + event<Release> [sameId && zeroMB] / (send<Release>(S::Updated,  P::Release, H::None)) = hasId,
             pressing + event<Release> [zeroId && zeroMB] / (send<Release>(S::Finished, P::Release, H::Exit), uidr) = idle,
             pressing + event<Release> [diffId && zeroMB] / (send<Release>(S::Finished, P::Release, H::Exit, true, false), uidr, send<Release>(S::Started, P::None, H::Enter)) = hasId,
-            pressing + event<Release> [!zeroMB]          / (send<Release>(S::Updated,  P::Release, H::None)),
+            pressing + event<Release> [nonZeroMB]          / (send<Release>(S::Updated,  P::Release, H::None)),
             pressing + event<Press>                      / (send<Press>  (S::Updated,  P::Press,   H::None)),
 
             hasId + event<DblClk> [sameId] / (send<DblClk>(S::Updated, P::DoubleClick, H::None)),
