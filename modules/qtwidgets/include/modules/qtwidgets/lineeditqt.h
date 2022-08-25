@@ -32,7 +32,6 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/stringproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
