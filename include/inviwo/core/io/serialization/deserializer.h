@@ -36,7 +36,7 @@
 #include <inviwo/core/util/logfilter.h>
 #include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/detected.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmutils.h>
 
 #include <flags/flags.h>
 
@@ -49,7 +49,7 @@
 #include <map>
 #include <unordered_map>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 namespace inviwo {
 

@@ -713,6 +713,7 @@ set(SOURCE_FILES
     util/typetraits.cpp
     util/unindent.cpp
     util/utilities.cpp
+    util/vectoroperations.cpp
     util/volumesampler.cpp
     util/volumesequencesampler.cpp
     util/volumesequenceutils.cpp

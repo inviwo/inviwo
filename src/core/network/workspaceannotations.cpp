@@ -30,6 +30,8 @@
 #include <inviwo/core/network/workspaceannotations.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <inviwo/core/util/glm.h>
+
 namespace inviwo {
 
 WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64jpeg, int w,
