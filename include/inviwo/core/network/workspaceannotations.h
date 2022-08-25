@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
 
 namespace inviwo {
 
@@ -54,9 +54,9 @@ public:
         ivec2 size = ivec2{0};
     };
 
-    WorkspaceAnnotations(InviwoApplication* app = InviwoApplication::getPtr());
+    WorkspaceAnnotations(InviwoApplication* app = util::getInviwoApplication());
     WorkspaceAnnotations(const std::vector<Base64Image>& canvasImages,
-                         InviwoApplication* app = InviwoApplication::getPtr());
+                         InviwoApplication* app = util::getInviwoApplication());
 
     /*
      * Loads workspace annotations from the provided \p path.
@@ -64,7 +64,7 @@ public:
      * @return WorkspaceAnnotations if successfully loaded, empty WorkspaceAnnotations otherwise.
      */
     WorkspaceAnnotations(std::string_view path,
-                         InviwoApplication* app = InviwoApplication::getPtr());
+                         InviwoApplication* app = util::getInviwoApplication());
 
     virtual ~WorkspaceAnnotations() = default;
 

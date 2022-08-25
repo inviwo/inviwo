@@ -32,6 +32,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 

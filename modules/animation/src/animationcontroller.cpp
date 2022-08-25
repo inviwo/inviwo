@@ -30,6 +30,7 @@
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/animationcontrollerobserver.h>
 #include <modules/animation/datastructures/controltrack.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/processors/canvasprocessor.h>

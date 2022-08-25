@@ -30,7 +30,7 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/util/timer.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
 
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/animationtime.h>
@@ -61,7 +61,8 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable,
                                                      public PropertyOwner {
 public:
-    AnimationController(Animation& animation, InviwoApplication* app = InviwoApplication::getPtr());
+    AnimationController(Animation& animation,
+                        InviwoApplication* app = util::getInviwoApplication());
     virtual ~AnimationController();
 
     /// Play animation

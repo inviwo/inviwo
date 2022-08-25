@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwoapplication.h>
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filedialog.h>
+#include <inviwo/core/util/pathtype.h>
 #include <string>
 #include <unordered_map>
 

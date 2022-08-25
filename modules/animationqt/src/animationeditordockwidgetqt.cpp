@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>

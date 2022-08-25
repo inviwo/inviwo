@@ -44,12 +44,12 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API WorkspaceAnnotationsQt : public WorkspaceAnnotations {
 public:
-    WorkspaceAnnotationsQt(InviwoApplication* app = InviwoApplication::getPtr());
+    WorkspaceAnnotationsQt(InviwoApplication* app = util::getInviwoApplication());
     WorkspaceAnnotationsQt(const QImage& network,
                            const std::vector<std::pair<std::string, QImage>>& canvasImages,
-                           InviwoApplication* app = InviwoApplication::getPtr());
+                           InviwoApplication* app = util::getInviwoApplication());
     WorkspaceAnnotationsQt(std::string_view path,
-                           InviwoApplication* app = InviwoApplication::getPtr());
+                           InviwoApplication* app = util::getInviwoApplication());
 
     virtual ~WorkspaceAnnotationsQt() = default;
 
@@ -66,7 +66,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     static QStringList workspaceProcessors(std::string_view path,
-                                           InviwoApplication* app = InviwoApplication::getPtr());
+                                           InviwoApplication* app = util::getInviwoApplication());
 
 private:
     Base64Image network_;

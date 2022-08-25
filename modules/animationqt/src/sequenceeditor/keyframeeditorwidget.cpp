@@ -36,6 +36,7 @@
 
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -81,7 +82,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
         property_->setOwner(nullptr);
 
         auto propWidget =
-            util::getInviwoApplication()->getPropertyWidgetFactory()->create(property_.get());
+            InviwoApplication::getPtr()->getPropertyWidgetFactory()->create(property_.get());
         propertyWidget_ = static_cast<PropertyWidgetQt*>(propWidget.release());
 
         if (auto label = propertyWidget_->findChild<EditableLabelQt*>()) {

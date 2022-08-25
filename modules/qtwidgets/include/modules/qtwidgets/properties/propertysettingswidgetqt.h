@@ -31,7 +31,6 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 // Core
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>

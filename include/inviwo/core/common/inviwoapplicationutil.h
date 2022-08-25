@@ -61,6 +61,18 @@ IVW_CORE_API InviwoApplication* getInviwoApplication(Property*);
  */
 IVW_CORE_API InviwoApplication* getInviwoApplication();
 
+/**
+ * Utility function to return whether the InviwoApplication is initialized
+ * @see InviwoApplication::isInitialized
+ */
+IVW_CORE_API bool isInviwoApplicationInitialized();
+/**
+ * Utility function to query the pool size of the InviwoApplication
+ * @return pool size of the InviwoApplication, 0 if the application is not initialized
+ * @see InviwoApplication::getPoolSize(), InviwoApplication::isInitialized
+ */
+IVW_CORE_API size_t getInviwoApplicationPoolSize();
+
 }  // namespace util
 
 }  // namespace inviwo

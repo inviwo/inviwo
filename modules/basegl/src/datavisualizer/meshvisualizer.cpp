@@ -29,6 +29,7 @@
 
 #include <modules/basegl/datavisualizer/meshvisualizer.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <modules/base/processors/meshsource.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/basegl/processors/meshrenderprocessorgl.h>

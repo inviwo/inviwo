@@ -96,7 +96,7 @@ public:
      * @param content A content type passed into the FileProperty, usually 'volume', 'image' etc.
      * @see FileProperty
      */
-    DataSource(InviwoApplication* app = InviwoApplication::getPtr(), const std::string& file = "",
+    DataSource(InviwoApplication* app = util::getInviwoApplication(), const std::string& file = "",
                const std::string& content = "");
     virtual ~DataSource() = default;
 
