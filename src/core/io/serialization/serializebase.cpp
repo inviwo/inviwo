@@ -30,7 +30,17 @@
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/ticpp.h>
 
+#include <charconv>
+
 namespace inviwo {
+
+namespace config {
+#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
+constexpr bool charconv = true;
+#else
+constexpr bool charconv = false;
+#endif
+}  // namespace config
 
 SerializeBase::SerializeBase()
     : doc_{std::make_unique<TxDocument>()}, rootElement_{nullptr}, retrieveChild_{true} {}
@@ -135,6 +145,55 @@ NodeSwitch::operator bool() const { return serializer_->rootElement_ != nullptr;
 std::string detail::getNodeAttributeOrDefault(TxElement* node, const std::string& key,
                                               const std::string& defaultValue) {
     return node->GetAttributeOrDefault(key, defaultValue);
+}
+
+namespace {
+
+template <class T>
+void fromStrInternal(std::string_view value, T& dest) {
+    if constexpr (config::charconv && (std::is_same_v<double, T> || std::is_same_v<float, T> ||
+                                       (!std::is_same_v<bool, T> && std::is_integral_v<T>))) {
+        const auto end = value.data() + value.size();
+        if (auto [p, ec] = std::from_chars(value.data(), end, dest);
+            ec != std::errc() || p != end) {
+            throw SerializationException("Error parsing number", IVW_CONTEXT_CUSTOM("fromStr"));
+        }
+    } else {
+        std::istringstream stream{value};
+        stream >> dest;
+    }
+}
+
+}  // namespace
+
+void detail::numericalFromStr(std::string_view value, double& dest) {
+    fromStrInternal(value, dest);
+}
+void detail::numericalFromStr(std::string_view value, float& dest) { fromStrInternal(value, dest); }
+void detail::numericalFromStr(std::string_view value, char& dest) { fromStrInternal(value, dest); }
+void detail::numericalFromStr(std::string_view value, signed char& dest) {
+    fromStrInternal(value, dest);
+}
+void detail::numericalFromStr(std::string_view value, unsigned char& dest) {
+    fromStrInternal(value, dest);
+}
+void detail::numericalFromStr(std::string_view value, short& dest) { fromStrInternal(value, dest); }
+void detail::numericalFromStr(std::string_view value, unsigned short& dest) {
+    fromStrInternal(value, dest);
+}
+void detail::numericalFromStr(std::string_view value, int& dest) { fromStrInternal(value, dest); }
+void detail::numericalFromStr(std::string_view value, unsigned int& dest) {
+    fromStrInternal(value, dest);
+}
+void detail::numericalFromStr(std::string_view value, long& dest) { fromStrInternal(value, dest); }
+void detail::numericalFromStr(std::string_view value, unsigned long& dest) {
+    fromStrInternal(value, dest);
+}
+void detail::numericalFromStr(std::string_view value, long long& dest) {
+    fromStrInternal(value, dest);
+}
+void detail::numericalFromStr(std::string_view value, unsigned long long& dest) {
+    fromStrInternal(value, dest);
 }
 
 }  // namespace inviwo
