@@ -122,6 +122,10 @@
 #include <modules/base/processors/volumeinformation.h>
 #include <modules/base/processors/tfselector.h>
 
+#include <modules/base/datavisualizer/imageinformationvisualizer.h>
+#include <modules/base/datavisualizer/meshinformationvisualizer.h>
+#include <modules/base/datavisualizer/volumeinformationvisualizer.h>
+
 #include <fmt/format.h>
 #include <tuple>
 
@@ -251,6 +255,10 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataWriter(std::make_unique<StlWriter>());
     registerDataWriter(std::make_unique<BinarySTLWriter>());
     registerDataWriter(std::make_unique<WaveFrontWriter>());
+
+    registerDataVisualizer(std::make_unique<ImageInformationVisualizer>(app));
+    registerDataVisualizer(std::make_unique<MeshInformationVisualizer>(app));
+    registerDataVisualizer(std::make_unique<VolumeInformationVisualizer>(app));
 
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
