@@ -127,7 +127,7 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
         return os;
     }
 
-    IVW_CORE_API friend std::istream& operator>>(std::istream& ss, BrushingTarget& bt);
+    IVW_MODULE_BRUSHINGANDLINKING_API friend std::istream& operator>>(std::istream& ss, BrushingTarget& bt);
 
     std::string_view getString() const { return target_; }
 
