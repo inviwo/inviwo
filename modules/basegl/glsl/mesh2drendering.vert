@@ -32,20 +32,20 @@
 
 layout(location = 7) in uint in_PickId;
 
-uniform GeometryParameters geometry_;
+uniform GeometryParameters geometry;
 
 uniform mat4 projectionMatrix;
+
+uniform bool pickingEnabled = false;
 
 out vec4 color_;
 out vec3 texCoord_;
 flat out vec4 pickColor_;
-
-uniform bool pickingEnabled = false;
 
 void main() {
     color_ = in_Color;
     texCoord_ = in_TexCoord;
     pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 
-    gl_Position = projectionMatrix * in_Vertex;
+    gl_Position = projectionMatrix * geometry.dataToWorld * in_Vertex;
 }

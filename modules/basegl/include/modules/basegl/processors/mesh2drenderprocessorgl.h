@@ -33,10 +33,9 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <vector>
+#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 
@@ -57,11 +56,14 @@ protected:
 
     BoolProperty enableDepthTest_;
 
-    FloatProperty top_, bottom_, left_, right_;
+    CompositeProperty frustum_;
+    FloatProperty top_;
+    FloatProperty bottom_;
+    FloatProperty left_;
+    FloatProperty right_;
 
-    using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
-    DrawerMap drawers_;
-    void updateDrawers();
+    FloatProperty near_;
+    FloatProperty far_;
 };
 
 }  // namespace inviwo
