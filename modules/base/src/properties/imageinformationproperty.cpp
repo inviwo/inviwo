@@ -42,15 +42,25 @@ ImageInformationProperty::ImageInformationProperty(std::string_view identifier,
                                                    std::string_view displayName,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , dimensions_("dimensions", "Dimensions", size2_t(0), size2_t(0),
-                  size2_t(std::numeric_limits<size_t>::max()), size2_t(1), InvalidationLevel::Valid,
-                  PropertySemantics("Text"))
+    : CompositeProperty(
+          identifier, displayName,
+          "A CompositeProperty holding properties to show a information about an image"_help,
+          invalidationLevel, semantics)
+    , dimensions_("dimensions", "Dimensions", "Image dimensions"_help, size2_t(0),
+                  {size2_t(0), ConstraintBehavior::Immutable},
+                  {size2_t(std::numeric_limits<size_t>::max()), ConstraintBehavior::Immutable},
+                  size2_t(1), InvalidationLevel::Valid, PropertySemantics("Text"))
+    , aspectRatio_("aspectRatio", "Aspect Ratio",
+                   OrdinalPropertyState<double>{0.0, 0.0, ConstraintBehavior::Immutable,
+                                                std::numeric_limits<double>::max(),
+                                                ConstraintBehavior::Immutable, 0.1,
+                                                InvalidationLevel::Valid, PropertySemantics::Text})
     , imageType_("imageType", "Image Type")
-    , numColorLayers_("numColorLayers", "Number of Color Layers", 0, 0,
-                      std::numeric_limits<size_t>::max(), 1, InvalidationLevel::Valid,
-                      PropertySemantics::Text)
-    , layers_("layers", "Layers") {
+    , numColorLayers_("numColorLayers", "Color Layers", "Number of color layers"_help, 0,
+                      {0, ConstraintBehavior::Immutable},
+                      {std::numeric_limits<size_t>::max(), ConstraintBehavior::Immutable}, 1,
+                      InvalidationLevel::Valid, PropertySemantics::Text)
+    , layers_("layers", "Layers", "Detailed information on all layers in the image"_help) {
     util::for_each_in_tuple(
         [&](auto& e) {
             e.setReadOnly(true);
@@ -69,11 +79,11 @@ ImageInformationProperty::ImageInformationProperty(std::string_view identifier,
 ImageInformationProperty::ImageInformationProperty(const ImageInformationProperty& rhs)
     : CompositeProperty(rhs)
     , dimensions_(rhs.dimensions_)
+    , aspectRatio_(rhs.aspectRatio_)
     , imageType_(rhs.imageType_)
     , numColorLayers_(rhs.numColorLayers_)
     , layers_(rhs.layers_) {
-    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
-    addProperty(layers_);
+    addProperties(dimensions_, aspectRatio_, imageType_, numColorLayers_, layers_);
 }
 
 ImageInformationProperty* ImageInformationProperty::clone() const {
@@ -98,6 +108,7 @@ void ImageInformationProperty::updateForNewImage(const Image& image) {
     }();
 
     dimensions_.set(dim);
+    aspectRatio_.set(static_cast<double>(dim.x) / dim.y);
     imageType_.set(toString(type));
     numColorLayers_.set(image.getNumberOfColorLayers());
 

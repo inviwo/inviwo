@@ -59,13 +59,14 @@ public:
 
     // Read-only used to show information
     IntSize2Property dimensions_;
+    DoubleProperty aspectRatio_;
     StringProperty imageType_;
     IntSizeTProperty numColorLayers_;
     CompositeProperty layers_;
 
 private:
-    auto props() { return std::tie(dimensions_, imageType_, numColorLayers_); }
-    auto props() const { return std::tie(dimensions_, imageType_, numColorLayers_); }
+    auto props() { return std::tie(dimensions_, aspectRatio_, imageType_, numColorLayers_); }
+    auto props() const { return std::tie(dimensions_, aspectRatio_, imageType_, numColorLayers_); }
 };
 
 }  // namespace inviwo

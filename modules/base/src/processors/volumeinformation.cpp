@@ -43,12 +43,14 @@ const ProcessorInfo VolumeInformation::processorInfo_{
     "Information",                   // Category
     CodeState::Stable,               // Code state
     "CPU, Volume, Information",      // Tags
-};
+    R"(
+    Shows available information provided by input volume including metadata.
+    )"_unindentHelp};
 const ProcessorInfo VolumeInformation::getProcessorInfo() const { return processorInfo_; }
 
 VolumeInformation::VolumeInformation()
     : Processor()
-    , volume_("volume")
+    , volume_("volume", "Input volume"_help)
     , volumeInfo_("dataInformation", "Data Information")
     , significantVoxels_("significantVoxels", "Significant Voxels", 0, 0,
                          std::numeric_limits<size_t>::max(), 1, InvalidationLevel::Valid,
@@ -77,9 +79,11 @@ VolumeInformation::VolumeInformation()
     , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
               vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
               PropertySemantics::Text)
-    , perVoxelProperties_("minmaxValues", "Aggregated per Voxel", true)
+    , perVoxelProperties_("minmaxValues", "Aggregated per Voxel", false)
     , transformations_("transformations", "Transformations")
-    , metaDataProperty_("metaData", "Meta Data")
+    , metaDataProperty_(
+          "metaData", "Meta Data",
+          "Composite property listing all the metadata stored in the input Image"_help)
     , voxelSize_("voxelSize", "Voxel size", dvec3(0), dvec3(std::numeric_limits<float>::lowest()),
                  dvec3(std::numeric_limits<float>::max()), dvec3(0.0001), InvalidationLevel::Valid,
                  PropertySemantics::Text) {

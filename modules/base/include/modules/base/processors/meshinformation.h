@@ -38,14 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MeshInformation, Mesh Information}
- * ![](org.inviwo.MeshInformation.png?classIdentifier=org.inviwo.MeshInformation)
- * Shows available information provided by the input mesh including metadata.
- *
- * ### Inports
- *   * __mesh__   input mesh
- */
-
 /**
  * \class MeshInformation
  * \brief provides information on the input mesh

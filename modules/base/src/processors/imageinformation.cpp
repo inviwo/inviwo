@@ -38,14 +38,18 @@ const ProcessorInfo ImageInformation::processorInfo_{
     "Information",                     // Category
     CodeState::Stable,                 // Code state
     "CPU, Image, Layer, Information",  // Tags
-};
+    R"(
+    Shows available information provided by the input image including metadata.
+    )"_unindentHelp};
 const ProcessorInfo ImageInformation::getProcessorInfo() const { return processorInfo_; }
 
 ImageInformation::ImageInformation()
     : Processor()
-    , image_("image", true)
+    , image_("image", "Input image"_help, OutportDeterminesSize::Yes)
     , imageInfo_("dataInformation", "Data Information")
-    , metaDataProperty_("metaData", "Meta Data") {
+    , metaDataProperty_(
+          "metaData", "Meta Data",
+          "Composite property listing all the metadata stored in the input Image"_help) {
 
     addPort(image_);
     addProperty(imageInfo_);

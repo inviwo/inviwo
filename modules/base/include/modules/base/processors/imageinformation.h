@@ -38,18 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageInformation, Image Information}
- * ![](org.inviwo.ImageInformation.png?classIdentifier=org.inviwo.ImageInformation)
- * Shows available information provided by input image including metadata.
- *
- * ### Inports
- *   * __image__   input image
- */
-
-/**
- * \class ImageInformation
- * \brief provides information on input image
- */
 class IVW_MODULE_BASE_API ImageInformation : public Processor {
 public:
     ImageInformation();
