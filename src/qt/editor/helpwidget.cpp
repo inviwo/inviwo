@@ -182,6 +182,9 @@ constexpr std::string_view css = R"(
     a {
         text-decoration: underline
     }
+    a:link {
+        color: #268BD2;
+    }
     span.name {
         font-weight: 600;
         color: #CdC9C5;
@@ -204,6 +207,7 @@ void link(T& factory, std::string_view id, Document::DocumentHandle& handle) {
     if (auto* fo = factory->getFactoryObject(id)) {
         auto& typeName = fo->getTypeName();
         std::string name{typeName.substr(0, typeName.find_first_of('<'))};
+        replaceInString(name, "class ", "");
         std::string doxyName{name};
         replaceInString(doxyName, ":", "_1");
         handle.append("a", "", {{"href", base + doxyName}}).append("span", name, {{"class", "id"}});
@@ -221,7 +225,6 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
     Document doc;
 
     auto html = doc.append("html");
-    html.append("style", css);
     auto body = html.append("body");
     body.append("h3", fmt::format("{}", processor.displayName));
 
@@ -301,7 +304,6 @@ Document makePropertyHelp(const help::HelpProperty& property, std::string_view p
     Document doc;
 
     auto html = doc.append("html");
-    html.append("style", css);
     auto body = html.append("body");
     body.append("h3", property.displayName);
     link(propertyFactory, property.classIdentifier, body);
@@ -397,6 +399,8 @@ HelpBrowser::HelpBrowser(HelpWidget* parent, InviwoApplication* app)
     setOpenExternalLinks(true);
 
     setText("Select a processor in the processor list to see help");
+
+    document()->setDefaultStyleSheet(utilqt::toQString(css));
 }
 
 void HelpBrowser::setCurrent(std::string_view processorClassIdentifier) {
