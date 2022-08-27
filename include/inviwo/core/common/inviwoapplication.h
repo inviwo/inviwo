@@ -244,6 +244,11 @@ public:
      */
     virtual void resizePool(size_t newSize);
 
+    /**
+     * Check whether the active thread is managed by the thread pool.
+     */
+    bool isPoolThread() const;
+
     void waitForPool();
     void setPostEnqueueFront(std::function<void()> func);
     void setProgressCallback(std::function<void(std::string)> progressCallback);
