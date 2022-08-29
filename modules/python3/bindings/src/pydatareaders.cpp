@@ -38,25 +38,6 @@
 namespace inviwo {
 
 // Allow overriding virtual functions from Python
-class DataReaderTrampoline : public DataReader, public pybind11::trampoline_self_life_support {
-public:
-    using DataReader::DataReader;  // Inherit constructors
-
-    virtual DataReader* clone() const override {
-        PYBIND11_OVERRIDE_PURE(DataReader*, /* Return type */
-                               DataReader,  /* Parent class */
-                               clone,       /* Name of function in C++ (must match Python name) */
-        );
-    }
-    virtual bool setOption(std::string_view key, std::any value) override {
-        PYBIND11_OVERRIDE(bool,       /* Return type */
-                          DataReader, /* Parent class */
-                          setOption,  /* Name of function in C++ (must match Python name) */
-                          key, value  /* Argument(s) */
-        );
-    }
-};
-
 template <typename T>
 class DataReaderTypeTrampoline : public DataReaderType<T>,
                                  public pybind11::trampoline_self_life_support {
@@ -117,26 +98,18 @@ void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string
 void exposeDataReaders(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::class_<DataReader, DataReaderTrampoline>(m, "DataReader")
-        .def("clone", &DataReader::clone)
-        .def_property_readonly("extensions", &DataReader::getExtensions,
-                               py::return_value_policy::reference_internal)
-        .def("addExtension", &DataReader::addExtension)
-        .def("setOption", &DataReader::setOption)
-        .def("getOption", &DataReader::getOption);
-
     // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#binding-classes-with-template-parameters
-    py::class_<DataReaderType<Image>, DataReader, DataReaderTypeTrampoline<Image>>(
+    py::class_<DataReaderType<Image>, DataReaderTypeTrampoline<Image>>(
         m, "ImageDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Image>::readData))
         .def("readData",
              py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Image>::readData));
-    py::class_<DataReaderType<Mesh>, DataReader, DataReaderTypeTrampoline<Mesh>>(m,
+    py::class_<DataReaderType<Mesh>, DataReaderTypeTrampoline<Mesh>>(m,
                                                                                  "MeshDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Mesh>::readData))
         .def("readData",
              py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Mesh>::readData));
-    py::class_<DataReaderType<Volume>, DataReader, DataReaderTypeTrampoline<Volume>>(
+    py::class_<DataReaderType<Volume>, DataReaderTypeTrampoline<Volume>>(
         m, "VolumeDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Volume>::readData))
         .def("readData", py::overload_cast<std::string_view, MetaDataOwner*>(
