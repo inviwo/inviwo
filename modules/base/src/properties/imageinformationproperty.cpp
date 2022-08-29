@@ -42,19 +42,15 @@ ImageInformationProperty::ImageInformationProperty(std::string_view identifier,
                                                    std::string_view displayName,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : CompositeProperty(
-          identifier, displayName,
-          "A CompositeProperty holding properties to show a information about an image"_help,
-          invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, "Information about an image"_help,
+                        invalidationLevel, semantics)
     , dimensions_("dimensions", "Dimensions", "Image dimensions"_help, size2_t(0),
                   {size2_t(0), ConstraintBehavior::Immutable},
                   {size2_t(std::numeric_limits<size_t>::max()), ConstraintBehavior::Immutable},
                   size2_t(1), InvalidationLevel::Valid, PropertySemantics("Text"))
-    , aspectRatio_("aspectRatio", "Aspect Ratio",
-                   OrdinalPropertyState<double>{0.0, 0.0, ConstraintBehavior::Immutable,
-                                                std::numeric_limits<double>::max(),
-                                                ConstraintBehavior::Immutable, 0.1,
-                                                InvalidationLevel::Valid, PropertySemantics::Text})
+    , aspectRatio_("aspectRatio", "Aspect Ratio", 0.0, {0.0, ConstraintBehavior::Immutable},
+                   {std::numeric_limits<double>::max(), ConstraintBehavior::Immutable}, 0.1,
+                   InvalidationLevel::Valid, PropertySemantics::Text)
     , imageType_("imageType", "Image Type")
     , numColorLayers_("numColorLayers", "Color Layers", "Number of color layers"_help, 0,
                       {0, ConstraintBehavior::Immutable},

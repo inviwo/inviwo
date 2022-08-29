@@ -38,7 +38,7 @@
 #include <array>
 #include <sstream>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 namespace ticpp {
 class Element;

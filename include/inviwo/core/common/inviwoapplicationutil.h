@@ -30,6 +30,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <cstddef>
+
 namespace inviwo {
 
 class InviwoApplication;
