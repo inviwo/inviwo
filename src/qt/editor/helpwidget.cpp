@@ -207,7 +207,6 @@ void link(T& factory, std::string_view id, Document::DocumentHandle& handle) {
     if (auto* fo = factory->getFactoryObject(id)) {
         auto& typeName = fo->getTypeName();
         std::string name{typeName.substr(0, typeName.find_first_of('<'))};
-        replaceInString(name, "class ", "");
         std::string doxyName{name};
         replaceInString(doxyName, ":", "_1");
         handle.append("a", "", {{"href", base + doxyName}}).append("span", name, {{"class", "id"}});

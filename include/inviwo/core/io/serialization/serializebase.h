@@ -180,7 +180,13 @@ IVW_CORE_API void numericalFromStr(std::string_view value, unsigned long long& d
 
 template <class T>
 decltype(auto) toStr(const T& value) {
-    return fmt::to_string(value);
+    if constexpr (std::is_same_v<std::string, T>) {
+        return value;
+    } else if constexpr (std::is_same_v<std::string_view, T>) {
+        return std::string{value};
+    } else {
+        return fmt::to_string(value);
+    }
 }
 
 template <class T>

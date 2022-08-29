@@ -36,14 +36,15 @@ namespace inviwo::util {
 /**
  * Demangle the type ID given in @p name
  * @param name mangled type ID name
- * @return demangled type name without `class`
+ * @return demangled type name without `class` and `struct`
  */
 IVW_CORE_API std::string demangle(const char* name);
 
 /**
  * Demangle and strip the type ID given in @p name
  * @param name mangled type ID name
- * @return demangled type name without `class`, `const`, `inviwo::`, or white space
+ * @return demangled type name without `class`, `struct`, `const`, `inviwo::`, or white space
+ * @see demangle()
  */
 IVW_CORE_API std::string parseTypeIdName(const char* name);
 

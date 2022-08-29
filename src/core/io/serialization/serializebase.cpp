@@ -31,6 +31,7 @@
 #include <inviwo/core/io/serialization/ticpp.h>
 
 #include <charconv>
+#include <sstream>
 
 namespace inviwo {
 
@@ -159,7 +160,7 @@ void fromStrInternal(std::string_view value, T& dest) {
             throw SerializationException("Error parsing number", IVW_CONTEXT_CUSTOM("fromStr"));
         }
     } else {
-        std::istringstream stream{value};
+        std::istringstream stream{std::string{value}};
         stream >> dest;
     }
 }
