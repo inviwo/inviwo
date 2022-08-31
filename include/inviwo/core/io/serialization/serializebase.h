@@ -184,6 +184,9 @@ decltype(auto) toStr(const T& value) {
         return value;
     } else if constexpr (std::is_same_v<std::string_view, T>) {
         return std::string{value};
+    } else if constexpr (std::is_same_v<bool, T>) {
+        // necessary since fmt::to_string(bool) defaults to "true"/"false" instead of 0/1
+        return fmt::format("{:d}", value);
     } else {
         return fmt::to_string(value);
     }
