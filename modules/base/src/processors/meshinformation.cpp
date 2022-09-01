@@ -38,14 +38,18 @@ const ProcessorInfo MeshInformation::processorInfo_{
     "Information",                       // Category
     CodeState::Stable,                   // Code state
     "CPU, Mesh, Geometry, Information",  // Tags
-};
+    R"(
+    Shows available information provided by the input mesh including metadata.
+    )"_unindentHelp};
 const ProcessorInfo MeshInformation::getProcessorInfo() const { return processorInfo_; }
 
 MeshInformation::MeshInformation()
     : Processor()
-    , mesh_("mesh")
+    , mesh_("mesh", "Input mesh"_help)
     , meshInfo_("dataInformation", "Data Information")
-    , metaDataProperty_("metaData", "Meta Data") {
+    , metaDataProperty_(
+          "metaData", "Meta Data",
+          "Composite property listing all the metadata stored in the input Image"_help) {
 
     addPort(mesh_);
     addProperty(meshInfo_);

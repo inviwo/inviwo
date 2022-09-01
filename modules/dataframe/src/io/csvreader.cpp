@@ -49,8 +49,17 @@
 #include <functional>
 #include <type_traits>
 #include <regex>
+#include <charconv>
 
 namespace inviwo {
+
+namespace config {
+#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
+constexpr bool charconv = true;
+#else
+constexpr bool charconv = false;
+#endif
+}  // namespace config
 
 CSVReader::CSVReader(std::string_view delim, bool hasHeader, bool doublePrecision)
     : DataReaderType<DataFrame>()

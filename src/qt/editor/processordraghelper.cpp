@@ -37,6 +37,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/glm.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/textlabeloverlay.h>

@@ -292,7 +292,7 @@ QString InviwoFileDialog::getPreviousPath(const QString& pathType) {
     if (pathType != "default") {
         defaultPath = getPreviousPath("default");
     } else {
-        defaultPath = utilqt::toQString(InviwoApplication::getPtr()->getBasePath());
+        defaultPath = utilqt::toQString(filesystem::findBasePath());
         if (!QDir(defaultPath).exists()) {
             defaultPath.clear();
         }

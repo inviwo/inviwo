@@ -182,6 +182,9 @@ constexpr std::string_view css = R"(
     a {
         text-decoration: underline
     }
+    a:link {
+        color: #268BD2;
+    }
     span.name {
         font-weight: 600;
         color: #CdC9C5;
@@ -221,7 +224,6 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
     Document doc;
 
     auto html = doc.append("html");
-    html.append("style", css);
     auto body = html.append("body");
     body.append("h3", fmt::format("{}", processor.displayName));
 
@@ -301,7 +303,6 @@ Document makePropertyHelp(const help::HelpProperty& property, std::string_view p
     Document doc;
 
     auto html = doc.append("html");
-    html.append("style", css);
     auto body = html.append("body");
     body.append("h3", property.displayName);
     link(propertyFactory, property.classIdentifier, body);
@@ -397,6 +398,8 @@ HelpBrowser::HelpBrowser(HelpWidget* parent, InviwoApplication* app)
     setOpenExternalLinks(true);
 
     setText("Select a processor in the processor list to see help");
+
+    document()->setDefaultStyleSheet(utilqt::toQString(css));
 }
 
 void HelpBrowser::setCurrent(std::string_view processorClassIdentifier) {

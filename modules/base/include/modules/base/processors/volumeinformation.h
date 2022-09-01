@@ -44,14 +44,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeInformation, Volume Information}
- * ![](org.inviwo.VolumeInformation.png?classIdentifier=org.inviwo.VolumeInformation)
- * Shows available information provided by input volume including metadata.
- *
- * ### Inports
- *   * __volume__   input volume
- */
-
 /**
  * \class VolumeInformation
  * \brief provides information on input volume

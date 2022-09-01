@@ -31,7 +31,7 @@
 #include <modules/animation/animationmoduledefine.h>
 
 #include <inviwo/core/util/timer.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -49,7 +49,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API DemoController : public DemoControllerObservable,
                                                 public PropertyOwner {
 public:
-    DemoController(InviwoApplication* app = InviwoApplication::getPtr());
+    DemoController(InviwoApplication* app = util::getInviwoApplication());
     virtual ~DemoController();
 
     enum Offset { None, First, Previous, Next, Last, Reload };

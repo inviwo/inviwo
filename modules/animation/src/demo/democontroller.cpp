@@ -29,6 +29,7 @@
 
 #include <modules/animation/demo/democontroller.h>
 #include <modules/animation/demo/democontrollerobserver.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>

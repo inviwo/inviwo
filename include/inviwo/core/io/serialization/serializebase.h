@@ -35,9 +35,10 @@
 
 #include <map>
 #include <string>
-#include <charconv>
 #include <array>
 #include <sstream>
+
+#include <fmt/core.h>
 
 namespace ticpp {
 class Element;
@@ -47,14 +48,6 @@ class Document;
 namespace inviwo {
 using TxElement = ticpp::Element;
 using TxDocument = ticpp::Document;
-
-namespace config {
-#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
-constexpr bool charconv = true;
-#else
-constexpr bool charconv = false;
-#endif
-}  // namespace config
 
 namespace detail {
 IVW_CORE_API std::string getNodeAttributeOrDefault(TxElement* node, const std::string& key,
@@ -171,31 +164,31 @@ protected:
 
 namespace detail {
 
+IVW_CORE_API void numericalFromStr(std::string_view value, double& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, float& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, char& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, signed char& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, unsigned char& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, short& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, unsigned short& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, int& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, unsigned int& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, long& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, unsigned long& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, long long& dest);
+IVW_CORE_API void numericalFromStr(std::string_view value, unsigned long long& dest);
+
 template <class T>
 decltype(auto) toStr(const T& value) {
     if constexpr (std::is_same_v<std::string, T>) {
         return value;
     } else if constexpr (std::is_same_v<std::string_view, T>) {
         return std::string{value};
-    } else if constexpr (config::charconv &&
-                         (std::is_same_v<double, T> || std::is_same_v<float, T> ||
-                          (!std::is_same_v<bool, T> && std::is_integral_v<T>))) {
-        std::array<char, 40> buff;
-        auto [p, ec] = std::to_chars(buff.data(), buff.data() + buff.size(), value);
-        if (ec != std::errc()) {
-            throw SerializationException("Error writing number", IVW_CONTEXT_CUSTOM("toStr"));
-        }
-        return std::string{buff.data(), static_cast<size_t>(p - buff.data())};
-
+    } else if constexpr (std::is_same_v<bool, T>) {
+        // necessary since fmt::to_string(bool) defaults to "true"/"false" instead of 0/1
+        return fmt::format("{:d}", value);
     } else {
-        std::ostringstream stream;
-        if constexpr (std::is_same_v<T, double>) {
-            stream.precision(17);
-        } else if constexpr (std::is_same_v<T, float>) {
-            stream.precision(8);
-        }
-        stream << value;
-        return std::move(stream).str();
+        return fmt::to_string(value);
     }
 }
 
@@ -203,14 +196,9 @@ template <class T>
 void fromStr(const std::string& value, T& dest) {
     if constexpr (std::is_same_v<std::string, T>) {
         dest = value;
-    } else if constexpr (config::charconv &&
-                         (std::is_same_v<double, T> || std::is_same_v<float, T> ||
-                          (!std::is_same_v<bool, T> && std::is_integral_v<T>))) {
-        const auto end = value.data() + value.size();
-        if (auto [p, ec] = std::from_chars(value.data(), end, dest);
-            ec != std::errc() || p != end) {
-            throw SerializationException("Error parsing number", IVW_CONTEXT_CUSTOM("fromStr"));
-        }
+    } else if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> ||
+                         (!std::is_same_v<bool, T> && std::is_integral_v<T>)) {
+        numericalFromStr(value, dest);
     } else {
         std::istringstream stream{value};
         stream >> dest;

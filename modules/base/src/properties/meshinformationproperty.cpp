@@ -43,7 +43,8 @@ MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
                                                  std::string_view displayName,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, "Information about a mesh and its buffers"_help,
+                        invalidationLevel, semantics)
     , defaultMeshInfo_("defaultMeshInfo", "Default Mesh Info")
     , defaultDrawType_("defaultDrawType", "Draw Type")
     , defaultConnectivity_("defaultConnectivity", "Connectivity")

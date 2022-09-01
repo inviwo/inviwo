@@ -29,7 +29,6 @@
 
 #pragma once
 
-#include <inviwo/core/properties/property.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/observer.h>
@@ -39,6 +38,7 @@ namespace inviwo {
 class Processor;
 class ProcessorObservable;
 class ProcessorNetworkEvaluator;
+class Property;
 
 /** \class ProcessorObserver
  *

@@ -61,6 +61,8 @@ public:
     StringProperty format_;
     IntSizeTProperty channels_;
     StringProperty swizzleMask_;
+    StringProperty interpolation_;
+    StringProperty wrapping_;
 };
 
 }  // namespace inviwo

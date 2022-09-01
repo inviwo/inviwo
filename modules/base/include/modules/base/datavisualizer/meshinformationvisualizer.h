@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,26 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include "utils/structs.glsl"
-#include "utils/pickingutils.glsl"
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/rendering/datavisualizer.h>
 
-layout(location = 7) in uint in_PickId;
+namespace inviwo {
 
-uniform GeometryParameters geometry;
+class IVW_MODULE_BASE_API MeshInformationVisualizer : public DataVisualizer {
+public:
+    MeshInformationVisualizer(InviwoApplication* app);
+    virtual ~MeshInformationVisualizer() = default;
+    virtual std::string getName() const override;
+    virtual Document getDescription() const override;
+    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
+    virtual bool isOutportSupported(const Outport* port) const override;
 
-uniform mat4 projectionMatrix;
+    virtual bool hasSourceProcessor() const override;
+    virtual bool hasVisualizerNetwork() const override;
 
-uniform bool pickingEnabled = false;
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
+                                                         ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
+        const std::string& filename, ProcessorNetwork* network) const override;
 
-out vec4 color_;
-out vec3 texCoord_;
-flat out vec4 pickColor_;
+private:
+    InviwoApplication* app_;
+};
 
-void main() {
-    color_ = in_Color;
-    texCoord_ = in_TexCoord;
-    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
-
-    gl_Position = projectionMatrix * geometry.dataToWorld * in_Vertex;
-}
+}  // namespace inviwo

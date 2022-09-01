@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/defaultvalues.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmutils.h>
 
 #include <string>
 

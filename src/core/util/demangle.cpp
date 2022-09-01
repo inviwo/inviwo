@@ -51,6 +51,8 @@ std::string demangle(const char* name) {
     return {status == 0 ? result.p : name};
 #else
     std::string str{name};
+    replaceInString(str, "class ", "");
+    replaceInString(str, "struct ", "");
 #if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64)
     replaceInString(str, "__ptr64", "");
 #endif
@@ -59,24 +61,9 @@ std::string demangle(const char* name) {
 }
 
 std::string parseTypeIdName(const char* name) {
-#if defined(__clang__) || defined(__GNUC__)
-    struct handle {
-        char* p;
-        handle(char* ptr) : p(ptr) {}
-        ~handle() { std::free(p); }
-    };
-    int status = -4;
-    handle result(abi::__cxa_demangle(name, nullptr, nullptr, &status));
-    std::string str{status == 0 ? result.p : name};
-#else
-    std::string str(name);
-    replaceInString(str, "class", "");
-    replaceInString(str, "const", "");
-#if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64)
-    replaceInString(str, "__ptr64", "");
-#endif
-#endif
+    std::string str{demangle(name)};
     replaceInString(str, "inviwo::", "");
+    replaceInString(str, "const", "");
     return removeFromString(removeFromString(str, '*'), ' ');
 }
 

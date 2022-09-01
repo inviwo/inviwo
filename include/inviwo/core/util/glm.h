@@ -134,33 +134,7 @@ typename std::enable_if<util::rank<vecType<C, R, U, Q>>::value == 2, U>::type ac
     return init;
 }
 
-template <typename T = double, glm::length_t C = 1, glm::length_t R = 1,
-          glm::qualifier Q = glm::defaultp>
-struct glmtype {
-    using type = glm::mat<C, R, T, Q>;
-};
-
-template <typename T, glm::qualifier P>
-struct glmtype<T, 1, 1, P> {
-    typedef T type;
-};
-
-template <typename T, glm::length_t L, glm::qualifier P>
-struct glmtype<T, L, 1, P> {
-    using type = glm::vec<L, T, P>;
-};
-
-template <typename T = double, glm::length_t C = 1, glm::length_t R = 1,
-          glm::qualifier Q = glm::defaultp>
-using glmtype_t = typename glmtype<T, C, R, Q>::type;
-
 }  // namespace util
-
-template <unsigned int Dim, typename Type>
-using Matrix = typename util::glmtype<Type, Dim, Dim>::type;
-
-template <unsigned int Dim, typename Type>
-using Vector = typename util::glmtype<Type, Dim, 1>::type;
 
 template <unsigned int N, typename T>
 Matrix<N, T> MatrixInvert(const Matrix<N, T>& m) {

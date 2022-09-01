@@ -38,7 +38,6 @@
 #include <pybind11/numpy.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/formats.h>

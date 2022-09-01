@@ -40,7 +40,7 @@ class Mesh;
 
 /**
  * \ingroup properties
- * \brief A CompositeProperty holding properties to show a information about a mesh
+ * \brief A CompositeProperty holding properties to show information about a mesh and its buffers
  */
 class IVW_MODULE_BASE_API MeshInformationProperty : public CompositeProperty {
 public:

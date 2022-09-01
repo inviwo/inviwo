@@ -29,6 +29,7 @@
 
 #include <modules/animation/workspaceanimations.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/zip.h>
 

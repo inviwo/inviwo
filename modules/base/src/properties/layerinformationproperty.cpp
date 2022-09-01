@@ -40,21 +40,33 @@ LayerInformationProperty::LayerInformationProperty(std::string_view identifier,
                                                    std::string_view displayName,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , layerType_("layerType", "Layer Type")
-    , format_("format", "Format", "")
-    , channels_("channels", "Channels", 0, 0, std::numeric_limits<size_t>::max(), 1,
+    : CompositeProperty(
+          identifier, displayName,
+          "A CompositeProperty holding properties to show a information about an image layer"_help,
+          invalidationLevel, semantics)
+    , layerType_("layerType", "Layer Type", "Type of the layer (Color, Depth, or Picking)"_help)
+    , format_("format", "Format", "Underlying data format of the layer"_help, "")
+    , channels_("channels", "Channels", "Number of different channels in the layer"_help, 0,
+                {0, ConstraintBehavior::Immutable},
+                {std::numeric_limits<size_t>::max(), ConstraintBehavior::Immutable}, 1,
                 InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
-    , swizzleMask_("swizzleMask", "Swizzle Mask") {
+    , swizzleMask_(
+          "swizzleMask", "Swizzle Mask",
+          "The swizzle mask is used when sampling the layer for example in OpenGL shaders"_help)
+    , interpolation_(
+          "interpolation", "Interpolation",
+          "Type of interpolation which is used when sampling the layer for example in OpenGL shaders"_help)
+    , wrapping_("wrapping", "Wrapping",
+                "Defines the wrapping of texture coordinates (Clamp, Repeat, or Mirror)"_help) {
 
     util::for_each_in_tuple(
         [&](auto& e) {
             e.setReadOnly(true);
             e.setSerializationMode(PropertySerializationMode::None);
             e.setCurrentStateAsDefault();
-            this->addProperty(e);
+            addProperty(e);
         },
-        std::tie(layerType_, format_, channels_, swizzleMask_));
+        std::tie(layerType_, format_, channels_, swizzleMask_, interpolation_, wrapping_));
 }
 
 LayerInformationProperty::LayerInformationProperty(const LayerInformationProperty& rhs)
@@ -62,9 +74,11 @@ LayerInformationProperty::LayerInformationProperty(const LayerInformationPropert
     , layerType_(rhs.layerType_)
     , format_(rhs.format_)
     , channels_(rhs.channels_)
-    , swizzleMask_(rhs.swizzleMask_) {
-    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); },
-                            std::tie(layerType_, format_, channels_, swizzleMask_));
+    , swizzleMask_(rhs.swizzleMask_)
+    , interpolation_(rhs.interpolation_)
+    , wrapping_(rhs.wrapping_) {
+
+    addProperties(layerType_, format_, channels_, swizzleMask_, interpolation_, wrapping_);
 }
 
 LayerInformationProperty* LayerInformationProperty::clone() const {
@@ -76,6 +90,8 @@ void LayerInformationProperty::updateFromLayer(const Layer& layer) {
     format_.set(layer.getDataFormat()->getString());
     channels_.set(layer.getDataFormat()->getComponents());
     swizzleMask_.set(toString(layer.getSwizzleMask()));
+    interpolation_.set(toString(layer.getInterpolation()));
+    wrapping_.set(toString(layer.getWrapping()));
 }
 
 }  // namespace inviwo

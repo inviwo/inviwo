@@ -35,6 +35,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/networkvisitor.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
 

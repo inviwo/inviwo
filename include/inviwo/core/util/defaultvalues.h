@@ -30,9 +30,13 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmmat.h>
 
 #include <inviwo/core/util/staticstring.h>
+
+#include <glm/gtc/type_precision.hpp>
+#include <glm/fwd.hpp>
 
 #include <string_view>
 

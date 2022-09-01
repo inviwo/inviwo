@@ -38,6 +38,9 @@ set(HEADER_FILES
     include/modules/base/datastructures/disjointsets.h
     include/modules/base/datastructures/imagereusecache.h
     include/modules/base/datastructures/kdtree.h
+    include/modules/base/datavisualizer/imageinformationvisualizer.h
+    include/modules/base/datavisualizer/meshinformationvisualizer.h
+    include/modules/base/datavisualizer/volumeinformationvisualizer.h
     include/modules/base/io/binarystlwriter.h
     include/modules/base/io/datvolumesequencereader.h
     include/modules/base/io/datvolumewriter.h
@@ -166,6 +169,9 @@ set(SOURCE_FILES
     src/basemodule.cpp
     src/datastructures/disjointsets.cpp
     src/datastructures/imagereusecache.cpp
+    src/datavisualizer/imageinformationvisualizer.cpp
+    src/datavisualizer/meshinformationvisualizer.cpp
+    src/datavisualizer/volumeinformationvisualizer.cpp
     src/io/binarystlwriter.cpp
     src/io/datvolumesequencereader.cpp
     src/io/datvolumewriter.cpp

@@ -56,6 +56,15 @@ InviwoApplication* getInviwoApplication(PropertyOwner* owner) {
     return owner ? owner->getInviwoApplication() : nullptr;
 }
 
+bool isInviwoApplicationInitialized() { return InviwoApplication::isInitialized(); }
+
+size_t getInviwoApplicationPoolSize() {
+    if (InviwoApplication::isInitialized()) {
+        return InviwoApplication::getPtr()->getPoolSize();
+    }
+    return 0u;
+}
+
 }  // namespace util
 
 }  // namespace inviwo

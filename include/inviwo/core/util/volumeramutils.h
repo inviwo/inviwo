@@ -30,8 +30,12 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+
+#include <vector>
+#include <future>
 
 namespace inviwo {
 
@@ -56,11 +60,11 @@ void forEachVoxel(const VolumeRAM& v, C callback) {
 
 template <typename C>
 void forEachVoxelParallel(const size3_t dims, C callback, size_t jobs = 0) {
-    if (InviwoApplication::isInitialized() && jobs == 0) {
-        jobs = 4 * InviwoApplication::getPtr()->getPoolSize();
+    const size_t poolSize = util::getInviwoApplicationPoolSize();
+    if (jobs == 0) {
+        jobs = 4 * poolSize;
     }
-
-    if (jobs == 0 || !InviwoApplication::isInitialized()) {
+    if ((jobs == 0) || (poolSize == 0)) {
         // fallback to serial version
         forEachVoxel(dims, callback);
         return;

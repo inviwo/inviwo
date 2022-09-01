@@ -34,7 +34,7 @@ import shutil
 
 class ImageCompare:
     def __init__(self, testImage, refImage, allowDifferentImageMode=False, 
-        logscaleDifferenceImage=False, invertDifferenceImage=False):
+        logscaleDifferenceImage=False, invertDifferenceImage=False, diffScale = 10.0):
 
         self.image1 = { 'filename' : None, 'size' : None, 'mode' : None }
         self.image2 = { 'filename' : None, 'size' : None, 'mode' : None }
@@ -47,6 +47,7 @@ class ImageCompare:
 
         self.logscaleImage = logscaleDifferenceImage
         self.invertImage = invertDifferenceImage
+        self.diffScale = diffScale
 
         self.diff(refImage, testImage)
 
@@ -115,7 +116,13 @@ class ImageCompare:
             if self.invertImage:
                 diffnp = maxval - diffnp
 
-            self.diffImage = Image.fromarray(diffnp)
+            if maxval != 255:
+                diffnp = diffnp * 255 / maxval
+
+            # scale diff image and ensure 8bit
+            diffnp = np.clip(diffnp * self.diffScale, 0.0, 255.0).astype(np.int8)
+
+            self.diffImage = Image.fromarray(diffnp, mode='L')
             self.maskImage = Image.fromarray((diffnp == 0))
 
     def saveDifferenceImage(self, difffile):

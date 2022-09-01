@@ -30,6 +30,7 @@
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 namespace inviwo {

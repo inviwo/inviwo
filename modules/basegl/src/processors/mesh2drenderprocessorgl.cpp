@@ -50,93 +50,60 @@ const ProcessorInfo Mesh2DRenderProcessorGL::processorInfo_{
     "org.inviwo.Mesh2DRenderProcessorGL",  // Class identifier
     "2D Mesh Renderer",                    // Display name
     "Mesh Rendering",                      // Category
-    CodeState::Experimental,               // Code state
+    CodeState::Stable,                     // Code state
     Tags::GL,                              // Tags
-};
+    "Render a mesh using only an orthographic projection without any illumination calculation."_unindentHelp};
 const ProcessorInfo Mesh2DRenderProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     : Processor()
-    , inport_("inputMesh")
-    , imageInport_("imageInport")
-    , outport_("outputImage")
+    , inport_("inputMesh", "Input meshes"_help)
+    , imageInport_("imageInport", "background image (optional)"_help)
+    , outport_("outputImage",
+               "output image containing the rendered meshes and the optional input image"_help)
     , shader_("mesh2drendering.vert", "mesh2drendering.frag")
-    , enableDepthTest_("enableDepthTest", "Enable Depth Test", true)
+    , enableDepthTest_("enableDepthTest", "Enable Depth Test",
+                       "Toggles the depth test during rendering"_help, true)
+    , frustum_("frustum", "Orthographic Frustum",
+               "Parameters to define the orthographic projection"_help)
+    , top_("top", "Top", 1.0f, -1.0f, 1.0f)
+    , bottom_("bottom", "Bottom", 0.0f, -1.0f, 1.0f)
+    , left_("left", "Left", 0.0f, -1.0f, 1.0f)
+    , right_("right", "Right", 1.0f, -1.0f, 1.0f)
+    , near_("near", "Near", -1.0f, -1.0f, 1.0f)
+    , far_("far", "Far", 1.0f, -1.0f, 1.0f) {
 
-    , top_("top", "Top", 1, -1, 1)
-    , bottom_("bottom", "Bottom", 0, -1, 1)
-    , left_("left", "Left", 0, -1, 1)
-    , right_("right", "Right", 1, -1, 1) {
-    addPort(inport_);
-    addPort(imageInport_);
-    addPort(outport_);
-
+    addPorts(inport_, imageInport_, outport_);
     imageInport_.setOptional(true);
 
-    addProperty(enableDepthTest_);
+    addProperties(enableDepthTest_, frustum_);
+    frustum_.addProperties(left_, right_, bottom_, top_, near_, far_);
 
-    addProperty(left_);
-    addProperty(right_);
-    addProperty(bottom_);
-    addProperty(top_);
-
-    inport_.onChange([this]() { updateDrawers(); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-Mesh2DRenderProcessorGL::~Mesh2DRenderProcessorGL() {}
+Mesh2DRenderProcessorGL::~Mesh2DRenderProcessorGL() = default;
 
 void Mesh2DRenderProcessorGL::process() {
-    if (imageInport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_);
-    } else {
-        utilgl::activateAndClearTarget(outport_);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
     shader_.activate();
 
-    mat4 proj = glm::ortho(left_.get(), right_.get(), bottom_.get(), top_.get(), -200.0f, 100.0f);
-    // mat4 proj = glm::ortho(-0.0f, 1.0f, -0.0f, 1.0f, -200.0f, 100.0f);
-    shader_.setUniform("projectionMatrix", proj);
-
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
+    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry_");
-        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer.second->getMesh()));
-        drawer.second->draw();
+    const mat4 proj =
+        glm::ortho(left_.get(), right_.get(), bottom_.get(), top_.get(), near_.get(), far_.get());
+    shader_.setUniform("projectionMatrix", proj);
+    for (auto mesh : inport_) {
+        utilgl::setShaderUniforms(shader_, *mesh, "geometry");
+        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+        MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                        mesh->getDefaultMeshInfo()};
+        drawer.draw();
     }
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-}
-
-void Mesh2DRenderProcessorGL::updateDrawers() {
-    auto changed = inport_.getChangedOutports();
-    DrawerMap temp;
-    std::swap(temp, drawers_);
-
-    std::map<const Outport*, std::vector<std::shared_ptr<const Mesh>>> data;
-    for (auto& elem : inport_.getSourceVectorData()) {
-        data[elem.first].push_back(elem.second);
-    }
-
-    for (auto elem : data) {
-        auto ibegin = temp.lower_bound(elem.first);
-        auto iend = temp.upper_bound(elem.first);
-
-        if (util::contains(changed, elem.first) || ibegin == temp.end() ||
-            static_cast<long>(elem.second.size()) !=
-                std::distance(ibegin, iend)) {  // data is changed or new.
-
-            for (auto geo : elem.second) {
-                auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
-                if (auto renderer = factory->create(geo.get())) {
-                    drawers_.emplace(std::make_pair(elem.first, std::move(renderer)));
-                }
-            }
-        } else {  // reuse the old data.
-            drawers_.insert(std::make_move_iterator(ibegin), std::make_move_iterator(iend));
-        }
-    }
 }
 
 }  // namespace inviwo

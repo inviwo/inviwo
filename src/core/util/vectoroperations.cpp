@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2022 Inviwo Foundation
+ * Copyright (c) 2020-2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,25 +27,6 @@
  *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
-#include "utils/pickingutils.glsl"
+#include <inviwo/core/util/vectoroperations.h>
 
-layout(location = 7) in uint in_PickId;
-
-uniform GeometryParameters geometry;
-
-uniform mat4 projectionMatrix;
-
-uniform bool pickingEnabled = false;
-
-out vec4 color_;
-out vec3 texCoord_;
-flat out vec4 pickColor_;
-
-void main() {
-    color_ = in_Color;
-    texCoord_ = in_TexCoord;
-    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
-
-    gl_Position = projectionMatrix * geometry.dataToWorld * in_Vertex;
-}
+namespace inviwo {}  // namespace inviwo
