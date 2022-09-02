@@ -1267,7 +1267,7 @@ void InviwoMainWindow::appendWorkspace(const QString& file) {
     app_->processEvents();  // make sure the gui is ready before we unlock.
 }
 
-void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
+bool InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
     std::string fileName{utilqt::fromQString(workspaceFileName)};
     fileName = filesystem::cleanupPath(fileName);
 
@@ -1284,22 +1284,24 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
         getNetworkEditor()->setModified(false);
         updateWindowTitle();
         LogInfo("Workspace saved to: " << fileName);
+        return true;
     } catch (const Exception& e) {
         util::log(e.getContext(),
                   "Unable to save network " + fileName + " due to " + e.getMessage(),
                   LogLevel::Error);
     }
+    return false;
 }
 
-void InviwoMainWindow::saveWorkspace() {
+bool InviwoMainWindow::saveWorkspace() {
     if (currentWorkspaceFileName_ == untitledWorkspaceName_)
-        saveWorkspaceAs();
+        return saveWorkspaceAs();
     else {
-        saveWorkspace(currentWorkspaceFileName_);
+        return saveWorkspace(currentWorkspaceFileName_);
     }
 }
 
-void InviwoMainWindow::saveWorkspaceAs() {
+bool InviwoMainWindow::saveWorkspaceAs() {
     InviwoFileDialog saveFileDialog(this, "Save Workspace ...", "workspace");
     saveFileDialog.setFileMode(FileMode::AnyFile);
     saveFileDialog.setAcceptMode(AcceptMode::Save);
@@ -1310,6 +1312,7 @@ void InviwoMainWindow::saveWorkspaceAs() {
 
     saveFileDialog.addExtension("inv", "Inviwo File");
 
+    bool savedWorkspace = false;
     if (saveFileDialog.exec()) {
         QString path = saveFileDialog.selectedFiles().at(0);
         if (!path.endsWith(".inv")) path.append(".inv");
@@ -1317,8 +1320,10 @@ void InviwoMainWindow::saveWorkspaceAs() {
         saveWorkspace(path);
         setCurrentWorkspace(path);
         addToRecentWorkspaces(path);
+        savedWorkspace = true;
     }
     saveWindowState();
+    return savedWorkspace;
 }
 
 void InviwoMainWindow::saveWorkspaceAsCopy() {
@@ -1337,8 +1342,9 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 
         if (!path.endsWith(".inv")) path.append(".inv");
 
-        saveWorkspace(path);
-        addToRecentWorkspaces(path);
+        if (saveWorkspace(path)) {
+            addToRecentWorkspaces(path);
+        }
     }
     saveWindowState();
 }

@@ -141,8 +141,19 @@ public:
      */
     bool appendWorkspace();
 
-    void saveWorkspace();
-    void saveWorkspaceAs();
+    /**
+     * saves the current workspace. If the workspace does not have a name yet, a file dialog will be
+     * shown.
+     * @return true if the workspace was saved, otherwise false.
+     * @see saveWorkspaceAs
+     */
+    bool saveWorkspace();
+    /**
+     * saves the current workspace using a file dialog
+     * @return true if the workspace was saved, otherwise false.
+     * @see saveWorkspaceAs
+     */
+    bool saveWorkspaceAs();
 
     /*
      * Save the current workspace into a new workspace file,
@@ -191,7 +202,12 @@ private:
      * @see askToSaveWorkspaceChanges
      */
     bool openWorkspace(QString workspaceFileName, bool isExample);
-    void saveWorkspace(QString workspaceFileName);
+
+    /**
+     * saves the current workspace to the given \p workspaceFileName.
+     * @return true if the workspace was saved, otherwise false.
+     */
+    bool saveWorkspace(QString workspaceFileName);
     void appendWorkspace(const QString& workspaceFileName);
 
     std::optional<QString> askForWorkspaceToOpen();
