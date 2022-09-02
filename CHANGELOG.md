@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-09-02 Append workspace on Welcome Screen
+Previously, the File menu received an "Append" functionality which appends a workspace to the current network by holding down Control/Command. This functionality is now also available in the Welcome Screen. The Welcome Screen also no longer immediately closes the current workspace, it is now possible to close the Welcome Screen and continue working without loosing any changes.
+
 ## 2022-08-16 New help system
 The old processor help system based on doxygen and qhp has been removed in favor of a runtime system where help text is added to processor/port/properties at runtime. To add a help text to a processor now you add a new element to the ProcessorInfo for that processor like this
 ```c++
