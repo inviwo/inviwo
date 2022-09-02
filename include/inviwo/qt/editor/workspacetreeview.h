@@ -63,7 +63,7 @@ public:
     void collapseRecursively(const QModelIndex& index);
 
 signals:
-    void loadFile(QString filename, bool isExample);
+    void loadFile(const QString& filename, bool isExample);
     void selectFile(const QModelIndex& index);
 };
 

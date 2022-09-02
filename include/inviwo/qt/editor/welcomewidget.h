@@ -54,6 +54,7 @@ class WorkspaceGridView;
 class InviwoApplication;
 class ChangeLog;
 class WorkspaceFilter;
+class KeyboardEventFilter;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
 #include <warn/push>
@@ -67,14 +68,18 @@ public:
     void updateRecentWorkspaces(const QStringList& list);
     void enableRestoreButton(bool hasRestoreWorkspace);
 
+    void updateLoadIcon(bool append, bool openWithPath);
+
 signals:
     void loadWorkspace(const QString& filename, bool isExample);
+    void appendWorkspace(const QString& filename);
     void newWorkspace();
     void openWorkspace();
     void restoreWorkspace();
 
 protected:
     virtual void showEvent(QShowEvent* event) override;
+    virtual void hideEvent(QHideEvent* event) override;
 
     virtual void keyPressEvent(QKeyEvent* event) override;
 
@@ -102,6 +107,8 @@ private:
     ChangeLog* changelog_;
     QToolButton* loadWorkspaceBtn_;
     QToolButton* restoreButton_;
+
+    KeyboardEventFilter* keyboardEventFilter_;
 };
 
 }  // namespace inviwo

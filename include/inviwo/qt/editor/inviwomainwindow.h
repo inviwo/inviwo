@@ -61,6 +61,7 @@ class HelpWidget;
 class WelcomeWidget;
 class AnnotationsWidget;
 class InviwoApplicationQt;
+class InviwoDockWidget;
 class InviwoEditMenu;
 class InviwoAboutWindow;
 class ResourceManagerDockWidget;
@@ -68,6 +69,7 @@ class FileAssociations;
 class ToolsMenu;
 class TextLabelOverlay;
 class MenuKeyboardEventFilter;
+class Processor;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -283,6 +285,22 @@ private:
     TCLAP::ValueArg<std::string> updateWorkspacesInPath_;
 
     UndoManager undoManager_;
+
+    struct VisibleWidgets {
+        /**
+         * store all visible processor and dock widgets before hiding them
+         */
+        void hide(InviwoMainWindow* win);
+        /**
+         * show previously hidden processor and dock widgets
+         */
+        void restore();
+
+        std::vector<Processor*> processors;
+        std::vector<InviwoDockWidget*> dockwidgets;
+    };
+    VisibleWidgets visibleWidgetState_;  //!< holds all processor and dock widgets that were visible
+                                         //!< before showing the welcome widget
 };
 
 }  // namespace inviwo

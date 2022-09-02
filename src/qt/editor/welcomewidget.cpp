@@ -47,6 +47,7 @@
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <inviwo/qt/editor/lineediteventfilter.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/keyboardutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -78,6 +79,7 @@
 #include <QSvgWidget>
 #include <QSvgRenderer>
 #include <QItemSelectionModel>
+#include <QApplication>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QWindow>
@@ -217,11 +219,37 @@ private:
     SearchDSL<QModelIndex> dsl_;
 };
 
+class KeyboardEventFilter : public QObject {
+public:
+    KeyboardEventFilter(WelcomeWidget* parent) : QObject(parent), widget_(parent) {}
+    virtual ~KeyboardEventFilter() = default;
+
+    virtual bool eventFilter(QObject*, QEvent* ev) override {
+        if (ev->type() == QEvent::KeyPress || ev->type() == QEvent::KeyRelease) {
+            update();
+        }
+        return false;
+    }
+
+    void update() {
+        const auto append = QApplication::queryKeyboardModifiers().testFlag(
+            util::getKeyboardModifier(ModifierAction::AppendWorkspace));
+        const auto openWithPath = QApplication::queryKeyboardModifiers().testFlag(
+            util::getKeyboardModifier(ModifierAction::OpenWithPath));
+
+        widget_->updateLoadIcon(append, openWithPath);
+    }
+
+private:
+    WelcomeWidget* widget_;
+};
+
 WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     : QSplitter(parent)
     , app_(app)
     , model_(new WorkspaceTreeModel(app, this))
-    , filterModel_{new WorkspaceFilter{this}} {
+    , filterModel_{new WorkspaceFilter{this}}
+    , keyboardEventFilter_{new KeyboardEventFilter(this)} {
 
     setObjectName("WelcomeWidget");
 
@@ -421,6 +449,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
             loadWorkspaceBtn_ = createButton("Load", ":/svgicons/open.svg",
                                              "Open selected workspace", "LoadWorkspaceToolButton");
+            loadWorkspaceBtn_->setEnabled(false);
             auto horizontalSpacer =
                 new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
                                 QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -550,6 +579,22 @@ void WelcomeWidget::enableRestoreButton(bool hasRestoreWorkspace) {
     restoreButton_->setEnabled(hasRestoreWorkspace);
 }
 
+void WelcomeWidget::updateLoadIcon(bool append, bool openWithPath) {
+    if (append) {
+        loadWorkspaceBtn_->setText("Append");
+        loadWorkspaceBtn_->setIcon(QIcon(":/svgicons/open-append.svg"));
+        loadWorkspaceBtn_->setToolTip("Append selected workspace to current one");
+    } else {
+        loadWorkspaceBtn_->setText("Load");
+        loadWorkspaceBtn_->setIcon(QIcon(":/svgicons/open.svg"));
+        if (openWithPath) {
+            loadWorkspaceBtn_->setToolTip("Open selected workspace with full path");
+        } else {
+            loadWorkspaceBtn_->setToolTip("Open selected workspace");
+        }
+    }
+}
+
 void WelcomeWidget::selectFirstLeaf() {
     // select first leaf node
     QTreeView* view = workspaceGridView_->isVisible() ? static_cast<QTreeView*>(workspaceGridView_)
@@ -591,8 +636,17 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
         expandTreeView();
     }
 
+    QApplication::instance()->installEventFilter(keyboardEventFilter_);
+    keyboardEventFilter_->update();
+
     QSplitter::showEvent(event);
     filterLineEdit_->setFocus(Qt::OtherFocusReason);
+}
+
+void WelcomeWidget::hideEvent(QHideEvent* event) {
+    QApplication::instance()->removeEventFilter(keyboardEventFilter_);
+
+    QSplitter::hideEvent(event);
 }
 
 void WelcomeWidget::keyPressEvent(QKeyEvent* event) {

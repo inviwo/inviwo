@@ -123,7 +123,7 @@ private:
 
     const BaseCallBack* appModeCallback_;
 
-    const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.
+    const int maxNumNestedShades_;  //< This number has to match the number of shades in the qss.
     int nestedDepth_;
 };
 

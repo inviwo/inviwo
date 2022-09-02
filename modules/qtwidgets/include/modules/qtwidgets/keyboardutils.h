@@ -31,13 +31,22 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QtCore/qnamespace.h>
+#include <warn/pop>
+
 class QKeyEvent;
 
 namespace inviwo {
 
+enum class ModifierAction { AppendWorkspace, OpenWithPath };
+
 namespace util {
 
 IVW_MODULE_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent* keyevent);
+
+IVW_MODULE_QTWIDGETS_API Qt::KeyboardModifier getKeyboardModifier(ModifierAction action);
 
 }  // namespace util
 
