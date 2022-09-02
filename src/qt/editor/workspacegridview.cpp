@@ -52,6 +52,7 @@
 #include <QResizeEvent>
 #include <QPersistentModelIndex>
 #include <QScrollBar>
+#include <QItemSelectionModel>
 #include <warn/pop>
 
 namespace inviwo {
@@ -305,6 +306,35 @@ private:
     int chunkSize_;
 };
 
+class SelectionModel : public QItemSelectionModel {
+public:
+    SelectionModel(QAbstractItemModel* model, QObject* parent)
+        : QItemSelectionModel(model, parent) {}
+    virtual ~SelectionModel() = default;
+
+    virtual void select(const QModelIndex& index,
+                        QItemSelectionModel::SelectionFlags command) override {
+        if (command.testFlag(QItemSelectionModel::Select) && isSelected(index)) {
+            // ignore de-selection of already selected items, the initial selection is not using
+            // this function
+            // see https://doc.qt.io/qt-6/qabstractitemview.html#SelectionMode-enum
+            return;
+        }
+        QItemSelectionModel::select(index, command);
+    }
+
+    virtual void select(const QItemSelection& selection,
+                        QItemSelectionModel::SelectionFlags command) override {
+        if (command.testFlag(QItemSelectionModel::Select)) {
+            // ignore de-selection of already selected items, the initial selection is not using
+            // this function
+            // see https://doc.qt.io/qt-6/qabstractitemview.html#SelectionMode-enum
+            return;
+        }
+        QItemSelectionModel::select(selection, command);
+    }
+};
+
 WorkspaceGridView::WorkspaceGridView(QAbstractItemModel* theModel, QWidget* parent)
     : QTreeView{parent}
     , itemSize_{utilqt::emToPx(this, 14)}
@@ -317,6 +347,10 @@ WorkspaceGridView::WorkspaceGridView(QAbstractItemModel* theModel, QWidget* pare
     setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
     setItemDelegate(new SectionDelegate(itemSize_, this));
     setIndentation(0);
+
+    // use custom selection model to prevent unselecting an already selected item
+    // see https://doc.qt.io/qt-6/qabstractitemview.html#SelectionMode-enum
+    setSelectionModel(new SelectionModel(proxy_, this));
 
 #if defined(WIN32)
     // Scrolling on Windows is set to scroll per item by default. Also need to adjust the step size
