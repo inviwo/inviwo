@@ -540,7 +540,7 @@ void OrdinalRefProperty<T>::setMinValue(const T& newMinValue) {
     // Make sure min < max
     modified |= maxValue_.update(glm::max(maxValue_.value, minValue_.value));
 
-    auto val = clamp(get_());  // make sure we clamp after we update min/max    
+    auto val = clamp(get_());  // make sure we clamp after we update min/max
     if (val != get_()) {
         set_(val);
         modified = true;

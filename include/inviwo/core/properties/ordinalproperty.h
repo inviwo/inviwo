@@ -152,7 +152,7 @@ public:
     virtual OrdinalProperty<T>* clone() const override;
     virtual ~OrdinalProperty();
 
-    operator const T &() const;
+    operator const T&() const;
     const T& operator*() const;
     const T* operator->() const;
 
@@ -519,7 +519,7 @@ std::string OrdinalProperty<T>::getClassIdentifier() const {
 }
 
 template <typename T>
-OrdinalProperty<T>::operator const T &() const {
+OrdinalProperty<T>::operator const T&() const {
     return value_.value;
 }
 
