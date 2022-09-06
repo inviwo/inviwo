@@ -373,14 +373,13 @@ IvwKey mapKeyFromQt(const QKeyEvent* keyevent) {
     }
 }
 
-Qt::KeyboardModifier getKeyboardModifier(ModifierAction action) {
-    switch (action) {
-        case ModifierAction::AppendWorkspace:
-            return Qt::ControlModifier;
-        case ModifierAction::OpenWithPath:
-            return Qt::ShiftModifier;
-        default:
-            return Qt::NoModifier;
+ModifierAction getModifierAction(Qt::KeyboardModifiers modifiers) {
+    if (modifiers.testFlag(Qt::ControlModifier)) {
+        return ModifierAction::AppendWorkspace;
+    } else if (modifiers.testFlag(Qt::ShiftModifier)) {
+        return ModifierAction::OpenWithPath;
+    } else {
+        return ModifierAction::None;
     }
 }
 

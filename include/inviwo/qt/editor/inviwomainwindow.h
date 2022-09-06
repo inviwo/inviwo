@@ -252,7 +252,6 @@ private:
     HelpWidget* helpWidget_;
     WelcomeWidget* welcomeWidget_ =
         nullptr;  ///< Use delayed initialization as it can be expensive.
-    std::vector<QDockWidget*> welcomeHidden_;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
 
@@ -294,10 +293,10 @@ private:
         /**
          * show previously hidden processor and dock widgets
          */
-        void restore();
+        void show();
 
         std::vector<Processor*> processors;
-        std::vector<InviwoDockWidget*> dockwidgets;
+        std::vector<QDockWidget*> dockwidgets;
     };
     VisibleWidgets visibleWidgetState_;  //!< holds all processor and dock widgets that were visible
                                          //!< before showing the welcome widget

@@ -119,7 +119,6 @@ QString addAppendSuffix(const QString& str, bool append) {
 class MenuKeyboardEventFilter : public QObject {
 public:
     MenuKeyboardEventFilter(QObject* parent) : QObject(parent) {}
-    virtual ~MenuKeyboardEventFilter() = default;
 
     // This will not trigger on MacOS, so we also trigger update on hovered and aboutToShow.
     virtual bool eventFilter(QObject*, QEvent* ev) override {
@@ -708,16 +707,14 @@ void InviwoMainWindow::addActions() {
                 menuEventFilter_->add(action, qFile);
                 auto path = QString::fromStdString(moduleWorkspacePath + "/" + file);
                 connect(action, &QAction::triggered, this, [this, path]() {
-                    if (QApplication::keyboardModifiers() ==
-                        util::getKeyboardModifier(ModifierAction::AppendWorkspace)) {
+                    auto action = util::getModifierAction(QApplication::keyboardModifiers());
+                    if (action == ModifierAction::AppendWorkspace) {
                         appendWorkspace(path);
                         hideWelcomeScreen();
                     } else if (askToSaveWorkspaceChanges()) {
-                        // open as regular workspace with proper filename if modifier key is pressed
-                        const bool modifierPressed =
-                            (QApplication::keyboardModifiers() ==
-                             util::getKeyboardModifier(ModifierAction::OpenWithPath));
-                        if (openWorkspace(path, !modifierPressed)) {
+                        // open examples as regular workspace with filename and full path if
+                        // modifier key is pressed
+                        if (openWorkspace(path, action != ModifierAction::OpenWithPath)) {
                             hideWelcomeScreen();
                         }
                     }
@@ -760,7 +757,8 @@ void InviwoMainWindow::addActions() {
                     menuEventFilter_->add(action, qFile);
                     auto path = QString::fromStdString(testDir + "/" + file);
                     connect(action, &QAction::triggered, this, [this, path]() {
-                        if (app_->keyboardModifiers() == Qt::ControlModifier) {
+                        auto action = util::getModifierAction(QApplication::keyboardModifiers());
+                        if (action == ModifierAction::AppendWorkspace) {
                             appendWorkspace(path);
                             hideWelcomeScreen();
                         } else if (askToSaveWorkspaceChanges()) {
@@ -1275,6 +1273,14 @@ bool InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
     std::string fileName{utilqt::fromQString(workspaceFileName)};
     fileName = filesystem::cleanupPath(fileName);
 
+    util::OnScopeExit onExit(nullptr);
+    if (welcomeWidget_ && centralWidget_->currentWidget() == welcomeWidget_) {
+        // When the Welcome widget is visible, we need to restore and show all previously hidden
+        // widgets prior saving the workspace, then hide them again afterward
+        visibleWidgetState_.show();
+        onExit.setAction([this]() { visibleWidgetState_.hide(this); });
+    }
+
     try {
         app_->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
             try {
@@ -1326,7 +1332,6 @@ bool InviwoMainWindow::saveWorkspaceAs() {
         addToRecentWorkspaces(path);
         savedWorkspace = true;
     }
-    saveWindowState();
     return savedWorkspace;
 }
 
@@ -1350,7 +1355,6 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
             addToRecentWorkspaces(path);
         }
     }
-    saveWindowState();
 }
 
 void InviwoMainWindow::toggleWelcomeScreen() {
@@ -1364,17 +1368,13 @@ void InviwoMainWindow::toggleWelcomeScreen() {
 void InviwoMainWindow::showWelcomeScreen() {
     setUpdatesEnabled(false);
 
+    // The order of hiding and showing widget here is important. Need to hide the non-floating
+    // dockwidgets first or they will end up being included in the size of the welcome app window
+    // even if the are not visible.
+    // Floating dock widgets and processor widgets are hidden, too. Otherwise they will be on top of
+    // the main window.
     visibleWidgetState_.hide(this);
 
-    // The order of hiding and showing widget here is important. Need to hide the dockwidgets first
-    // or they will end up being included in the size of the welcome app window even if the are not
-    // visible.
-    for (auto dw : findChildren<QDockWidget*>()) {
-        if (dw->isVisible() && !dw->isFloating()) {
-            dw->hide();
-            welcomeHidden_.push_back(dw);
-        }
-    }
     auto welcomeWidget = getWelcomeWidget();
     centralWidget_->addWidget(welcomeWidget);
     centralWidget_->setCurrentWidget(welcomeWidget);
@@ -1392,14 +1392,11 @@ void InviwoMainWindow::hideWelcomeScreen() {
     }
     setUpdatesEnabled(false);
 
-    visibleWidgetState_.restore();
-
     centralWidget_->setCurrentWidget(networkEditorView_);
     centralWidget_->removeWidget(getWelcomeWidget());
-    for (auto dw : welcomeHidden_) {
-        dw->show();
-    }
-    welcomeHidden_.clear();
+    // restore previously hidden dock and processor widgets
+    visibleWidgetState_.show();
+
     setUpdatesEnabled(true);
     app_->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
@@ -1424,25 +1421,21 @@ WelcomeWidget* inviwo::InviwoMainWindow::getWelcomeWidget() {
 
         connect(welcomeWidget_, &WelcomeWidget::loadWorkspace, this,
                 [this](const QString& filename, bool isExample) {
-                    if (QApplication::keyboardModifiers() ==
-                        util::getKeyboardModifier(ModifierAction::AppendWorkspace)) {
+                    if (askToSaveWorkspaceChanges()) {
                         hideWelcomeScreen();
-                        appendWorkspace(filename);
                         saveWindowState();
-                    } else {
-                        if (askToSaveWorkspaceChanges()) {
-                            hideWelcomeScreen();
-                            saveWindowState();
-                            const bool modifierPressed =
-                                (QApplication::keyboardModifiers() ==
-                                 util::getKeyboardModifier(ModifierAction::OpenWithPath));
-                            if (isExample && !modifierPressed) {
-                                openExample(filename);
-                            } else {
-                                openWorkspace(filename);
-                            }
+                        if (isExample) {
+                            openExample(filename);
+                        } else {
+                            openWorkspace(filename);
                         }
                     }
+                });
+        connect(welcomeWidget_, &WelcomeWidget::appendWorkspace, this,
+                [this](const QString& filename) {
+                    hideWelcomeScreen();
+                    appendWorkspace(filename);
+                    saveWindowState();
                 });
         connect(welcomeWidget_, &WelcomeWidget::openWorkspace, this, [this]() {
             if (auto path = askForWorkspaceToOpen()) {
@@ -1501,6 +1494,8 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     }
 
     app_->getWorkspaceManager()->clear();
+    // clear dangling pointers to processors with processor widgets
+    visibleWidgetState_.processors.clear();
     hideWelcomeScreen();
 
     saveWindowState();
@@ -1648,8 +1643,12 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
 }
 
 void InviwoMainWindow::VisibleWidgets::hide(InviwoMainWindow* win) {
-    processors = detail::getWidgetProcessors(win->getInviwoApplication());
-    dockwidgets = detail::getFloatingDockWidgets(win);
+    dockwidgets = util::copy_if(win->findChildren<QDockWidget*>(),
+                                [](const auto w) { return w->isVisible(); });
+    processors = util::copy_if(
+        win->getInviwoApplication()->getProcessorNetwork()->getProcessors(), [](const auto p) {
+            return p->hasProcessorWidget() && p->getProcessorWidget()->isVisible();
+        });
 
     for (const auto p : processors) {
         p->getProcessorWidget()->setVisible(false);
@@ -1659,7 +1658,7 @@ void InviwoMainWindow::VisibleWidgets::hide(InviwoMainWindow* win) {
     }
 }
 
-void InviwoMainWindow::VisibleWidgets::restore() {
+void InviwoMainWindow::VisibleWidgets::show() {
     for (const auto p : processors) {
         p->getProcessorWidget()->setVisible(true);
     }

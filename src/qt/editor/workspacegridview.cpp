@@ -348,7 +348,11 @@ WorkspaceGridView::WorkspaceGridView(QAbstractItemModel* theModel, QWidget* pare
     setItemDelegate(new SectionDelegate(itemSize_, this));
     setIndentation(0);
 
-    // use custom selection model to prevent unselecting an already selected item
+    // use custom selection model to prevent unselecting an already selected item matching the
+    // behavior of the WorktreeTreeView widget. This also matches single file selection in
+    // Windows Explorer. Drag & drop of workspace files onto the Welcome widget is unaffected since
+    // the entire widget is a drop target.
+    //
     // see https://doc.qt.io/qt-6/qabstractitemview.html#SelectionMode-enum
     setSelectionModel(new SelectionModel(proxy_, this));
 

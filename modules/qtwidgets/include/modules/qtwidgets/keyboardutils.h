@@ -40,13 +40,13 @@ class QKeyEvent;
 
 namespace inviwo {
 
-enum class ModifierAction { AppendWorkspace, OpenWithPath };
+enum class ModifierAction { None, AppendWorkspace, OpenWithPath };
 
 namespace util {
 
 IVW_MODULE_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent* keyevent);
 
-IVW_MODULE_QTWIDGETS_API Qt::KeyboardModifier getKeyboardModifier(ModifierAction action);
+IVW_MODULE_QTWIDGETS_API ModifierAction getModifierAction(Qt::KeyboardModifiers modifiers);
 
 }  // namespace util
 
