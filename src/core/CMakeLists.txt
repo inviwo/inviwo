@@ -324,7 +324,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmconvert.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmfmt.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmmat.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmmatext.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmvec.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/hashcombine.h
@@ -666,7 +668,9 @@ set(SOURCE_FILES
     util/formats.cpp
     util/glm.cpp
     util/glmconvert.cpp
+    util/glmfmt.cpp
     util/glmmat.cpp
+    util/glmmatext.cpp
     util/glmutils.cpp
     util/glmvec.cpp
     util/hashcombine.cpp

@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
