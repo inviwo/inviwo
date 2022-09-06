@@ -32,13 +32,14 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/constraintbehavior.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmmat.h>
 
 #include <string>
 #include <type_traits>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <fmt/core.h>
+#include <ostream>
 
 namespace inviwo {
 
@@ -149,7 +150,7 @@ public:
     virtual OrdinalProperty<T>* clone() const override;
     virtual ~OrdinalProperty();
 
-    operator const T&() const;
+    operator const T &() const;
     const T& operator*() const;
     const T* operator->() const;
 
@@ -423,9 +424,8 @@ struct PropertyTraits<OrdinalProperty<T>> {
     }
 };
 
-template <typename CTy, typename CTr, typename T>
-std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
-                                         const OrdinalProperty<T>& prop) {
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const OrdinalProperty<T>& prop) {
     return os << prop.get();
 }
 
@@ -517,7 +517,7 @@ std::string OrdinalProperty<T>::getClassIdentifier() const {
 }
 
 template <typename T>
-OrdinalProperty<T>::operator const T&() const {
+OrdinalProperty<T>::operator const T &() const {
     return value_.value;
 }
 
@@ -811,3 +811,13 @@ extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::fquat>;
 /// @endcond
 
 }  // namespace inviwo
+
+template <typename T>
+struct fmt::formatter<inviwo::OrdinalProperty<T>> : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(const inviwo::OrdinalProperty<T>& prop, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+        fmt::format_to(std::back_inserter(buff), "{}", prop.get());
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
+    }
+};
