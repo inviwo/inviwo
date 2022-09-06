@@ -362,6 +362,13 @@ WorkspaceGridView::WorkspaceGridView(QAbstractItemModel* theModel, QWidget* pare
     setVerticalScrollMode(ScrollPerPixel);
     verticalScrollBar()->setSingleStep(utilqt::emToPx(parent, 1.5));
 #endif
+    // Enable the vertical scroll bar at all times to prevent recursive resize events toggling
+    // between two chunk sizes. In some corner cases, the resize event will set a new chunk size
+    // (e.g. 3), which invalidates the model. Since the view now has no scroll bar, another resize
+    // event with a slightly larger width is triggered by endResetModel() in setChunkSize().
+    // This in turn sets a larger chunk size (4) due to the missing scroll bar which in turn causes
+    // a resize event.
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     connect(this, &QTreeView::doubleClicked, this, [this](const QModelIndex& index) {
         if (index.isValid() && (utilqt::getData(index, Role::Type) == Type::File)) {
@@ -403,7 +410,7 @@ void WorkspaceGridView::resizeEvent(QResizeEvent* event) {
 
     if (newChunkSize != proxy_->chunkSize()) {
         std::vector<QModelIndex> expanded;
-        auto findExpaned = [&](auto& self, const QModelIndex& parent) -> void {
+        auto findExpanded = [&](auto& self, const QModelIndex& parent) -> void {
             auto rows = proxy_->rowCount(parent);
             for (int i = 0; i < rows; ++i) {
                 auto index = proxy_->index(i, 0, parent);
@@ -413,7 +420,7 @@ void WorkspaceGridView::resizeEvent(QResizeEvent* event) {
                 }
             }
         };
-        findExpaned(findExpaned, QModelIndex{});
+        findExpanded(findExpanded, QModelIndex{});
         proxy_->setChunkSize(event->size().width() / itemSize_);
         for (const auto& idx : expanded) {
             expand(proxy_->mapFromSource(idx));
