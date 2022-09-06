@@ -192,7 +192,7 @@ void GLUIProcessor::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void GLUIProcessor::onWillAddProperty(Property*, size_t) {}
+void GLUIProcessor::onWillAddProperty(PropertyOwner*, Property*, size_t) {}
 
 void GLUIProcessor::onDidAddProperty(Property* property, size_t) {
     auto& factory = app_->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
@@ -216,7 +216,7 @@ void GLUIProcessor::onWillRemoveProperty(Property* property, size_t) {
     }
 }
 
-void GLUIProcessor::onDidRemoveProperty(Property*, size_t) {}
+void GLUIProcessor::onDidRemoveProperty(PropertyOwner*, Property*, size_t) {}
 
 }  // namespace glui
 

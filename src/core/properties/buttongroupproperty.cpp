@@ -87,13 +87,17 @@ ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::strin
                           invalidationLevel, semantics) {}
 
 ButtonGroupProperty::ButtonGroupProperty(const ButtonGroupProperty& rhs)
-    : Property(rhs), buttons_{} {
+    : Property(rhs), buttons_{}, partialHelp_{rhs.partialHelp_} {
     setValid();
+    updateHelp();
 }
 
 ButtonGroupProperty::ButtonGroupProperty(const ButtonGroupProperty& rhs,
                                          std::vector<Button> buttons)
-    : Property(rhs), buttons_{std::move(buttons)} {}
+    : Property(rhs), buttons_{std::move(buttons)}, partialHelp_{rhs.partialHelp_} {
+    setValid();
+    updateHelp();
+}
 
 ButtonGroupProperty* ButtonGroupProperty::clone() const { return new ButtonGroupProperty(*this); }
 

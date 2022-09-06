@@ -339,7 +339,7 @@ bool Property::needsSerialization() const {
         case PropertySerializationMode::Default:
             [[fallthrough]];
         default:
-            return !isDefaultState();
+            return !isDefaultState() || !getMetaDataMap()->empty();
     }
 }
 

@@ -41,7 +41,19 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/inviwosetupinfo.h>
 
+#include <inviwo/core/network/lambdanetworkvisitor.h>
+
+#include <algorithm>
+
 namespace inviwo {
+
+namespace meta {
+constexpr std::string_view exposed = "CompositeProcessorExposed";
+constexpr std::string_view index = "CompositeProcessorIndex";
+constexpr std::string_view visible = "CompositeProcessorVisible";
+constexpr std::string_view readOnly = "CompositeProcessorReadOnly";
+constexpr std::string_view displayName = "CompositeProcessorDisplayName";
+}  // namespace meta
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo CompositeProcessor::processorInfo_{
@@ -142,7 +154,7 @@ void CompositeProcessor::loadSubNetwork(std::string_view file) {
 
 void CompositeProcessor::registerProperty(Property* orgProp) {
     orgProp->addObserver(this);
-    if (orgProp->getMetaData<BoolMetaData>("CompositeProcessorExposed", false)) {
+    if (orgProp->getMetaData<BoolMetaData>(meta::exposed, false)) {
         addSuperProperty(orgProp);
     }
 }
@@ -159,7 +171,6 @@ Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
     } else {
         if (orgProp->getOwner()->getProcessor()->getNetwork() == subNetwork_.get()) {
             handlers_[orgProp] = std::make_unique<PropertyHandler>(*this, orgProp);
-            orgProp->setMetaData<BoolMetaData>("CompositeProcessorExposed", true);
             return handlers_[orgProp]->superProperty;
         } else {
             throw Exception("Could not find property " + orgProp->getPath(), IVW_CONTEXT);
@@ -177,7 +188,7 @@ Property* CompositeProcessor::getSuperProperty(Property* orgProp) {
 }
 
 void CompositeProcessor::removeSuperProperty(Property* orgProp) {
-    orgProp->unsetMetaData<BoolMetaData>("CompositeProcessorExposed");
+    orgProp->unsetMetaData<BoolMetaData>(meta::exposed);
     handlers_.erase(orgProp);
 }
 
@@ -198,16 +209,12 @@ void CompositeProcessor::onProcessorNetworkEvaluateRequest() {
 }
 
 void CompositeProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
-    std::function<void(PropertyOwner*)> observe = [&](PropertyOwner* po) {
-        po->addObserver(this);
-        for (auto prop : po->getProperties()) {
-            registerProperty(prop);
-        }
-        for (auto child : po->getCompositeProperties()) {
-            observe(child);
-        }
-    };
-    observe(p);
+    LambdaNetworkVisitor visitor{[this](CompositeProperty& prop) {
+                                     prop.PropertyOwner::addObserver(this);
+                                     registerProperty(&prop);
+                                 },
+                                 [this](Property& prop) { registerProperty(&prop); }};
+    p->accept(visitor);
 
     if (auto sink = dynamic_cast<CompositeSinkBase*>(p)) {
         auto& port = sink->getSuperOutport();
@@ -227,16 +234,12 @@ void CompositeProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
 }
 
 void CompositeProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
-    std::function<void(PropertyOwner*)> unObserve = [&](PropertyOwner* po) {
-        po->removeObserver(this);
-        for (auto prop : po->getProperties()) {
-            unregisterProperty(prop);
-        }
-        for (auto child : po->getCompositeProperties()) {
-            unObserve(child);
-        }
-    };
-    unObserve(p);
+    LambdaNetworkVisitor visitor{[this](CompositeProperty& prop) {
+                                     prop.PropertyOwner::removeObserver(this);
+                                     unregisterProperty(&prop);
+                                 },
+                                 [this](Property& prop) { unregisterProperty(&prop); }};
+    p->accept(visitor);
 
     if (auto sink = dynamic_cast<CompositeSinkBase*>(p)) {
         removePort(&sink->getSuperOutport());
@@ -245,6 +248,16 @@ void CompositeProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
         removePort(&source->getSuperInport());
         util::erase_remove(sources_, source);
     }
+}
+
+void CompositeProcessor::onProcessorBackgroundJobsChanged(Processor*, int diff, int total) {
+    if (diff > 0) {
+        notifyObserversStartBackgroundWork(this, diff);
+    } else {
+        notifyObserversFinishBackgroundWork(this, -diff);
+    }
+
+    getProgressBar().setActive(total > 0);
 }
 
 void CompositeProcessor::onDidAddProperty(Property* prop, size_t) { registerProperty(prop); }
@@ -267,13 +280,72 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
         subProperty->set(superProperty);
     })} {
 
+    subProperty->setMetaData<BoolMetaData>(meta::exposed, true);
+
+    const auto index = [&]() {
+        if (auto meta = subProperty->getMetaData<IntMetaData>(meta::index)) {
+            return meta->get();
+        } else {
+            subProperty->setMetaData<IntMetaData>(meta::index, comp.size());
+            return static_cast<int>(comp.size());
+        }
+    }();
+
     auto superId = subProperty->getPath();
     replaceInString(superId, ".", "-");
     superProperty->setIdentifier(superId);
-    superProperty->setDisplayName(subProperty->getOwner()->getProcessor()->getDisplayName() + " " +
-                                  subProperty->getDisplayName());
     superProperty->setSerializationMode(PropertySerializationMode::All);
-    comp.addProperty(superProperty, false);
+    superProperty->setMetaData<IntMetaData>(meta::index, index);
+
+    auto it = std::lower_bound(comp.begin(), comp.end(), index, [&](Property* prop, int b) {
+        const auto a = prop->getMetaData<IntMetaData>(meta::index, 0);
+        return a < b;
+    });
+
+    comp.insertProperty(std::distance(comp.begin(), it), superProperty, false);
+
+    auto findSub = [this](Property* superProp) {
+        auto imp = [&](auto self, Property* superProp) -> Property* {
+            if (superProp == superProperty) {
+                return subProperty;
+            } else {
+                auto superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
+                auto subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
+                auto pos = std::distance(superOwner->begin(),
+                                         find(superOwner->begin(), superOwner->end(), superProp));
+                return (*subOwner)[pos];
+            }
+        };
+        return imp(imp, superProp);
+    };
+
+    LambdaNetworkVisitor visitor{[&](Property& superProp) {
+        auto subProp = findSub(&superProp);
+        if (auto meta = subProp->getMetaData<StringMetaData>(meta::displayName)) {
+            superProp.setDisplayName(meta->get());
+        }
+        if (auto meta = subProp->getMetaData<BoolMetaData>(meta::visible)) {
+            superProp.setVisible(meta->get());
+        }
+        if (auto meta = subProp->getMetaData<BoolMetaData>(meta::readOnly)) {
+            superProp.setReadOnly(meta->get());
+        }
+        superProp.addObserver(&superObserver);
+    }};
+    superProperty->accept(visitor);
+
+    superObserver.onDisplayNameChange = [findSub](Property* superProp, std::string_view name) {
+        auto subProp = findSub(superProp);
+        subProp->setMetaData<StringMetaData>(meta::displayName, std::string{name});
+    };
+    superObserver.onVisibleChange = [findSub](Property* superProp, bool visible) {
+        auto subProp = findSub(superProp);
+        subProp->setMetaData<BoolMetaData>(meta::visible, visible);
+    };
+    superObserver.onReadOnlyChange = [findSub](Property* superProp, bool readOnly) {
+        auto subProp = findSub(superProp);
+        subProp->setMetaData<BoolMetaData>(meta::readOnly, readOnly);
+    };
 }
 
 CompositeProcessor::PropertyHandler::~PropertyHandler() {
@@ -292,7 +364,7 @@ void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string&) 
 
 void CompositeProcessor::onSetDisplayName(Property* orgProp, const std::string& displayName) {
     if (auto superProperty = getSuperProperty(orgProp)) {
-        superProperty->setSemantics(displayName);
+        superProperty->setDisplayName(displayName);
     }
 }
 

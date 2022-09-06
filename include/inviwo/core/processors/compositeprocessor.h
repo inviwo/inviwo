@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/propertyobserver.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
+#include <inviwo/core/processors/progressbarowner.h>
 
 namespace inviwo {
 
@@ -91,7 +92,8 @@ class CompositeSourceBase;
 class IVW_CORE_API CompositeProcessor : public Processor,
                                         public ProcessorNetworkObserver,
                                         public PropertyOwnerObserver,
-                                        public PropertyObserver {
+                                        public PropertyObserver,
+                                        public ProgressBarOwner {
 public:
     /**
      * Construct a CompositeProcessor, an optional workspace file can be supplied in which case it
@@ -163,6 +165,7 @@ private:
         const BaseCallBack* subCallback = nullptr;
         const BaseCallBack* superCallback = nullptr;
         bool onChangeActive = false;
+        PropertyObserverDelegate superObserver;
     };
 
     void loadSubNetwork(std::string_view file);
@@ -181,6 +184,7 @@ private:
     virtual void onProcessorNetworkDidAddProcessor(Processor*) override;
     virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
     virtual void onProcessorNetworkEvaluateRequest() override;
+    virtual void onProcessorBackgroundJobsChanged(Processor*, int, int) override;
 
     // PropertyOwnerObserver overrides
     virtual void onDidAddProperty(Property* property, size_t index) override;

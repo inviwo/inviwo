@@ -33,7 +33,6 @@
 #include <inviwo/core/util/interpolation.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 
-
 namespace inviwo {
 
 namespace {

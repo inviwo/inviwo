@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,44 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/util/iterrange.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/observer.h>
-
-namespace inviwo {
-
-class Property;
-class PropertyOwner;
-class PropertyOwnerObservable;
-
-class IVW_CORE_API PropertyOwnerObserver : public Observer {
-public:
-    friend PropertyOwnerObservable;
-    PropertyOwnerObserver() = default;
-    virtual ~PropertyOwnerObserver() = default;
-
-    /**
-     * This methods will be called when observed object changes.
-     * Override it to add behavior.
-     */
-    virtual void onWillAddProperty(PropertyOwner* owner, Property* property, size_t index);
-    virtual void onDidAddProperty(Property* property, size_t index);
-
-    virtual void onWillRemoveProperty(Property* property, size_t index);
-    virtual void onDidRemoveProperty(PropertyOwner* owner, Property* property, size_t index);
-};
-
-class IVW_CORE_API PropertyOwnerObservable : public Observable<PropertyOwnerObserver> {
-public:
-    PropertyOwnerObservable() = default;
-    virtual ~PropertyOwnerObservable() = default;
-
-    void notifyObserversWillAddProperty(PropertyOwner* owner, Property* property, size_t index);
-    void notifyObserversDidAddProperty(Property* property, size_t index);
-
-    void notifyObserversWillRemoveProperty(Property* property, size_t index);
-    void notifyObserversDidRemoveProperty(PropertyOwner* owner, Property* property, size_t index);
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -10,6 +10,7 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/subpropertyselectiondialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacegridview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacetreemodel.h
@@ -48,7 +49,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorstatusgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/subpropertyselectiondialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspaceannotationsqt.h

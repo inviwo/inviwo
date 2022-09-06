@@ -681,8 +681,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             dialog->show();
         });
 
-        auto saveCompAction =
-            menu.addAction(QIcon(":/svgicons/save.svg"), tr("&Save Composite"));
+        auto saveCompAction = menu.addAction(QIcon(":/svgicons/save.svg"), tr("&Save Composite"));
         connect(saveCompAction, &QAction::triggered, this, [this, selectedComposites]() {
             for (auto& p : selectedComposites) {
                 const auto compDir = mainwindow_->getInviwoApplication()->getPath(

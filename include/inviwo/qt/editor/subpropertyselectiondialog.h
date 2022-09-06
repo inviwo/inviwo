@@ -30,15 +30,42 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QMimeData>
+#include <warn/pop>
+
+#include <string>
 
 namespace inviwo {
 
 class CompositeProcessor;
+class Property;
 
-class IVW_QTEDITOR_API SubPropertySelectionDialog : public InviwoDockWidget {
+class SuperPropertyMimeData : public QMimeData {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    SuperPropertyMimeData(std::vector<Property*> someProperties);
+    static const std::string& getMimeTag();
+    static const SuperPropertyMimeData* toSuperPropertyMimeData(const QMimeData* data);
+    std::vector<Property*> properties;
+};
+
+class IVW_QTEDITOR_API SubPropertySelectionDialog : public InviwoDockWidget,
+                                                    public ProcessorNetworkObserver {
 public:
     SubPropertySelectionDialog(CompositeProcessor* processor, QWidget* parent);
     virtual ~SubPropertySelectionDialog() = default;
+
+protected:
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
+
+    CompositeProcessor* cp_;
 };
 
 }  // namespace inviwo

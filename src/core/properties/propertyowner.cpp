@@ -96,7 +96,7 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
         }
     }
 
-    notifyObserversWillAddProperty(property, index);
+    notifyObserversWillAddProperty(this, property, index);
     properties_.insert(properties_.begin() + index, property);
     property->setOwner(this);
 
@@ -163,7 +163,7 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
 
         prop->setOwner(nullptr);
         properties_.erase(it);
-        notifyObserversDidRemoveProperty(prop, index);
+        notifyObserversDidRemoveProperty(this, prop, index);
 
         // This will delete the property if owned; in that case set prop to nullptr.
         util::erase_remove_if(ownedProperties_, [&prop](const std::unique_ptr<Property>& p) {

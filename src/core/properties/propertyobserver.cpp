@@ -64,5 +64,4 @@ void PropertyObserver::onSetReadOnly(Property*, bool) {}
 
 void PropertyObserver::onSetVisible(Property*, bool) {}
 
-
 }  // namespace inviwo

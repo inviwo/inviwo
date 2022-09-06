@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,45 +26,51 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/observer.h>
+
+#include <utility>
+#include <iterator>
 
 namespace inviwo {
 
-class Property;
-class PropertyOwner;
-class PropertyOwnerObservable;
+namespace util {
 
-class IVW_CORE_API PropertyOwnerObserver : public Observer {
-public:
-    friend PropertyOwnerObservable;
-    PropertyOwnerObserver() = default;
-    virtual ~PropertyOwnerObserver() = default;
-
-    /**
-     * This methods will be called when observed object changes.
-     * Override it to add behavior.
-     */
-    virtual void onWillAddProperty(PropertyOwner* owner, Property* property, size_t index);
-    virtual void onDidAddProperty(Property* property, size_t index);
-
-    virtual void onWillRemoveProperty(Property* property, size_t index);
-    virtual void onDidRemoveProperty(PropertyOwner* owner, Property* property, size_t index);
+template <class Iter>
+struct iter_range : std::pair<Iter, Iter> {
+    using value_type = typename std::iterator_traits<Iter>::value_type;
+    using const_iterator = Iter;
+    using iterator = Iter;
+    using std::pair<Iter, Iter>::pair;
+    iter_range(const std::pair<Iter, Iter>& x) : std::pair<Iter, Iter>(x) {}
+    Iter begin() const { return this->first; }
+    Iter end() const { return this->second; }
 };
 
-class IVW_CORE_API PropertyOwnerObservable : public Observable<PropertyOwnerObserver> {
-public:
-    PropertyOwnerObservable() = default;
-    virtual ~PropertyOwnerObservable() = default;
+template <class Iter>
+inline iter_range<Iter> as_range(Iter begin, Iter end) {
+    return iter_range<Iter>(std::make_pair(begin, end));
+}
 
-    void notifyObserversWillAddProperty(PropertyOwner* owner, Property* property, size_t index);
-    void notifyObserversDidAddProperty(Property* property, size_t index);
+template <class Iter>
+inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
+    return iter_range<Iter>(x);
+}
 
-    void notifyObserversWillRemoveProperty(Property* property, size_t index);
-    void notifyObserversDidRemoveProperty(PropertyOwner* owner, Property* property, size_t index);
-};
+template <class Container>
+inline iter_range<typename Container::iterator> as_range(Container& c) {
+    using std::begin;
+    using std::end;
+    return iter_range<typename Container::iterator>(std::make_pair(begin(c), end(c)));
+}
+template <class Container>
+inline iter_range<typename Container::const_iterator> as_range(const Container& c) {
+    using std::begin;
+    using std::end;
+    return iter_range<typename Container::const_iterator>(std::make_pair(begin(c), end(c)));
+}
+
+}  // namespace util
 
 }  // namespace inviwo
