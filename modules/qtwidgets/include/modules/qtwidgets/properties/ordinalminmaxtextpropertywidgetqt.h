@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/metadata/metadata.h>
 
 #include <warn/push>

@@ -32,14 +32,17 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/constraintbehavior.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmmatext.h>
+#include <inviwo/core/util/glmfmt.h>
 #include <inviwo/core/util/assertion.h>
 
 #include <string>
 #include <functional>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <fmt/core.h>
+#include <ostream>
 
 namespace inviwo {
 
@@ -113,8 +116,7 @@ public:
 
     OrdinalRefProperty(
         std::string_view identifier, std::string_view displayName, Document help = {},
-        std::function<T()> get = []() { return T{}; },
-        std::function<void(const T&)> set = [](const T&) {},
+        std::function<T()> get = nullptr, std::function<void(const T&)> set = nullptr,
         const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
                                                                      ConstraintBehavior::Editable},
         const std::pair<T, ConstraintBehavior>& maxValue = std::pair{Defaultvalues<T>::getMax(),
@@ -244,6 +246,7 @@ public:
 private:
     std::function<T()> get_;
     std::function<void(const T&)> set_;
+    std::weak_ptr<ValueWrapper<T>> fallbackValue_;
     ValueWrapper<T> minValue_;
     ValueWrapper<T> maxValue_;
     ValueWrapper<T> increment_;
@@ -301,9 +304,8 @@ struct PropertyTraits<OrdinalRefProperty<T>> {
     }
 };
 
-template <typename CTy, typename CTr, typename T>
-std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
-                                         const OrdinalRefProperty<T>& prop) {
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const OrdinalRefProperty<T>& prop) {
     return os << prop.get();
 }
 
@@ -318,14 +320,26 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
     : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , get_{std::move(get)}
     , set_{std::move(set)}
-    , minValue_("minvalue", minValue.first)
-    , maxValue_("maxvalue", maxValue.first)
-    , increment_("increment", increment)
+    , fallbackValue_{}
+    , minValue_{"minvalue", minValue.first}
+    , maxValue_{"maxvalue", maxValue.first}
+    , increment_{"increment", increment}
     , minConstraint_{"minConstraint", minValue.second}
     , maxConstraint_{"maxConstraint", maxValue.second} {
 
-    IVW_ASSERT(get_, "The getter has to be valid");
-    IVW_ASSERT(set_, "The setter has to be valid");
+    if (get_ && set_) {
+        // Valid case
+    } else if (!get_ && !set_) {
+        // Both default we assign a dummy
+        auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", Defaultvalues<T>::getVal());
+        get_ = [val]() { return *val; };
+        set_ = [val](const T& newVal) { *val = newVal; };
+        fallbackValue_ = val;
+    } else {
+        // One valid and one not. One has to set both or none.
+        IVW_ASSERT(get_, "The getter has to be valid");
+        IVW_ASSERT(set_, "The setter has to be valid");
+    }
 
     if (!validRange(minValue_, maxValue_) || get_() != clamp(get_())) {
         throw Exception{
@@ -363,7 +377,22 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
                          state.semantics} {}
 
 template <typename T>
-OrdinalRefProperty<T>::OrdinalRefProperty(const OrdinalRefProperty<T>& rhs) = default;
+OrdinalRefProperty<T>::OrdinalRefProperty(const OrdinalRefProperty<T>& rhs)
+    : Property{rhs}
+    , get_{nullptr}
+    , set_{nullptr}
+    , fallbackValue_{}
+    , minValue_{rhs.minValue_}
+    , maxValue_{rhs.maxValue_}
+    , increment_{rhs.increment_}
+    , minConstraint_{rhs.minConstraint_}
+    , maxConstraint_{rhs.maxConstraint_} {
+
+    auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", rhs.get());
+    get_ = [val]() { return *val; };
+    set_ = [val](const T& newVal) { *val = newVal; };
+    fallbackValue_ = val;
+}
 
 template <typename T>
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::operator=(const T& value) {
@@ -565,6 +594,9 @@ void OrdinalRefProperty<T>::setIncrement(const T& newInc) {
 template <typename T>
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::resetToDefaultState() {
     bool modified = false;
+    if (auto value = fallbackValue_.lock()) {
+        modified |= value->reset();
+    }
     modified |= minValue_.reset();
     modified |= maxValue_.reset();
     modified |= increment_.reset();
@@ -574,12 +606,20 @@ OrdinalRefProperty<T>& OrdinalRefProperty<T>::resetToDefaultState() {
 
 template <typename T>
 bool OrdinalRefProperty<T>::isDefaultState() const {
-    return increment_.isDefault() && minValue_.isDefault() && maxValue_.isDefault();
+    if (auto value = fallbackValue_.lock()) {
+        return value->isDefault() && increment_.isDefault() && minValue_.isDefault() &&
+               maxValue_.isDefault();
+    } else {
+        return increment_.isDefault() && minValue_.isDefault() && maxValue_.isDefault();
+    }
 }
 
 template <typename T>
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
+    if (auto value = fallbackValue_.lock()) {
+        value->setAsDefault();
+    }
     minValue_.setAsDefault();
     maxValue_.setAsDefault();
     increment_.setAsDefault();
@@ -599,6 +639,13 @@ template <typename T>
 void OrdinalRefProperty<T>::serialize(Serializer& s) const {
     Property::serialize(s);
 
+    if (auto value = fallbackValue_.lock()) {
+        value->serialize(s, this->serializationMode_);
+    } else {
+        ValueWrapper<T> val{"fallbackValue", get()};
+        val.serialize(s, this->serializationMode_);
+    }
+
     minConstraint_.serialize(s, this->serializationMode_);
     maxConstraint_.serialize(s, this->serializationMode_);
     minValue_.serialize(s, this->serializationMode_);
@@ -611,6 +658,9 @@ void OrdinalRefProperty<T>::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
+    if (auto value = fallbackValue_.lock()) {
+        modified |= value->deserialize(d, this->serializationMode_);
+    }
     modified |= minConstraint_.deserialize(d, this->serializationMode_);
     modified |= maxConstraint_.deserialize(d, this->serializationMode_);
     modified |= minValue_.deserialize(d, this->serializationMode_);
@@ -716,3 +766,13 @@ extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<glm::fquat>;
 /// @endcond
 
 }  // namespace inviwo
+
+template <typename T>
+struct fmt::formatter<inviwo::OrdinalRefProperty<T>> : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(const inviwo::OrdinalRefProperty<T>& prop, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+        fmt::format_to(std::back_inserter(buff), "{}", prop.get());
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
+    }
+};
