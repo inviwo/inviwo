@@ -31,7 +31,8 @@
 
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmconvert.h>
 
 #include <initializer_list>
 

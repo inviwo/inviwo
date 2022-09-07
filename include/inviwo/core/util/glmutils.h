@@ -28,19 +28,11 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/glmmat.h>
+#include <glm/fwd.hpp>
 
 #include <warn/push>
 #include <warn/ignore/all>
-
-#include <glm/detail/setup.hpp>
-#include <glm/detail/qualifier.hpp>
-
 #include <half/half.hpp>
-
 #include <warn/pop>
 
 #include <type_traits>
@@ -161,52 +153,6 @@ struct same_extent<glm::tquat<T, Q>, U> {
 
 template <typename T, typename U>
 using same_extent_t = typename same_extent<T, U>::type;
-
-// GLM element access wrapper functions. Useful in template functions with scalar and vec types
-
-// vector like access
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-constexpr auto glmcomp(T& elem, size_t) -> T& {
-    return elem;
-}
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-constexpr auto glmcomp(T& elem, size_t i) ->
-    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
-                              typename T::value_type&>::type {
-    return elem[i];
-}
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
-constexpr auto glmcomp(T& elem, size_t i) ->
-    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
-                              typename T::value_type&>::type {
-    return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
-}
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
-constexpr auto glmcomp(const T& elem, size_t i) -> const typename T::value_type& {
-    return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
-}
-
-// matrix like access
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-constexpr auto glmcomp(T& elem, size_t, size_t) -> T& {
-    return elem;
-}
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-constexpr auto glmcomp(T& elem, size_t i, size_t) ->
-    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
-                              typename T::value_type&>::type {
-    return elem[i];
-}
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
-constexpr auto glmcomp(T& elem, size_t i, size_t j) ->
-    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
-                              typename T::value_type&>::type {
-    return elem[i][j];
-}
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
-constexpr auto glmcomp(const T& elem, size_t i, size_t j) -> const typename T::value_type& {
-    return elem[i][j];
-}
 
 template <typename T = double, glm::length_t C = 1, glm::length_t R = 1,
           glm::qualifier Q = glm::defaultp>

@@ -38,7 +38,6 @@ set(HEADER_FILES
     include/modules/opengl/shader/shadertype.h
     include/modules/opengl/shader/shaderutils.h
     include/modules/opengl/shader/standardshaders.h
-    include/modules/opengl/shader/uniformutils.h
     include/modules/opengl/sharedopenglresources.h
     include/modules/opengl/texture/texture.h
     include/modules/opengl/texture/texture2d.h

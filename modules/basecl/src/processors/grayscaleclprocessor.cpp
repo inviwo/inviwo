@@ -35,6 +35,7 @@
 #include <modules/opencl/syncclgl.h>
 #include <modules/opencl/volume/volumecl.h>
 #include <modules/opencl/kernelmanager.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 

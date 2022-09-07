@@ -30,8 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/serialization.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/optionpropertytraits.h>
 #include <inviwo/core/util/hashcombine.h>
 
 #include <string>
@@ -40,7 +39,10 @@
 
 namespace inviwo {
 
-class IVW_CORE_API FileExtension : public Serializable {
+class Serializer;
+class Deserializer;
+
+class IVW_CORE_API FileExtension {
 public:
     FileExtension();
     FileExtension(const FileExtension&) = default;
@@ -80,8 +82,8 @@ public:
      */
     bool matches(std::string_view str) const;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
 
     static FileExtension all();
 
@@ -100,15 +102,17 @@ public:
 };
 
 template <>
-struct PropertyTraits<OptionProperty<FileExtension>> {
-    static std::string classIdentifier() { return "org.inviwo.OptionPropertyFileExtension"; }
+struct OrdinalPropertyTraits<FileExtension> {
+    static const std::string& classIdentifier() {
+        static const std::string id{"org.inviwo.OptionPropertyFileExtension"};
+        return id;
+    }
 };
 
 }  // namespace inviwo
 
-namespace std {
 template <>
-struct hash<inviwo::FileExtension> {
+struct std::hash<inviwo::FileExtension> {
     size_t operator()(const inviwo::FileExtension& f) const {
         size_t h = 0;
         inviwo::util::hash_combine(h, f.extension_);
@@ -116,4 +120,3 @@ struct hash<inviwo::FileExtension> {
         return h;
     }
 };
-}  // namespace std

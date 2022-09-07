@@ -94,7 +94,7 @@ RangeSlider::RangeSlider(const std::string& label, const ivec2& value, int minVa
     // adjust size of picking mapper to fit 3 pieces (min pos, max pos, and center part)
     pickingMapper_.resize(3);
 
-    const auto texSourcePath = module::getModulePath("UserInterfaceGL", ModulePath::Images);
+    const auto texSourcePath = util::getModulePath("UserInterfaceGL", ModulePath::Images);
 
     const std::vector<std::string> sliderFiles = {
         "rangesliderhandle-normal.png", "rangesliderhandle-pressed.png",
@@ -177,7 +177,7 @@ void RangeSlider::renderWidget(const ivec2& origin, const size2_t&) {
     // bind textures
     auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
-    uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
+    uiShader.setUniform("arrayTexMap", uiTextureMap_);
 
     const ivec2 extent(getWidgetExtentScaled());
 

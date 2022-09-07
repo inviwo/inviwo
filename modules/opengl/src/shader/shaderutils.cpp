@@ -474,16 +474,16 @@ void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
 void setShaderUniforms(Shader& shader, const IsoValueProperty& property) {
     auto data = property.get().getVectorsf();
 
-    shader.setUniform("isovalues", data.first.size(), data.first.data());
-    shader.setUniform("isosurfaceColors", data.second.size(), data.second.data());
+    shader.setUniform("isovalues", data.first);
+    shader.setUniform("isosurfaceColors", data.second);
 }
 
 void setShaderUniforms(Shader& shader, const IsoValueProperty& property, std::string_view name) {
     auto data = property.get().getVectorsf();
 
     StrBuffer buff;
-    shader.setUniform(buff.replace("{}.values", name), data.first.size(), data.first.data());
-    shader.setUniform(buff.replace("{}.colors", name), data.second.size(), data.second.data());
+    shader.setUniform(buff.replace("{}.values", name), data.first);
+    shader.setUniform(buff.replace("{}.colors", name), data.second);
 }
 
 void addShaderDefines(Shader& shader, const IsoTFProperty& property) {
@@ -552,21 +552,27 @@ void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& indicator,
     if (indicator) {
         if (indicator.plane1_) {
             shader.setUniform(buff.replace("{}.plane1.position", name),
-                              indicator.plane1_.position_);
-            shader.setUniform(buff.replace("{}.plane1.normal", name), indicator.plane1_.normal_);
-            shader.setUniform(buff.replace("{}.plane1.color", name), indicator.plane1_.color_);
+                              indicator.plane1_.position_.get());
+            shader.setUniform(buff.replace("{}.plane1.normal", name),
+                              indicator.plane1_.normal_.get());
+            shader.setUniform(buff.replace("{}.plane1.color", name),
+                              indicator.plane1_.color_.get());
         }
         if (indicator.plane2_) {
             shader.setUniform(buff.replace("{}.plane2.position", name),
-                              indicator.plane2_.position_);
-            shader.setUniform(buff.replace("{}.plane2.normal", name), indicator.plane2_.normal_);
-            shader.setUniform(buff.replace("{}.plane2.color", name), indicator.plane2_.color_);
+                              indicator.plane2_.position_.get());
+            shader.setUniform(buff.replace("{}.plane2.normal", name),
+                              indicator.plane2_.normal_.get());
+            shader.setUniform(buff.replace("{}.plane2.color", name),
+                              indicator.plane2_.color_.get());
         }
         if (indicator.plane3_) {
             shader.setUniform(buff.replace("{}.plane3.position", name),
-                              indicator.plane3_.position_);
-            shader.setUniform(buff.replace("{}.plane3.normal", name), indicator.plane3_.normal_);
-            shader.setUniform(buff.replace("{}.plane3.color", name), indicator.plane3_.color_);
+                              indicator.plane3_.position_.get());
+            shader.setUniform(buff.replace("{}.plane3.normal", name),
+                              indicator.plane3_.normal_.get());
+            shader.setUniform(buff.replace("{}.plane3.color", name),
+                              indicator.plane3_.color_.get());
         }
     }
 }

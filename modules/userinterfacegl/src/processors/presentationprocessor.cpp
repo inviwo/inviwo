@@ -176,7 +176,7 @@ void PresentationProcessor::updateSlideImage() {
 
     const std::string currentFileName = fileList_[index];
 
-    auto factory = getNetwork()->getApplication()->getDataReaderFactory();
+    auto factory = getInviwoApplication()->getDataReaderFactory();
     auto reader = factory->getReaderForTypeAndExtension<Layer>(currentFileName);
 
     // there should always be a reader since we asked the reader for valid extensions

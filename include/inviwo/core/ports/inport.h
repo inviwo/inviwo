@@ -138,6 +138,8 @@ public:
 protected:
     Inport(std::string_view identifier, Document help);
 
+    bool circularConnection(const Port* port) const;
+
     /**
      * Called by Outport::invalidate on its connected inports, which is call by
      * Processor::invalidate. Will by default invalidate its processor. From above in the

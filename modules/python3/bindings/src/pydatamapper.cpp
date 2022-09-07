@@ -32,9 +32,9 @@
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 
+#include <inviwo/core/util/glmfmt.h>
 #include <pybind11/numpy.h>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <fmt/core.h>
 
 namespace py = pybind11;
 

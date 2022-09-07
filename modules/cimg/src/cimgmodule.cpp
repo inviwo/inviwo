@@ -36,6 +36,7 @@
 #include <modules/cimg/tiffstackvolumereader.h>
 
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <modules/cimg/cimgutils.h>
 
 namespace inviwo {

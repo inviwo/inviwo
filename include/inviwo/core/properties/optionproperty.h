@@ -30,6 +30,7 @@
 #pragma once
 
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/optionpropertytraits.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/introspection.h>
 #include <inviwo/core/util/assertion.h>
@@ -377,14 +378,7 @@ bool operator!=(const U& lhs, const OptionProperty<T>& rhs) {
 template <typename T>
 struct PropertyTraits<OptionProperty<T>> {
     static const std::string& classIdentifier() {
-        if constexpr (std::is_enum_v<T>) {
-            static const std::string identifier = "org.inviwo.OptionProperty" + util::enumName<T>();
-            return identifier;
-        } else {
-            static const std::string identifier =
-                "org.inviwo.OptionProperty" + Defaultvalues<T>::getName();
-            return identifier;
-        }
+        return OrdinalPropertyTraits<T>::classIdentifier();
     }
 };
 

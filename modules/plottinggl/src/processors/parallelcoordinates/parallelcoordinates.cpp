@@ -591,9 +591,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
                                            marginsInternal_.first.y, marginsInternal_.first.x));
     lineShader_.setUniform("dims", ivec2(size));
     // pcp_lines.vert
-    lineShader_.setUniform("axisPositions", lines_.axisPositions.size(),
-                           lines_.axisPositions.data());
-    lineShader_.setUniform("axisFlipped", lines_.axisFlipped.size(), lines_.axisFlipped.data());
+    lineShader_.setUniform("axisPositions", lines_.axisPositions);
+    lineShader_.setUniform("axisFlipped", lines_.axisFlipped);
     // pcp_lines.geom
     // lineWidth;
 

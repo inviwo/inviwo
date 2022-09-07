@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/fileextension.h>
 
+#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>

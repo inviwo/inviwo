@@ -33,6 +33,8 @@
 
 #include <algorithm>
 
+#include <inviwo/core/util/glm.h>
+
 namespace inviwo {
 
 namespace animation {

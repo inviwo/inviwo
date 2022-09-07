@@ -30,6 +30,7 @@
 #include <modules/basegl/shadercomponents/backgroundcomponent.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <string_view>
 #include <fmt/format.h>

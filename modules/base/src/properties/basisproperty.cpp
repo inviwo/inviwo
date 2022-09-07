@@ -32,6 +32,8 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 
+#include <glm/gtx/matrix_operation.hpp>
+
 namespace inviwo {
 
 const std::string BasisProperty::classIdentifier = "org.inviwo.VolumeBasisProperty";

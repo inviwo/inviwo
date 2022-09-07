@@ -31,6 +31,8 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <glm/gtx/component_wise.hpp>
+
 namespace inviwo {
 
 ImageCache::ImageCache(std::shared_ptr<const Image> master) : valid_(true), master_(master) {}

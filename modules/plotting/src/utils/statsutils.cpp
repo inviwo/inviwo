@@ -29,6 +29,7 @@
 
 #include <modules/plotting/utils/statsutils.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 namespace statsutil {

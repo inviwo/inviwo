@@ -29,6 +29,7 @@
 
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/utilities.h>

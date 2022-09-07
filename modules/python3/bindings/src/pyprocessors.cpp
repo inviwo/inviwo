@@ -38,6 +38,7 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -279,8 +280,7 @@ void exposeProcessors(pybind11::module& m) {
         .def_property_readonly("ready", &CanvasProcessor::isReady)
         .def("snapshot",
              [](CanvasProcessor* canvas, std::string filepath) {
-                 auto writer = canvas->getNetwork()
-                                   ->getApplication()
+                 auto writer = canvas->getInviwoApplication()
                                    ->getDataWriterFactory()
                                    ->getWriterForTypeAndExtension<Layer>(filepath);
                  if (!writer) {
@@ -298,8 +298,7 @@ void exposeProcessors(pybind11::module& m) {
 
         .def("snapshotAsync", [](CanvasProcessor* canvas, std::string filepath) {
             auto writer = std::shared_ptr<DataWriterType<Layer>>{
-                canvas->getNetwork()
-                    ->getApplication()
+                canvas->getInviwoApplication()
                     ->getDataWriterFactory()
                     ->getWriterForTypeAndExtension<Layer>(filepath)};
             if (!writer) {

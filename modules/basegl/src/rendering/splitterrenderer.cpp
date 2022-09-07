@@ -138,7 +138,7 @@ void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direct
 
     shader_.activate();
 
-    shader_.setUniform("positions", pos.size(), pos.data());
+    shader_.setUniform("positions", pos);
 
     shader_.setUniform("screenDim", canvasDimsf);
     // draw picking buffer

@@ -30,9 +30,11 @@
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/animationcontrollerobserver.h>
 #include <modules/animation/datastructures/controltrack.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -49,12 +51,12 @@ namespace {
 constexpr std::string_view defaultImageExt = "png";
 
 std::vector<std::string> imageExts(InviwoApplication* app) {
-    return util::transform(app->getDataWriterFactory()->getExtensionsForType<Layer>(),
+    return util::transform(util::getDataWriterFactory(app)->getExtensionsForType<Layer>(),
                            [](const auto& i) -> std::string { return toString(i); });
 }
 
 size_t imageExtIndex(InviwoApplication* app, std::string_view ext) {
-    auto exts = app->getDataWriterFactory()->getExtensionsForType<Layer>();
+    auto exts = util::getDataWriterFactory(app)->getExtensionsForType<Layer>();
     auto it = std::find_if(exts.begin(), exts.end(), [&](auto& e) { return e.extension_ == ext; });
     if (it != exts.end()) {
         return std::distance(exts.begin(), it);

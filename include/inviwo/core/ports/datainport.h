@@ -39,7 +39,6 @@
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/document.h>
-#include <inviwo/core/network/networkutils.h>
 
 #include <memory>
 #include <vector>
@@ -134,11 +133,7 @@ size_t DataInport<T, N, Flat>::getMaxNumberOfConnections() const {
 
 template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
-    if (!port || port->getProcessor() == getProcessor()) return false;
-
-    // Check for circular depends.
-    auto pd = util::getPredecessors(port->getProcessor());
-    if (pd.find(getProcessor()) != pd.end()) return false;
+    if (!port || port->getProcessor() == getProcessor() || circularConnection(port)) return false;
 
     if constexpr (Flat) {
         if (dynamic_cast<const OutportIterable<T>*>(port)) {

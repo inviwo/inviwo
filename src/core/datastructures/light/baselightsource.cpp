@@ -28,6 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/light/baselightsource.h>
+
+#include <glm/trigonometric.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtc/constants.hpp>
 
 namespace inviwo {

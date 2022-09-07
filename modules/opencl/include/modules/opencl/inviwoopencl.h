@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/core/util/singleton.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 #include <modules/opencl/cl.hpp>
 

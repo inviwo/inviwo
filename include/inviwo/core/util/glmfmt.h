@@ -33,7 +33,7 @@
 #include <glm/detail/type_quat.hpp>
 #include <glm/gtx/io.hpp>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 #include <fmt/ostream.h>
 
 template <glm::length_t L, typename T, glm::qualifier Q>

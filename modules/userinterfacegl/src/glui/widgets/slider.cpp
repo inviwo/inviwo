@@ -70,7 +70,7 @@ Slider::Slider(const std::string& label, int value, int minValue, int maxValue,
         return triggerUpdate;
     };
 
-    const auto texSourcePath = module::getModulePath("UserInterfaceGL", ModulePath::Images);
+    const auto texSourcePath = util::getModulePath("UserInterfaceGL", ModulePath::Images);
 
     const std::vector<std::string> sliderFiles = {
         "sliderhandle-normal.png", "sliderhandle-pressed.png", "sliderhandle-checked.png",
@@ -108,7 +108,7 @@ void Slider::renderWidget(const ivec2& origin, const size2_t&) {
     // bind textures
     auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
-    uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
+    uiShader.setUniform("arrayTexMap", uiTextureMap_);
 
     const vec2 extent(getWidgetExtentScaled());
 

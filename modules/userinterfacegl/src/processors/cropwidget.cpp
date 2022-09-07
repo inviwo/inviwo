@@ -41,6 +41,7 @@
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/rendering/meshdrawergl.h>

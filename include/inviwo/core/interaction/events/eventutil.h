@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/glmfmt.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 

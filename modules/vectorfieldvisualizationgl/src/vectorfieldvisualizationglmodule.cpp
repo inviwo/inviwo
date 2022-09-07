@@ -52,6 +52,7 @@
 #include <modules/vectorfieldvisualizationgl/shader_resources.h>
 
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 

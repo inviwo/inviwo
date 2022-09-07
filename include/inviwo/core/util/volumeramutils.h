@@ -30,9 +30,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/threadutil.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/common/inviwoapplicationutil.h>
 
 #include <vector>
 #include <future>
@@ -60,7 +59,7 @@ void forEachVoxel(const VolumeRAM& v, C callback) {
 
 template <typename C>
 void forEachVoxelParallel(const size3_t dims, C callback, size_t jobs = 0) {
-    const size_t poolSize = util::getInviwoApplicationPoolSize();
+    const size_t poolSize = util::getPoolSize();
     if (jobs == 0) {
         jobs = 4 * poolSize;
     }
@@ -75,7 +74,7 @@ void forEachVoxelParallel(const size3_t dims, C callback, size_t jobs = 0) {
         size3_t start = size3_t(0, 0, job * dims.z / jobs);
         size3_t stop = size3_t(dims.x, dims.y, std::min(dims.z, (job + 1) * dims.z / jobs));
 
-        futures.push_back(dispatchPool([&callback, start, stop]() {
+        futures.push_back(util::dispatchPool([&callback, start, stop]() {
             size3_t pos{0};
 
             for (pos.z = start.z; pos.z < stop.z; ++pos.z) {

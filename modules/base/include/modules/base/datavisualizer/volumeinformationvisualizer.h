@@ -33,6 +33,8 @@
 
 namespace inviwo {
 
+class InviwoApplication;
+
 class IVW_MODULE_BASE_API VolumeInformationVisualizer : public DataVisualizer {
 public:
     VolumeInformationVisualizer(InviwoApplication* app);

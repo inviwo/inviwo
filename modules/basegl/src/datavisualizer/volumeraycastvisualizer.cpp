@@ -39,11 +39,12 @@
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/ports/volumeport.h>
-
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/common/factoryutil.h>
 
 namespace inviwo {
 
@@ -62,7 +63,7 @@ Document VolumeRaycastVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> VolumeRaycastVisualizer::getSupportedFileExtensions() const {
-    auto rf = app_->getDataReaderFactory();
+    auto rf = util::getDataReaderFactory(app_);
     auto exts = rf->getExtensionsForType<Volume>();
     auto exts2 = rf->getExtensionsForType<VolumeSequence>();
     exts.insert(exts.end(), exts2.begin(), exts2.end());

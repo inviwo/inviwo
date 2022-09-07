@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/glm.h>
 
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
 #include <modules/animation/datastructures/callbacktrack.h>

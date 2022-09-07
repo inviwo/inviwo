@@ -32,6 +32,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/util/glmfmt.h>
 
 namespace inviwo {
 
@@ -127,8 +128,8 @@ void ImageNormalizationProcessor::updateMinMax() {
     min_ = minMax.first;
     max_ = minMax.second;
 
-    minS_.set(toString(minMax.first));
-    maxS_.set(toString(minMax.second));
+    minS_.set(fmt::to_string(minMax.first));
+    maxS_.set(fmt::to_string(minMax.second));
 
     min_.a = 0.0;  // never normalize alpha
     max_.a = 1.0;

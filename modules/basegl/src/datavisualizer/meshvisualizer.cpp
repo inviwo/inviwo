@@ -35,6 +35,7 @@
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/ports/meshport.h>
 
 #include <inviwo/core/io/datareaderfactory.h>

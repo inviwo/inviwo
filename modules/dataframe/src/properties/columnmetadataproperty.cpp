@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 

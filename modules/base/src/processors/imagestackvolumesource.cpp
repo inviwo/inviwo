@@ -29,7 +29,7 @@
 
 #include <modules/base/processors/imagestackvolumesource.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
@@ -79,7 +79,7 @@ ImageStackVolumeSource::ImageStackVolumeSource(InviwoApplication* app)
     , skipUnsupportedFiles_("skipUnsupportedFiles", "Skip Unsupported Files", false)
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
-    , readerFactory_{app->getDataReaderFactory()} {
+    , readerFactory_{util::getDataReaderFactory(app)} {
 
     addPort(outport_);
     addProperty(filePattern_);

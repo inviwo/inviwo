@@ -30,6 +30,7 @@
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 

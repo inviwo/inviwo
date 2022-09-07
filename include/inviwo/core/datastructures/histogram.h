@@ -30,7 +30,11 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmcomp.h>
+
+#include <glm/common.hpp>
 
 #include <iterator>
 #include <vector>

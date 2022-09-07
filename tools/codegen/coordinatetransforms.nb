@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    109120,       2292]
-NotebookOptionsPosition[    108114,       2255]
-NotebookOutlinePosition[    108460,       2270]
-CellTagsIndexPosition[    108417,       2267]
+NotebookDataLength[    112572,       2339]
+NotebookOptionsPosition[    110683,       2301]
+NotebookOutlinePosition[    111084,       2317]
+CellTagsIndexPosition[    111041,       2314]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -25,7 +25,9 @@ Cell[BoxData[
     RowBox[{"{", 
      RowBox[{"\"\<PageWidth\>\"", "\[Rule]", "5000"}], "}"}]}]}], 
   "]"}]], "Input",
- CellChangeTimes->{{3.627103105555641*^9, 3.6271031061937046`*^9}}],
+ CellChangeTimes->{{3.627103105555641*^9, 3.6271031061937046`*^9}},
+ CellLabel->
+  "In[754]:=",ExpressionUUID->"51e91f54-dcea-4861-9b8c-f71db61aa203"],
 
 Cell[CellGroupData[{
 
@@ -137,8 +139,7 @@ Cell[BoxData[{
     RowBox[{
      RowBox[{"{", 
       RowBox[{"space_", ",", "pos_"}], "}"}], "\[RuleDelayed]", 
-     RowBox[{"space", "\[Rule]", "pos"}]}]}]}], 
-  ";"}], "\[IndentingNewLine]", 
+     RowBox[{"space", "\[Rule]", "pos"}]}]}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"vertexPos", "=", 
    RowBox[{
@@ -295,7 +296,9 @@ Cell[BoxData[{
    3.627029989032504*^9}, {3.6270325396151667`*^9, 3.627032540925517*^9}, 
    3.627041866654336*^9, {3.62710812634767*^9, 3.627108221917226*^9}, {
    3.6271083059306264`*^9, 3.627108310887122*^9}, {3.6271266291845393`*^9, 
-   3.6271266586315393`*^9}, {3.6775742205240097`*^9, 3.6775742361785746`*^9}}],
+   3.6271266586315393`*^9}, {3.6775742205240097`*^9, 3.6775742361785746`*^9}},
+ CellLabel->
+  "In[755]:=",ExpressionUUID->"706e0666-3633-48a7-a4e0-5a7f4c27f5f5"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -345,43 +348,42 @@ Cell[BoxData[
          Directive[12]}, VertexSize -> {Medium}}]]}, 
     TagBox[GraphicsGroupBox[{
        {Hue[0.6, 0.7, 0.5], Opacity[0.7], Arrowheads[
-        0.028937842778793414`], {
-         ArrowBox[BezierCurveBox[{{0., 0.}, {0.5000000000000004, 
-          0.1644407471831171}, {1., 0.}}], 0.030239520958083826`], InsetBox[
+        Medium], {
+         ArrowBox[BezierCurveBox[{{0., 0.}, {0.5000000000000002, 
+          0.1644407471831165}, {1., 0.}}], 0.1], InsetBox[
           StyleBox[
            RotationBox["\<\"ModelMatrix\"\>",
             BoxRotation->0.],
            StripOnInput->False,
            FontSize->12,
-           Background->GrayLevel[1]], {0.5000000000000001, 0.07000000000000006},
+           Background->GrayLevel[1]], {0.49999999999999994, 0.07000000000000006},
            ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}, {
-         ArrowBox[BezierCurveBox[{{0., 0.}, {0.16444074718311655`, -0.5}, {
-          0., -1.}}], 0.030239520958083826`], InsetBox[
+         ArrowBox[BezierCurveBox[{{0., 0.}, {
+          0.1644407471831165, -0.5000000000000002}, {0., -1.}}], 0.1], 
+         InsetBox[
           StyleBox[
            RotationBox["\<\"IndexMatrix\"\>",
             BoxRotation->1.5707963267948966`],
            StripOnInput->False,
            FontSize->12,
-           Background->GrayLevel[1]], {0.07000000000000006, -0.5000000000000001},
+           Background->GrayLevel[1]], {0.07000000000000006, -0.49999999999999994},
            ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}, {
          ArrowBox[BezierCurveBox[{{1., 0.}, {
-          0.5000000000000007, -0.16444074718311624`}, {0., 0.}}], 
-          0.030239520958083826`], InsetBox[
+          0.5000000000000003, -0.1644407471831164}, {0., 0.}}], 0.1], InsetBox[
           StyleBox[
            RotationBox[
-            TemplateBox[{"\"ModelMatrix\"","\"-1\""},
+            TemplateBox[{"\"ModelMatrix\"", "\"-1\""},
              "Superscript"],
             BoxRotation->0.],
            StripOnInput->False,
            FontSize->12,
-           Background->GrayLevel[1]], {0.5, -0.07000000000000006}, 
-          ImageScaled[{0.5, 0.5}],
+           Background->GrayLevel[1]], {0.5000000000000001, -0.07000000000000006},
+           ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}, {
-         ArrowBox[BezierCurveBox[{{1., 0.}, {1.4999999999999987`, 
-          0.16444074718310983`}, {2., 0.}}], 0.030239520958083826`], 
-         InsetBox[
+         ArrowBox[BezierCurveBox[{{1., 0.}, {1.4999999999999984`, 
+          0.1644407471831161}, {2., 0.}}], 0.1], InsetBox[
           StyleBox[
            RotationBox["\<\"WorldMatrix\"\>",
             BoxRotation->0.],
@@ -391,11 +393,11 @@ Cell[BoxData[
           ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}, {
          ArrowBox[BezierCurveBox[{{2., 0.}, {
-          1.5000000000000018`, -0.16444074718312243`}, {1., 0.}}], 
-          0.030239520958083826`], InsetBox[
+          1.500000000000002, -0.16444074718311635`}, {1., 0.}}], 0.1], 
+         InsetBox[
           StyleBox[
            RotationBox[
-            TemplateBox[{"\"WorldMatrix\"","\"-1\""},
+            TemplateBox[{"\"WorldMatrix\"", "\"-1\""},
              "Superscript"],
             BoxRotation->0.],
            StripOnInput->False,
@@ -404,30 +406,31 @@ Cell[BoxData[
           ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}, {
          ArrowBox[BezierCurveBox[{{2., 0.}, {
-          2.164440747183118, -0.5000000000000593}, {2., -1.}}], 
-          0.030239520958083826`], InsetBox[
+          2.1644407471831193`, -0.5000000000000038}, {2., -1.}}], 0.1], 
+         InsetBox[
           StyleBox[
            RotationBox["\<\"ViewMatrix\"\>",
             BoxRotation->1.5707963267948966`],
            StripOnInput->False,
            FontSize->12,
-           Background->GrayLevel[1]], {2.0700000000000003`, -0.5}, 
+           Background->GrayLevel[1]], {2.0700000000000003, -0.5}, 
           ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}, {
          ArrowBox[BezierCurveBox[{{2., -1.}, {
-          1.835559252816882, -0.49999999999999994`}, {2., 0.}}], 
-          0.030239520958083826`], InsetBox[
+          1.8355592528168807`, -0.5000000000000058}, {2., 0.}}], 0.1], 
+         InsetBox[
           StyleBox[
            RotationBox[
-            TemplateBox[{"\"ViewMatrix\"","\"-1\""},
+            TemplateBox[{"\"ViewMatrix\"", "\"-1\""},
              "Superscript"],
             BoxRotation->1.5707963267948966`],
            StripOnInput->False,
            FontSize->12,
-           Background->GrayLevel[1]], {1.93, -0.5}, ImageScaled[{0.5, 0.5}],
+           Background->GrayLevel[1]], {1.9300000000000002, -0.5000000000000001},
+           ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}, {
-         ArrowBox[BezierCurveBox[{{2., -1.}, {2.5, -0.8355592528179372}, {
-          3., -1.}}], 0.030239520958083826`], InsetBox[
+         ArrowBox[BezierCurveBox[{{2., -1.}, {
+          2.499999999999981, -0.8355592528168788}, {3., -1.}}], 0.1], InsetBox[
           StyleBox[
            RotationBox["\<\"ProjectionMatrix\"\>",
             BoxRotation->0.],
@@ -436,11 +439,11 @@ Cell[BoxData[
            Background->GrayLevel[1]], {2.5, -0.9299999999999999}, 
           ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}, {
-         ArrowBox[BezierCurveBox[{{3., -1.}, {2.5, -1.1644407471830105`}, {
-          2., -1.}}], 0.030239520958083826`], InsetBox[
+         ArrowBox[BezierCurveBox[{{3., -1.}, {2.5, -1.164440747183121}, {
+          2., -1.}}], 0.1], InsetBox[
           StyleBox[
            RotationBox[
-            TemplateBox[{"\"ProjectionMatrix\"","\"-1\""},
+            TemplateBox[{"\"ProjectionMatrix\"", "\"-1\""},
              "Superscript"],
             BoxRotation->0.],
            StripOnInput->False,
@@ -448,17 +451,17 @@ Cell[BoxData[
            Background->GrayLevel[1]], {2.5, -1.07}, ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}, {
          ArrowBox[BezierCurveBox[{{
-          0., -1.}, {-0.16444074718311646`, -0.5000000000000018}, {0., 0.}}], 
-          0.030239520958083826`], InsetBox[
+          0., -1.}, {-0.1644407471831164, -0.5000000000000003}, {0., 0.}}], 
+          0.1], InsetBox[
           StyleBox[
            RotationBox[
-            TemplateBox[{"\"IndexMatrix\"","\"-1\""},
+            TemplateBox[{"\"IndexMatrix\"", "\"-1\""},
              "Superscript"],
             BoxRotation->1.5707963267948966`],
            StripOnInput->False,
            FontSize->12,
-           Background->GrayLevel[1]], {-0.07000000000000006, -0.5}, 
-          ImageScaled[{0.5, 0.5}],
+           Background->GrayLevel[1]], {-0.07000000000000006, -0.5000000000000001},
+           ImageScaled[{0.5, 0.5}],
           BaseStyle->"Graphics"]}}, 
        {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[
         0.7]}], {DiskBox[{0., 0.}, 0.1], InsetBox[
@@ -490,15 +493,13 @@ Cell[BoxData[
     AllowKernelInitialization->False]],
   DefaultBaseStyle->{
    "NetworkGraphics", FrontEnd`GraphicsHighlightColor -> Hue[0.8, 1., 0.6]},
+  FormatType->TraditionalForm,
   FrameTicks->None,
-  GridLinesStyle->Directive[
-    GrayLevel[0.5, 0.4]],
-  ImagePadding->15,
   ImageSize->800,
   Prolog->{
     RGBColor[0.87, 0.94, 1], 
     TagBox[
-     DiskBox[{1, 0}, {1.25, 0.25}], "Ellipse"], 
+     DiskBox[{1, 0}, {1.25, 0.25}], "Ellipsoid"], 
     GrayLevel[0], 
     InsetBox[
      FormBox[
@@ -506,7 +507,7 @@ Cell[BoxData[
      1, 0.17}], 
     RGBColor[0.87, 0.94, 1], 
     TagBox[
-     DiskBox[{0, -1}, {0.25, 0.25}], "Ellipse"], 
+     DiskBox[{0, -1}, {0.25, 0.25}], "Ellipsoid"], 
     GrayLevel[0], 
     InsetBox[
      FormBox[
@@ -514,7 +515,7 @@ Cell[BoxData[
       TraditionalForm], {0, -1.17}], 
     RGBColor[0.87, 0.94, 1], 
     TagBox[
-     DiskBox[{2.5, -1.}, {0.7, 0.25}], "Ellipse"], 
+     DiskBox[{2.5, -1.}, {0.7, 0.25}], "Ellipsoid"], 
     GrayLevel[0], 
     InsetBox[
      FormBox[
@@ -532,7 +533,11 @@ Cell[BoxData[
    3.627030044051139*^9, 3.627032101310817*^9, 3.627032559351583*^9, 
    3.627041878936124*^9, 3.627103109637049*^9, 3.6271082247745113`*^9, 
    3.627108313447378*^9, 3.6271266606535397`*^9, 3.6775574189238553`*^9, 
-   3.6775742437613335`*^9}]
+   3.6775742437613335`*^9, 3.8716188616337395`*^9, 3.871623730500124*^9, 
+   3.8716247773897705`*^9, 3.8716250171218596`*^9, 3.871634518656029*^9, 
+   3.8716346104619837`*^9},
+ CellLabel->
+  "Out[762]=",ExpressionUUID->"9b8bbe55-1aa1-419d-83b1-fcbe2cd79f0c"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -563,7 +568,9 @@ Cell[BoxData[{
         RowBox[{"False", ",", "1"}], "}"}]}], "}"}]}], ",", " ", 
     RowBox[{"Alignment", "\[Rule]", "Left"}]}], "]"}]}]}], "Input",
  CellChangeTimes->{{3.6775610987259607`*^9, 3.6775611717512627`*^9}, {
-  3.677561212336321*^9, 3.677561237808868*^9}}],
+  3.677561212336321*^9, 3.677561237808868*^9}},
+ CellLabel->
+  "In[763]:=",ExpressionUUID->"fed12002-dd3d-4cf7-b2a6-daa9a01fb8fa"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -574,8 +581,7 @@ Cell[BoxData[
 max)\"\>"},
     {"\<\"World\"\>", "\<\"world space coordinates\"\>", "\<\"(-inf, \
 inf)\"\>"},
-    {"\<\"View\"\>", "\<\"view space coordinates\"\>", "\<\"(-inf, \
-inf)\"\>"},
+    {"\<\"View\"\>", "\<\"view space coordinates\"\>", "\<\"(-inf, inf)\"\>"},
     {"\<\"Clip\"\>", "\<\"clip space coordinates\"\>", "\<\"[-1,1]\"\>"},
     {"\<\"Index\"\>", "\<\"voxel index coordinates\"\>", "\<\"[0, number of \
 voxels)\"\>"}
@@ -587,7 +593,11 @@ voxels)\"\>"}
   "Grid"]], "Output",
  CellChangeTimes->{
   3.6775610720682955`*^9, {3.6775611023573236`*^9, 3.6775611725493426`*^9}, {
-   3.6775612185739446`*^9, 3.6775612384949365`*^9}, 3.677574247757733*^9}],
+   3.6775612185739446`*^9, 3.6775612384949365`*^9}, 3.677574247757733*^9, 
+   3.871618866544759*^9, 3.871623730564123*^9, 3.8716247774367714`*^9, 
+   3.871625017172857*^9, 3.871634518706031*^9, 3.871634610509987*^9},
+ CellLabel->
+  "Out[763]=",ExpressionUUID->"9042a54c-18c5-4180-b68a-ba7f99560914"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -611,7 +621,11 @@ StructuredGridEntity<N>*\"\>", "\<\"entity_\"\>"}
   "Grid"]], "Output",
  CellChangeTimes->{
   3.6775610720682955`*^9, {3.6775611023573236`*^9, 3.6775611725493426`*^9}, {
-   3.6775612185739446`*^9, 3.6775612384949365`*^9}, 3.677574247761733*^9}]
+   3.6775612185739446`*^9, 3.6775612384949365`*^9}, 3.677574247757733*^9, 
+   3.871618866544759*^9, 3.871623730564123*^9, 3.8716247774367714`*^9, 
+   3.871625017172857*^9, 3.871634518706031*^9, 3.871634610521988*^9},
+ CellLabel->
+  "Out[764]=",ExpressionUUID->"fc138453-136d-4f80-93bd-39d565831de2"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -630,7 +644,9 @@ Cell[BoxData[{
    3.677560794797571*^9}, {3.677560837841875*^9, 3.6775609108631763`*^9}, {
    3.6775609431424046`*^9, 3.6775609600860987`*^9}, {3.677561037767866*^9, 
    3.677561066479737*^9}, 3.677561191368224*^9, {3.67756125003309*^9, 
-   3.6775612559926863`*^9}}],
+   3.6775612559926863`*^9}},
+ CellLabel->
+  "In[765]:=",ExpressionUUID->"289ac429-9e65-4e92-a98d-0afbcdbf6ace"],
 
 Cell[BoxData["\<\"Space   Description               Range\\n\\nData    raw \
 data numbers          generally (-inf, inf), ([0,1] for textures)\\n\\nModel  \
@@ -643,7 +659,11 @@ coordinates   [0, number of voxels)\\n\"\>"], "Output",
    3.677560795727664*^9, 3.6775608407861695`*^9, {3.677560885138604*^9, 
    3.6775609114232326`*^9}, {3.677560949848075*^9, 3.6775609607681665`*^9}, {
    3.677561038341923*^9, 3.6775610743565245`*^9}, 3.6775611921683044`*^9, 
-   3.6775612564017267`*^9, 3.677574252507208*^9}],
+   3.6775612564017267`*^9, 3.677574252507208*^9, 3.8716188731885843`*^9, 
+   3.8716237306201277`*^9, 3.871624777506775*^9, 3.871625017223858*^9, 
+   3.8716345187800303`*^9, 3.871634610550989*^9},
+ CellLabel->
+  "Out[765]=",ExpressionUUID->"ea2132bf-2dce-4aa1-a246-04c379cd414d"],
 
 Cell[BoxData["\<\"From Space   To Space   Transform          Entity           \
                 Member\\n\\nData         Model      ModelMatrix        const \
@@ -658,7 +678,11 @@ StructuredGridEntity<N>*   entity_\\n\"\>"], "Output",
    3.677560795727664*^9, 3.6775608407861695`*^9, {3.677560885138604*^9, 
    3.6775609114232326`*^9}, {3.677560949848075*^9, 3.6775609607681665`*^9}, {
    3.677561038341923*^9, 3.6775610743565245`*^9}, 3.6775611921683044`*^9, 
-   3.6775612564017267`*^9, 3.6775742525092077`*^9}]
+   3.6775612564017267`*^9, 3.677574252507208*^9, 3.8716188731885843`*^9, 
+   3.8716237306201277`*^9, 3.871624777506775*^9, 3.871625017223858*^9, 
+   3.8716345187800303`*^9, 3.8716346105599875`*^9},
+ CellLabel->
+  "Out[766]=",ExpressionUUID->"b58deeb3-f1b3-4cb5-8a73-c1d572936c70"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -769,7 +793,7 @@ Cell[BoxData[
        RowBox[{"{", 
         RowBox[{
          RowBox[{"Inv", "[", "x_", "]"}], "\[RuleDelayed]", 
-         RowBox[{"\"\<MatrixInvert(\>\"", "<>", "x", "<>", "\"\<)\>\""}]}], 
+         RowBox[{"\"\<glm::inverse(\>\"", "<>", "x", "<>", "\"\<)\>\""}]}], 
         "}"}]}]}], ";", "\[IndentingNewLine]", 
      RowBox[{"(*", " ", 
       RowBox[{"Apply", " ", "multipilcation"}], " ", "*)"}], " ", 
@@ -794,17 +818,19 @@ Cell[BoxData[
            "}"}]}]}], "}"}]}]}], ";", "\[IndentingNewLine]", "trans"}]}], " ",
     "\[IndentingNewLine]", "]"}]}]], "Input",
  CellChangeTimes->{{3.6267641696621647`*^9, 3.62676430450838*^9}, {
-  3.626764416752842*^9, 3.62676445821292*^9}, {3.626765319711173*^9, 
-  3.626765321374365*^9}, {3.6267654551802197`*^9, 3.626765657878249*^9}, {
-  3.626769164958419*^9, 3.626769228337826*^9}, {3.6267824733027143`*^9, 
-  3.626782546813094*^9}, {3.626782590364966*^9, 3.6267826131656322`*^9}, {
-  3.626782668992674*^9, 3.62678267238284*^9}, {3.6267827061813517`*^9, 
-  3.626782864930951*^9}, {3.626782996250383*^9, 3.6267831242401953`*^9}, {
-  3.626783181819662*^9, 3.6267831925092983`*^9}, {3.6270133789791393`*^9, 
-  3.627013443069194*^9}, {3.627014594125594*^9, 3.627014596104596*^9}, {
-  3.6270300585396957`*^9, 3.62703006142625*^9}, {3.627042611440069*^9, 
-  3.627042619781218*^9}, {3.627043342695414*^9, 3.627043347349929*^9}, {
-  3.6271083350715404`*^9, 3.6271083396149945`*^9}}],
+   3.626764416752842*^9, 3.62676445821292*^9}, {3.626765319711173*^9, 
+   3.626765321374365*^9}, {3.6267654551802197`*^9, 3.626765657878249*^9}, {
+   3.626769164958419*^9, 3.626769228337826*^9}, {3.6267824733027143`*^9, 
+   3.626782546813094*^9}, {3.626782590364966*^9, 3.6267826131656322`*^9}, {
+   3.626782668992674*^9, 3.62678267238284*^9}, {3.6267827061813517`*^9, 
+   3.626782864930951*^9}, {3.626782996250383*^9, 3.6267831242401953`*^9}, {
+   3.626783181819662*^9, 3.6267831925092983`*^9}, {3.6270133789791393`*^9, 
+   3.627013443069194*^9}, {3.627014594125594*^9, 3.627014596104596*^9}, {
+   3.6270300585396957`*^9, 3.62703006142625*^9}, {3.627042611440069*^9, 
+   3.627042619781218*^9}, {3.627043342695414*^9, 3.627043347349929*^9}, {
+   3.6271083350715404`*^9, 3.6271083396149945`*^9}, 3.8716189582769737`*^9},
+ CellLabel->
+  "In[767]:=",ExpressionUUID->"a52b80a8-f4bf-417b-93a9-a95e5e12f8f4"],
 
 Cell[CellGroupData[{
 
@@ -838,7 +864,9 @@ Cell[BoxData[
    3.626765041936873*^9, 3.6267650444035883`*^9}, {3.626782635286623*^9, 
    3.6267826455951443`*^9}, {3.626783276498507*^9, 3.626783278451229*^9}, {
    3.627014599704565*^9, 3.627014633364355*^9}, {3.627014783533242*^9, 
-   3.627014845953301*^9}}],
+   3.627014845953301*^9}},
+ CellLabel->
+  "In[768]:=",ExpressionUUID->"9e202607-80e6-4c63-9865-de2202589817"],
 
 Cell[BoxData[
  TagBox[
@@ -860,72 +888,69 @@ Cell[BoxData[
 \>"},
      {"\<\"Data\"\>", "\<\"Index\"\>", "\<\"getIndexMatrix()\"\>"},
      {"\<\"Model\"\>", "\<\"Data\"\>", \
-"\<\"MatrixInvert(getModelMatrix())\"\>"},
+"\<\"glm::inverse(getModelMatrix())\"\>"},
      {"\<\"Model\"\>", "\<\"World\"\>", "\<\"getWorldMatrix()\"\>"},
      {"\<\"Model\"\>", "\<\"View\"\>", \
 "\<\"getViewMatrix()*getWorldMatrix()\"\>"},
      {"\<\"Model\"\>", "\<\"Clip\"\>", \
 "\<\"getProjectionMatrix()*getViewMatrix()*getWorldMatrix()\"\>"},
      {"\<\"Model\"\>", "\<\"Index\"\>", \
-"\<\"getIndexMatrix()*MatrixInvert(getModelMatrix())\"\>"},
+"\<\"getIndexMatrix()*glm::inverse(getModelMatrix())\"\>"},
      {"\<\"World\"\>", "\<\"Data\"\>", \
-"\<\"MatrixInvert(getWorldMatrix()*getModelMatrix())\"\>"},
-     {"\<\"World\"\>", "\<\"Model\"\>", "\<\"MatrixInvert(getWorldMatrix())\"\
+"\<\"glm::inverse(getWorldMatrix()*getModelMatrix())\"\>"},
+     {"\<\"World\"\>", "\<\"Model\"\>", "\<\"glm::inverse(getWorldMatrix())\"\
 \>"},
      {"\<\"World\"\>", "\<\"View\"\>", "\<\"getViewMatrix()\"\>"},
      {"\<\"World\"\>", "\<\"Clip\"\>", \
 "\<\"getProjectionMatrix()*getViewMatrix()\"\>"},
      {"\<\"World\"\>", "\<\"Index\"\>", \
-"\<\"getIndexMatrix()*MatrixInvert(getWorldMatrix()*getModelMatrix())\"\>"},
+"\<\"getIndexMatrix()*glm::inverse(getWorldMatrix()*getModelMatrix())\"\>"},
      {"\<\"View\"\>", "\<\"Data\"\>", \
-"\<\"MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix())\"\>"},
+"\<\"glm::inverse(getViewMatrix()*getWorldMatrix()*getModelMatrix())\"\>"},
      {"\<\"View\"\>", "\<\"Model\"\>", \
-"\<\"MatrixInvert(getViewMatrix()*getWorldMatrix())\"\>"},
+"\<\"glm::inverse(getViewMatrix()*getWorldMatrix())\"\>"},
      {"\<\"View\"\>", "\<\"World\"\>", \
-"\<\"MatrixInvert(getViewMatrix())\"\>"},
+"\<\"glm::inverse(getViewMatrix())\"\>"},
      {"\<\"View\"\>", "\<\"Clip\"\>", "\<\"getProjectionMatrix()\"\>"},
      {"\<\"View\"\>", "\<\"Index\"\>", \
-"\<\"getIndexMatrix()*MatrixInvert(getViewMatrix()*getWorldMatrix()*\
+"\<\"getIndexMatrix()*glm::inverse(getViewMatrix()*getWorldMatrix()*\
 getModelMatrix())\"\>"},
      {"\<\"Clip\"\>", "\<\"Data\"\>", \
-"\<\"MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*\
+"\<\"glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*\
 getModelMatrix())\"\>"},
      {"\<\"Clip\"\>", "\<\"Model\"\>", \
-"\<\"MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix())\"\>\
+"\<\"glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix())\"\>\
 "},
      {"\<\"Clip\"\>", "\<\"World\"\>", \
-"\<\"MatrixInvert(getProjectionMatrix()*getViewMatrix())\"\>"},
+"\<\"glm::inverse(getProjectionMatrix()*getViewMatrix())\"\>"},
      {"\<\"Clip\"\>", "\<\"View\"\>", \
-"\<\"MatrixInvert(getProjectionMatrix())\"\>"},
+"\<\"glm::inverse(getProjectionMatrix())\"\>"},
      {"\<\"Clip\"\>", "\<\"Index\"\>", \
-"\<\"getIndexMatrix()*MatrixInvert(getProjectionMatrix()*getViewMatrix()*\
+"\<\"getIndexMatrix()*glm::inverse(getProjectionMatrix()*getViewMatrix()*\
 getWorldMatrix()*getModelMatrix())\"\>"},
      {"\<\"Index\"\>", "\<\"Data\"\>", \
-"\<\"MatrixInvert(getIndexMatrix())\"\>"},
+"\<\"glm::inverse(getIndexMatrix())\"\>"},
      {"\<\"Index\"\>", "\<\"Model\"\>", \
-"\<\"getModelMatrix()*MatrixInvert(getIndexMatrix())\"\>"},
+"\<\"getModelMatrix()*glm::inverse(getIndexMatrix())\"\>"},
      {"\<\"Index\"\>", "\<\"World\"\>", \
-"\<\"getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix())\"\>"},
+"\<\"getWorldMatrix()*getModelMatrix()*glm::inverse(getIndexMatrix())\"\>"},
      {"\<\"Index\"\>", "\<\"View\"\>", \
-"\<\"getViewMatrix()*getWorldMatrix()*getModelMatrix()*MatrixInvert(\
+"\<\"getViewMatrix()*getWorldMatrix()*getModelMatrix()*glm::inverse(\
 getIndexMatrix())\"\>"},
      {"\<\"Index\"\>", "\<\"Clip\"\>", \
 "\<\"getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix()*\
-MatrixInvert(getIndexMatrix())\"\>"}
+glm::inverse(getIndexMatrix())\"\>"}
     },
-    GridBoxAlignment->{
-     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
-      "RowsIndexed" -> {}},
+    GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
     GridBoxDividers->{
-     "Columns" -> {{False}}, "ColumnsIndexed" -> {}, 
-      "Rows" -> {False, True, {False}, False}, "RowsIndexed" -> {}},
+     "Columns" -> {{False}}, "Rows" -> {False, True, {False}, False}},
     GridBoxSpacings->{"Columns" -> {
         Offset[0.27999999999999997`], {
          Offset[2.0999999999999996`]}, 
-        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.27999999999999997`]}, "Rows" -> {
         Offset[0.2], {
          Offset[0.4]}, 
-        Offset[0.2]}, "RowsIndexed" -> {}}],
+        Offset[0.2]}}],
    {None, OutputFormsDump`HeadedColumns}],
   Function[BoxForm`e$, 
    TableForm[
@@ -941,7 +966,12 @@ MatrixInvert(getIndexMatrix())\"\>"}
    3.627021034382331*^9, 3.627022702689829*^9, {3.627030045731987*^9, 
    3.627030063157319*^9}, 3.627032103878377*^9, 3.6270325617518053`*^9, 
    3.6270426251208963`*^9, 3.6270433497596827`*^9, 3.627103115859671*^9, 
-   3.627108342857319*^9, 3.6271266656965394`*^9}]
+   3.627108342857319*^9, 3.6271266656965394`*^9, 3.8716188836814513`*^9, 
+   3.87161896596647*^9, 3.8716237306981306`*^9, 3.87162477759779*^9, 
+   3.87162501729186*^9, 3.8716345188910294`*^9, 3.871634610606989*^9},
+ CellLabel->
+  "Out[768]//TableForm=",ExpressionUUID->"2facfbeb-1a44-4eea-93b8-\
+aebc82a24a53"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -951,7 +981,7 @@ Cell[BoxData[
    "StringTemplate", "[", "\[IndentingNewLine]", 
     "\"\</********************************************************************\
 *************\n *\n * Inviwo - Interactive Visualization Workshop\n *\n * \
-Copyright (c) 2012-2016 Inviwo Foundation\n * All rights reserved.\n *\n * \
+Copyright (c) 2012-2022 Inviwo Foundation\n * All rights reserved.\n *\n * \
 Redistribution and use in source and binary forms, with or without\n * \
 modification, are permitted provided that the following conditions are met:\n \
 *\n * 1. Redistributions of source code must retain the above copyright \
@@ -971,11 +1001,11 @@ CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) \
 ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF \
 THE POSSIBILITY OF SUCH DAMAGE.\n *\n \
 ******************************************************************************\
-***/\n\n#ifndef IVW_COORDINATETRANSFORMER_H\n#define \
-IVW_COORDINATETRANSFORMER_H\n\n#include \
-<inviwo/core/common/inviwocoredefine.h>\n#include \
-<inviwo/core/common/inviwo.h>\n#include <inviwo/core/datastructures/camera.h>\
-\n\nnamespace inviwo {\n\n/**\n * This file is auto generated using \
+***/\n\n#pragma once\n\n#include <inviwo/core/common/inviwocoredefine.h>\n\
+#include <inviwo/core/datastructures/camera.h>\n#include \
+<inviwo/core/util/exception.h>\n#include <inviwo/core/util/fmtutils.h>\n\n\
+#include <glm/matrix.hpp>\n\n#include <iosfwd>\n\nnamespace inviwo {\n// \
+clang-format off\n/**\n * This file is auto generated using \
 tools/codegen/coordinatetransforms.nb\n *\n * Space   Description             \
   Range\n * \
 ==============================================================================\
@@ -983,7 +1013,7 @@ tools/codegen/coordinatetransforms.nb\n *\n * Space   Description             \
 textures)\n * Model   model space coordinates   (data min, data max)\n * \
 World   world space coordinates   (-inf, inf)\n * View    view space \
 coordinates    (-inf, inf)\n * Clip    clip space coordinates    [-1,1]\n * \
-Index   voxel index coordinates   [0, number of voxels)\n * \n * From Space   \
+Index   voxel index coordinates   [0, number of voxels)\n *\n * From Space   \
 To Space   Transform          Entity                           Member\n * \
 ==============================================================================\
 =====\n * Data         Model      ModelMatrix        const SpatialEntity<N>*  \
@@ -991,11 +1021,8 @@ To Space   Transform          Entity                           Member\n * \
 SpatialEntity<N>*          entity_\n * World        View       ViewMatrix     \
     const CameraND<N>*               camera_\n * View         Clip       \
 ProjectionMatrix   const CameraND<N>*               camera_\n * Data         \
-Index      IndexMatrix        const StructuredGridEntity<N>*   entity_\n *    \
-                                                                              \
-                                                                              \
-             \n *                                                             \
-                           \n *  \:250c\[HorizontalLine]\[HorizontalLine]\
+Index      IndexMatrix        const StructuredGridEntity<N>*   entity_\n * \n \
+* \n *  \:250c\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
@@ -1009,17 +1036,16 @@ Index      IndexMatrix        const StructuredGridEntity<N>*   entity_\n *    \
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510\n \
+*  \[VerticalLine]                          Spatial                          \
+\[VerticalLine]\n *  \[VerticalLine]               ModelM.               \
+WorldM.               \[VerticalLine]                         \n *  \
+\[VerticalLine]   \:250c\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
-\[HorizontalLine]\:2510                         \n *  \[VerticalLine]         \
-                 Spatial                          \[VerticalLine]             \
-            \n *  \[VerticalLine]               ModelM.               WorldM. \
-              \[VerticalLine]                         \n *  \[VerticalLine]   \
+\[HorizontalLine]\:2510\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
+\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[FilledRightTriangle]\
 \:250c\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
-\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510\
-\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
-\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
-\[HorizontalLine]\[HorizontalLine]\[FilledRightTriangle]\:250c\
-\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\:2510\
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
 \[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\[HorizontalLine]\
@@ -1155,26 +1181,20 @@ View  \[VerticalLine]               \[VerticalLine]  Clip  \[VerticalLine]   \
 */\n\ntemplate <unsigned int N>\nclass SpatialEntity;\n\ntemplate <unsigned \
 int N>\nclass StructuredGridEntity;\n\nnamespace util {\n\nclass Camera2D {\n\
 public:\n    Camera2D() : view_(1.0f), projection_(1.0f) {}\n    const \
-Matrix<3, float>& getViewMatrix() const { return view_; }\n    const \
-Matrix<3, float>& getProjectionMatrix() const { return projection_; }\n\n\
-private:\n    Matrix<3, float> view_;\n    Matrix<3, float> projection_;\n};\n\
-\ntemplate <unsigned int N>\nstruct cameratype {};\n\ntemplate <>\nstruct \
-cameratype<2> {\n    typedef Camera2D type;\n};\n\ntemplate <>\nstruct \
-cameratype<3> {\n    typedef Camera type;\n};\n}\ntemplate <unsigned int N>\n\
-using CameraND = typename util::cameratype<N>::type;\n\nenum class \
-CoordinateSpace {\n    Data, Model, World, Index, Clip, View\n};\n\ntemplate \
-<class Elem, class Traits>\nstd::basic_ostream<Elem, Traits>& \
-operator<<(std::basic_ostream<Elem, Traits>& ss,\n                            \
-                 CoordinateSpace s) {\n    switch (s) {\n        case \
-CoordinateSpace::Data:\n            ss << \\\"Data\\\";\n            break;\n \
-       case CoordinateSpace::Model:\n            ss << \\\"Model\\\";\n       \
-     break;\n        case CoordinateSpace::World:\n            ss << \
-\\\"World\\\";\n            break;\n        case CoordinateSpace::Index:\n    \
-        ss << \\\"Index\\\";\n            break;\n        case \
-CoordinateSpace::Clip:\n            ss << \\\"Clip\\\";\n            break;\n \
-       case CoordinateSpace::View:\n            ss << \\\"View\\\";\n         \
-   break;\n    }\n    return ss;\n}\n\n`content`\n\n} // namespace\n\n#endif \
-// IVW_COORDINATETRANSFORMER_H\n\>\"", "\n", "]"}]}], ";"}]], "Input",
+glm::mat3& getViewMatrix() const { return view_; }\n    const glm::mat3& \
+getProjectionMatrix() const { return projection_; }\n\nprivate:\n    \
+glm::mat3 view_;\n    glm::mat3 projection_;\n};\n\ntemplate <unsigned int N>\
+\nstruct cameratype {};\n\ntemplate <>\nstruct cameratype<2> {\n    typedef \
+Camera2D type;\n};\n\ntemplate <>\nstruct cameratype<3> {\n    typedef Camera \
+type;\n};\n}\ntemplate <unsigned int N>\nusing CameraND = typename \
+util::cameratype<N>::type;\n\nenum class CoordinateSpace {\n    Data, Model, \
+World, Index, Clip, View\n};\n\nIVW_CORE_API std::string_view \
+enumToStr(CoordinateSpace s);\n\nIVW_CORE_API std::ostream& \
+operator<<(std::ostream& ss, CoordinateSpace s);\n\n`content`\n// \
+clang-format on\n}  // namespace inviwo\n\ntemplate <>\nstruct \
+fmt::formatter<inviwo::CoordinateSpace> : \
+inviwo::FlagFormatter<inviwo::CoordinateSpace> {};\n\>\"", "\n", "]"}]}], 
+  ";"}]], "Input",
  CellChangeTimes->{{3.6775629781548853`*^9, 3.6775629887489443`*^9}, {
    3.6775630200910783`*^9, 3.6775633486649323`*^9}, {3.6775688374297543`*^9, 
    3.6775688861826286`*^9}, {3.677569736658668*^9, 3.67756979078008*^9}, {
@@ -1182,7 +1202,15 @@ CoordinateSpace::Clip:\n            ss << \\\"Clip\\\";\n            break;\n \
    3.677571289264913*^9, 3.6775726484278154`*^9, {3.6775728937593465`*^9, 
    3.6775729012740974`*^9}, {3.6775742620881653`*^9, 
    3.6775742949524517`*^9}, {3.6775757529472365`*^9, 3.677575757970739*^9}, {
-   3.677577076519581*^9, 3.677577105956524*^9}}],
+   3.677577076519581*^9, 3.677577105956524*^9}, {3.871618705376874*^9, 
+   3.8716187155537243`*^9}, {3.8716189931724277`*^9, 
+   3.8716190196787744`*^9}, {3.871619085659157*^9, 3.8716190931401143`*^9}, {
+   3.871622415867424*^9, 3.8716224527474084`*^9}, 3.8716233598590612`*^9, {
+   3.871623508039603*^9, 3.871623590599818*^9}, {3.871625002692467*^9, 
+   3.8716250117317657`*^9}, {3.871634512766245*^9, 3.871634513122247*^9}, {
+   3.8716345960458255`*^9, 3.871634603982412*^9}},
+ CellLabel->
+  "In[769]:=",ExpressionUUID->"b6fb518b-671d-4413-adc6-89e6bfd92465"],
 
 Cell[CellGroupData[{
 
@@ -1195,9 +1223,9 @@ Cell[BoxData[{
    RowBox[{
     RowBox[{"ApplyTemplate", "[", 
      RowBox[{"t_", ",", "sel_", ",", 
-      RowBox[{"dict_:", 
+      RowBox[{"dict_", ":", 
        RowBox[{"<|", "|>"}]}], ",", 
-      RowBox[{"alias_:", 
+      RowBox[{"alias_", ":", 
        RowBox[{"{", "}"}]}]}], "]"}], ":=", 
     RowBox[{"Module", "[", 
      RowBox[{
@@ -1288,7 +1316,7 @@ Cell[BoxData[{
     "StringTemplate", "[", "\[IndentingNewLine]", 
      "\"\<    /**\n     * Returns the matrix transformation mapping from \
 `fromDescription`\n     * to `toDescription`, i.e. from `fromRange` to \
-`toRange`\n     */\n    virtual const Matrix<N+1, float> \
+`toRange`\n     */\n    virtual glm::mat<N+1, N+1, float> \
 get`fromSpace`To`toSpace`Matrix() const = 0;\>\"", "\[IndentingNewLine]", 
      "]"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
@@ -1296,7 +1324,7 @@ get`fromSpace`To`toSpace`Matrix() const = 0;\>\"", "\[IndentingNewLine]",
    RowBox[{"transformTemplateSlim", " ", "=", " ", 
     RowBox[{
     "StringTemplate", "[", "\[IndentingNewLine]", 
-     "\"\<    virtual const Matrix<N+1, float> \
+     "\"\<    virtual glm::mat<N+1, N+1, float> \
 get`fromSpace`To`toSpace`Matrix() const = 0;\>\"", "\[IndentingNewLine]", 
      "]"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
@@ -1331,8 +1359,9 @@ get`fromSpace`To`toSpace`Matrix() const = 0;\>\"", "\[IndentingNewLine]",
         "\"\<     * to \\\"to\\\" coordinates\\n\>\"", ",", 
         "\[IndentingNewLine]", "\"\<     */\\n\>\"", ",", 
         "\[IndentingNewLine]", 
-        "\"\<    virtual Matrix<N + 1, float> getMatrix(CoordinateSpace from, \
-CoordinateSpace to) const;\\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<    virtual glm::mat<N + 1, N + 1, float> \
+getMatrix(CoordinateSpace from, CoordinateSpace to) const;\\n\>\"", ",", 
+        "\[IndentingNewLine]", 
         RowBox[{"TemplateSlot", "[", "\"\<content\>\"", "]"}], ",", 
         "\"\<\\n\>\"", ",", "\[IndentingNewLine]", "\"\<};\>\""}], 
        "\[IndentingNewLine]", "}"}], ",", 
@@ -1344,7 +1373,7 @@ CoordinateSpace to) const;\\n\>\"", ",", "\[IndentingNewLine]",
    RowBox[{"transformTemplateDecl", " ", "=", " ", 
     RowBox[{
     "StringTemplate", "[", "\[IndentingNewLine]", 
-     "\"\<    virtual const Matrix<N+1, float> \
+     "\"\<    virtual glm::mat<N+1, N+1, float> \
 get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
     ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
@@ -1352,7 +1381,7 @@ get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
    RowBox[{"getterTemplateDecl", " ", "=", " ", 
     RowBox[{
     "StringTemplate", "[", "\[IndentingNewLine]", 
-     "\"\<    virtual const Matrix<N+1, float> get`transform`() const;\>\"", 
+     "\"\<    virtual glm::mat<N+1, N+1, float> get`transform`() const;\>\"", 
      "\[IndentingNewLine]", "]"}]}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
@@ -1362,7 +1391,7 @@ get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
      RowBox[{
       RowBox[{"{", "\[IndentingNewLine]", 
        RowBox[{
-       "\"\<template <unsigned int N>\\nconst Matrix<N+1, float> \>\"", ",", 
+       "\"\<template <unsigned int N>\\nglm::mat<N+1, N+1, float> \>\"", ",", 
         "\[IndentingNewLine]", 
         RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
         "\"\<<N>::get\>\"", ",", 
@@ -1386,7 +1415,7 @@ get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
       RowBox[{"{", "\[IndentingNewLine]", 
        RowBox[{
        "\"\<template <unsigned int N>\\n\>\"", ",", "\[IndentingNewLine]", 
-        "\"\<const Matrix<N+1, float> \
+        "\"\<glm::mat<N+1, N+1, float> \
 `name`Impl<N>::get`fromSpace`To`toSpace`Matrix() const {\\n\>\"", ",", 
         "\[IndentingNewLine]", "\"\<    return `implementation`;\\n\>\"", ",",
          "\[IndentingNewLine]", "\"\<}\\n\>\""}], "}"}], 
@@ -1641,7 +1670,7 @@ get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
    RowBox[{
     RowBox[{"getInvolvedTransforms", "[", 
      RowBox[{"transforms_", ",", "sel_", ",", 
-      RowBox[{"dict_:", 
+      RowBox[{"dict_", ":", 
        RowBox[{"<|", "|>"}]}]}], "]"}], ":=", 
     RowBox[{"Module", "[", 
      RowBox[{
@@ -1829,7 +1858,6 @@ get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
                     RowBox[{"\"\<member\>\"", "\[Rule]", 
                     RowBox[{"arg", "[", 
                     RowBox[{"[", "2", "]"}], "]"}]}]}], "|>"}]}], "]"}], ",", 
-                 
                  RowBox[{"#", "[", "\"\<args\>\"", "]"}]}], "]"}], ",", 
                RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], "]"}]}]}], 
            ",", "\[IndentingNewLine]", "\"\<\\n\\n\>\"", ",", 
@@ -1886,7 +1914,6 @@ get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
                     RowBox[{"\"\<member\>\"", "\[Rule]", 
                     RowBox[{"arg", "[", 
                     RowBox[{"[", "2", "]"}], "]"}]}]}], "|>"}]}], "]"}], ",", 
-                 
                  RowBox[{"#", "[", "\"\<args\>\"", "]"}]}], "]"}], ",", 
                RowBox[{"Delimiters", "\[Rule]", "\"\<\\n\>\""}]}], "]"}]}]}], 
            ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
@@ -1948,7 +1975,7 @@ get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
       RowBox[{"{", "\[IndentingNewLine]", 
        RowBox[{
        "\"\<template<unsigned int N>\\n\>\"", ",", "\[IndentingNewLine]", 
-        "\"\<Matrix<N + 1, float> \>\"", ",", 
+        "\"\<glm::mat<N + 1, N + 1, float> \>\"", ",", 
         RowBox[{"TemplateSlot", "[", "\"\<name\>\"", "]"}], ",", 
         "\"\<<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {\
 \\n\>\"", ",", "\[IndentingNewLine]", "\"\<    switch (from) {\\n\>\"", ",", 
@@ -1956,8 +1983,8 @@ get`fromSpace`To`toSpace`Matrix() const;\>\"", "\[IndentingNewLine]", "]"}]}],
         RowBox[{"TemplateSlot", "[", "\"\<content\>\"", "]"}], ",", 
         "\"\<\\n\>\"", ",", "\[IndentingNewLine]", 
         "\"\<        default:\\n\>\"", ",", "\[IndentingNewLine]", 
-        "\"\<            throw Exception(\\\"getMatrix is not available for \
-the given space: \\\" + toString(from), IvwContext);\\n\>\"", ",", 
+        "\"\<            throw Exception(IVW_CONTEXT, \\\"getMatrix is not \
+available for the given space: {}\\\", from);\\n\>\"", ",", 
         "\[IndentingNewLine]", "\"\<    }\\n\>\"", ",", " ", 
         "\[IndentingNewLine]", "\"\<}\\n\>\""}], "\[IndentingNewLine]", "}"}],
        ",", 
@@ -1971,19 +1998,19 @@ the given space: \\\" + toString(from), IvwContext);\\n\>\"", ",",
      RowBox[{"{", "\[IndentingNewLine]", 
       RowBox[{"\"\<        case CoordinateSpace::\>\"", ",", " ", 
        RowBox[{"TemplateSlot", "[", "\"\<fromSpace\>\"", "]"}], ",", 
-       "\"\<: \\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<:\\n\>\"", ",", "\[IndentingNewLine]", 
        "\"\<            switch (to) {\\n\>\"", ",", "\[IndentingNewLine]", 
        RowBox[{"TemplateSlot", "[", "\"\<content\>\"", "]"}], ",", 
        "\"\<\\n\>\"", ",", "\[IndentingNewLine]", 
        "\"\<                default:\\n\>\"", ",", "\[IndentingNewLine]", 
-       "\"\<                    throw Exception(\\\"getMatrix is not \
-available for the given spaces: \\\" + \\n\>\"", ",", "\[IndentingNewLine]", 
-       "\"\<                                    \
-toString(CoordinateSpace::\>\"", ",", " ", 
+       "\"\<                    throw Exception(IVW_CONTEXT, \\\"getMatrix is \
+not available for the given spaces: {} to {}\\\", \\n\>\"", ",", 
+       "\[IndentingNewLine]", 
+       "\"\<                                    CoordinateSpace::\>\"", ",", 
+       " ", 
        RowBox[{"TemplateSlot", "[", "\"\<fromSpace\>\"", "]"}], " ", ",", 
-       "\"\<) + \\\" to \\\" + toString(to), IvwContext);\\n\>\"", ",", 
-       "\[IndentingNewLine]", "\"\<            }\>\""}], 
-      "\[IndentingNewLine]", "}"}], ",", 
+       "\"\<, to);\\n\>\"", ",", "\[IndentingNewLine]", 
+       "\"\<            }\>\""}], "\[IndentingNewLine]", "}"}], ",", 
      RowBox[{"InsertionFunction", "\[Rule]", "TextString"}], ",", 
      RowBox[{"CombinerFunction", "\[Rule]", "StringJoin"}]}], 
     "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
@@ -1995,15 +2022,15 @@ toString(CoordinateSpace::\>\"", ",", " ",
       RowBox[{"{", "\[IndentingNewLine]", 
        RowBox[{"\"\<                case CoordinateSpace::\>\"", ",", " ", 
         RowBox[{"TemplateSlot", "[", "\"\<toSpace\>\"", "]"}], ",", 
-        "\"\<: \\n\>\"", ",", "\[IndentingNewLine]", 
+        "\"\<:\\n\>\"", ",", "\[IndentingNewLine]", 
         RowBox[{"TemplateIf", "[", 
          RowBox[{
           RowBox[{
            RowBox[{"TemplateSlot", "[", "\"\<fromSpace\>\"", "]"}], "==", " ", 
            RowBox[{"TemplateSlot", "[", "\"\<toSpace\>\"", "]"}]}], ",", 
           "\[IndentingNewLine]", 
-          "\"\<                    return Matrix<N + 1, float>(1.0f);\>\"", 
-          ",", "\[IndentingNewLine]", 
+          "\"\<                    return glm::mat<N + 1, N + 1, \
+float>(1.0f);\>\"", ",", "\[IndentingNewLine]", 
           RowBox[{"{", 
            RowBox[{"\"\<                    return get\>\"", ",", " ", 
             RowBox[{"TemplateSlot", "[", "\"\<fromSpace\>\"", "]"}], ",", 
@@ -2045,7 +2072,6 @@ toString(CoordinateSpace::\>\"", ",", " ",
                     " ", 
                     RowBox[{
                     "\"\<content\>\"", "\[Rule]", " ", "\[IndentingNewLine]", 
-                    
                     RowBox[{"StringJoin", "@", 
                     RowBox[{"TemplateApply", "@", 
                     RowBox[{"TemplateSequence", "[", 
@@ -2098,8 +2124,9 @@ toString(CoordinateSpace::\>\"", ",", " ",
   ";"}], "\[IndentingNewLine]", 
  RowBox[{"Export", "[", 
   RowBox[{
-  "\"\<C:/Users/petst55/Work/Inviwo/coordinatetransformer.h\>\"", ",", "text",
-    ",", "\"\<Text\>\""}], "]"}]}], "Input",
+  "\"\<C:/Users/petst55.AD/Documents/Inviwo/inviwo/include/inviwo/core/\
+datastructures/coordinatetransformer.h\>\"", ",", "text", ",", 
+   "\"\<Text\>\""}], "]"}]}], "Input",
  CellChangeTimes->{{3.6267660046509743`*^9, 3.6267660075676317`*^9}, {
    3.626766369428837*^9, 3.626766395963797*^9}, {3.626766427413505*^9, 
    3.626766609405746*^9}, {3.62676702159552*^9, 3.626767068464396*^9}, {
@@ -2238,10 +2265,21 @@ toString(CoordinateSpace::\>\"", ",", " ",
    3.6775748680297537`*^9, {3.677575034290378*^9, 3.677575113830331*^9}, 
    3.6775752106940165`*^9, {3.6775753243083773`*^9, 3.6775754044223876`*^9}, {
    3.677575444904435*^9, 3.677575450470992*^9}, {3.677575740412983*^9, 
-   3.6775757432552676`*^9}, {3.6775770126021895`*^9, 3.6775770129272223`*^9}}],
+   3.6775757432552676`*^9}, {3.6775770126021895`*^9, 
+   3.6775770129272223`*^9}, {3.871618792365429*^9, 3.871618825903559*^9}, {
+   3.8716233931317635`*^9, 3.871623448035083*^9}, {3.871623743590764*^9, 
+   3.871623743908764*^9}, {3.8716238220070314`*^9, 3.871623822374029*^9}, {
+   3.871623890619852*^9, 3.871623904270914*^9}, {3.871623963861418*^9, 
+   3.8716240899483347`*^9}, {3.871624240887198*^9, 3.8716243083967924`*^9}, {
+   3.871624376701129*^9, 3.871624376904126*^9}, {3.871624521227783*^9, 
+   3.8716245570590415`*^9}, {3.8716247162373037`*^9, 
+   3.8716247423485484`*^9}, {3.8716260734927263`*^9, 3.871626073920727*^9}, 
+   3.8716262617673426`*^9},
+ CellLabel->
+  "In[770]:=",ExpressionUUID->"52632fc1-a8b9-4988-b4bc-42f6c0d7e19d"],
 
-Cell[BoxData["\<\"C:/Users/petst55/Work/Inviwo/coordinatetransformer.h\"\>"], \
-"Output",
+Cell[BoxData["\<\"C:/Users/petst55.AD/Documents/Inviwo/inviwo/include/inviwo/\
+core/datastructures/coordinatetransformer.h\"\>"], "Output",
  CellChangeTimes->{
   3.6775694106940746`*^9, 3.6775695536233664`*^9, 3.6775695866796713`*^9, 
    3.6775696744794507`*^9, 3.6775698016351647`*^9, 3.677570522729267*^9, 
@@ -2250,13 +2288,22 @@ Cell[BoxData["\<\"C:/Users/petst55/Work/Inviwo/coordinatetransformer.h\"\>"], \
    3.6775730487158403`*^9, 3.6775743035823145`*^9, 3.6775744384187965`*^9, 
    3.677574590446998*^9, 3.6775747234322953`*^9, 3.677574870232974*^9, 
    3.677575212540201*^9, 3.6775754166466103`*^9, 3.6775754515751023`*^9, 
-   3.6775757828722286`*^9}]
+   3.6775757828722286`*^9, 3.871619101206522*^9, 3.871619154030238*^9, 
+   3.8716234525190983`*^9, 3.871623595020328*^9, {3.8716237309671297`*^9, 
+   3.8716237465757775`*^9}, {3.8716238154900093`*^9, 3.8716238260346174`*^9}, 
+   3.8716239296032777`*^9, {3.871624359717904*^9, 3.871624377994135*^9}, 
+   3.871624530313344*^9, 3.8716245642133427`*^9, 3.8716247778677936`*^9, 
+   3.871625017543864*^9, 3.8716260785204215`*^9, 3.8716262651243954`*^9, 
+   3.8716345193010345`*^9, 3.8716346123230925`*^9},
+ CellLabel->
+  "Out[804]=",ExpressionUUID->"5d232b2c-5032-4544-8329-bce30a1eab56"]
 }, Open  ]]
 },
-WindowSize->{1920, 1038},
-WindowMargins->{{Automatic, 1912}, {-38, Automatic}},
-FrontEndVersion->"10.0 for Microsoft Windows (64-bit) (July 1, 2014)",
-StyleDefinitions->"Default.nb"
+WindowSize->{1909, 1007},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"13.0 for Microsoft Windows (64-bit) (December 2, 2021)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"b959d14d-75e8-4e44-9dc1-802506f0c60e"
 ]
 (* End of Notebook Content *)
 
@@ -2269,33 +2316,32 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 305, 7, 31, "Input"],
+Cell[558, 20, 388, 9, 28, "Input",ExpressionUUID->"51e91f54-dcea-4861-9b8c-f71db61aa203"],
 Cell[CellGroupData[{
-Cell[888, 31, 10860, 266, 734, "Input"],
-Cell[11751, 299, 10000, 235, 375, "Output"]
+Cell[971, 33, 10940, 267, 749, "Input",ExpressionUUID->"706e0666-3633-48a7-a4e0-5a7f4c27f5f5"],
+Cell[11914, 302, 10079, 237, 360, "Output",ExpressionUUID->"9b8bbe55-1aa1-419d-83b1-fcbe2cd79f0c"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21788, 539, 948, 26, 52, "Input"],
-Cell[22739, 567, 1036, 22, 118, "Output"],
-Cell[23778, 591, 1141, 22, 103, "Output"]
+Cell[22030, 544, 1031, 28, 48, "Input",ExpressionUUID->"fed12002-dd3d-4cf7-b2a6-daa9a01fb8fa"],
+Cell[23064, 574, 1259, 25, 135, "Output",ExpressionUUID->"9042a54c-18c5-4180-b68a-ba7f99560914"],
+Cell[24326, 601, 1366, 26, 118, "Output",ExpressionUUID->"fc138453-136d-4f80-93bd-39d565831de2"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[24956, 618, 682, 14, 52, "Input"],
-Cell[25641, 634, 859, 11, 292, "Output"],
-Cell[26503, 647, 1001, 13, 252, "Output"]
+Cell[25729, 632, 765, 16, 48, "Input",ExpressionUUID->"289ac429-9e65-4e92-a98d-0afbcdbf6ace"],
+Cell[26497, 650, 1088, 15, 280, "Output",ExpressionUUID->"ea2132bf-2dce-4aa1-a246-04c379cd414d"],
+Cell[27588, 667, 1230, 17, 242, "Output",ExpressionUUID->"b58deeb3-f1b3-4cb5-8a73-c1d572936c70"]
 }, Open  ]],
-Cell[27519, 663, 5850, 143, 372, "Input"],
+Cell[28833, 687, 5968, 145, 352, "Input",ExpressionUUID->"a52b80a8-f4bf-417b-93a9-a95e5e12f8f4"],
 Cell[CellGroupData[{
-Cell[33394, 810, 1166, 30, 31, "Input"],
-Cell[34563, 842, 4733, 101, 478, "Output"]
+Cell[34826, 836, 1249, 32, 28, "Input",ExpressionUUID->"9e202607-80e6-4c63-9865-de2202589817"],
+Cell[36078, 870, 4839, 103, 560, "Output",ExpressionUUID->"2facfbeb-1a44-4eea-93b8-aebc82a24a53"]
 }, Open  ]],
-Cell[39311, 946, 17227, 238, 3276, "Input"],
+Cell[40932, 976, 16896, 236, 2797, "Input",ExpressionUUID->"b6fb518b-671d-4413-adc6-89e6bfd92465"],
 Cell[CellGroupData[{
-Cell[56563, 1188, 50881, 1052, 4652, "Input"],
-Cell[107447, 2242, 651, 10, 31, "Output"]
+Cell[57853, 1216, 51555, 1062, 4425, "Input",ExpressionUUID->"52632fc1-a8b9-4988-b4bc-42f6c0d7e19d"],
+Cell[109411, 2280, 1256, 18, 32, "Output",ExpressionUUID->"5d232b2c-5032-4544-8329-bce30a1eab56"]
 }, Open  ]]
 }
 ]
 *)
 
-(* End of internal cache information *)

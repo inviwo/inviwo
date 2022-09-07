@@ -29,11 +29,12 @@
 
 #include <modules/base/datavisualizer/imageinformationvisualizer.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <modules/base/processors/imagesource.h>
 #include <modules/base/processors/imageinformation.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <inviwo/core/io/datareaderfactory.h>
 
@@ -54,7 +55,7 @@ Document ImageInformationVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> ImageInformationVisualizer::getSupportedFileExtensions() const {
-    auto rf = app_->getDataReaderFactory();
+    auto rf = util::getDataReaderFactory(app_);
     auto exts = rf->getExtensionsForType<Layer>();
     return exts;
 }

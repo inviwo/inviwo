@@ -34,6 +34,8 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/processors/processorfactory.h>
 
 namespace inviwo {
 

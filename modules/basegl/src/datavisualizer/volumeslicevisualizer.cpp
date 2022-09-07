@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <inviwo/core/io/datareaderfactory.h>
 

@@ -30,6 +30,7 @@
 #include <modules/userinterfacegl/glui/widgets/toolbutton.h>
 #include <modules/userinterfacegl/glui/renderer.h>
 
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datareaderexception.h>
@@ -118,7 +119,7 @@ void ToolButton::renderWidget(const ivec2& origin, const size2_t& canvasDim) {
 }
 
 std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string& filename) {
-    auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
+    auto factory = util::getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(filename)) {
         try {
             // try to load texture data from current file

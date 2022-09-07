@@ -29,6 +29,8 @@
 
 #include <modules/opencl/light/packedlightsource.h>
 
+#include <glm/trigonometric.hpp>
+
 namespace inviwo {
 
 PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float radianceScale) {

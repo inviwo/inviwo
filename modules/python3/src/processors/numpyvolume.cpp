@@ -30,6 +30,7 @@
 #include <modules/python3/processors/numpyvolume.h>
 #include <modules/python3/python3module.h>
 #include <pybind11/pybind11.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -43,12 +44,11 @@ const ProcessorInfo NumPyVolume::processorInfo_{
 };
 const ProcessorInfo NumPyVolume::getProcessorInfo() const { return processorInfo_; }
 
-NumPyVolume::NumPyVolume()
+NumPyVolume::NumPyVolume(InviwoApplication* app)
     : Processor()
     , outport_("outport")
     , size_("size", "Size", size3_t(64), size3_t(32), size3_t(512))
-    , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(
-                  ModulePath::Scripts) +
+    , script_(app->getModuleByType<Python3Module>()->getPath(ModulePath::Scripts) +
               "/numpyvolumeprocessor.py") {
     addPort(outport_);
     addProperty(size_);

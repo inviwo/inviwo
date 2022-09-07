@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/util/docbuilder.h>
+#include <tuple>
 
 namespace inviwo {
 
@@ -52,5 +52,12 @@ ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayN
     , tags{std::move(someTags)}
     , help{std::move(help)}
     , visible{isVisible} {}
+
+bool operator==(const ProcessorInfo& a, const ProcessorInfo& b) {
+    return std::tie(a.classIdentifier, a.displayName, a.category, a.codeState, a.tags, a.visible) ==
+           std::tie(b.classIdentifier, b.displayName, b.category, b.codeState, b.tags, b.visible);
+}
+
+bool operator!=(const ProcessorInfo& a, const ProcessorInfo& b) { return !(a == b); }
 
 }  // namespace inviwo

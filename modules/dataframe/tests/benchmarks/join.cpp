@@ -159,22 +159,24 @@ template <typename T, typename Cont>
 std::vector<std::uint32_t> selectRows(const Cont& cont, dataframefilters::Filters filters) {
     std::vector<std::uint32_t> rows;
     for (auto&& [row, value] : util::enumerate<std::uint32_t>(cont)) {
-        auto test =
-            util::overloaded{[&v = value](const std::function<bool(std::int64_t)>& func) {
-                                 if constexpr (std::is_integral_v<T>) {
-                                     return func(static_cast<std::int64_t>(v));
-                                 }
-                                 (void)v;
-                                 return false;
-                             },
-                             [v = value](const std::function<bool(double)>& func) {
-                                 if constexpr (std::is_floating_point_v<T>) {
-                                     return func(v);
-                                 }
-                                 (void)v;
-                                 return false;
-                             },
-                             [](const std::function<bool(std::string_view)>&) { return false; }};
+        auto test = util::overloaded{
+            [v = value]([[maybe_unused]] const std::function<bool(std::int64_t)>& func) {
+                if constexpr (std::is_integral_v<T>) {
+                    return func(static_cast<std::int64_t>(v));
+                } else {
+                    (void)v;
+                    return false;
+                }
+            },
+            [v = value]([[maybe_unused]] const std::function<bool(double)>& func) {
+                if constexpr (std::is_floating_point_v<T>) {
+                    return func(v);
+                } else {
+                    (void)v;
+                    return false;
+                }
+            },
+            [](const std::function<bool(std::string_view)>&) { return false; }};
         auto op = [&](const auto& f) { return std::visit(test, f.filter); };
         if ((std::any_of(filters.include.begin(), filters.include.end(), op) ||
              filters.include.empty()) &&
@@ -218,7 +220,7 @@ std::shared_ptr<DataFrame> createDataFrame(int size, int maxValue) {
 }
 
 static void SelectRowsDataFrame(benchmark::State& st) {
-    auto df = createDataFrame(st.range(0), 100);
+    auto df = createDataFrame(static_cast<int>(st.range(0)), 100);
 
     dataframefilters::Filters filters;
     filters.include.push_back(filters::intMatch(1, filters::NumberComp::Less, 32));

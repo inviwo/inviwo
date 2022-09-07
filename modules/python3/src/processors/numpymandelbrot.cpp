@@ -30,6 +30,7 @@
 #include <modules/python3/processors/numpymandelbrot.h>
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -42,7 +43,7 @@ const ProcessorInfo NumpyMandelbrot::processorInfo_{
 };
 const ProcessorInfo NumpyMandelbrot::getProcessorInfo() const { return processorInfo_; }
 
-NumpyMandelbrot::NumpyMandelbrot()
+NumpyMandelbrot::NumpyMandelbrot(InviwoApplication* app)
     : Processor()
     , outport_("outport", false)
     , size_("size", "Size", size2_t(600, 440), size2_t(32), size2_t(2048))
@@ -51,8 +52,7 @@ NumpyMandelbrot::NumpyMandelbrot()
     , power_("power", "power", 2.f, 0.01f, 10.f, 0.01f)
     , iterations_("iterations", "Iterations", 10, 1, 1000)
 
-    , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(
-                  ModulePath::Scripts) +
+    , script_(app->getModuleByType<Python3Module>()->getPath(ModulePath::Scripts) +
               "/mandelbrot.py") {
 
     addPort(outport_);

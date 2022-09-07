@@ -34,10 +34,7 @@
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/document.h>
 
-#include <tuple>
 #include <string>
-#include <string_view>
-#include <utility>
 
 namespace inviwo {
 
@@ -61,15 +58,8 @@ public:
     Document help;  ///< Help text for the processor
     bool visible;   ///< Show in processor list (ProcessorTreeWidget), enabling drag&drop
 
-    friend inline bool operator==(const ProcessorInfo& a, const ProcessorInfo& b) {
-        return std::tie(a.classIdentifier, a.displayName, a.category, a.codeState, a.tags,
-                        a.visible) == std::tie(b.classIdentifier, b.displayName, b.category,
-                                               b.codeState, b.tags, b.visible);
-    }
-
-    friend inline bool operator!=(const ProcessorInfo& a, const ProcessorInfo& b) {
-        return !(a == b);
-    }
+    IVW_CORE_API friend bool operator==(const ProcessorInfo& a, const ProcessorInfo& b);
+    IVW_CORE_API friend bool operator!=(const ProcessorInfo& a, const ProcessorInfo& b);
 };
 
 }  // namespace inviwo

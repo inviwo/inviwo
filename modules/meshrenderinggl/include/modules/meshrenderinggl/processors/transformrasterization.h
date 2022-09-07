@@ -32,6 +32,7 @@
 #include <modules/meshrenderinggl/datastructures/rasterization.h>
 #include <modules/meshrenderinggl/ports/rasterizationport.h>
 #include <modules/base/properties/transformlistproperty.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 

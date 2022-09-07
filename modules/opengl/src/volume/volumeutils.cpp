@@ -35,6 +35,8 @@
 
 #include <fmt/format.h>
 
+#include <glm/gtc/matrix_inverse.hpp>
+
 namespace inviwo {
 
 namespace utilgl {

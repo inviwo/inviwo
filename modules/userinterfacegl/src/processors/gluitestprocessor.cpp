@@ -156,7 +156,7 @@ GLUITestProcessor::GLUITestProcessor()
     propertyLayout_.addElement(readOnlyButtonPropertyUI_);
     propertyLayout_.addElement(toolButtonPropertyUI_);
 
-    toolButtonPropertyUI_.setImage(module::getModulePath("UserInterfaceGL", ModulePath::Images) +
+    toolButtonPropertyUI_.setImage(util::getModulePath("UserInterfaceGL", ModulePath::Images) +
                                    "/home.png");
 
     // plain GLUI widgets w/o connection to any Inviwo property

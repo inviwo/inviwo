@@ -35,6 +35,8 @@
 #include <fmt/format.h>
 #include <units/units.hpp>
 
+#include <glm/gtx/component_wise.hpp>
+
 namespace inviwo {
 
 IvfVolumeWriter::IvfVolumeWriter() : DataWriterType<Volume>() {

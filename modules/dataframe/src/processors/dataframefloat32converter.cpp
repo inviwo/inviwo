@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/processors/dataframefloat32converter.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 

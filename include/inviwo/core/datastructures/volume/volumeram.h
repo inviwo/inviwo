@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/datastructures/histogram.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/formatdispatching.h>
 

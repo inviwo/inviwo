@@ -39,6 +39,7 @@
 #include <modules/basegl/processors/background.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 

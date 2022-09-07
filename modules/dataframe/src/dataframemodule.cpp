@@ -56,6 +56,7 @@
 
 #include <inviwo/core/properties/propertyconverter.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <modules/json/jsonmodule.h>
 

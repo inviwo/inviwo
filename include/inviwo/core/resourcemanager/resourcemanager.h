@@ -34,6 +34,7 @@
 #include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <typeindex>
 #include <unordered_map>

@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <modules/base/processors/ordinalpropertyanimator.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/network/networklock.h>
 

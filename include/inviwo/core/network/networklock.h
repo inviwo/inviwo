@@ -30,11 +30,12 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
+
+class ProcessorNetwork;
+class Processor;
+class Property;
 
 /// A RAII utility for locking and unlocking the network
 struct IVW_CORE_API NetworkLock {
@@ -46,26 +47,11 @@ struct IVW_CORE_API NetworkLock {
 
     NetworkLock(NetworkLock const&) = delete;
     NetworkLock& operator=(NetworkLock const& that) = delete;
-    NetworkLock(NetworkLock&& rhs);
+    NetworkLock(NetworkLock&& rhs) noexcept;
     NetworkLock& operator=(NetworkLock&& that);
 
 private:
     ProcessorNetwork* network_;
 };
-
-inline NetworkLock::NetworkLock(ProcessorNetwork* network) : network_(network) {
-    if (network_) network_->lock();
-}
-
-inline NetworkLock::NetworkLock(Processor* processor)
-    : NetworkLock(processor ? processor->getNetwork() : nullptr) {}
-
-inline NetworkLock::NetworkLock(Property* property)
-    : NetworkLock(property ? (property->getOwner() ? property->getOwner()->getProcessor() : nullptr)
-                           : nullptr) {}
-
-inline NetworkLock::~NetworkLock() {
-    if (network_) network_->unlock();
-}
 
 }  // namespace inviwo

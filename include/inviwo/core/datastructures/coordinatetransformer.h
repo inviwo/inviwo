@@ -30,11 +30,11 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glm.h>
 #include <inviwo/core/datastructures/camera.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/fmtutils.h>
+
+#include <glm/matrix.hpp>
 
 #include <iosfwd>
 
@@ -59,26 +59,26 @@ namespace inviwo {
  * World        View       ViewMatrix         const CameraND<N>*               camera_
  * View         Clip       ProjectionMatrix   const CameraND<N>*               camera_
  * Data         Index      IndexMatrix        const StructuredGridEntity<N>*   entity_
- *
- *
+ * 
+ * 
  *  ┌───────────────────────────────────────────────────────────┐
  *  │                          Spatial                          │
- *  │               ModelM.               WorldM.               │
- *  │   ┌────────┐──────────▶┌────────┐───────────▶┌────────┐   │
- *  │   │        │           │        │            │        │   │
- *  │   │  Data  │           │ Model  │            │ World  │   │
- *  │   │        │ ModelM.-1 │        │  WorldM.-1 │        │   │
- *  │   └────────┘◀──────────└────────┘◀───────────└────────┘   │
- *  │   │        ▲                                 │        ▲   │
- *  └───┼────────┼─────────────────────────────────┼─────   ┼───┘
- *      │      I │                                 │      V │
- *    I │      n │                               V │      i │
- *    n │      d │                               i │      e │
- *    d │      e │                               e │      w │
- *    e │      x │                               w │      M │
- *    x │      M │                               M │      - │
- *    M │      - │                                 │      1 │
- *      │      1 │                                 │        │
+ *  │               ModelM.               WorldM.               │                         
+ *  │   ┌────────┐──────────▶┌────────┐───────────▶┌────────┐   │                         
+ *  │   │        │           │        │            │        │   │                         
+ *  │   │  Data  │           │ Model  │            │ World  │   │                         
+ *  │   │        │ ModelM.-1 │        │  WorldM.-1 │        │   │                         
+ *  │   └────────┘◀──────────└────────┘◀───────────└────────┘   │                         
+ *  │   │        ▲                                 │        ▲   │                         
+ *  └───┼────────┼─────────────────────────────────┼─────   ┼───┘                         
+ *      │      I │                                 │      V │                             
+ *    I │      n │                               V │      i │                             
+ *    n │      d │                               i │      e │                             
+ *    d │      e │                               e │      w │                             
+ *    e │      x │                               w │      M │                             
+ *    x │      M │                               M │      - │                             
+ *    M │      - │                                 │      1 │                             
+ *      │      1 │                                 │        │                             
  *  ┌───┼────────┼────┐                        ┌───┼────────┼────────────────────────────┐
  *  │   │        │    │                        │   │        │                            │
  *  │   ▼        │    │                        │   ▼        │  ProjectionM               │
@@ -103,12 +103,12 @@ namespace util {
 class Camera2D {
 public:
     Camera2D() : view_(1.0f), projection_(1.0f) {}
-    const Matrix<3, float>& getViewMatrix() const { return view_; }
-    const Matrix<3, float>& getProjectionMatrix() const { return projection_; }
+    const glm::mat3& getViewMatrix() const { return view_; }
+    const glm::mat3& getProjectionMatrix() const { return projection_; }
 
 private:
-    Matrix<3, float> view_;
-    Matrix<3, float> projection_;
+    glm::mat3 view_;
+    glm::mat3 projection_;
 };
 
 template <unsigned int N>
@@ -144,37 +144,37 @@ public:
      * Returns the matrix transformation mapping from "from" coordinates
      * to "to" coordinates
      */
-    virtual Matrix<N + 1, float> getMatrix(CoordinateSpace from, CoordinateSpace to) const;
+    virtual glm::mat<N + 1, N + 1, float> getMatrix(CoordinateSpace from, CoordinateSpace to) const;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to raw data numbers, i.e. from (data min, data max) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getModelToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to world space coordinates, i.e. from (data min, data max) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getModelToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to model space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getDataToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to world space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getDataToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to model space coordinates, i.e. from (-inf, inf) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getWorldToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getWorldToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToDataMatrix() const = 0;
 };
 
 template<unsigned int N>
@@ -186,97 +186,97 @@ public:
      * Returns the matrix transformation mapping from "from" coordinates
      * to "to" coordinates
      */
-    virtual Matrix<N + 1, float> getMatrix(CoordinateSpace from, CoordinateSpace to) const;
+    virtual glm::mat<N + 1, N + 1, float> getMatrix(CoordinateSpace from, CoordinateSpace to) const;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to raw data numbers, i.e. from (data min, data max) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getModelToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to raw data numbers, i.e. from (data min, data max) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getModelToTextureMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToTextureMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to voxel index coordinates, i.e. from (data min, data max) to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getModelToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToIndexMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to world space coordinates, i.e. from (data min, data max) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getModelToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to model space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getDataToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to model space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getTextureToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getTextureToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to voxel index coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getDataToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToIndexMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to voxel index coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getTextureToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getTextureToIndexMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to world space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getDataToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to world space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getTextureToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getTextureToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to model space coordinates, i.e. from [0, number of voxels) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getIndexToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to raw data numbers, i.e. from [0, number of voxels) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getIndexToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to raw data numbers, i.e. from [0, number of voxels) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getIndexToTextureMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToTextureMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to world space coordinates, i.e. from [0, number of voxels) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getIndexToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to model space coordinates, i.e. from (-inf, inf) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getWorldToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getWorldToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getWorldToTextureMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToTextureMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to voxel index coordinates, i.e. from (-inf, inf) to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getWorldToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToIndexMatrix() const = 0;
 };
 
 template<unsigned int N>
@@ -288,107 +288,107 @@ public:
      * Returns the matrix transformation mapping from "from" coordinates
      * to "to" coordinates
      */
-    virtual Matrix<N + 1, float> getMatrix(CoordinateSpace from, CoordinateSpace to) const;
+    virtual glm::mat<N + 1, N + 1, float> getMatrix(CoordinateSpace from, CoordinateSpace to) const;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to model space coordinates, i.e. from [-1,1] to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getClipToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to raw data numbers, i.e. from [-1,1] to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getClipToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to view space coordinates, i.e. from [-1,1] to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getClipToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToViewMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to world space coordinates, i.e. from [-1,1] to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getClipToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to clip space coordinates, i.e. from (data min, data max) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getModelToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to raw data numbers, i.e. from (data min, data max) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getModelToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to view space coordinates, i.e. from (data min, data max) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getModelToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToViewMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to world space coordinates, i.e. from (data min, data max) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getModelToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to clip space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getDataToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to model space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getDataToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to view space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getDataToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToViewMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to world space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getDataToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to clip space coordinates, i.e. from (-inf, inf) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getViewToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to model space coordinates, i.e. from (-inf, inf) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getViewToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getViewToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to world space coordinates, i.e. from (-inf, inf) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getViewToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to clip space coordinates, i.e. from (-inf, inf) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getWorldToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to model space coordinates, i.e. from (-inf, inf) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getWorldToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getWorldToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to view space coordinates, i.e. from (-inf, inf) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getWorldToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToViewMatrix() const = 0;
 };
 
 template<unsigned int N>
@@ -400,249 +400,237 @@ public:
      * Returns the matrix transformation mapping from "from" coordinates
      * to "to" coordinates
      */
-    virtual Matrix<N + 1, float> getMatrix(CoordinateSpace from, CoordinateSpace to) const;
+    virtual glm::mat<N + 1, N + 1, float> getMatrix(CoordinateSpace from, CoordinateSpace to) const;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to model space coordinates, i.e. from [-1,1] to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getClipToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to raw data numbers, i.e. from [-1,1] to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getClipToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to raw data numbers, i.e. from [-1,1] to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getClipToTextureMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToTextureMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to view space coordinates, i.e. from [-1,1] to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getClipToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToViewMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to voxel index coordinates, i.e. from [-1,1] to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getClipToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToIndexMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from clip space coordinates
      * to world space coordinates, i.e. from [-1,1] to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getClipToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getClipToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to clip space coordinates, i.e. from (data min, data max) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getModelToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to raw data numbers, i.e. from (data min, data max) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getModelToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to raw data numbers, i.e. from (data min, data max) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getModelToTextureMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToTextureMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to view space coordinates, i.e. from (data min, data max) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getModelToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToViewMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to voxel index coordinates, i.e. from (data min, data max) to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getModelToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToIndexMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from model space coordinates
      * to world space coordinates, i.e. from (data min, data max) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getModelToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getModelToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to clip space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getDataToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to clip space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getTextureToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getTextureToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to model space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getDataToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to model space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getTextureToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getTextureToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to view space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getDataToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToViewMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to view space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getTextureToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getTextureToViewMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to voxel index coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getDataToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToIndexMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to voxel index coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getTextureToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getTextureToIndexMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to world space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getDataToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getDataToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
      * to world space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getTextureToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getTextureToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to clip space coordinates, i.e. from (-inf, inf) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getViewToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to model space coordinates, i.e. from (-inf, inf) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getViewToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getViewToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getViewToTextureMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToTextureMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to voxel index coordinates, i.e. from (-inf, inf) to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getViewToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToIndexMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from view space coordinates
      * to world space coordinates, i.e. from (-inf, inf) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getViewToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getViewToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to clip space coordinates, i.e. from [0, number of voxels) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getIndexToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to model space coordinates, i.e. from [0, number of voxels) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getIndexToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to raw data numbers, i.e. from [0, number of voxels) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getIndexToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to raw data numbers, i.e. from [0, number of voxels) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getIndexToTextureMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToTextureMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to view space coordinates, i.e. from [0, number of voxels) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getIndexToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToViewMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from voxel index coordinates
      * to world space coordinates, i.e. from [0, number of voxels) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getIndexToWorldMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getIndexToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to clip space coordinates, i.e. from (-inf, inf) to [-1,1]
      */
-    virtual const Matrix<N+1, float> getWorldToClipMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToClipMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to model space coordinates, i.e. from (-inf, inf) to (data min, data max)
      */
-    virtual const Matrix<N+1, float> getWorldToModelMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getWorldToDataMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToDataMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
-    virtual const Matrix<N+1, float> getWorldToTextureMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToTextureMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to view space coordinates, i.e. from (-inf, inf) to (-inf, inf)
      */
-    virtual const Matrix<N+1, float> getWorldToViewMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToViewMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from world space coordinates
      * to voxel index coordinates, i.e. from (-inf, inf) to [0, number of voxels)
      */
-    virtual const Matrix<N+1, float> getWorldToIndexMatrix() const = 0;
+    virtual glm::mat<N+1, N+1, float> getWorldToIndexMatrix() const = 0;
 };
-
-
-// https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
-extern template class IVW_CORE_TMPL_EXP SpatialCoordinateTransformer<2>;
-extern template class IVW_CORE_TMPL_EXP SpatialCoordinateTransformer<3>;
-extern template class IVW_CORE_TMPL_EXP SpatialCameraCoordinateTransformer<2>;
-extern template class IVW_CORE_TMPL_EXP SpatialCameraCoordinateTransformer<3>;
-
-extern template class IVW_CORE_TMPL_EXP StructuredCoordinateTransformer<2>;
-extern template class IVW_CORE_TMPL_EXP StructuredCoordinateTransformer<3>;
-extern template class IVW_CORE_TMPL_EXP StructuredCameraCoordinateTransformer<2>;
-extern template class IVW_CORE_TMPL_EXP StructuredCameraCoordinateTransformer<3>;
 
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 template<unsigned int N>
-Matrix<N + 1, float> SpatialCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
+glm::mat<N + 1, N + 1, float> SpatialCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
     switch (from) {
         case CoordinateSpace::Data:
             switch (to) {
                 case CoordinateSpace::Data:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::Model:
                     return getDataToModelMatrix();
                 case CoordinateSpace::World:
                     return getDataToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Data, to);
             }
         case CoordinateSpace::Model:
             switch (to) {
                 case CoordinateSpace::Data:
                     return getModelToDataMatrix();
                 case CoordinateSpace::Model:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Model, to);
             }
         case CoordinateSpace::World:
             switch (to) {
@@ -651,23 +639,23 @@ Matrix<N + 1, float> SpatialCoordinateTransformer<N>::getMatrix(CoordinateSpace 
                 case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
                 case CoordinateSpace::World:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::World, to);
             }
         default:
-            throw Exception("getMatrix is not available for the given space: " + toString(from), IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT, "getMatrix is not available for the given space: {}", from);
     }
 }
 
 template<unsigned int N>
-Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
+glm::mat<N + 1, N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
     switch (from) {
         case CoordinateSpace::Index:
             switch (to) {
                 case CoordinateSpace::Index:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::Data:
                     return getIndexToDataMatrix();
                 case CoordinateSpace::Model:
@@ -675,22 +663,22 @@ Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpa
                 case CoordinateSpace::World:
                     return getIndexToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Index) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Index, to);
             }
         case CoordinateSpace::Data:
             switch (to) {
                 case CoordinateSpace::Index:
                     return getDataToIndexMatrix();
                 case CoordinateSpace::Data:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::Model:
                     return getDataToModelMatrix();
                 case CoordinateSpace::World:
                     return getDataToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Data, to);
             }
         case CoordinateSpace::Model:
             switch (to) {
@@ -699,12 +687,12 @@ Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpa
                 case CoordinateSpace::Data:
                     return getModelToDataMatrix();
                 case CoordinateSpace::Model:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Model, to);
             }
         case CoordinateSpace::World:
             switch (to) {
@@ -715,23 +703,23 @@ Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpa
                 case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
                 case CoordinateSpace::World:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::World, to);
             }
         default:
-            throw Exception("getMatrix is not available for the given space: " + toString(from), IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT, "getMatrix is not available for the given space: {}", from);
     }
 }
 
 template<unsigned int N>
-Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
+glm::mat<N + 1, N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
     switch (from) {
         case CoordinateSpace::Data:
             switch (to) {
                 case CoordinateSpace::Data:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::Model:
                     return getDataToModelMatrix();
                 case CoordinateSpace::World:
@@ -741,15 +729,15 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                 case CoordinateSpace::Clip:
                     return getDataToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Data, to);
             }
         case CoordinateSpace::Model:
             switch (to) {
                 case CoordinateSpace::Data:
                     return getModelToDataMatrix();
                 case CoordinateSpace::Model:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 case CoordinateSpace::View:
@@ -757,8 +745,8 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                 case CoordinateSpace::Clip:
                     return getModelToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Model, to);
             }
         case CoordinateSpace::World:
             switch (to) {
@@ -767,14 +755,14 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                 case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
                 case CoordinateSpace::World:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::View:
                     return getWorldToViewMatrix();
                 case CoordinateSpace::Clip:
                     return getWorldToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::World, to);
             }
         case CoordinateSpace::View:
             switch (to) {
@@ -785,12 +773,12 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                 case CoordinateSpace::World:
                     return getViewToWorldMatrix();
                 case CoordinateSpace::View:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::Clip:
                     return getViewToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::View) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::View, to);
             }
         case CoordinateSpace::Clip:
             switch (to) {
@@ -803,23 +791,23 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                 case CoordinateSpace::View:
                     return getClipToViewMatrix();
                 case CoordinateSpace::Clip:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Clip) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Clip, to);
             }
         default:
-            throw Exception("getMatrix is not available for the given space: " + toString(from), IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT, "getMatrix is not available for the given space: {}", from);
     }
 }
 
 template<unsigned int N>
-Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
+glm::mat<N + 1, N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
     switch (from) {
         case CoordinateSpace::Index:
             switch (to) {
                 case CoordinateSpace::Index:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::Data:
                     return getIndexToDataMatrix();
                 case CoordinateSpace::Model:
@@ -831,15 +819,15 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                 case CoordinateSpace::Clip:
                     return getIndexToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Index) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Index, to);
             }
         case CoordinateSpace::Data:
             switch (to) {
                 case CoordinateSpace::Index:
                     return getDataToIndexMatrix();
                 case CoordinateSpace::Data:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::Model:
                     return getDataToModelMatrix();
                 case CoordinateSpace::World:
@@ -849,8 +837,8 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                 case CoordinateSpace::Clip:
                     return getDataToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Data, to);
             }
         case CoordinateSpace::Model:
             switch (to) {
@@ -859,7 +847,7 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                 case CoordinateSpace::Data:
                     return getModelToDataMatrix();
                 case CoordinateSpace::Model:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 case CoordinateSpace::View:
@@ -867,8 +855,8 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                 case CoordinateSpace::Clip:
                     return getModelToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Model, to);
             }
         case CoordinateSpace::World:
             switch (to) {
@@ -879,14 +867,14 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                 case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
                 case CoordinateSpace::World:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::View:
                     return getWorldToViewMatrix();
                 case CoordinateSpace::Clip:
                     return getWorldToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::World, to);
             }
         case CoordinateSpace::View:
             switch (to) {
@@ -899,12 +887,12 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                 case CoordinateSpace::World:
                     return getViewToWorldMatrix();
                 case CoordinateSpace::View:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 case CoordinateSpace::Clip:
                     return getViewToClipMatrix();
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::View) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::View, to);
             }
         case CoordinateSpace::Clip:
             switch (to) {
@@ -919,13 +907,13 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                 case CoordinateSpace::View:
                     return getClipToViewMatrix();
                 case CoordinateSpace::Clip:
-                    return Matrix<N + 1, float>(1.0f);
+                    return glm::mat<N + 1, N + 1, float>(1.0f);
                 default:
-                    throw Exception("getMatrix is not available for the given spaces: " +
-                                    toString(CoordinateSpace::Clip) + " to " + toString(to), IVW_CONTEXT);
+                    throw Exception(IVW_CONTEXT, "getMatrix is not available for the given spaces: {} to {}", 
+                                    CoordinateSpace::Clip, to);
             }
         default:
-            throw Exception("getMatrix is not available for the given space: " + toString(from), IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT, "getMatrix is not available for the given space: {}", from);
     }
 }
 #include <warn/pop>
@@ -942,16 +930,16 @@ public:
 
     void setEntity(const SpatialEntity<N>& entity);
 
-    virtual const Matrix<N+1, float> getDataToModelMatrix() const;
-    virtual const Matrix<N+1, float> getDataToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getModelToDataMatrix() const;
-    virtual const Matrix<N+1, float> getModelToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToDataMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToModelMatrix() const;
 
 protected:
-    virtual const Matrix<N+1, float> getModelMatrix() const;
-    virtual const Matrix<N+1, float> getWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldMatrix() const;
 
 private:
     const SpatialEntity<N>* entity_;
@@ -969,29 +957,29 @@ public:
 
     void setEntity(const StructuredGridEntity<N>& entity);
 
-    virtual const Matrix<N+1, float> getDataToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getDataToModelMatrix() const;
-    virtual const Matrix<N+1, float> getDataToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToDataMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToModelMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToTextureMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getModelToDataMatrix() const;
-    virtual const Matrix<N+1, float> getModelToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getModelToTextureMatrix() const;
-    virtual const Matrix<N+1, float> getModelToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getTextureToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getTextureToModelMatrix() const;
-    virtual const Matrix<N+1, float> getTextureToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToDataMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToModelMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToTextureMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToTextureMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToTextureMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getTextureToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getTextureToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getTextureToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToTextureMatrix() const;
 
 protected:
-    virtual const Matrix<N+1, float> getIndexMatrix() const;
-    virtual const Matrix<N+1, float> getModelMatrix() const;
-    virtual const Matrix<N+1, float> getWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldMatrix() const;
 
 private:
     const StructuredGridEntity<N>* entity_;
@@ -1010,32 +998,32 @@ public:
     void setEntity(const SpatialEntity<N>& entity);
     void setCamera(const CameraND<N>& camera);
 
-    virtual const Matrix<N+1, float> getClipToDataMatrix() const;
-    virtual const Matrix<N+1, float> getClipToModelMatrix() const;
-    virtual const Matrix<N+1, float> getClipToViewMatrix() const;
-    virtual const Matrix<N+1, float> getClipToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getDataToClipMatrix() const;
-    virtual const Matrix<N+1, float> getDataToModelMatrix() const;
-    virtual const Matrix<N+1, float> getDataToViewMatrix() const;
-    virtual const Matrix<N+1, float> getDataToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getModelToClipMatrix() const;
-    virtual const Matrix<N+1, float> getModelToDataMatrix() const;
-    virtual const Matrix<N+1, float> getModelToViewMatrix() const;
-    virtual const Matrix<N+1, float> getModelToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getViewToClipMatrix() const;
-    virtual const Matrix<N+1, float> getViewToDataMatrix() const;
-    virtual const Matrix<N+1, float> getViewToModelMatrix() const;
-    virtual const Matrix<N+1, float> getViewToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToClipMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToDataMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToModelMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToViewMatrix() const;
 
 protected:
-    virtual const Matrix<N+1, float> getModelMatrix() const;
-    virtual const Matrix<N+1, float> getWorldMatrix() const;
-    virtual const Matrix<N+1, float> getViewMatrix() const;
-    virtual const Matrix<N+1, float> getProjectionMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getProjectionMatrix() const;
 
 private:
     const SpatialEntity<N>* entity_;
@@ -1055,53 +1043,53 @@ public:
     void setEntity(const StructuredGridEntity<N>& entity);
     void setCamera(const CameraND<N>& camera);
 
-    virtual const Matrix<N+1, float> getClipToDataMatrix() const;
-    virtual const Matrix<N+1, float> getClipToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getClipToModelMatrix() const;
-    virtual const Matrix<N+1, float> getClipToTextureMatrix() const;
-    virtual const Matrix<N+1, float> getClipToViewMatrix() const;
-    virtual const Matrix<N+1, float> getClipToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getDataToClipMatrix() const;
-    virtual const Matrix<N+1, float> getDataToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getDataToModelMatrix() const;
-    virtual const Matrix<N+1, float> getDataToViewMatrix() const;
-    virtual const Matrix<N+1, float> getDataToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToClipMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToDataMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToModelMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToTextureMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToViewMatrix() const;
-    virtual const Matrix<N+1, float> getIndexToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getModelToClipMatrix() const;
-    virtual const Matrix<N+1, float> getModelToDataMatrix() const;
-    virtual const Matrix<N+1, float> getModelToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getModelToTextureMatrix() const;
-    virtual const Matrix<N+1, float> getModelToViewMatrix() const;
-    virtual const Matrix<N+1, float> getModelToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getTextureToClipMatrix() const;
-    virtual const Matrix<N+1, float> getTextureToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getTextureToModelMatrix() const;
-    virtual const Matrix<N+1, float> getTextureToViewMatrix() const;
-    virtual const Matrix<N+1, float> getTextureToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getViewToClipMatrix() const;
-    virtual const Matrix<N+1, float> getViewToDataMatrix() const;
-    virtual const Matrix<N+1, float> getViewToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getViewToModelMatrix() const;
-    virtual const Matrix<N+1, float> getViewToTextureMatrix() const;
-    virtual const Matrix<N+1, float> getViewToWorldMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToClipMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToDataMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToIndexMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToModelMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToTextureMatrix() const;
-    virtual const Matrix<N+1, float> getWorldToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToTextureMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getClipToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getDataToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToTextureMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToTextureMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getTextureToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getTextureToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getTextureToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getTextureToViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getTextureToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToTextureMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewToWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToClipMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToDataMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToTextureMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldToViewMatrix() const;
 
 protected:
-    virtual const Matrix<N+1, float> getIndexMatrix() const;
-    virtual const Matrix<N+1, float> getModelMatrix() const;
-    virtual const Matrix<N+1, float> getWorldMatrix() const;
-    virtual const Matrix<N+1, float> getViewMatrix() const;
-    virtual const Matrix<N+1, float> getProjectionMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getIndexMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getModelMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getWorldMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getViewMatrix() const;
+    virtual glm::mat<N+1, N+1, float> getProjectionMatrix() const;
 
 private:
     const StructuredGridEntity<N>* entity_;
@@ -1125,11 +1113,11 @@ SpatialCoordinateTransformerImpl<N>* SpatialCoordinateTransformerImpl<N>::clone(
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getModelMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCoordinateTransformerImpl<N>::getModelMatrix() const {
     return entity_->getModelMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getWorldMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCoordinateTransformerImpl<N>::getWorldMatrix() const {
     return entity_->getWorldMatrix();
 }
 
@@ -1139,33 +1127,33 @@ void SpatialCoordinateTransformerImpl<N>::setEntity(const SpatialEntity<N>& enti
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getDataToModelMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCoordinateTransformerImpl<N>::getDataToModelMatrix() const {
     return getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getDataToWorldMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCoordinateTransformerImpl<N>::getDataToWorldMatrix() const {
     return getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
-    return MatrixInvert(getModelMatrix());
+glm::mat<N+1, N+1, float> SpatialCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
+    return glm::inverse(getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
     return getWorldMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> SpatialCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
-    return MatrixInvert(getWorldMatrix());
+glm::mat<N+1, N+1, float> SpatialCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
+    return glm::inverse(getWorldMatrix());
 }
 
 
@@ -1185,15 +1173,15 @@ StructuredCoordinateTransformerImpl<N>* StructuredCoordinateTransformerImpl<N>::
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexMatrix() const {
     return entity_->getIndexMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getModelMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getModelMatrix() const {
     return entity_->getModelMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldMatrix() const {
     return entity_->getWorldMatrix();
 }
 
@@ -1203,93 +1191,93 @@ void StructuredCoordinateTransformerImpl<N>::setEntity(const StructuredGridEntit
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getDataToIndexMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getDataToIndexMatrix() const {
     return getIndexMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getDataToModelMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getDataToModelMatrix() const {
     return getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getDataToWorldMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getDataToWorldMatrix() const {
     return getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToDataMatrix() const {
-    return MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToDataMatrix() const {
+    return glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToModelMatrix() const {
-    return getModelMatrix()*MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToModelMatrix() const {
+    return getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToTextureMatrix() const {
-    return MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToTextureMatrix() const {
+    return glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToWorldMatrix() const {
-    return getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToWorldMatrix() const {
+    return getWorldMatrix()*getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
-    return MatrixInvert(getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
+    return glm::inverse(getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToIndexMatrix() const {
+    return getIndexMatrix()*glm::inverse(getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToTextureMatrix() const {
-    return MatrixInvert(getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToTextureMatrix() const {
+    return glm::inverse(getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
     return getWorldMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getTextureToIndexMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getTextureToIndexMatrix() const {
     return getIndexMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getTextureToModelMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getTextureToModelMatrix() const {
     return getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getTextureToWorldMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getTextureToWorldMatrix() const {
     return getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToIndexMatrix() const {
+    return getIndexMatrix()*glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
-    return MatrixInvert(getWorldMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
+    return glm::inverse(getWorldMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToTextureMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToTextureMatrix() const {
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 
 
@@ -1310,19 +1298,19 @@ SpatialCameraCoordinateTransformerImpl<N>* SpatialCameraCoordinateTransformerImp
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelMatrix() const {
     return entity_->getModelMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldMatrix() const {
     return entity_->getWorldMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewMatrix() const {
     return camera_->getViewMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getProjectionMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getProjectionMatrix() const {
     return camera_->getProjectionMatrix();
 }
 
@@ -1336,102 +1324,102 @@ void SpatialCameraCoordinateTransformerImpl<N>::setCamera(const CameraND<N>& cam
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToDataMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToDataMatrix() const {
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToModelMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToModelMatrix() const {
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToViewMatrix() const {
-    return MatrixInvert(getProjectionMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToViewMatrix() const {
+    return glm::inverse(getProjectionMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToWorldMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToWorldMatrix() const {
+    return glm::inverse(getProjectionMatrix()*getViewMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getDataToClipMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getDataToClipMatrix() const {
     return getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getDataToModelMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getDataToModelMatrix() const {
     return getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getDataToViewMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getDataToViewMatrix() const {
     return getViewMatrix()*getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getDataToWorldMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getDataToWorldMatrix() const {
     return getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToClipMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToClipMatrix() const {
     return getProjectionMatrix()*getViewMatrix()*getWorldMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
-    return MatrixInvert(getModelMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
+    return glm::inverse(getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToViewMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToViewMatrix() const {
     return getViewMatrix()*getWorldMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
     return getWorldMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToClipMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToClipMatrix() const {
     return getProjectionMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToDataMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToDataMatrix() const {
+    return glm::inverse(getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToModelMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToModelMatrix() const {
+    return glm::inverse(getViewMatrix()*getWorldMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToWorldMatrix() const {
-    return MatrixInvert(getViewMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToWorldMatrix() const {
+    return glm::inverse(getViewMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToClipMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToClipMatrix() const {
     return getProjectionMatrix()*getViewMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
-    return MatrixInvert(getWorldMatrix());
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
+    return glm::inverse(getWorldMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToViewMatrix() const {
+glm::mat<N+1, N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToViewMatrix() const {
     return getViewMatrix();
 }
 
@@ -1453,23 +1441,23 @@ StructuredCameraCoordinateTransformerImpl<N>* StructuredCameraCoordinateTransfor
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexMatrix() const {
     return entity_->getIndexMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelMatrix() const {
     return entity_->getModelMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldMatrix() const {
     return entity_->getWorldMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewMatrix() const {
     return camera_->getViewMatrix();
 }
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getProjectionMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getProjectionMatrix() const {
     return camera_->getProjectionMatrix();
 }
 
@@ -1483,206 +1471,206 @@ void StructuredCameraCoordinateTransformerImpl<N>::setCamera(const CameraND<N>& 
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToDataMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToDataMatrix() const {
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToIndexMatrix() const {
+    return getIndexMatrix()*glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToModelMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToModelMatrix() const {
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToTextureMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToTextureMatrix() const {
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToViewMatrix() const {
-    return MatrixInvert(getProjectionMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToViewMatrix() const {
+    return glm::inverse(getProjectionMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToWorldMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToWorldMatrix() const {
+    return glm::inverse(getProjectionMatrix()*getViewMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToClipMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToClipMatrix() const {
     return getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToIndexMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToIndexMatrix() const {
     return getIndexMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToModelMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToModelMatrix() const {
     return getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToViewMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToViewMatrix() const {
     return getViewMatrix()*getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToWorldMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToWorldMatrix() const {
     return getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToClipMatrix() const {
-    return getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToClipMatrix() const {
+    return getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToDataMatrix() const {
-    return MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToDataMatrix() const {
+    return glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToModelMatrix() const {
-    return getModelMatrix()*MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToModelMatrix() const {
+    return getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToTextureMatrix() const {
-    return MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToTextureMatrix() const {
+    return glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToViewMatrix() const {
-    return getViewMatrix()*getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToViewMatrix() const {
+    return getViewMatrix()*getWorldMatrix()*getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToWorldMatrix() const {
-    return getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToWorldMatrix() const {
+    return getWorldMatrix()*getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToClipMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToClipMatrix() const {
     return getProjectionMatrix()*getViewMatrix()*getWorldMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
-    return MatrixInvert(getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
+    return glm::inverse(getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToIndexMatrix() const {
+    return getIndexMatrix()*glm::inverse(getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToTextureMatrix() const {
-    return MatrixInvert(getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToTextureMatrix() const {
+    return glm::inverse(getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToViewMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToViewMatrix() const {
     return getViewMatrix()*getWorldMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
     return getWorldMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToClipMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToClipMatrix() const {
     return getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToIndexMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToIndexMatrix() const {
     return getIndexMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToModelMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToModelMatrix() const {
     return getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToViewMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToViewMatrix() const {
     return getViewMatrix()*getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToWorldMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getTextureToWorldMatrix() const {
     return getWorldMatrix()*getModelMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToClipMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToClipMatrix() const {
     return getProjectionMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToDataMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToDataMatrix() const {
+    return glm::inverse(getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToIndexMatrix() const {
+    return getIndexMatrix()*glm::inverse(getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToModelMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToModelMatrix() const {
+    return glm::inverse(getViewMatrix()*getWorldMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToTextureMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToTextureMatrix() const {
+    return glm::inverse(getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToWorldMatrix() const {
-    return MatrixInvert(getViewMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToWorldMatrix() const {
+    return glm::inverse(getViewMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToClipMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToClipMatrix() const {
     return getProjectionMatrix()*getViewMatrix();
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToIndexMatrix() const {
+    return getIndexMatrix()*glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
-    return MatrixInvert(getWorldMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
+    return glm::inverse(getWorldMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToTextureMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToTextureMatrix() const {
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 
 template <unsigned int N>
-const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToViewMatrix() const {
+glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToViewMatrix() const {
     return getViewMatrix();
 }
-// clang-format on
 
+// clang-format on
 }  // namespace inviwo
 
 template <>

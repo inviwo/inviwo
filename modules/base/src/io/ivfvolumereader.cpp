@@ -32,7 +32,7 @@
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/rawvolumeramloader.h>
 
@@ -58,7 +58,7 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(std::string_view filePath) {
     const DataFormatBase* format = nullptr;
     bool littleEndian = true;
 
-    d.registerFactory(InviwoApplication::getPtr()->getMetaDataFactory());
+    d.registerFactory(util::getMetaDataFactory());
     d.deserialize("RawFile", rawFile);
     rawFile = fileDirectory + "/" + rawFile;
     d.deserialize("ByteOffset", byteOffset);

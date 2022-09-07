@@ -30,7 +30,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glm.h>
+
+#include <glm/fwd.hpp>
 
 #include <memory>
 #include <vector>
@@ -63,8 +64,8 @@ enum class UpdateLookRanges { Yes, No };
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 viewDir,
-                                vec3 lookUp, float fitRatio = 1.05f,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox,
+                                glm::vec3 viewDir, glm::vec3 lookUp, float fitRatio = 1.05f,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
@@ -82,7 +83,7 @@ IVW_CORE_API void setCameraView(CameraProperty& cam, const mat4& boundingBox, ve
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty& cam, const mat4& boundingBox,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox,
                                 float fitRatio = 1.05f,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
@@ -102,7 +103,7 @@ IVW_CORE_API void setCameraView(CameraProperty& cam, const mat4& boundingBox,
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty& cam, const mat4& boundingBox, Side side,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox, Side side,
                                 float fitRatio = 1.05f,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
@@ -117,7 +118,7 @@ IVW_CORE_API void setCameraView(CameraProperty& cam, const mat4& boundingBox, Si
  * @param boundingBox  basis and offset of the bounding box used to determine the ranges
  * @param maxZoomFactor determines how far away from the volume the user will be able to zoom out.
  */
-IVW_CORE_API void setCameraLookRanges(CameraProperty& cam, const mat4& boundingBox,
+IVW_CORE_API void setCameraLookRanges(CameraProperty& cam, const glm::mat4& boundingBox,
                                       float maxZoomFactor = 25.f);
 
 /**
@@ -125,7 +126,7 @@ IVW_CORE_API void setCameraLookRanges(CameraProperty& cam, const mat4& boundingB
  * Makes sure that the far plane is distant enough to avoid clipping given to current zoom factor.
  * @see setCameraLookRanges
  */
-IVW_CORE_API std::pair<float, float> computeCameraNearFar(const mat4& boundingBox,
+IVW_CORE_API std::pair<float, float> computeCameraNearFar(const glm::mat4& boundingBox,
                                                           float maxZoomFactor = 25.f,
                                                           float nearFarRatio = 1.f / 10000.f);
 
@@ -136,7 +137,7 @@ IVW_CORE_API std::pair<float, float> computeCameraNearFar(const mat4& boundingBo
  * @see computeCameraNearFar
  * @see setCameraLookRanges
  */
-IVW_CORE_API void setCameraNearFar(CameraProperty& cam, const mat4& boundingBox,
+IVW_CORE_API void setCameraNearFar(CameraProperty& cam, const glm::mat4& boundingBox,
                                    float maxZoomFactor = 25.f, float nearFarRatio = 1.f / 10000.f);
 
 }  // namespace camerautil

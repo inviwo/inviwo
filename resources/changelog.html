@@ -26,6 +26,12 @@
 </style>
 </head>
 <body>
+<h2>2022-09-14 Include cleanup and refactoring</h2>
+<p>We have tried to cleanup and remove and break some include dependencies in inviwo core to reduce the overall compile time<br>
+We have generally tried to reduce the use of big includes that has a many transitive includes. And tried to break up some headers into smaller parts to avoid having to include unused things.<br>
+For example the <code class="notranslate">inviwo/core/util/glm.h</code> header had been broken up into several smaller headers, <code class="notranslate">glmvec.h</code>, <code class="notranslate">glmmat.h</code>, <code class="notranslate">glmcomp.h</code>, <code class="notranslate">glmconver.h</code>, and<code class="notranslate">glmutils.h</code>.<br>
+Several new utility headers has also been extended or added. For example <code class="notranslate">inviwo/core/common/inviwoapplicationutil.h</code> can now be used to get an <code class="notranslate">InviwoApplication</code> pointer without the need of including all of inviwoapplication.h<br>
+similarly there is a <code class="notranslate">inviwo/core/common/factoryutil.h</code> to easily get to various factories, and a <code class="notranslate">inviwo/core/util/moduleutils.h</code> to get to various inviwo modules.</p>
 <h2>2022-09-14 New CompositeProcessor property configuration dialog</h2>
 <p>The long deprecated UsageMode has now been removed and with that the only way to select which properties was shown in a <code class="notranslate">CompositeProcessor</code>.<br>
 To fix that, the <code class="notranslate">CompositeProcessor</code> got a new dialog <code class="notranslate">Configure Properties</code>, accessable from the context menu in the network editor.<br>

@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 #include <cmath>
+
+#include <glm/trigonometric.hpp>
 #include <glm/gtc/constants.hpp>
 
 namespace inviwo {

@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/base/properties/bufferinformationproperty.h>
 #include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 

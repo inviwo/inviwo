@@ -39,7 +39,7 @@
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/metadata/metadataowner.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>

@@ -36,6 +36,7 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 

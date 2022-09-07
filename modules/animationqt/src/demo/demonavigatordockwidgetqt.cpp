@@ -33,6 +33,7 @@
 #include <modules/animation/demo/democontroller.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
@@ -82,7 +83,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
 
     // Add all properties of DemoController
-    auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
+    auto factory = util::getPropertyWidgetFactory();
     for (auto property : controller_.getProperties()) {
         auto propWidget = factory->create(property);
         auto propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());

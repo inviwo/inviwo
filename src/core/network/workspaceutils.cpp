@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logerrorcounter.h>
 

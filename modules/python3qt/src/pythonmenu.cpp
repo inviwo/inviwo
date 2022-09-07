@@ -29,6 +29,7 @@
 
 #include <modules/python3qt/pythonmenu.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <fmt/format.h>

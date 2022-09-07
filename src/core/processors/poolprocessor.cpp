@@ -111,7 +111,7 @@ void PoolProcessor::submit(Submission& job) {
     states_.push_back(job.state);
     notifyObserversStartBackgroundWork(this, job.tasks.size());
     for (auto& task : job.tasks) {
-        getNetwork()->getApplication()->getThreadPool().enqueueRaw(std::move(task));
+        util::getThreadPool(getInviwoApplication()).enqueueRaw(std::move(task));
     }
 }
 

@@ -31,6 +31,7 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/network/networkutils.h>
 
 namespace inviwo {
 
@@ -188,6 +189,12 @@ void Inport::removeOnDisconnect(const BaseCallBack* callback) {
 
 void Inport::setIsReadyUpdater(std::function<bool()> updater) {
     isReady_.setUpdate(std::move(updater));
+}
+
+bool Inport::circularConnection(const Port* port) const {
+    // Check for circular depends.
+    auto pd = util::getPredecessors(port->getProcessor());
+    return pd.find(getProcessor()) != pd.end();
 }
 
 }  // namespace inviwo

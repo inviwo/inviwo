@@ -34,9 +34,13 @@
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/shader/standardshaders.h>
+#include <modules/opengl/texture/textureunit.h>
+
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/transformiterator.h>
 #include <inviwo/core/util/safecstr.h>
+
+#include <glm/gtc/type_ptr.hpp>
 
 #include <fmt/format.h>
 
@@ -512,6 +516,208 @@ auto Shader::getShaderObjects() -> util::iter_range<iterator> {
 }
 auto Shader::getShaderObjects() const -> util::iter_range<const_iterator> {
     return util::as_range(begin(), end());
+}
+
+void Shader::setUniform(std::string_view name, bool value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1i(location, static_cast<int>(value));
+}
+void Shader::setUniform(std::string_view name, util::span<const bool> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) {
+        std::vector<int> tmp(values.begin(), values.end());
+        glUniform1iv(location, static_cast<GLsizei>(tmp.size()), tmp.data());
+    }
+}
+void Shader::setUniform(std::string_view name, int value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1i(location, value);
+}
+void Shader::setUniform(std::string_view name, util::span<const int> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1iv(location, static_cast<GLsizei>(values.size()), values.data());
+}
+void Shader::setUniform(std::string_view name, unsigned int value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1ui(location, value);
+}
+void Shader::setUniform(std::string_view name, util::span<const unsigned int> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1uiv(location, static_cast<GLsizei>(values.size()), values.data());
+}
+void Shader::setUniform(std::string_view name, float value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1f(location, value);
+}
+void Shader::setUniform(std::string_view name, util::span<const float> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1fv(location, static_cast<GLsizei>(values.size()), values.data());
+}
+
+void Shader::setUniform(std::string_view name, bvec2 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) {
+        ivec2 tmp(value);
+        glUniform2i(location, tmp[0], tmp[1]);
+    }
+}
+void Shader::setUniform(std::string_view name, util::span<const bvec2> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) {
+        std::vector<ivec2> tmp(values.begin(), values.end());
+        glUniform2iv(location, static_cast<GLsizei>(tmp.size()), glm::value_ptr(*tmp.data()));
+    }
+}
+void Shader::setUniform(std::string_view name, bvec3 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) {
+        ivec3 tmp(value);
+        glUniform3i(location, tmp[0], tmp[1], tmp[2]);
+    }
+}
+void Shader::setUniform(std::string_view name, util::span<const bvec3> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) {
+        std::vector<ivec3> tmp(values.begin(), values.end());
+        glUniform3iv(location, static_cast<GLsizei>(tmp.size()), glm::value_ptr(*tmp.data()));
+    }
+}
+void Shader::setUniform(std::string_view name, bvec4 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) {
+        ivec4 tmp(value);
+        glUniform4i(location, tmp[0], tmp[1], tmp[2], tmp[3]);
+    }
+}
+void Shader::setUniform(std::string_view name, util::span<const bvec4> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) {
+        std::vector<ivec4> tmp(values.begin(), values.end());
+        glUniform4iv(location, static_cast<GLsizei>(tmp.size()), glm::value_ptr(*tmp.data()));
+    }
+}
+
+void Shader::setUniform(std::string_view name, ivec2 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform2i(location, value[0], value[1]);
+}
+void Shader::setUniform(std::string_view name, util::span<const ivec2> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniform2iv(location, static_cast<GLsizei>(values.size()), glm::value_ptr(*values.data()));
+}
+void Shader::setUniform(std::string_view name, ivec3 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform3i(location, value[0], value[1], value[2]);
+}
+void Shader::setUniform(std::string_view name, util::span<const ivec3> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniform3iv(location, static_cast<GLsizei>(values.size()), glm::value_ptr(*values.data()));
+}
+void Shader::setUniform(std::string_view name, ivec4 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform4i(location, value[0], value[1], value[2], value[3]);
+}
+void Shader::setUniform(std::string_view name, util::span<const ivec4> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniform4iv(location, static_cast<GLsizei>(values.size()), glm::value_ptr(*values.data()));
+}
+
+void Shader::setUniform(std::string_view name, uvec2 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform2ui(location, value[0], value[1]);
+}
+void Shader::setUniform(std::string_view name, util::span<const uvec2> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniform2uiv(location, static_cast<GLsizei>(values.size()),
+                      glm::value_ptr(*values.data()));
+}
+void Shader::setUniform(std::string_view name, uvec3 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform3ui(location, value[0], value[1], value[2]);
+}
+void Shader::setUniform(std::string_view name, util::span<const uvec3> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniform3uiv(location, static_cast<GLsizei>(values.size()),
+                      glm::value_ptr(*values.data()));
+}
+void Shader::setUniform(std::string_view name, uvec4 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform4ui(location, value[0], value[1], value[2], value[3]);
+}
+void Shader::setUniform(std::string_view name, util::span<const uvec4> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniform4uiv(location, static_cast<GLsizei>(values.size()),
+                      glm::value_ptr(*values.data()));
+}
+
+void Shader::setUniform(std::string_view name, vec2 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform2f(location, value[0], value[1]);
+}
+void Shader::setUniform(std::string_view name, util::span<const vec2> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniform2fv(location, static_cast<GLsizei>(values.size()), glm::value_ptr(*values.data()));
+}
+void Shader::setUniform(std::string_view name, vec3 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform3f(location, value[0], value[1], value[2]);
+}
+void Shader::setUniform(std::string_view name, util::span<const vec3> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniform3fv(location, static_cast<GLsizei>(values.size()), glm::value_ptr(*values.data()));
+}
+void Shader::setUniform(std::string_view name, vec4 value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform4f(location, value[0], value[1], value[2], value[3]);
+}
+void Shader::setUniform(std::string_view name, util::span<const vec4> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniform4fv(location, static_cast<GLsizei>(values.size()), glm::value_ptr(*values.data()));
+}
+
+void Shader::setUniform(std::string_view name, const mat2& value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniformMatrix2fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+void Shader::setUniform(std::string_view name, util::span<const mat2> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniformMatrix2fv(location, static_cast<GLsizei>(values.size()), GL_FALSE,
+                           glm::value_ptr(*values.data()));
+}
+void Shader::setUniform(std::string_view name, const mat3& value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+void Shader::setUniform(std::string_view name, util::span<const mat3> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniformMatrix3fv(location, static_cast<GLsizei>(values.size()), GL_FALSE,
+                           glm::value_ptr(*values.data()));
+}
+void Shader::setUniform(std::string_view name, const mat4& value) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+void Shader::setUniform(std::string_view name, util::span<const mat4> values) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1)
+        glUniformMatrix4fv(location, static_cast<GLsizei>(values.size()), GL_FALSE,
+                           glm::value_ptr(*values.data()));
+}
+
+void Shader::setUniform(std::string_view name, const TextureUnit& texUnit) const {
+    GLint location = findUniformLocation(name);
+    if (location != -1) glUniform1i(location, texUnit.getUnitNumber());
 }
 
 }  // namespace inviwo

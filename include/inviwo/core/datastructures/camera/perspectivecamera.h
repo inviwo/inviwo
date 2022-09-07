@@ -30,7 +30,10 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/camera/camera.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmmat.h>
+
+#include <glm/ext/matrix_clip_space.hpp>
 
 namespace inviwo {
 

@@ -38,6 +38,7 @@
 #include <modules/opencl/volume/volumecl.h>
 #include <modules/opencl/volume/volumeclgl.h>
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 

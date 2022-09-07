@@ -35,6 +35,8 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/eventpropagator.h>
 
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglcapabilities.h>
