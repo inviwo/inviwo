@@ -47,6 +47,7 @@
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <inviwo/qt/editor/lineediteventfilter.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/keyboardutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -78,6 +79,7 @@
 #include <QSvgWidget>
 #include <QSvgRenderer>
 #include <QItemSelectionModel>
+#include <QApplication>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QWindow>
@@ -274,16 +276,36 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         leftSplitter->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         {  // left column: workspace filter, list of recently used workspaces, and examples
-            auto load = [this](const QModelIndex& index) {
+
+            auto loadFile = [this](const QString& filename, bool isExample) {
+                auto action = util::getModifierAction(QApplication::keyboardModifiers());
+                switch (action) {
+                    case ModifierAction::AppendWorkspace:
+                        emit appendWorkspace(filename);
+                        break;
+                    case ModifierAction::OpenWithPath:
+                        emit loadWorkspace(filename, false);
+                        break;
+                    case ModifierAction::None:
+                    default:
+                        emit loadWorkspace(filename, isExample);
+                        break;
+                }
+            };
+            auto updateLoadButtons = [this](const QModelIndex& index) {
                 updateDetails(index);
                 loadWorkspaceBtn_->disconnect();
+                appendWorkspaceBtn_->disconnect();
 
                 if (index.isValid()) {
                     const auto filename = utilqt::getData(index, Role::FilePath).toString();
                     const auto isExample = utilqt::getData(index, Role::isExample).toBool();
+
                     QObject::connect(
                         loadWorkspaceBtn_, &QToolButton::clicked, this,
                         [this, filename, isExample]() { emit loadWorkspace(filename, isExample); });
+                    QObject::connect(appendWorkspaceBtn_, &QToolButton::clicked, this,
+                                     [this, filename]() { emit appendWorkspace(filename); });
                 }
             };
 
@@ -292,18 +314,18 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             workspaceTreeView_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             workspaceTreeView_->setVisible(!getSetting("showWorkSpaceGridView", true).toBool());
 
-            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::loadFile, this,
-                             &WelcomeWidget::loadWorkspace);
-            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::selectFile, this, load);
+            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::loadFile, this, loadFile);
+            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::selectFile, this,
+                             updateLoadButtons);
 
             workspaceGridView_ = new WorkspaceGridView(filterModel_, this);
             workspaceGridView_->setMinimumWidth(utilqt::emToPx(this, 25));
             workspaceGridView_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             workspaceGridView_->setVisible(getSetting("showWorkSpaceGridView", true).toBool());
 
-            QObject::connect(workspaceGridView_, &WorkspaceGridView::loadFile, this,
-                             &WelcomeWidget::loadWorkspace);
-            QObject::connect(workspaceGridView_, &WorkspaceGridView::selectFile, this, load);
+            QObject::connect(workspaceGridView_, &WorkspaceGridView::loadFile, this, loadFile);
+            QObject::connect(workspaceGridView_, &WorkspaceGridView::selectFile, this,
+                             updateLoadButtons);
 
             auto toolbarLayout = new QHBoxLayout();
             filterLineEdit_ = new QLineEdit();
@@ -421,6 +443,11 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
             loadWorkspaceBtn_ = createButton("Load", ":/svgicons/open.svg",
                                              "Open selected workspace", "LoadWorkspaceToolButton");
+            loadWorkspaceBtn_->setEnabled(false);
+            appendWorkspaceBtn_ = createButton("Append", ":/svgicons/open-append.svg",
+                                               "Append selected workspace to current one",
+                                               "AppendWorkspaceToolButton");
+            appendWorkspaceBtn_->setEnabled(false);
             auto horizontalSpacer =
                 new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
                                 QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -444,7 +471,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                              [this]() { emit restoreWorkspace(); });
             centerLayout->addLayout(buttonLayout);
 
-            setTabOrder(loadWorkspaceBtn_, newButton);
+            setTabOrder(loadWorkspaceBtn_, appendWorkspaceBtn_);
+            setTabOrder(appendWorkspaceBtn_, newButton);
             setTabOrder(newButton, openFileButton);
             setTabOrder(openFileButton, restoreButton_);
             setTabOrder(restoreButton_, details_);
@@ -595,6 +623,8 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
     filterLineEdit_->setFocus(Qt::OtherFocusReason);
 }
 
+void WelcomeWidget::hideEvent(QHideEvent* event) { QSplitter::hideEvent(event); }
+
 void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
     if ((event->key() >= Qt::Key_0) && (event->key() <= Qt::Key_9) &&
         event->modifiers().testFlag(Qt::ControlModifier)) {
@@ -612,7 +642,12 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
             event->accept();
         }
     } else if ((event->key() == Qt::Key_Return) || (event->key() == Qt::Key_Enter)) {
-        loadWorkspaceBtn_->animateClick();
+        auto action = util::getModifierAction(QApplication::queryKeyboardModifiers());
+        if (action == ModifierAction::AppendWorkspace) {
+            appendWorkspaceBtn_->animateClick();
+        } else {
+            loadWorkspaceBtn_->animateClick();
+        }
         event->accept();
     }
     QWidget::keyPressEvent(event);
@@ -635,6 +670,7 @@ std::string formatDescription(std::string_view str) {
 
 void WelcomeWidget::updateDetails(const QModelIndex& index) {
     loadWorkspaceBtn_->setEnabled(index.isValid());
+    appendWorkspaceBtn_->setEnabled(index.isValid());
     if (!index.isValid()) {
         dragAndDrop_->show();
         details_->hide();

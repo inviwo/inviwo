@@ -61,6 +61,7 @@ class HelpWidget;
 class WelcomeWidget;
 class AnnotationsWidget;
 class InviwoApplicationQt;
+class InviwoDockWidget;
 class InviwoEditMenu;
 class InviwoAboutWindow;
 class ResourceManagerDockWidget;
@@ -68,6 +69,7 @@ class FileAssociations;
 class ToolsMenu;
 class TextLabelOverlay;
 class MenuKeyboardEventFilter;
+class Processor;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -141,8 +143,19 @@ public:
      */
     bool appendWorkspace();
 
-    void saveWorkspace();
-    void saveWorkspaceAs();
+    /**
+     * saves the current workspace. If the workspace does not have a name yet, a file dialog will be
+     * shown.
+     * @return true if the workspace was saved, otherwise false.
+     * @see saveWorkspaceAs
+     */
+    bool saveWorkspace();
+    /**
+     * saves the current workspace using a file dialog
+     * @return true if the workspace was saved, otherwise false.
+     * @see saveWorkspaceAs
+     */
+    bool saveWorkspaceAs();
 
     /*
      * Save the current workspace into a new workspace file,
@@ -191,7 +204,12 @@ private:
      * @see askToSaveWorkspaceChanges
      */
     bool openWorkspace(QString workspaceFileName, bool isExample);
-    void saveWorkspace(QString workspaceFileName);
+
+    /**
+     * saves the current workspace to the given \p workspaceFileName.
+     * @return true if the workspace was saved, otherwise false.
+     */
+    bool saveWorkspace(QString workspaceFileName);
     void appendWorkspace(const QString& workspaceFileName);
 
     std::optional<QString> askForWorkspaceToOpen();
@@ -234,7 +252,6 @@ private:
     HelpWidget* helpWidget_;
     WelcomeWidget* welcomeWidget_ =
         nullptr;  ///< Use delayed initialization as it can be expensive.
-    std::vector<QDockWidget*> welcomeHidden_;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
 
@@ -267,6 +284,22 @@ private:
     TCLAP::ValueArg<std::string> updateWorkspacesInPath_;
 
     UndoManager undoManager_;
+
+    struct VisibleWidgets {
+        /**
+         * store all visible processor and dock widgets before hiding them
+         */
+        void hide(InviwoMainWindow* win);
+        /**
+         * show previously hidden processor and dock widgets
+         */
+        void show();
+
+        std::vector<Processor*> processors;
+        std::vector<QDockWidget*> dockwidgets;
+    };
+    VisibleWidgets visibleWidgetState_;  //!< holds all processor and dock widgets that were visible
+                                         //!< before showing the welcome widget
 };
 
 }  // namespace inviwo

@@ -38,7 +38,6 @@
 // for Qt key codes
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QtCore/qnamespace.h>
 #include <QKeyEvent>
 #include <warn/pop>
 
@@ -371,6 +370,16 @@ IvwKey mapKeyFromQt(const QKeyEvent* keyevent) {
 
         default:
             return IvwKey::Unknown;
+    }
+}
+
+ModifierAction getModifierAction(Qt::KeyboardModifiers modifiers) {
+    if (modifiers.testFlag(Qt::ControlModifier)) {
+        return ModifierAction::AppendWorkspace;
+    } else if (modifiers.testFlag(Qt::ShiftModifier)) {
+        return ModifierAction::OpenWithPath;
+    } else {
+        return ModifierAction::None;
     }
 }
 

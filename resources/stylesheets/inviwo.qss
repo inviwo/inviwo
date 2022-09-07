@@ -1038,11 +1038,11 @@ QSplitter#WelcomeWidget::handle:horizontal:pressed {
 }
 
 QSplitter#WelcomeWidget QToolButton {
-    font-size: 16pt;
+    font-size: 14pt;
 }
 QSplitter#WelcomeWidget QLineEdit {
     color: #c8ccd0;
-    font-size: 16pt;
+    font-size: 14pt;
     padding: 0.25em;
 }
 

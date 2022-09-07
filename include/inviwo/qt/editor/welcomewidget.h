@@ -69,12 +69,14 @@ public:
 
 signals:
     void loadWorkspace(const QString& filename, bool isExample);
+    void appendWorkspace(const QString& filename);
     void newWorkspace();
     void openWorkspace();
     void restoreWorkspace();
 
 protected:
     virtual void showEvent(QShowEvent* event) override;
+    virtual void hideEvent(QHideEvent* event) override;
 
     virtual void keyPressEvent(QKeyEvent* event) override;
 
@@ -101,6 +103,7 @@ private:
     QTextEdit* details_;
     ChangeLog* changelog_;
     QToolButton* loadWorkspaceBtn_;
+    QToolButton* appendWorkspaceBtn_;
     QToolButton* restoreButton_;
 };
 
