@@ -1,15 +1,10 @@
 name: Update Latest Relase
 
 on:
-  workflow_dispatch:
-  workflow_run:
-    workflows: [Test Installer]
-    types: 
-      - completed
+  workflow_call:
 
 jobs:
   upload_artifact:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/heads/master'}}
     strategy:
       matrix:
         os: [windows-latest] # macos-latest,

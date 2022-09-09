@@ -152,4 +152,16 @@ jobs:
         name: inviwo-python-api
         path: build/docs/python-api/*
 
+  test-installer:
+    uses: ./.github/workflows/test-installer.yml
+    secrets: inherit
 
+  update-api-docs:
+    # if: ${{ github.ref == 'refs/heads/master' }}
+    uses: ./.github/workflows/update-api-docs.yml
+    secrets: inherit
+
+  update-latest-release:
+    # if: ${{ github.ref == 'refs/heads/master' }}
+    uses: ./.github/workflows/update-latest-release.yml
+    secrets: inherit

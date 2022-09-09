@@ -1,18 +1,10 @@
 name: Update API Docs
 
-on: 
-  workflow_dispatch:
-  workflow_run:
-    workflows: [Build Inviwo]
-    types: 
-      - completed
-    branches:
-      - 'master'
-      - 'feature/github-action'
+on:
+  workflow_call:
 
 jobs:
   update-api-docs:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: windows-latest
     steps:
       - name: Clone Inviwo

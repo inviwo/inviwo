@@ -1,15 +1,10 @@
 name: Test Installer
 
 on:
-  workflow_dispatch:
-  workflow_run:
-    workflows: [Build Inviwo]
-    types: 
-      - completed
+  workflow_call:
 
 jobs:
   test-installer:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     strategy:
       fail-fast: false
       matrix:
