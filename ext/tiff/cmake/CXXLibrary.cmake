@@ -24,7 +24,8 @@
 # OF THIS SOFTWARE.
 
 # C++ support
-option(cxx "Enable C++ stream API building (requires C++ compiler)" ON)
+#[===[ Inviwo modification: toggled option to OFF ]===]
+option(cxx "Enable C++ stream API building (requires C++ compiler)" OFF)
 set(CXX_SUPPORT FALSE)
 if (cxx)
     enable_language(CXX)

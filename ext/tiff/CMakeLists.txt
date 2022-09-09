@@ -133,20 +133,23 @@ include(Release)
 
 
 # Process subdirectories
-add_subdirectory(port)
 add_subdirectory(libtiff)
+#[===[ Inviwo modification
+add_subdirectory(port)
 add_subdirectory(tools)
 add_subdirectory(test)
 add_subdirectory(contrib)
 add_subdirectory(build)
 add_subdirectory(man)
 add_subdirectory(html)
+]===]
 
 # pkg-config support
 include(PkgConfig)
 
 message(STATUS "")
 message(STATUS "Libtiff is now configured for ${CMAKE_SYSTEM}")
+#[===[ Inviwo modification: reduce logging
 message(STATUS "")
 message(STATUS "  Installation directory:             ${prefix}")
 message(STATUS "  Documentation directory:            ${LIBTIFF_DOCDIR}")
@@ -199,3 +202,13 @@ message(STATUS "")
 # message(STATUS "  X Athena Widgets support:           ${HAVE_XAW}")
 message(STATUS "  OpenGL support:                     ${HAVE_OPENGL}")
 message(STATUS "")
+]===]
+
+#[===[ Inviwo modification ]===]
+ivw_suppress_compiler_warnings(tiff)
+ivw_default_install_targets(tiff)
+ivw_folder(tiff ext)
+source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
+ivw_make_package(TIFF tiff)
+add_library(TIFF::TIFF ALIAS tiff)
+#[===[ End Inviwo modification ]===]

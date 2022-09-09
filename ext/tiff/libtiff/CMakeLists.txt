@@ -169,6 +169,7 @@ if(HAVE_LD_VERSION_SCRIPT)
                         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiff.map")
 endif()
 
+#[===[ Inviwo modification: disable unused export and install
 export(TARGETS tiff NAMESPACE TIFF:: FILE "${CMAKE_CURRENT_BINARY_DIR}/libtiffTargets.cmake")
 install(TARGETS tiff EXPORT TiffTargets
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -184,6 +185,7 @@ install(EXPORT TiffTargets
         NAMESPACE TIFF::
         DESTINATION ${TIFF_CONFIGDIR}
 )
+]===]
 
 if(CXX_SUPPORT)
   set(tiffxx_HEADERS
@@ -207,6 +209,7 @@ if(CXX_SUPPORT)
                           "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiffxx.map")
   endif()
 
+#[===[ Inviwo modification: disable install in case tiffxx is enabled
   install(TARGETS tiffxx
           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -214,9 +217,10 @@ if(CXX_SUPPORT)
 
   install(FILES ${tiffxx_HEADERS}
           DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
-
+]===]
 endif()
 
+#[===[ Inviwo modification: mkg3states and faxtable are not part of libtiff library
 add_executable(mkg3states ../placeholder.h)
 target_sources(mkg3states PRIVATE mkg3states.c tif_fax3.h)
 target_link_libraries(mkg3states tiff port)
@@ -226,3 +230,4 @@ add_custom_target(faxtable
         COMMAND ${CMAKE_COMMAND} -E rm "tif_fax3sm.c"
         COMMAND mkg3states -b -c const "tif_fax3sm.c"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+]===]

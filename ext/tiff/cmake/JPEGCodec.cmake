@@ -26,7 +26,7 @@
 
 # JPEG
 set(JPEG_SUPPORT FALSE)
-find_package(JPEG)
+find_package(JPEG CONFIG)
 option(jpeg "use libjpeg (required for JPEG compression)" ${JPEG_FOUND})
 if (jpeg AND JPEG_FOUND)
     set(JPEG_SUPPORT TRUE)
