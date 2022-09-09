@@ -38,13 +38,13 @@ struct SelectionColor {
 };
 
 /**
- * Blend @p srcColor with @p brushingColor using separate interpolants for color and alpha.
+ * Blend @p srcColor with @p selectionColor using separate interpolants for color and alpha.
  * @param srcColor
- * @param brushingColor
- * @return color resulting from mixing @p srcColor with @p brushingColor
+ * @param selectionColor
+ * @return color resulting from mixing @p srcColor with @p selectionColor
  */
-vec4 applySelectionColor(in vec4 srcColor, in SelectionColor brushingColor) {
-    return mix(srcColor, brushingColor.color, vec4(vec3(brushingColor.colorMixIn), brushingColor.alphaMixIn));
+vec4 applySelectionColor(in vec4 srcColor, in SelectionColor selectionColor) {
+    return mix(srcColor, selectionColor.color, vec4(vec3(selectionColor.colorMixIn), selectionColor.alphaMixIn));
 }
 
 #endif // IVW_SELECTIONCOLOR_GLSL
