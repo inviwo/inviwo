@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-09-09 Updated ext/libtiff
+The libtiff library located in `ext/libtiff` was updated to the latest release 4.4.0.
+
 ## 2022-09-02 Append workspace on Welcome Screen
 Previously, the File menu received an "Append" functionality which appends a workspace to the current network by holding down Control/Command. This functionality is now also available in the Welcome Screen. The Welcome Screen also no longer immediately closes the current workspace, it is now possible to close the Welcome Screen and continue working without loosing any changes.
 
