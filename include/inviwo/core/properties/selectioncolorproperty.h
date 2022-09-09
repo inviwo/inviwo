@@ -31,8 +31,15 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
+
+struct IVW_CORE_API SelectionColorState {
+    vec4 color;
+    float colorMixIn;
+    bool visible;
+};
 
 /**
  * @ingroup properties
@@ -48,10 +55,17 @@ public:
         vec3 color = vec3(1.0f, 0.906f, 0.612f), float alpha = 0.75f,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
+    SelectionColorProperty(
+        std::string_view identifier, std::string_view displayName, Document help,
+        bool checked = false, vec3 color = vec3(1.0f, 0.906f, 0.612f), float alpha = 0.75f,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+        PropertySemantics semantics = PropertySemantics::Default);
     SelectionColorProperty(const SelectionColorProperty& rhs);
     virtual ~SelectionColorProperty() = default;
 
     virtual SelectionColorProperty* clone() const override;
+
+    SelectionColorState getState() const;
 
     vec4 getColor() const;
     /**

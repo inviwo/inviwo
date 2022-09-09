@@ -131,6 +131,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/raycastgeometry.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/sampler2d.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/sampler3d.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/selectioncolor.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/shading.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/structs.glsl
 )

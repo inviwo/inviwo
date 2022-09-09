@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,67 +24,27 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include "plotting/common.glsl"
-#include "utils/structs.glsl"
-#include "utils/sampler2d.glsl"
-#include "utils/selectioncolor.glsl"
+#ifndef IVW_SELECTIONCOLOR_GLSL
+#define IVW_SELECTIONCOLOR_GLSL
 
-layout(location = 0) in float X;
-layout(location = 1) in float Y;
-layout(location = 2) in float C;
-layout(location = 3) in float R;
-layout(location = 4) in uint in_PickId;
+struct SelectionColor {
+    vec4 color;
+    float colorMixIn;
+    float alphaMixIn;
+    bool visible;
+};
 
-uniform sampler2D transferFunction;
-
-out vec4 vColor;
-out float vRadius;
-out float vDepth;
-flat out uint pickID_;
-
-uniform vec2 minmaxX;
-uniform vec2 minmaxY;
-uniform vec2 minmaxC;
-uniform vec2 minmaxR;
-uniform vec4 default_color;
-
-uniform SelectionColor secondaryColor = SelectionColor(vec4(0.0), 0.0, 0.0, true);
-
-uniform float minRadius;
-uniform float maxRadius;
-
-uniform int has_color = 0;
-uniform int has_radius = 0;
-
-uniform bool pickingEnabled = false;
-
-float norm(in float v, in vec2 mm) { 
-    return (v - mm.x) / (mm.y - mm.x); 
+/**
+ * Blend @p srcColor with @p selectionColor using separate interpolants for color and alpha.
+ * @param srcColor
+ * @param selectionColor
+ * @return color resulting from mixing @p srcColor with @p selectionColor
+ */
+vec4 applySelectionColor(in vec4 srcColor, in SelectionColor selectionColor) {
+    return mix(srcColor, selectionColor.color, vec4(vec3(selectionColor.colorMixIn), selectionColor.alphaMixIn));
 }
 
-void main(void) {
-    if (has_color == 1) {
-        float c = norm(C, minmaxC);
-        vColor = texture(transferFunction, vec2(c, 0.5));
-    } else {
-        vColor = default_color;
-    }
-    vColor = applySelectionColor(vColor, secondaryColor);
-
-    if (has_radius == 1) {
-        float r = norm(R, minmaxR);
-        vRadius = minRadius + r * (maxRadius - minRadius);
-    } else {
-        vRadius = maxRadius;
-    }
-    vDepth = 0.5;
-
-    float x = norm(X, minmaxX);
-    float y = norm(Y, minmaxY);
-    gl_Position = vec4(x, y, 0.5, 1);
-    
-    pickID_ = pickingEnabled ? in_PickId : 0;
-}
+#endif // IVW_SELECTIONCOLOR_GLSL

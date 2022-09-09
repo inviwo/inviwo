@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/selectioncolorproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/raycastingproperty.h>
 #include <inviwo/core/datastructures/light/lightingstate.h>
@@ -118,6 +119,14 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoValuePrope
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const IsoTFProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoTFProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoTFProperty& property,
+                                             std::string_view name);
+
+// SelectionColorProperty
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
+                                             const SelectionColorProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SelectionColorProperty& property,
+                                             std::string_view name);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SelectionColorState& state,
                                              std::string_view name);
 
 // Background Image
