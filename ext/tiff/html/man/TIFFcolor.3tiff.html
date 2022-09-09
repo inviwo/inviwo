@@ -42,21 +42,21 @@ routines.</p>
 *</b><i>ycbcr</i><b>, float *</b><i>luma</i><b>, float
 *</b><i>refBlackWhite&quot;</i><b>);&quot;<br>
 void TIFFYCbCrtoRGB(TIFFYCbCrToRGB *</b><i>ycbcr</i><b>,
-uint32</b> <i>Y</i><b>, int32</b> <i>Cb</i><b>, int32</b>
-<i>Cr</i><b>, uint32 *</b><i>R</i><b>, uint32
-*</b><i>G</i><b>, uint32 *</b><i>B</i> <b>);</b></p>
+uint32_t</b> <i>Y</i><b>, int32_t</b> <i>Cb</i><b>, int32_t</b>
+<i>Cr</i><b>, uint32_t *</b><i>R</i><b>, uint32_t
+*</b><i>G</i><b>, uint32_t *</b><i>B</i> <b>);</b></p>
 <!-- INDENTATION -->
 <p><b>int TIFFCIELabToRGBInit(TIFFCIELabToRGB
 *</b><i>cielab</i><b>, TIFFDisplay *</b><i>display</i><b>,
 float *</b><i>refWhite</i><b>);<br>
 void TIFFCIELabToXYZ(TIFFCIELabToRGB *</b><i>cielab</i><b>,
-uint32</b> <i>L</i><b>, int32</b> <i>a</i><b>, int32</b>
+uint32_t</b> <i>L</i><b>, int32_t</b> <i>a</i><b>, int32_t</b>
 <i>b</i><b>, float *</b><i>X</i><b>, float *</b><i>Y</i><b>,
 float *</b><i>Z</i><b>);<br>
 void TIFFXYZToRGB(TIFFCIELabToRGB *</b><i>cielab</i><b>,
 float</b> <i>X</i><b>, float</b> <i>Y</i><b>, float</b>
-<i>Z&quot;</i><b>,</b><i>uint32</i><b>*&quot;</b><i>R</i><b>,
-uint32 *</b><i>G</i><b>, uint32 *</b><i>B</i><b>);</b></p>
+<i>Z&quot;</i><b>,</b><i>uint32_t</i><b>*&quot;</b><i>R</i><b>,
+uint32_t *</b><i>G</i><b>, uint32_t *</b><i>B</i><b>);</b></p>
 </td>
 </table>
 <a name="DESCRIPTION"></a>
@@ -116,7 +116,7 @@ int*</p>
 <td width="6%">
 
 <p>Cb_b_tab;<br>
-int32*</p>
+int32_t*</p>
 </td>
 <td width="56%">
 </td>
@@ -127,7 +127,7 @@ int32*</p>
 <td width="6%">
 
 <p>Cr_g_tab;<br>
-int32*</p>
+int32_t*</p>
 </td>
 <td width="56%">
 </td>
@@ -148,7 +148,7 @@ int32*</p>
 <tr valign="top" align="left">
 <td width="17%"></td>
 <td width="82%">
-<p>int32* Y_tab;<br>
+<p>int32_t* Y_tab;<br>
 } TIFFYCbCrToRGB;</p></td>
 </table>
 <!-- INDENTATION -->
@@ -178,7 +178,7 @@ should helps to understand the the technique:</p>
 <td width="17%"></td>
 <td width="82%">
 <pre>float *luma, *refBlackWhite;
-uint16 hs, vs;
+uint16_t hs, vs;
 
 /* Initialize structures */
 ycbcr = (TIFFYCbCrToRGB*)
@@ -212,7 +212,7 @@ sizeof(long))</p>
 <td width="24%"></td>
 <td width="75%">
 
-<p>+ 3*256*sizeof(int32));</p>
+<p>+ 3*256*sizeof(int32_t));</p>
 </td>
 </table>
 <!-- INDENTATION -->
@@ -272,9 +272,9 @@ if (TIFFYCbCrToRGBInit(ycbcr, luma, refBlackWhite) &lt;
 <td width="17%"></td>
 <td width="82%">
 <p>/* Start conversion */<br>
-uint32 r, g, b;<br>
-uint32 Y;<br>
-int32 Cb, Cr;</p>
+uint32_t r, g, b;<br>
+uint32_t Y;<br>
+int32_t Cb, Cr;</p>
 <!-- INDENTATION -->
 <p>for each pixel in image</p></td>
 </table>
@@ -535,19 +535,19 @@ as</p>
 <td width="24%"></td>
 <td width="75%">
 
-<p>uint32 d_Vrwr; /* Pixel values for ref. white */</p>
+<p>uint32_t d_Vrwr; /* Pixel values for ref. white */</p>
 </td>
 <tr valign="top" align="left">
 <td width="24%"></td>
 <td width="75%">
 
-<p>uint32 d_Vrwg;</p>
+<p>uint32_t d_Vrwg;</p>
 </td>
 <tr valign="top" align="left">
 <td width="24%"></td>
 <td width="75%">
 
-<p>uint32 d_Vrwb;</p>
+<p>uint32_t d_Vrwb;</p>
 </td>
 <tr valign="top" align="left">
 <td width="24%"></td>
@@ -922,9 +922,9 @@ state.&quot;);</p>
 <p>}</p>
 <!-- INDENTATION -->
 <p>/* Now we can start to convert */<br>
-uint32 r, g, b;<br>
-uint32 L;<br>
-int32 a, b;<br>
+uint32_t r, g, b;<br>
+uint32_t L;<br>
+int32_t a, b;<br>
 float X, Y, Z;</p>
 <!-- INDENTATION -->
 <p>for each pixel in image</p></td>

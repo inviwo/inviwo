@@ -1,5 +1,3 @@
-/* $Id: check_tag.c,v 1.3 2008/04/15 14:19:37 dron Exp $ */
-
 /*
  * Copyright (c) 2004, Andrey Kiselev  <dron@ak4719.spb.edu>
  *
@@ -32,18 +30,18 @@
 #include "tiffio.h"
 
 int
-CheckShortField(TIFF *tif, const ttag_t field, const uint16 value)
+CheckShortField(TIFF *tif, const ttag_t field, const uint16_t value)
 {
-	uint16 tmp = 123;
+	uint16_t tmp = 123;
 
 	if (!TIFFGetField(tif, field, &tmp)) {
-		fprintf (stderr, "Problem fetching tag %lu.\n",
-			 (unsigned long) field);
+		fprintf (stderr, "Problem fetching tag %"PRIu32".\n",
+			 field);
 		return -1;
 	}
 	if (tmp != value) {
-		fprintf (stderr, "Wrong SHORT value fetched for tag %lu.\n",
-			 (unsigned long) field);
+		fprintf (stderr, "Wrong SHORT value fetched for tag %"PRIu32".\n",
+			 field);
 		return -1;
 	}
 
@@ -51,18 +49,18 @@ CheckShortField(TIFF *tif, const ttag_t field, const uint16 value)
 }
 
 int
-CheckShortPairedField(TIFF *tif, const ttag_t field, const uint16 *values)
+CheckShortPairedField(TIFF *tif, const ttag_t field, const uint16_t *values)
 {
-	uint16 tmp[2] = { 123, 456 };
+	uint16_t tmp[2] = {123, 456 };
 
 	if (!TIFFGetField(tif, field, tmp, tmp + 1)) {
-		fprintf (stderr, "Problem fetching tag %lu.\n",
-			 (unsigned long) field);
+		fprintf (stderr, "Problem fetching tag %"PRIu32".\n",
+			 field);
 		return -1;
 	}
 	if (tmp[0] != values[0] || tmp[1] != values[1]) {
-		fprintf (stderr, "Wrong SHORT PAIR fetched for tag %lu.\n",
-			 (unsigned long) field);
+		fprintf (stderr, "Wrong SHORT PAIR fetched for tag %"PRIu32".\n",
+			 field);
 		return -1;
 	}
 
@@ -70,18 +68,18 @@ CheckShortPairedField(TIFF *tif, const ttag_t field, const uint16 *values)
 }
 
 int
-CheckLongField(TIFF *tif, const ttag_t field, const uint32 value)
+CheckLongField(TIFF *tif, const ttag_t field, const uint32_t value)
 {
-	uint32 tmp = 123;
+	uint32_t tmp = 123;
 
 	if (!TIFFGetField(tif, field, &tmp)) {
-		fprintf (stderr, "Problem fetching tag %lu.\n",
-			 (unsigned long) field);
+		fprintf (stderr, "Problem fetching tag %"PRIu32".\n",
+			 field);
 		return -1;
 	}
 	if (tmp != value) {
-		fprintf (stderr, "Wrong LONG value fetched for tag %lu.\n",
-			 (unsigned long) field);
+		fprintf (stderr, "Wrong LONG value fetched for tag %"PRIu32".\n",
+			 field);
 		return -1;
 	}
 

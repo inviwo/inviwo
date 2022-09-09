@@ -1,5 +1,3 @@
-/* $Id: strip.c,v 1.5 2013-12-17 14:41:58 bfriesen Exp $ */
-
 /*
  * Copyright (c) 2004, Andrey Kiselev  <dron@ak4719.spb.edu>
  *
@@ -59,8 +57,8 @@ write_strips(TIFF *tif, const tdata_t array, const tsize_t size)
 
 		if (TIFFWriteEncodedStrip(tif, strip, (char *)array + offset,
 					  bufsize) != bufsize) {
-			fprintf (stderr, "Can't write strip %lu.\n",
-				 (unsigned long)strip);
+			fprintf (stderr, "Can't write strip %"PRIu32".\n",
+				 strip);
 			return -1;
 		}
         }
@@ -99,13 +97,13 @@ read_strips(TIFF *tif, const tdata_t array, const tsize_t size)
 			bufsize = stripsize;
 
 		if (TIFFReadEncodedStrip(tif, strip, buf, -1) != bufsize) {
-			fprintf (stderr, "Can't read strip %lu.\n",
-				 (unsigned long)strip);
+			fprintf (stderr, "Can't read strip %"PRIu32".\n",
+				 strip);
 			return -1;
 		}
 		if (memcmp(buf, (char *)array + offset, bufsize) != 0) {
-			fprintf (stderr, "Wrong data read for strip %lu.\n",
-				 (unsigned long)strip);
+			fprintf (stderr, "Wrong data read for strip %"PRIu32".\n",
+				 strip);
 			_TIFFfree(buf);
 			return -1;
 		}
@@ -117,11 +115,11 @@ read_strips(TIFF *tif, const tdata_t array, const tsize_t size)
 }
 
 int
-create_image_striped(const char *name, uint32 width, uint32 length,
-		      uint32 rowsperstrip, uint16 compression,
-		      uint16 spp, uint16 bps, uint16 photometric,
-		      uint16 sampleformat, uint16 planarconfig,
-		      const tdata_t array, const tsize_t size)
+create_image_striped(const char *name, uint32_t width, uint32_t length,
+                     uint32_t rowsperstrip, uint16_t compression,
+                     uint16_t spp, uint16_t bps, uint16_t photometric,
+                     uint16_t sampleformat, uint16_t planarconfig,
+                     const tdata_t array, const tsize_t size)
 {
 	TIFF		*tif;
 
@@ -171,25 +169,25 @@ failure:
 	TIFFClose(tif);
 openfailure:
 	fprintf (stderr, "Can't create test TIFF file %s:\n"
-"    ImageWidth=%ld, ImageLength=%ld, RowsPerStrip=%ld, Compression=%d,\n"
-"    BitsPerSample=%d, SamplesPerPixel=%d, SampleFormat=%d,\n"
-"    PlanarConfiguration=%d, PhotometricInterpretation=%d.\n",
-		 name, (long) width, (long) length, (long) rowsperstrip,
+"    ImageWidth=%"PRIu32", ImageLength=%"PRIu32", RowsPerStrip=%"PRIu32", Compression=%"PRIu16",\n"
+"    BitsPerSample=%"PRIu16", SamplesPerPixel=%"PRIu16", SampleFormat=%"PRIu16",\n"
+"    PlanarConfiguration=%"PRIu16", PhotometricInterpretation=%"PRIu16".\n",
+		 name, width, length, rowsperstrip,
                  compression, bps, spp, sampleformat, planarconfig,
 		 photometric);
 	return -1;
 }
 
 int
-read_image_striped(const char *name, uint32 width, uint32 length,
-		    uint32 rowsperstrip, uint16 compression,
-		    uint16 spp, uint16 bps, uint16 photometric,
-		    uint16 sampleformat, uint16 planarconfig,
-		    const tdata_t array, const tsize_t size)
+read_image_striped(const char *name, uint32_t width, uint32_t length,
+                   uint32_t rowsperstrip, uint16_t compression,
+                   uint16_t spp, uint16_t bps, uint16_t photometric,
+                   uint16_t sampleformat, uint16_t planarconfig,
+                   const tdata_t array, const tsize_t size)
 {
 	TIFF		*tif;
-	uint16		value_u16;
-	uint32		value_u32;
+	uint16_t		value_u16;
+	uint32_t		value_u32;
 
 	/* Test whether we can read written values. */
 	tif = TIFFOpen(name, "r");
@@ -249,10 +247,10 @@ failure:
 	TIFFClose(tif);
 openfailure:
 	fprintf (stderr, "Can't read test TIFF file %s:\n"
-"    ImageWidth=%ld, ImageLength=%ld, RowsPerStrip=%ld, Compression=%d,\n"
-"    BitsPerSample=%d, SamplesPerPixel=%d, SampleFormat=%d,\n"
-"    PlanarConfiguration=%d, PhotometricInterpretation=%d.\n",
-		 name, (long) width, (long) length, (long) rowsperstrip,
+"    ImageWidth=%"PRIu32", ImageLength=%"PRIu32", RowsPerStrip=%"PRIu32", Compression=%"PRIu16",\n"
+"    BitsPerSample=%"PRIu16", SamplesPerPixel=%"PRIu16", SampleFormat=%"PRIu16",\n"
+"    PlanarConfiguration=%"PRIu16", PhotometricInterpretation=%"PRIu16".\n",
+		 name, width, length, rowsperstrip,
                  compression, bps, spp, sampleformat, planarconfig,
 		 photometric);
 	return -1;
@@ -261,7 +259,7 @@ openfailure:
 int
 write_scanlines(TIFF *tif, const tdata_t array, const tsize_t size)
 {
-	uint32		length, row;
+	uint32_t		length, row;
 	tsize_t		scanlinesize, offset;
         (void) size;
 
@@ -279,7 +277,7 @@ write_scanlines(TIFF *tif, const tdata_t array, const tsize_t size)
 	for (offset = 0, row = 0; row < length; offset+=scanlinesize, row++) {
 		if (TIFFWriteScanline(tif, (char *)array + offset, row, 0) == -1) {
 			fprintf (stderr,
-				 "Can't write image data at row %lu.\n", (long) row);
+				 "Can't write image data at row %"PRIu32".\n", row);
 			return -1;
 		}
         }

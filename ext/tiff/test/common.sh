@@ -7,6 +7,7 @@ SRCDIR=`cd $SRCDIR && pwd`
 TOPSRCDIR=`cd $srcdir/.. && pwd`
 TOOLS=`cd ../tools && pwd`
 IMAGES="${SRCDIR}/images"
+REFS="${SRCDIR}/refs"
 
 # Aliases for built tools
 FAX2PS=${TOOLS}/fax2ps
@@ -41,13 +42,15 @@ IMG_RGB_3C_16B=${IMAGES}/rgb-3c-16b.tiff
 IMG_RGB_3C_8B=${IMAGES}/rgb-3c-8b.tiff
 IMG_MINISBLACK_2C_8B_ALPHA=${IMAGES}/minisblack-2c-8b-alpha.tiff
 IMG_QUAD_LZW_COMPAT=${IMAGES}/quad-lzw-compat.tiff
+IMG_LZW_SINGLE_STROP=${IMAGES}/lzw-single-strip.tiff
 
 IMG_MINISWHITE_1C_1B_PBM=${IMAGES}/miniswhite-1c-1b.pbm
 IMG_MINISBLACK_1C_8B_PGM=${IMAGES}/minisblack-1c-8b.pgm
+IMG_RGB_3C_16B_PPM=${IMAGES}/rgb-3c-16b.ppm
 IMG_RGB_3C_8B_PPM=${IMAGES}/rgb-3c-8b.ppm
 
 # All uncompressed image files
-IMG_UNCOMPRESSED="${IMG_MINISBLACK_1C_16B} ${IMG_MINISBLACK_1C_8B} ${IMG_MINISWHITE_1C_1B} ${IMG_PALETTE_1C_1B} ${IMG_PALETTE_1C_4B} ${IMG_PALETTE_1C_4B} ${IMG_PALETTE_1C_8B} ${IMG_RGB_3C_8B}"
+IMG_UNCOMPRESSED="${IMG_MINISBLACK_1C_16B} ${IMG_MINISBLACK_1C_8B} ${IMG_MINISWHITE_1C_1B} ${IMG_PALETTE_1C_1B} ${IMG_PALETTE_1C_4B} ${IMG_PALETTE_1C_4B} ${IMG_PALETTE_1C_8B} ${IMG_RGB_3C_8B} ${IMG_RGB_3C_16B}"
 
 #
 # Test a simple convert-like command.

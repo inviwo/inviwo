@@ -27,8 +27,7 @@ LIBPORT = $(top_builddir)/port/libport.la
 LIBTIFF = $(top_builddir)/libtiff/libtiff.la
 
 EXTRA_DIST = \
-	CMakeLists.txt \
-	Makefile.vc
+	CMakeLists.txt
 
 bin_PROGRAMS = \
 	fax2ps \
@@ -128,7 +127,7 @@ tiffgt_SOURCES = tiffgt.c
 tiffgt_CFLAGS = $(CFLAGS) $(GLUT_CFLAGS) $(AM_CFLAGS)
 tiffgt_LDADD = $(LIBTIFF) $(LIBPORT) $(X_LIBS) $(GLUT_LIBS)
 
-AM_CPPFLAGS = -I$(top_srcdir)/libtiff
+AM_CPPFLAGS = -I$(top_srcdir)/libtiff -I$(top_srcdir)/port
 
 echo:
 	(echo $(CFLAGS))

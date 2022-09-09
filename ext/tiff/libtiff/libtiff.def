@@ -12,6 +12,7 @@ EXPORTS	TIFFAccessTagMethods
 	TIFFCreateCustomDirectory
 	TIFFCreateDirectory
 	TIFFCreateEXIFDirectory
+	TIFFCreateGPSDirectory
 	TIFFCurrentDirOffset
 	TIFFCurrentDirectory
 	TIFFCurrentRow
@@ -20,6 +21,7 @@ EXPORTS	TIFFAccessTagMethods
 	TIFFDataWidth
 	TIFFDefaultStripSize
 	TIFFDefaultTileSize
+	TIFFDeferStrileArrayWriting
 	TIFFError
 	TIFFErrorExt
 	TIFFFdOpen
@@ -27,16 +29,20 @@ EXPORTS	TIFFAccessTagMethods
 	TIFFFieldName
 	TIFFFieldPassCount
 	TIFFFieldReadCount
+	TIFFFieldIsAnonymous
 	TIFFFieldTag
 	TIFFFieldWithName
 	TIFFFieldWithTag
 	TIFFFieldWriteCount
+	TIFFFieldSetGetSize
+	TIFFFieldSetGetCountSize
 	TIFFFileName
 	TIFFFileno
 	TIFFFindCODEC
 	TIFFFindField
 	TIFFFlush
 	TIFFFlushData
+	TIFFForceStrileArrayWriting
 	TIFFFreeDirectory
 	TIFFGetBitRevTable
 	TIFFGetClientInfo
@@ -49,12 +55,17 @@ EXPORTS	TIFFAccessTagMethods
 	TIFFGetReadProc
 	TIFFGetSeekProc
 	TIFFGetSizeProc
+	TIFFGetStrileByteCount
+	TIFFGetStrileByteCountWithErr
+	TIFFGetStrileOffset
+	TIFFGetStrileOffsetWithErr
 	TIFFGetTagListCount
 	TIFFGetTagListEntry
 	TIFFGetUnmapFileProc
 	TIFFGetVersion
 	TIFFGetWriteProc
 	TIFFIsBigEndian
+	TIFFIsBigTIFF
 	TIFFIsByteSwapped
 	TIFFIsCODECConfigured
 	TIFFIsMSB2LSB
@@ -80,8 +91,10 @@ EXPORTS	TIFFAccessTagMethods
 	TIFFReadCustomDirectory
 	TIFFReadDirectory
 	TIFFReadEXIFDirectory
+	TIFFReadGPSDirectory
 	TIFFReadEncodedStrip
 	TIFFReadEncodedTile
+	TIFFReadFromUserBuffer
 	TIFFReadRGBAImage
 	TIFFReadRGBAImageOriented
 	TIFFReadRGBAStrip
@@ -164,5 +177,8 @@ EXPORTS	TIFFAccessTagMethods
 	_TIFFmemcpy
 	_TIFFmemset
 	_TIFFrealloc
-        _TIFFMultiply32
-        _TIFFMultiply64
+	_TIFFMultiply32
+	_TIFFMultiply64
+	_TIFFGetExifFields
+	_TIFFGetGpsFields
+

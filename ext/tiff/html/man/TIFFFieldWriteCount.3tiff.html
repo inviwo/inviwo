@@ -63,12 +63,12 @@ should be supplied to <b>TIFFSetField</b>. For most field
 types this is a small positive integer, typically 1 or 2,
 but there are some special values: <b><br>
 TIFF_VARIABLE</b> indicates that a variable number of values
-is possible; then, a <b>uint16</b> <i>count</i> argument and
+is possible; then, a <b>uint16_t</b> <i>count</i> argument and
 a pointer <i>data</i> argument must be supplied to
 <b>TIFFSetField</b>. <b><br>
 TIFF_VARIABLE2</b> is the same as <b>TIFF_VARIABLE</b>
 except that the <i>count</i> argument must have type
-<b>uint32</b>. (On most modern machines, this makes no
+<b>uint32_t</b>. (On most modern machines, this makes no
 practical difference, and the <i>count</i> argument can
 simply be an <b>int</b> in either case.) <b><br>
 TIFF_SPP</b> indicates that the number of arguments must be

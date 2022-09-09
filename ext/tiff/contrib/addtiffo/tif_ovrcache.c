@@ -1,6 +1,4 @@
 /******************************************************************************
- * $Id: tif_ovrcache.c,v 1.11 2015-05-29 03:08:19 bfriesen Exp $
- *
  * Project:  TIFF Overview Builder
  * Purpose:  Library functions to maintain two rows of tiles or two strips
  *           of data for output overviews as an output cache. 
@@ -140,7 +138,7 @@ static void TIFFWriteOvrRow( TIFFOvrCache * psCache )
     int		nRet, iTileX, iTileY = psCache->nBlockOffset;
     unsigned char *pabyData;
     toff_t	nBaseDirOffset;
-    uint32      RowsInStrip;
+    uint32_t  RowsInStrip;
 
 /* -------------------------------------------------------------------- */
 /*      If the output cache is multi-byte per sample, and the file      */
@@ -150,11 +148,11 @@ static void TIFFWriteOvrRow( TIFFOvrCache * psCache )
     if( TIFFIsByteSwapped(psCache->hTIFF) )
     {
         if( psCache->nBitsPerPixel == 16 )
-            TIFFSwabArrayOfShort( (uint16 *) psCache->pabyRow1Blocks,
+            TIFFSwabArrayOfShort( (uint16_t *) psCache->pabyRow1Blocks,
                       (psCache->nBytesPerBlock * psCache->nSamples) / 2 );
 
         else if( psCache->nBitsPerPixel == 32 )
-            TIFFSwabArrayOfLong( (uint32 *) psCache->pabyRow1Blocks,
+            TIFFSwabArrayOfLong( (uint32_t *) psCache->pabyRow1Blocks,
                          (psCache->nBytesPerBlock * psCache->nSamples) / 4 );
 
         else if( psCache->nBitsPerPixel == 64 )
@@ -168,6 +166,7 @@ static void TIFFWriteOvrRow( TIFFOvrCache * psCache )
 /* -------------------------------------------------------------------- */
     nBaseDirOffset = TIFFCurrentDirOffset( psCache->hTIFF );
     nRet = TIFFSetSubDirectory( psCache->hTIFF, psCache->nDirOffset );
+    (void) nRet;
     assert( nRet == 1 );
 
 /* -------------------------------------------------------------------- */

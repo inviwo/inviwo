@@ -43,14 +43,14 @@ extern "C" {
     
 typedef struct 
 {
-    uint32	nXSize;
-    uint32	nYSize;
+    uint32_t	nXSize;
+    uint32_t	nYSize;
 
-    uint16	nBitsPerPixel;
-    uint16	nSamples;
-    uint16      nPlanarConfig;
-    uint32	nBlockXSize;
-    uint32	nBlockYSize;
+    uint16_t	nBitsPerPixel;
+    uint16_t	nSamples;
+    uint16_t    nPlanarConfig;
+    uint32_t	nBlockXSize;
+    uint32_t	nBlockYSize;
     toff_t	nBytesPerBlock;
     toff_t      nBytesPerRow;
 
@@ -76,15 +76,15 @@ void           TIFFDestroyOvrCache( TIFFOvrCache * );
 void TIFFBuildOverviews( TIFF *, int, int *, int, const char *,
                          int (*)(double,void*), void * );
 
-void TIFF_ProcessFullResBlock( TIFF *, int, int, int, int, int, int *, int, 
-                               int, TIFFOvrCache **, uint32, uint32,
-                               unsigned char *, uint32, uint32,
+void TIFF_ProcessFullResBlock( TIFF *, int, int, int, int, int, int *, int,
+                               int, TIFFOvrCache **, uint32_t, uint32_t,
+                               unsigned char *, uint32_t, uint32_t,
                                int, const char * );
 
-uint32 TIFF_WriteOverview( TIFF *, uint32, uint32, int, int, int, int, int,
-                           int, int, int, int, unsigned short *,
-                           unsigned short *, unsigned short *, int,
-                           int, int);
+uint32_t TIFF_WriteOverview( TIFF *, uint32_t, uint32_t, int, int, int, int, int,
+                             int, int, int, int, unsigned short *,
+                             unsigned short *, unsigned short *, int,
+                             int, int);
 
 
 

@@ -1,4 +1,3 @@
-.\" $Id: TIFFReadRGBAStrip.3tiff,v 1.4 2016-09-25 20:05:50 bfriesen Exp $
 .\"
 .\" Copyright (c) 1991-1997 Sam Leffler
 .\" Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -37,7 +36,7 @@ TIFFReadRGBAStrip \- read and decode an image strip into a fixed-format raster
 .br
 .B "#define TIFFGetA(abgr) (((abgr) >> 24) & 0xff)"
 .sp
-.BI "int TIFFReadRGBAStrip(TIFF *" tif ", uint32 " row ", uint32 *" raster ")"
+.BI "int TIFFReadRGBAStrip(TIFF *" tif ", uint32_t " row ", uint32_t *" raster ")"
 .SH DESCRIPTION
 .IR TIFFReadRGBAStrip
 reads a single strip of a strip-based image into memory, storing the result in

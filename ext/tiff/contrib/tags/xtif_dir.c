@@ -91,7 +91,7 @@ _XTIFFVSetField(TIFF* tif, ttag_t tag, va_list ap)
 	xtiff *xt = XTIFFDIR(tif);
 	XTIFFDirectory* xd = &xt->xtif_dir;
 	int status = 1;
-	uint32 v32=0;
+	uint32_t v32=0;
 	int i=0, v=0;
 	va_list ap1 = ap;
 
@@ -104,12 +104,12 @@ _XTIFFVSetField(TIFF* tif, ttag_t tag, va_list ap)
                  */
 	case TIFFTAG_EXAMPLE_MULTI:
 		/* multi-valued tags need to store the count as well */
-		xd->xd_num_multi = (uint16) va_arg(ap, int);
+		xd->xd_num_multi = (uint16_t) va_arg(ap, int);
 		_TIFFsetDoubleArray(&xd->xd_example_multi, va_arg(ap, double*),
 			(long) xd->xd_num_multi);
 		break;
 	case TIFFTAG_EXAMPLE_SINGLE:
-		xd->xd_example_single = va_arg(ap, uint32);
+		xd->xd_example_single = va_arg(ap, uint32_t);
 		break;
 	case TIFFTAG_EXAMPLE_ASCII:
 		_TIFFsetString(&xd->xd_example_ascii, va_arg(ap, char*));
@@ -162,14 +162,14 @@ _XTIFFVGetField(TIFF* tif, ttag_t tag, va_list ap)
                  *     example tags with your own.
                  */
 	case TIFFTAG_EXAMPLE_MULTI:
-		*va_arg(ap, uint16*) = xd->xd_num_multi;
+		*va_arg(ap, uint16_t*) = xd->xd_num_multi;
 		*va_arg(ap, double**) = xd->xd_example_multi;
 		break;
 	case TIFFTAG_EXAMPLE_ASCII:
 		*va_arg(ap, char**) = xd->xd_example_ascii;
 		break;
 	case TIFFTAG_EXAMPLE_SINGLE:
-		*va_arg(ap, uint32*) = xd->xd_example_single;
+		*va_arg(ap, uint32_t*) = xd->xd_example_single;
 		break;
 	default:
 		/* return inherited method */
@@ -269,7 +269,7 @@ _XTIFFDefaultDirectory(TIFF *tif)
 		 * Install into TIFF structure.
 		 */
 		TIFFMEMBER(tif,clientdir) = (tidata_t)xt;
-		tif->tif_flags |= XTIFF_INITIALIZED; /* dont do this again! */
+		tif->tif_flags |= XTIFF_INITIALIZED; /* don't do this again! */
 	}
 	
 	/* set up our own defaults */

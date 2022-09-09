@@ -76,12 +76,20 @@ set(docfiles
   v4.0.1.html
   v4.0.2.html
   v4.0.3.html
-  v4.0.4beta.html)
+  v4.0.4.html
+  v4.0.4beta.html
+  v4.0.5.html
+  v4.0.6.html
+  v4.0.7.html
+  v4.0.8.html
+  v4.0.9.html
+  v4.0.10.html
+  v4.1.0.html
+  v4.2.0.html
+  v4.3.0.html)
 
 install(FILES ${docfiles}
         DESTINATION "${LIBTIFF_DOCDIR}/html")
 
 add_subdirectory(images)
 add_subdirectory(man)
-
-extra_dist(${docfiles})

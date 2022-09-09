@@ -32,9 +32,9 @@
 
 /* XXX - Define Private directory tag structure here */
 struct XTIFFDirectory {
-	uint16	 xd_num_multi; /* dir-count for the multi tag */
+	uint16_t	 xd_num_multi; /* dir-count for the multi tag */
 	double*  xd_example_multi;
-	uint32   xd_example_single; 
+	uint32_t   xd_example_single;
 	char*    xd_example_ascii;
 };
 typedef struct XTIFFDirectory XTIFFDirectory;
@@ -45,7 +45,7 @@ typedef struct XTIFFDirectory XTIFFDirectory;
 
 struct xtiff {
 	TIFF 		*xtif_tif;	/* parent TIFF pointer */
-	uint32		xtif_flags;
+	uint32_t		xtif_flags;
 #define       XTIFFP_PRINT   0x00000001
 	XTIFFDirectory	xtif_dir;	/* internal rep of current directory */
 	TIFFVSetMethod	xtif_vsetfield;	/* inherited tag set routine */

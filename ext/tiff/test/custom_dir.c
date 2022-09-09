@@ -1,5 +1,3 @@
-/* $Id: custom_dir.c,v 1.3 2013-12-17 14:41:58 bfriesen Exp $ */
-
 /*
  * Copyright (c) 2012, Frank Warmerdam <warmerdam@pobox.com>
  *
@@ -44,12 +42,12 @@
 static const char filename[] = "custom_dir.tif";
 
 #define	SPP	3		/* Samples per pixel */
-const uint16	width = 1;
-const uint16	length = 1;
-const uint16	bps = 8;
-const uint16	photometric = PHOTOMETRIC_RGB;
-const uint16	rows_per_strip = 1;
-const uint16	planarconfig = PLANARCONFIG_CONTIG;
+const uint16_t	width = 1;
+const uint16_t	length = 1;
+const uint16_t	bps = 8;
+const uint16_t	photometric = PHOTOMETRIC_RGB;
+const uint16_t	rows_per_strip = 1;
+const uint16_t	planarconfig = PLANARCONFIG_CONTIG;
 
 static TIFFField
 customFields[] = {
@@ -64,11 +62,11 @@ main()
 {
 	TIFF		*tif;
 	unsigned char	buf[SPP] = { 0, 127, 255 };
-	uint64          dir_offset = 0, dir_offset2 = 0;
-	uint64          read_dir_offset = 0, read_dir_offset2 = 0;
-	uint64          *dir_offset2_ptr = NULL;
+	uint64_t          dir_offset = 0, dir_offset2 = 0;
+	uint64_t          read_dir_offset = 0, read_dir_offset2 = 0;
+	uint64_t          *dir_offset2_ptr = NULL;
 	char           *ascii_value;
-	uint16          count16 = 0;
+	uint16_t          count16 = 0;
 	
 
 	/* We write the main directory as a simple image. */

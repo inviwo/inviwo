@@ -1,6 +1,4 @@
 /*
- * $Id: xtiff.c,v 1.4 2013-05-02 14:44:29 tgl Exp $
- *
  * xtiff - view a TIFF file in an X window
  *
  * Dan Sears
@@ -72,7 +70,7 @@
 #include "xtifficon.h"
 
 #define TIFF_GAMMA      "2.2"     /* default gamma from the TIFF 5.0 spec */
-#define ROUND(x)        (uint16) ((x) + 0.5)
+#define ROUND(x)        (uint16_t) ((x) + 0.5)
 #define SCALE(x, s)     (((x) * 65535L) / (s))
 #define MCHECK(m)       if (!m) { fprintf(stderr, "malloc failed\n"); exit(0); }
 #define MIN(a, b)       (((a) < (b)) ? (a) : (b))
@@ -133,8 +131,8 @@ typedef struct {
     Boolean help;
     float gamma;
     Boolean usePixmap;
-    uint32 viewportWidth;
-    uint32 viewportHeight;
+    uint32_t viewportWidth;
+    uint32_t viewportHeight;
     int translate;
     Boolean verbose;
 } AppData, *AppDataPtr;
@@ -238,8 +236,8 @@ unsigned char       basePixel = 0;
  * TIFF data structures
  */
 TIFF *              tfFile = NULL;
-uint32              tfImageWidth, tfImageHeight;
-uint16              tfBitsPerSample, tfSamplesPerPixel, tfPlanarConfiguration,
+uint32_t              tfImageWidth, tfImageHeight;
+uint16_t              tfBitsPerSample, tfSamplesPerPixel, tfPlanarConfiguration,
                     tfPhotometricInterpretation, tfGrayResponseUnit,
                     tfImageDepth, tfBytesPerRow;
 int                 tfDirectory = 0, tfMultiPage = False;
@@ -255,7 +253,7 @@ double              *dRed, *dGreen, *dBlue;
 /*
  * shared data structures
  */
-uint16 *            redMap = NULL, *greenMap = NULL, *blueMap = NULL,
+uint16_t *            redMap = NULL, *greenMap = NULL, *blueMap = NULL,
                     *grayMap = NULL, colormapSize;
 char *             imageMemory;
 char *              fileName;
@@ -453,9 +451,9 @@ GetTIFFHeader()
      */
     switch (tfPhotometricInterpretation) {
     case PHOTOMETRIC_RGB:
-	redMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
-	greenMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
-	blueMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
+	redMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
+	greenMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
+	blueMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
 	MCHECK(redMap); MCHECK(greenMap); MCHECK(blueMap);
 	for (i = 0; i < colormapSize; i++)
 	    dRed[i] = dGreen[i] = dBlue[i]
@@ -464,9 +462,9 @@ GetTIFFHeader()
     case PHOTOMETRIC_PALETTE:
         if (!TIFFGetField(tfFile, TIFFTAG_COLORMAP,
                 &redMap, &greenMap, &blueMap)) {
-            redMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
-            greenMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
-            blueMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
+            redMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
+            greenMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
+            blueMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
             MCHECK(redMap); MCHECK(greenMap); MCHECK(blueMap);
             for (i = 0; i < colormapSize; i++)
                 dRed[i] = dGreen[i] = dBlue[i]
@@ -481,18 +479,18 @@ GetTIFFHeader()
         }
         break;
     case PHOTOMETRIC_MINISWHITE:
-        redMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
-        greenMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
-        blueMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
+        redMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
+        greenMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
+        blueMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
         MCHECK(redMap); MCHECK(greenMap); MCHECK(blueMap);
 	for (i = 0; i < colormapSize; i++)
 	    dRed[i] = dGreen[i] = dBlue[i] = (double)
 		 SCALE(colormapSize-1-i, colormapSize-1);
         break;
     case PHOTOMETRIC_MINISBLACK:
-        redMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
-        greenMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
-        blueMap = (uint16 *) malloc(colormapSize * sizeof(uint16));
+        redMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
+        greenMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
+        blueMap = (uint16_t *) malloc(colormapSize * sizeof(uint16_t));
         MCHECK(redMap); MCHECK(greenMap); MCHECK(blueMap);
 	for (i = 0; i < colormapSize; i++)
 	    dRed[i] = dGreen[i] = dBlue[i] = (double) SCALE(i, colormapSize-1);
@@ -738,8 +736,8 @@ GetTIFFImage()
 {
     int pixel_map[3], red_shift, green_shift, blue_shift;
     char *scan_line, *output_p, *input_p;
-    uint32 i, j;
-    uint16 s;
+    uint32_t i, j;
+    uint16_t s;
 
     scan_line = (char *) malloc(tfBytesPerRow = TIFFScanlineSize(tfFile));
     MCHECK(scan_line);

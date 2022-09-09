@@ -1,5 +1,3 @@
-/* $Id: tif_close.c,v 1.21 2016-01-23 21:20:34 erouault Exp $ */
-
 /*
  * Copyright (c) 1988-1997 Sam Leffler
  * Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -78,14 +76,19 @@ TIFFCleanup(TIFF* tif)
          * Clean up custom fields.
          */
 	if (tif->tif_fields && tif->tif_nfields > 0) {
-		uint32 i;
+		uint32_t i;
 
 		for (i = 0; i < tif->tif_nfields; i++) {
 			TIFFField *fld = tif->tif_fields[i];
-			if (fld->field_bit == FIELD_CUSTOM &&
-			    strncmp("Tag ", fld->field_name, 4) == 0) {
-				_TIFFfree(fld->field_name);
-				_TIFFfree(fld);
+			if (fld->field_name != NULL) {
+				if (fld->field_bit == FIELD_CUSTOM &&
+					/* caution: tif_fields[i] must not be the beginning of a fields-array.
+					 *          Otherwise the following tags are also freed with the first free().
+					 */
+					TIFFFieldIsAnonymous(fld)) {
+					_TIFFfree(fld->field_name);
+					_TIFFfree(fld);
+				}
 			}
 		}
 
@@ -93,7 +96,7 @@ TIFFCleanup(TIFF* tif)
 	}
 
         if (tif->tif_nfieldscompat > 0) {
-                uint32 i;
+                uint32_t i;
 
                 for (i = 0; i < tif->tif_nfieldscompat; i++) {
                         if (tif->tif_fieldscompat[i].allocated_size)

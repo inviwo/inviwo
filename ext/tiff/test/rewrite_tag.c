@@ -1,5 +1,3 @@
-/* $Id: rewrite_tag.c,v 1.9 2015-08-23 14:23:00 bfriesen Exp $ */
-
 /*
  * Copyright (c) 2007, Frank Warmerdam <warmerdam@pobox.com>
  *
@@ -32,6 +30,7 @@
 #include "tif_config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef HAVE_UNISTD_H 
 # include <unistd.h> 
@@ -40,9 +39,8 @@
 #include "tiffio.h"
 #include "tiffiop.h"
 
-const uint32	width = 10;
-const uint32	length = 40;
-const uint32	rows_per_strip = 1;
+const uint32_t	length = 40;
+const uint32_t	rows_per_strip = 1;
 
 int test_packbits()
 
@@ -51,6 +49,7 @@ int test_packbits()
     int             i;
     unsigned char   buf[10] = {0,0,0,0,0,0,0,0,0,0};
 
+    uint32_t width = 10;
     int  length = 20;
     const char *filename = "test_packbits.tif";
 
@@ -138,16 +137,19 @@ int test_packbits()
 /************************************************************************/
 /*                            rewrite_test()                            */
 /************************************************************************/
-int rewrite_test( const char *filename, int length, int bigtiff, 
-                  uint64 base_value )
+int rewrite_test(const char *filename, uint32_t width, int length, int bigtiff,
+                 uint64_t base_value )
 
 {
     TIFF		*tif;
     int			i;
-    unsigned char	buf[10] = {5,6,7,8,9,10,11,12,13,14};
-    uint64		*rowoffset, *rowbytes;
-    uint64		*upd_rowoffset;
-    uint64		*upd_bytecount;
+    unsigned char	*buf;
+    uint64_t		*rowoffset, *rowbytes;
+    uint64_t		*upd_rowoffset = NULL;
+    uint64_t		*upd_bytecount = NULL;
+
+    buf = calloc(1, width);
+    assert(buf);
 
     /* Test whether we can write tags. */
     if( bigtiff )
@@ -157,6 +159,7 @@ int rewrite_test( const char *filename, int length, int bigtiff,
 
     if (!tif) {
         fprintf (stderr, "Can't create test TIFF file %s.\n", filename);
+        free(buf);
         return 1;
     }
 
@@ -204,6 +207,7 @@ int rewrite_test( const char *filename, int length, int bigtiff,
     tif = TIFFOpen(filename, "r+");
     if (!tif) {
         fprintf (stderr, "Can't open test TIFF file %s.\n", filename);
+        free(buf);
         return 1;
     }
         
@@ -219,9 +223,9 @@ int rewrite_test( const char *filename, int length, int bigtiff,
         goto failure;
     }
 
-    upd_rowoffset = (uint64 *) _TIFFmalloc(sizeof(uint64) * length);
+    upd_rowoffset = (uint64_t *) _TIFFmalloc(sizeof(uint64_t) * length);
     for( i = 0; i < length; i++ )
-        upd_rowoffset[i] = base_value + i*10;
+        upd_rowoffset[i] = base_value + i*width;
 
     if( !_TIFFRewriteField( tif, TIFFTAG_STRIPOFFSETS, TIFF_LONG8, 
                             length, upd_rowoffset ) )
@@ -231,10 +235,11 @@ int rewrite_test( const char *filename, int length, int bigtiff,
     }
 
     _TIFFfree( upd_rowoffset );
+    upd_rowoffset = NULL;
 
-    upd_bytecount = (uint64 *) _TIFFmalloc(sizeof(uint64) * length);
+    upd_bytecount = (uint64_t *) _TIFFmalloc(sizeof(uint64_t) * length);
     for( i = 0; i < length; i++ )
-        upd_bytecount[i] = 100 + i*10;
+        upd_bytecount[i] = 100 + i*width;
 
     if( !_TIFFRewriteField( tif, TIFFTAG_STRIPBYTECOUNTS, TIFF_LONG8, 
                             length, upd_bytecount ) )
@@ -244,6 +249,7 @@ int rewrite_test( const char *filename, int length, int bigtiff,
     }
 
     _TIFFfree( upd_bytecount );
+    upd_bytecount = NULL;
 
     TIFFClose(tif);
 
@@ -252,6 +258,7 @@ int rewrite_test( const char *filename, int length, int bigtiff,
     tif = TIFFOpen(filename, "r");
     if (!tif) {
         fprintf (stderr, "Can't open test TIFF file %s.\n", filename);
+        free(buf);
         return 1;
     }
         
@@ -263,7 +270,7 @@ int rewrite_test( const char *filename, int length, int bigtiff,
         
     for( i = 0; i < length; i++ )
     {
-        uint64 expect = base_value + i*10;
+        uint64_t expect = base_value + i * width;
 
         if( rowoffset[i] != expect )
         {
@@ -286,7 +293,7 @@ int rewrite_test( const char *filename, int length, int bigtiff,
         
     for( i = 0; i < length; i++ )
     {
-        uint64 expect = 100 + i*10;
+        uint64_t expect = 100 + i * width;
 
         if( rowbytes[i] != expect )
         {
@@ -302,6 +309,7 @@ int rewrite_test( const char *filename, int length, int bigtiff,
     }
 
     TIFFClose( tif );
+    free(buf);
 
     /* All tests passed; delete file and exit with success status. */
     unlink(filename);
@@ -310,6 +318,15 @@ int rewrite_test( const char *filename, int length, int bigtiff,
   failure:
     /* Something goes wrong; close file and return unsuccessful status. */
     TIFFClose(tif);
+    free(buf);
+    if( upd_rowoffset != NULL )
+    {
+        _TIFFfree( upd_rowoffset );
+    }
+    if ( upd_bytecount != NULL )
+    {
+        _TIFFfree( upd_bytecount );
+    }
     /*  unlink(filename); */
 
     return 1;
@@ -327,16 +344,20 @@ main(void)
     failure |= test_packbits();
 
     /* test fairly normal use */
-    failure |= rewrite_test( "rewrite1.tif", 10, 0, 100 );
-    failure |= rewrite_test( "rewrite2.tif", 10, 1, 100 );
+    failure |= rewrite_test( "rewrite1.tif", 10, 10, 0, 100 );
+    failure |= rewrite_test( "rewrite2.tif", 10, 10, 1, 100 );
 
     /* test case of fitting all in directory entry */
-    failure |= rewrite_test( "rewrite3.tif", 1, 0, 100 );
-    failure |= rewrite_test( "rewrite4.tif", 1, 1, 100 );
+    failure |= rewrite_test( "rewrite3.tif", 10, 1, 0, 100 );
+    failure |= rewrite_test( "rewrite4.tif", 10, 1, 1, 100 );
 
     /* test with very large values that don't fit in 4bytes (bigtiff only) */
-    failure |= rewrite_test( "rewrite5.tif", 1000, 1, 0x6000000000ULL );
-    failure |= rewrite_test( "rewrite6.tif", 1, 1, 0x6000000000ULL );
+    failure |= rewrite_test( "rewrite5.tif", 10, 1000, 1, 0x6000000000ULL );
+    failure |= rewrite_test( "rewrite6.tif", 10, 1, 1, 0x6000000000ULL );
+
+    /* StripByteCounts on LONG */
+    failure |= rewrite_test( "rewrite7.tif", 65536, 1, 0, 100 );
+    failure |= rewrite_test( "rewrite8.tif", 65536, 2, 0, 100 );
 
     return failure;
 }

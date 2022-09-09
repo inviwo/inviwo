@@ -1,5 +1,3 @@
-/* $Id: raw_decode.c,v 1.7 2015-08-16 20:08:21 bfriesen Exp $ */
-
 /*
  * Copyright (c) 2012, Frank Warmerdam <warmerdam@pobox.com>
  *
@@ -61,7 +59,7 @@
    "JPEGLib: JPEG parameter struct mismatch: library thinks size is 432,
    caller expects 464"
 
-   For such users we wil fix the problem here. See install.doc file from
+   For such users we will fix the problem here. See install.doc file from
    the JPEG library distribution for details.
 */
 
@@ -122,24 +120,24 @@ static int check_rgb_pixel( int pixel,
 	return 1;
 }
 
-static int check_rgba_pixel( int pixel,
-			     int min_red, int max_red,
-			     int min_green, int max_green,
-			     int min_blue, int max_blue,
-			     int min_alpha, int max_alpha,
-			     uint32 *buffer ) {
+static int check_rgba_pixel(int pixel,
+                            int min_red, int max_red,
+                            int min_green, int max_green,
+                            int min_blue, int max_blue,
+                            int min_alpha, int max_alpha,
+                            uint32_t *buffer ) {
 	/* RGBA images are upside down - adjust for normal ordering */
 	int adjusted_pixel = pixel % 128 + (127 - (pixel/128)) * 128;
-	uint32 rgba = buffer[adjusted_pixel];
+	uint32_t rgba = buffer[adjusted_pixel];
 
-	if( TIFFGetR(rgba) >= (uint32) min_red &&
-	    TIFFGetR(rgba) <= (uint32) max_red &&
-	    TIFFGetG(rgba) >= (uint32) min_green &&
-	    TIFFGetG(rgba) <= (uint32) max_green &&
-	    TIFFGetB(rgba) >= (uint32) min_blue &&
-	    TIFFGetB(rgba) <= (uint32) max_blue &&
-	    TIFFGetA(rgba) >= (uint32) min_alpha &&
-	    TIFFGetA(rgba) <= (uint32) max_alpha ) {
+	if( TIFFGetR(rgba) >= (uint32_t) min_red &&
+	    TIFFGetR(rgba) <= (uint32_t) max_red &&
+	    TIFFGetG(rgba) >= (uint32_t) min_green &&
+	    TIFFGetG(rgba) <= (uint32_t) max_green &&
+	    TIFFGetB(rgba) >= (uint32_t) min_blue &&
+	    TIFFGetB(rgba) <= (uint32_t) max_blue &&
+	    TIFFGetA(rgba) >= (uint32_t) min_alpha &&
+	    TIFFGetA(rgba) <= (uint32_t) max_alpha ) {
 		return 0;
 	}
 
@@ -162,7 +160,7 @@ main(int argc, char **argv)
 	unsigned short h, v;
 	int status;
 	unsigned char *buffer;
-	uint32 *rgba_buffer;
+	uint32_t *rgba_buffer;
 	tsize_t sz, szout;
 	unsigned int pixel_status = 0;
 
@@ -263,8 +261,8 @@ main(int argc, char **argv)
 	 */
 	tif = TIFFOpen(srcfile,"r");
 	
-	sz = 128 * 128 * sizeof(uint32);
-	rgba_buffer = (uint32 *) malloc(sz);
+	sz = 128 * 128 * sizeof(uint32_t);
+	rgba_buffer = (uint32_t *) malloc(sz);
 	
 	if (!TIFFReadRGBATile( tif, 1*128, 2*128, rgba_buffer )) {
 		fprintf( stderr, "TIFFReadRGBATile() returned failure code.\n" );
@@ -273,7 +271,7 @@ main(int argc, char **argv)
 
 	/*
 	 * Currently TIFFReadRGBATile() just uses JPEGCOLORMODE_RGB so this
-	 * trivally matches the last results.  Eventually we should actually
+	 * trivially matches the last results.  Eventually we should actually
 	 * accomplish it from the YCbCr subsampled buffer ourselves in which
 	 * case the results may be subtly different but similar.
 	 */

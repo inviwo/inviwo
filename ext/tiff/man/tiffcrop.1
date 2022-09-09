@@ -1,4 +1,3 @@
-.\" $Id: tiffcrop.1,v 1.8 2016-09-25 20:05:52 bfriesen Exp $
 .\" tiffcrop -- a port of tiffcp.c extended to include extended processing of images
 .\" 
 .\" Original code:
@@ -134,7 +133,7 @@ or
 may be used to specify all odd or even numbered images counting from one.
 Note that internally, TIFF images are numbered from zero rather than one
 but since this convention is not obvious to most users, tiffcrop used 1
-to specifiy the first image in a multipage file.  The word
+to specify the first image in a multipage file.  The word
 .B last 
 may be used in place of a number in the sequence to indicate the 
 final image in the file without knowing how many images there are.
@@ -145,8 +144,8 @@ to process the 1st, 5th through 7th, and final image in the file.
 .TP 
 .B \-E top|bottom|left|right
 Specify the top, bottom, left, or right edge as the reference from
-which to calcuate the width and length of crop regions or sequence
-of postions for zones. When used with the \-e option for exporting
+which to calculate the width and length of crop regions or sequence
+of positions for zones. When used with the \-e option for exporting
 zones or regions, the reference edge determines how composite images
 are arranged. Using \-E left or right causes successive zones or 
 regions to be merged horizontally whereas using \-E top or bottom
@@ -351,6 +350,10 @@ will force data to be written with the FillOrder tag set to
 .TP 
 .B \-i
 Ignore non\-fatal read errors and continue processing of the input file.
+.TP
+.B "\-k size"
+Set maximum memory allocation size (in MiB). The default is 256MiB.
+Set to 0 to disable the limit.
 .TP 
 .B \-l
 Specify the length of a tile (in pixels).
@@ -546,11 +549,11 @@ additional ones may be added in the future. It will handle tiled images with
 bit depths that are not a multiple of eight that tiffcp may refuse to read.
 .PP 
 .I Tiffcrop
-was designed to handle large files containing many moderate sized images 
-with memory usage that is independent of the number of images in the file. 
+was designed to handle large files containing many moderate sized images
+with memory usage that is independent of the number of images in the file.
 In order to support compression modes that are not based on individual 
 scanlines, e.g. JPEG, it now reads images by strip or tile rather than by 
-indvidual scanlines. In addition to the memory required by the input and 
+individual scanlines. In addition to the memory required by the input and
 output buffers associated with
 .I LibTIFF
 one or more buffers at least as large as the largest image to be read are

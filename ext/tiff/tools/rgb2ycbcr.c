@@ -1,5 +1,3 @@
-/* $Id: rgb2ycbcr.c,v 1.17 2016-08-15 21:26:56 erouault Exp $ */
-
 /*
  * Copyright (c) 1991-1997 Sam Leffler
  * Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -25,6 +23,7 @@
  */
 
 #include "tif_config.h"
+#include "libport.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -34,12 +33,15 @@
 # include <unistd.h>
 #endif
 
-#ifdef NEED_LIBPORT
-# include "libport.h"
-#endif
-
 #include "tiffiop.h"
 #include "tiffio.h"
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
 
 #define	streq(a,b)	(strcmp(a,b) == 0)
 #define	CopyField(tag, v) \
@@ -48,17 +50,17 @@
 #ifndef howmany
 #define	howmany(x, y)	(((x)+((y)-1))/(y))
 #endif
-#define	roundup(x, y)	(howmany(x,y)*((uint32)(y)))
+#define	roundup(x, y)	(howmany(x,y)*((uint32_t)(y)))
 
 #define	LumaRed		ycbcrCoeffs[0]
 #define	LumaGreen	ycbcrCoeffs[1]
 #define	LumaBlue	ycbcrCoeffs[2]
 
-uint16	compression = COMPRESSION_PACKBITS;
-uint32	rowsperstrip = (uint32) -1;
+uint16_t	compression = COMPRESSION_PACKBITS;
+uint32_t	rowsperstrip = (uint32_t) -1;
 
-uint16	horizSubSampling = 2;		/* YCbCr horizontal subsampling */
-uint16	vertSubSampling = 2;		/* YCbCr vertical subsampling */
+uint16_t	horizSubSampling = 2;		/* YCbCr horizontal subsampling */
+uint16_t	vertSubSampling = 2;		/* YCbCr vertical subsampling */
 float	ycbcrCoeffs[3] = { .299F, .587F, .114F };
 /* default coding range is CCIR Rec 601-1 with no headroom/footroom */
 float	refBlackWhite[6] = { 0.F, 255.F, 128.F, 255.F, 128.F, 255.F };
@@ -91,17 +93,17 @@ main(int argc, char* argv[])
 			else if (streq(optarg, "zip"))
 			    compression = COMPRESSION_ADOBE_DEFLATE;
 			else
-			    usage(-1);
+			    usage(EXIT_FAILURE);
 			break;
 		case 'h':
 			horizSubSampling = atoi(optarg);
             if( horizSubSampling != 1 && horizSubSampling != 2 && horizSubSampling != 4 )
-                usage(-1);
+                usage(EXIT_FAILURE);
 			break;
 		case 'v':
 			vertSubSampling = atoi(optarg);
             if( vertSubSampling != 1 && vertSubSampling != 2 && vertSubSampling != 4 )
-                usage(-1);
+                usage(EXIT_FAILURE);
 			break;
 		case 'r':
 			rowsperstrip = atoi(optarg);
@@ -115,14 +117,14 @@ main(int argc, char* argv[])
 			refBlackWhite[5] = 240.;
 			break;
 		case '?':
-			usage(0);
+			usage(EXIT_FAILURE);
 			/*NOTREACHED*/
 		}
 	if (argc - optind < 2)
-		usage(-1);
+		usage(EXIT_FAILURE);
 	out = TIFFOpen(argv[argc-1], "w");
 	if (out == NULL)
-		return (-2);
+		return (EXIT_FAILURE);
 	setupLumaTables();
 	for (; optind < argc-1; optind++) {
 		in = TIFFOpen(argv[optind], "r");
@@ -131,6 +133,7 @@ main(int argc, char* argv[])
 				if (!tiffcvt(in, out) ||
 				    !TIFFWriteDirectory(out)) {
 					(void) TIFFClose(out);
+					(void) TIFFClose(in);
 					return (1);
 				}
 			} while (TIFFReadDirectory(in));
@@ -138,7 +141,7 @@ main(int argc, char* argv[])
 		}
 	}
 	(void) TIFFClose(out);
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
 float	*lumaRed;
@@ -176,17 +179,17 @@ setupLumaTables(void)
 }
 
 static void
-cvtClump(unsigned char* op, uint32* raster, uint32 ch, uint32 cw, uint32 w)
+cvtClump(unsigned char* op, uint32_t* raster, uint32_t ch, uint32_t cw, uint32_t w)
 {
 	float Y, Cb = 0, Cr = 0;
-	uint32 j, k;
+	uint32_t j, k;
 	/*
 	 * Convert ch-by-cw block of RGB
 	 * to YCbCr and sample accordingly.
 	 */
 	for (k = 0; k < ch; k++) {
 		for (j = 0; j < cw; j++) {
-			uint32 RGB = (raster - k*w)[j];
+			uint32_t RGB = (raster - k * w)[j];
 			Y = lumaRed[TIFFGetR(RGB)] +
 			    lumaGreen[TIFFGetG(RGB)] +
 			    lumaBlue[TIFFGetB(RGB)];
@@ -218,11 +221,11 @@ cvtClump(unsigned char* op, uint32* raster, uint32 ch, uint32 cw, uint32 w)
  * sample to generate the output data.
  */
 static void
-cvtStrip(unsigned char* op, uint32* raster, uint32 nrows, uint32 width)
+cvtStrip(unsigned char* op, uint32_t* raster, uint32_t nrows, uint32_t width)
 {
-	uint32 x;
+	uint32_t x;
 	int clumpSize = vertSubSampling * horizSubSampling + 2;
-	uint32 *tp;
+	uint32_t *tp;
 
 	for (; nrows >= vertSubSampling; nrows -= vertSubSampling) {
 		tp = raster;
@@ -251,23 +254,23 @@ cvtStrip(unsigned char* op, uint32* raster, uint32 nrows, uint32 width)
 }
 
 static int
-cvtRaster(TIFF* tif, uint32* raster, uint32 width, uint32 height)
+cvtRaster(TIFF* tif, uint32_t* raster, uint32_t width, uint32_t height)
 {
-	uint32 y;
+	uint32_t y;
 	tstrip_t strip = 0;
 	tsize_t cc, acc;
 	unsigned char* buf;
-	uint32 rwidth = roundup(width, horizSubSampling);
-	uint32 rheight = roundup(height, vertSubSampling);
-	uint32 nrows = (rowsperstrip > rheight ? rheight : rowsperstrip);
-        uint32 rnrows = roundup(nrows,vertSubSampling);
+	uint32_t rwidth = roundup(width, horizSubSampling);
+	uint32_t rheight = roundup(height, vertSubSampling);
+	uint32_t nrows = (rowsperstrip > rheight ? rheight : rowsperstrip);
+        uint32_t rnrows = roundup(nrows, vertSubSampling);
 
 	cc = rnrows*rwidth +
 	    2*((rnrows*rwidth) / (horizSubSampling*vertSubSampling));
 	buf = (unsigned char*)_TIFFmalloc(cc);
 	// FIXME unchecked malloc
-	for (y = height; (int32) y > 0; y -= nrows) {
-		uint32 nr = (y > nrows ? nrows : y);
+	for (y = height; (int32_t) y > 0; y -= nrows) {
+		uint32_t nr = (y > nrows ? nrows : y);
 		cvtStrip(buf, raster + (y-1)*width, nr, width);
 		nr = roundup(nr, vertSubSampling);
 		acc = nr*rwidth +
@@ -284,12 +287,12 @@ cvtRaster(TIFF* tif, uint32* raster, uint32 width, uint32 height)
 static int
 tiffcvt(TIFF* in, TIFF* out)
 {
-	uint32 width, height;		/* image width & height */
-	uint32* raster;			/* retrieve RGBA image */
-	uint16 shortv;
+	uint32_t width, height;		/* image width & height */
+	uint32_t* raster;			/* retrieve RGBA image */
+	uint16_t shortv;
 	float floatv;
 	char *stringv;
-	uint32 longv;
+	uint32_t longv;
 	int result;
 	size_t pixel_count;
 
@@ -301,18 +304,18 @@ tiffcvt(TIFF* in, TIFF* out)
  	if (!width || !height || pixel_count / width != height) {
  		TIFFError(TIFFFileName(in),
  			  "Malformed input file; "
- 			  "can't allocate buffer for raster of %lux%lu size",
- 			  (unsigned long)width, (unsigned long)height);
+ 			  "can't allocate buffer for raster of %"PRIu32"x%"PRIu32" size",
+ 			  width, height);
  		return 0;
  	}
  
- 	raster = (uint32*)_TIFFCheckMalloc(in, pixel_count, sizeof(uint32),
- 					   "raster buffer");
+ 	raster = (uint32_t*)_TIFFCheckMalloc(in, pixel_count, sizeof(uint32_t),
+                                         "raster buffer");
   	if (raster == 0) {
  		TIFFError(TIFFFileName(in),
- 			  "Failed to allocate buffer (%lu elements of %lu each)",
- 			  (unsigned long)pixel_count,
- 			  (unsigned long)sizeof(uint32));
+ 			  "Failed to allocate buffer (%"TIFF_SIZE_FORMAT" elements of %"TIFF_SIZE_FORMAT" each)",
+ 			  pixel_count,
+ 			  sizeof(uint32_t));
   		return (0);
   	}
 
@@ -358,32 +361,45 @@ tiffcvt(TIFF* in, TIFF* out)
         return result;
 }
 
-char* stuff[] = {
-    "usage: rgb2ycbcr [-c comp] [-r rows] [-h N] [-v N] input... output\n",
-    "where comp is one of the following compression algorithms:\n",
-    " jpeg\t\tJPEG encoding\n",
-    " lzw\t\tLempel-Ziv & Welch encoding\n",
-    " zip\t\tdeflate encoding\n",
-    " packbits\tPackBits encoding (default)\n",
-    " none\t\tno compression\n",
-    "and the other options are:\n",
-    " -r\trows/strip\n",
-    " -h\thorizontal sampling factor (1,2,4)\n",
-    " -v\tvertical sampling factor (1,2,4)\n",
-    NULL
+const char* usage_info[] = {
+/* Help information format modified for the sake of consistency with the other tiff tools */
+/*    "usage: rgb2ycbcr [-c comp] [-r rows] [-h N] [-v N] input... output\n", */
+/*     "where comp is one of the following compression algorithms:\n", */
+"Convert RGB color, greyscale, or bi-level TIFF images to YCbCr images\n\n"
+"usage: rgb2ycbcr [options] input output",
+"where options are:",
+#ifdef JPEG_SUPPORT
+" -c jpeg      JPEG encoding",
+#endif
+#ifdef ZIP_SUPPORT
+" -c zip       Zip/Deflate encoding",
+#endif
+#ifdef LZW_SUPPORT
+" -c lzw       Lempel-Ziv & Welch encoding",
+#endif
+#ifdef PACKBITS_SUPPORT
+" -c packbits  PackBits encoding (default)",
+#endif
+#if defined(JPEG_SUPPORT) || defined(LZW_SUPPORT) || defined(ZIP_SUPPORT) || defined(PACKBITS_SUPPORT)
+" -c none      no compression",
+#endif
+"",
+/*    "and the other options are:\n", */
+" -r   rows/strip",
+" -h   horizontal sampling factor (1,2,4)",
+" -v   vertical sampling factor (1,2,4)",
+NULL
 };
 
 static void
 usage(int code)
 {
-	char buf[BUFSIZ];
 	int i;
+	FILE * out = (code == EXIT_SUCCESS) ? stdout : stderr;
 
-	setbuf(stderr, buf);
-       
- fprintf(stderr, "%s\n\n", TIFFGetVersion());
-	for (i = 0; stuff[i] != NULL; i++)
-		fprintf(stderr, "%s\n", stuff[i]);
+	fprintf(out, "%s\n\n", TIFFGetVersion());
+	for (i = 0; usage_info[i] != NULL; i++)
+		fprintf(out, "%s\n", usage_info[i]);
 	exit(code);
 }
 

@@ -113,7 +113,7 @@ passed through the varargs interfaces.</big></p></td>
 <td width="15%"></td>
 <td width="46%">
 
-<p><big>typedef unsigned short uint16;</big></p>
+<p><big>typedef unsigned short uint16_t;</big></p>
 </td>
 <td width="38%">
 
@@ -124,7 +124,7 @@ passed through the varargs interfaces.</big></p></td>
 <td width="46%">
 
 <p><big>typedef unsigned &lt;<i>thing</i>&gt;
-uint32;</big></p>
+uint32_t;</big></p>
 </td>
 <td width="38%">
 
@@ -144,7 +144,7 @@ uint32;</big></p>
 <td width="15%"></td>
 <td width="46%">
 
-<p><big>typedef uint16 tdir_t;</big></p>
+<p><big>typedef uint16_t tdir_t;</big></p>
 </td>
 <td width="38%">
 
@@ -154,7 +154,7 @@ uint32;</big></p>
 <td width="15%"></td>
 <td width="46%">
 
-<p><big>typedef uint16 tsample_t;</big></p>
+<p><big>typedef uint16_t tsample_t;</big></p>
 </td>
 <td width="38%">
 
@@ -164,7 +164,7 @@ uint32;</big></p>
 <td width="15%"></td>
 <td width="46%">
 
-<p><big>typedef uint32 tstrip_t;</big></p>
+<p><big>typedef uint32_t tstrip_t;</big></p>
 </td>
 <td width="38%">
 
@@ -174,7 +174,7 @@ uint32;</big></p>
 <td width="15%"></td>
 <td width="46%">
 
-<p><big>typedef uint32 ttile_t;</big></p>
+<p><big>typedef uint32_t ttile_t;</big></p>
 </td>
 <td width="38%">
 
@@ -184,7 +184,7 @@ uint32;</big></p>
 <td width="15%"></td>
 <td width="46%">
 
-<p><big>typedef int32 tsize_t;</big></p>
+<p><big>typedef int32_t tsize_t;</big></p>
 </td>
 <td width="38%">
 
@@ -214,7 +214,7 @@ uint32;</big></p>
 <td width="15%"></td>
 <td width="46%">
 
-<p><big>typedef int32 toff_t;</big></p>
+<p><big>typedef int32_t toff_t;</big></p>
 </td>
 <td width="38%">
 
@@ -238,7 +238,7 @@ size (w/o penalty). <i>ttag_t</i> must be either int,
 unsigned int, pointer, or double because the library uses a
 varargs interface and</big> ANSI C <big>restricts the type
 of the parameter before an ellipsis to be a promoted type.
-<i>toff_t</i> is defined as int32 because TIFF file offsets
+<i>toff_t</i> is defined as int32_t because TIFF file offsets
 are (unsigned) 32-bit quantities. A signed value is used
 because some interfaces return &minus;1 on error. Finally,
 note that user-specified data references are passed as

@@ -1,4 +1,3 @@
-.\" $Id: TIFFFieldTag.3tiff,v 1.2 2016-09-25 20:05:49 bfriesen Exp $
 .\"
 .\" Copyright (c) 2012, Tom Lane <tgl@sss.pgh.pa.us>
 .\"
@@ -28,7 +27,7 @@ TIFFFieldTag \- Get TIFF field tag value from field information
 .SH SYNOPSIS
 .B "#include <tiffio.h>"
 .sp
-.BI "uint32 TIFFFieldTag(const TIFFField* " fip ")"
+.BI "uint32_t TIFFFieldTag(const TIFFField* " fip ")"
 .SH DESCRIPTION
 .BR TIFFFieldTag
 returns the numeric tag value for a TIFF field.

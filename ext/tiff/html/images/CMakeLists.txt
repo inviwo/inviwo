@@ -42,5 +42,3 @@ set(docfiles
 
 install(FILES ${docfiles}
         DESTINATION "${LIBTIFF_DOCDIR}/html/images")
-
-extra_dist(${docfiles})

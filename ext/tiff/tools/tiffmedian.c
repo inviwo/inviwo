@@ -1,5 +1,3 @@
-/* $Id: tiffmedian.c,v 1.13 2015-06-21 01:09:11 bfriesen Exp $ */
-
 /*
  * Apply median cut on an image.
  *
@@ -41,6 +39,7 @@
  */
 
 #include "tif_config.h"
+#include "libport.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,11 +49,14 @@
 # include <unistd.h>
 #endif
 
-#ifdef NEED_LIBPORT
-# include "libport.h"
-#endif
-
 #include "tiffio.h"
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
 
 #define	MAX_CMAP_SIZE	256
 
@@ -77,7 +79,7 @@ typedef	struct colorbox {
 	int	rmin, rmax;
 	int	gmin, gmax;
 	int	bmin, bmax;
-	uint32	total;
+	uint32_t	total;
 } Colorbox;
 
 typedef struct {
@@ -85,20 +87,20 @@ typedef struct {
 	int	entries[MAX_CMAP_SIZE][2];
 } C_cell;
 
-uint16	rm[MAX_CMAP_SIZE], gm[MAX_CMAP_SIZE], bm[MAX_CMAP_SIZE];
-int	num_colors;
-uint32	histogram[B_LEN][B_LEN][B_LEN];
-Colorbox *freeboxes;
-Colorbox *usedboxes;
-C_cell	**ColorCells;
-TIFF	*in, *out;
-uint32	rowsperstrip = (uint32) -1;
-uint16	compression = (uint16) -1;
-uint16	bitspersample = 1;
-uint16	samplesperpixel;
-uint32	imagewidth;
-uint32	imagelength;
-uint16	predictor = 0;
+static uint16_t	rm[MAX_CMAP_SIZE], gm[MAX_CMAP_SIZE], bm[MAX_CMAP_SIZE];
+static int	num_colors;
+static uint32_t	histogram[B_LEN][B_LEN][B_LEN];
+static Colorbox *freeboxes;
+static Colorbox *usedboxes;
+static C_cell	**ColorCells;
+static TIFF	*in, *out;
+static uint32_t	rowsperstrip = (uint32_t) -1;
+static uint16_t	compression = (uint16_t) -1;
+static uint16_t	bitspersample = 1;
+static uint16_t	samplesperpixel;
+static uint32_t	imagewidth;
+static uint32_t	imagelength;
+static uint16_t	predictor = 0;
 
 static	void get_histogram(TIFF*, Colorbox*);
 static	void splitbox(Colorbox*);
@@ -108,7 +110,7 @@ static	void quant(TIFF*, TIFF*);
 static	void quant_fsdither(TIFF*, TIFF*);
 static	Colorbox* largest_box(void);
 
-static	void usage(void);
+static	void usage(int);
 static	int processCompressOptions(char*);
 
 #define	CopyField(tag, v) \
@@ -118,10 +120,10 @@ int
 main(int argc, char* argv[])
 {
 	int i, dither = 0;
-	uint16 shortv, config, photometric;
+	uint16_t shortv, config, photometric;
 	Colorbox *box_list, *ptr;
 	float floatv;
-	uint32 longv;
+	uint32_t longv;
 	int c;
 #if !HAVE_DECL_OPTARG
 	extern int optind;
@@ -129,11 +131,11 @@ main(int argc, char* argv[])
 #endif
 
 	num_colors = MAX_CMAP_SIZE;
-	while ((c = getopt(argc, argv, "c:C:r:f")) != -1)
+	while ((c = getopt(argc, argv, "c:C:r:fh")) != -1)
 		switch (c) {
 		case 'c':		/* compression scheme */
 			if (!processCompressOptions(optarg))
-				usage();
+				usage(EXIT_FAILURE);
 			break;
 		case 'C':		/* set colormap size */
 			num_colors = atoi(optarg);
@@ -141,7 +143,7 @@ main(int argc, char* argv[])
 				fprintf(stderr,
 				   "-c: colormap too big, max %d\n",
 				   MAX_CMAP_SIZE);
-				usage();
+				usage(EXIT_FAILURE);
 			}
 			break;
 		case 'f':		/* dither */
@@ -150,15 +152,20 @@ main(int argc, char* argv[])
 		case 'r':		/* rows/strip */
 			rowsperstrip = atoi(optarg);
 			break;
-		case '?':
-			usage();
+		case 'h':
+			usage(EXIT_SUCCESS);
 			/*NOTREACHED*/
+                        break;
+		case '?':
+			usage(EXIT_FAILURE);
+			/*NOTREACHED*/
+                        break;
 		}
 	if (argc - optind != 2)
-		usage();
+		usage(EXIT_FAILURE);
 	in = TIFFOpen(argv[optind], "r");
 	if (in == NULL)
-		return (-1);
+		return (EXIT_FAILURE);
 	TIFFGetField(in, TIFFTAG_IMAGEWIDTH, &imagewidth);
 	TIFFGetField(in, TIFFTAG_IMAGELENGTH, &imagelength);
 	TIFFGetField(in, TIFFTAG_BITSPERSAMPLE, &bitspersample);
@@ -166,18 +173,18 @@ main(int argc, char* argv[])
 	if (bitspersample != 8 && bitspersample != 16) {
 		fprintf(stderr, "%s: Image must have at least 8-bits/sample\n",
 		    argv[optind]);
-		return (-3);
+		return (EXIT_FAILURE);
 	}
 	if (!TIFFGetField(in, TIFFTAG_PHOTOMETRIC, &photometric) ||
 	    photometric != PHOTOMETRIC_RGB || samplesperpixel < 3) {
 		fprintf(stderr, "%s: Image must have RGB data\n", argv[optind]);
-		return (-4);
+		return (EXIT_FAILURE);
 	}
 	TIFFGetField(in, TIFFTAG_PLANARCONFIG, &config);
 	if (config != PLANARCONFIG_CONTIG) {
 		fprintf(stderr, "%s: Can only handle contiguous data packing\n",
 		    argv[optind]);
-		return (-5);
+		return (EXIT_FAILURE);
 	}
 
 	/*
@@ -247,15 +254,16 @@ main(int argc, char* argv[])
 	 */
 	out = TIFFOpen(argv[optind+1], "w");
 	if (out == NULL)
-		return (-2);
+		return (EXIT_FAILURE);
 
 	CopyField(TIFFTAG_SUBFILETYPE, longv);
 	CopyField(TIFFTAG_IMAGEWIDTH, longv);
 	TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, (short)COLOR_DEPTH);
-	if (compression != (uint16)-1) {
+	if (compression != (uint16_t)-1) {
 		TIFFSetField(out, TIFFTAG_COMPRESSION, compression);
 		switch (compression) {
 		case COMPRESSION_LZW:
+		case COMPRESSION_ADOBE_DEFLATE:
 		case COMPRESSION_DEFLATE:
 			if (predictor != 0)
 				TIFFSetField(out, TIFFTAG_PREDICTOR, predictor);
@@ -292,7 +300,7 @@ main(int argc, char* argv[])
 	}
 	TIFFSetField(out, TIFFTAG_COLORMAP, rm, gm, bm);
 	(void) TIFFClose(out);
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
 static int
@@ -311,40 +319,48 @@ processCompressOptions(char* opt)
 		char* cp = strchr(opt, ':');
 		if (cp)
 			predictor = atoi(cp+1);
-		compression = COMPRESSION_DEFLATE;
+		compression = COMPRESSION_ADOBE_DEFLATE;
 	} else
 		return (0);
 	return (1);
 }
 
-char* stuff[] = {
-"usage: tiffmedian [options] input.tif output.tif",
-"where options are:",
-" -r #		make each strip have no more than # rows",
-" -C #		create a colormap with # entries",
-" -f		use Floyd-Steinberg dithering",
-" -c lzw[:opts]	compress output with Lempel-Ziv & Welch encoding",
-" -c zip[:opts]	compress output with deflate encoding",
-" -c packbits	compress output with packbits encoding",
-" -c none	use no compression algorithm on output",
-"",
-"LZW and deflate options:",
-" #		set predictor value",
-"For example, -c lzw:2 to get LZW-encoded data with horizontal differencing",
-NULL
-};
+static const char usage_info[] =
+"Apply the median cut algorithm to an RGB TIFF file\n\n"
+"usage: tiffmedian [options] input.tif output.tif\n"
+"where options are:\n"
+" -r #  make each strip have no more than # rows\n"
+" -C #  create a colormap with # entries\n"
+" -f    use Floyd-Steinberg dithering\n"
+"\n"
+#ifdef LZW_SUPPORT
+" -c lzw[:opts] compress output with Lempel-Ziv & Welch encoding\n"
+/* "    LZW options:" */
+"    #  set predictor value\n"
+"    For example, -c lzw:2 to get LZW-encoded data with horizontal differencing\n"
+#endif
+#ifdef ZIP_SUPPORT
+" -c zip[:opts] compress output with deflate encoding\n"
+/* "    Deflate (ZIP) options:" */
+"    #  set predictor value\n"
+#endif
+#ifdef PACKBITS_SUPPORT
+" -c packbits   compress output with packbits encoding\n"
+#endif
+#if defined(LZW_SUPPORT) || defined(ZIP_SUPPORT) || defined(PACKBITS_SUPPORT)
+" -c none       use no compression algorithm on output\n"
+#endif
+"\n"
+;
 
 static void
-usage(void)
+usage(int code)
 {
-	char buf[BUFSIZ];
-	int i;
+	FILE * out = (code == EXIT_SUCCESS) ? stdout : stderr;
 
-	setbuf(stderr, buf);
-        fprintf(stderr, "%s\n\n", TIFFGetVersion());
-	for (i = 0; stuff[i] != NULL; i++)
-		fprintf(stderr, "%s\n", stuff[i]);
-	exit(-1);
+        fprintf(out, "%s\n\n", TIFFGetVersion());
+        fprintf(out, "%s", usage_info);
+	exit(code);
 }
 
 static void
@@ -352,19 +368,19 @@ get_histogram(TIFF* in, Colorbox* box)
 {
 	register unsigned char *inptr;
 	register int red, green, blue;
-	register uint32 j, i;
+	register uint32_t j, i;
 	unsigned char *inputline;
 
 	inputline = (unsigned char *)_TIFFmalloc(TIFFScanlineSize(in));
 	if (inputline == NULL) {
 		fprintf(stderr, "No space for scanline buffer\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	box->rmin = box->gmin = box->bmin = 999;
 	box->rmax = box->gmax = box->bmax = -1;
 	box->total = imagewidth * imagelength;
 
-	{ register uint32 *ptr = &histogram[0][0][0];
+	{ register uint32_t *ptr = &histogram[0][0][0];
 	  for (i = B_LEN*B_LEN*B_LEN; i-- > 0;)
 		*ptr++ = 0;
 	}
@@ -380,7 +396,7 @@ get_histogram(TIFF* in, Colorbox* box)
                                 fprintf(stderr,
                                         "Logic error. "
                                         "Histogram array overflow!\n");
-                                exit(-6);
+                                exit(EXIT_FAILURE);
                         }
 			if (red < box->rmin)
 				box->rmin = red;
@@ -404,7 +420,7 @@ static Colorbox *
 largest_box(void)
 {
 	register Colorbox *p, *b;
-	register uint32 size;
+	register uint32_t size;
 
 	b = NULL;
 	size = 0;
@@ -418,13 +434,13 @@ largest_box(void)
 static void
 splitbox(Colorbox* ptr)
 {
-	uint32		hist2[B_LEN];
+	uint32_t		hist2[B_LEN];
 	int		first=0, last=0;
 	register Colorbox	*new;
-	register uint32	*iptr, *histp;
+	register uint32_t	*iptr, *histp;
 	register int	i, j;
 	register int	ir,ig,ib;
-	register uint32 sum, sum1, sum2;
+	register uint32_t sum, sum1, sum2;
 	enum { RED, GREEN, BLUE } axis;
 
 	/*
@@ -540,7 +556,7 @@ splitbox(Colorbox* ptr)
 static void
 shrinkbox(Colorbox* box)
 {
-	register uint32 *histp;
+	register uint32_t *histp;
 	register int	ir, ig, ib;
 
 	if (box->rmax > box->rmin) {
@@ -713,7 +729,7 @@ create_colorcell(int red, int green, int blue)
 static void
 map_colortable(void)
 {
-	register uint32 *histp = &histogram[0][0][0];
+	register uint32_t *histp = &histogram[0][0][0];
 	register C_cell *cell;
 	register int j, tmp, d2, dist;
 	int ir, ig, ib, i;
@@ -762,7 +778,7 @@ quant(TIFF* in, TIFF* out)
 {
 	unsigned char	*outline, *inputline;
 	register unsigned char	*outptr, *inptr;
-	register uint32 i, j;
+	register uint32_t i, j;
 	register int red, green, blue;
 
 	inputline = (unsigned char *)_TIFFmalloc(TIFFScanlineSize(in));
@@ -817,8 +833,8 @@ quant_fsdither(TIFF* in, TIFF* out)
 	short *thisline, *nextline;
 	register unsigned char	*outptr;
 	register short *thisptr, *nextptr;
-	register uint32 i, j;
-	uint32 imax, jmax;
+	register uint32_t i, j;
+	uint32_t imax, jmax;
 	int lastline, lastpixel;
 
 	imax = imagelength - 1;

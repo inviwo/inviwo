@@ -1,5 +1,3 @@
-/* $Id: short_tag.c,v 1.9 2013-12-17 14:41:58 bfriesen Exp $ */
-
 /*
  * Copyright (c) 2004, Andrey Kiselev  <dron@ak4719.spb.edu>
  *
@@ -43,16 +41,16 @@
 static const char filename[] = "short_test.tiff";
 
 #define	SPP	3		/* Samples per pixel */
-const uint16	width = 1;
-const uint16	length = 1;
-const uint16	bps = 8;
-const uint16	photometric = PHOTOMETRIC_RGB;
-const uint16	rows_per_strip = 1;
-const uint16	planarconfig = PLANARCONFIG_CONTIG;
+const uint16_t	width = 1;
+const uint16_t	length = 1;
+const uint16_t	bps = 8;
+const uint16_t	photometric = PHOTOMETRIC_RGB;
+const uint16_t	rows_per_strip = 1;
+const uint16_t	planarconfig = PLANARCONFIG_CONTIG;
 
 static const struct {
 	const ttag_t	tag;
-	const uint16	value;
+	const uint16_t	value;
 } short_single_tags[] = {
 	{ TIFFTAG_COMPRESSION, COMPRESSION_NONE },
 	{ TIFFTAG_FILLORDER, FILLORDER_MSB2LSB },
@@ -68,7 +66,7 @@ static const struct {
 
 static const struct {
 	const ttag_t	tag;
-	const uint16	values[2];
+	const uint16_t	values[2];
 } short_paired_tags[] = {
 	{ TIFFTAG_PAGENUMBER, {1, 1} },
 	{ TIFFTAG_HALFTONEHINTS, {0, 255} },
@@ -123,8 +121,8 @@ main()
 	for (i = 0; i < NSINGLETAGS; i++) {
 		if (!TIFFSetField(tif, short_single_tags[i].tag,
 				  short_single_tags[i].value)) {
-			fprintf(stderr, "Can't set tag %lu.\n",
-				(unsigned long)short_single_tags[i].tag);
+			fprintf(stderr, "Can't set tag %"PRIu32".\n",
+				short_single_tags[i].tag);
 			goto failure;
 		}
 	}
@@ -133,8 +131,8 @@ main()
 		if (!TIFFSetField(tif, short_paired_tags[i].tag,
 				  short_paired_tags[i].values[0],
 				  short_paired_tags[i].values[1])) {
-			fprintf(stderr, "Can't set tag %lu.\n",
-				(unsigned long)short_paired_tags[i].tag);
+			fprintf(stderr, "Can't set tag %"PRIu32".\n",
+				short_paired_tags[i].tag);
 			goto failure;
 		}
 	}

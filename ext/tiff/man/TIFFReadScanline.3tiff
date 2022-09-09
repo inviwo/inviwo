@@ -1,4 +1,3 @@
-.\" $Id: TIFFReadScanline.3tiff,v 1.3 2016-09-25 20:05:50 bfriesen Exp $
 .\"
 .\" Copyright (c) 1988-1997 Sam Leffler
 .\" Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -31,7 +30,7 @@ file
 .SH SYNOPSIS
 .B "#include <tiffio.h>"
 .sp
-.BI "int TIFFReadScanline(TIFF *" tif ", tdata_t " buf ", uint32 " row ", tsample_t " sample ")"
+.BI "int TIFFReadScanline(TIFF *" tif ", tdata_t " buf ", uint32_t " row ", tsample_t " sample ")"
 .SH DESCRIPTION
 Read the data for the specified row into the (user supplied) data buffer
 .IR buf .

@@ -1,5 +1,3 @@
-/* $Id: fax2ps.c,v 1.31 2015-09-06 18:24:27 bfriesen Exp $" */
-
 /*
  * Copyright (c) 1991-1997 Sam Leffler
  * Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -24,6 +22,7 @@
  * OF THIS SOFTWARE.
  */
 #include "tif_config.h"
+#include "libport.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,12 +42,15 @@
 # include <io.h>
 #endif
 
-#ifdef NEED_LIBPORT
-# include "libport.h"
-#endif
-
 #include "tiffiop.h"
 #include "tiffio.h"
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS  0
+#endif
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE  1
+#endif
 
 float	defxres = 204.;		/* default x resolution (pixels/inch) */
 float	defyres = 98.;		/* default y resolution (lines/inch) */
@@ -70,7 +72,7 @@ int	maxline = 512;		/* max output line of PostScript */
  * March 13-15, 1995.
  */
 static void
-printruns(unsigned char* buf, uint32* runs, uint32* erun, uint32 lastx)
+printruns(unsigned char* buf, uint32_t* runs, uint32_t* erun, uint32_t lastx)
 {
     static struct {
 	char white, black;
@@ -84,9 +86,9 @@ printruns(unsigned char* buf, uint32* runs, uint32* erun, uint32 lastx)
     static char* svalue =
 	" !\"#$&'*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abc";
     int colormode = 1;		/* 0 for white, 1 for black */
-    uint32 runlength = 0;
+    uint32_t runlength = 0;
     int n = maxline;
-    uint32 x = 0;
+    uint32_t x = 0;
     int l;
 
     (void) buf;
@@ -124,7 +126,7 @@ printruns(unsigned char* buf, uint32* runs, uint32* erun, uint32 lastx)
 		l++;
 	}
 	while (runlength > 0 && runlength <= 6) {
-	    uint32 bitsleft = 6;
+	    uint32_t bitsleft = 6;
 	    int t = 0;
 	    while (bitsleft) {
 		if (runlength <= bitsleft) {
@@ -196,10 +198,10 @@ emitFont(FILE* fd)
 }
 
 void
-printTIF(TIFF* tif, uint16 pageNumber)
+printTIF(TIFF* tif, uint16_t pageNumber)
 {
-    uint32 w, h;
-    uint16 unit, compression;
+    uint32_t w, h;
+    uint16_t unit, compression;
     float xres, yres, scale = 1.0;
     tstrip_t s, ns;
     time_t creation_time;
@@ -273,10 +275,10 @@ printTIF(TIFF* tif, uint16 pageNumber)
 TIFFGetField(tif, TIFFTAG_PAGENUMBER, &pn, &ptotal)
 
 int
-findPage(TIFF* tif, uint16 pageNumber)
+findPage(TIFF* tif, uint16_t pageNumber)
 {
-    uint16 pn = (uint16) -1;
-    uint16 ptotal = (uint16) -1;
+    uint16_t pn = (uint16_t) -1;
+    uint16_t ptotal = (uint16_t) -1;
     if (GetPageNumber(tif)) {
 	while (pn != (pageNumber-1) && TIFFReadDirectory(tif) && GetPageNumber(tif))
 	    ;
@@ -286,10 +288,10 @@ findPage(TIFF* tif, uint16 pageNumber)
 }
 
 void
-fax2ps(TIFF* tif, uint16 npages, uint16* pages, char* filename)
+fax2ps(TIFF* tif, uint16_t npages, uint16_t* pages, char* filename)
 {
     if (npages > 0) {
-	uint16 pn, ptotal;
+	uint16_t pn, ptotal;
 	int i;
 
 	if (!GetPageNumber(tif))
@@ -302,7 +304,7 @@ fax2ps(TIFF* tif, uint16 npages, uint16* pages, char* filename)
 		fprintf(stderr, "%s: No page number %d\n", filename, pages[i]);
 	}
     } else {
-	uint16 pageNumber = 0;
+	uint16_t pageNumber = 0;
 	do
 	    printTIF(tif, pageNumber++);
 	while (TIFFReadDirectory(tif));
@@ -328,11 +330,11 @@ main(int argc, char** argv)
     extern int optind;
     extern char* optarg;
 #endif
-    uint16 *pages = NULL, npages = 0, pageNumber;
+    uint16_t *pages = NULL, npages = 0, pageNumber;
     int c, dowarnings = 0;		/* if 1, enable library warnings */
     TIFF* tif;
 
-    while ((c = getopt(argc, argv, "l:p:x:y:W:H:wS")) != -1)
+    while ((c = getopt(argc, argv, "l:p:x:y:W:H:wSh")) != -1)
 	switch (c) {
 	case 'H':		/* page height */
 	    pageHeight = (float)atof(optarg);
@@ -344,15 +346,15 @@ main(int argc, char** argv)
 	    pageWidth = (float)atof(optarg);
 	    break;
 	case 'p':		/* print specific page */
-	    pageNumber = (uint16)atoi(optarg);
+	    pageNumber = (uint16_t)atoi(optarg);
 	    if (pages)
-		pages = (uint16*) realloc(pages, (npages+1)*sizeof(uint16));
+		pages = (uint16_t*) realloc(pages, (npages + 1) * sizeof(uint16_t));
 	    else
-		pages = (uint16*) malloc(sizeof(uint16));
+		pages = (uint16_t*) malloc(sizeof(uint16_t));
 	    if( pages == NULL )
 	    {
 		fprintf(stderr, "Out of memory\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	    }
 	    pages[npages++] = pageNumber;
 	    break;
@@ -368,11 +370,14 @@ main(int argc, char** argv)
 	case 'l':
 	    maxline = atoi(optarg);
 	    break;
+	case 'h':
+	    usage(EXIT_SUCCESS);
+	    break;
 	case '?':
-	    usage(-1);
+	    usage(EXIT_FAILURE);
 	}
     if (npages > 0)
-	qsort(pages, npages, sizeof(uint16), pcompar);
+	qsort(pages, npages, sizeof(uint16_t), pcompar);
     if (!dowarnings)
 	TIFFSetWarningHandler(0);
     if (optind < argc) {
@@ -393,7 +398,7 @@ main(int argc, char** argv)
 	fd = tmpfile();
 	if (fd == NULL) {
 	    fprintf(stderr, "Could not obtain temporary file.\n");
-	    exit(-2);
+	    exit(EXIT_FAILURE);
 	}
 #if defined(HAVE_SETMODE) && defined(O_BINARY)
 	setmode(fileno(stdin), O_BINARY);
@@ -403,7 +408,7 @@ main(int argc, char** argv)
                         fclose(fd);
                         fprintf(stderr,
                                 "Could not copy stdin to temporary file.\n");
-                        exit(-2);  
+                        exit(EXIT_FAILURE);
                 }
         }
 	_TIFF_lseek_f(fileno(fd), 0, SEEK_SET);
@@ -423,33 +428,30 @@ main(int argc, char** argv)
     printf("%%%%Pages: %u\n", totalPages);
     printf("%%%%EOF\n");
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 
-char* stuff[] = {
-"usage: fax2ps [options] [input.tif ...]",
-"where options are:",
-" -w            suppress warning messages",
-" -l chars      set maximum output line length for generated PostScript",
-" -p page#      select page to print (can use multiple times)",
-" -x xres       set default horizontal resolution of input data (dpi)",
-" -y yres       set default vertical resolution of input data (lpi)",
-" -S            scale output to page size",
-" -W width      set output page width (inches), default is 8.5",
-" -H height     set output page height (inches), default is 11",
-NULL
-};
+static const char usage_info[] =
+"Convert a TIFF facsimile to compressed PostScript\n\n"
+"usage: fax2ps [options] [input.tif ...]\n"
+"where options are:\n"
+" -w            suppress warning messages\n"
+" -l chars      set maximum output line length for generated PostScript\n"
+" -p page#      select page to print (can use multiple times)\n"
+" -x xres       set default horizontal resolution of input data (dpi)\n"
+" -y yres       set default vertical resolution of input data (lpi)\n"
+" -S            scale output to page size\n"
+" -W width      set output page width (inches), default is 8.5\n"
+" -H height     set output page height (inches), default is 11\n"
+;
 
 static void
 usage(int code)
 {
-	char buf[BUFSIZ];
-	int i;
+	FILE * out = (code == EXIT_SUCCESS) ? stdout : stderr;
 
-	setbuf(stderr, buf);
-        fprintf(stderr, "%s\n\n", TIFFGetVersion());
-	for (i = 0; stuff[i] != NULL; i++)
-		fprintf(stderr, "%s\n", stuff[i]);
+        fprintf(out, "%s\n\n", TIFFGetVersion());
+        fprintf(out, "%s", usage_info);
 	exit(code);
 }
 

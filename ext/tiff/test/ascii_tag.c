@@ -1,5 +1,3 @@
-/* $Id: ascii_tag.c,v 1.8 2013-12-17 14:41:57 bfriesen Exp $ */
-
 /*
  * Copyright (c) 2004, Andrey Kiselev  <dron@ak4719.spb.edu>
  *
@@ -110,8 +108,8 @@ main()
 	for (i = 0; i < NTAGS; i++) {
 		if (!TIFFSetField(tif, ascii_tags[i].tag,
 				  ascii_tags[i].value)) {
-			fprintf(stderr, "Can't set tag %lu.\n",
-				(unsigned long)ascii_tags[i].tag);
+			fprintf(stderr, "Can't set tag %"PRIu32".\n",
+				ascii_tags[i].tag);
 			goto failure;
 		}
 	}
@@ -146,8 +144,8 @@ main()
 	for (i = 0; i < NTAGS; i++) {
 		if (!TIFFGetField(tif, ascii_tags[i].tag, &value)
 		    || strcmp(value, ascii_tags[i].value)) {
-			fprintf(stderr, "Can't get tag %lu.\n",
-				(unsigned long)ascii_tags[i].tag);
+			fprintf(stderr, "Can't get tag %"PRIu32".\n",
+				ascii_tags[i].tag);
 			goto failure;
 		}
 	}

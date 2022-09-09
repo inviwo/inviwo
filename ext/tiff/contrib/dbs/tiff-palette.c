@@ -1,5 +1,3 @@
-/* $Id: tiff-palette.c,v 1.5 2010-06-08 18:55:15 bfriesen Exp $ */
-
 /*
  * tiff-palette.c -- create a Class P (palette) TIFF file
  *
@@ -42,7 +40,7 @@ int main(int argc, char **argv)
     int             bits_per_pixel = 8, cmsize, i, j, k,
                     cmap_index, chunk_size = 32, nchunks = 16;
     unsigned char * scan_line;
-    uint16          *red, *green, *blue;
+    uint16_t        *red, *green, *blue;
     TIFF *          tif;
 
     programName = argv[0];
@@ -81,9 +79,9 @@ int main(int argc, char **argv)
     } else {
 	cmsize = 2;
     }
-    red = (uint16 *) malloc(cmsize * sizeof(uint16));
-    green = (uint16 *) malloc(cmsize * sizeof(uint16));
-    blue = (uint16 *) malloc(cmsize * sizeof(uint16));
+    red = (uint16_t *) malloc(cmsize * sizeof(uint16_t));
+    green = (uint16_t *) malloc(cmsize * sizeof(uint16_t));
+    blue = (uint16_t *) malloc(cmsize * sizeof(uint16_t));
 
     switch (bits_per_pixel) {
     case 8:

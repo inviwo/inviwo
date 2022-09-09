@@ -1,4 +1,3 @@
-.\" $Id: TIFFWriteTile.3tiff,v 1.3 2016-09-25 20:05:50 bfriesen Exp $
 .\"
 .\" Copyright (c) 1988-1997 Sam Leffler
 .\" Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -31,7 +30,7 @@ file
 .SH SYNOPSIS
 .B "#include <tiffio.h>"
 .sp
-.BI "tsize_t TIFFWriteTile(TIFF *" tif ", tdata_t " buf ", uint32 " x ", uint32 " y ", uint32 " z ", tsample_t " sample ")"
+.BI "tsize_t TIFFWriteTile(TIFF *" tif ", tdata_t " buf ", uint32_t " x ", uint32_t " y ", uint32_t " z ", tsample_t " sample ")"
 .SH DESCRIPTION
 Write the data for the tile
 .I containing

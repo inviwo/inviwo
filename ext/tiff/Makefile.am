@@ -31,21 +31,18 @@ ACLOCAL_AMFLAGS = -I m4
 docfiles = \
 	COPYRIGHT \
 	ChangeLog \
-	README \
-	README.vms \
+	README.md \
 	RELEASE-DATE \
 	TODO \
 	VERSION
 
 EXTRA_DIST = \
+	placeholder.h \
+	cmake \
 	CMakeLists.txt \
 	HOWTO-RELEASE \
-	Makefile.vc \
-	SConstruct \
 	autogen.sh \
-	configure.com \
-	libtiff-4.pc.in \
-	nmake.opt
+	libtiff-4.pc.in
 
 dist_doc_DATA = $(docfiles)
 

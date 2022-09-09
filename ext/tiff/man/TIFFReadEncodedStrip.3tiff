@@ -1,4 +1,3 @@
-.\" $Id: TIFFReadEncodedStrip.3tiff,v 1.3 2016-09-25 20:05:49 bfriesen Exp $
 .\"
 .\" Copyright (c) 1988-1997 Sam Leffler
 .\" Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -31,7 +30,7 @@ file
 .SH SYNOPSIS
 .B "#include <tiffio.h>"
 .sp
-.BI "tsize_t TIFFReadEncodedStrip(TIFF *" tif ", tstrip_t " strip ", tdata_t " buf ", tsize_t " size ")"
+.BI "tmsize_t TIFFReadEncodedStrip(TIFF *" tif ", uint32_t " strip ", void *" buf ", tmsize_t " size ")"
 .SH DESCRIPTION
 Read the specified strip of data and place up to
 .I size
