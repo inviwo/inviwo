@@ -2,6 +2,13 @@ name: Test Installer
 
 on:
   workflow_call:
+    inputs:
+      run_id:
+        required: true
+        type: string
+      run_number:
+        required: true
+        type: string
 
 jobs:
   test-installer:
@@ -21,7 +28,8 @@ jobs:
       uses: dawidd6/action-download-artifact@v2
       with:
         name: ${{ matrix.installer }}
-        workflow: inviwo.yml
+        run_id: ${{ inputs.run_id }}
+        run_number: ${{ inputs.run_number }}
 
     ###############################################################################
     # Windows

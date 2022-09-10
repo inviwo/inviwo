@@ -155,6 +155,9 @@ jobs:
   test-installer:
     needs: build
     uses: ./.github/workflows/test-installer.yml
+    with:
+        run_id: ${{ github.run_id }}
+        run_number: ${{ github.run_number }}
     secrets: inherit
 
   update-api-docs:
