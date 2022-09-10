@@ -133,21 +133,21 @@ jobs:
       run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel --target ${{ matrix.targets }}
 
     - name: Upload installer
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.installer }}
         path: ${{ matrix.artifact }}
 
     - name: Upload doxygen
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: inviwo-cpp-api
         path: build/docs/inviwo/html/*
 
     - name: Upload shpinx
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: inviwo-python-api
         path: build/docs/python-api/*
@@ -167,7 +167,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Download artifact
-      uses: actions/download-artifact
+      uses: actions/download-artifact@v3
       with:
         name: ${{ matrix.installer }}
 
@@ -229,13 +229,13 @@ jobs:
           submodules: false
 
       - name: Download artifact
-        uses: actions/download-artifact
+        uses: actions/download-artifact@v3
         with:
           name: inviwo-python-api
           path: inviwo/python-api
 
       - name: Download artifact
-        uses: actions/download-artifact
+        uses: actions/download-artifact@v3
         with:
           name: inviwo-cpp-api
           path: inviwo/cpp-api
@@ -266,7 +266,7 @@ jobs:
     
     steps:
     - name: Download installer
-      uses: actions/download-artifact
+      uses: actions/download-artifact@v3
       with:
         name: ${{ matrix.installer }}
 
