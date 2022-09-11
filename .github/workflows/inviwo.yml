@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-20.04]
+        os: [windows-latest, macos-latest, ubuntu-22.04]
         include:
           - os: 'windows-latest'
             triplet: 'x64-windows'
@@ -30,7 +30,7 @@ jobs:
             targets: 'all package'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
-          - os: 'ubuntu-20.04'
+          - os: 'ubuntu-22.04'
             triplet: 'x64-linux'
             mono: 'mono'
             # Disable benchmark for now due to error: 
@@ -115,7 +115,20 @@ jobs:
       with: 
         path: inviwo
         submodules: recursive
-        
+
+    - name: "Build Changelog"
+      id: build_changelog
+      uses: mikepenz/release-changelog-builder-action@v3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: changelog
+      shell: bash
+      run: |
+        echo "-- Changes --"
+        echo "${{ steps.build_changelog.outputs.changelog }}"
+        echo "-- End --"
+
     - name: Configure CMake
       shell: bash
       run: >
@@ -133,23 +146,145 @@ jobs:
       run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel --target ${{ matrix.targets }}
 
     - name: Upload installer
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.installer }}
         path: ${{ matrix.artifact }}
 
     - name: Upload doxygen
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: inviwo-cpp-api
         path: build/docs/inviwo/html/*
 
     - name: Upload shpinx
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: inviwo-python-api
         path: build/docs/python-api/*
 
+  test-installer:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest] # macos-latest,
+        include:
+          - os: 'windows-latest'
+            installer: 'inviwo-installer-win'
+          #- os: 'macos-latest'
+          #  installer: 'inviwo-installer-macos'
+        
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ matrix.installer }}
 
+    # Windows
+    - name: Run Windows Installer
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        # find the name of the installer
+        $exe = Get-ChildItem -Name Inviwo-*.exe
+        # launch the nsis installer in "silent mode" (/S), should run without user interaction
+        Invoke-expression "./$exe /S"
+        # this will spawn the installer in the background so we need to wait for it to finish
+        $proc = Get-Process | where {$_.ProcessName -like "Inviwo-*"} | Select-Object -First 1
+        if ($proc) { 
+          Wait-Process -Id $proc.id
+        }
+        
+    - name: Run Inviwo
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $ver = (Get-ChildItem -Name C:/"Program Files"/Inviwo/*)
+        Invoke-expression "C:/'Program Files'/Inviwo/$ver/bin/Inviwo-cli.exe --logconsole --quit"
+    
+    # Macos
+    - name: Run MacOS Installer
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        # Find the name of the installer 
+        DMG=$(ls Inviwo-*.dmg)
+        # Mount installer image
+        hdiutil attach $DMG
+        # Install by copying Inviwo.app to applications folder
+        cp -r /Volumes/${DMG%%.dmg}/Inviwo.app /Applications/
+        hdiutil detach /Volumes/${DMG%%.dmg}/
+
+    - name: Run Inviwo
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        cd /Applications/Inviwo.app/Contents/MacOS/
+        ./Inviwo --logconsole --quit
+
+  update-api-docs:
+    needs: [build, test-installer]
+    runs-on: windows-latest
+    steps:
+      - name: Clone Inviwo
+        uses: actions/checkout@v2
+        with: 
+          ref: gh-pages
+          path: inviwo
+          submodules: false
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: inviwo-python-api
+          path: inviwo/python-api
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: inviwo-cpp-api
+          path: inviwo/cpp-api
+
+      - run: |
+          cd inviwo
+          git add python-api
+          git commit -m "Update Python API Docs"
+          git push
+
+      - run: |
+          cd inviwo
+          git add cpp-api
+          git commit -m "Update C++ API Docs"
+          git push
+
+  update-latest-release:
+    needs: [build, test-installer]
+    strategy:
+      matrix:
+        os: [windows-latest] # macos-latest,
+        include:
+          - os: 'windows-latest'
+            installer: 'inviwo-installer-win'
+          #- os: 'macos-latest'
+          #  installer: 'inviwo-installer-macos'
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Download installer
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ matrix.installer }}
+
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Inviwo-*
+        file_glob: true
+        tag: ${{ github.ref }}
+        overwrite: true
+        body: "The latest inviwo build, updated for every merged pull request."
