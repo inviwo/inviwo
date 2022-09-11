@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-20.04]
+        os: [windows-latest, macos-latest, ubuntu-22.04]
         include:
           - os: 'windows-latest'
             triplet: 'x64-windows'
@@ -30,7 +30,7 @@ jobs:
             targets: 'all package'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
-          - os: 'ubuntu-20.04'
+          - os: 'ubuntu-22.04'
             triplet: 'x64-linux'
             mono: 'mono'
             # Disable benchmark for now due to error: 
@@ -123,7 +123,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: changelog
-      shell: back
+      shell: bash
       run: |
         echo "-- Changes --"
         echo "${{ steps.build_changelog.outputs.changelog }}"
@@ -184,9 +184,7 @@ jobs:
       with:
         name: ${{ matrix.installer }}
 
-    ###############################################################################
     # Windows
-    ###############################################################################
     - name: Run Windows Installer
       if: runner.os == 'Windows'
       shell: pwsh
@@ -208,9 +206,7 @@ jobs:
         $ver = (Get-ChildItem -Name C:/"Program Files"/Inviwo/*)
         Invoke-expression "C:/'Program Files'/Inviwo/$ver/bin/Inviwo-cli.exe --logconsole --quit"
     
-    ###############################################################################
     # Macos
-    ###############################################################################
     - name: Run MacOS Installer
       if: runner.os == 'macOS'
       shell: bash
