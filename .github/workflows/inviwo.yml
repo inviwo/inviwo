@@ -115,7 +115,20 @@ jobs:
       with: 
         path: inviwo
         submodules: recursive
-        
+
+    - name: "Build Changelog"
+      id: build_changelog
+      uses: mikepenz/release-changelog-builder-action@3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: changelog
+      shell: back
+      run: |
+        echo "-- Changes --"
+        echo "${{ steps.build_changelog.outputs.changelog }}"
+        echo "-- End --"
+
     - name: Configure CMake
       shell: bash
       run: >
