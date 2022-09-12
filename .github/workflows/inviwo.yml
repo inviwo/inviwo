@@ -119,6 +119,8 @@ jobs:
     - name: "Build Changelog"
       id: build_changelog
       uses: mikepenz/release-changelog-builder-action@v3
+      with:
+        toTag: ${{ github.ref }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -227,6 +229,7 @@ jobs:
         ./Inviwo --logconsole --quit
 
   update-api-docs:
+    if: github.ref == 'refs/heads/master'
     needs: [build, test-installer]
     runs-on: windows-latest
     steps:
@@ -262,6 +265,7 @@ jobs:
           git push
 
   update-latest-release:
+    if: github.ref == 'refs/heads/master'
     needs: [build, test-installer]
     strategy:
       matrix:
