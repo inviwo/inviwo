@@ -1,19 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<meta name="generator" content=
-"HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
 <title>Building the TIFF Software Distribution</title>
+<style type="text/css">
+body {
+font-family: Arial, Helvetica, Sans;
+}
+</style>
 </head>
-<body bgcolor="white">
-<h1><font face="Arial, Helvetica, Sans"><img src=
-"images/cramps.gif" width="159" height="203" align="left" border=
-"1" hspace="6"> Building the Software Distribution</font></h1>
+<body>
+<h1><img src="images/cramps.gif" width="159" height="203" align="left" border="1" hspace="6" alt="cramps">
+Building the Software Distribution</h1>
 <ul>
 <li><a href="#CMAKE">Building on all systems with CMake</a>.</li>
 <li><a href="#UNIX">Building on a UNIX system with Autoconf</a>.</li>
-<li><a href="#PC">Building on an MS-DOS or Windows system with nmake</a>.</li>
-<li><a href="#VMS">Building on a VMS system</a>.</li>
 <li><a href="#Other">Building the Software on Other
 Systems.</a></li>
 </ul>
@@ -229,7 +229,6 @@ available <tt>zlib</tt> distribution written by Jean-loup Gailly and
 Mark Adler; this software is available at <a href=
 "http://www.zlib.org/">http://www.zlib.org/</a>.</dd>
 </dl>
-<a name="Sample" id="Sample"></a>
 <hr width="65%" align="right">
 <a name="UNIX" id="UNIX"></a>
 <h2>Building on a UNIX System with Autoconf</h2>
@@ -421,182 +420,8 @@ enabled the <tt>DIRS_LIBINC</tt> and <tt>DIR_GZLIB</tt> parameters
 should also be set (see below). By default this package is not
 configured.</dd>
 </dl>
-<a name="Sample" id="Sample"></a>
 <hr width="65%" align="right">
 <a name="PC" id="PC"></a>
-<h2>Building the Software under Windows 2000/XP/7/8/10 with nmake</h2>
-With Microsoft Visual C++ installed, and properly configured for
-commandline use (you will likely need to source VCVARS32.BAT in
-AUTOEXEC.bAT or somewhere similar) you should be able to use the
-provided <tt>makefile.vc</tt>.
-<p>The source package is delivered using Unix line termination
-conventions, which work with MSVC but do not work with Windows
-'notepad'. If you use unzip from the <a href=
-"http://www.info-zip.org/pub/infozip/">Info-Zip</a> package, you
-can extract the files using Windows normal line termination
-conventions with a command similar to:</p>
-<pre>
-  unzip -aa -a tiff-4.0.5.zip
-</pre>
-<p>By default the nmake-based libtiff build does not depend on any
-additional libraries.  Normally libtiff should be built with at least
-JPEG and ZIP support so that it can open JPEG and ZIP-compressed TIFF
-files.  In order to add additional libraries (e.g. libjpeg, zlib,
-jbigkit), build those libraries according to their own particular
-build instructions, and then edit 'nmake.opt' (using a capable
-plain-text editor) to enable use of the libraries, including
-specifying where the libraries are installed.  It is also necessary to
-edit libtiff/tiffconf.vc.h to enable the related configuration defines
-(<em>JPEG_SUPPORT</em>, <em>OJPEG_SUPPORT</em>, <em>PIXARLOG_SUPPORT</em>,
-<em>ZIP_SUPPORT</em>), or to disable features which are normally
-included by default.  Ignore the comment at the top of the
-libtiff/tiffconf.vc.h file which says that it has no influence on the
-build, because the statement is not true for Windows. Please note that
-the nmake build copies tiffconf.vc.h to tiffconf.h, and copies
-tif_config.vc.h to tif_config.h, overwriting any files which may be
-present.  Likewise, the 'nmake clean' step removes those files.</p>
-<p>To build using the provided makefile.vc you may use:</p>
-<pre>
-  C:\tiff-4.0.5&gt; nmake /f makefile.vc clean
-  C:\tiff-4.0.5&gt; nmake /f makefile.vc
-
-    or (the hard way)
-
-  C:\tiff-4.0.5&gt; cd port
-  C:\tiff-4.0.5\port&gt; nmake /f makefile.vc clean
-  C:\tiff-4.0.5\port&gt; nmake /f makefile.vc
-  C:\tiff-4.0.5&gt; cd ../libtiff
-  C:\tiff-4.0.5\libtiff&gt; nmake /f makefile.vc clean
-  C:\tiff-4.0.5\libtiff&gt; nmake /f makefile.vc
-  C:\tiff-4.0.5\libtiff&gt; cd ..\tools
-  C:\tiff-4.0.5\tools&gt; nmake /f makefile.vc clean
-  C:\tiff-4.0.5\tools&gt; nmake /f makefile.vc
-</pre>
-<p>This will build the library
-file <tt>libtiff\libtiff\libtiff.lib</tt>.</p>
-<p>The makefile also builds a DLL (libtiff.dll) with an associated
-import library (libtiff_i.lib). Any builds using libtiff will need to
-include the LIBTIFF\LIBTIFF directory in the include path.</p>
-<p>The <tt>libtiff\tools\makefile.vc</tt> should build .exe's for
-all the standard TIFF tool programs.</p>
-<hr>
-<a name="VMS" id="VMS"></a>
-<h2>Building the Software on a VMS System</h2>
-The VMS port was done by Karsten Spang (<a href=
-"mailto:krs@kampsax.dk">krs@kampsax.dk</a>), who also "sort of"
-maintains it. The VMS specific files are not in the main
-directories. Instead they are placed under
-<tt>[.CONTRIB.VMS...]</tt> in the distribution tree. Installation:
-It is assumed that you have unpacked the tar file into a VMS
-directory tree, in this text called DISK:[TIFF].
-<ol>
-<li>Move the VMS specific files to their proper directories.
-<pre>
-$ SET DEFAULT DISK:[TIFF.CONTRIB.VMS]
-$ RENAME [.LIBTIFF]*.* [-.-.LIBTIFF]
-$ RENAME [.TOOLS]*.* [-.-.TOOLS]
-</pre></li>
-<li>Compile the library.
-<pre>
-$ SET DEFAULT DISK:[TIFF.LIBTIFF]
-$ @MAKEVMS
-</pre></li>
-<li>Compile the tools.
-<pre>
-$ SET DEFAULT DISK:[TIFF.TOOLS]
-$ @MAKEVMS
-</pre></li>
-<li>Define the programs.
-<pre>
-$ DEFINE TIFFSHR DISK:[TIFF.LIBTIFF]TIFFSHR
-$ FAX2PS    :==$DISK:[TIFF.TOOLS]FAX2PS
-$ FAX2TIFF  :==$DISK:[TIFF.TOOLS]FAX2TIFF
-$ GIF2TIFF  :==$DISK:[TIFF.TOOLS]GIF2TIFF
-$ PAL2RGB   :==$DISK:[TIFF.TOOLS]PAL2RGB
-$ PPM2TIFF  :==$DISK:[TIFF.TOOLS]PPM2TIFF
-$ RAS2TIFF  :==$DISK:[TIFF.TOOLS]RAS2TIFF
-$ RGB2YCBCR :==$DISK:[TIFF.TOOLS]RGB2YCBCR
-$ THUMBNAIL :==$DISK:[TIFF.TOOLS]THUMBNAIL
-$ TIFF2BW   :==$DISK:[TIFF.TOOLS]TIFF2BW
-$ TIFF2PS   :==$DISK:[TIFF.TOOLS]TIFF2PS
-$ TIFFCMP   :==$DISK:[TIFF.TOOLS]TIFFCMP
-$ TIFFCP    :==$DISK:[TIFF.TOOLS]TIFFCP
-$ TIFFDITHER:==$DISK:[TIFF.TOOLS]TIFFDITHER
-$ TIFFDUMP  :==$DISK:[TIFF.TOOLS]TIFFDUMP
-$ TIFFINFO  :==$DISK:[TIFF.TOOLS]TIFFINFO
-$ TIFFMEDIAN:==$DISK:[TIFF.TOOLS]TIFFMEDIAN
-$ TIFFSPLIT :==$DISK:[TIFF.TOOLS]TIFFSPLIT
-$ YCBCR     :==$DISK:[TIFF.TOOLS]YCBCR
-</pre></li>
-</ol>
-You will want to add these lines to your <tt>LOGIN.COM</tt> file,
-after changing the name of the directory that you have used on your
-machine.
-<p>This release has been tested on OpenVMS/VAX 5.5-2, using VAX C
-3.2. A previous release was tested under OpenVMS/AXP ?.? using DEC
-C ?.?, it is believed that this release as well works on AXP. The
-code contains some GNU C specific things. This does *not* imply,
-however, that the VAX/GCC configuration has been tested, *it has
-not*.</p>
-<p>The command procedures (<tt>MAKEVMS.COM</tt>) for building the
-library and tools, is believed to choose the correct options for
-the VAX and AXP cases automatically.</p>
-<p>On the AXP, IEEE floating point is used by default. If you want
-VAX floating point, remove the <tt>/FLOAT=IEEE_FLOAT</tt>
-qualifier, and change <tt>HAVE_IEEEFP=1</tt> to
-<tt>HAVE_IEEEFP=0</tt> in the <tt>MAKEVMS.COM</tt> files in both
-the <b>libtiff</b> and <b>tools</b> directories.</p>
-<h3>Compiling your own program on a VMS system:</h3>
-When compiling a source file in which you <tt>"#include
-&lt;tiffio.h&gt;"</tt>, use the following command
-<pre>
-    $ CC/INCLUDE=DISK:[TIFF.LIBTIFF]
-</pre>
-This ensures that the header file is found. On the AXP, also add
-<tt>/FLOAT=IEEE_FLOAT</tt> (if used when building the library).
-<h3>Linking your own program to the TIFF library on a VMS
-system:</h3>
-You can link to the library in two ways: Either using the shareable
-library, or using the object library. On the VAX these
-possibilities are:
-<ol>
-<li>Using the shareable TIFF library.
-<pre>
-$ LINK MY_PROGRAM,DISK:[TIFF.LIBTIFF]TIFF/OPTIONS,SYS$INPUT:/OPTIONS
-    SYS$SHARE:VAXCRTL/SHAREABLE
-</pre></li>
-<li>Using the TIFF object library.
-<pre>
-$ LINK MY_PROGRAM, -
-    DISK:[TIFF.LIBTIFF]TIFF/LIBRARY/INCLUDE=(TIF_FAX3SM,TIF_CODEC), -
-    SYS$INPUT:/OPTIONS
-    SYS$SHARE:VAXCRTL/SHAREABLE
-</pre></li>
-</ol>
-On AXP (and possibly also using DEC C on VAX) the corresponding
-commands are
-<ol>
-<li>Using the shareable TIFF library.
-<pre>
-$ LINK MY_PROGRAM,DISK:[TIFF.LIBTIFF]TIFF/OPTIONS
-</pre></li>
-<li>Using the TIFF object library.
-<pre>
-$ LINK MY_PROGRAM,DISK:[TIFF.LIBTIFF]TIFF/LIBRARY
-</pre></li>
-</ol>
-Method 1 uses the shortest link time and smallest <tt>.EXE</tt>
-files, but it requires that <tt>TIFFSHR</tt> is defined as above at
-link time and <strong>at run time</strong>. Using the compilation
-procedure above, the tools are linked in this way.
-<p>Method 2 gives somewhat longer link time and larger
-<tt>.EXE</tt> files, but does not require <tt>TIFFSHR</tt> to be
-defined. This method is recommended if you want to run your program
-on another machine, and for some reason don't want to have the
-library on that machine. If you plan to have more than one program
-(including the tools) on the machine, it is recommended that you
-copy the library to the other machine and use method 1.</p>
-<hr>
 <a name="Other" id="Other"></a>
 <h2>Building the Software on Other Systems</h2>
 This section contains information that might be useful if you are
@@ -689,7 +514,7 @@ libtiff/uvcode.h                LogL/LogLuv codec-specific definitions
 libtiff/version.h               version string (generated by Makefile)
 libtiff/tif_apple.c             Apple-related OS support
 libtiff/tif_atari.c             Atari-related OS support
-libtiff/tif_aux.c               auxilary directory-related functions
+libtiff/tif_aux.c               auxiliary directory-related functions
 libtiff/tif_close.c             close an open TIFF file
 libtiff/tif_codec.c             configuration table of builtin codecs
 libtiff/tif_compress.c          compression scheme support
@@ -720,7 +545,6 @@ libtiff/tif_thunder.c           Thunderscan codec (decoding only)
 libtiff/tif_tile.c              some tile-related code
 libtiff/tif_unix.c              UNIX-related OS support
 libtiff/tif_version.c           library version support
-libtiff/tif_vms.c               VMS-related OS support
 libtiff/tif_warning.c           library warning handler
 libtiff/tif_win3.c              Windows-3.1-related OS support
 libtiff/tif_win32.c             Win32 (95/98/NT) related OS support

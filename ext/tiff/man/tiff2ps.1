@@ -1,4 +1,3 @@
-.\" $Id: tiff2ps.1,v 1.12 2016-09-25 20:05:51 bfriesen Exp $
 .\"
 .\" Copyright (c) 1988-1997 Sam Leffler
 .\" Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -160,6 +159,10 @@ options.
 .B \-l
 Specify the left margin for the output (in inches). This does not affect
 the width of the printed image.
+.TP
+.BI \-M " size"
+Set maximum memory allocation size (in MiB). The default is 256MiB.
+Set to 0 to disable the limit.
 .TP
 .B \-m
 Where possible render using the

@@ -22,73 +22,88 @@
 # LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 
-extra_dist(Makefile.vc)
+add_executable(fax2ps ../placeholder.h)
+target_sources(fax2ps PRIVATE fax2ps.c)
+target_link_libraries(fax2ps PRIVATE tiff port)
 
-include_directories(${PROJECT_SOURCE_DIR}/libtiff
-                    ${PROJECT_BINARY_DIR}/libtiff
-                    ${PROJECT_SOURCE_DIR}/port
-                    ${CMAKE_CURRENT_BINARY_DIR})
+add_executable(fax2tiff ../placeholder.h)
+target_sources(fax2tiff PRIVATE fax2tiff.c)
+target_link_libraries(fax2tiff PRIVATE tiff port)
 
-add_executable(fax2ps fax2ps.c)
-target_link_libraries(fax2ps tiff port)
+add_executable(pal2rgb ../placeholder.h)
+target_sources(pal2rgb PRIVATE pal2rgb.c)
+target_link_libraries(pal2rgb PRIVATE tiff port)
 
-add_executable(fax2tiff fax2tiff.c)
-target_link_libraries(fax2tiff tiff port)
+add_executable(ppm2tiff ../placeholder.h)
+target_sources(ppm2tiff PRIVATE ppm2tiff.c)
+target_link_libraries(ppm2tiff PRIVATE tiff port)
 
-add_executable(pal2rgb pal2rgb.c)
-target_link_libraries(pal2rgb tiff port)
+add_executable(raw2tiff ../placeholder.h)
+target_sources(raw2tiff PRIVATE raw2tiff.c)
+target_link_libraries(raw2tiff PRIVATE tiff port CMath::CMath)
 
-add_executable(ppm2tiff ppm2tiff.c)
-target_link_libraries(ppm2tiff tiff port)
+add_executable(rgb2ycbcr ../placeholder.h)
+target_sources(rgb2ycbcr PRIVATE rgb2ycbcr.c)
+target_link_libraries(rgb2ycbcr PRIVATE tiff port)
 
-add_executable(raw2tiff raw2tiff.c)
-target_link_libraries(raw2tiff tiff port)
+add_executable(thumbnail ../placeholder.h)
+target_sources(thumbnail PRIVATE thumbnail.c)
+target_link_libraries(thumbnail PRIVATE tiff port CMath::CMath)
 
-add_executable(rgb2ycbcr rgb2ycbcr.c)
-target_link_libraries(rgb2ycbcr tiff port)
+add_executable(tiff2bw ../placeholder.h)
+target_sources(tiff2bw PRIVATE tiff2bw.c)
+target_link_libraries(tiff2bw PRIVATE tiff port)
 
-add_executable(thumbnail thumbnail.c)
-target_link_libraries(thumbnail tiff port)
+add_executable(tiff2pdf ../placeholder.h)
+target_sources(tiff2pdf PRIVATE tiff2pdf.c)
+target_link_libraries(tiff2pdf PRIVATE tiff port)
 
-add_executable(tiff2bw tiff2bw.c)
-target_link_libraries(tiff2bw tiff port)
+add_executable(tiff2ps ../placeholder.h)
+target_sources(tiff2ps PRIVATE tiff2ps.c)
+target_link_libraries(tiff2ps PRIVATE tiff port CMath::CMath)
 
-add_executable(tiff2pdf tiff2pdf.c)
-target_link_libraries(tiff2pdf tiff port)
+add_executable(tiff2rgba ../placeholder.h)
+target_sources(tiff2rgba PRIVATE tiff2rgba.c)
+target_link_libraries(tiff2rgba PRIVATE tiff port)
 
-add_executable(tiff2ps tiff2ps.c)
-target_link_libraries(tiff2ps tiff port)
+add_executable(tiffcmp ../placeholder.h)
+target_sources(tiffcmp PRIVATE tiffcmp.c)
+target_link_libraries(tiffcmp PRIVATE tiff port)
 
-add_executable(tiff2rgba tiff2rgba.c)
-target_link_libraries(tiff2rgba tiff port)
+add_executable(tiffcp ../placeholder.h)
+target_sources(tiffcp PRIVATE tiffcp.c)
+target_link_libraries(tiffcp PRIVATE tiff port)
 
-add_executable(tiffcmp tiffcmp.c)
-target_link_libraries(tiffcmp tiff port)
+add_executable(tiffcrop ../placeholder.h)
+target_sources(tiffcrop PRIVATE tiffcrop.c)
+target_link_libraries(tiffcrop PRIVATE tiff port CMath::CMath)
 
-add_executable(tiffcp tiffcp.c)
-target_link_libraries(tiffcp tiff port)
+add_executable(tiffdither ../placeholder.h)
+target_sources(tiffdither PRIVATE tiffdither.c)
+target_link_libraries(tiffdither PRIVATE tiff port)
 
-add_executable(tiffcrop tiffcrop.c)
-target_link_libraries(tiffcrop tiff port)
+add_executable(tiffdump ../placeholder.h)
+target_sources(tiffdump PRIVATE tiffdump.c)
+target_link_libraries(tiffdump PRIVATE tiff port)
 
-add_executable(tiffdither tiffdither.c)
-target_link_libraries(tiffdither tiff port)
+add_executable(tiffinfo ../placeholder.h)
+target_sources(tiffinfo PRIVATE tiffinfo.c)
+target_link_libraries(tiffinfo PRIVATE tiff port)
 
-add_executable(tiffdump tiffdump.c)
-target_link_libraries(tiffdump tiff port)
+add_executable(tiffmedian ../placeholder.h)
+target_sources(tiffmedian PRIVATE tiffmedian.c)
+target_link_libraries(tiffmedian PRIVATE tiff port)
 
-add_executable(tiffinfo tiffinfo.c)
-target_link_libraries(tiffinfo tiff port)
+add_executable(tiffset ../placeholder.h)
+target_sources(tiffset PRIVATE tiffset.c)
+target_link_libraries(tiffset PRIVATE tiff port)
 
-add_executable(tiffmedian tiffmedian.c)
-target_link_libraries(tiffmedian tiff port)
+add_executable(tiffsplit ../placeholder.h)
+target_sources(tiffsplit PRIVATE tiffsplit.c)
+target_link_libraries(tiffsplit PRIVATE tiff port)
 
-add_executable(tiffset tiffset.c)
-target_link_libraries(tiffset tiff port)
-
-add_executable(tiffsplit tiffsplit.c)
-target_link_libraries(tiffsplit tiff port)
-
+# rgb2ycbcr and thumbnail are intended to *NOT* be installed. They are for
+# testing purposes only.
 install(TARGETS fax2ps
                 fax2tiff
                 pal2rgb
@@ -107,19 +122,41 @@ install(TARGETS fax2ps
                 tiffmedian
                 tiffset
                 tiffsplit
-        RUNTIME DESTINATION "${CMAKE_INSTALL_FULL_BINDIR}")
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
 if(HAVE_OPENGL)
-  if(OPENGL_INCLUDE_DIR)
-    include_directories(${OPENGL_INCLUDE_DIR})
-  endif()
-  if(GLUT_INCLUDE_DIR)
-    include_directories(${GLUT_INCLUDE_DIR})
-  endif()
-
-  add_executable(tiffgt tiffgt.c)
-  target_link_libraries(tiffgt tiff ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
+  add_executable(tiffgt ../placeholder.h)
+  target_sources(tiffgt PRIVATE tiffgt.c)
+  target_link_libraries(tiffgt PRIVATE tiff port)
+  target_link_libraries(tiffgt PRIVATE OpenGL::GL GLUT::GLUT)
 
   install(TARGETS tiffgt
-          RUNTIME DESTINATION "${CMAKE_INSTALL_FULL_BINDIR}")
+          RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+endif()
+
+if(WEBP_SUPPORT AND EMSCRIPTEN)
+  # Emscripten is pretty finnicky about linker flags.
+  # It needs --shared-memory if and only if atomics or bulk-memory is used.
+  foreach(target fax2ps
+                 fax2tiff
+                 pal2rgb
+                 ppm2tiff
+                 raw2tiff
+                 rgb2ycbcr
+                 thumbnail
+                 tiff2bw
+                 tiff2pdf
+                 tiff2ps
+                 tiff2rgba
+                 tiffcmp
+                 tiffcp
+                 tiffcrop
+                 tiffdither
+                 tiffdump
+                 tiffinfo
+                 tiffmedian
+                 tiffset
+                 tiffsplit)
+    target_link_options(${target} PUBLIC "-Wl,--shared-memory")
+  endforeach()
 endif()

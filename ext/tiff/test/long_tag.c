@@ -1,5 +1,3 @@
-/* $Id: long_tag.c,v 1.5 2013-12-17 14:41:58 bfriesen Exp $ */
-
 /*
  * Copyright (c) 2004, Andrey Kiselev  <dron@ak4719.spb.edu>
  *
@@ -39,22 +37,22 @@
 
 #include "tiffio.h"
 
-extern int CheckLongField(TIFF *, ttag_t, uint32);
+extern int CheckLongField(TIFF *, ttag_t, uint32_t);
 
 const char	*filename = "long_test.tiff";
 
 static struct Tags {
 	ttag_t		tag;
 	short		count;
-	uint32		value;
+	uint32_t		value;
 } long_tags[] = {
 	{ TIFFTAG_SUBFILETYPE, 1, FILETYPE_REDUCEDIMAGE|FILETYPE_PAGE|FILETYPE_MASK }
 };
 #define NTAGS   (sizeof (long_tags) / sizeof (long_tags[0]))
 
-const uint32	width = 1;
-const uint32	length = 1;
-const uint32	rows_per_strip = 1;
+const uint32_t	width = 1;
+const uint32_t	length = 1;
+const uint32_t	rows_per_strip = 1;
 
 int
 main(int argc, char **argv)

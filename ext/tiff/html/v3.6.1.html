@@ -1,3 +1,4 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
 <TITLE>
@@ -17,7 +18,7 @@ Changes in TIFF v3.6.1
 <HR SIZE=4 WIDTH=65% ALIGN=left>
 <B>Current Version</B>: v3.6.1<BR>
 <B>Previous Version</B>: <A HREF=v3.6.0.html>v3.6.0</a><BR>
-<B>Master FTP Site</B>: <A HREF="ftp://download.osgeo.org/libtiff">
+<B>Master Download Site</B>: <A HREF="https://download.osgeo.org/libtiff">
 download.osgeo.org</a>, directory pub/libtiff</A><BR>
 <B>Master HTTP Site</B>: <A HREF="http://www.simplesystems.org/libtiff/">
 http://www.simplesystems.org/libtiff/</a> 
@@ -31,7 +32,7 @@ If you don't find something listed here, then it was not done in this
 timeframe, or it was not considered important enough to be mentioned.
 The following information is located here:
 <UL>
-<LI><A HREF="#hightlights">Major Changes</A>
+<LI><A HREF="#highlights">Major Changes</A>
 <LI><A HREF="#configure">Changes in the software configuration</A>
 <LI><A HREF="#libtiff">Changes in libtiff</A>
 <LI><A HREF="#tools">Changes in the tools</A>
@@ -116,7 +117,7 @@ Patch supplied by Ross Finlayson.
 it was done in 3.6.0).
 
 <li> libtiff/{tiff.h, tif_dirinfo.c}: Added support for IFD (13) datatype,
-intruduced in "Adobe PageMaker TIFF Technical Notes".
+introduced in "Adobe PageMaker TIFF Technical Notes".
 
 <li> libtiff/{tif_color.c, tif_getimage.c, tiffio.h}: New color space
 conversion code: CIE L*a*b* 1976 images now supported by the TIFFRGBAImage
@@ -124,7 +125,7 @@ interface. YCbCr to RGB conversion code also moved there and now has
 <a href="./man/TIFFcolor.3t.html">publicly available interface</a>. These
 routines currently used in TIFFRGBAImage interface only and not supported in
 other libtiff tools yet. So if you want, for example, to convert CIE Lab image
-into PostScript file you should do it in two steps: chnge colorspace to RGB
+into PostScript file you should do it in two steps: change colorspace to RGB
 using <a href="./man/tiff2rgba.1.html">tiff2rgba</a> utility abd then process
 it with the <a href="./man/tiff2ps.1.html">tiff2ps</a>.
 
@@ -175,7 +176,7 @@ lines.
 <UL> 
 
 <li> contrib/pds/{tif_pdsdirread.c, tif_pdsdirwrite.c}: Use TIFFDataWidth()
-function insted of tiffDataWidth array.
+function instead of tiffDataWidth array.
 
 </UL>
 

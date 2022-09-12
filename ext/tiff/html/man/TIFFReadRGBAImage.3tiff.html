@@ -47,12 +47,12 @@ and decode an image into a fixed-format raster</p>
 0xff)</b></p>
 <!-- INDENTATION -->
 <p><b>int TIFFReadRGBAImage(TIFF *</b><i>tif</i><b>,
-uint32</b> <i>width</i><b>, uint32</b> <i>height</i><b>,
-uint32 *</b><i>raster</i><b>, int</b>
+uint32_t</b> <i>width</i><b>, uint32_t</b> <i>height</i><b>,
+uint32_t *</b><i>raster</i><b>, int</b>
 <i>stopOnError</i><b>)<br>
 int TIFFReadRGBAImageOriented(TIFF *</b><i>tif</i><b>,
-uint32</b> <i>width</i><b>, uint32</b> <i>height</i><b>,
-uint32 *</b><i>raster</i><b>, int</b> <i>orientation</i><b>,
+uint32_t</b> <i>width</i><b>, uint32_t</b> <i>height</i><b>,
+uint32_t *</b><i>raster</i><b>, int</b> <i>orientation</i><b>,
 int</b> <i>stopOnError</i><b>)</b></p>
 </td>
 </table>
@@ -176,7 +176,7 @@ scaling sample values. Palette, grayscale, bilevel,
 uncorrected by any colorimetry information present in the
 directory.</p>
 <!-- INDENTATION -->
-<p>The paramater <i>stopOnError</i> specifies how to act if
+<p>The parameter <i>stopOnError</i> specifies how to act if
 an error is encountered while reading the image. If
 <i>stopOnError</i> is non-zero, then an error will terminate
 the operation; otherwise <i>TIFFReadRGBAImage</i> will

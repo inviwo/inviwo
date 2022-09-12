@@ -1,5 +1,3 @@
-/* $Id: thumbnail.c,v 1.21 2015-06-21 01:09:10 bfriesen Exp $ */
-
 /*
  * Copyright (c) 1994-1997 Sam Leffler
  * Copyright (c) 1994-1997 Silicon Graphics, Inc.
@@ -25,6 +23,7 @@
  */
 
 #include "tif_config.h"
+#include "libport.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,20 +34,19 @@
 # include <unistd.h>
 #endif
 
-#ifdef NEED_LIBPORT
-# include "libport.h"
-#endif
-
 #include "tiffio.h"
 
-#ifndef HAVE_GETOPT
-extern int getopt(int, char**, char*);
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
 #endif
 
 #define	streq(a,b)	(strcmp(a,b) == 0)
 
 #ifndef TIFFhowmany8
-# define TIFFhowmany8(x) (((x)&0x07)?((uint32)(x)>>3)+1:(uint32)(x)>>3)
+# define TIFFhowmany8(x) (((x)&0x07)?((uint32_t)(x)>>3)+1:(uint32_t)(x)>>3)
 #endif
 
 typedef enum {
@@ -61,15 +59,15 @@ typedef enum {
     LINEAR
 } Contrast;
 
-static	uint32 tnw = 216;		/* thumbnail width */
-static	uint32 tnh = 274;		/* thumbnail height */
+static	uint32_t tnw = 216;		/* thumbnail width */
+static	uint32_t tnh = 274;		/* thumbnail height */
 static	Contrast contrast = LINEAR;	/* current contrast */
-static	uint8* thumbnail;
+static	uint8_t* thumbnail;
 
 static	int cpIFD(TIFF*, TIFF*);
 static	int generateThumbnail(TIFF*, TIFF*);
 static	void initScale();
-static	void usage(void);
+static	void usage(int code);
 
 #if !HAVE_DECL_OPTARG
 extern	char* optarg;
@@ -96,11 +94,11 @@ main(int argc, char* argv[])
 				   streq(optarg, "linear")? LINEAR :
 							    EXP;
 			break;
-	default:	usage();
+	default:	usage(EXIT_FAILURE);
 	}
     }
     if (argc-optind != 2)
-	usage();
+	usage(EXIT_FAILURE);
 
     out = TIFFOpen(argv[optind+1], "w");
     if (out == NULL)
@@ -109,11 +107,11 @@ main(int argc, char* argv[])
     if( in == NULL )
         return 2;
 
-    thumbnail = (uint8*) _TIFFmalloc(tnw * tnh);
+    thumbnail = (uint8_t*) _TIFFmalloc(tnw * tnh);
     if (!thumbnail) {
 	    TIFFError(TIFFFileName(in),
 		      "Can't allocate space for thumbnail buffer.");
-	    return 1;
+	    return EXIT_FAILURE;
     }
 
     if (in != NULL) {
@@ -127,10 +125,10 @@ main(int argc, char* argv[])
 	(void) TIFFClose(in);
     }
     (void) TIFFClose(out);
-    return 0;
+    return EXIT_SUCCESS;
 bad:
     (void) TIFFClose(out);
-    return 1;
+    return EXIT_FAILURE;
 }
 
 #define	CopyField(tag, v) \
@@ -143,37 +141,37 @@ bad:
     if (TIFFGetField(in, tag, &v1, &v2, &v3, &v4)) TIFFSetField(out, tag, v1, v2, v3, v4)
 
 static void
-cpTag(TIFF* in, TIFF* out, uint16 tag, uint16 count, TIFFDataType type)
+cpTag(TIFF* in, TIFF* out, uint16_t tag, uint16_t count, TIFFDataType type)
 {
 	switch (type) {
 	case TIFF_SHORT:
 		if (count == 1) {
-			uint16 shortv;
+			uint16_t shortv;
 			CopyField(tag, shortv);
 		} else if (count == 2) {
-			uint16 shortv1, shortv2;
+			uint16_t shortv1, shortv2;
 			CopyField2(tag, shortv1, shortv2);
 		} else if (count == 4) {
-			uint16 *tr, *tg, *tb, *ta;
+			uint16_t *tr, *tg, *tb, *ta;
 			CopyField4(tag, tr, tg, tb, ta);
-		} else if (count == (uint16) -1) {
-			uint16 shortv1;
-			uint16* shortav;
+		} else if (count == (uint16_t) -1) {
+			uint16_t shortv1;
+			uint16_t* shortav;
 			CopyField2(tag, shortv1, shortav);
 		}
 		break;
 	case TIFF_LONG:
-		{ uint32 longv;
+		{ uint32_t longv;
 		  CopyField(tag, longv);
 		}
 		break;
 	case TIFF_LONG8:
-		{ uint64 longv8;
+		{ uint64_t longv8;
 		  CopyField(tag, longv8);
 		}
 		break;
 	case TIFF_SLONG8:
-		{ int64 longv8;
+		{ int64_t longv8;
 		  CopyField(tag, longv8);
 		}
 		break;
@@ -181,7 +179,7 @@ cpTag(TIFF* in, TIFF* out, uint16 tag, uint16 count, TIFFDataType type)
 		if (count == 1) {
 			float floatv;
 			CopyField(tag, floatv);
-		} else if (count == (uint16) -1) {
+		} else if (count == (uint16_t) -1) {
 			float* floatav;
 			CopyField(tag, floatav);
 		}
@@ -195,7 +193,7 @@ cpTag(TIFF* in, TIFF* out, uint16 tag, uint16 count, TIFFDataType type)
 		if (count == 1) {
 			double doublev;
 			CopyField(tag, doublev);
-		} else if (count == (uint16) -1) {
+		} else if (count == (uint16_t) -1) {
 			double* doubleav;
 			CopyField(tag, doubleav);
 		}
@@ -216,9 +214,9 @@ cpTag(TIFF* in, TIFF* out, uint16 tag, uint16 count, TIFFDataType type)
 #undef CopyField2
 #undef CopyField
 
-static struct cpTag {
-    uint16	tag;
-    uint16	count;
+static const struct cpTag {
+    uint16_t	tag;
+    uint16_t	count;
     TIFFDataType type;
 } tags[] = {
     { TIFFTAG_IMAGEWIDTH,		1, TIFF_LONG },
@@ -243,38 +241,38 @@ static struct cpTag {
     { TIFFTAG_XRESOLUTION,		1, TIFF_RATIONAL },
     { TIFFTAG_YRESOLUTION,		1, TIFF_RATIONAL },
     { TIFFTAG_PAGENAME,			1, TIFF_ASCII },
-    { TIFFTAG_XPOSITION,		1, TIFF_RATIONAL },
-    { TIFFTAG_YPOSITION,		1, TIFF_RATIONAL },
-    { TIFFTAG_GROUP4OPTIONS,		1, TIFF_LONG },
-    { TIFFTAG_RESOLUTIONUNIT,		1, TIFF_SHORT },
-    { TIFFTAG_PAGENUMBER,		2, TIFF_SHORT },
-    { TIFFTAG_SOFTWARE,			1, TIFF_ASCII },
-    { TIFFTAG_DATETIME,			1, TIFF_ASCII },
-    { TIFFTAG_ARTIST,			1, TIFF_ASCII },
-    { TIFFTAG_HOSTCOMPUTER,		1, TIFF_ASCII },
-    { TIFFTAG_WHITEPOINT,		2, TIFF_RATIONAL },
-    { TIFFTAG_PRIMARYCHROMATICITIES,	(uint16) -1,TIFF_RATIONAL },
-    { TIFFTAG_HALFTONEHINTS,		2, TIFF_SHORT },
-    { TIFFTAG_BADFAXLINES,		1, TIFF_LONG },
-    { TIFFTAG_CLEANFAXDATA,		1, TIFF_SHORT },
-    { TIFFTAG_CONSECUTIVEBADFAXLINES,	1, TIFF_LONG },
-    { TIFFTAG_INKSET,			1, TIFF_SHORT },
+    { TIFFTAG_XPOSITION,		1,                     TIFF_RATIONAL },
+    { TIFFTAG_YPOSITION,		1,                     TIFF_RATIONAL },
+    { TIFFTAG_GROUP4OPTIONS,		1,                 TIFF_LONG },
+    { TIFFTAG_RESOLUTIONUNIT,		1,                TIFF_SHORT },
+    { TIFFTAG_PAGENUMBER,		2,                    TIFF_SHORT },
+    { TIFFTAG_SOFTWARE,			1,                  TIFF_ASCII },
+    { TIFFTAG_DATETIME,			1,                  TIFF_ASCII },
+    { TIFFTAG_ARTIST,			1,                    TIFF_ASCII },
+    { TIFFTAG_HOSTCOMPUTER,		1,                  TIFF_ASCII },
+    { TIFFTAG_WHITEPOINT,		2,                    TIFF_RATIONAL },
+    { TIFFTAG_PRIMARYCHROMATICITIES,	(uint16_t) -1, TIFF_RATIONAL },
+    { TIFFTAG_HALFTONEHINTS,		2,                 TIFF_SHORT },
+    { TIFFTAG_BADFAXLINES,		1,                   TIFF_LONG },
+    { TIFFTAG_CLEANFAXDATA,		1,                  TIFF_SHORT },
+    { TIFFTAG_CONSECUTIVEBADFAXLINES,	1,            TIFF_LONG },
+    { TIFFTAG_INKSET,			1,                    TIFF_SHORT },
     /*{ TIFFTAG_INKNAMES,			1, TIFF_ASCII },*/ /* Needs much more complicated logic. See tiffcp */
-    { TIFFTAG_DOTRANGE,			2, TIFF_SHORT },
-    { TIFFTAG_TARGETPRINTER,		1, TIFF_ASCII },
-    { TIFFTAG_SAMPLEFORMAT,		1, TIFF_SHORT },
-    { TIFFTAG_YCBCRCOEFFICIENTS,	(uint16) -1,TIFF_RATIONAL },
-    { TIFFTAG_YCBCRSUBSAMPLING,		2, TIFF_SHORT },
-    { TIFFTAG_YCBCRPOSITIONING,		1, TIFF_SHORT },
-    { TIFFTAG_REFERENCEBLACKWHITE,	(uint16) -1,TIFF_RATIONAL },
-    { TIFFTAG_EXTRASAMPLES,		(uint16) -1, TIFF_SHORT },
+    { TIFFTAG_DOTRANGE,			2,                  TIFF_SHORT },
+    { TIFFTAG_TARGETPRINTER,		1,                 TIFF_ASCII },
+    { TIFFTAG_SAMPLEFORMAT,		1,                  TIFF_SHORT },
+    { TIFFTAG_YCBCRCOEFFICIENTS,	(uint16_t) -1,     TIFF_RATIONAL },
+    { TIFFTAG_YCBCRSUBSAMPLING,		2,              TIFF_SHORT },
+    { TIFFTAG_YCBCRPOSITIONING,		1,              TIFF_SHORT },
+    { TIFFTAG_REFERENCEBLACKWHITE,	(uint16_t) -1,   TIFF_RATIONAL },
+    { TIFFTAG_EXTRASAMPLES,		(uint16_t) -1,      TIFF_SHORT },
 };
 #define	NTAGS	(sizeof (tags) / sizeof (tags[0]))
 
 static void
 cpTags(TIFF* in, TIFF* out)
 {
-    struct cpTag *p;
+    const struct cpTag *p;
     for (p = tags; p < &tags[NTAGS]; p++)
 	{
 		/* Horrible: but TIFFGetField() expects 2 arguments to be passed */
@@ -282,14 +280,14 @@ cpTags(TIFF* in, TIFF* out)
 		/* isn't used */
 		if( p->tag == TIFFTAG_GROUP3OPTIONS )
 		{
-			uint16 compression;
+			uint16_t compression;
 			if( !TIFFGetField(in, TIFFTAG_COMPRESSION, &compression) ||
 				compression != COMPRESSION_CCITTFAX3 )
 				continue;
 		}
 		if( p->tag == TIFFTAG_GROUP4OPTIONS )
 		{
-			uint16 compression;
+			uint16_t compression;
 			if( !TIFFGetField(in, TIFFTAG_COMPRESSION, &compression) ||
 				compression != COMPRESSION_CCITTFAX4 )
 				continue;
@@ -307,11 +305,11 @@ cpStrips(TIFF* in, TIFF* out)
 
     if (buf) {
 	tstrip_t s, ns = TIFFNumberOfStrips(in);
-	uint64 *bytecounts;
+	uint64_t *bytecounts;
 
 	TIFFGetField(in, TIFFTAG_STRIPBYTECOUNTS, &bytecounts);
 	for (s = 0; s < ns; s++) {
-	  if (bytecounts[s] > (uint64) bufsize) {
+	  if (bytecounts[s] > (uint64_t) bufsize) {
 		buf = (unsigned char *)_TIFFrealloc(buf, (tmsize_t)bytecounts[s]);
 		if (!buf)
 		    goto bad;
@@ -341,11 +339,11 @@ cpTiles(TIFF* in, TIFF* out)
 
     if (buf) {
 	ttile_t t, nt = TIFFNumberOfTiles(in);
-	uint64 *bytecounts;
+	uint64_t *bytecounts;
 
 	TIFFGetField(in, TIFFTAG_TILEBYTECOUNTS, &bytecounts);
 	for (t = 0; t < nt; t++) {
-	    if (bytecounts[t] > (uint64) bufsize) {
+	    if (bytecounts[t] > (uint64_t) bufsize) {
 		buf = (unsigned char *)_TIFFrealloc(buf, (tmsize_t)bytecounts[t]);
 		if (!buf)
 		    goto bad;
@@ -381,16 +379,16 @@ cpIFD(TIFF* in, TIFF* out)
     return (1);
 }
 
-static	uint16	photometric;		/* current photometric of raster */
-static	uint16	filterWidth;		/* filter width in pixels */
-static	uint32	stepSrcWidth;		/* src image stepping width */
-static	uint32	stepDstWidth;		/* dest stepping width */
-static	uint8* src0;			/* horizontal bit stepping (start) */
-static	uint8* src1;			/* horizontal bit stepping (middle) */
-static	uint8* src2;			/* horizontal bit stepping (end) */
-static	uint32* rowoff;			/* row offset for stepping */
-static	uint8 cmap[256];		/* colormap indexes */
-static	uint8 bits[256];		/* count of bits set */
+static	uint16_t	photometric;		/* current photometric of raster */
+static	uint16_t	filterWidth;		/* filter width in pixels */
+static	uint32_t	stepSrcWidth;		/* src image stepping width */
+static	uint32_t	stepDstWidth;		/* dest stepping width */
+static	uint8_t* src0;			/* horizontal bit stepping (start) */
+static	uint8_t* src1;			/* horizontal bit stepping (middle) */
+static	uint8_t* src2;			/* horizontal bit stepping (end) */
+static	uint32_t* rowoff;			/* row offset for stepping */
+static	uint8_t cmap[256];		/* colormap indexes */
+static	uint8_t bits[256];		/* count of bits set */
 
 static void
 setupBitsTables()
@@ -418,10 +416,10 @@ static int clamp(float v, int low, int high)
 #endif
 
 static void
-expFill(float pct[], uint32 p, uint32 n)
+expFill(float pct[], uint32_t p, uint32_t n)
 {
-    uint32 i;
-    uint32 c = (p * n) / 100;
+    uint32_t i;
+    uint32_t c = (p * n) / 100;
     for (i = 1; i < c; i++)
 	pct[i] = (float) (1-exp(i/((double)(n-1)))/ M_E);
     for (; i < n; i++)
@@ -432,7 +430,7 @@ static void
 setupCmap()
 {
     float pct[256];			/* known to be large enough */
-    uint32 i;
+    uint32_t i;
     pct[0] = 1;				/* force white */
     switch (contrast) {
     case EXP50: expFill(pct, 50, 256); break;
@@ -461,10 +459,10 @@ setupCmap()
 static void
 initScale()
 {
-    src0 = (uint8*) _TIFFmalloc(sizeof (uint8) * tnw);
-    src1 = (uint8*) _TIFFmalloc(sizeof (uint8) * tnw);
-    src2 = (uint8*) _TIFFmalloc(sizeof (uint8) * tnw);
-    rowoff = (uint32*) _TIFFmalloc(sizeof (uint32) * tnw);
+    src0 = (uint8_t*) _TIFFmalloc(sizeof (uint8_t) * tnw);
+    src1 = (uint8_t*) _TIFFmalloc(sizeof (uint8_t) * tnw);
+    src2 = (uint8_t*) _TIFFmalloc(sizeof (uint8_t) * tnw);
+    rowoff = (uint32_t*) _TIFFmalloc(sizeof (uint32_t) * tnw);
     filterWidth = 0;
     stepDstWidth = stepSrcWidth = 0;
     setupBitsTables();
@@ -475,18 +473,18 @@ initScale()
  * according to the widths of the src and dst images.
  */
 static void
-setupStepTables(uint32 sw)
+setupStepTables(uint32_t sw)
 {
     if (stepSrcWidth != sw || stepDstWidth != tnw) {
 	int step = sw;
 	int limit = tnw;
 	int err = 0;
-	uint32 sx = 0;
-	uint32 x;
+	uint32_t sx = 0;
+	uint32_t x;
 	int fw;
-	uint8 b;
+	uint8_t b;
 	for (x = 0; x < tnw; x++) {
-	    uint32 sx0 = sx;
+	    uint32_t sx0 = sx;
 	    err += step;
 	    while (err >= limit) {
 		err -= limit;
@@ -509,33 +507,33 @@ setupStepTables(uint32 sw)
 }
 
 static void
-setrow(uint8* row, uint32 nrows, const uint8* rows[])
+setrow(uint8_t* row, uint32_t nrows, const uint8_t* rows[])
 {
-    uint32 x;
-    uint32 area = nrows * filterWidth;
+    uint32_t x;
+    uint32_t area = nrows * filterWidth;
     for (x = 0; x < tnw; x++) {
-	uint32 mask0 = src0[x];
-	uint32 fw = src1[x];
-	uint32 mask1 = src1[x];
-	uint32 off = rowoff[x];
-	uint32 acc = 0;
-	uint32 y, i;
+	uint32_t mask0 = src0[x];
+	uint32_t fw = src1[x];
+	uint32_t mask1 = src1[x];
+	uint32_t off = rowoff[x];
+	uint32_t acc = 0;
+	uint32_t y, i;
 	for (y = 0; y < nrows; y++) {
-	    const uint8* src = rows[y] + off;
+	    const uint8_t* src = rows[y] + off;
 	    acc += bits[*src++ & mask0];
 	    switch (fw) {
 	    default:
 		for (i = fw; i > 8; i--)
 		    acc += bits[*src++];
-		/* fall thru... */
-	    case 8: acc += bits[*src++];
-	    case 7: acc += bits[*src++];
-	    case 6: acc += bits[*src++];
-	    case 5: acc += bits[*src++];
-	    case 4: acc += bits[*src++];
-	    case 3: acc += bits[*src++];
-	    case 2: acc += bits[*src++];
-	    case 1: acc += bits[*src++];
+		/* fall through... */
+	    case 8: acc += bits[*src++]; /* fall through */
+	    case 7: acc += bits[*src++]; /* fall through */
+	    case 6: acc += bits[*src++]; /* fall through */
+	    case 5: acc += bits[*src++]; /* fall through */
+	    case 4: acc += bits[*src++]; /* fall through */
+	    case 3: acc += bits[*src++]; /* fall through */
+	    case 2: acc += bits[*src++]; /* fall through */
+	    case 1: acc += bits[*src++]; /* fall through */
 	    case 0: break;
 	    }
 	    acc += bits[*src & mask1];
@@ -551,18 +549,18 @@ setrow(uint8* row, uint32 nrows, const uint8* rows[])
  * with a user-selectable contrast curve.
  */
 static void
-setImage1(const uint8* br, uint32 rw, uint32 rh)
+setImage1(const uint8_t* br, uint32_t rw, uint32_t rh)
 {
     int step = rh;
     int limit = tnh;
     int err = 0;
     int bpr = TIFFhowmany8(rw);
     int sy = 0;
-    uint8* row = thumbnail;
-    uint32 dy;
+    uint8_t* row = thumbnail;
+    uint32_t dy;
     for (dy = 0; dy < tnh; dy++) {
-	const uint8* rows[256];
-	uint32 nrows = 1;
+	const uint8_t* rows[256];
+	uint32_t nrows = 1;
 	fprintf(stderr, "bpr=%d, sy=%d, bpr*sy=%d\n", bpr, sy, bpr*sy);
 	rows[0] = br + bpr*sy;
 	err += step;
@@ -584,9 +582,9 @@ setImage1(const uint8* br, uint32 rw, uint32 rh)
 }
 
 static void
-setImage(const uint8* br, uint32 rw, uint32 rh)
+setImage(const uint8_t* br, uint32_t rw, uint32_t rh)
 {
-    filterWidth = (uint16) ceil((double) rw / (double) tnw);
+    filterWidth = (uint16_t) ceil((double) rw / (double) tnw);
     setupStepTables(rw);
     setImage1(br, rw, rh);
 }
@@ -596,8 +594,8 @@ generateThumbnail(TIFF* in, TIFF* out)
 {
     unsigned char* raster;
     unsigned char* rp;
-    uint32 sw, sh, rps;
-    uint16 bps, spp;
+    uint32_t sw, sh, rps;
+    uint16_t bps, spp;
     tsize_t rowsize, rastersize;
     tstrip_t s, ns = TIFFNumberOfStrips(in);
     toff_t diroff[1];
@@ -634,25 +632,26 @@ generateThumbnail(TIFF* in, TIFF* out)
     _TIFFfree(raster);
 
     TIFFSetField(out, TIFFTAG_SUBFILETYPE, FILETYPE_REDUCEDIMAGE);
-    TIFFSetField(out, TIFFTAG_IMAGEWIDTH, (uint32) tnw);
-    TIFFSetField(out, TIFFTAG_IMAGELENGTH, (uint32) tnh);
-    TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, (uint16) 8);
-    TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, (uint16) 1);
+    TIFFSetField(out, TIFFTAG_IMAGEWIDTH, (uint32_t) tnw);
+    TIFFSetField(out, TIFFTAG_IMAGELENGTH, (uint32_t) tnh);
+    TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, (uint16_t) 8);
+    TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, (uint16_t) 1);
     TIFFSetField(out, TIFFTAG_COMPRESSION, COMPRESSION_PACKBITS);
     TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISWHITE);
     TIFFSetField(out, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
     TIFFSetField(out, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
-    cpTag(in, out, TIFFTAG_SOFTWARE,		(uint16) -1, TIFF_ASCII);
-    cpTag(in, out, TIFFTAG_IMAGEDESCRIPTION,	(uint16) -1, TIFF_ASCII);
-    cpTag(in, out, TIFFTAG_DATETIME,		(uint16) -1, TIFF_ASCII);
-    cpTag(in, out, TIFFTAG_HOSTCOMPUTER,	(uint16) -1, TIFF_ASCII);
+    cpTag(in, out, TIFFTAG_SOFTWARE, (uint16_t) -1, TIFF_ASCII);
+    cpTag(in, out, TIFFTAG_IMAGEDESCRIPTION, (uint16_t) -1, TIFF_ASCII);
+    cpTag(in, out, TIFFTAG_DATETIME, (uint16_t) -1, TIFF_ASCII);
+    cpTag(in, out, TIFFTAG_HOSTCOMPUTER, (uint16_t) -1, TIFF_ASCII);
     diroff[0] = 0UL;
     TIFFSetField(out, TIFFTAG_SUBIFD, 1, diroff);
     return (TIFFWriteEncodedStrip(out, 0, thumbnail, tnw*tnh) != -1 &&
             TIFFWriteDirectory(out) != -1);
 }
 
-char* stuff[] = {
+const char* usage_info[] = {
+"Create a TIFF file with thumbnail images\n\n"
 "usage: thumbnail [options] input.tif output.tif",
 "where options are:",
 " -h #		specify thumbnail image height (default is 274)",
@@ -669,16 +668,15 @@ NULL
 };
 
 static void
-usage(void)
+usage(int code)
 {
-	char buf[BUFSIZ];
 	int i;
+	FILE * out = (code == EXIT_SUCCESS) ? stdout : stderr;
 
-	setbuf(stderr, buf);
-        fprintf(stderr, "%s\n\n", TIFFGetVersion());
-	for (i = 0; stuff[i] != NULL; i++)
-		fprintf(stderr, "%s\n", stuff[i]);
-	exit(-1);
+        fprintf(out, "%s\n\n", TIFFGetVersion());
+	for (i = 0; usage_info[i] != NULL; i++)
+		fprintf(out, "%s\n", usage_info[i]);
+	exit(code);
 }
 
 /* vim: set ts=8 sts=8 sw=8 noet: */

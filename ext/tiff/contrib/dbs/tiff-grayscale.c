@@ -1,5 +1,3 @@
-/* $Id: tiff-grayscale.c,v 1.6 2010-06-08 18:55:15 bfriesen Exp $ */
-
 /*
  * tiff-grayscale.c -- create a Class G (grayscale) TIFF file
  *      with a gray response curve in linear optical density
@@ -43,7 +41,7 @@ int main(int argc, char **argv)
     int             bits_per_pixel = 8, cmsize, i, j, k,
                     gray_index, chunk_size = 32, nchunks = 16;
     unsigned char * scan_line;
-    uint16 *        gray;
+    uint16_t *      gray;
     float           refblackwhite[2*1];
     TIFF *          tif;
 
@@ -75,11 +73,11 @@ int main(int argc, char **argv)
     }
 
     cmsize = nchunks * nchunks;
-    gray = (uint16 *) malloc(cmsize * sizeof(uint16));
+    gray = (uint16_t *) malloc(cmsize * sizeof(uint16_t));
 
     gray[0] = 3000;
     for (i = 1; i < cmsize; i++)
-        gray[i] = (uint16) (-log10((double) i / (cmsize - 1)) * 1000);
+        gray[i] = (uint16_t) (-log10((double) i / (cmsize - 1)) * 1000);
 
     refblackwhite[0] = 0.0;
     refblackwhite[1] = (float)((1L<<bits_per_pixel) - 1);

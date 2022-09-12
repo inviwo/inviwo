@@ -1,13 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
 <TITLE>
 Modifying The TIFF Library
 </TITLE>
+<style type="text/css">
+body {
+font-family: Arial, Helvetica, Sans;
+}
+</style>
 </HEAD>
-<BODY BGCOLOR=white> 
-<FONT FACE="Arial, Helvetica, Sans">
+<BODY>
 <H1>
-<IMG SRC=images/dave.gif WIDTH=107 HEIGHT=148 BORDER=2 ALIGN=left HSPACE=6>
+<IMG SRC="images/dave.gif" WIDTH=107 HEIGHT=148 BORDER=2 ALIGN=left HSPACE=6 ALT="dave">
 Modifying The TIFF Library
 </H1>
 
@@ -19,18 +24,19 @@ how to add new support to the library.
 The following sections are found in this chapter:
 
 <UL>
-<LI><A HREF=#Config>Library Configuration</A>
-<LI><A HREF=#Portability>General Portability Comments</A>
+<LI><A HREF="#Config">Library Configuration</A>
+<LI><A HREF="#Portability">General Portability Comments</A>
 <LI><A HREF="#Types">Types and Portability</A>
 <LI><A HREF="addingtags.html">Adding New Tags</A>
-<LI><A HREF=#AddingCODECS>Adding New Builtin Codecs</A>
+<LI><A HREF="#AddingCODECS">Adding New Builtin Codecs</A>
 <LI><A HREF="addingtags.html#AddingCODECTags">Adding New Codec-private Tags</A>
-<LI><A HREF=#Other>Other Comments</A>
+<LI><A HREF="#Other">Other Comments</A>
 </UL>
 
 
-<A NAME="Config"><P><HR WIDTH=65% ALIGN=right><H3>Library Configuration</H3></A>
-
+<HR WIDTH="65%" ALIGN=right>
+<H3 id="Config">Library Configuration</H3>
+<P>
 Information on compiling the library is given
 <A HREF=build.html>elsewhere in this documentation</A>.
 This section describes the low-level mechanisms used to control
@@ -71,11 +77,11 @@ To override the default compression behaviour define
 to enable configuration of the appropriate codecs (see the table
 below); e.g.
 
-<UL><PRE>
+<PRE style="margin-left: 3em;">
 #define	COMPRESSION_SUPPORT
 #define	CCITT_SUPPORT
 #define	PACKBITS_SUPPORT
-</PRE></UL>
+</PRE>
 
 Several other compression schemes are configured separately from
 the default set because they depend on ancillary software
@@ -87,7 +93,7 @@ The JPEG codec that comes with <TT>libtiff</TT> is designed for
 use with release 5 or later of the Independent JPEG Group's freely
 available software distribution.
 This software can be retrieved from the directory
-<A HREF=ftp://ftp.uu.net/graphics/jpeg>ftp.uu.net:/graphics/jpeg/</A>.
+<A HREF="ftp://ftp.uu.net/graphics/jpeg">ftp.uu.net:/graphics/jpeg/</A>.
 
 
 <P>
@@ -103,14 +109,14 @@ for use with version 0.99 or later of the freely available
 <TT>libz</TT> library written by Jean-loup Gailly and Mark Adler.
 The data format used by this library is described
 in the files
-<A HREF=ftp://ftp.uu.net/pub/archiving/zip/doc/zlib-3.1.doc>zlib-3.1.doc</A>,
+<A HREF="ftp://ftp.uu.net/pub/archiving/zip/doc/zlib-3.1.doc">zlib-3.1.doc</A>,
 and
-<A HREF=ftp://ftp.uu.net/pub/archiving/zip/doc/deflate-1.1.doc>deflate-1.1.doc</A>,
+<A HREF="ftp://ftp.uu.net/pub/archiving/zip/doc/deflate-1.1.doc">deflate-1.1.doc</A>,
 available in the directory
-<A HREF=ftp://ftp.uu.net/pub/archiving/zip/doc>ftp.uu.net:/pub/archiving/zip/doc</A>.</EM>
+<A HREF="ftp://ftp.uu.net/pub/archiving/zip/doc">ftp.uu.net:/pub/archiving/zip/doc</A>.
 The library can be retried from the directory
-<A HREF=ftp://ftp.uu.net/pub/archiving/zip/zlib/>ftp.uu.net:/pub/archiving/zip/zlib/</A>
-(or try <A HREF=ftp://quest.jpl.nasa.gov/beta/zlib/>quest.jpl.nasa.gov:/beta/zlib/</A>).
+<A HREF="ftp://ftp.uu.net/pub/archiving/zip/zlib/">ftp.uu.net:/pub/archiving/zip/zlib/</A>
+(or try <A HREF="ftp://quest.jpl.nasa.gov/beta/zlib/">quest.jpl.nasa.gov:/beta/zlib/</A>).
 
 <P>
 <IMG SRC="images/warning.gif" ALT="NOTE: " ALIGN=left HSPACE=8 VSPACE=6>
@@ -205,15 +211,15 @@ run-length encoding scheme from ThunderScan (compression 32809)</TD>
 <I>The ICC Profile Format Specification</I>,
 Annex B.3 "Embedding ICC Profiles in TIFF Files";
 available at
-<A HREF=http://www.color.org>http://www.color.org</A>
+<A HREF="http://www.color.org">http://www.color.org</A>
 </TD>
 </TR>
 
 </TABLE>
 
-
-<A NAME="Portability"><P><HR WIDTH=65% ALIGN=right><H3>General Portability Comments</H3></A>
-
+<HR WIDTH="65%" ALIGN=right>
+<H3 id="Portability">General Portability Comments</H3>
+<P>
 This software is developed on Silicon Graphics UNIX
 systems (big-endian, MIPS CPU, 32-bit ints,
 IEEE floating point). 
@@ -247,18 +253,7 @@ operating system-dependencies
 as possible in two files: <B>tiffcomp.h</B> and
 <B>libtiff/tif_&lt;os&gt;.c</B>.  The latter file contains
 operating system-specific routines to do I/O and I/O-related operations.
-The UNIX (<B>tif_unix.c</B>),
-Macintosh (<B>tif_apple.c</B>),
-and VMS (<B>tif_vms.c</B>)
-code has had the most use;
-the MS/DOS support (<B>tif_msdos.c</B>) assumes
-some level of UNIX system call emulation (i.e.
-<TT>open</TT>,
-<TT>read</TT>,
-<TT>write</TT>,
-<TT>fstat</TT>,
-<TT>malloc</TT>,
-<TT>free</TT>).
+The UNIX (<B>tif_unix.c</B>) code has had the most use.
 
 <P>
 Native CPU byte order is determined on the fly by
@@ -271,7 +266,7 @@ codecs for optimization purposes.
 The following defines control general portability:
 
 <P>
-<TABLE BORDER CELLPADDING=3 WIDTH=100%>
+<TABLE BORDER CELLPADDING=3 WIDTH="100%">
 
 <TR>
 <TD VALIGN=top><TT>BSDTYPES</TT></TD>
@@ -283,7 +278,7 @@ The following defines control general portability:
 <TR>
 <TD VALIGN=top><TT>HAVE_IEEEFP</TT></TD>
 <TD>Define this as 0 or 1 according to the floating point
-		format suported by the machine.  If your machine does
+		format supported by the machine.  If your machine does
 		not support IEEE floating point then you will need to
 		add support to tif_machdep.c to convert between the
 		native format and IEEE format.</TD>
@@ -317,8 +312,9 @@ Note that <B>tiffcomp.h</B> defines <TT>HAVE_IEEEFP</TT> to be
 1 (<TT>BSDTYPES</TT> is not defined).
 
 
-<A NAME="Types"><P><HR WIDTH=65% ALIGN=right><H3>Types and Portability</H3></A>
-
+<HR WIDTH="65%" ALIGN=right>
+<H3 id="Types">Types and Portability</H3>
+<P>
 The software makes extensive use of C typedefs to promote portability.
 Two sets of typedefs are used, one for communication with clients
 of the library and one for internal data structures and parsing of the
@@ -328,40 +324,40 @@ purely by fiddling with the following machine-dependent typedefs:
 
 
 <P>
-<TABLE BORDER CELLPADDING=3 WIDTH=100%>
+<TABLE BORDER CELLPADDING=3 WIDTH="100%">
 
 <TR>
-<TD>uint8</TD>
+<TD>uint8_t</TD>
 <TD>8-bit unsigned integer</TD>
 <TD>tiff.h</TD>
 </TR>
 
 <TR>
-<TD>int8</TD>
+<TD>int8_t</TD>
 <TD>8-bit signed integer</TD>
 <TD>tiff.h</TD>
 </TR>
 
 <TR>
-<TD>uint16</TD>
+<TD>uint16_t</TD>
 <TD>16-bit unsigned integer</TD>
 <TD>tiff.h</TD>
 </TR>
 
 <TR>
-<TD>int16</TD>
+<TD>int16_t</TD>
 <TD>16-bit signed integer</TD>
 <TD>tiff.h</TD>
 </TR>
 
 <TR>
-<TD>uint32</TD>
+<TD>uint32_t</TD>
 <TD>32-bit unsigned integer</TD>
 <TD>tiff.h</TD>
 </TR>
 
 <TR>
-<TD>int32</TD>
+<TD>int32_t</TD>
 <TD>32-bit signed integer</TD>
 <TD>tiff.h</TD>
 </TR>
@@ -385,30 +381,30 @@ structure:
 
 
 <P>
-<TABLE BORDER CELLPADDING=3 WIDTH=100%>
+<TABLE BORDER CELLPADDING=3 WIDTH="100%">
 
 <TR>
-<TD WIDTH=25%>typedef unsigned int ttag_t;</TD>	<TD>directory tag</TD>
+<TD WIDTH="25%">typedef unsigned int ttag_t;</TD>	<TD>directory tag</TD>
 </TR>
 
 <TR>
-<TD>typedef uint16 tdir_t;</TD>		<TD>directory index</TD>
+<TD>typedef uint16_t tdir_t;</TD>		<TD>directory index</TD>
 </TR>
 
 <TR>
-<TD>typedef uint16 tsample_t;</TD>	<TD>sample number</TD>
+<TD>typedef uint16_t tsample_t;</TD>	<TD>sample number</TD>
 </TR>
 
 <TR>
-<TD>typedef uint32 tstrip_t;</TD>	<TD>strip number</TD>
+<TD>typedef uint32_t tstrip_t;</TD>	<TD>strip number</TD>
 </TR>
 
 <TR>
-<TD>typedef uint32 ttile_t;</TD>		<TD>tile number</TD>
+<TD>typedef uint32_t ttile_t;</TD>		<TD>tile number</TD>
 </TR>
 
 <TR>
-<TD>typedef int32 tsize_t;</TD>		<TD>i/o size in bytes</TD>
+<TD>typedef int32_t tsize_t;</TD>		<TD>i/o size in bytes</TD>
 </TR>
 
 <TR>
@@ -420,7 +416,7 @@ structure:
 </TR>
 
 <TR>
-<TD>typedef int32 toff_t;</TD>		<TD>file offset (should be off_t)</TD>
+<TD>typedef int32_t toff_t;</TD>		<TD>file offset (should be off_t)</TD>
 </TR>
 
 <TR>
@@ -442,7 +438,7 @@ be an arbitrary size (without penalty).  <TT>ttag_t</TT> must be either
 because the library uses a varargs
 interface and ANSI C restricts the type of the parameter before an
 ellipsis to be a promoted type.  <TT>toff_t</TT> is defined as
-<TT>int32</TT> because
+<TT>int32_t</TT> because
 TIFF file offsets are (unsigned) 32-bit quantities.  A signed
 value is used because some interfaces return -1 on error (sigh).
 Finally, note that <TT>tidata_t</TT> is used internally to the library to
@@ -451,8 +447,9 @@ passed as opaque handles and only cast at the lowest layers where
 their type is presumed.
 
 
-<P><HR WIDTH=65% ALIGN=right><H3>General Comments</H3></A>
-
+<HR WIDTH="65%" ALIGN=right>
+<H3>General Comments</H3>
+<P>
 The library is designed to hide as much of the details of TIFF from
 applications as
 possible.  In particular, TIFF directories are read in their entirety
@@ -460,7 +457,9 @@ into an internal format.  Only the tags known by the library are
 available to a user and certain tag data may be maintained that a user
 does not care about (e.g. transfer function tables).
 
-<A NAME=AddingCODECS><P><HR WIDTH=65% ALIGN=right><H3>Adding New Builtin Codecs</H3></A>
+<HR WIDTH="65%" ALIGN=right>
+<H3 id="AddingCODECS">Adding New Builtin Codecs</H3>
+<P>
 
 To add builtin support for a new compression algorithm, you can either
 use the "tag-extension" trick to override the handling of the
@@ -514,8 +513,9 @@ encoded or decoded if the image is organized with <TT>PlanarConfig</TT>=2
 (separate planes).  This is important for algorithms such as JPEG.
 If <TT>PlanarConfig</TT>=1 (interleaved), then sample will always be 0.
 
-<A NAME=Other><P><HR WIDTH=65% ALIGN=right><H3>Other Comments</H3></A>
-
+<HR WIDTH="65%" ALIGN=right>
+<H3 id="Other">Other Comments</H3>
+<P>
 The library handles most I/O buffering.  There are two data buffers
 when decoding data: a raw data buffer that holds all the data in a
 strip, and a user-supplied scanline buffer that compression schemes

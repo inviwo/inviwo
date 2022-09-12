@@ -53,8 +53,8 @@ int TIFFRGBAImageBegin(TIFFRGBAImage *</b><i>img</i><b>,
 TIFF*</b> <i>tif</i><b>, int</b> <i>stopOnError</i><b>,
 char</b> <i>emsg[1024]</i><b>)<br>
 int TIFFRGBAImageGet(TIFFRGBAImage *</b><i>img</i><b>,
-uint32*</b> <i>raster</i><b>, uint32</b> <i>width</i> <b>,
-uint32</b> <i>height</i><b>)<br>
+uint32_t*</b> <i>raster</i><b>, uint32_t</b> <i>width</i> <b>,
+uint32_t</b> <i>height</i><b>)<br>
 void TIFFRGBAImageEnd(TIFFRGBAImage
 *</b><i>img</i><b>)</b></p>
 </td>
@@ -169,9 +169,9 @@ after each display operation. For example, the
 update the display as the raster is being filled:</p>
 <!-- INDENTATION -->
 <pre>static void
-putContigAndDraw(TIFFRGBAImage* img, uint32* raster,
-    uint32 x, uint32 y, uint32 w, uint32 h,
-    int32 fromskew, int32 toskew,
+putContigAndDraw(TIFFRGBAImage* img, uint32_t* raster,
+    uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+    int32_t fromskew, int32_t toskew,
     unsigned char* cp)
 {
     (*putContig)(img, raster, x, y, w, h, fromskew, toskew, cp);

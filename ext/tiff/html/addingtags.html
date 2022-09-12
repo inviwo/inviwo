@@ -1,18 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
 <TITLE>
 Modifying The TIFF Library
 </TITLE>
+<style type="text/css">
+body {
+font-family: Arial, Helvetica, Sans;
+}
+</style>
 </HEAD>
-<BODY BGCOLOR=white> 
-<FONT FACE="Arial, Helvetica, Sans">
+<BODY>
 
 <H1>
 Defining New TIFF Tags
 </H1>
 
 Libtiff has built-in knowledge of all the standard TIFF tags, as
-well as extentions.  The following describes how to add knowledge of
+well as extensions.  The following describes how to add knowledge of
 new tags as builtins to libtiff, or how to application specific tags can
 be used by applications without modifying libtiff. 
 <p>
@@ -27,8 +32,8 @@ This structure looks like this:
 <pre>
 typedef	struct {
   ttag_t    field_tag;          /* field's tag */
-  short	    field_readcount;    /* read count/TIFF_VARIABLE/TIFF_SPP */
-  short	    field_writecount;   /* write count/TIFF_VARIABLE */
+  short	    field_readcount;    /* read count / TIFF_VARIABLE / TIFF_VARIABLE2 / TIFF_SPP */
+  short	    field_writecount;   /* write count / TIFF_VARIABLE / TIFF_VARIABLE2 */
   TIFFDataType field_type;      /* type of associated data */
   unsigned short field_bit;     /* bit in fieldsset bit vector */
   unsigned char field_oktochange;/* if true, can change while writing */
@@ -46,9 +51,9 @@ tiff.h for each known tag. <p>
 The special value TIFF_VARIABLE (-1) indicates that a variable number of
 values may be read.  The special value TIFFTAG_SPP (-2) indicates that there
 should be one value for each sample as defined by TIFFTAG_SAMPLESPERPIXEL.  
-The special value TIFF_VARIABLE2 (-3) is presumably similar to TIFF_VARIABLE
-though I am not sure what the distinction in behaviour is.  This field
-is TIFF_VARIABLE for variable length ascii fields.<p>
+The special value TIFF_VARIABLE2 (-3) is similar to TIFF_VARIABLE
+but the required TIFFGetField() count value must be uint32_t* instead of uint16_t* as for TIFF_VARIABLE (-1).  
+For ASCII fields with variable length, this field is TIFF_VARIABLE.<p>
 
 <li> <b>field_writecount</b>: The number of values which should be written.
 Generally the same as field_readcount.  A few built-in exceptions exist, but
@@ -101,10 +106,17 @@ if particular calling conventions are desired for TIFFSetField() and
 TIFFGetField().<p>
 
 When tags are autodefined like this the <b>field_readcount</b> and
-<b>field_writecount</b> values are always TIFF_VARIABLE.  The 
+<b>field_writecount</b> values are always TIFF_VARIABLE2 (-3).  The 
 <b>field_passcount</b> is always TRUE, and the <b>field_bit</b> is 
 FIELD_CUSTOM.  The field name will be "Tag %d" where the %d is the tag 
-number.<p>  
+number.
+<BR>Thus, to read anonymous auto-registered tags use the following:
+<pre>
+    uint32_t count;
+    void* value;  //has to be a pointer to the expected value type.
+    TIFFGetField(tif, TIFFTAG_UNKNOWN_TO_LIBTIFF, &count, &value);
+
+</pre><p>  
 
 <h2>Defining Application Tags</h2>
 
@@ -113,7 +125,7 @@ their own tags to store information outside the core TIFF specification.
 This is done by calling TIFFMergeFieldInfo() with one or more TIFFFieldInfos. 
 <p>
 
-The libgeotiff library provides geospatial information extentions within
+The libgeotiff library provides geospatial information extensions within
 a TIFF file.  First, a set of TIFFFieldInfo's is prepared with information
 on the new tags:<p>
 
@@ -198,8 +210,8 @@ If tag definitions are only required for writing custom tags, you can just
 call TIFFMergeFieldInfo() before setting new tags.  The whole extender
 architecture can then be avoided.<p>
 
-<A NAME=AddingTags><P><H2>Adding New Builtin Tags</H2></A>
-
+<H2 id="AddingTags">Adding New Builtin Tags</H2>
+<P>
 A similar approach is taken to the above.  However, the TIFFFieldInfo 
 should be added to the tiffFieldInfo[] list in tif_dirinfo.c.  Ensure that
 new tags are added in sorted order by the tag number.<p>
@@ -234,12 +246,12 @@ add appropriate handling as follows:
 
 <P>
 If you want to maintain portability, beware of making assumptions
-about data types.  Use the typedefs (<TT>uint16</TT>, etc. when dealing with
+about data types.  Use the typedefs (<TT>uint16_t</TT>, etc. when dealing with
 data on disk and <TT>t*_t</TT> when stuff is in memory) and be careful about
 passing items through printf or similar vararg interfaces.
 
-<A NAME=AddingCODECTags><P><H2>Adding New Codec-private Tags</H2></A>
-
+<H2 id="AddingCODECTags">Adding New Codec-private Tags</H2>
+<P>
 To add tags that are meaningful <EM>only when a particular compression
 algorithm is used</EM> follow these steps:
 

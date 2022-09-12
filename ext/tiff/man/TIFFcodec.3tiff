@@ -1,4 +1,3 @@
-.\" $Id: TIFFcodec.3tiff,v 1.4 2016-09-25 20:05:50 bfriesen Exp $
 .\"
 .\" Copyright (c) 1995 Sam Leffler
 .\" Copyright (c) 1995 Silicon Graphics, Inc.
@@ -30,13 +29,13 @@ TIFFFindCODEC, TIFFRegisterCODEC, TIFFUnRegisterCODEC, TIFFIsCODECConfigured
 .SH SYNOPSIS
 .B "#include <tiffio.h>"
 .sp
-.BI "const TIFFCodec* TIFFFindCODEC(uint16 " scheme ");"
+.BI "const TIFFCodec* TIFFFindCODEC(uint16_t " scheme ");"
 .br
-.BI "TIFFCodec* TIFFRegisterCODEC(uint16 " scheme ", const char *" method ", TIFFInitMethod " init ");"
+.BI "TIFFCodec* TIFFRegisterCODEC(uint16_t " scheme ", const char *" method ", TIFFInitMethod " init ");"
 .br
 .BI "void TIFFUnRegisterCODEC(TIFFCodec *" codec ");"
 .br
-.BI "int TIFFIsCODECConfigured(uint16 " scheme ");"
+.BI "int TIFFIsCODECConfigured(uint16_t " scheme ");"
 .SH DESCRIPTION
 .I libtiff
 supports a variety of compression schemes implemented by software

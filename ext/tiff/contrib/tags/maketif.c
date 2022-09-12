@@ -36,7 +36,7 @@ failure:
 void SetUpTIFFDirectory(TIFF *tif)
 {
 	double mymulti[6]={0.0,1.0,2.0,  3.1415926, 5.0,1.0};
-	uint32 mysingle=3456;
+	uint32_t mysingle=3456;
 	char *ascii="This file was produced by Steven Spielberg. NOT";
 
 	TIFFSetField(tif,TIFFTAG_IMAGEWIDTH,WIDTH);

@@ -30,93 +30,132 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tiffconf.h.cmake.in
                ${CMAKE_CURRENT_BINARY_DIR}/tiffconf.h
                @ONLY)
 
-extra_dist(
-  SConstruct
-  tif_config.h-vms
-  tif_config.vc.h
-  tif_config.wince.h
-  tiffconf.vc.h
-  tiffconf.wince.h
-  libtiff.def
-  libtiff.map
-  libtiffxx.map)
+set(tiff_public_HEADERS
+        tiff.h
+        tiffio.h
+        tiffvers.h
+        ${CMAKE_CURRENT_BINARY_DIR}/tiffconf.h)
 
-set(tiff_HEADERS
-  tiff.h
-  tiffio.h
-  tiffvers.h)
+set(tiff_private_HEADERS
+        t4.h
+        tif_dir.h
+        tif_predict.h
+        tiffiop.h
+        uvcode.h
+        ${CMAKE_CURRENT_BINARY_DIR}/tif_config.h)
 
-set(tiff_noinst_HEADERS
-  t4.h
-  tif_dir.h
-  tif_predict.h
-  tiffiop.h
-  uvcode.h)
 
-set(nodist_tiff_HEADERS
-  ${CMAKE_CURRENT_BINARY_DIR}/tiffconf.h)
+add_library(tiff libtiff.def)
 
-set(tiff_SOURCES
-  tif_aux.c
-  tif_close.c
-  tif_codec.c
-  tif_color.c
-  tif_compress.c
-  tif_dir.c
-  tif_dirinfo.c
-  tif_dirread.c
-  tif_dirwrite.c
-  tif_dumpmode.c
-  tif_error.c
-  tif_extension.c
-  tif_fax3.c
-  tif_fax3sm.c
-  tif_flush.c
-  tif_getimage.c
-  tif_jbig.c
-  tif_jpeg.c
-  tif_jpeg_12.c
-  tif_luv.c
-  tif_lzma.c
-  tif_lzw.c
-  tif_next.c
-  tif_ojpeg.c
-  tif_open.c
-  tif_packbits.c
-  tif_pixarlog.c
-  tif_predict.c
-  tif_print.c
-  tif_read.c
-  tif_strip.c
-  tif_swab.c
-  tif_thunder.c
-  tif_tile.c
-  tif_version.c
-  tif_warning.c
-  tif_write.c
-  tif_zip.c)
+target_sources(tiff PRIVATE
+        ${tiff_public_HEADERS}
+        ${tiff_private_HEADERS}
+        tif_aux.c
+        tif_close.c
+        tif_codec.c
+        tif_color.c
+        tif_compress.c
+        tif_dir.c
+        tif_dirinfo.c
+        tif_dirread.c
+        tif_dirwrite.c
+        tif_dumpmode.c
+        tif_error.c
+        tif_extension.c
+        tif_fax3.c
+        tif_fax3sm.c
+        tif_flush.c
+        tif_getimage.c
+        tif_jbig.c
+        tif_jpeg.c
+        tif_jpeg_12.c
+        tif_lerc.c
+        tif_luv.c
+        tif_lzma.c
+        tif_lzw.c
+        tif_next.c
+        tif_ojpeg.c
+        tif_open.c
+        tif_packbits.c
+        tif_pixarlog.c
+        tif_predict.c
+        tif_print.c
+        tif_read.c
+        tif_strip.c
+        tif_swab.c
+        tif_thunder.c
+        tif_tile.c
+        tif_version.c
+        tif_warning.c
+        tif_webp.c
+        tif_write.c
+        tif_zip.c
+        tif_zstd.c)
 
-set(tiffxx_HEADERS
-  tiffio.hxx)
-
-set(tiffxx_SOURCES
-  tif_stream.cxx)
-
-if(WIN32_IO)
-  extra_dist(tif_unix.c)
-  list(APPEND tiff_SOURCES tif_win32.c)
+if(USE_WIN32_FILEIO)
+  target_sources(tiff PRIVATE tif_win32.c)
 else()
-  extra_dist(tif_win32.c)
-  list(APPEND tiff_SOURCES tif_unix.c)
+  target_sources(tiff PRIVATE tif_unix.c)
 endif()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${CMAKE_CURRENT_BINARY_DIR}
-                    ${TIFF_INCLUDES})
+target_include_directories(tiff
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    PRIVATE
+        ${TIFF_INCLUDES}
+)
 
-add_library(tiff ${tiff_SOURCES} ${tiff_HEADERS} ${nodist_tiff_HEADERS}
-            ${tiff_port_SOURCES} libtiff.def)
-target_link_libraries(tiff ${TIFF_LIBRARY_DEPS})
+set(tiff_libs_private_list "") # cmake list
+set(tiff_requires_private "") # cmake string
+
+if(ZIP_SUPPORT)
+  target_link_libraries(tiff PRIVATE ZLIB::ZLIB)
+  string(APPEND tiff_requires_private " zlib")
+endif()
+if(ZIP_SUPPORT AND LIBDEFLATE_SUPPORT)
+  target_link_libraries(tiff PRIVATE Deflate::Deflate)
+  list(APPEND tiff_libs_private_list "${Deflate_LIBRARY}")
+endif()
+if(JPEG_SUPPORT)
+  target_link_libraries(tiff PRIVATE JPEG::JPEG)
+  string(APPEND tiff_requires_private " libjpeg")
+  if(JPEG_DUAL_MODE_8_12)
+    target_include_directories(tiff PRIVATE ${JPEG12_INCLUDE_DIR})
+    target_link_libraries(tiff PRIVATE ${JPEG12_LIBRARIES})
+  endif()
+endif()
+if(JBIG_SUPPORT)
+  target_link_libraries(tiff PRIVATE JBIG::JBIG)
+  list(APPEND tiff_libs_private_list "${JBIG_LIBRARY}")
+endif()
+if(LERC_SUPPORT)
+  target_link_libraries(tiff PRIVATE LERC::LERC)
+  list(APPEND tiff_libs_private_list "${LERC_LIBRARY}")
+  if(NOT BUILD_SHARED_LIBS)
+    set_target_properties(tiff PROPERTIES COMPILE_DEFINITIONS LERC_STATIC)
+  endif()
+endif()
+if(LZMA_SUPPORT)
+  target_link_libraries(tiff PRIVATE LibLZMA::LibLZMA)
+  string(APPEND tiff_requires_private " liblzma")
+endif()
+if(ZSTD_SUPPORT)
+  target_link_libraries(tiff PRIVATE ZSTD::ZSTD)
+  string(APPEND tiff_requires_private " libzstd")
+endif()
+if(WEBP_SUPPORT)
+  target_link_libraries(tiff PRIVATE WebP::WebP)
+  string(APPEND tiff_requires_private " libwebp")
+endif()
+target_link_libraries(tiff PRIVATE CMath::CMath)
+if(CMath_LIBRARY)
+  list(APPEND tiff_libs_private_list "${CMath_LIBRARY}")
+endif()
+
+set(tiff_libs_private_list "${tiff_libs_private_list}" PARENT_SCOPE)
+set(tiff_requires_private "${tiff_requires_private}" PARENT_SCOPE)
+
 set_target_properties(tiff PROPERTIES SOVERSION ${SO_COMPATVERSION})
 if(NOT CYGWIN)
     # This property causes shared libraries on Linux to have the full version
@@ -130,20 +169,32 @@ if(HAVE_LD_VERSION_SCRIPT)
                         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiff.map")
 endif()
 
+#[===[ Inviwo modification: disable unused export and install
+export(TARGETS tiff NAMESPACE TIFF:: FILE "${CMAKE_CURRENT_BINARY_DIR}/libtiffTargets.cmake")
+install(TARGETS tiff EXPORT TiffTargets
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-## Inviwo: disabled installing binary files
-#install(TARGETS tiff
-#        RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
-#        LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
-#        ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
+install(FILES ${tiff_public_HEADERS}
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
-## Inviwo: Temporarily disabled installing header files
-#install(FILES ${tiff_HEADERS} ${nodist_tiff_HEADERS}
-#        DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
-##-------------------
+set(TIFF_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/tiff)
+install(EXPORT TiffTargets
+        FILE TiffTargets.cmake
+        NAMESPACE TIFF::
+        DESTINATION ${TIFF_CONFIGDIR}
+)
+]===]
 
-if(cxx)
-  add_library(tiffxx ${tiffxx_SOURCES} ${tiffxx_HEADERS})
+if(CXX_SUPPORT)
+  set(tiffxx_HEADERS
+          tiffio.hxx)
+
+  add_library(tiffxx ../placeholder.h)
+  target_sources(tiffxx PRIVATE
+          ${tiffxx_HEADERS}
+          tif_stream.cxx)
   target_link_libraries(tiffxx tiff)
   set_target_properties(tiffxx PROPERTIES SOVERSION ${SO_COMPATVERSION})
   if(NOT CYGWIN)
@@ -158,52 +209,25 @@ if(cxx)
                           "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiffxx.map")
   endif()
 
-  ## Inviwo: disabled installing binary files
-  # install(TARGETS tiffxx
-  #         RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
-  #         LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
-  #         ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
+#[===[ Inviwo modification: disable install in case tiffxx is enabled
+  install(TARGETS tiffxx
+          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-  ## Inviwo: Temporarily disabled installing header files
-  # install(FILES ${tiffxx_HEADERS}
-  #         DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+  install(FILES ${tiffxx_HEADERS}
+          DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+]===]
 endif()
 
-#--------------------------------------------------------------------
-# Inviwo modifications
-if (UNIX)
-  # Resolve runtime issue on macOS (tested on High Sierra 10.13.1): 
-  # dyld: Symbol not found: __cg_TIFFClientOpen
-  # Referenced from: /System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO
-  # Expected in: /inviwo/build/lib/Debug/libtiff.5.dylib
-  # in /System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO
-  #
-  # Our version of tiff does not do name mangling (_cg), but the macOS-shipped
-  # tiff version seem to do that. Dependencies (Qt?) built using the shipped library 
-  # will expect name mangled tiff functions, but they won't be loaded if 
-  # a library with the same name is already loaded.
-  # Thus, rename the output library to make both libraries load.
-  set_target_properties(tiff PROPERTIES OUTPUT_NAME inviwo-tiff)
-endif()
+#[===[ Inviwo modification: mkg3states and faxtable are not part of libtiff library
+add_executable(mkg3states ../placeholder.h)
+target_sources(mkg3states PRIVATE mkg3states.c tif_fax3.h)
+target_link_libraries(mkg3states tiff port)
 
-target_include_directories(tiff INTERFACE 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>
-)
-
-add_library(TIFF::TIFF ALIAS tiff)
-#--------------------------------------------------------------------
-# Install library into target folder
-ivw_default_install_targets(tiff)
-
-#--------------------------------------------------------------------
-# Create folder structure
-ivw_folder(tiff ext)
-if(cxx)
-  ivw_folder(tiffxx ext)
-  target_include_directories(tiffxx INTERFACE 
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>
-  )
-  add_library(TIFF::TIFFXX ALIAS tiffxx)
-endif()
+add_custom_target(faxtable
+        DEPENDS mkg3states
+        COMMAND ${CMAKE_COMMAND} -E rm "tif_fax3sm.c"
+        COMMAND mkg3states -b -c const "tif_fax3sm.c"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+]===]

@@ -1,4 +1,3 @@
-.\" $Id: TIFFWriteScanline.3tiff,v 1.3 2016-09-25 20:05:50 bfriesen Exp $
 .\"
 .\" Copyright (c) 1988-1997 Sam Leffler
 .\" Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -31,7 +30,7 @@ file
 .SH SYNOPSIS
 .B "#include <tiffio.h>"
 .sp
-.BI "int TIFFWriteScanline(TIFF *" tif ", tdata_t " buf ", uint32 " row ", tsample_t " sample ")"
+.BI "int TIFFWriteScanline(TIFF *" tif ", tdata_t " buf ", uint32_t " row ", tsample_t " sample ")"
 .SH DESCRIPTION
 Write data to a file at the specified row. The
 .I sample

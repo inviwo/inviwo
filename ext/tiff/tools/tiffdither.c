@@ -1,5 +1,3 @@
-/* $Id: tiffdither.c,v 1.16 2015-06-21 01:09:11 bfriesen Exp $ */
-
 /*
  * Copyright (c) 1988-1997 Sam Leffler
  * Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -25,6 +23,7 @@
  */
 
 #include "tif_config.h"
+#include "libport.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,12 +33,15 @@
 # include <unistd.h>
 #endif
 
-#ifdef NEED_LIBPORT
-# include "libport.h"
-#endif
-
 #include "tiffio.h"
 #include "tiffiop.h"
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
 
 #define	streq(a,b)	(strcmp(a,b) == 0)
 #define	strneq(a,b,n)	(strncmp(a,b,n) == 0)
@@ -47,11 +49,11 @@
 #define	CopyField(tag, v) \
 	if (TIFFGetField(in, tag, &v)) TIFFSetField(out, tag, v)
 
-uint32	imagewidth;
-uint32	imagelength;
+uint32_t	imagewidth;
+uint32_t	imagelength;
 int	threshold = 128;
 
-static	void usage(void);
+static	void usage(int code);
 
 /* 
  * Floyd-Steinberg error propragation with threshold.
@@ -64,8 +66,8 @@ fsdither(TIFF* in, TIFF* out)
 	short *thisline, *nextline, *tmpptr;
 	register unsigned char	*outptr;
 	register short *thisptr, *nextptr;
-	register uint32 i, j;
-	uint32 imax, jmax;
+	register uint32_t i, j;
+	uint32_t imax, jmax;
 	int lastline, lastpixel;
 	int bit;
 	tsize_t outlinesize;
@@ -151,9 +153,9 @@ fsdither(TIFF* in, TIFF* out)
 	return errcode;
 }
 
-static	uint16 compression = COMPRESSION_PACKBITS;
-static	uint16 predictor = 0;
-static	uint32 group3options = 0;
+static	uint16_t compression = COMPRESSION_PACKBITS;
+static	uint16_t predictor = 0;
+static	uint32_t group3options = 0;
 
 static void
 processG3Options(char* cp)
@@ -168,7 +170,7 @@ processG3Options(char* cp)
 			else if (strneq(cp, "fill", 4))
 				group3options |= GROUP3OPT_FILLBITS;
 			else
-				usage();
+				usage(EXIT_FAILURE);
 		} while ((cp = strchr(cp, ':')));
 	}
 }
@@ -194,7 +196,7 @@ processCompressOptions(char* opt)
 		char* cp = strchr(opt, ':');
 		if (cp)
 			predictor = atoi(cp+1);
-		compression = COMPRESSION_DEFLATE;
+		compression = COMPRESSION_ADOBE_DEFLATE;
 	} else
 		return (0);
 	return (1);
@@ -204,22 +206,22 @@ int
 main(int argc, char* argv[])
 {
 	TIFF *in, *out;
-	uint16 samplesperpixel, bitspersample = 1, shortv;
+	uint16_t samplesperpixel, bitspersample = 1, shortv;
 	float floatv;
 	char thing[1024];
-	uint32 rowsperstrip = (uint32) -1;
-	uint16 fillorder = 0;
+	uint32_t rowsperstrip = (uint32_t) -1;
+	uint16_t fillorder = 0;
 	int c;
 #if !HAVE_DECL_OPTARG
 	extern int optind;
 	extern char *optarg;
 #endif
 
-	while ((c = getopt(argc, argv, "c:f:r:t:")) != -1)
+	while ((c = getopt(argc, argv, "c:f:r:t:h")) != -1)
 		switch (c) {
 		case 'c':		/* compression scheme */
 			if (!processCompressOptions(optarg))
-				usage();
+				usage(EXIT_FAILURE);
 			break;
 		case 'f':		/* fill order */
 			if (streq(optarg, "lsb2msb"))
@@ -227,7 +229,7 @@ main(int argc, char* argv[])
 			else if (streq(optarg, "msb2lsb"))
 				fillorder = FILLORDER_MSB2LSB;
 			else
-				usage();
+				usage(EXIT_FAILURE);
 			break;
 		case 'r':		/* rows/strip */
 			rowsperstrip = atoi(optarg);
@@ -239,29 +241,34 @@ main(int argc, char* argv[])
 			else if (threshold > 255)
 				threshold = 255;
 			break;
+		case 'h':
+			usage(EXIT_SUCCESS);
+                        /*NOTREACHED*/
+                        break;
 		case '?':
-			usage();
+			usage(EXIT_FAILURE);
 			/*NOTREACHED*/
+                        break;
 		}
 	if (argc - optind < 2)
-		usage();
+		usage(EXIT_FAILURE);
 	in = TIFFOpen(argv[optind], "r");
 	if (in == NULL)
-		return (-1);
+		return (EXIT_FAILURE);
 	TIFFGetField(in, TIFFTAG_SAMPLESPERPIXEL, &samplesperpixel);
 	if (samplesperpixel != 1) {
 		fprintf(stderr, "%s: Not a b&w image.\n", argv[0]);
-		return (-1);
+		return (EXIT_FAILURE);
 	}
 	TIFFGetField(in, TIFFTAG_BITSPERSAMPLE, &bitspersample);
 	if (bitspersample != 8) {
 		fprintf(stderr,
 		    " %s: Sorry, only handle 8-bit samples.\n", argv[0]);
-		return (-1);
+		return (EXIT_FAILURE);
 	}
 	out = TIFFOpen(argv[optind+1], "w");
 	if (out == NULL)
-		return (-1);
+		return (EXIT_FAILURE);
 	CopyField(TIFFTAG_IMAGEWIDTH, imagewidth);
 	TIFFGetField(in, TIFFTAG_IMAGELENGTH, &imagelength);
 	TIFFSetField(out, TIFFTAG_IMAGELENGTH, imagelength-1);
@@ -287,6 +294,7 @@ main(int argc, char* argv[])
 		TIFFSetField(out, TIFFTAG_GROUP3OPTIONS, group3options);
 		break;
 	case COMPRESSION_LZW:
+	case COMPRESSION_ADOBE_DEFLATE:
 	case COMPRESSION_DEFLATE:
 		if (predictor)
 			TIFFSetField(out, TIFFTAG_PREDICTOR, predictor);
@@ -295,46 +303,53 @@ main(int argc, char* argv[])
 	fsdither(in, out);
 	TIFFClose(in);
 	TIFFClose(out);
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
-char* stuff[] = {
-"usage: tiffdither [options] input.tif output.tif",
-"where options are:",
-" -r #		make each strip have no more than # rows",
-" -t #		set the threshold value for dithering (default 128)",
-" -f lsb2msb	force lsb-to-msb FillOrder for output",
-" -f msb2lsb	force msb-to-lsb FillOrder for output",
-" -c lzw[:opts]	compress output with Lempel-Ziv & Welch encoding",
-" -c zip[:opts]	compress output with deflate encoding",
-" -c packbits	compress output with packbits encoding",
-" -c g3[:opts]	compress output with CCITT Group 3 encoding",
-" -c g4		compress output with CCITT Group 4 encoding",
-" -c none	use no compression algorithm on output",
-"",
-"Group 3 options:",
-" 1d		use default CCITT Group 3 1D-encoding",
-" 2d		use optional CCITT Group 3 2D-encoding",
-" fill		byte-align EOL codes",
-"For example, -c g3:2d:fill to get G3-2D-encoded data with byte-aligned EOLs",
-"",
-"LZW and deflate options:",
-" #		set predictor value",
-"For example, -c lzw:2 to get LZW-encoded data with horizontal differencing",
-NULL
-};
+static const char usage_info[] =
+"Convert a greyscale image to bilevel using dithering\n\n"
+"usage: tiffdither [options] input.tif output.tif\n"
+"where options are:\n"
+" -r #      make each strip have no more than # rows\n"
+" -t #      set the threshold value for dithering (default 128)\n"
+" -f lsb2msb    force lsb-to-msb FillOrder for output\n"
+" -f msb2lsb    force msb-to-lsb FillOrder for output\n"
+"\n"
+#ifdef LZW_SUPPORT
+" -c lzw[:opts] compress output with Lempel-Ziv & Welch encoding\n"
+"    #          set predictor value\n"
+"    For example, -c lzw:2 for LZW-encoded data with horizontal differencing\n"
+#endif
+#ifdef ZIP_SUPPORT
+" -c zip[:opts] compress output with deflate encoding\n"
+"    #          set predictor value\n"
+#endif
+#ifdef PACKBITS_SUPPORT
+" -c packbits   compress output with packbits encoding\n"
+#endif
+#ifdef CCITT_SUPPORT
+" -c g3[:opts]  compress output with CCITT Group 3 encoding\n"
+"    Group 3 options:\n"
+"    1d         use default CCITT Group 3 1D-encoding\n"
+"    2d         use optional CCITT Group 3 2D-encoding\n"
+"    fill       byte-align EOL codes\n"
+"    For example, -c g3:2d:fill for G3-2D-encoded data with byte-aligned EOLs\n"
+" -c g4         compress output with CCITT Group 4 encoding\n"
+#endif
+#if defined(LZW_SUPPORT) || defined(ZIP_SUPPORT) || defined(PACKBITS_SUPPORT) || defined(CCITT_SUPPORT)
+" -c none       use no compression algorithm on output\n"
+#endif
+"\n"
+;
 
 static void
-usage(void)
+usage(int code)
 {
-	char buf[BUFSIZ];
-	int i;
+	FILE * out = (code == EXIT_SUCCESS) ? stdout : stderr;
 
-	setbuf(stderr, buf);
-        fprintf(stderr, "%s\n\n", TIFFGetVersion());
-	for (i = 0; stuff[i] != NULL; i++)
-		fprintf(stderr, "%s\n", stuff[i]);
-	exit(-1);
+        fprintf(out, "%s\n\n", TIFFGetVersion());
+        fprintf(out, "%s", usage_info);
+	exit(code);
 }
 
 /* vim: set ts=8 sts=8 sw=8 noet: */

@@ -1,5 +1,3 @@
-/* $Id: strip_rw.c,v 1.6 2008/03/28 01:42:07 bfriesen Exp $ */
-
 /*
  * Copyright (c) 2004, Andrey Kiselev  <dron@ak4719.spb.edu>
  *
@@ -41,22 +39,22 @@
 #include "test_arrays.h"
 
 extern int
-create_image_striped(const char *, uint32, uint32, uint32, uint16, uint16,
-		     uint16, uint16, uint16, uint16, const tdata_t,
-		     const tsize_t);
+create_image_striped(const char *, uint32_t, uint32_t, uint32_t, uint16_t, uint16_t,
+                     uint16_t, uint16_t, uint16_t, uint16_t, const tdata_t,
+                     const tsize_t);
 extern int
-read_image_striped(const char *, uint32, uint32, uint32, uint16, uint16,
-		   uint16, uint16, uint16, uint16, const tdata_t,
-		   const tsize_t);
+read_image_striped(const char *, uint32_t, uint32_t, uint32_t, uint16_t, uint16_t,
+                   uint16_t, uint16_t, uint16_t, uint16_t, const tdata_t,
+                   const tsize_t);
 
 const char	*filename = "strip_test.tiff";
 
 int
 main(int argc, char **argv)
 {
-	uint32		rowsperstrip;
-	uint16		compression;
-	uint16		spp, bps, photometric, sampleformat, planarconfig;
+	uint32_t		rowsperstrip;
+	uint16_t		compression;
+	uint16_t		spp, bps, photometric, sampleformat, planarconfig;
         (void) argc;
         (void) argv;
 

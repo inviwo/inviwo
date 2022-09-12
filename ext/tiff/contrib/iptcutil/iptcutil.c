@@ -1,5 +1,3 @@
-/* $Id: iptcutil.c,v 1.11 2015-06-21 01:09:09 bfriesen Exp $ */
-
 #include "tif_config.h"
 
 #include <stdio.h>
@@ -19,7 +17,7 @@
 # include <fcntl.h>
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #define STRNICMP strnicmp
 #else 
 #define STRNICMP strncasecmp
@@ -238,10 +236,10 @@ int formatIPTC(FILE *ifile, FILE *ofile)
 
       /* we found the 0x1c tag and now grab the dataset and record number tags */
       dataset = getc(ifile);
-      if ((char) dataset == EOF)
+      if (dataset == EOF)
         return -1;
       recnum = getc(ifile);
-      if ((char) recnum == EOF)
+      if (recnum == EOF)
         return -1;
       /* try to match this record to one of the ones in our named table */
       for (i=0; i< tagcount; i++)
@@ -416,14 +414,14 @@ int main(int argc, char *argv[])
             {
             case 't':
               mode = 1;
-#ifdef WIN32
+#ifdef _WIN32
               /* Set "stdout" to binary mode: */
               _setmode( _fileno( ofile ), _O_BINARY );
 #endif
               break;
             case 'b':
               mode = 0;
-#ifdef WIN32
+#ifdef _WIN32
               /* Set "stdin" to binary mode: */
               _setmode( _fileno( ifile ), _O_BINARY );
 #endif
@@ -784,7 +782,7 @@ int sindex(char ch,char *string)
   char *cp;
   for(cp=string;*cp;++cp)
     if(ch==*cp)
-      return (int)(cp-string);	/* return postion of character */
+      return (int)(cp-string);	/* return position of character */
   return -1;			/* eol ... no match found */
 }
 
@@ -928,6 +926,7 @@ int tokenizer(unsigned inflag,char *token,int tokmax,char *line,
             {
 	    case IN_WHITE:
 	      _p_state=IN_TOKEN; /* switch states */
+          /* Fall through */
 
 	    case IN_TOKEN:		 /* these 2 are     */
 	    case IN_QUOTE:		 /*  identical here */

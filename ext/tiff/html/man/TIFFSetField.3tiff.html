@@ -93,9 +93,9 @@ understood by <i>libtiff</i>, the number of parameter
 values, and the expected types for the parameter values are
 shown below. The data types are: <i>char*</i> is
 null-terminated string and corresponds to the
-<small>ASCII</small> data type; <i>uint16</i> is an unsigned
-16-bit value; <i>uint32</i> is an unsigned 32-bit value;
-<i>uint16*</i> is an array of unsigned 16-bit values.
+<small>ASCII</small> data type; <i>uint16_t</i> is an unsigned
+16-bit value; <i>uint32_t</i> is an unsigned 32-bit value;
+<i>uint16_t*</i> is an array of unsigned 16-bit values.
 <i>void*</i> is an array of data values of unspecified
 type.</p>
 
@@ -173,7 +173,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -196,7 +196,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -221,7 +221,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -244,7 +244,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16*</p></td>
+<p>uint16_t*</p></td>
 <td width="11%">
 
 
@@ -269,7 +269,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -294,7 +294,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -386,7 +386,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -409,7 +409,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16,uint16*</p></td>
+<p>uint16_t,uint16_t*</p></td>
 <td width="11%">
 
 
@@ -484,7 +484,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -509,7 +509,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 
 
@@ -534,7 +534,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 
 
@@ -559,7 +559,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -605,7 +605,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32,void*</p></td>
+<p>uint32_t,void*</p></td>
 <td width="11%">
 
 
@@ -630,7 +630,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 
 
@@ -678,7 +678,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -701,7 +701,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 
 
@@ -726,7 +726,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16, char*</p></td>
+<p>uint16_t, char*</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -749,7 +749,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -824,7 +824,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32*,void*</p></td>
+<p>uint32_t*,void*</p></td>
 <td width="11%">
 
 
@@ -897,7 +897,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -922,7 +922,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -945,7 +945,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -991,7 +991,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -1037,7 +1037,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -1060,7 +1060,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -1083,7 +1083,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32,void*</p></td>
+<p>uint32_t,void*</p></td>
 <td width="11%">
 
 
@@ -1108,7 +1108,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -1133,7 +1133,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -1208,7 +1208,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -1231,7 +1231,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32,void*</p></td>
+<p>uint32_t,void*</p></td>
 <td width="11%">
 
 
@@ -1256,7 +1256,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 
 
@@ -1281,7 +1281,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -1306,7 +1306,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -1425,7 +1425,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -1448,7 +1448,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16,uint32*</p></td>
+<p>uint16_t,uint32_t*</p></td>
 <td width="11%">
 
 
@@ -1496,7 +1496,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 </td></tr>
 <tr valign="top" align="left">
@@ -1519,7 +1519,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 
 
@@ -1544,7 +1544,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 
 
@@ -1569,7 +1569,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32</p></td>
+<p>uint32_t</p></td>
 <td width="11%">
 
 
@@ -1584,7 +1584,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>1 or 3&Dagger; uint16*</p></td>
+<p>1 or 3&Dagger; uint16_t*</p></td>
 <td width="11%">
 
 
@@ -1634,7 +1634,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint32,void*</p></td>
+<p>uint32_t,void*</p></td>
 <td width="11%">
 
 
@@ -1730,7 +1730,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
@@ -1755,7 +1755,7 @@ meaning of each tag.</p>
 <td width="29%">
 
 
-<p>uint16</p></td>
+<p>uint16_t</p></td>
 <td width="11%">
 
 
