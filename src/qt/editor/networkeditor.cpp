@@ -674,7 +674,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         expandAction->setDisabled(selectedComposites.empty());
 
         auto selectPropAction =
-            menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Select Sub Properties"));
+            menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
         selectPropAction->setEnabled(selectedComposites.size() == 1);
         connect(selectPropAction, &QAction::triggered, this, [this, selectedComposites]() {
             auto dialog = new SubPropertySelectionDialog(*selectedComposites.begin(), mainwindow_);

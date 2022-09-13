@@ -44,7 +44,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QHBoxLayout>
+#include <QLabel>
+#include <QGridLayout>
 #include <QTreeView>
 #include <QHeaderView>
 #include <QAbstractItemModel>
@@ -55,6 +56,8 @@
 #include <QStyledItemDelegate>
 #include <QEvent>
 #include <QMouseEvent>
+#include <QToolButton>
+#include <QItemSelectionModel>
 #include <warn/pop>
 
 #include <fmt/format.h>
@@ -576,7 +579,10 @@ class ItemDelegate : public QStyledItemDelegate {
 
 SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* processor,
                                                        QWidget* parent)
-    : InviwoDockWidget("Add Sub Properties", parent, "SubPropertySelectionWidget"), cp_{processor} {
+    : InviwoDockWidget(
+          utilqt::toQString(fmt::format("Configure Properties ({})", processor->getIdentifier())),
+          parent, "ConfigureCompositeProcessorWidget")
+    , cp_{processor} {
 
     processor->getNetwork()->addObserver(this);
 
@@ -588,7 +594,7 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* proce
 
     loadState();
 
-    auto layout = new QHBoxLayout();
+    auto layout = new QGridLayout();
 
     auto config = [&](QTreeView* tree) {
         tree->header()->hide();
@@ -619,24 +625,43 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* proce
         tree->setSizePolicy(sp);
     };
 
-    {
-        auto& net = processor->getSubNetwork();
-        auto subModel = new NetworkTreeModel(net, this);
-        auto subTree = new QTreeView(this);
-        subTree->setModel(subModel);
-        config(subTree);
-        subTree->setDragDropMode(QAbstractItemView::DragOnly);
-        layout->addWidget(subTree);
-    }
-    {
-        auto superModel = new CompositeProcessorTreeModel(processor, this);
-        auto superTree = new QTreeView(this);
-        superTree->setModel(superModel);
-        superTree->setDragDropMode(QAbstractItemView::DragDrop);
-        superTree->setItemDelegate(new ItemDelegate(this));
-        config(superTree);
-        layout->addWidget(superTree);
-    }
+    layout->addWidget(new QLabel("Composite Network"), 0, 0);
+    layout->addWidget(new QLabel("Exposed Properties"), 0, 2);
+
+    // Sub tree
+    auto& net = processor->getSubNetwork();
+    auto subModel = new NetworkTreeModel(net, this);
+    auto subTree = new QTreeView(this);
+    subTree->setModel(subModel);
+    config(subTree);
+    subTree->setDragDropMode(QAbstractItemView::DragOnly);
+    layout->addWidget(subTree, 1, 0);
+
+    // Add button
+    auto add = new QToolButton(this);
+    add->setIcon(QIcon(":/svgicons/link-right.svg"));
+    add->setMinimumSize(utilqt::emToPx(this, QSizeF{3, 3}));
+    add->setIconSize(utilqt::emToPx(this, QSizeF{3, 3}));
+    add->setAutoRaise(true);
+    layout->addWidget(add, 1, 1);
+
+    connect(subTree->selectionModel(), &QItemSelectionModel::selectionChanged, this,
+            [subTree, add](const QItemSelection&, const QItemSelection&) {
+                bool empty = subTree->selectionModel()->selectedIndexes().empty();
+                add->setDisabled(empty);
+            });
+            
+    
+
+    // Super tree
+    auto superModel = new CompositeProcessorTreeModel(processor, this);
+    auto superTree = new QTreeView(this);
+    superTree->setModel(superModel);
+    superTree->setDragDropMode(QAbstractItemView::DragDrop);
+    superTree->setItemDelegate(new ItemDelegate(this));
+    config(superTree);
+    layout->addWidget(superTree, 1, 2);
+    superTree->setRootIndex(superModel->index(0, 0));
 
     setContents(layout);
 }
