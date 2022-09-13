@@ -650,8 +650,6 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* proce
                 bool empty = subTree->selectionModel()->selectedIndexes().empty();
                 add->setDisabled(empty);
             });
-            
-    
 
     // Super tree
     auto superModel = new CompositeProcessorTreeModel(processor, this);
