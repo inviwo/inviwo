@@ -60,7 +60,14 @@ include(AutotoolsCompat)
 include(CompilerChecks)
 
 # Linker checks (version script, etc.)
-include(LinkerChecks)
+
+#[===[ Inviwo modification, cmake detects support for versionscript but xcode does not like it ]===)
+if(XCODE)
+    set(HAVE_LD_VERSION_SCRIPT FALSE)
+else()
+  include(LinkerChecks)
+endif()
+#[===[ End Inviwo modification ]===]
 
 # Processor checks (endianness, fill order, floating point, etc.)
 include(ProcessorChecks)
@@ -149,7 +156,7 @@ include(PkgConfig)
 
 message(STATUS "")
 message(STATUS "Libtiff is now configured for ${CMAKE_SYSTEM}")
-#[===[ Inviwo modification: reduce logging
+#[===[ Inviwo modification
 message(STATUS "")
 message(STATUS "  Installation directory:             ${prefix}")
 message(STATUS "  Documentation directory:            ${LIBTIFF_DOCDIR}")
