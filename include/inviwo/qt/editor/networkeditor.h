@@ -154,6 +154,8 @@ protected:
     void propagateEventToSelectedProcessors(KeyboardEvent& pressKeyEvent);
 
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
+    void deleteAndKeepConnections(ProcessorGraphicsItem* processor);
+
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
 
     // Override for tooltips

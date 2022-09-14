@@ -40,6 +40,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/inviwosetupinfo.h>
+#include <inviwo/core/util/zip.h>
 
 #include <inviwo/core/network/lambdanetworkvisitor.h>
 
@@ -178,6 +179,17 @@ Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
     }
 }
 
+void CompositeProcessor::removeSuperProperty(Property* orgProp) {
+    orgProp->unsetMetaData<BoolMetaData>(meta::exposed);
+    handlers_.erase(orgProp);
+    
+    orgProp->unsetMetaData<IntMetaData>(meta::index);
+    for (auto&& [index, superProp] : util::enumerate(*this)) {
+        superProp->setMetaData<IntMetaData>(meta::index, index);
+        getSubProperty(superProp)->setMetaData<IntMetaData>(meta::index, index);
+    }
+}
+
 Property* CompositeProcessor::getSuperProperty(Property* orgProp) {
     auto it = handlers_.find(orgProp);
     if (it != handlers_.end()) {
@@ -185,11 +197,6 @@ Property* CompositeProcessor::getSuperProperty(Property* orgProp) {
     } else {
         return nullptr;
     }
-}
-
-void CompositeProcessor::removeSuperProperty(Property* orgProp) {
-    orgProp->unsetMetaData<BoolMetaData>(meta::exposed);
-    handlers_.erase(orgProp);
 }
 
 Property* CompositeProcessor::getSubProperty(Property* superProperty) {
