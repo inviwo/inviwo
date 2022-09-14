@@ -446,10 +446,10 @@ public:
     }
 
     virtual QVariant data(const QModelIndex& index, int role) const override {
-        if (role ==  Qt::ForegroundRole) {
+        if (role == Qt::ForegroundRole) {
             return {};
         }
-    
+
         if (index.column() == 3) {
             switch (role) {
                 case Qt::DecorationRole: {

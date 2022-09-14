@@ -182,7 +182,7 @@ Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
 void CompositeProcessor::removeSuperProperty(Property* orgProp) {
     orgProp->unsetMetaData<BoolMetaData>(meta::exposed);
     handlers_.erase(orgProp);
-    
+
     orgProp->unsetMetaData<IntMetaData>(meta::index);
     for (auto&& [index, superProp] : util::enumerate(*this)) {
         superProp->setMetaData<IntMetaData>(meta::index, index);
