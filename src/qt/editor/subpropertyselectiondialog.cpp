@@ -92,11 +92,11 @@ const SuperPropertyMimeData* SuperPropertyMimeData::toSuperPropertyMimeData(cons
 }
 
 namespace column {
-    static constexpr int name = 0;
-    static constexpr int visible = 1;
-    static constexpr int readonly = 2;
-    static constexpr int remove = 3;
-}
+static constexpr int name = 0;
+static constexpr int visible = 1;
+static constexpr int readonly = 2;
+static constexpr int remove = 3;
+}  // namespace column
 
 class NetworkTreeModel : public QAbstractItemModel,
                          public PropertyOwnerObserver,
@@ -456,7 +456,7 @@ public:
         if (role == Qt::ForegroundRole) {
             return {};
         }
-    
+
         if (index.column() == column::remove) {
             switch (role) {
                 case Qt::DecorationRole: {
@@ -563,7 +563,7 @@ class ItemDelegate : public QStyledItemDelegate {
                              const QStyleOptionViewItem& option,
                              const QModelIndex& index) override {
 
-        if (index.column() == column::visible || index.column() == column::readonly ) {
+        if (index.column() == column::visible || index.column() == column::readonly) {
             if (event->type() == QEvent::MouseButtonPress) {
                 event->accept();
                 return true;

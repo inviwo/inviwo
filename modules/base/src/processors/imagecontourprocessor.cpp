@@ -53,8 +53,7 @@ ImageContourProcessor::ImageContourProcessor()
                {0, ConstraintBehavior::Immutable}, {4, ConstraintBehavior::Editable})
     , isoValue_("iso", "ISO Value", "The contour iso value"_help, 0.5,
                 {0, ConstraintBehavior::Ignore}, {1, ConstraintBehavior::Ignore})
-    , color_("color", "Color",
-             util::ordinalColor(vec4(1.0)).set("The contour color"_help)) {
+    , color_("color", "Color", util::ordinalColor(vec4(1.0)).set("The contour color"_help)) {
 
     addPorts(image_, mesh_);
     addProperties(channel_, isoValue_, color_);
