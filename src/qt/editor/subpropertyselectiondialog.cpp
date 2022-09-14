@@ -91,6 +91,13 @@ const SuperPropertyMimeData* SuperPropertyMimeData::toSuperPropertyMimeData(cons
     return qobject_cast<const SuperPropertyMimeData*>(data);
 }
 
+namespace column {
+    static constexpr int name = 0;
+    static constexpr int visible = 1;
+    static constexpr int readonly = 2;
+    static constexpr int remove = 3;
+}
+
 class NetworkTreeModel : public QAbstractItemModel,
                          public PropertyOwnerObserver,
                          public PropertyObserver {
@@ -213,7 +220,7 @@ public:
             return utilqt::toQString(desc);
         };
 
-        if (index.column() == 0) {
+        if (index.column() == column::name) {
             switch (role) {
                 case Qt::DisplayRole: {
                     if (auto prop = toProperty(index)) {
@@ -242,7 +249,7 @@ public:
                     break;
                 }
             }
-        } else if (index.column() == 1) {
+        } else if (index.column() == column::visible) {
             switch (role) {
                 case Qt::DecorationRole: {
                     if (auto prop = toProperty(index)) {
@@ -263,7 +270,7 @@ public:
                     break;
                 }
             }
-        } else if (index.column() == 2) {
+        } else if (index.column() == column::readonly) {
             switch (role) {
                 case Qt::DecorationRole: {
                     if (auto prop = toProperty(index)) {
@@ -431,7 +438,7 @@ public:
     virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override { return 4; }
 
     Qt::ItemFlags flags(const QModelIndex& index) const override {
-        if (index.column() == 0) {
+        if (index.column() == column::name) {
             Qt::ItemFlags flags = Qt::NoItemFlags;
             if (toProperty(index)) {
                 flags = flags | Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable;
@@ -449,8 +456,8 @@ public:
         if (role == Qt::ForegroundRole) {
             return {};
         }
-
-        if (index.column() == 3) {
+    
+        if (index.column() == column::remove) {
             switch (role) {
                 case Qt::DecorationRole: {
                     if (auto prop = toProperty(index)) {
@@ -480,19 +487,19 @@ public:
 
         if (role != Qt::EditRole) return false;
 
-        if (index.column() == 0) {
+        if (index.column() == column::name) {
             if (auto str = value.toString(); !str.isEmpty()) {
                 if (auto property = toProperty(index)) {
                     property->setDisplayName(utilqt::fromQString(str));
                     return true;
                 }
             }
-        } else if (index.column() == 1) {
+        } else if (index.column() == column::visible) {
             if (auto property = toProperty(index)) {
                 property->setVisible(value.toBool());
                 return true;
             }
-        } else if (index.column() == 2) {
+        } else if (index.column() == column::readonly) {
             if (auto property = toProperty(index)) {
                 property->setReadOnly(value.toBool());
                 return true;
@@ -556,7 +563,7 @@ class ItemDelegate : public QStyledItemDelegate {
                              const QStyleOptionViewItem& option,
                              const QModelIndex& index) override {
 
-        if (index.column() >= 1 && index.column() <= 2) {
+        if (index.column() == column::visible || index.column() == column::readonly ) {
             if (event->type() == QEvent::MouseButtonPress) {
                 event->accept();
                 return true;
@@ -567,7 +574,7 @@ class ItemDelegate : public QStyledItemDelegate {
             }
         }
 
-        if (index.column() == 3) {
+        if (index.column() == column::remove) {
             if (event->type() == QEvent::MouseButtonPress) {
                 event->accept();
                 return true;
@@ -630,7 +637,7 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* proce
         tree->setSizePolicy(sp);
     };
 
-    layout->addWidget(new QLabel("Composite Network"), 0, 0);
+    layout->addWidget(new QLabel("All Properties"), 0, 0);
     layout->addWidget(new QLabel("Exposed Properties"), 0, 2);
 
     // Sub tree

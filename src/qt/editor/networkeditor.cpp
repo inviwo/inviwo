@@ -553,10 +553,10 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 connect(showAction, &QAction::triggered,
                         [widget]() { widget->setVisible(!widget->isVisible()); });
             } else if (auto comp = dynamic_cast<CompositeProcessor*>(processor->getProcessor())) {
-                if (util::any_of(comp->getSubNetwork().processorView(),
+                if (util::any_of(comp->getSubNetwork().processorRange(),
                                  [](const Processor& p) { return p.hasProcessorWidget(); })) {
                     QMenu* subMenu = menu.addMenu("Widgets");
-                    for (const auto& subProcessor : comp->getSubNetwork().processorView()) {
+                    for (const auto& subProcessor : comp->getSubNetwork().processorRange()) {
                         if (auto subWidget = subProcessor.getProcessorWidget()) {
                             QAction* showAction = subMenu->addAction(utilqt::toQString(
                                 fmt::format("Show {} Widget", subProcessor.getDisplayName())));

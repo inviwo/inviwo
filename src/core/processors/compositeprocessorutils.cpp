@@ -285,7 +285,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
             network.addLink(l);
         }
 
-        auto tmp = network.removeProcessor(&composite);
+        network.removeProcessor(&composite);
     } catch (const Exception& e) {
         util::log(e.getContext(), e.getMessage());
     }

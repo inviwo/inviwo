@@ -40,7 +40,8 @@ const ProcessorInfo ImageContourProcessor::processorInfo_{
     "Image Processing",                  // Category
     CodeState::Experimental,             // Code state
     Tags::CPU,                           // Tags
-    R"(Does marching squares on the image to extract a contour mesh.)"_unindentHelp};
+    R"(Extracts a contour line for a specific value in the image using marching squares.
+    The output contour is provided as a line mesh.)"_unindentHelp};
 
 const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
 
@@ -48,12 +49,12 @@ ImageContourProcessor::ImageContourProcessor()
     : Processor()
     , image_("image", "Input image"_help, OutportDeterminesSize::Yes)
     , mesh_("mesh", "Contour mesh"_help)
-    , channel_("channel", "Channel", "The image channel to use compare the iso value to"_help, 0,
+    , channel_("channel", "Channel", "The image channel used to extract the contour"_help, 0,
                {0, ConstraintBehavior::Immutable}, {4, ConstraintBehavior::Editable})
     , isoValue_("iso", "ISO Value", "The contour iso value"_help, 0.5,
                 {0, ConstraintBehavior::Ignore}, {1, ConstraintBehavior::Ignore})
     , color_("color", "Color",
-             util::ordinalColor(vec4(1.0)).set("The color of the resulting mesh"_help)) {
+             util::ordinalColor(vec4(1.0)).set("The contour color"_help)) {
 
     addPorts(image_, mesh_);
     addProperties(channel_, isoValue_, color_);

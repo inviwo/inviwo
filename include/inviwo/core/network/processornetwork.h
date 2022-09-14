@@ -188,7 +188,10 @@ public:
     template <typename C>
     void forEachProcessor(C callback);
 
-    auto processorView() const {
+    /**
+     * Returns a range of all processors (Processor&), in unspecified order.
+     */
+    auto processorRange() const {
         return util::transformRange(
             processors_, [](const auto& item) -> decltype(auto) { return *item.second; });
     }
@@ -272,7 +275,10 @@ public:
     template <typename C>
     void forEachConnection(C callback);
 
-    auto connectionView() const { return util::as_range(connections_); }
+    /**
+     * Returns a range of all connections (PortConnection&), in unspecified order.
+     */
+    auto connectionRange() const { return util::as_range(connections_); }
 
     /**
      * @brief Check if @p port is owned by a processor in this ProcessorNetwork
@@ -347,7 +353,10 @@ public:
     template <typename C>
     void forEachLink(C callback);
 
-    auto linkView() const { return util::as_range(links_); }
+    /**
+     * Returns a range of all links (PropertyLink&), in unspecified order.
+     */
+    auto linkRange() const { return util::as_range(links_); }
 
     /**
      * Is Property Link bidirectional
