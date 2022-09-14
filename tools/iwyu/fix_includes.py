@@ -112,7 +112,7 @@ _NAMESPACE_END_RE = re.compile(r'\s*(})|'
                                                              r'\s*(U_NAMESPACE_END)|'
                                                              r'\s*(HASH_NAMESPACE_DECLARATION_END)')
 # The group (in parens) holds the unique 'key' identifying this #include.
-_INCLUDE_RE = re.compile(r'\s*#\s*include\s+([<"][^">]+[>"])')
+_INCLUDE_RE = re.compile(r'\s*#\s*include\s+((?!<warn/)[<"][^">]+[>"])')
 # We don't need this to actually match forward-declare lines (we get
 # that information from the iwyu input), but we do need an RE here to
 # serve as an index to _LINE_TYPES.  So we use an RE that never matches.
@@ -1607,6 +1607,11 @@ def _IsMainCUInclude(line_info, filename):
         return True
     # First, normalize the includee by getting rid of -inl.h and .h
     # suffixes (for the #include) and the "'s around the #include line.
+
+    if ((line_info.key.startswith("<inviwo/") or line_info.key.startswith("<modules/"))
+            and line_info.key.endswith("moduledefine.h>")):
+        return True
+
     canonical_include = re.sub(r'(-inl\.h|\.h|\.hpp)$', '',
                                line_info.key.replace('"', '').replace('<', '').replace('>', ''),
                                flags=re.I)

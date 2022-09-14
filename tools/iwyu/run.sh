@@ -10,7 +10,7 @@ ninja -t clean -r CXX_COMPILER__inviwo-module-${module}_Release
 
 ninja inviwo-module-${module} | tee inc.fix 
 
-${sed} -i -E 's/#include "([a-z0-9./\-]+)"/#include <\1>/g' inc.fix
+${sed} -i -E 's/#include "([a-z0-9./\-_]+)"/#include <\1>/g' inc.fix
 ${sed} -i 's/#include <stdint.h>/#include <cstdint> /g' inc.fix
 ${sed} -i 's/#include <stddef.h>/#include <cstddef> /g' inc.fix
 ${sed} -i 's/#include <math.h>/#include <cmath> /g' inc.fix
