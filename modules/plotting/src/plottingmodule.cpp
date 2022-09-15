@@ -28,15 +28,23 @@
  *********************************************************************************/
 
 #include <modules/plotting/plottingmodule.h>
-#include <modules/plotting/processors/dataframecolumntocolorvector.h>
-#include <modules/plotting/properties/axisproperty.h>
-#include <modules/plotting/properties/axisstyleproperty.h>
-#include <modules/plotting/properties/categoricalaxisproperty.h>
-#include <modules/plotting/properties/marginproperty.h>
-#include <modules/plotting/properties/plottextproperty.h>
-#include <modules/plotting/properties/tickproperty.h>
+
+#include <inviwo/core/common/inviwomodule.h>                           // for InviwoModule
+#include <inviwo/core/io/serialization/ticpp.h>                        // for TxElement
+#include <inviwo/core/io/serialization/versionconverter.h>             // for Kind, changeAttribute
+#include <modules/plotting/processors/dataframecolumntocolorvector.h>  // for DataFrameColumnToC...
+#include <modules/plotting/properties/axisproperty.h>                  // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>             // for AxisStyleProperty
+#include <modules/plotting/properties/categoricalaxisproperty.h>       // for CategoricalAxisPro...
+#include <modules/plotting/properties/marginproperty.h>                // for MarginProperty
+#include <modules/plotting/properties/plottextproperty.h>              // for PlotTextProperty
+#include <modules/plotting/properties/tickproperty.h>                  // for MajorTickProperty
+
+#include <functional>  // for __base, function
+#include <string>      // for operator!=, char_t...
 
 namespace inviwo {
+class InviwoApplication;
 
 PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plotting") {
 

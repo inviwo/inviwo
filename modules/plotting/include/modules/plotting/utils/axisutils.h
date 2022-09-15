@@ -29,22 +29,24 @@
 
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
 
-#include <modules/plotting/datastructures/axissettings.h>
+#include <inviwo/core/util/glmvec.h>                            // for vec3, vec2, dvec2, vec4
+#include <modules/plotting/datastructures/axissettings.h>       // for AxisSettings
+#include <modules/plotting/datastructures/majorticksettings.h>  // for MajorTickSettings (ptr only)
 
-#include <inviwo/core/util/glmvec.h>
-
-#include <tuple>
-#include <vector>
-#include <limits>
-#include <memory>
+#include <cstddef>  // for size_t
+#include <limits>   // for numeric_limits
+#include <memory>   // for unique_ptr
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 namespace inviwo {
 
 class Mesh;
 
 namespace plot {
+class MinorTickSettings;
 
 IVW_MODULE_PLOTTING_API std::vector<double> getMajorTickPositions(const MajorTickSettings& ticks,
                                                                   dvec2 range,

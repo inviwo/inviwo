@@ -28,19 +28,24 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING...
 
-#include <modules/plotting/properties/axisproperty.h>
-#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                   // for FloatProperty, Floa...
+#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
+
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <tuple>        // for tie
+#include <vector>       // for vector
 
 namespace inviwo {
 
 namespace plot {
+class AxisProperty;
 
 /**
  * \brief a convenience property for updating/overriding multiple axes properties. A property change

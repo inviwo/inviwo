@@ -29,6 +29,16 @@
 
 #include <modules/plotting/properties/tickproperty.h>
 
+#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>           // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>           // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>              // for OptionPropertyOption, Opt...
+#include <inviwo/core/properties/ordinalproperty.h>             // for FloatVec4Property, FloatP...
+#include <inviwo/core/properties/propertysemantics.h>           // for PropertySemantics, Proper...
+#include <inviwo/core/util/glmvec.h>                            // for vec4, vec3
+#include <inviwo/core/util/staticstring.h>                      // for operator+
+#include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, TickStyle::Both
+
 namespace inviwo {
 
 namespace plot {

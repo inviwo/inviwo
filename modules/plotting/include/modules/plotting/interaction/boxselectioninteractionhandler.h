@@ -28,18 +28,26 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
-#include <modules/plotting/properties/axisproperty.h>
-#include <modules/plotting/properties/boxselectionproperty.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/interaction/interactionhandler.h>
+#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
 
-#include <optional>
-#include <unordered_set>
+#include <inviwo/core/interaction/interactionhandler.h>  // for InteractionHandler
+#include <inviwo/core/util/dispatcher.h>                 // for Dispatcher
+#include <inviwo/core/util/glmvec.h>                     // for dvec2, size2_t
+
+#include <array>       // for array
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <optional>    // for optional
+#include <string>      // for string
+#include <vector>      // for vector
 
 namespace inviwo {
+class BufferBase;
+class Event;
 
 namespace plot {
+class BoxSelectionProperty;
+
 /**
  * \brief Handles interaction for 2D rectangle selection/filtering
  * Selection/Filtering callbacks are called when filtering changes.
