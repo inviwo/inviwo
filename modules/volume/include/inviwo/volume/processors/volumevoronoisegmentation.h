@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <inviwo/volume/volumemoduledefine.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
-#include <optional>
+#include <inviwo/volume/volumemoduledefine.h>                  // for IVW_MODULE_VOLUME_API
+
+#include <inviwo/core/ports/volumeport.h>                      // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/poolprocessor.h>              // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrameInport
+#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
 
 namespace inviwo {
 
