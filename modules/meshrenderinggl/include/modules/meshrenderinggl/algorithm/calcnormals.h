@@ -30,7 +30,9 @@
 #pragma once
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
+
 #include <inviwo/core/datastructures/geometry/mesh.h>
+
 #include <memory>
 
 namespace inviwo {

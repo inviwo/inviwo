@@ -29,10 +29,12 @@
 
 #pragma once
 
-#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
+
+#include <inviwo/core/common/inviwomodule.h>                      // for InviwoModule
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_MESHRENDERINGGL_API MeshRenderingGLModule : public InviwoModule {
 public:

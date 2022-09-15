@@ -28,18 +28,26 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/meshrenderingglmodule.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
-#include <modules/meshrenderinggl/processors/linerasterizer.h>
-#include <modules/meshrenderinggl/processors/meshrasterizer.h>
-#include <modules/meshrenderinggl/processors/rasterizationrenderer.h>
-#include <modules/meshrenderinggl/processors/transformrasterization.h>
-#include <modules/meshrenderinggl/processors/calcnormalsprocessor.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
 
-#include <modules/meshrenderinggl/processors/sphererasterizer.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/core/common/inviwomodule.h>                            // for InviwoModule, Mod...
+#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterableIm...
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <modules/meshrenderinggl/ports/rasterizationport.h>            // for RasterizationOutport
+#include <modules/meshrenderinggl/processors/calcnormalsprocessor.h>    // for CalcNormalsProcessor
+#include <modules/meshrenderinggl/processors/linerasterizer.h>          // for LineRasterizer
+#include <modules/meshrenderinggl/processors/meshrasterizer.h>          // for MeshRasterizer
+#include <modules/meshrenderinggl/processors/rasterizationrenderer.h>   // for RasterizationRend...
+#include <modules/meshrenderinggl/processors/sphererasterizer.h>        // for SphereRasterizer
+#include <modules/meshrenderinggl/processors/transformrasterization.h>  // for TransformRasteriz...
+#include <modules/opengl/shader/shadermanager.h>                        // for ShaderManager
+
+#include <functional>                                                   // for __base
+#include <memory>                                                       // for unique_ptr
+
+#include <fmt/core.h>                                                   // for basic_string_view
 
 namespace inviwo {
+class InviwoApplication;
 
 MeshRenderingGLModule::MeshRenderingGLModule(InviwoApplication* app)
     : InviwoModule(app, "MeshRenderingGL") {

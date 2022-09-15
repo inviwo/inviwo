@@ -29,17 +29,18 @@
 
 #pragma once
 
-#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>             // for IndexBuffer
+#include <inviwo/core/datastructures/geometry/mesh.h>             // for Mesh
+#include <inviwo/core/util/iterrange.h>                           // for as_range
+#include <inviwo/core/util/transformiterator.h>                   // for TransformIterator, make...
 
-#include <inviwo/core/util/transformiterator.h>
-#include <inviwo/core/util/stdextensions.h>
-
-#include <vector>
-#include <unordered_map>
-#include <optional>
+#include <cstdint>                                                // for uint32_t
+#include <iterator>                                               // for bidirectional_iterator_tag
+#include <optional>                                               // for optional, nullopt
+#include <unordered_map>                                          // for unordered_map<>::const_...
+#include <vector>                                                 // for vector
 
 namespace inviwo {
 

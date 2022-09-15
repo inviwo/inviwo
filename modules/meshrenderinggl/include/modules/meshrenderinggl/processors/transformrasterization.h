@@ -29,10 +29,12 @@
 
 #pragma once
 
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
-#include <modules/base/properties/transformlistproperty.h>
-#include <inviwo/core/processors/processor.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
+
+#include <inviwo/core/processors/processor.h>                     // for Processor
+#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
+#include <modules/base/properties/transformlistproperty.h>        // for TransformListProperty
+#include <modules/meshrenderinggl/ports/rasterizationport.h>      // for RasterizationInport
 
 namespace inviwo {
 

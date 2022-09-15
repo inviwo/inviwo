@@ -29,10 +29,24 @@
 
 #pragma once
 
-#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>   // for IVW_MODULE_MESHRENDERI...
+
+#include <inviwo/core/datastructures/spatialdata.h>                // for SpatialEntity
+#include <inviwo/core/util/document.h>                             // for Document
+#include <inviwo/core/util/glmmat.h>                               // for mat4
+#include <inviwo/core/util/glmvec.h>                               // for ivec2
+#include <modules/meshrenderinggl/datastructures/rasterization.h>  // for Rasterization
+
+#include <functional>                                              // for function
+#include <memory>                                                  // for shared_ptr
+#include <type_traits>                                             // for remove_extent_t
+
+#include <glm/mat4x4.hpp>                                          // for operator*
+#include <glm/vec4.hpp>                                            // for operator*, operator+
 
 namespace inviwo {
+class Shader;
+
 /**
  * \brief Rasterization wrapper to add an additional transform on the render call.
  */

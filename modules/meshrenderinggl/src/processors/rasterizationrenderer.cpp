@@ -29,25 +29,43 @@
 
 #include <modules/meshrenderinggl/processors/rasterizationrenderer.h>
 
-#include <modules/opengl/geometry/meshgl.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/rendering/meshdrawerfactory.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/base/algorithm/dataminmax.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
+#include <inviwo/core/datastructures/image/image.h>                  // for Image
+#include <inviwo/core/interaction/cameratrackball.h>                 // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                             // for BaseImageInport, Ima...
+#include <inviwo/core/ports/inportiterable.h>                        // for InportIterable<>::co...
+#include <inviwo/core/ports/outportiterable.h>                       // for OutportIterable
+#include <inviwo/core/processors/processor.h>                        // for Processor
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                   // for CodeState, CodeState...
+#include <inviwo/core/processors/processortags.h>                    // for Tags, Tags::GL
+#include <inviwo/core/properties/boolcompositeproperty.h>            // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                     // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>                   // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>                // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                  // for FloatProperty, Float...
+#include <inviwo/core/properties/property.h>                         // for Property
+#include <inviwo/core/properties/propertysemantics.h>                // for PropertySemantics
+#include <inviwo/core/util/dispatcher.h>                             // for Dispatcher<>::Handle
+#include <inviwo/core/util/glmmat.h>                                 // for mat4
+#include <inviwo/core/util/glmvec.h>                                 // for uvec3, vec3
+#include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogProce...
+#include <modules/meshrenderinggl/datastructures/rasterization.h>    // IWYU pragma: keep
+#include <modules/meshrenderinggl/ports/rasterizationport.h>         // for RasterizationInport
+#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
+#include <modules/opengl/shader/shaderutils.h>                       // for ImageInport, setUnif...
+#include <modules/opengl/texture/textureutils.h>                     // for activateTargetAndCle...
 
-#include <sstream>
-#include <chrono>
-#include <variant>
+#include <functional>                                                // for __base
+#include <string>                                                    // for string
+#include <string_view>                                               // for string_view
+#include <type_traits>                                               // for remove_extent_t
+#include <vector>                                                    // for vector
 
-#include <fmt/format.h>
+#include <fmt/core.h>                                                // for format_to, basic_str...
 
 namespace inviwo {
+class Shader;
+
 namespace {
 void configComposite(BoolCompositeProperty& comp) {
 

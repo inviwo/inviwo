@@ -29,30 +29,21 @@
 
 #pragma once
 
-#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <modules/meshrenderinggl/datastructures/halfedges.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/rendering/meshdrawer.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>     // for IVW_MODULE_MESHRENDE...
 
-#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
-#include <modules/meshrenderinggl/algorithm/calcnormals.h>
+#include <inviwo/core/datastructures/image/image.h>                  // for Image
+#include <inviwo/core/interaction/cameratrackball.h>                 // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                             // for ImageInport, ImageOu...
+#include <inviwo/core/processors/processor.h>                        // for Processor
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>            // for BoolCompositeProperty
+#include <inviwo/core/properties/cameraproperty.h>                   // for CameraProperty
+#include <inviwo/core/properties/ordinalproperty.h>                  // for FloatProperty, Float...
+#include <inviwo/core/util/dispatcher.h>                             // for Dispatcher, Dispatch...
+#include <modules/meshrenderinggl/ports/rasterizationport.h>         // for RasterizationInport
+#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
 
-#include <string_view>
-#include <memory>
+#include <memory>                                                    // for shared_ptr, unique_ptr
 
 namespace inviwo {
 
