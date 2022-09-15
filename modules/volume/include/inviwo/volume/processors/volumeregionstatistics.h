@@ -29,12 +29,20 @@
 
 #pragma once
 
-#include <inviwo/volume/volumemoduledefine.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/volume/volumemoduledefine.h>  // for IVW_MODULE_VOLUME_API
+
+#include <inviwo/core/datastructures/coordinatetransformer.h>  // for CoordinateSpace, operator<<
+#include <inviwo/core/ports/volumeport.h>                      // for VolumeInport
+#include <inviwo/core/processors/poolprocessor.h>              // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty
+#include <inviwo/core/util/staticstring.h>                     // for operator+
+#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrameOutport
+
+#include <functional>   // for __base
+#include <string>       // for operator==, operator+, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, operat...
 
 namespace inviwo {
 

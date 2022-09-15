@@ -28,10 +28,9 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/volume/volumemoduledefine.h>
+#include <inviwo/volume/volumemoduledefine.h>  // for IVW_MODULE_VOLUME_API
 
-#include <memory>
-#include <vector>
+#include <vector>  // for vector
 
 namespace inviwo {
 
