@@ -28,22 +28,41 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
-#include <modules/webbrowser/interaction/cefkeyboardmapping.h>
-#include <modules/webbrowser/renderhandlergl.h>
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/interaction/events/resizeevent.h>
-#include <inviwo/core/interaction/events/wheelevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
+
+#include <inviwo/core/interaction/events/event.h>                  // for Event
+#include <inviwo/core/interaction/events/interactionevent.h>       // for InteractionEvent
+#include <inviwo/core/interaction/events/keyboardevent.h>          // for KeyboardEvent
+#include <inviwo/core/interaction/events/keyboardkeys.h>           // for KeyState, KeyState::Press
+#include <inviwo/core/interaction/events/mousebuttons.h>           // for MouseState, MouseButton
+#include <inviwo/core/interaction/events/mouseevent.h>             // for MouseEvent
+#include <inviwo/core/interaction/events/mouseinteractionevent.h>  // for MouseInteractionEvent
+#include <inviwo/core/interaction/events/pickingevent.h>           // for PickingEvent
+#include <inviwo/core/interaction/events/resizeevent.h>            // for ResizeEvent
+#include <inviwo/core/interaction/events/touchevent.h>             // for TouchDevice, TouchEvent
+#include <inviwo/core/interaction/events/touchstate.h>             // for TouchState, TouchState...
+#include <inviwo/core/interaction/events/wheelevent.h>             // for WheelEvent
+#include <inviwo/core/util/glmvec.h>                               // for dvec2, uvec2
+#include <modules/webbrowser/interaction/cefkeyboardmapping.h>     // for keyModifiers
+#include <modules/webbrowser/renderhandlergl.h>                    // for RenderHandlerGL
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/base/cef_logging.h>
+#include <flags/flags.h>                                           // for operator&
+#include <glm/vec2.hpp>                                            // for vec<>::(anonymous)
+#include <include/base/cef_logging.h>                              // for COMPACT_GOOGLE_LOG_FATAL
+#include <include/base/cef_scoped_refptr.h>                        // for scoped_refptr
+#include <include/cef_base.h>                                      // for CefTouchEvent, CefKeyE...
+#include <include/cef_browser.h>                                   // for CefBrowserHost, CefBro...
+
 #include <warn/pop>
 
-#include <iostream>
-#include <string>
-#include <locale>
-#include <codecvt>
+#include <cctype>                                                  // for iscntrl
+#include <codecvt>                                                 // for codecvt_utf8_utf16
+#include <locale>                                                  // for wstring_convert
+#include <string>                                                  // for basic_string, string
+#include <type_traits>                                             // for enable_if<>::type
+#include <utility>                                                 // for pair
+#include <vector>                                                  // for vector
 
 namespace inviwo {
 

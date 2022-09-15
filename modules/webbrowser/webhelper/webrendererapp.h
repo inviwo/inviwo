@@ -31,9 +31,17 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_app.h>
-#include <include/wrapper/cef_helpers.h>
 #include "include/wrapper/cef_message_router.h"
+#include <include/base/cef_macros.h>             // for DISALLOW_COPY_AND_ASSIGN
+#include <include/base/cef_scoped_refptr.h>      // for scoped_refptr
+#include <include/cef_app.h>                     // for CefApp
+#include <include/cef_base.h>                    // for CefRefPtr, IMPLEMENT_REFCOUNTING
+#include <include/cef_browser.h>                 // for CefBrowser
+#include <include/cef_frame.h>                   // for CefFrame
+#include <include/cef_process_message.h>         // for CefProcessMessage, CefProcessId
+#include <include/cef_render_process_handler.h>  // for CefRenderProcessHandler
+#include <include/cef_v8.h>                      // for CefV8Context
+
 #include <warn/pop>
 
 namespace inviwo {

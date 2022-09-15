@@ -29,10 +29,25 @@
 
 #include <modules/webbrowser/properties/propertywidgetcef.h>
 
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/properties/property.h>             // for Property
+#include <inviwo/core/properties/propertysemantics.h>    // for PropertySemantics
+#include <inviwo/core/properties/propertywidget.h>       // for PropertyWidget
+#include <inviwo/core/util/logcentral.h>                 // for LogCentral, LogError
+#include <modules/json/io/json/propertyjsonconverter.h>  // for json, PropertyJSONConverter
 
-#include <nlohmann/json.hpp>
+#include <initializer_list>                              // for initializer_list
+#include <ostream>                                       // for operator<<, basic_ostream, strin...
+#include <stdexcept>                                     // for out_of_range
+#include <utility>                                       // for move
+#include <vector>                                        // for vector
+
+#include <include/base/cef_basictypes.h>                 // for int64
+#include <include/base/cef_scoped_refptr.h>              // for scoped_refptr
+#include <include/cef_base.h>                            // for CefRefPtr, CefString
+#include <include/cef_frame.h>                           // for CefFrame
+#include <nlohmann/json.hpp>                             // for json_ref, basic_json, basic_json...
+
+class CefBrowser;
 
 using json = nlohmann::json;
 

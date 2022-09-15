@@ -29,6 +29,10 @@
 
 #include <modules/webbrowser/webbrowserapp.h>
 
+#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
+#include <include/cef_base.h>                // for CefRefPtr, CefString
+#include <include/cef_command_line.h>        // for CefCommandLine
+
 namespace inviwo {
 
 WebBrowserApp::WebBrowserApp() = default;

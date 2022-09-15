@@ -28,19 +28,50 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/processors/webbrowserprocessor.h>
-#include <modules/webbrowser/interaction/cefinteractionhandler.h>
-#include <modules/webbrowser/webbrowsermodule.h>
-#include <modules/webbrowser/webbrowserutil.h>
-#include <modules/opengl/image/layergl.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/propertyfactory.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/utilities.h>
+
+#include <inviwo/core/common/inviwoapplication.h>                  // for InviwoApplication
+#include <inviwo/core/interaction/pickingmapper.h>                 // for PickingMapper
+#include <inviwo/core/ports/imageport.h>                           // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                      // for Processor
+#include <inviwo/core/processors/processorinfo.h>                  // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                 // for CodeState, CodeState::...
+#include <inviwo/core/processors/processortags.h>                  // for Tags
+#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                 // for ButtonProperty
+#include <inviwo/core/properties/fileproperty.h>                   // for FileProperty
+#include <inviwo/core/properties/invalidationlevel.h>              // for InvalidationLevel, Inv...
+#include <inviwo/core/properties/optionproperty.h>                 // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                // for DoubleProperty
+#include <inviwo/core/properties/property.h>                       // for Property
+#include <inviwo/core/properties/stringproperty.h>                 // for StringProperty
+#include <inviwo/core/properties/valuewrapper.h>                   // for PropertySerializationMode
+#include <inviwo/core/util/formats.h>                              // for DataFormat, DataVec4UInt8
+#include <inviwo/core/util/singlefileobserver.h>                   // for SingleFileObserver
+#include <inviwo/core/util/staticstring.h>                         // for operator+
+#include <modules/webbrowser/cefimageconverter.h>                  // for CefImageConverter
+#include <modules/webbrowser/interaction/cefinteractionhandler.h>  // for CEFInteractionHandler
+#include <modules/webbrowser/renderhandlergl.h>                    // for RenderHandlerGL
+#include <modules/webbrowser/webbrowserclient.h>                   // for WebBrowserClient
+#include <modules/webbrowser/webbrowsermodule.h>                   // for WebBrowserModule
+#include <modules/webbrowser/webbrowserutil.h>                     // for getDefaultBrowserSettings
+
+#include <cmath>                                                   // for log, pow
+
+#include <include/base/cef_scoped_refptr.h>                        // for scoped_refptr
+#include <include/cef_base.h>                                      // for CefRefPtr
+#include <include/cef_browser.h>                                   // for CefBrowser, CefBrowser...
+#include <include/cef_client.h>                                    // for CefClient
+#include <include/cef_frame.h>                                     // for CefFrame
+#include <include/cef_request_context.h>                           // for CefRequestContext
+#include <include/cef_values.h>                                    // for CefDictionaryValue
+
+namespace inviwo {
+class Deserializer;
+class PickingEvent;
+}  // namespace inviwo
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_app.h>
 #include <warn/pop>
 
 namespace inviwo {

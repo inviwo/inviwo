@@ -29,17 +29,31 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/processors/progressbarobservercef.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>             // for IVW_MODULE_WEBBROWSER_API
 
-#include <inviwo/core/network/processornetworkobserver.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/network/processornetworkobserver.h>          // for ProcessorNetworkObserver
+#include <inviwo/core/util/dispatcher.h>                           // for Dispatcher
+#include <modules/webbrowser/processors/progressbarobservercef.h>  // for ProgressBarObserverCEF
+
+#include <functional>                                              // for function
+#include <map>                                                     // for map
+#include <memory>                                                  // for shared_ptr
+#include <string>                                                  // for string, operator==, hash
+#include <unordered_map>                                           // for unordered_map
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/wrapper/cef_message_router.h"
-#include <include/cef_load_handler.h>
+#include <include/base/cef_basictypes.h>                           // for int64
+#include <include/cef_base.h>                                      // for CefRefPtr, CefString
+#include <include/cef_load_handler.h>                              // for CefLoadHandler
+
+class CefBrowser;
+class CefFrame;
+namespace inviwo {
+class Processor;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

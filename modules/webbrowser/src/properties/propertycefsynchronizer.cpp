@@ -28,19 +28,39 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/properties/propertycefsynchronizer.h>
-#include <modules/webbrowser/webbrowsermodule.h>
 
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
+#include <inviwo/core/network/processornetwork.h>                    // for ProcessorNetwork
+#include <inviwo/core/properties/property.h>                         // for Property
+#include <inviwo/core/properties/propertyowner.h>                    // for PropertyOwner
+#include <inviwo/core/util/exception.h>                              // for Exception
+#include <inviwo/core/util/logcentral.h>                             // for LogCentral, log, Log...
+#include <inviwo/core/util/settings/settings.h>                      // for Settings
+#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
+#include <inviwo/core/util/stdextensions.h>                          // for erase_remove_if, fin...
+#include <inviwo/core/util/stringconversion.h>                       // for splitByFirst
+#include <modules/json/io/json/propertyjsonconverter.h>              // for json
+#include <modules/webbrowser/properties/propertywidgetcef.h>         // for PropertyWidgetCEF
+#include <modules/webbrowser/properties/propertywidgetceffactory.h>  // for PropertyWidgetCEFFac...
 
-#include <fmt/format.h>
+#include <algorithm>                                                 // for find_if
+#include <exception>                                                 // for exception
+#include <initializer_list>                                          // for initializer_list
+#include <string>                                                    // for char_traits, operator+
+#include <string_view>                                               // for string_view, operator==
+#include <utility>                                                   // for move
 
-#include <string_view>
+#include <fmt/core.h>                                                // for format
+#include <include/base/cef_basictypes.h>                             // for int64
+#include <include/base/cef_scoped_refptr.h>                          // for scoped_refptr
+#include <include/cef_base.h>                                        // for CefRefPtr, CefString
+#include <include/cef_browser.h>                                     // for CefBrowser
+#include <include/cef_frame.h>                                       // for CefFrame
+#include <include/cef_load_handler.h>                                // for CefLoadHandler::Tran...
+#include <nlohmann/json.hpp>                                         // for basic_json, basic_js...
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "include/cef_parser.h"
 #include <warn/pop>
 
 namespace inviwo {

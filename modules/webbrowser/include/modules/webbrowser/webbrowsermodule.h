@@ -29,20 +29,30 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/propertywidgetceffactory.h>
-#include <modules/webbrowser/renderhandlergl.h>
-#include <modules/webbrowser/webbrowserclient.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>               // for IVW_MODULE_WEBBROWSE...
 
-#include <modules/json/jsonmodule.h>
+#include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule
+#include <inviwo/core/util/timer.h>                                  // for Timer
+#include <modules/json/jsonmodule.h>                                 // for JSONModule
+#include <modules/webbrowser/properties/propertywidgetceffactory.h>  // for PropertyWidgetCEFFac...
+#include <modules/webbrowser/webbrowserclient.h>                     // for WebBrowserClient
 
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/timer.h>
+#include <memory>                                                    // for unique_ptr, make_unique
+#include <string>                                                    // for string
+#include <utility>                                                   // for move
+#include <vector>                                                    // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
 
 #include "include/internal/cef_types.h"
+#include <include/cef_base.h>                                        // for CefRefPtr
+
+namespace inviwo {
+class PropertyWidgetCEFFactoryObject;
+template <typename T, typename P> class PropertyWidgetCEFFactoryObjectTemplate;
+}  // namespace inviwo
 #if __APPLE__  // Mac
 #include "include/wrapper/cef_library_loader.h"
 #endif

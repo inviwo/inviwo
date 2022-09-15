@@ -29,6 +29,14 @@
 
 #include <modules/webbrowser/webbrowsersettings.h>
 
+#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
+#include <inviwo/core/properties/invalidationlevel.h>   // for InvalidationLevel, InvalidationLe...
+#include <inviwo/core/properties/ordinalproperty.h>     // for IntProperty
+#include <inviwo/core/properties/propertysemantics.h>   // for PropertySemantics, PropertySemant...
+#include <inviwo/core/util/settings/settings.h>         // for Settings
+
+#include <string_view>                                  // for string_view
+
 namespace inviwo {
 
 WebBrowserSettings::WebBrowserSettings()

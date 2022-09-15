@@ -29,29 +29,47 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/renderhandlergl.h>
-#include <modules/webbrowser/properties/propertycefsynchronizer.h>
-#include <modules/webbrowser/processors/processorcefsynchronizer.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>               // for IVW_MODULE_WEBBROWSE...
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/modulemanager.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <modules/webbrowser/processors/processorcefsynchronizer.h>  // for ProcessorCefSynchron...
+#include <modules/webbrowser/properties/propertycefsynchronizer.h>   // IWYU pragma: keep
+#include <modules/webbrowser/renderhandlergl.h>                      // for RenderHandlerGL
 
-#include <map>
+#include <functional>                                                // for function
+#include <map>                                                       // for map
+#include <memory>                                                    // for unique_ptr, shared_ptr
+#include <string>                                                    // for string
+#include <vector>                                                    // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_client.h>
-#include <include/cef_load_handler.h>
-#include <include/cef_life_span_handler.h>
-#include <include/cef_resource_request_handler.h>
-#include <include/wrapper/cef_message_router.h>
-#include <include/wrapper/cef_resource_manager.h>
+#include <include/base/cef_macros.h>                                 // for DISALLOW_COPY_AND_AS...
+#include <include/base/cef_scoped_refptr.h>                          // for scoped_refptr
+#include <include/cef_base.h>                                        // for CefRefPtr, CefString
+#include <include/cef_client.h>                                      // for CefClient
+#include <include/cef_display_handler.h>                             // for CefDisplayHandler
+#include <include/cef_life_span_handler.h>                           // for CefLifeSpanHandler
+#include <include/cef_load_handler.h>                                // for CefLoadHandler, CefL...
+#include <include/cef_process_message.h>                             // for CefProcessId, CefPro...
+#include <include/cef_render_handler.h>                              // for CefRenderHandler
+#include <include/cef_request_handler.h>                             // for CefRequestHandler
+#include <include/cef_resource_request_handler.h>                    // for CefResourceRequestHa...
+#include <include/wrapper/cef_resource_manager.h>                    // IWYU pragma: keep
+
+class CefBrowser;
+class CefFrame;
+class CefMessageRouterBrowserSide;
+class CefRequest;
+class CefRequestCallback;
+class CefResourceHandler;
+
 #include <warn/pop>
 
 namespace inviwo {
+
+class ModuleManager;
+class Processor;
+class PropertyWidgetCEFFactory;
 
 /* \class WebBrowserClient
  * CefClient with custom render handler and call redirections.

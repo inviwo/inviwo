@@ -28,7 +28,10 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/webbrowserutil.h>
-#include <tuple>
+
+#include <tuple>               // for tuple
+
+#include <include/cef_base.h>  // for CefBrowserSettings, CefWindowInfo, STATE_ENABLED
 
 namespace inviwo {
 

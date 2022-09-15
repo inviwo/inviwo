@@ -29,9 +29,13 @@
 
 #include <modules/webbrowser/interaction/cefkeyboardmapping.h>
 
+#include <inviwo/core/interaction/events/keyboardkeys.h>  // for IvwKey, KeyModifier, IvwKey::De...
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/cef_base.h"
+#include <flags/flags.h>                                  // for flags, operator&
+
 #include <warn/pop>
 
 namespace inviwo {

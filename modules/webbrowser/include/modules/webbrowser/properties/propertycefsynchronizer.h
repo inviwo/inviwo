@@ -29,18 +29,30 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/propertywidgetcef.h>
-#include <modules/webbrowser/properties/propertywidgetceffactory.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>        // for IVW_MODULE_WEBBROWSER_API
 
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/propertyownerobserver.h>
-#include <inviwo/core/util/callback.h>
+#include <inviwo/core/properties/propertyownerobserver.h>     // for PropertyOwnerObserver
+#include <modules/webbrowser/properties/propertywidgetcef.h>  // for PropertyWidgetCEF
+
+#include <cstddef>                                            // for size_t
+#include <memory>                                             // for unique_ptr
+#include <string_view>                                        // for string_view
+#include <vector>                                             // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/wrapper/cef_message_router.h"
-#include <include/cef_load_handler.h>
+#include <include/base/cef_basictypes.h>                      // for int64
+#include <include/cef_base.h>                                 // for CefRefPtr, CefString, IMPLE...
+#include <include/cef_load_handler.h>                         // for CefLoadHandler, CefLoadHand...
+
+class CefBrowser;
+class CefFrame;
+namespace inviwo {
+class Property;
+class PropertyWidgetCEFFactory;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {
