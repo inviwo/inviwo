@@ -28,7 +28,23 @@
  *********************************************************************************/
 
 #include <modules/postprocessing/processors/imagefilter.h>
-#include <modules/opengl/shader/shaderutils.h>
+
+#include <inviwo/core/ports/imageport.h>                // for ImageOutport, ImageInport
+#include <inviwo/core/processors/processor.h>           // for Processor
+#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>      // for CodeState, CodeState::Experimental
+#include <inviwo/core/processors/processortags.h>       // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>   // for InvalidationLevel, InvalidationLe...
+#include <inviwo/core/properties/optionproperty.h>      // for OptionPropertyOption, OptionPrope...
+#include <inviwo/core/properties/ordinalproperty.h>     // for IntProperty
+#include <modules/basegl/algorithm/imageconvolution.h>  // for ImageConvolution
+
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
 
 namespace inviwo {
 

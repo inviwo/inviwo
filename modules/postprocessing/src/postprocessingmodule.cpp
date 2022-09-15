@@ -28,21 +28,26 @@
  *********************************************************************************/
 
 #include <modules/postprocessing/postprocessingmodule.h>
-#include <modules/postprocessing/processors/depthoffield.h>
-#include <modules/postprocessing/processors/ssao.h>
-#include <modules/postprocessing/processors/fog.h>
-#include <modules/postprocessing/processors/fxaa.h>
-#include <modules/postprocessing/processors/tonemapping.h>
-#include <modules/postprocessing/processors/hdrbloom.h>
-#include <modules/postprocessing/processors/imagebrightnesscontrast.h>
-#include <modules/postprocessing/processors/imageedgedarken.h>
-#include <modules/postprocessing/processors/imagehuesaturationluminance.h>
-#include <modules/postprocessing/processors/imageopacity.h>
-#include <modules/postprocessing/processors/imagefilter.h>
-#include <modules/postprocessing/processors/depthdarkening.h>
-#include <modules/opengl/shader/shadermanager.h>
+
+#include <inviwo/core/common/inviwomodule.h>                                // for InviwoModule
+#include <modules/opengl/shader/shadermanager.h>                            // for ShaderManager
+#include <modules/postprocessing/processors/depthdarkening.h>               // for DepthDarkening
+#include <modules/postprocessing/processors/depthoffield.h>                 // for DepthOfField
+#include <modules/postprocessing/processors/fog.h>                          // for Fog
+#include <modules/postprocessing/processors/fxaa.h>                         // for FXAA
+#include <modules/postprocessing/processors/hdrbloom.h>                     // for HdrBloom
+#include <modules/postprocessing/processors/imagebrightnesscontrast.h>      // for ImageBrightne...
+#include <modules/postprocessing/processors/imageedgedarken.h>              // for ImageEdgeDarken
+#include <modules/postprocessing/processors/imagefilter.h>                  // for ImageFilter
+#include <modules/postprocessing/processors/imagehuesaturationluminance.h>  // for ImageHueSatur...
+#include <modules/postprocessing/processors/imageopacity.h>                 // for ImageOpacity
+#include <modules/postprocessing/processors/ssao.h>                         // for SSAO
+#include <modules/postprocessing/processors/tonemapping.h>                  // for Tonemapping
+
+#include <memory>  // for unique_ptr
 
 namespace inviwo {
+class InviwoApplication;
 
 PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     : InviwoModule(app, "PostProcessing") {
