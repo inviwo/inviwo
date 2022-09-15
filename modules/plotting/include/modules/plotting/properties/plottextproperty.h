@@ -29,16 +29,22 @@
 
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/plottingmoduledefine.h>             // for IVW_MODULE_PLOTTING_API
 
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/fontrendering/properties/fontproperty.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>      // for BoolCompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
+#include <inviwo/core/properties/ordinalproperty.h>            // for FloatProperty, FloatVec4Pr...
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Propert...
+#include <inviwo/core/properties/stringproperty.h>             // for StringProperty
+#include <inviwo/core/util/glmvec.h>                           // for vec2, vec4
+#include <modules/fontrendering/properties/fontproperty.h>     // for FontProperty
+#include <modules/plotting/datastructures/plottextsettings.h>  // for PlotTextSettings
+
+#include <string>                                              // for string
+#include <string_view>                                         // for string_view
 
 namespace inviwo {
+class FontSettings;
 
 namespace plot {
 

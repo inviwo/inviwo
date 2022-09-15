@@ -28,11 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
-#include <modules/fontrendering/datastructures/fontdata.h>
+#include <modules/plotting/plottingmoduledefine.h>             // for IVW_MODULE_PLOTTING_API
+
+#include <inviwo/core/util/glmvec.h>                           // for vec2, vec4
+#include <modules/fontrendering/datastructures/fontdata.h>     // for FontData
+#include <modules/plotting/datastructures/plottextsettings.h>  // for PlotTextSettings
 
 namespace inviwo {
+class FontSettings;
 
 namespace plot {
 

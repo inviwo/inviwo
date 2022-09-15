@@ -28,7 +28,18 @@
  *********************************************************************************/
 
 #include <modules/plotting/properties/marginproperty.h>
-#include <inviwo/core/network/networklock.h>
+
+#include <inviwo/core/network/networklock.h>            // for NetworkLock
+#include <inviwo/core/properties/compositeproperty.h>   // for CompositeProperty
+#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
+#include <inviwo/core/properties/invalidationlevel.h>   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>     // for FloatProperty, OrdinalProperty
+#include <inviwo/core/properties/propertysemantics.h>   // for PropertySemantics
+#include <inviwo/core/util/glmvec.h>                    // for vec2, vec4
+
+#include <algorithm>                                    // for max, min
+
+#include <glm/vec2.hpp>                                 // for operator-, vec<>::(anonymous), vec
 
 namespace inviwo {
 

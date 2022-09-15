@@ -29,6 +29,34 @@
 
 #include <modules/plotting/processors/dataframecolumntocolorvector.h>
 
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/tfprimitive.h>                     // for TFPrimitiveData
+#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFunction
+#include <inviwo/core/ports/datainport.h>                               // for DataInport
+#include <inviwo/core/ports/dataoutport.h>                              // for DataOutport
+#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterable
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags
+#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/util/formatdispatching.h>                         // for Scalars
+#include <inviwo/core/util/glmvec.h>                                    // for vec4, uvec3
+#include <inviwo/core/util/staticstring.h>                              // for operator+
+#include <inviwo/dataframe/properties/columnoptionproperty.h>           // for ColumnOptionProperty
+
+#include <algorithm>                                                    // for minmax_element
+#include <functional>                                                   // for __base
+#include <memory>                                                       // for shared_ptr, make_...
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+
+#include <fmt/core.h>                                                   // for format, format_to
+#include <half/half.hpp>                                                // for operator<
+
 namespace inviwo {
 
 namespace plot {

@@ -29,14 +29,32 @@
 
 #include <modules/plotting/properties/categoricalaxisproperty.h>
 
-#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/boolproperty.h>                      // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                    // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                   // for FloatProperty, Floa...
+#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
+#include <inviwo/core/util/glmvec.h>                                  // for vec2, vec4, dvec2
+#include <inviwo/core/util/staticstring.h>                            // for operator+
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
+#include <modules/fontrendering/properties/fontproperty.h>            // for FontProperty
+#include <modules/fontrendering/util/fontutils.h>                     // for getFont, FontType
+#include <modules/plotting/datastructures/axissettings.h>             // for AxisSettings::Orien...
+#include <modules/plotting/datastructures/majorticksettings.h>        // for TickStyle, TickStyl...
+#include <modules/plotting/datastructures/minortickdata.h>            // for MinorTickData
+#include <modules/plotting/properties/plottextproperty.h>             // for PlotTextProperty
+#include <modules/plotting/properties/tickproperty.h>                 // for MajorTickProperty
 
-#include <modules/plotting/utils/axisutils.h>
-#include <modules/fontrendering/util/fontutils.h>
+#include <cstddef>                                                    // for size_t
+#include <utility>                                                    // for move
 
 namespace inviwo {
 
 namespace plot {
+class MinorTickSettings;
+class PlotTextSettings;
 
 const std::string CategoricalAxisProperty::classIdentifier = "org.inviwo.CategoricalAxisProperty";
 std::string CategoricalAxisProperty::getClassIdentifier() const { return classIdentifier; }

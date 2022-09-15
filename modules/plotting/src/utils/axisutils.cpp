@@ -29,16 +29,38 @@
 
 #include <modules/plotting/utils/axisutils.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/util/assertion.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, makeBuffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Conne...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4, vec2
+#include <inviwo/core/util/zip.h>                                       // for make_sequence
+#include <modules/plotting/datastructures/axissettings.h>               // for AxisSettings
+#include <modules/plotting/datastructures/majorticksettings.h>          // for MajorTickSettings
+#include <modules/plotting/datastructures/minorticksettings.h>          // for MinorTickSettings
+#include <modules/plotting/datastructures/plottextsettings.h>           // for PlotTextSettings
 
-#include <algorithm>
-#include <tuple>
+#include <stdlib.h>                                                     // for abs
+#include <algorithm>                                                    // for transform, fill, max
+#include <cmath>                                                        // for floor, ceil, abs
+#include <cstdint>                                                      // for uint32_t
+#include <numeric>                                                      // for iota
+#include <sstream>                                                      // for basic_stringbuf<>...
+#include <string>                                                       // for operator==
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+
+#include "glm/gtx/scalar_multiplication.hpp"                            // for operator*
+#include <glm/common.hpp>                                               // for min, max, mix
+#include <glm/ext/scalar_constants.hpp>                                 // for epsilon
+#include <glm/fwd.hpp>                                                  // for vec2
+#include <glm/geometric.hpp>                                            // for normalize, distance
+#include <glm/vec2.hpp>                                                 // for operator*, vec
+#include <glm/vec3.hpp>                                                 // for operator*, vec
+#include <glm/vec4.hpp>                                                 // for vec
 
 namespace inviwo {
 

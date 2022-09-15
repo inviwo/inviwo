@@ -28,22 +28,23 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/plottingmoduledefine.h>          // for IVW_MODULE_PLOTTING_API
 
-#include <modules/plotting/datastructures/axissettings.h>
+#include <inviwo/core/util/glmvec.h>                        // for dvec2, vec4
+#include <modules/plotting/datastructures/axissettings.h>   // for AxisSettings::Orientation
+#include <modules/plotting/datastructures/majortickdata.h>  // for MajorTickData
+#include <modules/plotting/datastructures/minortickdata.h>  // for MinorTickData
+#include <modules/plotting/datastructures/plottextdata.h>   // for PlotTextData
 
-#include <modules/plotting/datastructures/plottextdata.h>
-#include <modules/plotting/datastructures/majortickdata.h>
-#include <modules/plotting/datastructures/minortickdata.h>
-
-#include <inviwo/core/util/glmvec.h>
-
-#include <vector>
-#include <string>
+#include <string>                                           // for string, basic_string
+#include <vector>                                           // for vector
 
 namespace inviwo {
 
 namespace plot {
+class MajorTickSettings;
+class MinorTickSettings;
+class PlotTextSettings;
 
 class IVW_MODULE_PLOTTING_API AxisData : public AxisSettings {
 public:

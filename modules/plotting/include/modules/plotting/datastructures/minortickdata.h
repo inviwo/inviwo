@@ -28,10 +28,11 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
-#include <modules/plotting/datastructures/minorticksettings.h>
+#include <modules/plotting/plottingmoduledefine.h>              // for IVW_MODULE_PLOTTING_API
 
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmvec.h>                            // for vec4
+#include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, TickStyle::Out...
+#include <modules/plotting/datastructures/minorticksettings.h>  // for MinorTickSettings
 
 namespace inviwo {
 

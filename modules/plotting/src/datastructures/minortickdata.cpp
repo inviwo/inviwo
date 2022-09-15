@@ -29,6 +29,10 @@
 
 #include <modules/plotting/datastructures/minortickdata.h>
 
+#include <inviwo/core/util/glmvec.h>                            // for vec4
+#include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle
+#include <modules/plotting/datastructures/minorticksettings.h>  // for MinorTickSettings
+
 namespace inviwo {
 
 namespace plot {

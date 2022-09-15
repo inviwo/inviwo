@@ -29,15 +29,23 @@
 
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/plottingmoduledefine.h>              // for IVW_MODULE_PLOTTING_API
 
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>           // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>           // for InvalidationLevel, Invali...
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>             // for FloatProperty, FloatVec4P...
+#include <inviwo/core/properties/propertysemantics.h>           // for PropertySemantics, Proper...
+#include <inviwo/core/util/glmvec.h>                            // for vec4
+#include <inviwo/core/util/staticstring.h>                      // for operator+
+#include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, MajorTickSettings
+#include <modules/plotting/datastructures/minorticksettings.h>  // for MinorTickSettings
 
-#include <modules/plotting/datastructures/majorticksettings.h>
-#include <modules/plotting/datastructures/minorticksettings.h>
+#include <functional>                                           // for __base
+#include <string>                                               // for operator==, string, opera...
+#include <string_view>                                          // for operator==, string_view
+#include <vector>                                               // for operator!=, vector, opera...
 
 namespace inviwo {
 

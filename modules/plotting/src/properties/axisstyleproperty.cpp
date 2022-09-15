@@ -29,10 +29,20 @@
 
 #include <modules/plotting/properties/axisstyleproperty.h>
 
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/network/networklock.h>
-#include <modules/fontrendering/util/fontutils.h>
+#include <inviwo/core/network/networklock.h>                          // for NetworkLock
+#include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                   // for FloatProperty, Floa...
+#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
+#include <inviwo/core/util/foreacharg.h>                              // for for_each_in_tuple
+#include <inviwo/core/util/glmvec.h>                                  // for vec4
+#include <inviwo/core/util/stdextensions.h>                           // for contains, find
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
+#include <modules/fontrendering/util/fontutils.h>                     // for FontType, FontType:...
+#include <modules/plotting/properties/axisproperty.h>                 // for AxisProperty
+
+#include <functional>                                                 // for __base
 
 namespace inviwo {
 

@@ -28,13 +28,21 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
-#include <modules/plotting/datastructures/boxselectionsettings.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <modules/plotting/plottingmoduledefine.h>                 // for IVW_MODULE_PLOTTING_API
 
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/properties/compositeproperty.h>              // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>              // for InvalidationLevel, Inv...
+#include <inviwo/core/properties/optionproperty.h>                 // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                // for FloatProperty, FloatVe...
+#include <inviwo/core/properties/propertysemantics.h>              // for PropertySemantics, Pro...
+#include <inviwo/core/util/glmvec.h>                               // for vec4
+#include <inviwo/core/util/staticstring.h>                         // for operator+
+#include <modules/plotting/datastructures/boxselectionsettings.h>  // for BoxSelectionSettingsIn...
+
+#include <functional>                                              // for __base
+#include <string>                                                  // for operator==, string
+#include <string_view>                                             // for operator==
+#include <vector>                                                  // for operator!=, vector
 
 namespace inviwo {
 
