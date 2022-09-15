@@ -29,6 +29,8 @@
 
 #include <modules/userinterfacegl/glui/layout/vboxlayout.h>
 
+#include <modules/userinterfacegl/glui/layout/boxlayout.h>  // for BoxLayout, BoxLayout::LayoutD...
+
 namespace inviwo {
 
 namespace glui {

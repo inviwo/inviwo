@@ -29,31 +29,35 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
-#include <inviwo/core/datastructures/camera/camera.h>
-#include <inviwo/core/datastructures/camera/perspectivecamera.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/interaction/pickingmapper.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/framebufferobject.h>
-#include <modules/opengl/texture/texture2d.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>  // for PerspectiveCamera
+#include <inviwo/core/interaction/pickingmapper.h>                // for PickingMapper
+#include <inviwo/core/ports/imageport.h>                          // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                     // for Processor
+#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>         // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                // for ButtonProperty
+#include <inviwo/core/properties/cameraproperty.h>                // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>             // for CompositeProperty
+#include <inviwo/core/properties/ordinalproperty.h>               // for FloatProperty, FloatVec...
+#include <inviwo/core/properties/simplelightingproperty.h>        // for SimpleLightingProperty
+#include <inviwo/core/util/glmmat.h>                              // for mat4
+#include <inviwo/core/util/glmvec.h>                              // for vec3, dvec2, ivec2
+#include <modules/opengl/shader/shader.h>                         // for Shader
+
+#include <array>                                                  // for array
+#include <cstddef>                                                // for size_t
+#include <memory>                                                 // for unique_ptr, shared_ptr
 
 namespace inviwo {
 
-class MouseEvent;
-class Mesh;
-class MeshDrawerGL;
-class PickingObject;
 class Image;
 class ImageGL;
+class Mesh;
+class MeshDrawerGL;
+class PickingEvent;
 
 /** \docpage{org.inviwo.CameraWidget, Camera Interaction Processor}
  * ![](org.inviwo.CameraWidget.png?classIdentifier=org.inviwo.CameraWidget)

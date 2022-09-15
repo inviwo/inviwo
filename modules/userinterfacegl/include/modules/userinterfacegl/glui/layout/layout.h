@@ -29,11 +29,9 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
 
-#include <inviwo/core/interaction/pickingmapper.h>
-
-#include <vector>
+#include <inviwo/core/util/glmvec.h>                              // for ivec4, ivec2, size2_t
 
 namespace inviwo {
 

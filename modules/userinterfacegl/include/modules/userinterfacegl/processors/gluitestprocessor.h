@@ -29,25 +29,33 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>           // for IVW_MODULE_USE...
 
-#include <modules/userinterfacegl/glui/renderer.h>
-#include <modules/userinterfacegl/glui/layout/boxlayout.h>
-#include <modules/userinterfacegl/glui/layout/vboxlayout.h>
+#include <inviwo/core/ports/imageport.h>                                   // for ImageInport
+#include <inviwo/core/processors/processor.h>                              // for Processor
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>                           // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                         // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>                      // for CompositeProperty
+#include <inviwo/core/properties/minmaxproperty.h>                         // for IntMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                         // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                        // for FloatVec4Property
+#include <inviwo/core/util/staticstring.h>                                 // for operator+
+#include <modules/userinterfacegl/glui/element.h>                          // for Element
+#include <modules/userinterfacegl/glui/layout/boxlayout.h>                 // for BoxLayout::Lay...
+#include <modules/userinterfacegl/glui/layout/vboxlayout.h>                // for VBoxLayout
+#include <modules/userinterfacegl/glui/renderer.h>                         // for Renderer
+#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>       // for BoolPropertyWi...
+#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>     // for ButtonProperty...
+#include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>      // for FloatPropertyW...
+#include <modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h>  // for IntMinMaxPrope...
+#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>        // for IntPropertyWidget
 
-#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h>
+#include <functional>                                                      // for __base
+#include <memory>                                                          // for unique_ptr
+#include <string>                                                          // for operator==
+#include <string_view>                                                     // for operator==
+#include <vector>                                                          // for operator!=
 
 namespace inviwo {
 

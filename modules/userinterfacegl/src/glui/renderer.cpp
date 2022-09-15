@@ -28,33 +28,44 @@
  *********************************************************************************/
 
 #include <modules/userinterfacegl/glui/renderer.h>
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/zip.h>
+#include <inviwo/core/common/inviwoapplication.h>                       // for InviwoApplication
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for makeIndexBuffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/datastructures/image/layer.h>                     // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
+#include <inviwo/core/io/datareaderfactory.h>                           // for DataReaderFactory
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                    // for vec2, vec4, size2_t
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/stringconversion.h>                          // for joinString
+#include <inviwo/core/util/zip.h>                                       // for enumerate, zipIte...
+#include <modules/fontrendering/textrenderer.h>                         // for TextRenderer
+#include <modules/fontrendering/util/fontutils.h>                       // for getFont, FontType
+#include <modules/opengl/glformats.h>                                   // for GLFormat, GLFormats
+#include <modules/opengl/inviwoopengl.h>                                // for GLsizei, GL_LINEAR
+#include <modules/opengl/rendering/meshdrawergl.h>                      // for MeshDrawerGL
+#include <modules/opengl/rendering/texturequadrenderer.h>               // for TextureQuadRenderer
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/texture/texture2darray.h>                      // for Texture2DArray
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
 
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/buffer/buffergl.h>
-#include <modules/opengl/buffer/bufferobject.h>
-#include <modules/opengl/buffer/bufferobjectarray.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/texture/texture2darray.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/glformats.h>
-#include <modules/opengl/shader/shaderutils.h>
+#include <algorithm>                                                    // for all_of
+#include <sstream>                                                      // for basic_stringbuf<>...
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for move, pair
 
-#include <modules/fontrendering/util/fontutils.h>
-
-#include <algorithm>
+#include <glm/vec2.hpp>                                                 // for vec, operator==
+#include <glm/vector_relational.hpp>                                    // for any, notEqual
 
 namespace inviwo {
 

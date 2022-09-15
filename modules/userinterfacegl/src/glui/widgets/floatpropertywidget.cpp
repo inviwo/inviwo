@@ -29,9 +29,24 @@
 
 #include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>
 
+#include <inviwo/core/properties/ordinalproperty.h>       // for FloatProperty
+#include <inviwo/core/properties/propertywidget.h>        // for PropertyWidget
+#include <inviwo/core/util/glmvec.h>                      // for dvec2, ivec2
+#include <modules/userinterfacegl/glui/element.h>         // for UIOrientation
+#include <modules/userinterfacegl/glui/widgets/slider.h>  // for Slider
+
+#include <cmath>                                          // for fabs, round
+#include <functional>                                     // for __base, function
+
+#include <glm/common.hpp>                                 // for clamp
+#include <glm/ext/scalar_constants.hpp>                   // for epsilon
+
 namespace inviwo {
+class Processor;
+class Property;
 
 namespace glui {
+class Renderer;
 
 const std::string FloatPropertyWidget::classIdentifier = "org.inviwo.glui.FloatPropertyWidget";
 std::string FloatPropertyWidget::getClassIdentifier() const { return classIdentifier; }

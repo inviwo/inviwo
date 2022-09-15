@@ -29,17 +29,23 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
 
-#include <modules/userinterfacegl/glui/widgets/slider.h>
+#include <inviwo/core/properties/ordinalproperty.h>               // for FloatProperty
+#include <inviwo/core/properties/propertyobserver.h>              // for PropertyObserver
+#include <inviwo/core/properties/propertywidget.h>                // for PropertyWidget
+#include <inviwo/core/util/glmvec.h>                              // for ivec2
+#include <modules/userinterfacegl/glui/element.h>                 // for UIOrientation, UIOrient...
+#include <modules/userinterfacegl/glui/widgets/slider.h>          // for Slider
 
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/propertywidget.h>
-#include <inviwo/core/properties/propertyobserver.h>
+#include <string>                                                 // for string
 
 namespace inviwo {
+class Processor;
+class Property;
 
 namespace glui {
+class Renderer;
 
 /**
  * \class FloatPropertyWidget

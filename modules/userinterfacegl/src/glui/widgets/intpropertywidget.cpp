@@ -29,9 +29,23 @@
 
 #include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
 
+#include <inviwo/core/properties/ordinalproperty.h>       // for IntProperty
+#include <inviwo/core/properties/propertywidget.h>        // for PropertyWidget
+#include <inviwo/core/util/glmvec.h>                      // for dvec2, ivec2
+#include <modules/userinterfacegl/glui/element.h>         // for UIOrientation
+#include <modules/userinterfacegl/glui/widgets/slider.h>  // for Slider
+
+#include <cmath>                                          // for round
+#include <functional>                                     // for __base, function
+
+#include <glm/common.hpp>                                 // for clamp
+
 namespace inviwo {
+class Processor;
+class Property;
 
 namespace glui {
+class Renderer;
 
 const std::string IntPropertyWidget::classIdentifier = "org.inviwo.glui.IntPropertyWidget";
 std::string IntPropertyWidget::getClassIdentifier() const { return classIdentifier; }

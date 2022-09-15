@@ -29,6 +29,8 @@
 
 #include <modules/userinterfacegl/glui/layout/layout.h>
 
+#include <inviwo/core/util/glmvec.h>  // for ivec4
+
 namespace inviwo {
 
 namespace glui {

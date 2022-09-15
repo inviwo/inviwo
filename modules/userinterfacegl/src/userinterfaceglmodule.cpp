@@ -29,27 +29,34 @@
 
 #include <modules/userinterfacegl/userinterfaceglmodule.h>
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluiprocessor.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
+#include <inviwo/core/common/inviwomodule.h>                                 // for InviwoModule
+#include <inviwo/core/properties/boolproperty.h>                             // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                           // for ButtonProperty
+#include <inviwo/core/properties/minmaxproperty.h>                           // for FloatMinMaxP...
+#include <inviwo/core/properties/ordinalproperty.h>                          // for FloatProperty
+#include <inviwo/core/util/staticstring.h>                                   // for operator+
+#include <modules/opengl/shader/shadermanager.h>                             // for ShaderManager
+#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>         // for BoolProperty...
+#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>       // for ButtonProper...
+#include <modules/userinterfacegl/glui/widgets/floatminmaxpropertywidget.h>  // for FloatMinMaxP...
+#include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>        // for FloatPropert...
+#include <modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h>    // for IntMinMaxPro...
+#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>          // for IntPropertyW...
+#include <modules/userinterfacegl/glui/widgetsupplier.h>                     // for WidgetSupplier
+#include <modules/userinterfacegl/processors/camerawidget.h>                 // for CameraWidget
+#include <modules/userinterfacegl/processors/cropwidget.h>                   // for CropWidget
+#include <modules/userinterfacegl/processors/gluiprocessor.h>                // for GLUIProcessor
+#include <modules/userinterfacegl/processors/gluitestprocessor.h>            // for GLUITestProc...
+#include <modules/userinterfacegl/processors/presentationprocessor.h>        // for Presentation...
 
-#include <modules/opengl/shader/shadermanager.h>
-
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-
-#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/floatminmaxpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
+#include <memory>                                                            // for unique_ptr
 
 namespace inviwo {
+class InviwoApplication;
+
+namespace glui {
+class WidgetFactory;
+}  // namespace glui
 
 UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
     : InviwoModule(app, "UserInterfaceGL"), WidgetSupplier(*this) {

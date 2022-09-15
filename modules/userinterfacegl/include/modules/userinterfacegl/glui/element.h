@@ -29,22 +29,25 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
 
-#include <modules/userinterfacegl/glui/renderer.h>
+#include <inviwo/core/interaction/pickingmapper.h>                // for PickingMapper
+#include <inviwo/core/util/glmvec.h>                              // for ivec2, dvec2, size2_t
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/pickingmapper.h>
-
-#include <functional>
-#include <string>
-#include <vector>
+#include <cstddef>                                                // for size_t
+#include <functional>                                             // for function
+#include <memory>                                                 // for shared_ptr
+#include <string>                                                 // for string
 
 namespace inviwo {
 
+class PickingEvent;
+class Processor;
+class TextRenderer;
 class Texture2D;
 
 namespace glui {
+class Renderer;
 
 enum class UIOrientation { Vertical, Horizontal };
 
