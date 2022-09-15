@@ -29,25 +29,34 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/datastructures/bitset.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTIN...
 
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plottinggl/plotters/scatterplotgl.h>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/rendering/texturequadrenderer.h>
-#include <modules/fontrendering/textrenderer.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
+#include <inviwo/core/datastructures/bitset.h>                         // for BitSet
+#include <inviwo/core/ports/imageport.h>                               // for ImageOutport
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                  // for CompositeProperty
+#include <inviwo/core/properties/eventproperty.h>                      // for EventProperty
+#include <inviwo/core/properties/ordinalproperty.h>                    // for IntProperty, Float...
+#include <inviwo/core/properties/transferfunctionproperty.h>           // for TransferFunctionPr...
+#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
+#include <inviwo/dataframe/properties/columnoptionproperty.h>          // for ColumnOptionProperty
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>   // for FontFaceOptionProp...
+#include <modules/fontrendering/textrenderer.h>                        // for TextRenderer
+#include <modules/opengl/rendering/texturequadrenderer.h>              // for TextureQuadRenderer
+#include <modules/plottinggl/plotters/scatterplotgl.h>                 // for ScatterPlotGL, Sca...
+
+#include <cstddef>        // for size_t
+#include <cstdint>        // for uint32_t
+#include <memory>         // for shared_ptr, unique...
+#include <unordered_map>  // for unordered_map
+#include <vector>         // for vector
 
 namespace inviwo {
+class Column;
+class Texture2D;
 
 namespace plot {
 

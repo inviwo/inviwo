@@ -28,17 +28,65 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/processors/scatterplotmatrixprocessor.h>
-#include <modules/plottinggl/plotters/scatterplotgl.h>
 
-#include <modules/plotting/utils/statsutils.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/colorbrewer.h>
+#include "inviwo/core/util/colorbrewer-generated.h"                    // for Category, Category...
+#include <inviwo/core/datastructures/bitset.h>                         // for BitSet, BitSet::Bi...
+#include <inviwo/core/datastructures/buffer/buffer.h>                  // for IndexBuffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>      // for BufferRAMPrecision
+#include <inviwo/core/datastructures/transferfunction.h>               // for TransferFunction
+#include <inviwo/core/interaction/events/event.h>                      // for Event
+#include <inviwo/core/interaction/events/mousebuttons.h>               // for MouseButton, Mouse...
+#include <inviwo/core/interaction/events/mouseevent.h>                 // for MouseEvent
+#include <inviwo/core/ports/imageport.h>                               // for ImageOutport
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
+#include <inviwo/core/processors/processortags.h>                      // for Tags
+#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                  // for CompositeProperty
+#include <inviwo/core/properties/eventproperty.h>                      // for EventProperty::Action
+#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                    // for FloatVec4Property
+#include <inviwo/core/properties/property.h>                           // for Property
+#include <inviwo/core/properties/propertysemantics.h>                  // for PropertySemantics
+#include <inviwo/core/properties/selectioncolorproperty.h>             // for SelectionColorProp...
+#include <inviwo/core/properties/transferfunctionproperty.h>           // for TransferFunctionPr...
+#include <inviwo/core/properties/valuewrapper.h>                       // for PropertySerializat...
+#include <inviwo/core/util/colorbrewer.h>                              // for getTransferFunction
+#include <inviwo/core/util/exception.h>                                // for Exception
+#include <inviwo/core/util/glmvec.h>                                   // for vec2, size2_t, ivec2
+#include <inviwo/core/util/sourcecontext.h>                            // for IVW_CONTEXT
+#include <inviwo/core/util/utilities.h>                                // for stripIdentifier
+#include <inviwo/core/util/zip.h>                                      // for enumerate, zipIter...
+#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrame, DataFra...
+#include <inviwo/dataframe/properties/columnoptionproperty.h>          // for ColumnOptionProperty
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>      // for BrushingTargetsInv...
+#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingTarget
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>   // for FontFaceOptionProp...
+#include <modules/fontrendering/textrenderer.h>                        // for createTextTexture
+#include <modules/fontrendering/util/fontutils.h>                      // for FontType, FontType...
+#include <modules/opengl/inviwoopengl.h>                               // for GL_RGBA, GL_FLOAT
+#include <modules/opengl/openglutils.h>                                // for BlendModeState
+#include <modules/opengl/rendering/texturequadrenderer.h>              // for TextureQuadRenderer
+#include <modules/opengl/texture/texture2d.h>                          // for Texture2D
+#include <modules/opengl/texture/textureutils.h>                       // for activateAndClearTa...
+#include <modules/plotting/utils/statsutils.h>                         // for RegresionResult
+#include <modules/plottinggl/plotters/scatterplotgl.h>                 // for ScatterPlotGL, Sca...
+
+#include <functional>   // for __base
+#include <iomanip>      // for operator<<, setpre...
+#include <ostream>      // for basic_ostream, ope...
+#include <string>       // for char_traits, string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for move, pair
+
+#include <glm/detail/setup.hpp>  // for size_t
+#include <glm/vec2.hpp>          // for vec<>::(anonymous)
 
 namespace inviwo {
+class Column;
 
 namespace plot {
 
