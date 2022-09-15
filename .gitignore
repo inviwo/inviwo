@@ -9,3 +9,4 @@ compile_commands.json
 CMakeUserPresets.json
 build/
 out/
+.vs/
