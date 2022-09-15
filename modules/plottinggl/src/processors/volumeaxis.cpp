@@ -29,12 +29,59 @@
 
 #include <modules/plottinggl/processors/volumeaxis.h>
 
-#include <modules/plotting/utils/axisutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/algorithm/boundingbox.h>                  // for boundingBox
+#include <inviwo/core/datastructures/coordinatetransformer.h>   // for StructuredCoordinateTrans...
+#include <inviwo/core/datastructures/image/imagetypes.h>        // for ImageType, ImageType::Col...
+#include <inviwo/core/datastructures/unitsystem.h>              // for Axis
+#include <inviwo/core/interaction/cameratrackball.h>            // for CameraTrackball
+#include <inviwo/core/network/networklock.h>                    // for NetworkLock
+#include <inviwo/core/ports/imageport.h>                        // for ImageInport, ImageOutport
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeInport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>               // for Tags
+#include <inviwo/core/properties/boolcompositeproperty.h>       // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>              // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>           // for CompositeProperty
+#include <inviwo/core/properties/minmaxproperty.h>              // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>              // for OptionPropertyOption, Opt...
+#include <inviwo/core/properties/ordinalproperty.h>             // for FloatProperty
+#include <inviwo/core/properties/property.h>                    // for updateDefaultState, Overw...
+#include <inviwo/core/properties/propertysemantics.h>           // for PropertySemantics, Proper...
+#include <inviwo/core/properties/stringproperty.h>              // for StringProperty
+#include <inviwo/core/properties/valuewrapper.h>                // for PropertySerializationMode
+#include <inviwo/core/util/formats.h>                           // for DataFloat32
+#include <inviwo/core/util/glmmat.h>                            // for dmat4, dmat3
+#include <inviwo/core/util/glmutils.h>                          // for Matrix
+#include <inviwo/core/util/glmvec.h>                            // for dvec3, dvec2, vec3, dvec4
+#include <inviwo/core/util/raiiutils.h>                         // for KeepTrueWhileInScope
+#include <inviwo/core/util/staticstring.h>                      // for operator+
+#include <inviwo/core/util/zip.h>                               // for enumerate, zipIterator
+#include <modules/opengl/texture/textureutils.h>                // for activateAndClearTarget
+#include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, TickStyle::Out...
+#include <modules/plotting/properties/axisproperty.h>           // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>      // for AxisStyleProperty
+#include <modules/plotting/properties/plottextproperty.h>       // for PlotTextProperty
+#include <modules/plotting/properties/tickproperty.h>           // for MajorTickProperty, MinorT...
+#include <modules/plottinggl/utils/axisrenderer.h>              // for AxisRenderer3D
+
+#include <algorithm>                                            // for max_element
+#include <cstddef>                                              // for size_t
+#include <initializer_list>                                     // for initializer_list
+#include <memory>                                               // for shared_ptr, shared_ptr<>:...
+#include <type_traits>                                          // for remove_extent_t
+
+#include <fmt/core.h>                                           // for basic_string_view, format
+#include <glm/common.hpp>                                       // for sign
+#include <glm/detail/type_vec1.hpp>                             // for operator-
+#include <glm/geometric.hpp>                                    // for dot, normalize, cross
+#include <glm/mat3x3.hpp>                                       // for operator*
+#include <glm/mat4x4.hpp>                                       // for operator*
+#include <glm/matrix.hpp>                                       // for inverse, transpose
+#include <glm/vec3.hpp>                                         // for operator*, operator-, vec...
+#include <glm/vec4.hpp>                                         // for operator*, operator+, ope...
 
 namespace inviwo {
 

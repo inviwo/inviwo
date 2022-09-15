@@ -29,24 +29,34 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>      // for IVW_MODULE_PLOTTINGGL_API
 
-#include <modules/basegl/viewmanager.h>
-#include <modules/opengl/rendering/texturequadrenderer.h>
+#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
+#include <inviwo/core/properties/minmaxproperty.h>          // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>          // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
+#include <inviwo/core/util/glmvec.h>                        // for size2_t, ivec2, ivec4
+#include <inviwo/core/util/staticstring.h>                  // for operator+
+#include <modules/basegl/viewmanager.h>                     // for ViewManager
+#include <modules/opengl/rendering/texturequadrenderer.h>   // for TextureQuadRenderer
+#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
+#include <modules/plotting/properties/marginproperty.h>     // for MarginProperty
+#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 
-#include <modules/plotting/properties/marginproperty.h>
-#include <modules/plotting/properties/axisproperty.h>
-#include <modules/plotting/properties/axisstyleproperty.h>
-#include <modules/plottinggl/utils/axisrenderer.h>
+#include <array>                                            // for array
+#include <functional>                                       // for __base
+#include <string>                                           // for operator==, operator+, string
+#include <string_view>                                      // for operator==
+#include <vector>                                           // for operator!=, vector, operator==
 
 namespace inviwo {
+class Event;
+class Outport;
 
 namespace plot {
 

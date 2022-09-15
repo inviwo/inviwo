@@ -28,15 +28,22 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/datastructures/geometry/typedmesh.h>
-#include <modules/basegl/datastructures/linesettings.h>
-#include <modules/basegl/rendering/linerenderer.h>
-#include <modules/plotting/properties/boxselectionproperty.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>         // for IVW_MODULE_PLOTTINGGL_API
+
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, Connecti...
+#include <inviwo/core/datastructures/geometry/typedmesh.h>     // for TypedMesh<>::Vertex, Color...
+#include <inviwo/core/util/glmvec.h>                           // for vec4, vec3, dvec2, size2_t
+#include <modules/basegl/datastructures/linesettings.h>        // for LineSettings
+#include <modules/basegl/rendering/linerenderer.h>             // for LineRenderer
+
+#include <array>                                               // for array
+#include <optional>                                            // for optional
 
 namespace inviwo {
 
 namespace plot {
+class BoxSelectionProperty;
+
 /**
  * \brief Renders a 2D rectangle in screen space.
  * Use in combination with BoxSelectionInteractionHandler.

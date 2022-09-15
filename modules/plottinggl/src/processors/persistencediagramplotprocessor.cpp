@@ -29,9 +29,29 @@
 
 #include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
 
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/dataframe/util/dataframeutil.h>
+#include <inviwo/core/datastructures/bitset.h>                         // for BitSet
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>      // for BufferRAMPrecision
+#include <inviwo/core/interaction/events/pickingevent.h>               // for PickingEvent
+#include <inviwo/core/ports/imageport.h>                               // for BaseImageInport
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
+#include <inviwo/core/processors/processortags.h>                      // for Tags
+#include <inviwo/core/util/zip.h>                                      // for sequence
+#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
+#include <inviwo/dataframe/properties/columnoptionproperty.h>          // for ColumnOptionProperty
+#include <inviwo/dataframe/util/dataframeutil.h>                       // for createToolTipForRow
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <modules/opengl/texture/textureutils.h>                       // for ImageInport
+#include <modules/plottinggl/plotters/persistencediagramplotgl.h>      // for PersistenceDiagram...
+
+#include <algorithm>                                                   // for copy_if
+#include <cstdint>                                                     // for uint32_t
+#include <iterator>                                                    // for back_insert_iterator
+#include <string>                                                      // for string
+#include <string_view>                                                 // for string_view
+#include <type_traits>                                                 // for remove_extent_t
+#include <vector>                                                      // for vector
 
 namespace inviwo {
 

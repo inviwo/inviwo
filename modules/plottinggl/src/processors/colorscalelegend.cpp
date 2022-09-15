@@ -28,8 +28,49 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/processors/colorscalelegend.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
+
+#include <inviwo/core/datastructures/datamapper.h>                    // for DataMapper
+#include <inviwo/core/datastructures/unitsystem.h>                    // for Axis
+#include <inviwo/core/ports/datainport.h>                             // for DataInport
+#include <inviwo/core/ports/imageport.h>                              // for ImageInport, ImageO...
+#include <inviwo/core/ports/volumeport.h>                             // for VolumeInport
+#include <inviwo/core/processors/processor.h>                         // for Processor
+#include <inviwo/core/processors/processorinfo.h>                     // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                    // for CodeState, CodeStat...
+#include <inviwo/core/processors/processortags.h>                     // for Tags
+#include <inviwo/core/properties/boolproperty.h>                      // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                    // for OptionProperty, Opt...
+#include <inviwo/core/properties/ordinalproperty.h>                   // for IntProperty, FloatP...
+#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
+#include <inviwo/core/util/defaultvalues.h>                           // for Defaultvalues
+#include <inviwo/core/util/glmvec.h>                                  // for ivec2, vec2, vec4
+#include <inviwo/core/util/staticstring.h>                            // for operator+
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
+#include <modules/fontrendering/properties/fontproperty.h>            // for FontProperty
+#include <modules/opengl/inviwoopengl.h>                              // for GL_ALWAYS, GL_ONE
+#include <modules/opengl/openglutils.h>                               // for Activate, BlendMode...
+#include <modules/opengl/shader/shader.h>                             // for Shader
+#include <modules/opengl/shader/shaderutils.h>                        // for setUniforms
+#include <modules/opengl/texture/textureunit.h>                       // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                      // for activateAndClearTarget
+#include <modules/plotting/datastructures/axissettings.h>             // for AxisSettings::Orien...
+#include <modules/plotting/datastructures/majorticksettings.h>        // for TickStyle, TickStyl...
+#include <modules/plotting/properties/axisproperty.h>                 // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>            // for AxisStyleProperty
+#include <modules/plotting/properties/plottextproperty.h>             // for PlotTextProperty
+#include <modules/plotting/properties/tickproperty.h>                 // for MajorTickProperty
+#include <modules/plottinggl/utils/axisrenderer.h>                    // for AxisRenderer
+
+#include <array>                                                      // for array
+#include <cmath>                                                      // for ceil
+#include <memory>                                                     // for shared_ptr
+#include <type_traits>                                                // for remove_extent_t
+
+#include <fmt/core.h>                                                 // for basic_string_view, arg
+#include <glm/vec2.hpp>                                               // for operator+, operator-
 
 namespace inviwo {
 namespace plot {

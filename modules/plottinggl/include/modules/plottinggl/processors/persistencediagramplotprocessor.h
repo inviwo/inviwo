@@ -29,16 +29,21 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>                 // for IVW_MODULE_PLOTTIN...
 
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plottinggl/plotters/persistencediagramplotgl.h>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/datastructures/bitset.h>                         // for BitSet
+#include <inviwo/core/ports/imageport.h>                               // for BaseImageInport
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
+#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
+#include <inviwo/dataframe/properties/columnoptionproperty.h>          // for ColumnOptionProperty
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <modules/opengl/texture/textureutils.h>                       // for ImageInport
+#include <modules/plottinggl/plotters/persistencediagramplotgl.h>      // for PersistenceDiagram...
 
-#include <set>
+#include <cstddef>                                                     // for size_t
+#include <functional>                                                  // for function
+#include <memory>                                                      // for shared_ptr
 
 namespace inviwo {
 

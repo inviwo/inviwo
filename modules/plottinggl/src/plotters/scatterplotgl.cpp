@@ -28,26 +28,67 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/plotters/scatterplotgl.h>
-#include <modules/opengl/buffer/buffergl.h>
-#include <modules/opengl/buffer/bufferobject.h>
-#include <modules/opengl/buffer/bufferobjectarray.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/openglutils.h>
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/util/colorconversion.h>
-#include <inviwo/core/util/zip.h>
-#include <modules/opengl/buffer/bufferobjectarray.h>
+#include <inviwo/core/datastructures/bitset.h>                            // for BitSet
+#include <inviwo/core/datastructures/buffer/buffer.h>                     // for BufferBase, Ind...
+#include <inviwo/core/datastructures/buffer/bufferram.h>                  // for BufferRAM
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>         // for BufferRAMPrecision
+#include <inviwo/core/datastructures/image/image.h>                       // for Image
+#include <inviwo/core/datastructures/representationconverter.h>           // for RepresentationC...
+#include <inviwo/core/datastructures/representationconverterfactory.h>    // for RepresentationC...
+#include <inviwo/core/datastructures/tfprimitive.h>                       // for TFPrimitiveData
+#include <inviwo/core/datastructures/transferfunction.h>                  // for TransferFunction
+#include <inviwo/core/interaction/events/event.h>                         // for Event
+#include <inviwo/core/interaction/events/keyboardkeys.h>                  // for KeyModifier
+#include <inviwo/core/interaction/events/pickingevent.h>                  // for PickingEvent
+#include <inviwo/core/interaction/pickingmapper.h>                        // for PickingMapper
+#include <inviwo/core/interaction/pickingstate.h>                         // for PickingHoverState
+#include <inviwo/core/ports/imageport.h>                                  // for ImageOutport
+#include <inviwo/core/processors/processor.h>                             // for Processor
+#include <inviwo/core/properties/boolproperty.h>                          // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                     // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                     // for InvalidationLevel
+#include <inviwo/core/properties/minmaxproperty.h>                        // for DoubleMinMaxPro...
+#include <inviwo/core/properties/ordinalproperty.h>                       // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                     // for PropertySemantics
+#include <inviwo/core/properties/selectioncolorproperty.h>                // for SelectionColorP...
+#include <inviwo/core/properties/transferfunctionproperty.h>              // for TransferFunctio...
+#include <inviwo/core/util/dispatcher.h>                                  // for Dispatcher
+#include <inviwo/core/util/foreacharg.h>                                  // for for_each_in_tuple
+#include <inviwo/core/util/formatdispatching.h>                           // for Scalars
+#include <inviwo/core/util/glmvec.h>                                      // for dvec2, vec4
+#include <inviwo/core/util/stdextensions.h>                               // for transform
+#include <inviwo/core/util/zip.h>                                         // for make_sequence
+#include <inviwo/dataframe/datastructures/column.h>                       // for Column
+#include <modules/opengl/buffer/buffergl.h>                               // for BufferGL
+#include <modules/opengl/buffer/bufferobject.h>                           // for BufferObject
+#include <modules/opengl/buffer/bufferobjectarray.h>                      // for BufferObjectArray
+#include <modules/opengl/inviwoopengl.h>                                  // for glDrawElements
+#include <modules/opengl/openglutils.h>                                   // for BlendModeState
+#include <modules/opengl/shader/shader.h>                                 // for Shader
+#include <modules/opengl/shader/shaderutils.h>                            // for ImageInport
+#include <modules/opengl/texture/textureunit.h>                           // for TextureUnitCont...
+#include <modules/opengl/texture/textureutils.h>                          // for deactivateCurre...
+#include <modules/plotting/datastructures/axissettings.h>                 // for AxisSettings::O...
+#include <modules/plotting/interaction/boxselectioninteractionhandler.h>  // for BoxSelectionInt...
+#include <modules/plotting/properties/axisproperty.h>                     // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>                // for AxisStyleProperty
+#include <modules/plotting/properties/boxselectionproperty.h>             // for BoxSelectionPro...
+#include <modules/plotting/properties/marginproperty.h>                   // for MarginProperty
+#include <modules/plottinggl/rendering/boxselectionrenderer.h>            // for BoxSelectionRen...
+#include <modules/plottinggl/utils/axisrenderer.h>                        // for AxisRenderer
 
-#include <algorithm>
+#include <algorithm>                                                      // for partition, min
+#include <iterator>                                                       // for distance
+#include <type_traits>                                                    // for remove_extent_t
+#include <utility>                                                        // for swap
+#include <vector>                                                         // for vector
+
+#include <fmt/core.h>                                                     // for basic_string_view
+#include <glm/common.hpp>                                                 // for clamp
+#include <glm/vec2.hpp>                                                   // for vec<>::(anonymous)
+#include <glm/vec4.hpp>                                                   // for operator+, vec<...
+#include <half/half.hpp>                                                  // for operator<, oper...
 
 namespace inviwo {
 

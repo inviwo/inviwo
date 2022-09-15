@@ -28,23 +28,36 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>          // for IVW_MODULE_PLOTTINGGL_API
+
+#include <inviwo/core/properties/boolcompositeproperty.h>       // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
+#include <inviwo/core/properties/minmaxproperty.h>              // for DoubleMinMaxProperty
+#include <inviwo/core/util/glmvec.h>                            // for vec4, vec2, dvec2
+#include <modules/plotting/datastructures/axissettings.h>       // for AxisSettings, AxisSetting...
+#include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, MajorTickSettings
+#include <modules/plotting/datastructures/minorticksettings.h>  // for MinorTickSettings
+#include <modules/plotting/datastructures/plottextsettings.h>   // for PlotTextSettings
+
+#include <cstddef>                                              // for size_t
+#include <cstdint>                                              // for uint32_t
+#include <functional>                                           // for function, __base
+#include <memory>                                               // for shared_ptr
+#include <string>                                               // for string
+#include <string_view>                                          // for string_view
+#include <vector>                                               // for vector
 
 namespace inviwo {
 
-class DataFrame;
-class Column;
 class CategoricalColumn;
+class Column;
+class DataFrame;
+class FontSettings;
 
 namespace plot {
 
-class ParallelCoordinates;
 class PCPAxisSettings;
+class ParallelCoordinates;
 
 class IVW_MODULE_PLOTTINGGL_API PCPLabelSettings : public PlotTextSettings {
 public:

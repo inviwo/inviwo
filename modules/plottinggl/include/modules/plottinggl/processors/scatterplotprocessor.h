@@ -29,16 +29,30 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plottinggl/plotters/scatterplotgl.h>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>                 // for IVW_MODULE_PLOTTIN...
+
+#include <inviwo/core/ports/imageport.h>                               // for BaseImageInport
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>                     // for OptionProperty
+#include <inviwo/core/util/staticstring.h>                             // for operator+
+#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
+#include <inviwo/dataframe/properties/columnoptionproperty.h>          // for ColumnOptionProperty
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <modules/opengl/texture/textureutils.h>                       // for ImageInport
+#include <modules/plottinggl/plotters/scatterplotgl.h>                 // for ScatterPlotGL::Sor...
+
+#include <cstddef>                                                     // for size_t
+#include <cstdint>                                                     // for uint32_t
+#include <functional>                                                  // for __base, function
+#include <memory>                                                      // for shared_ptr
+#include <string>                                                      // for operator==, operator+
+#include <string_view>                                                 // for operator==
+#include <unordered_map>                                               // for unordered_map
+#include <vector>                                                      // for operator!=, vector
 
 namespace inviwo {
+class PickingEvent;
 
 namespace plot {
 

@@ -29,35 +29,54 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/datastructures/geometry/typedmesh.h>
-#include <inviwo/core/interaction/pickingmapper.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/rendering/texturequadrenderer.h>
-#include <modules/fontrendering/textrenderer.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>                        // for IVW_MODULE_...
 
-#include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>
+#include <inviwo/core/datastructures/bitset.h>                                // for BitSet
+#include <inviwo/core/datastructures/buffer/buffer.h>                         // for IndexBuffer
+#include <inviwo/core/datastructures/geometry/typedmesh.h>                    // for TypedMesh
+#include <inviwo/core/interaction/pickingmapper.h>                            // for PickingMapper
+#include <inviwo/core/ports/datainport.h>                                     // for DataInport
+#include <inviwo/core/ports/imageport.h>                                      // for ImageOutport
+#include <inviwo/core/ports/outportiterable.h>                                // for OutportIter...
+#include <inviwo/core/processors/processor.h>                                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>                             // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>                     // for BoolComposi...
+#include <inviwo/core/properties/boolproperty.h>                              // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                            // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>                         // for CompositePr...
+#include <inviwo/core/properties/optionproperty.h>                            // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                           // for FloatProperty
+#include <inviwo/core/properties/stringproperty.h>                            // for StringProperty
+#include <inviwo/core/util/glmvec.h>                                          // for vec2, size2_t
+#include <inviwo/core/util/staticstring.h>                                    // for operator+
+#include <inviwo/dataframe/properties/dataframecolormapproperty.h>            // for DataFrameCo...
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>         // for BrushingAnd...
+#include <modules/fontrendering/properties/fontproperty.h>                    // for FontProperty
+#include <modules/opengl/inviwoopengl.h>                                      // for GLsizei
+#include <modules/opengl/shader/shader.h>                                     // for Shader
+#include <modules/plotting/properties/marginproperty.h>                       // for MarginProperty
+#include <modules/plottinggl/utils/axisrenderer.h>                            // for AxisRenderer
+#include <modules/userinterfacegl/glui/renderer.h>                            // for Renderer
+#include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>  // for DoubleMinMa...
 
-#include <modules/plotting/properties/categoricalaxisproperty.h>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
-#include <inviwo/dataframe/properties/dataframecolormapproperty.h>
-#include <modules/plotting/properties/marginproperty.h>
+#include <array>                                                              // for array
+#include <cstddef>                                                            // for size_t
+#include <cstdint>                                                            // for uint32_t
+#include <functional>                                                         // for __base
+#include <memory>                                                             // for unique_ptr
+#include <string>                                                             // for operator==
+#include <string_view>                                                        // for operator==
+#include <unordered_map>                                                      // for operator!=
+#include <utility>                                                            // for pair
+#include <vector>                                                             // for operator!=
 
-#include <modules/plottinggl/utils/axisrenderer.h>
+#include <fmt/core.h>                                                         // for format_to
 
 namespace inviwo {
+class DataFrame;
+class Deserializer;
 class PickingEvent;
+class Serializer;
 
 /** \docpage{org.inviwo.ParallelCoordinates, Parallel Coordinates}
  * ![](org.inviwo.ParallelCoordinates.png?classIdentifier=org.inviwo.ParallelCoordinates)
