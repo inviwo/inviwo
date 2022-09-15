@@ -28,9 +28,19 @@
  *********************************************************************************/
 
 #include <modules/postprocessing/processors/imagehuesaturationluminance.h>
-#include <modules/opengl/shader/shaderutils.h>
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
+#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::None
+#include <inviwo/core/properties/ordinalproperty.h>                      // for FloatProperty
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <modules/opengl/shader/shaderutils.h>                           // for setUniforms
+
+#include <string>                                                        // for string
+#include <string_view>                                                   // for string_view
 
 namespace inviwo {
+class TextureUnitContainer;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageHueSaturationLuminance::processorInfo_{

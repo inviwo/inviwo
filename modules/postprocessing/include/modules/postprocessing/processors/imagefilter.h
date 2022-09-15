@@ -29,13 +29,18 @@
 
 #pragma once
 
-#include <modules/postprocessing/postprocessingmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <modules/basegl/algorithm/imageconvolution.h>
+#include <modules/postprocessing/postprocessingmoduledefine.h>  // for IVW_MODULE_POSTPROCESSING...
+
+#include <inviwo/core/ports/imageport.h>                        // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
+#include <inviwo/core/properties/optionproperty.h>              // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>             // for IntProperty
+#include <modules/basegl/algorithm/imageconvolution.h>          // for ImageConvolution
+
+#include <array>                                                // for array
+#include <vector>                                               // for vector
 
 namespace inviwo {
 

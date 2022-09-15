@@ -29,10 +29,12 @@
 
 #pragma once
 
-#include <modules/postprocessing/postprocessingmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/postprocessing/postprocessingmoduledefine.h>  // for IVW_MODULE_POSTPROCESSING...
+
+#include <inviwo/core/common/inviwomodule.h>                    // for InviwoModule
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_POSTPROCESSING_API PostProcessingModule : public InviwoModule {
 public:

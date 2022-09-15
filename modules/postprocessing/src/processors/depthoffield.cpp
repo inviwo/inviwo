@@ -29,13 +29,73 @@
 
 #include <modules/postprocessing/processors/depthoffield.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/network/networklock.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/texture/texture3d.h>
+#include <inviwo/core/common/inviwoapplication.h>                       // for dispatchFront
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/camera/camera.h>                   // for Camera
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>        // for PerspectiveCamera
+#include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>  // for SkewedPerspective...
+#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/image/imageram.h>                  // for ImageRAM
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/interaction/events/keyboardkeys.h>                // for KeyModifier, KeyM...
+#include <inviwo/core/interaction/events/mousebuttons.h>                // for MouseButton, Mous...
+#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
+#include <inviwo/core/network/networklock.h>                            // for NetworkLock
+#include <inviwo/core/ports/imageport.h>                                // for BaseImageInport
+#include <inviwo/core/ports/meshport.h>                                 // for MeshInport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::None
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
+#include <inviwo/core/properties/eventproperty.h>                       // for EventProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                     // for IntSizeTProperty
+#include <inviwo/core/util/formats.h>                                   // for DataFormat
+#include <inviwo/core/util/glmvec.h>                                    // for vec2, size2_t, vec3
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <modules/base/algorithm/randomutils.h>                         // for haltonSequence
+#include <modules/opengl/image/imagegl.h>                               // for ImageGL
+#include <modules/opengl/inviwoopengl.h>                                // for GLuint, GL_FALSE
+#include <modules/opengl/openglcapabilities.h>                          // for OpenGLCapabilities
+#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
+#include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
+#include <modules/opengl/shader/shaderutils.h>                          // for ImageInport
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
+#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
+#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+
+#include <algorithm>                                                    // for max, min, copy, fill
+#include <cmath>                                                        // for cos, sin, pow, round
+#include <functional>                                                   // for __base
+#include <numeric>                                                      // for accumulate
+#include <ostream>                                                      // for operator<<
+#include <string>                                                       // for string, operator!=
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for pair, make_pair
+
+#include <glm/detail/setup.hpp>                                         // for size_t
+#include <glm/fwd.hpp>                                                  // for vec2, vec3
+#include <glm/geometric.hpp>                                            // for normalize, dot
+#include <glm/gtx/scalar_multiplication.hpp>                            // for operator*, operator/
+#include <glm/trigonometric.hpp>                                        // for cos, radians, sin
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                                                 // for operator*, vec<>:...
 
 namespace inviwo {
+class Event;
 
 const ProcessorInfo DepthOfField::processorInfo_{
     "org.inviwo.DepthOfField",  // Class identifier

@@ -28,21 +28,43 @@
  *********************************************************************************/
 
 #include <modules/postprocessing/processors/depthdarkening.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/basegl/processors/imageprocessing/imagelowpass.h>
 
-#include <modules/basegl/algorithm/imageconvolution.h>
+#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/image/layerramprecision.h>         // for LayerRAMPrecision
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/imageport.h>                                // for ImageOutport, Ima...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::None
+#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/util/formats.h>                                   // for DataFloat32
+#include <inviwo/core/util/glmvec.h>                                    // for vec2, size2_t, vec4
+#include <modules/basegl/algorithm/imageconvolution.h>                  // for ImageConvolution
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
+#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                          // for setUniforms
+#include <modules/opengl/texture/texture2d.h>                           // for Texture2D
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit, Text...
+#include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
 
-#include <modules/base/algorithm/dataminmax.h>
-#include <numeric>
+#include <functional>                                                   // for __base
+#include <limits>                                                       // for numeric_limits
+#include <numeric>                                                      // for accumulate
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+
+#include <glm/common.hpp>                                               // for max, min
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
 
 namespace inviwo {
 

@@ -29,13 +29,14 @@
 
 #pragma once
 
-#include <modules/postprocessing/postprocessingmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <modules/postprocessing/postprocessingmoduledefine.h>           // for IVW_MODULE_POSTP...
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/properties/ordinalproperty.h>                      // for FloatProperty
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.ImageOpacity, Image Opacity}
  * ![](org.inviwo.ImageOpacity.png?classIdentifier=org.inviwo.ImageOpacity)

@@ -53,17 +53,53 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------*/
 
 #include <modules/postprocessing/processors/ssao.h>
-#include <inviwo/core/datastructures/camera/perspectivecamera.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <random>
+
+#include <inviwo/core/datastructures/camera/camera.h>             // for Camera
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>  // for PerspectiveCamera
+#include <inviwo/core/datastructures/image/image.h>               // for Image
+#include <inviwo/core/datastructures/image/layer.h>               // for Layer
+#include <inviwo/core/ports/imageport.h>                          // for ImageOutport, ImageInport
+#include <inviwo/core/processors/processor.h>                     // for Processor
+#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                // for CodeState, CodeState::S...
+#include <inviwo/core/processors/processortags.h>                 // for Tags
+#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>                // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>             // for InvalidationLevel, Inva...
+#include <inviwo/core/properties/optionproperty.h>                // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>               // for IntProperty, FloatProperty
+#include <inviwo/core/util/glmmat.h>                              // for mat4
+#include <inviwo/core/util/glmvec.h>                              // for vec4, vec2, size2_t
+#include <modules/opengl/buffer/framebufferobject.h>              // for FrameBufferObject
+#include <modules/opengl/geometry/meshgl.h>                       // for MeshGL
+#include <modules/opengl/image/imagegl.h>                         // for ImageGL
+#include <modules/opengl/image/layergl.h>                         // for LayerGL
+#include <modules/opengl/openglutils.h>                           // for Enable
+#include <modules/opengl/shader/shader.h>                         // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>                   // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                     // for ShaderType, ShaderType:...
+#include <modules/opengl/sharedopenglresources.h>                 // for SharedOpenGLResources
+#include <modules/opengl/texture/textureutils.h>                  // for activateTargetAndCopySo...
+
+#include <algorithm>                                              // for max
+#include <array>                                                  // for operator!=, array
+#include <cmath>                                                  // for cos, sin, tanf
+#include <functional>                                             // for __base
+#include <memory>                                                 // for shared_ptr, shared_ptr<...
+#include <random>                                                 // for mt19937, uniform_real_d...
+#include <string>                                                 // for to_string, string
+#include <string_view>                                            // for string_view
+#include <type_traits>                                            // for remove_extent_t
+
+#include <glm/common.hpp>                                         // for clamp
+#include <glm/ext/scalar_constants.hpp>                           // for pi
+#include <glm/mat4x4.hpp>                                         // for mat<>::col_type
+#include <glm/trigonometric.hpp>                                  // for radians, cos, sin
+#include <glm/vec2.hpp>                                           // for vec<>::(anonymous)
+#include <glm/vec4.hpp>                                           // for vec<>::(anonymous)
 
 namespace inviwo {
+class DataFormatBase;
 
 #define USE_AO_SPECIAL_BLUR 1
 static vec4 hbaoRandom[SSAO::HBAO_RANDOM_ELEMENTS * SSAO::MAX_SAMPLES];

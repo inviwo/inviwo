@@ -28,12 +28,26 @@
  *********************************************************************************/
 
 #include <modules/postprocessing/processors/fog.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/geometry/meshgl.h>
+
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorDepth
+#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>         // for Tags
+#include <inviwo/core/properties/cameraproperty.h>        // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
+#include <inviwo/core/properties/minmaxproperty.h>        // for FloatMinMaxProperty
+#include <inviwo/core/properties/ordinalproperty.h>       // for FloatVec3Property, FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>     // for PropertySemantics, PropertySema...
+#include <inviwo/core/util/glmvec.h>                      // for vec3
+#include <modules/opengl/shader/shader.h>                 // for Shader
+#include <modules/opengl/shader/shaderutils.h>            // for setUniforms
+#include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>          // for activateTargetAndCopySource
+
+#include <functional>                                     // for __base
+#include <string>                                         // for string
+#include <string_view>                                    // for string_view
 
 namespace inviwo {
 
