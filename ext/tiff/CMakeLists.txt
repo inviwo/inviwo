@@ -136,8 +136,9 @@ include(LibraryFeatures)
 find_package(CMath REQUIRED)
 
 # Release support
+#[===[ Inviwo modification: Runs script to input version in header, which has already been done.
 include(Release)
-
+]===]
 
 # Process subdirectories
 add_subdirectory(libtiff)

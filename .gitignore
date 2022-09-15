@@ -7,3 +7,6 @@ pyconfig.ini
 .clangd
 compile_commands.json
 CMakeUserPresets.json
+build/
+out/
+.vs/

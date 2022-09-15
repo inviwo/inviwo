@@ -30,20 +30,6 @@
 cmake_minimum_required(VERSION 3.15...3.22 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
-#--------------------------------------------------------------------
-# Disallow in-source builds, we require an out of source build
-get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
-get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
-set(prevbindir "")
-while(NOT "${bindir}" STREQUAL "${prevbindir}")
-    if("${bindir}" STREQUAL "${srcdir}")
-        message(FATAL_ERROR
-            "In-source builds are not permitted!\n"
-            "Make a separate folder for building, outside of the source directory.")
-    endif()
-    set(prevbindir "${bindir}")
-    get_filename_component(bindir ${bindir} DIRECTORY)
-endwhile()
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
