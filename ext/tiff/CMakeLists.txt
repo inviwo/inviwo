@@ -136,8 +136,9 @@ include(LibraryFeatures)
 find_package(CMath REQUIRED)
 
 # Release support
+#[===[ Inviwo modification: Runs script to input version in header, which has already been done.
 include(Release)
-
+]===]
 
 # Process subdirectories
 add_subdirectory(libtiff)
@@ -214,8 +215,7 @@ message(STATUS "")
 #[===[ Inviwo modification ]===]
 ivw_suppress_compiler_warnings(tiff)
 ivw_default_install_targets(tiff)
-ivw_folder(tiff ext/tiff)
-ivw_folder(release ext/tiff)
+ivw_folder(tiff ext)
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 ivw_make_package(TIFF tiff)
 add_library(TIFF::TIFF ALIAS tiff)
