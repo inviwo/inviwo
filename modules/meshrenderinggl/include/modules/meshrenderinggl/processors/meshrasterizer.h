@@ -29,34 +29,40 @@
 
 #pragma once
 
-#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <modules/meshrenderinggl/datastructures/halfedges.h>
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/rendering/meshdrawer.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/base/properties/transformlistproperty.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDE...
 
-#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
-#include <modules/meshrenderinggl/algorithm/calcnormals.h>
+#include <inviwo/core/ports/meshport.h>                              // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>                        // for Processor
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>            // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                     // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                   // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>                // for CompositeProperty
+#include <inviwo/core/properties/optionproperty.h>                   // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                  // for FloatProperty, Float...
+#include <inviwo/core/properties/simplelightingproperty.h>           // for SimpleLightingProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>         // for TransferFunctionProp...
+#include <inviwo/core/util/document.h>                               // for Document
+#include <inviwo/core/util/glmmat.h>                                 // for mat4
+#include <inviwo/core/util/glmvec.h>                                 // for ivec2
+#include <inviwo/core/util/staticstring.h>                           // for operator+
+#include <modules/base/properties/transformlistproperty.h>           // for TransformListProperty
+#include <modules/meshrenderinggl/algorithm/calcnormals.h>           // for CalculateMeshNormals...
+#include <modules/meshrenderinggl/datastructures/rasterization.h>    // for Rasterization
+#include <modules/meshrenderinggl/ports/rasterizationport.h>         // for RasterizationOutport
+#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
 
-#include <inviwo/core/util/glm.h>
-#include <string_view>
+#include <array>        // for array
+#include <functional>   // for __base, function
+#include <memory>       // for shared_ptr
+#include <string>       // for operator==, operator+
+#include <string_view>  // for operator==, string_view
+#include <vector>       // for operator!=, vector
 
 namespace inviwo {
+class Layer;
+class Mesh;
+class Shader;
 
 /** \docpage{org.inviwo.MeshRasterizer, Mesh Rasterizer}
  * ![](org.inviwo.MeshRasterizer.png?classIdentifier=org.inviwo.MeshRasterizer)

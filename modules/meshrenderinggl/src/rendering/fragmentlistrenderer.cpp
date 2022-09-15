@@ -28,19 +28,33 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/shader/shaderutils.h>
 
-#include <cstdio>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorDepth
+#include <inviwo/core/util/dispatcher.h>                  // for Dispatcher, Dispatcher<>::Handle
+#include <inviwo/core/util/glmvec.h>                      // for size2_t, vec2, vec4, ivec2
+#include <modules/opengl/buffer/bufferobject.h>           // for BufferObject
+#include <modules/opengl/glformats.h>                     // for GLFormats
+#include <modules/opengl/inviwoopengl.h>                  // for GLfloat, GLuint, GLint, GL_ARRA...
+#include <modules/opengl/openglcapabilities.h>            // for OpenGLCapabilities
+#include <modules/opengl/openglutils.h>                   // for CullFaceState, DepthMaskState
+#include <modules/opengl/shader/shader.h>                 // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>           // for ShaderObject
+#include <modules/opengl/texture/texture2d.h>             // for Texture2D
+#include <modules/opengl/texture/textureunit.h>           // for TextureUnit, TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>          // for singleDrawImagePlaneRect, bindA...
+
+#include <algorithm>    // for min
+#include <ostream>      // for operator<<, char_traits, basic_...
+#include <string_view>  // for string_view
+#include <vector>       // for vector
+
+#include <fmt/core.h>                // for basic_string_view, format
+#include <fmt/ostream.h>             // for print
+#include <glm/detail/qualifier.hpp>  // for tvec2, tvec4
+#include <glm/vec2.hpp>              // for vec<>::(anonymous), operator!=
 
 namespace inviwo {
+class Image;
 
 FragmentListRenderer::Illustration::Illustration(size2_t screenSize, size_t fragmentSize)
     : index{screenSize, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}

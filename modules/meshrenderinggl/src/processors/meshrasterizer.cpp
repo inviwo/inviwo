@@ -28,27 +28,71 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/processors/meshrasterizer.h>
-#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
 
-#include <modules/opengl/geometry/meshgl.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/rendering/meshdrawerfactory.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/base/algorithm/dataminmax.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>                         // for IndexBuffer
+#include <inviwo/core/datastructures/data.h>                                  // for noData
+#include <inviwo/core/datastructures/geometry/geometrytype.h>                 // for Connectivit...
+#include <inviwo/core/datastructures/geometry/mesh.h>                         // for Mesh, Mesh:...
+#include <inviwo/core/datastructures/image/layer.h>                           // for Layer
+#include <inviwo/core/datastructures/representationconverter.h>               // for Representat...
+#include <inviwo/core/datastructures/representationconverterfactory.h>        // for Representat...
+#include <inviwo/core/datastructures/transferfunction.h>                      // for TransferFun...
+#include <inviwo/core/ports/datainport.h>                                     // for DataInport
+#include <inviwo/core/ports/inportiterable.h>                                 // for InportItera...
+#include <inviwo/core/ports/meshport.h>                                       // for MeshFlatMul...
+#include <inviwo/core/processors/processor.h>                                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>                             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                            // for CodeState
+#include <inviwo/core/processors/processortags.h>                             // for Tags, Tags::GL
+#include <inviwo/core/properties/boolcompositeproperty.h>                     // for BoolComposi...
+#include <inviwo/core/properties/boolproperty.h>                              // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                            // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>                         // for CompositePr...
+#include <inviwo/core/properties/invalidationlevel.h>                         // for Invalidatio...
+#include <inviwo/core/properties/listproperty.h>                              // for ListProperty
+#include <inviwo/core/properties/optionproperty.h>                            // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                           // for IntProperty
+#include <inviwo/core/properties/property.h>                                  // for Property
+#include <inviwo/core/properties/propertysemantics.h>                         // for PropertySem...
+#include <inviwo/core/properties/simplelightingproperty.h>                    // for SimpleLight...
+#include <inviwo/core/properties/transferfunctionproperty.h>                  // for TransferFun...
+#include <inviwo/core/util/document.h>                                        // for Document
+#include <inviwo/core/util/glmmat.h>                                          // for mat4
+#include <inviwo/core/util/glmutils.h>                                        // for Matrix
+#include <inviwo/core/util/glmvec.h>                                          // for vec4, ivec2
+#include <inviwo/core/util/iterrange.h>                                       // for iter_range
+#include <inviwo/core/util/logcentral.h>                                      // for LogCentral
+#include <inviwo/core/util/staticstring.h>                                    // for operator+
+#include <modules/base/properties/transformlistproperty.h>                    // for TransformLi...
+#include <modules/meshrenderinggl/algorithm/calcnormals.h>                    // for CalculateMe...
+#include <modules/meshrenderinggl/datastructures/halfedges.h>                 // for HalfEdges
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>  // for Transformed...
+#include <modules/meshrenderinggl/ports/rasterizationport.h>                  // for Rasterizati...
+#include <modules/opengl/geometry/meshgl.h>                                   // for MeshGL
+#include <modules/opengl/image/layergl.h>                                     // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                                      // for GL_BACK
+#include <modules/opengl/openglutils.h>                                       // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>                            // for MeshDrawerG...
+#include <modules/opengl/shader/shader.h>                                     // for Shader, Sha...
+#include <modules/opengl/shader/shaderobject.h>                               // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                                // for addShaderDe...
+#include <modules/opengl/texture/textureunit.h>                               // for TextureUnit
 
-#include <sstream>
-#include <chrono>
-#include <variant>
+#include <cstddef>        // for size_t
+#include <tuple>          // for tuple_eleme...
+#include <type_traits>    // for remove_exte...
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for pair
+#include <variant>        // for visit, variant
 
-#include <fmt/format.h>
+#include <fmt/core.h>      // for format
+#include <glm/mat4x4.hpp>  // for operator*
+#include <glm/vec2.hpp>    // for operator/
+#include <glm/vec4.hpp>    // for operator*
 
 namespace inviwo {
+class Rasterization;
+
 namespace {
 void configComposite(BoolCompositeProperty& comp) {
 

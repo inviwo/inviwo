@@ -29,14 +29,18 @@
 
 #pragma once
 
-#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <modules/opengl/shader/shaderutils.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
 
-#include <vector>
-#include <unordered_map>
-#include <optional>
+#include <inviwo/core/datastructures/datatraits.h>  // for DataTraits
+#include <inviwo/core/util/document.h>              // for Document
+#include <inviwo/core/util/glmmat.h>                // for mat4
+#include <inviwo/core/util/glmvec.h>                // for uvec3, ivec2
+
+#include <functional>  // for function
+#include <string>      // for string
 
 namespace inviwo {
+class Shader;
 
 /**
  * \brief A functor class for rendering geometry into a fragment list

@@ -29,27 +29,29 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/datastructures/meshshadercache.h>
-#include <modules/basegl/properties/linesettingsproperty.h>
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
-#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDERI...
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <modules/base/properties/transformlistproperty.h>
+#include <inviwo/core/ports/meshport.h>                            // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>                      // for Processor
+#include <inviwo/core/processors/processorinfo.h>                  // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>                // for FloatProperty, FloatVe...
+#include <inviwo/core/util/document.h>                             // for Document
+#include <inviwo/core/util/glmmat.h>                               // for mat4
+#include <inviwo/core/util/glmvec.h>                               // for ivec2
+#include <modules/base/properties/transformlistproperty.h>         // for TransformListProperty
+#include <modules/basegl/properties/linesettingsproperty.h>        // for LineSettingsProperty
+#include <modules/meshrenderinggl/datastructures/rasterization.h>  // for Rasterization
+#include <modules/meshrenderinggl/ports/rasterizationport.h>       // for RasterizationOutport
 
-#include <vector>
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <vector>      // for vector
 
 namespace inviwo {
+class Mesh;
+class MeshShaderCache;
+class Shader;
 
 /** \docpage{org.inviwo.LineRasterizer, Line Rasterizer}
  * ![](org.inviwo.LineRasterizer.png?classIdentifier=org.inviwo.LineRasterizer)

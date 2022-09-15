@@ -28,10 +28,20 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/datastructures/halfedges.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <modules/base/algorithm/meshutils.h>
 
-#include <iostream>
+#include <inviwo/core/datastructures/buffer/buffer.h>              // for IndexBuffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>  // for IndexBufferRAM
+#include <inviwo/core/datastructures/geometry/geometrytype.h>      // for DrawType, DrawType::Tr...
+#include <inviwo/core/datastructures/geometry/mesh.h>              // for Mesh, Mesh::IndexVector
+#include <inviwo/core/util/assertion.h>                            // for IVW_ASSERT
+#include <inviwo/core/util/iterrange.h>                            // for iter_range
+#include <inviwo/core/util/transformiterator.h>                    // for TransformIterator
+#include <modules/base/algorithm/meshutils.h>                      // for forEachTriangle
+
+#include <map>          // for map, operator!=, __map...
+#include <memory>       // for make_shared, shared_ptr
+#include <type_traits>  // for remove_reference<>::type
+#include <utility>      // for pair, move
 
 namespace inviwo {
 

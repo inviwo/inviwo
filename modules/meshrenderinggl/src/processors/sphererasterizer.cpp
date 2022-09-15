@@ -29,22 +29,63 @@
 
 #include <modules/meshrenderinggl/processors/sphererasterizer.h>
 
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/util/document.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/image/layergl.h>
+#include <inviwo/core/algorithm/boundingbox.h>                                // for boundingBox
+#include <inviwo/core/datastructures/geometry/geometrytype.h>                 // for BufferType
+#include <inviwo/core/datastructures/geometry/mesh.h>                         // for Mesh::MeshInfo
+#include <inviwo/core/datastructures/image/layer.h>                           // for Layer
+#include <inviwo/core/datastructures/representationconverter.h>               // for Representat...
+#include <inviwo/core/datastructures/representationconverterfactory.h>        // for Representat...
+#include <inviwo/core/datastructures/transferfunction.h>                      // for TransferFun...
+#include <inviwo/core/interaction/cameratrackball.h>                          // for CameraTrack...
+#include <inviwo/core/ports/meshport.h>                                       // for MeshFlatMul...
+#include <inviwo/core/processors/processor.h>                                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>                             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                            // for CodeState
+#include <inviwo/core/processors/processortags.h>                             // for Tags
+#include <inviwo/core/properties/boolproperty.h>                              // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>                            // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>                         // for CompositePr...
+#include <inviwo/core/properties/invalidationlevel.h>                         // for Invalidatio...
+#include <inviwo/core/properties/listproperty.h>                              // for ListProperty
+#include <inviwo/core/properties/optionproperty.h>                            // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                           // for FloatProperty
+#include <inviwo/core/properties/simplelightingproperty.h>                    // for SimpleLight...
+#include <inviwo/core/properties/transferfunctionproperty.h>                  // for TransferFun...
+#include <inviwo/core/util/document.h>                                        // for Document
+#include <inviwo/core/util/glmmat.h>                                          // for mat4
+#include <inviwo/core/util/glmutils.h>                                        // for Matrix
+#include <inviwo/core/util/glmvec.h>                                          // for ivec2, vec4
+#include <inviwo/core/util/staticstring.h>                                    // for operator+
+#include <modules/base/properties/transformlistproperty.h>                    // for TransformLi...
+#include <modules/basegl/datastructures/meshshadercache.h>                    // for MeshShaderC...
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>  // for Transformed...
+#include <modules/meshrenderinggl/ports/rasterizationport.h>                  // for Rasterizati...
+#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>           // for FragmentLis...
+#include <modules/opengl/geometry/meshgl.h>                                   // for MeshGL
+#include <modules/opengl/image/layergl.h>                                     // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                                      // for GL_DEPTH_TEST
+#include <modules/opengl/openglcapabilities.h>                                // for OpenGLCapab...
+#include <modules/opengl/openglutils.h>                                       // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>                            // for MeshDrawerGL
+#include <modules/opengl/shader/shader.h>                                     // for Shader
+#include <modules/opengl/shader/shaderobject.h>                               // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                                 // for ShaderType
+#include <modules/opengl/shader/shaderutils.h>                                // for setShaderUn...
+#include <modules/opengl/texture/textureunit.h>                               // for TextureUnit
 
-#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
+#include <cstddef>        // for size_t
+#include <map>            // for __map_iterator
+#include <type_traits>    // for remove_exte...
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for pair
 
-#include <fmt/format.h>
+#include <fmt/core.h>      // for format
+#include <glm/mat4x4.hpp>  // for operator*
+#include <glm/vec2.hpp>    // for vec<>::(ano...
+#include <glm/vec4.hpp>    // for operator*
 
 namespace inviwo {
+class Rasterization;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SphereRasterizer::processorInfo_{

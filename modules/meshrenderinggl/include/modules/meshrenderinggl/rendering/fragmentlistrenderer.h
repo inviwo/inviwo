@@ -29,21 +29,25 @@
 
 #pragma once
 
-#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/rendering/meshdrawer.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/buffer/bufferobject.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
+
+#include <inviwo/core/util/dispatcher.h>         // for Dispatcher, Dispatcher<...
+#include <inviwo/core/util/glmvec.h>             // for size2_t, vec3
+#include <modules/opengl/buffer/bufferobject.h>  // for BufferObject
+#include <modules/opengl/inviwoopengl.h>         // for GLuint
+#include <modules/opengl/shader/shader.h>        // for Shader
+#include <modules/opengl/texture/texture2d.h>    // for Texture2D
+#include <modules/opengl/texture/textureunit.h>  // for TextureUnit (ptr only)
+
+#include <array>       // for array
+#include <cstddef>     // for size_t
+#include <functional>  // for function
+#include <iosfwd>      // for ostream
+
+#include <glm/vec3.hpp>  // for vec
 
 namespace inviwo {
+class Image;
 
 /**
  * \brief helper class for rendering perfect alpha-blended shapes using fragment lists.

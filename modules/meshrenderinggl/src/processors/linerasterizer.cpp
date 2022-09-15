@@ -28,16 +28,54 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/processors/linerasterizer.h>
-#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
-#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
 
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>                 // for BufferType
+#include <inviwo/core/datastructures/geometry/mesh.h>                         // for Mesh::MeshInfo
+#include <inviwo/core/ports/meshport.h>                                       // for MeshFlatMul...
+#include <inviwo/core/processors/processor.h>                                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>                             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                            // for CodeState
+#include <inviwo/core/processors/processortags.h>                             // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>                              // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>                         // for Invalidatio...
+#include <inviwo/core/properties/listproperty.h>                              // for ListProperty
+#include <inviwo/core/properties/ordinalproperty.h>                           // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                         // for PropertySem...
+#include <inviwo/core/util/document.h>                                        // for Document
+#include <inviwo/core/util/glmmat.h>                                          // for mat4
+#include <inviwo/core/util/glmutils.h>                                        // for Matrix
+#include <inviwo/core/util/glmvec.h>                                          // for vec4, vec2
+#include <inviwo/core/util/stringconversion.h>                                // for toString
+#include <modules/base/properties/transformlistproperty.h>                    // for TransformLi...
+#include <modules/basegl/datastructures/meshshadercache.h>                    // for MeshShaderC...
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>         // for StipplingSe...
+#include <modules/basegl/properties/linesettingsproperty.h>                   // for LineSetting...
+#include <modules/basegl/properties/stipplingproperty.h>                      // for addShaderDe...
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>  // for Transformed...
+#include <modules/meshrenderinggl/ports/rasterizationport.h>                  // for Rasterizati...
+#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>           // for FragmentLis...
+#include <modules/opengl/geometry/meshgl.h>                                   // for MeshGL
+#include <modules/opengl/inviwoopengl.h>                                      // for GL_LEQUAL
+#include <modules/opengl/openglutils.h>                                       // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>                            // for MeshDrawerG...
+#include <modules/opengl/shader/shader.h>                                     // for Shader
+#include <modules/opengl/shader/shaderobject.h>                               // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                                 // for ShaderType
+#include <modules/opengl/shader/shaderutils.h>                                // for setShaderUn...
 
-#include <fmt/format.h>
+#include <cstddef>      // for size_t
+#include <map>          // for __map_iterator
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_exte...
+#include <utility>      // for pair
+
+#include <fmt/core.h>      // for format
+#include <glm/mat4x4.hpp>  // for operator*
+#include <glm/vec4.hpp>    // for operator*
 
 namespace inviwo {
+class Rasterization;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LineRasterizer::processorInfo_{
