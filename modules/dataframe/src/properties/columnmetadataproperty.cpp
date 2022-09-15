@@ -28,11 +28,29 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/properties/columnmetadataproperty.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/network/networklock.h>
-#include <modules/base/algorithm/dataminmax.h>
-#include <inviwo/core/util/glm.h>
+
+#include <inviwo/core/datastructures/unitsystem.h>         // for Unit
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
+#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
+#include <inviwo/core/properties/property.h>               // for updateDefaultState, OverwriteS...
+#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
+#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
+#include <inviwo/core/util/formats.h>                      // for DataFloat64, DataFormatBase
+#include <inviwo/core/util/glmvec.h>                       // for dvec2
+#include <inviwo/dataframe/datastructures/column.h>        // for Column, ColumnType, ColumnType...
+
+#include <functional>                                      // for __base
+#include <memory>                                          // for shared_ptr
+#include <type_traits>                                     // for remove_extent_t
+
+#include <fmt/core.h>                                      // for basic_string_view
+#include <fmt/format.h>                                    // for to_string
+#include <glm/common.hpp>                                  // for max, min
+#include <glm/vec2.hpp>                                    // for operator!=, operator==, vec<>:...
+#include <units/units.hpp>                                 // for unit_from_string
 
 namespace inviwo {
 

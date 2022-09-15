@@ -34,6 +34,7 @@
 
 #include <inviwo/core/io/tempfilehandle.h>
 #include <inviwo/dataframe/io/csvreader.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/io/datareaderexception.h>
 
 #include <sstream>

@@ -29,9 +29,10 @@
 
 #include <inviwo/dataframe/util/filters.h>
 
-#include <functional>
-#include <algorithm>
-#include <regex>
+#include <stdlib.h>    // for size_t, abs
+#include <algorithm>   // for max
+#include <functional>  // for __base, equal_to, greater, greater_equal, less, less_equal, not_eq...
+#include <regex>       // for regex, regex_match, regex_search
 
 namespace inviwo {
 

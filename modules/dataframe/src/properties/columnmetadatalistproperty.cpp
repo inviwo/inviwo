@@ -28,15 +28,19 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
-#include <inviwo/core/metadata/metadataowner.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <modules/base/algorithm/dataminmax.h>
-#include <inviwo/core/util/glm.h>
+
+#include <inviwo/core/network/networklock.h>                     // for NetworkLock
+#include <inviwo/core/properties/invalidationlevel.h>            // for InvalidationLevel
+#include <inviwo/core/properties/listproperty.h>                 // for ListProperty, ListProper...
+#include <inviwo/core/properties/property.h>                     // for OverwriteState, Overwrit...
+#include <inviwo/core/properties/propertyowner.h>                // for PropertyOwner
+#include <inviwo/core/properties/propertysemantics.h>            // for PropertySemantics
+#include <inviwo/core/properties/valuewrapper.h>                 // for PropertySerializationMode
+#include <inviwo/core/util/exception.h>                          // for Exception
+#include <inviwo/core/util/sourcecontext.h>                      // for IVW_CONTEXT
+#include <inviwo/core/util/zip.h>                                // for enumerate, zipIterator
+#include <inviwo/dataframe/datastructures/dataframe.h>           // for DataFrameInport, DataFrame
+#include <inviwo/dataframe/properties/columnmetadataproperty.h>  // for ColumnMetaDataProperty
 
 namespace inviwo {
 

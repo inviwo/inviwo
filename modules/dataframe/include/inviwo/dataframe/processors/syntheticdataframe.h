@@ -29,13 +29,19 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>     // for IVW_MODULE_DATAFRAME_API
+
+#include <inviwo/core/ports/dataoutport.h>              // for DataOutport
+#include <inviwo/core/processors/processor.h>           // for Processor
+#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>   // for CompositeProperty
+#include <inviwo/core/properties/ordinalproperty.h>     // for IntProperty, IntSizeTProperty
+#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+
+#include <string>                                       // for operator+, string
+
+#include <fmt/core.h>                                   // for format
 
 namespace inviwo {
 

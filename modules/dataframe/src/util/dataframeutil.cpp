@@ -29,18 +29,44 @@
 
 #include <inviwo/dataframe/util/dataframeutil.h>
 
-#include <inviwo/core/util/document.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/assertion.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/datastructures/bitset.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/datastructures/bitset.h>                          // for BitSet
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase, Buffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/assertion.h>                                 // for IVW_ASSERT
+#include <inviwo/core/util/document.h>                                  // for Document, TableBu...
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                    // for ivec2
+#include <inviwo/core/util/iterrange.h>                                 // for iter_range, as_range
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stdextensions.h>                             // for transform, contains
+#include <inviwo/core/util/stringconversion.h>                          // for toLower
+#include <inviwo/core/util/transformiterator.h>                         // for TransformIterator
+#include <inviwo/core/util/zip.h>                                       // for zipper, enumerate
+#include <inviwo/dataframe/datastructures/column.h>                     // for CategoricalColumn
+#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+#include <inviwo/dataframe/util/filters.h>                              // for ItemFilter, Filters
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <tcb/span.hpp>
-#include <optional>
-#include <algorithm>
+#include <algorithm>                                                    // for any_of
+#include <functional>                                                   // for function
+#include <iterator>                                                     // for distance
+#include <map>                                                          // for operator==, map
+#include <optional>                                                     // for optional
+#include <string_view>                                                  // for string_view, oper...
+#include <unordered_map>                                                // for operator==, unord...
+#include <utility>                                                      // for move, pair
+#include <variant>                                                      // for visit
+
+#include <fmt/core.h>                                                   // for format, basic_str...
+#include <glm/gtx/hash.hpp>                                             // for hash<>::operator()
+#include <glm/vec2.hpp>                                                 // for operator==, opera...
+#include <glm/vec3.hpp>                                                 // for operator==, opera...
+#include <glm/vec4.hpp>                                                 // for operator==, opera...
+#include <half/half.hpp>                                                // for operator==, opera...
 
 namespace inviwo {
 
@@ -561,18 +587,16 @@ std::vector<std::uint32_t> selectRows(const Column& col,
                                 [[maybe_unused]] const std::function<bool(std::int64_t)>& func) {
                                 if constexpr (std::is_integral_v<ValueType>) {
                                     return func(static_cast<std::int64_t>(v));
-                                } else {
-                                    (void)v;
-                                    return false;
                                 }
+                                (void)v;
+                                return false;
                             },
                             [v = value]([[maybe_unused]] const std::function<bool(double)>& func) {
                                 if constexpr (std::is_floating_point_v<ValueType>) {
                                     return func(v);
-                                } else {
-                                    (void)v;
-                                    return false;
                                 }
+                                (void)v;
+                                return false;
                             },
                             [](const std::function<bool(std::string_view)>&) { return false; }};
                         auto op = [&](const auto& f) { return std::visit(test, f.filter); };

@@ -29,12 +29,20 @@
 
 #include <inviwo/dataframe/datastructures/column.h>
 
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/exception.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/unitsystem.h>                      // for Unit
+#include <inviwo/core/util/exception.h>                                 // for Exception, RangeE...
+#include <inviwo/core/util/glmvec.h>                                    // for dvec2
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT, IVW_...
+#include <inviwo/core/util/stdextensions.h>                             // for transform
 
-#include <unordered_map>
-#include <ostream>
+#include <sstream>                                                      // for basic_stringbuf<>...
+#include <unordered_map>                                                // for unordered_map
+
+#include <glm/gtc/type_precision.hpp>                                   // for uint32_t
 
 namespace inviwo {
 

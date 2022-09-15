@@ -28,8 +28,17 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/processors/dataframemetadata.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/glm.h>
+
+#include <inviwo/core/processors/processor.h>                        // for Processor
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                   // for CodeState, CodeState...
+#include <inviwo/core/processors/processortags.h>                    // for Tags
+#include <inviwo/dataframe/datastructures/dataframe.h>               // for DataFrame, DataFrame...
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>  // for ColumnMetaDataListPr...
+
+#include <memory>                                                    // for make_shared, shared_ptr
+#include <string>                                                    // for string
+#include <string_view>                                               // for string_view
 
 namespace inviwo {
 

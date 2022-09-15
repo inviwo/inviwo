@@ -28,9 +28,24 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/processors/dataframesource.h>
-#include <inviwo/core/util/zip.h>
+
+#include <inviwo/core/io/datareader.h>                               // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                      // for DataReaderException
+#include <inviwo/core/ports/outportiterable.h>                       // for OutportIterableImpl<...
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                   // for CodeState, CodeState...
+#include <inviwo/core/processors/processortags.h>                    // for Tags
+#include <inviwo/core/properties/fileproperty.h>                     // for FileProperty
+#include <inviwo/core/properties/property.h>                         // for OverwriteState, Over...
+#include <inviwo/dataframe/datastructures/dataframe.h>               // for DataFrameOutport
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>  // for ColumnMetaDataListPr...
+#include <modules/base/processors/datasource.h>                      // for DataSource
+
+#include <functional>                                                // for __base
+#include <string_view>                                               // for string_view
 
 namespace inviwo {
+class InviwoApplication;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameSource::processorInfo_{

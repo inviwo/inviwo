@@ -28,9 +28,19 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/io/xmlwriter.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datawriterexception.h>
-#include <inviwo/core/io/serialization/serializer.h>
+
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
+#include <inviwo/core/io/serialization/serializer.h>                    // for Serializer
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+
+#include <fstream>                                                      // for stringstream, bas...
+#include <string>                                                       // for basic_string
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
 
 namespace inviwo {
 

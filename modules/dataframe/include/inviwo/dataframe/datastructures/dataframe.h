@@ -29,26 +29,40 @@
 
 #pragma once
 
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/datatraits.h>
-#include <inviwo/core/datastructures/unitsystem.h>
-#include <inviwo/core/metadata/metadataowner.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/glmfmt.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/datastructures/column.h>
+#include <inviwo/core/datastructures/datatraits.h>   // for DataTraits
+#include <inviwo/core/datastructures/unitsystem.h>   // for Unit
+#include <inviwo/core/metadata/metadataowner.h>      // for MetaDataOwner
+#include <inviwo/core/ports/datainport.h>            // for DataInport
+#include <inviwo/core/ports/dataoutport.h>           // for DataOutport
+#include <inviwo/core/util/document.h>               // for TableBuilder, Document, TableBuilder...
+#include <inviwo/core/util/exception.h>              // for Exception, ExceptionContext
+#include <inviwo/core/util/formats.h>                // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                 // for dvec2, uvec3
+#include <inviwo/core/util/stringconversion.h>       // for toString
+#include <inviwo/dataframe/datastructures/column.h>  // for Column
 
-#include <unordered_map>
+#include <cstddef>                                   // for size_t
+#include <cstdint>                                   // for uint32_t
+#include <memory>                                    // for shared_ptr, allocator, dynamic_point...
+#include <optional>                                  // for optional, nullopt, optional<>::value...
+#include <string>                                    // for string, to_string, hash, operator+
+#include <string_view>                               // for string_view
+#include <type_traits>                               // for remove_extent_t
+#include <unordered_map>                             // for unordered_map
+#include <utility>                                   // for move, pair
+#include <vector>                                    // for vector, vector<>::const_iterator
 
-#include <fmt/core.h>
+#include <fmt/core.h>                                // for format, basic_string_view
+#include <fmt/format.h>                              // for to_string
+#include <glm/fwd.hpp>                               // for u64
+#include <glm/gtx/io.hpp>                            // for operator<<
+#include <glm/vec2.hpp>                              // for vec, vec<>::(anonymous)
 
 namespace inviwo {
 
 class BufferBase;
-class BufferRAM;
 
 class IVW_MODULE_DATAFRAME_API InvalidColCount : public Exception {
 public:
@@ -245,7 +259,7 @@ struct DataTraits<DataFrame> {
 
         auto range = [](const Column* col) {
             if (col->getCustomRange()) {
-                return fmt::to_string(*col->getCustomRange());
+                return toString(*col->getCustomRange());
             } else {
                 return std::string("-");
             }

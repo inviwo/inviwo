@@ -28,14 +28,24 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
-#include <inviwo/dataframe/properties/colormapproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>            // for IVW_MODULE_DATAFRAME_API
+
+#include <inviwo/core/ports/datainport.h>                      // for DataInport
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Propert...
+#include <inviwo/core/properties/transferfunctionproperty.h>   // for TransferFunctionProperty
+#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
+
+#include <functional>                                          // for function
+#include <memory>                                              // for shared_ptr
+#include <string>                                              // for string
+#include <vector>                                              // for vector
 
 namespace inviwo {
+class ColormapProperty;
+class DataFrame;
 
 /**
  * \brief Property for selecting which column to apply colormapping to.

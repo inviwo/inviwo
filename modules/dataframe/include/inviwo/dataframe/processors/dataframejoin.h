@@ -29,16 +29,27 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>            // for IVW_MODULE_DATAFRAME_API
 
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/listproperty.h>               // for ListProperty
+#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty
+#include <inviwo/core/properties/propertyownerobserver.h>      // for PropertyOwnerObserver
+#include <inviwo/core/util/staticstring.h>                     // for operator+
+#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrameInport, DataFrame...
+#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
+
+#include <cstddef>                                             // for size_t
+#include <functional>                                          // for __base
+#include <string>                                              // for operator==, operator+, string
+#include <string_view>                                         // for operator==
+#include <vector>                                              // for operator!=, vector, operat...
 
 namespace inviwo {
+class Property;
+class PropertyOwner;
 
 /** \docpage{org.inviwo.DataFrameJoin, Data Frame Join}
  * ![](org.inviwo.DataFrameJoin.png?classIdentifier=org.inviwo.DataFrameJoin)

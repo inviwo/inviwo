@@ -27,12 +27,35 @@
  *
  *********************************************************************************/
 #include <inviwo/dataframe/jsondataframeconversion.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/dataframe/datastructures/column.h>
-#include <iterator>
-#include <vector>
-#include <functional>
+
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
+#include <inviwo/core/util/exception.h>                                 // for ExceptionContext
+#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/stringconversion.h>                          // for toString
+#include <inviwo/dataframe/datastructures/column.h>                     // for TemplateColumn
+#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+
+#include <cmath>                                                        // for isnan
+#include <cstddef>                                                      // for size_t
+#include <cstdint>                                                      // for int32_t, uint32_t
+#include <functional>                                                   // for __base, function
+#include <memory>                                                       // for shared_ptr, uniqu...
+#include <optional>                                                     // for optional
+#include <sstream>                                                      // for basic_stringbuf<>...
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <vector>                                                       // for vector
+
+#include <glm/gtc/type_ptr.hpp>                                         // for value_ptr
+#include <glm/gtx/io.hpp>                                               // for operator<<
+#include <half/half.hpp>                                                // for operator<<
+#include <nlohmann/json.hpp>                                            // for iteration_proxy_v...
 
 namespace inviwo {
 

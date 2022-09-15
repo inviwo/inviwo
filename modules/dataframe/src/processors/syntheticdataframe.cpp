@@ -29,7 +29,37 @@
 
 #include <inviwo/dataframe/processors/syntheticdataframe.h>
 
-#include <random>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/dataoutport.h>                              // for DataOutport
+#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterableIm...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
+#include <inviwo/core/properties/ordinalproperty.h>                     // for IntSizeTProperty
+#include <inviwo/dataframe/datastructures/column.h>                     // for TemplateColumn
+#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+
+#include <cstddef>                                                      // for size_t
+#include <functional>                                                   // for __base
+#include <memory>                                                       // for shared_ptr, make_...
+#include <optional>                                                     // for optional
+#include <random>                                                       // for mt19937, uniform_...
+#include <sstream>                                                      // for basic_stringbuf<>...
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <vector>                                                       // for vector
+
+#include <fmt/core.h>                                                   // for format
+#include <glm/fwd.hpp>                                                  // for uint8
+#include <glm/gtc/type_ptr.hpp>                                         // for value_ptr
 
 namespace inviwo {
 

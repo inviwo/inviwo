@@ -29,15 +29,25 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>       // for IVW_MODULE_DATAFRAME_API
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, operator<<
+#include <inviwo/core/ports/dataoutport.h>                // for DataOutport
+#include <inviwo/core/ports/imageport.h>                  // for ImageInport
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/properties/minmaxproperty.h>        // for IntSizeTMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>        // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>       // for IntSizeTProperty
+#include <inviwo/core/util/staticstring.h>                // for operator+
+#include <inviwo/dataframe/datastructures/dataframe.h>    // for DataFrame
+
+#include <functional>                                     // for __base
+#include <string>                                         // for operator==, operator+, string
+#include <string_view>                                    // for operator==
+#include <vector>                                         // for operator!=, vector, operator==
+
+#include <fmt/core.h>                                     // for format
 
 namespace inviwo {
 

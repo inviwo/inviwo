@@ -29,11 +29,12 @@
 
 #pragma once
 
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
-#include <modules/json/io/json/optionpropertyjsonconverter.h>
-#include <nlohmann/json.hpp>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
+
+#include <nlohmann/json.hpp>                         // for json
 
 namespace inviwo {
+class ColumnOptionProperty;
 
 /**
  * Converts an ColumnOptionProperty to a JSON object.

@@ -28,21 +28,32 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/properties/filterlistproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 
-#include <inviwo/dataframe/util/filters.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel
+#include <inviwo/core/properties/listproperty.h>           // for ListProperty, ListPropertyUIFlags
+#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty, Int64Min...
+#include <inviwo/core/properties/optionproperty.h>         // for OptionProperty, OptionProperty...
+#include <inviwo/core/properties/ordinalproperty.h>        // for IntProperty, DoubleProperty
+#include <inviwo/core/properties/property.h>               // for Property
+#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
+#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
+#include <inviwo/core/util/staticstring.h>                 // for operator+
+#include <inviwo/dataframe/util/filters.h>                 // for NumberComp, StringComp, Number...
 
-#include <limits>
-#include <regex>
-#include <functional>
-#include <algorithm>
+#include <cstdint>                                         // for int64_t
+#include <functional>                                      // for __base
+#include <limits>                                          // for numeric_limits
+#include <memory>                                          // for unique_ptr, make_unique, __uni...
+#include <utility>                                         // for move, forward
+#include <vector>                                          // for operator!=, vector, operator==
+
+#include <glm/common.hpp>                                  // for max, min
+#include <glm/vec2.hpp>                                    // for operator!=
 
 namespace inviwo {
+class PropertyOwner;
 
 namespace detail {
 

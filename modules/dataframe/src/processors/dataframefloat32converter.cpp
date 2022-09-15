@@ -30,7 +30,28 @@
 #include <inviwo/dataframe/processors/dataframefloat32converter.h>
 #include <inviwo/core/util/glm.h>
 
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags
+#include <inviwo/core/util/formatdispatching.h>                         // for Floats, Precision...
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmutils.h>                                  // for same_extent
+#include <inviwo/core/util/stdextensions.h>                             // for transform
+#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame, DataFr...
+
+#include <memory>                                                       // for shared_ptr, share...
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for move
+
 namespace inviwo {
+class Column;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameFloat32Converter::processorInfo_{

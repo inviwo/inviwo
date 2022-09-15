@@ -29,10 +29,32 @@
 
 #include <inviwo/dataframe/processors/dataframeexporter.h>
 
-#include <inviwo/dataframe/io/csvwriter.h>
-#include <inviwo/dataframe/io/xmlwriter.h>
+#include <inviwo/core/io/datawriter.h>                // for Overwrite, Overwrite::No, Overwrite...
+#include <inviwo/core/ports/datainport.h>             // for DataInport
+#include <inviwo/core/ports/outportiterable.h>        // for OutportIterable
+#include <inviwo/core/processors/processor.h>         // for Processor
+#include <inviwo/core/processors/processorinfo.h>     // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>    // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>     // for Tags
+#include <inviwo/core/properties/boolproperty.h>      // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>    // for ButtonProperty
+#include <inviwo/core/properties/fileproperty.h>      // for FileProperty
+#include <inviwo/core/properties/stringproperty.h>    // for StringProperty
+#include <inviwo/core/properties/templateproperty.h>  // for operator<<
+#include <inviwo/core/util/filedialogstate.h>         // for AcceptMode, AcceptMode::Save
+#include <inviwo/core/util/fileextension.h>           // for FileExtension, operator==
+#include <inviwo/core/util/glmvec.h>                  // for uvec3
+#include <inviwo/core/util/logcentral.h>              // for LogCentral, LogInfo, LogWarn
+#include <inviwo/dataframe/datastructures/dataframe.h> // IWYU pragma: keep
+#include <inviwo/dataframe/io/csvwriter.h>            // for CSVWriter
+#include <inviwo/dataframe/io/xmlwriter.h>            // for XMLWriter
 
-#include <fmt/format.h>
+#include <functional>                                 // for __base
+#include <memory>                                     // for shared_ptr
+#include <ostream>                                    // for operator<<, basic_ostream
+#include <string_view>                                // for string_view
+
+#include <fmt/core.h>                                 // for format_to, basic_string_view, format
 
 namespace inviwo {
 
