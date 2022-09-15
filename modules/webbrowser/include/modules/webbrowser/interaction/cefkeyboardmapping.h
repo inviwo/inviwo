@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
+
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 
 namespace inviwo {

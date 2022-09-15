@@ -30,6 +30,7 @@
 #include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>
 
 namespace inviwo {
+class PropertyJSONConverterFactory;
 
 PropertyWidgetCEFFactoryObject::PropertyWidgetCEFFactoryObject(
     const PropertyJSONConverterFactory* converterFactory)

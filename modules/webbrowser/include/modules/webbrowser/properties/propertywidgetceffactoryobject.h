@@ -29,15 +29,16 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/json/io/json/propertyjsonconverterfactory.h>
-#include <modules/webbrowser/properties/propertywidgetcef.h>
-#include <string>
+#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
+
+#include <inviwo/core/properties/property.h>                    // for Property (ptr only), Prop...
+#include <modules/json/io/json/propertyjsonconverterfactory.h>  // for PropertyJSONConverterFactory
+
+#include <memory>  // for unique_ptr, make_unique
+#include <string>  // for string
 
 namespace inviwo {
-
-class Property;
-class PropertyWidget;
+class PropertyWidgetCEF;
 
 class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEFFactoryObject {
 public:

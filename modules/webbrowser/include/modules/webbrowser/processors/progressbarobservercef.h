@@ -28,13 +28,17 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/progressbar.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
+
+#include <inviwo/core/processors/progressbar.h>  // for ProgressBarObserver
+
+#include <string>  // for string
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_frame.h>
+#include <include/cef_base.h>   // for CefRefPtr
+#include <include/cef_frame.h>  // for CefFrame
+
 #include <warn/pop>
 namespace inviwo {
 

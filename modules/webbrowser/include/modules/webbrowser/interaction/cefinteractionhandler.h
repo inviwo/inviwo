@@ -29,22 +29,34 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <inviwo/core/interaction/interactionhandler.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
+
+#include <inviwo/core/interaction/interactionhandler.h>  // for InteractionHandler
+
+#include <string>  // for string
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_browser.h>
+#include <include/base/cef_basictypes.h>  // for uint32
+#include <include/cef_base.h>             // for CefRefPtr, CefKeyEvent, CefMouse...
+#include <include/cef_browser.h>          // for CefBrowserHost
+
+namespace inviwo {
+class Event;
+class KeyboardEvent;
+class MouseEvent;
+class MouseInteractionEvent;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {
-class RenderHandlerGL;
-class TouchPoint;
-class TouchEvent;
-class TouchDevice;
 class PickingEvent;
+class RenderHandlerGL;
+class TouchDevice;
+class TouchEvent;
+class TouchPoint;
+
 /*\class CEFInteractionHandler
  * Translates Inviwo events to CEF events and injects them into provided CefBrowserHost.
  * Assumes that PickingEvent is sent for mouse and touch events

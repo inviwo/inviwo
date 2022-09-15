@@ -29,7 +29,17 @@
 
 #include <modules/webbrowser/renderhandlergl.h>
 
-#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/glmvec.h>           // for size2_t
+#include <inviwo/core/util/rendercontext.h>    // for RenderContext
+#include <modules/opengl/texture/texture2d.h>  // for Texture2D
+
+#include <vector>  // for vector<>::value_type
+
+#include <glm/common.hpp>                    // for max
+#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
+#include <include/cef_base.h>                // for CefRect, CefRefPtr, PET_VIEW, operator==
+#include <include/cef_browser.h>             // for CefBrowser, CefBrowserHost
+#include <include/cef_render_handler.h>      // for CefRenderHandler::RectList, CefRenderHandl...
 
 namespace inviwo {
 

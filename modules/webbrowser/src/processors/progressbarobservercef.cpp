@@ -29,7 +29,11 @@
 
 #include <modules/webbrowser/processors/progressbarobservercef.h>
 
-#include <inviwo/core/processors/progressbarowner.h>
+#include <ostream>  // for operator<<, basic_ostream, stringstream
+
+#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
+#include <include/cef_base.h>                // for CefRefPtr
+#include <include/cef_frame.h>               // for CefFrame
 
 namespace inviwo {
 

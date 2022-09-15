@@ -29,6 +29,9 @@
 
 #include <webrendererapp.h>
 
+#include <include/cef_base.h>                    // for CefRefPtr
+#include <include/cef_render_process_handler.h>  // for CefRenderProcessHandler
+
 namespace inviwo {
 
 CefWebRendererApp::CefWebRendererApp() = default;

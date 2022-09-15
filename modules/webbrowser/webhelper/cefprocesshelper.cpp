@@ -27,9 +27,15 @@
  *
  *********************************************************************************/
 
-#include <webrendererapp.h>
-#include <webotherapp.h>
-#include <app_switches.h>
+#include <cstddef>  // for NULL
+
+#include <app_switches.h>      // for CreateCommandLine, GetProcessType, PROCE...
+#include <include/cef_app.h>   // for CefApp, CefExecuteProcess
+#include <include/cef_base.h>  // for CefRefPtr, CefMainArgs
+#include <webotherapp.h>       // for CefWebAppOther
+#include <webrendererapp.h>    // for CefWebRendererApp
+
+class CefCommandLine;
 
 #if __APPLE__  // Mac
 #include "include/wrapper/cef_library_loader.h"
