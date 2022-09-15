@@ -29,16 +29,18 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
 
-#include <modules/userinterfacegl/glui/layout/layout.h>
+#include <inviwo/core/util/glmvec.h>                     // for ivec2, size2_t
+#include <modules/userinterfacegl/glui/layout/layout.h>  // for Layout
 
-#include <vector>
-#include <functional>
+#include <functional>  // for reference_wrapper
+#include <vector>      // for vector
 
 namespace inviwo {
 
 namespace glui {
+class Element;
 
 /**
  * \class BoxLayout

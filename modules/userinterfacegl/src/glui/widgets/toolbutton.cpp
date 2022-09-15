@@ -28,26 +28,40 @@
  *********************************************************************************/
 
 #include <modules/userinterfacegl/glui/widgets/toolbutton.h>
-#include <modules/userinterfacegl/glui/renderer.h>
 
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/util/moduleutils.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/common/factoryutil.h>                             // for getDataReaderFactory
+#include <inviwo/core/datastructures/image/layer.h>                     // IWYU pragma: keep
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
+#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
+#include <inviwo/core/io/datareaderfactory.h>                           // for DataReaderFactory
+#include <inviwo/core/util/glmvec.h>                                    // for ivec2, ivec4, vec2
+#include <inviwo/core/util/logcentral.h>                                // for log, LogCentral
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                                // for GL_ONE, GL_ONE_MI...
+#include <modules/opengl/openglutils.h>                                 // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>                      // for MeshDrawerGL
+#include <modules/opengl/rendering/texturequadrenderer.h>               // for TextureQuadRenderer
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/texture/texture2darray.h>                      // for Texture2DArray
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
+#include <modules/userinterfacegl/glui/renderer.h>                      // for Renderer
+#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>        // for AbstractButton
 
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/texture/texture2darray.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
+#include <map>            // for map
+#include <ostream>        // for operator<<, basic...
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
 
-#include <vector>
+#include <glm/vec2.hpp>  // for operator+, operator-
+#include <glm/vec4.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
+class Layer;
+class Processor;
 
 namespace glui {
 

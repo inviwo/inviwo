@@ -28,14 +28,19 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
 
-#include <inviwo/core/properties/property.h>
-#include <modules/userinterfacegl/glui/element.h>
+#include <inviwo/core/properties/property.h>  // for PropertyTraits
+
+#include <memory>  // for unique_ptr, make_unique
+#include <string>  // for string
 
 namespace inviwo {
+class Processor;
 
 namespace glui {
+class Element;
+class Renderer;
 
 class IVW_MODULE_USERINTERFACEGL_API WidgetFactoryObject {
 public:

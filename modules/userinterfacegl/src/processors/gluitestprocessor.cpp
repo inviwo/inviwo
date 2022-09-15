@@ -28,16 +28,47 @@
  *********************************************************************************/
 
 #include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/glui/element.h>
 
-#include <inviwo/core/util/moduleutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/openglutils.h>
+#include <inviwo/core/common/inviwomodule.h>                               // for ModulePath
+#include <inviwo/core/ports/imageport.h>                                   // for ImageInport
+#include <inviwo/core/processors/processor.h>                              // for Processor
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
+#include <inviwo/core/processors/processortags.h>                          // for Tags
+#include <inviwo/core/properties/boolproperty.h>                           // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                         // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>                      // for CompositeProperty
+#include <inviwo/core/properties/minmaxproperty.h>                         // for IntMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                         // for OptionProperty...
+#include <inviwo/core/properties/ordinalproperty.h>                        // for FloatVec4Property
+#include <inviwo/core/properties/propertysemantics.h>                      // for PropertySemantics
+#include <inviwo/core/util/defaultvalues.h>                                // for Defaultvalues
+#include <inviwo/core/util/glmvec.h>                                       // for vec4, ivec2
+#include <inviwo/core/util/logcentral.h>                                   // for LogCentral
+#include <inviwo/core/util/moduleutils.h>                                  // for getModulePath
+#include <inviwo/core/util/staticstring.h>                                 // for operator+
+#include <modules/opengl/inviwoopengl.h>                                   // for GL_ALWAYS, GL_ONE
+#include <modules/opengl/openglutils.h>                                    // for BlendModeState
+#include <modules/opengl/texture/textureutils.h>                           // for activateAndCle...
+#include <modules/userinterfacegl/glui/element.h>                          // for Element, UIOri...
+#include <modules/userinterfacegl/glui/layout/boxlayout.h>                 // for BoxLayout, Box...
+#include <modules/userinterfacegl/glui/layout/vboxlayout.h>                // for VBoxLayout
+#include <modules/userinterfacegl/glui/renderer.h>                         // for Renderer
+#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>       // for BoolPropertyWi...
+#include <modules/userinterfacegl/glui/widgets/button.h>                   // for Button
+#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>     // for ToolButtonProp...
+#include <modules/userinterfacegl/glui/widgets/checkbox.h>                 // for CheckBox
+#include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>      // for FloatPropertyW...
+#include <modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h>  // for IntMinMaxPrope...
+#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>        // for IntPropertyWidget
+#include <modules/userinterfacegl/glui/widgets/rangeslider.h>              // for RangeSlider
+#include <modules/userinterfacegl/glui/widgets/slider.h>                   // for Slider
 
-#include <modules/userinterfacegl/glui/widgets/button.h>
-#include <modules/userinterfacegl/glui/widgets/checkbox.h>
-#include <modules/userinterfacegl/glui/widgets/slider.h>
-#include <modules/userinterfacegl/glui/widgets/rangeslider.h>
+#include <utility>  // for move
+
+#include <glm/gtx/io.hpp>  // for operator<<
+#include <glm/vec2.hpp>    // for vec<>::(anonym...
+#include <glm/vec4.hpp>    // for vec<>::(anonym...
 
 namespace inviwo {
 

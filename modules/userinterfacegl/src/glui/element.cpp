@@ -28,19 +28,33 @@
  *********************************************************************************/
 
 #include <modules/userinterfacegl/glui/element.h>
-#include <modules/userinterfacegl/glui/renderer.h>
 
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/moduleutils.h>
-#include <inviwo/core/util/colorconversion.h>
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <modules/fontrendering/textrenderer.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture/texture2d.h>
+#include <inviwo/core/interaction/events/pickingevent.h>   // for PickingEvent
+#include <inviwo/core/interaction/pickingstate.h>          // for PickingPressItem, PickingPress...
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
+#include <inviwo/core/util/colorconversion.h>              // for hsv2rgb, rgb2hsv
+#include <inviwo/core/util/glmmat.h>                       // for mat3
+#include <inviwo/core/util/glmvec.h>                       // for ivec2, dvec2, vec2, vec4, size2_t
+#include <modules/fontrendering/textrenderer.h>            // for TextRenderer
+#include <modules/opengl/inviwoopengl.h>                   // for GL_ALWAYS, GL_ONE_MINUS_SRC_ALPHA
+#include <modules/opengl/openglutils.h>                    // for BlendModeState, DepthFuncState
+#include <modules/opengl/rendering/texturequadrenderer.h>  // for TextureQuadRenderer
+#include <modules/opengl/shader/shader.h>                  // for Shader
+#include <modules/opengl/texture/texture2d.h>              // for Texture2D
+#include <modules/userinterfacegl/glui/renderer.h>         // for Renderer
 
-#include <numeric>
+#include <algorithm>    // for max
+#include <cmath>        // for abs
+#include <cstdlib>      // for abs
+#include <type_traits>  // for enable_if<>::type, remove_exte...
+
+#include <flags/flags.h>                 // for operator&, flags
+#include <glm/common.hpp>                // for max
+#include <glm/ext/scalar_constants.hpp>  // for epsilon
+#include <glm/vec2.hpp>                  // for operator+, operator!=, operator*
+#include <glm/vec3.hpp>                  // for vec<>::(anonymous)
+#include <glm/vec4.hpp>                  // for vec<>::(anonymous)
 
 namespace inviwo {
 

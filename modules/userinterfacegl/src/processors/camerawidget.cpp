@@ -29,30 +29,77 @@
 
 #include <modules/userinterfacegl/processors/camerawidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <inviwo/core/rendering/meshdrawerfactory.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/io/datareader.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/util/filesystem.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/glformats.h>
-#include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/common/inviwoapplication.h>                 // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>                      // for InviwoModule, ModulePath
+#include <inviwo/core/datastructures/camera/camera.h>             // for Camera
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>  // for PerspectiveCamera
+#include <inviwo/core/datastructures/geometry/mesh.h>             // for Mesh
+#include <inviwo/core/datastructures/geometry/typedmesh.h>        // for BasicMesh
+#include <inviwo/core/datastructures/image/image.h>               // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>          // for ImageType, ImageType::C...
+#include <inviwo/core/interaction/events/pickingevent.h>          // for PickingEvent
+#include <inviwo/core/interaction/pickingmapper.h>                // for PickingMapper
+#include <inviwo/core/interaction/pickingstate.h>                 // for PickingPressItem, Picki...
+#include <inviwo/core/io/datareader.h>                            // for DataReaderType
+#include <inviwo/core/io/datareaderfactory.h>                     // for DataReaderFactory
+#include <inviwo/core/network/processornetwork.h>                 // for ProcessorNetwork
+#include <inviwo/core/ports/imageport.h>                          // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                     // for Processor
+#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                // for CodeState, CodeState::E...
+#include <inviwo/core/processors/processortags.h>                 // for Tags
+#include <inviwo/core/properties/boolcompositeproperty.h>         // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                // for ButtonProperty
+#include <inviwo/core/properties/cameraproperty.h>                // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>             // for CompositeProperty
+#include <inviwo/core/properties/constraintbehavior.h>            // for ConstraintBehavior, Con...
+#include <inviwo/core/properties/invalidationlevel.h>             // for InvalidationLevel, Inva...
+#include <inviwo/core/properties/ordinalproperty.h>               // for ordinalColor, FloatProp...
+#include <inviwo/core/properties/simplelightingproperty.h>        // for SimpleLightingProperty
+#include <inviwo/core/util/exception.h>                           // for Exception
+#include <inviwo/core/util/glm.h>                                 // for filled
+#include <inviwo/core/util/glmmat.h>                              // for mat4, mat3
+#include <inviwo/core/util/glmvec.h>                              // for vec3, vec2, dvec2, vec4
+#include <inviwo/core/util/logcentral.h>                          // for LogVerbosity, LogVerbos...
+#include <inviwo/core/util/sourcecontext.h>                       // for IVW_CONTEXT
+#include <modules/base/algorithm/meshutils.h>                     // for cube
+#include <modules/opengl/image/imagegl.h>                         // for ImageGL
+#include <modules/opengl/image/layergl.h>                         // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                          // for GL_ALWAYS, GL_DEPTH_TEST
+#include <modules/opengl/openglutils.h>                           // for BlendModeState, DepthFu...
+#include <modules/opengl/rendering/meshdrawergl.h>                // for MeshDrawerGL
+#include <modules/opengl/shader/shader.h>                         // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>                   // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                    // for setShaderUniforms, addS...
+#include <modules/opengl/texture/textureunit.h>                   // for TextureUnit
+#include <modules/opengl/texture/textureutils.h>                  // for activateAndClearTarget
 
-#include <modules/base/algorithm/meshutils.h>
+#include <algorithm>    // for max
+#include <cmath>        // for tan
+#include <cstdlib>      // for abs
+#include <functional>   // for __base, function
+#include <map>          // for map
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for enable_if<>::type
+#include <typeinfo>     // for bad_cast
+#include <vector>       // for vector, vector<>::value...
+
+#include <flags/flags.h>                 // for operator&, flags
+#include <fmt/core.h>                    // for format
+#include <glm/common.hpp>                // for abs
+#include <glm/ext/matrix_transform.hpp>  // for rotate, scale
+#include <glm/ext/scalar_constants.hpp>  // for epsilon, pi
+#include <glm/geometric.hpp>             // for normalize, cross, length
+#include <glm/gtc/matrix_inverse.hpp>    // for inverseTranspose
+#include <glm/gtx/transform.hpp>         // for rotate, scale
+#include <glm/mat3x3.hpp>                // for operator*, mat
+#include <glm/mat4x4.hpp>                // for mat, operator+, operator*
+#include <glm/trigonometric.hpp>         // for radians
+#include <glm/vec2.hpp>                  // for operator*, vec<>::(anon...
+#include <glm/vec3.hpp>                  // for operator*, vec<>::(anon...
+#include <glm/vec4.hpp>                  // for operator*, operator+
 
 namespace inviwo {
 

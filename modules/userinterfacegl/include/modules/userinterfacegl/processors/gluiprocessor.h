@@ -29,23 +29,42 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/listproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/ports/imageport.h>
-
-#include <modules/userinterfacegl/glui/renderer.h>
-#include <modules/userinterfacegl/glui/layout/boxlayout.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
 
 #include <unordered_map>
+#include <inviwo/core/ports/imageport.h>                   // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
+#include <inviwo/core/properties/listproperty.h>           // for ListProperty
+#include <inviwo/core/properties/optionproperty.h>         // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>        // for FloatVec4Property, Floa...
+#include <inviwo/core/properties/propertyownerobserver.h>  // for PropertyOwnerObserver
+#include <inviwo/core/util/staticstring.h>                 // for operator+
+
+/*
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+*/
+
+#include <modules/userinterfacegl/glui/layout/boxlayout.h>  // for BoxLayout::LayoutDirection
+#include <modules/userinterfacegl/glui/renderer.h>          // for Renderer
+
+#include <cstddef>        // for size_t
+#include <functional>     // for __base
+#include <memory>         // for unique_ptr
+#include <string>         // for operator==, operator+
+#include <string_view>    // for operator==
+#include <unordered_map>  // for unordered_map
+#include <vector>         // for operator!=, vector, ope...
 
 namespace inviwo {
 
 class InviwoApplication;
+class Property;
+class PropertyOwner;
 
 namespace glui {
 

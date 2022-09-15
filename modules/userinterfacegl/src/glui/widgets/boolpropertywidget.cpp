@@ -29,9 +29,19 @@
 
 #include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
 
+#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
+#include <inviwo/core/properties/propertywidget.h>          // for PropertyWidget
+#include <inviwo/core/util/glmvec.h>                        // for ivec2
+#include <modules/userinterfacegl/glui/widgets/checkbox.h>  // for CheckBox
+
+#include <functional>  // for __base, function
+
 namespace inviwo {
+class Processor;
+class Property;
 
 namespace glui {
+class Renderer;
 
 const std::string BoolPropertyWidget::classIdentifier = "org.inviwo.glui.BoolPropertyWidget";
 std::string BoolPropertyWidget::getClassIdentifier() const { return classIdentifier; }

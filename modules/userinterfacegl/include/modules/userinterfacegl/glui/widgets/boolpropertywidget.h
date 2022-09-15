@@ -29,17 +29,22 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
 
-#include <modules/userinterfacegl/glui/widgets/checkbox.h>
+#include <inviwo/core/properties/propertyobserver.h>        // for PropertyObserver
+#include <inviwo/core/properties/propertywidget.h>          // for PropertyWidget
+#include <inviwo/core/util/glmvec.h>                        // for ivec2
+#include <modules/userinterfacegl/glui/widgets/checkbox.h>  // for CheckBox
 
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/propertywidget.h>
-#include <inviwo/core/properties/propertyobserver.h>
+#include <string>  // for string
 
 namespace inviwo {
+class BoolProperty;
+class Processor;
+class Property;
 
 namespace glui {
+class Renderer;
 
 /**
  * \class BoolPropertyWidget

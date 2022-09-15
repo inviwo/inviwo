@@ -30,23 +30,43 @@
 
 #include <modules/userinterfacegl/processors/gluiprocessor.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/propertyfactory.h>
-#include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication
+#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>          // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>           // for Tags
+#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>       // for InvalidationLevel, Invalidati...
+#include <inviwo/core/properties/listproperty.h>            // for ListProperty
+#include <inviwo/core/properties/optionproperty.h>          // for OptionProperty, OptionPropert...
+#include <inviwo/core/properties/ordinalproperty.h>         // for FloatVec4Property, FloatProperty
+#include <inviwo/core/properties/property.h>                // for Property
+#include <inviwo/core/properties/propertyfactory.h>         // for PropertyFactory
+#include <inviwo/core/properties/propertyownerobserver.h>   // for PropertyOwnerObservable
+#include <inviwo/core/properties/propertysemantics.h>       // for PropertySemantics, PropertySe...
+#include <inviwo/core/util/glmvec.h>                        // for vec4, vec2, ivec2, ivec4, vec3
+#include <inviwo/core/util/iterrange.h>                     // for iter_range
+#include <inviwo/core/util/staticstring.h>                  // for operator+
+#include <inviwo/core/util/stringconversion.h>              // for splitByLast
+#include <inviwo/core/util/transformiterator.h>             // for TransformIterator
+#include <modules/opengl/inviwoopengl.h>                    // for GL_ALWAYS, GL_ONE, GL_ONE_MIN...
+#include <modules/opengl/openglutils.h>                     // for BlendModeState, DepthFuncState
+#include <modules/opengl/texture/textureutils.h>            // for activateTargetAndClearOrCopyS...
+#include <modules/userinterfacegl/glui/element.h>           // for Element
+#include <modules/userinterfacegl/glui/layout/boxlayout.h>  // for BoxLayout::LayoutDirection
+#include <modules/userinterfacegl/glui/renderer.h>          // for Renderer
+#include <modules/userinterfacegl/glui/widgetfactory.h>     // for WidgetFactory
+#include <modules/userinterfacegl/userinterfaceglmodule.h>  // for UserInterfaceGLModule
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
-#include <modules/userinterfacegl/glui/widgetfactory.h>
-#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/floatminmaxpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
+#include <cctype>   // for tolower
+#include <utility>  // for pair, make_pair, move
+
+#include <glm/vec2.hpp>  // for operator*, operator+, vec
 
 namespace inviwo {
+class PropertyOwner;
 
 namespace glui {
 

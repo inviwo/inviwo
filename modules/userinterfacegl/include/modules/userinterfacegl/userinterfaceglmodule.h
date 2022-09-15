@@ -29,15 +29,14 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
 
-#include <modules/userinterfacegl/glui/widgetsupplier.h>
-#include <modules/userinterfacegl/glui/widgetfactory.h>
-#include <modules/userinterfacegl/glui/widgetfactoryobject.h>
-#include <modules/userinterfacegl/glui/element.h>
+#include <inviwo/core/common/inviwomodule.h>              // for InviwoModule
+#include <modules/userinterfacegl/glui/widgetfactory.h>   // for WidgetFactory
+#include <modules/userinterfacegl/glui/widgetsupplier.h>  // for WidgetSupplier
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule,
                                                              public glui::WidgetSupplier {
