@@ -29,23 +29,35 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME...
 
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
-#include <inviwo/dataframe/properties/filterlistproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/dataframe/io/csvreader.h>
+#include <inviwo/core/ports/dataoutport.h>                           // for DataOutport
+#include <inviwo/core/processors/processor.h>                        // for Processor
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>            // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                     // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                   // for ButtonProperty
+#include <inviwo/core/properties/fileproperty.h>                     // for FileProperty
+#include <inviwo/core/properties/optionproperty.h>                   // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                  // for IntSizeTProperty
+#include <inviwo/core/properties/stringproperty.h>                   // for StringProperty
+#include <inviwo/core/util/staticstring.h>                           // for operator+
+#include <inviwo/dataframe/datastructures/dataframe.h>               // for DataFrame
+#include <inviwo/dataframe/io/csvreader.h>                           // for CSVReader::EmptyField
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>  // for ColumnMetaDataListPr...
+#include <inviwo/dataframe/properties/filterlistproperty.h>          // for FilterListProperty
+#include <inviwo/dataframe/util/filters.h>                           // for Filters
+
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr
+#include <string>       // for operator==, operator+
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector
+
+#include <fmt/core.h>  // for format
 
 namespace inviwo {
+class Deserializer;
 
 /** \docpage{org.inviwo.CSVSource, CSVSource}
  * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)

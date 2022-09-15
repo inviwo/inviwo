@@ -29,14 +29,23 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
 
-#include <inviwo/core/io/datareader.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/util/filters.h>
+#include <inviwo/core/io/datareader.h>      // for DataReaderType
+#include <inviwo/dataframe/util/filters.h>  // for Filters
+
+#include <any>          // for any
+#include <cstddef>      // for size_t
+#include <functional>   // for function
+#include <iosfwd>       // for istream
+#include <memory>       // for shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <utility>      // for pair
+#include <vector>       // for vector
 
 namespace inviwo {
+class DataFrame;
 
 /**
  * \class CSVReader

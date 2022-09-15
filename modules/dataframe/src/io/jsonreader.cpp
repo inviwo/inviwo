@@ -28,8 +28,18 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/io/jsonreader.h>
-#include <inviwo/dataframe/jsondataframeconversion.h>
-#include <inviwo/core/util/filesystem.h>
+
+#include <inviwo/core/io/datareader.h>                  // for DataReaderType
+#include <inviwo/core/util/exception.h>                 // for FileException
+#include <inviwo/core/util/fileextension.h>             // for FileExtension
+#include <inviwo/core/util/sourcecontext.h>             // for IVW_CONTEXT
+#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+#include <inviwo/dataframe/jsondataframeconversion.h>   // IWYU pragma: keep
+
+#include <fstream>  // for basic_ifstream, ios, istream, str...
+#include <string>   // for operator==, fpos
+
+#include <nlohmann/json.hpp>  // for operator>>, json
 
 using json = nlohmann::json;
 

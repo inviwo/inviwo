@@ -28,11 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
 
-#include <nlohmann/json.hpp>
+#include <inviwo/core/io/datareaderexception.h>         // for DataReaderException
+#include <inviwo/core/util/exception.h>                 // for ExceptionContext
+#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+
+#include <string>  // for string
+
+#include <nlohmann/json.hpp>  // for json
 
 using json = nlohmann::json;
 

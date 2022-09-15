@@ -29,11 +29,18 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
+
+#include <inviwo/core/properties/optionproperty.h>      // for OptionPropertyInt
+#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrameInport, DataFrame
+
+#include <functional>   // for function
+#include <memory>       // for shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
 
 namespace inviwo {
+class Property;
 
 class IVW_MODULE_DATAFRAME_API ColumnOptionProperty : public OptionPropertyInt {
 public:

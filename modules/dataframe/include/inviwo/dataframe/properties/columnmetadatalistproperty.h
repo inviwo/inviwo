@@ -28,16 +28,22 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/properties/listproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/columnmetadataproperty.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
 
-#include <string_view>
+#include <inviwo/core/properties/invalidationlevel.h>   // for InvalidationLevel, InvalidationLe...
+#include <inviwo/core/properties/listproperty.h>        // for ListProperty
+#include <inviwo/core/properties/property.h>            // for OverwriteState
+#include <inviwo/core/properties/propertysemantics.h>   // for PropertySemantics, PropertySemant...
+#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrameInport, DataFrame
+
+#include <cstddef>      // for size_t
+#include <functional>   // for function
+#include <memory>       // for shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
 
 namespace inviwo {
-
-class MetaDataOwner;
+class ColumnMetaDataProperty;
 
 /**
  * \ingroup properties

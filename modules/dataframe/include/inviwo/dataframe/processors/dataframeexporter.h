@@ -29,23 +29,27 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
 
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/datainport.h>           // for DataInport
+#include <inviwo/core/ports/outportiterable.h>      // for OutportIterable
+#include <inviwo/core/processors/processor.h>       // for Processor
+#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>    // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>  // for ButtonProperty
+#include <inviwo/core/properties/fileproperty.h>    // for FileProperty
+#include <inviwo/core/properties/stringproperty.h>  // for StringProperty
+#include <inviwo/core/util/glmvec.h>                // for uvec3
 
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <string>         // for string
+#include <unordered_map>  // for operator!=
+#include <vector>         // for vector
 
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/util/fileextension.h>
+#include <fmt/core.h>  // for format_to, basic_string_view, format
 
 namespace inviwo {
+class DataFrame;
+class FileExtension;
 
 /** \docpage{org.inviwo.DataFrameExporter, DataFrame Exporter}
  * ![](org.inviwo.DataFrameExporter.png?classIdentifier=org.inviwo.DataFrameExporter)

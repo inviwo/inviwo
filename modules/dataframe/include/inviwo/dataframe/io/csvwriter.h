@@ -28,11 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
+
+#include <inviwo/core/io/datawriter.h>  // for DataWriterType
+
+#include <iosfwd>       // for ostream
+#include <memory>       // for unique_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
+class DataFrame;
 
 /**
  * \brief DataFrame CSV Writer

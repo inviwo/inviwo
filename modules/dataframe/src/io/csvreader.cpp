@@ -29,27 +29,48 @@
 
 #include <inviwo/dataframe/io/csvreader.h>
 
-#include <inviwo/dataframe/datastructures/column.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/safecstr.h>
-#include <inviwo/core/util/detected.h>
-#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/unitsystem.h>                      // for Unit
+#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
+#include <inviwo/core/util/detected.h>                                  // for alwaysFalse
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/filesystem.h>                                // for skipByteOrderMark
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
+#include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stdextensions.h>                             // for overloaded
+#include <inviwo/core/util/stringconversion.h>                          // for trim
+#include <inviwo/core/util/zip.h>                                       // for zipIterator, zipper
+#include <inviwo/dataframe/datastructures/column.h>                     // for CategoricalColumn...
+#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+#include <inviwo/dataframe/util/filters.h>                              // for Filters, ItemFilter
 
-#include <fstream>
-#include <algorithm>
-#include <charconv>
-#include <cstdlib>
-#include <cerrno>
-#include <clocale>
-#include <functional>
-#include <type_traits>
-#include <regex>
-#include <charconv>
+#include <algorithm>      // for any_of, none_of
+#include <charconv>       // for from_chars
+#include <clocale>        // for setlocale, LC_ALL
+#include <cstdint>        // for int64_t
+#include <cstdlib>        // for size_t, strtod
+#include <fstream>        // for char_traits, basi...
+#include <functional>     // for function, __base
+#include <iterator>       // for istreambuf_iterator
+#include <limits>         // for numeric_limits
+#include <optional>       // for optional, nullopt
+#include <regex>          // for regex_match, smatch
+#include <sstream>        // for basic_stringbuf<>...
+#include <system_error>   // for errc
+#include <type_traits>    // for remove_reference<...
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <variant>        // for visit
+#include <cerrno>         // for errno
+
+#include <fmt/core.h>            // for format
+#include <glm/gtc/type_ptr.hpp>  // for value_ptr
+#include <units/units.hpp>       // for unit_from_string
 
 namespace inviwo {
 
