@@ -119,6 +119,7 @@
 
         <file>svgicons/fullscreen.svg</file>
         <file>svgicons/canvas-hide.svg</file>
+        <file>svgicons/canvas-show.svg</file>
 
         <file>svgicons/python.svg</file>
         <file>svgicons/python-mono.svg</file>

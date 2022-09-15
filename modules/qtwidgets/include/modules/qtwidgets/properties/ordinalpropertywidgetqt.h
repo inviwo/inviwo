@@ -295,7 +295,6 @@ std::unique_ptr<QMenu> OrdinalLikePropertyWidgetQt<Prop, Sem>::getContextMenu() 
             &OrdinalLikePropertyWidgetQt<Prop, Sem>::showSettings);
 
     settingsAction->setEnabled(!property_->getReadOnly());
-    settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);
 
     return menu;
 }

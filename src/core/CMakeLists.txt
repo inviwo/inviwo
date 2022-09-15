@@ -258,7 +258,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyownerobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertypresetmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertysemantics.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyvisibility.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactoryobject.h
@@ -340,6 +339,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/introspection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/iterrange.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/licenseinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
@@ -680,6 +680,7 @@ set(SOURCE_FILES
     util/indirectiterator.cpp
     util/introspection.cpp
     util/inviwosetupinfo.cpp
+    util/iterrange.cpp
     util/licenseinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp

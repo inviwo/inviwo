@@ -32,7 +32,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/properties/propertyvisibility.h>
 
 namespace inviwo {
 
@@ -48,7 +47,6 @@ public:
     virtual void onSetSemantics(Property* property, const PropertySemantics& semantics);
     virtual void onSetReadOnly(Property* property, bool readonly);
     virtual void onSetVisible(Property* property, bool visible);
-    virtual void onSetUsageMode(Property* property, UsageMode usageMode);
 };
 
 class IVW_CORE_API PropertyObservable : public Observable<PropertyObserver> {
@@ -60,7 +58,6 @@ protected:
     void notifyObserversOnSetSemantics(Property* property, const PropertySemantics& semantics);
     void notifyObserversOnSetReadOnly(Property* property, bool readonly);
     void notifyObserversOnSetVisible(Property* property, bool visible);
-    void notifyObserversOnSetUsageMode(Property* property, UsageMode usageMode);
 };
 
 struct IVW_CORE_API PropertyObserverDelegate : public PropertyObserver {
@@ -69,7 +66,6 @@ struct IVW_CORE_API PropertyObserverDelegate : public PropertyObserver {
     std::function<void(Property*, const PropertySemantics&)> onSemanticsChange;
     std::function<void(Property*, bool)> onReadOnlyChange;
     std::function<void(Property*, bool)> onVisibleChange;
-    std::function<void(Property*, UsageMode)> onUsageModeChange;
 
     virtual void onSetIdentifier(Property* property, const std::string& identifier) override {
         if (onIdentifierChange) onIdentifierChange(property, identifier);
@@ -85,9 +81,6 @@ struct IVW_CORE_API PropertyObserverDelegate : public PropertyObserver {
     }
     virtual void onSetVisible(Property* property, bool visible) override {
         if (onVisibleChange) onVisibleChange(property, visible);
-    }
-    virtual void onSetUsageMode(Property* property, UsageMode usageMode) override {
-        if (onUsageModeChange) onUsageModeChange(property, usageMode);
     }
 };
 

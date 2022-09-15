@@ -31,7 +31,6 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
-#include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/network/processornetworkevaluationobserver.h>
 #include <inviwo/core/network/processornetworkobserver.h>

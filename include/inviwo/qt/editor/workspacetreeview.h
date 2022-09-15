@@ -42,10 +42,6 @@ class QAbstractItemModel;
 
 namespace inviwo {
 
-class InviwoApplication;
-class TreeItem;
-class WorkspaceTreeModel;
-
 class IVW_QTEDITOR_API WorkspaceTreeView : public QTreeView {
 #include <warn/push>
 #include <warn/ignore/all>

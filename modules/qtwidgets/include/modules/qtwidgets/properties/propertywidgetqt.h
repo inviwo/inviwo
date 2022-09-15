@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertyobserver.h>
 
@@ -103,10 +102,8 @@ protected:
     // PropertyObservable overrides
     virtual void onSetReadOnly(Property* property, bool readonly) override;
     virtual void onSetVisible(Property* property, bool visible) override;
-    virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
 
     virtual void setVisible(bool visible) override;
-    UsageMode getApplicationUsageMode();
 
     virtual bool event(QEvent* event) override;  //< for custom tooltips.
     virtual void paintEvent(QPaintEvent* pe) override;
@@ -121,9 +118,7 @@ private:
 
     PropertyWidgetQt* parent_;
 
-    const BaseCallBack* appModeCallback_;
-
-    const int maxNumNestedShades_;  //< This number has to match the number of shades in the qss.
+    const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.
     int nestedDepth_;
 };
 

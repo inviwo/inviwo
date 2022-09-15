@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,33 +26,46 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QMimeData>
+#include <warn/pop>
+
+#include <string>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API ImageContourProcessor : public Processor {
+class CompositeProcessor;
+class Property;
+
+class SuperPropertyMimeData : public QMimeData {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    ImageContourProcessor();
-    virtual ~ImageContourProcessor() = default;
+    SuperPropertyMimeData(std::vector<Property*> someProperties);
+    static const std::string& getMimeTag();
+    static const SuperPropertyMimeData* toSuperPropertyMimeData(const QMimeData* data);
+    std::vector<Property*> properties;
+};
 
-    virtual void process() override;
+class IVW_QTEDITOR_API SubPropertySelectionDialog : public InviwoDockWidget,
+                                                    public ProcessorNetworkObserver {
+public:
+    SubPropertySelectionDialog(CompositeProcessor* processor, QWidget* parent);
+    virtual ~SubPropertySelectionDialog() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+protected:
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
 
-private:
-    ImageInport image_;
-    MeshOutport mesh_;
-    IntSizeTProperty channel_;
-    DoubleProperty isoValue_;
-    FloatVec4Property color_;
+    CompositeProcessor* cp_;
 };
 
 }  // namespace inviwo

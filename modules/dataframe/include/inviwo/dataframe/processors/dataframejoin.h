@@ -79,7 +79,8 @@ public:
 
 private:
     virtual void onDidAddProperty(Property* property, size_t index) override;
-    virtual void onDidRemoveProperty(Property* property, size_t index) override;
+    virtual void onDidRemoveProperty(PropertyOwner* owner, Property* property,
+                                     size_t index) override;
 
     DataFrameInport inportLeft_;
     DataFrameInport inportRight_;

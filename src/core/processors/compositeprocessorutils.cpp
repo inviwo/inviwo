@@ -218,6 +218,8 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
 
 void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
     try {
+        // Make sure we delete the composite as the last thing we do, after any locks
+        auto holder = composite.shared_from_this();
         auto& network = *composite.getNetwork();
         auto& subNetwork = composite.getSubNetwork();
         NetworkLock lock(&network);

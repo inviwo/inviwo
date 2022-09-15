@@ -134,7 +134,7 @@ void TFSelector::onDidAddProperty(Property* property, size_t) {
     property->Property::addObserver(this);
 }
 
-void TFSelector::onDidRemoveProperty(Property*, size_t) { updateOptions(); }
+void TFSelector::onDidRemoveProperty(PropertyOwner*, Property*, size_t) { updateOptions(); }
 
 void TFSelector::updateOptions() {
     // update option property

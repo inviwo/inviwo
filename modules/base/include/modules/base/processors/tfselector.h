@@ -81,7 +81,8 @@ private:
 
     virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
     virtual void onDidAddProperty(Property* property, size_t index) override;
-    virtual void onDidRemoveProperty(Property* property, size_t index) override;
+    virtual void onDidRemoveProperty(PropertyOwner* owner, Property* property,
+                                     size_t index) override;
 
     void updateOptions();
 

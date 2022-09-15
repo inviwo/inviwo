@@ -136,7 +136,8 @@ bool CompositeProperty::needsSerialization() const {
         case PropertySerializationMode::Default:
             [[fallthrough]];
         default:
-            return std::any_of(properties_.begin(), properties_.end(),
+            return !getMetaDataMap()->empty() ||
+                   std::any_of(properties_.begin(), properties_.end(),
                                [](const Property* p) { return p->needsSerialization(); });
     }
 }

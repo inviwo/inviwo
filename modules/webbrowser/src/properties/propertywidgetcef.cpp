@@ -138,16 +138,4 @@ void PropertyWidgetCEF::onSetVisible(Property* /*property*/, bool visible) {
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 
-void PropertyWidgetCEF::onSetUsageMode(Property* /*property*/, UsageMode usageMode) {
-    if (!frame_) {
-        return;
-    }
-    std::stringstream script;
-    std::stringstream mode;
-    mode << usageMode;
-    auto p = json{{"usageMode", mode.str()}};
-    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
-}
-
 }  // namespace inviwo

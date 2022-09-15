@@ -1,5 +1,11 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-09-14 New CompositeProcessor property configuration dialog
+The long deprecated UsageMode has now been removed and with that the only way to select which properties was shown in a `CompositeProcessor`. 
+To fix that, the `CompositeProcessor` got a new dialog `Configure Properties`, accessable from the context menu in the network editor.
+![Configure Properties](resources/changelog/configure-properties.png) 
+In the dialog one can select which of the properties in the sub network that should be exposed in the `CompositeProcessor`,It is also possible to mark sub properties as read only or invisible to potentially reduce complexity.
+
 ## 2022-09-09 Updated ext/libtiff
 The libtiff library located in `ext/libtiff` was updated to the latest release 4.4.0.
 

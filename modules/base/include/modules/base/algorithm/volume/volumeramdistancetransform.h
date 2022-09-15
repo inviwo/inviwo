@@ -36,6 +36,7 @@
 
 #ifdef IVW_USE_OPENMP
 #include <omp.h>
+#include <thread>
 #endif
 
 namespace inviwo {

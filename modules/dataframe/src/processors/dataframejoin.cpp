@@ -140,6 +140,8 @@ void DataFrameJoin::onDidAddProperty(Property* property, size_t) {
     }
 }
 
-void DataFrameJoin::onDidRemoveProperty(Property*, size_t) { secondaryKeys_.setModified(); }
+void DataFrameJoin::onDidRemoveProperty(PropertyOwner*, Property*, size_t) {
+    secondaryKeys_.setModified();
+}
 
 }  // namespace inviwo

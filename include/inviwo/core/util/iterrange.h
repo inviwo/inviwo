@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,29 +26,51 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <ostream>
+
+#include <utility>
+#include <iterator>
 
 namespace inviwo {
 
-enum class UsageMode {
-    Application = 0,  // Always show property
-    Development = 1,  // Default, Only show in developer mode
+namespace util {
+
+template <class Iter>
+struct iter_range : std::pair<Iter, Iter> {
+    using value_type = typename std::iterator_traits<Iter>::value_type;
+    using const_iterator = Iter;
+    using iterator = Iter;
+    using std::pair<Iter, Iter>::pair;
+    iter_range(const std::pair<Iter, Iter>& x) : std::pair<Iter, Iter>(x) {}
+    Iter begin() const { return this->first; }
+    Iter end() const { return this->second; }
 };
 
-inline std::ostream& operator<<(std::ostream& ss, const UsageMode& mode) {
-    switch (mode) {
-        case UsageMode::Application:
-            ss << "Application";
-            break;
-        case UsageMode::Development:
-            ss << "Development";
-            break;
-    }
-    return ss;
+template <class Iter>
+inline iter_range<Iter> as_range(Iter begin, Iter end) {
+    return iter_range<Iter>(std::make_pair(begin, end));
 }
+
+template <class Iter>
+inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
+    return iter_range<Iter>(x);
+}
+
+template <class Container>
+inline iter_range<typename Container::iterator> as_range(Container& c) {
+    using std::begin;
+    using std::end;
+    return iter_range<typename Container::iterator>(std::make_pair(begin(c), end(c)));
+}
+template <class Container>
+inline iter_range<typename Container::const_iterator> as_range(const Container& c) {
+    using std::begin;
+    using std::end;
+    return iter_range<typename Container::const_iterator>(std::make_pair(begin(c), end(c)));
+}
+
+}  // namespace util
 
 }  // namespace inviwo

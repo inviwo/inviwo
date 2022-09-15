@@ -49,7 +49,6 @@ public:
     SystemSettings(InviwoApplication* app);
     virtual ~SystemSettings();
     StringProperty workspaceAuthor_;
-    OptionProperty<UsageMode> applicationUsageMode_;
     IntSizeTProperty poolSize_;
     BoolProperty enablePortInspectors_;
     IntProperty portInspectorSize_;

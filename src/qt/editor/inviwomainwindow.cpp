@@ -916,7 +916,6 @@ void InviwoMainWindow::addActions() {
         expandAction->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_G);
         expandAction->setEnabled(false);
         connect(expandAction, &QAction::triggered, this, [this]() {
-            std::unordered_set<CompositeProcessor*> selectedComposites;
             for (auto item : networkEditor_->selectedItems()) {
                 if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
                     if (auto comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
@@ -927,18 +926,19 @@ void InviwoMainWindow::addActions() {
         });
 
         auto updateButtonState = [this, expandAction, compAction] {
-            std::unordered_set<CompositeProcessor*> selectedComposites;
-            std::unordered_set<Processor*> selectedProcessors;
+            bool selectedProcessor = false;
+            bool selectedComposite = false;
+
             for (auto item : networkEditor_->selectedItems()) {
                 if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
-                    selectedProcessors.insert(pgi->getProcessor());
-                    if (auto comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
-                        selectedComposites.insert(comp);
+                    selectedProcessor = true;
+                    if (dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
+                        selectedComposite = true;
                     }
                 }
             }
-            expandAction->setDisabled(selectedComposites.empty());
-            compAction->setDisabled(selectedProcessors.empty());
+            expandAction->setEnabled(selectedComposite);
+            compAction->setEnabled(selectedProcessor);
         };
         connect(networkEditor_.get(), &QGraphicsScene::selectionChanged, this, updateButtonState);
         connect(networkMenuItem, &QMenu::aboutToShow, this, updateButtonState);

@@ -198,7 +198,6 @@ std::unique_ptr<QMenu> LightPropertyWidgetQt::getContextMenu() {
         settings_->showWidget();
     });
     settingsAction->setEnabled(!property_->getReadOnly());
-    settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);
     return menu;
 }
 

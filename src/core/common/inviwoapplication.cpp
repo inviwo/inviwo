@@ -366,14 +366,6 @@ void InviwoApplication::resizePool(size_t newSize) {
     }
 }
 
-UsageMode InviwoApplication::getApplicationUsageMode() const {
-    return systemSettings_->applicationUsageMode_;
-}
-
-void InviwoApplication::setApplicationUsageMode(UsageMode mode) {
-    systemSettings_->applicationUsageMode_.set(mode);
-}
-
 LayerRamResizer* InviwoApplication::getLayerRamResizer() const { return layerRamResizer_; }
 void InviwoApplication::setLayerRamResizer(LayerRamResizer* obj) { layerRamResizer_ = obj; }
 

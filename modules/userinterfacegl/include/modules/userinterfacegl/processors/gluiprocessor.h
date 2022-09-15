@@ -95,11 +95,11 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void onWillAddProperty(Property* property, size_t index) override;
+    virtual void onWillAddProperty(PropertyOwner*, Property* property, size_t index) override;
     virtual void onDidAddProperty(Property* property, size_t index) override;
 
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
-    virtual void onDidRemoveProperty(Property* property, size_t index) override;
+    virtual void onDidRemoveProperty(PropertyOwner*, Property* property, size_t index) override;
 
 private:
     ImageInport inport_;

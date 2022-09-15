@@ -40,6 +40,8 @@
 #include <inviwo/core/links/linkevaluator.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/iterrange.h>
+#include <inviwo/core/util/transformiterator.h>
 
 #include <string_view>
 #include <memory>
@@ -187,6 +189,14 @@ public:
     void forEachProcessor(C callback);
 
     /**
+     * Returns a range of all processors (Processor&), in unspecified order.
+     */
+    auto processorRange() const {
+        return util::transformRange(
+            processors_, [](const auto& item) -> decltype(auto) { return *item.second; });
+    }
+
+    /**
      * @brief Add a PortConnection to the ProcessorNetwork.
      *
      * This involves creating the connection between the two specified ports, as well as adding this
@@ -266,7 +276,12 @@ public:
     void forEachConnection(C callback);
 
     /**
-     * @brief Check if @p port is owned by a processor in this processornetwork
+     * Returns a range of all connections (PortConnection&), in unspecified order.
+     */
+    auto connectionRange() const { return util::as_range(connections_); }
+
+    /**
+     * @brief Check if @p port is owned by a processor in this ProcessorNetwork
      *
      * This will retrieve the identifier of the @p ports owner and see if this network has a
      * processor with that identifier
@@ -337,6 +352,11 @@ public:
      */
     template <typename C>
     void forEachLink(C callback);
+
+    /**
+     * Returns a range of all links (PropertyLink&), in unspecified order.
+     */
+    auto linkRange() const { return util::as_range(links_); }
 
     /**
      * Is Property Link bidirectional
@@ -416,7 +436,7 @@ public:
     int runningBackgroundJobs() const { return backgoundJobs_; }
 
 private:
-    // Assign a identifier and display name, if none is set.
+    // Assign an identifier and display name, if none is set.
     void assignIdentifierAndName(Processor& p, std::string_view name);
     void removeProcessorHelper(Processor* processor);
 

@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <inviwo/core/util/iterrange.h>
+
 #include <iterator>
 #include <type_traits>
 #include <utility>
@@ -175,6 +177,14 @@ template <typename Transform, typename Iter>
 auto makeTransformIterator(Transform&& transform, Iter iter) {
     return TransformIterator<std::remove_reference_t<Transform>, Iter>(
         std::forward<Transform>(transform), iter);
+}
+
+template <typename Range, typename Transform>
+auto transformRange(Range& range, Transform&& transform) {
+    using std::begin;
+    using std::end;
+    return util::as_range(makeTransformIterator(transform, begin(range)),
+                          makeTransformIterator(transform, end(range)));
 }
 
 }  // namespace util

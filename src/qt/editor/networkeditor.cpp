@@ -81,6 +81,7 @@
 #include <inviwo/qt/editor/processordraghelper.h>
 #include <inviwo/qt/editor/connectiondraghelper.h>
 #include <inviwo/qt/editor/linkdraghelper.h>
+#include <inviwo/qt/editor/subpropertyselectiondialog.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -429,6 +430,38 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
     }
 }
 
+void NetworkEditor::deleteAndKeepConnections(ProcessorGraphicsItem* processor) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
+    auto p = processor->getProcessor();
+    for (auto& prop : p->getPropertiesRecursive()) {
+        auto links = network_->getPropertiesLinkedTo(prop);
+        auto bidirectional = util::copy_if(
+            links, [&](Property* dst) { return network_->isLinkedBidirectional(prop, dst); });
+        if (bidirectional.size() > 1) {
+            for (size_t i = 1; i < bidirectional.size(); ++i) {
+                network_->addLink(bidirectional[0], bidirectional[i]);
+                network_->addLink(bidirectional[i], bidirectional[0]);
+            }
+        }
+    }
+
+    auto& inports = p->getInports();
+    auto& outports = p->getOutports();
+    for (size_t i = 0; i < std::min(inports.size(), outports.size()); ++i) {
+        if (inports[i]->isConnected() && outports[i]->isConnected()) {
+            auto out = inports[i]->getConnectedOutport();
+            auto ins = outports[i]->getConnectedInports();
+            network_->removeConnection(out, inports[i]);
+            for (auto in : ins) {
+                network_->removeConnection(outports[i], in);
+                network_->addConnection(out, in);
+            }
+        }
+    }
+    network_->removeProcessor(p);
+}
+
 void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
     auto addVisualizers = [this](QMenu& menu, ProcessorOutportGraphicsItem* ogi) {
@@ -519,6 +552,22 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 showAction->setChecked(widget->isVisible());
                 connect(showAction, &QAction::triggered,
                         [widget]() { widget->setVisible(!widget->isVisible()); });
+            } else if (auto comp = dynamic_cast<CompositeProcessor*>(processor->getProcessor())) {
+                if (util::any_of(comp->getSubNetwork().processorRange(),
+                                 [](const Processor& p) { return p.hasProcessorWidget(); })) {
+                    QMenu* subMenu = menu.addMenu("Widgets");
+                    for (const auto& subProcessor : comp->getSubNetwork().processorRange()) {
+                        if (auto subWidget = subProcessor.getProcessorWidget()) {
+                            QAction* showAction = subMenu->addAction(utilqt::toQString(
+                                fmt::format("Show {} Widget", subProcessor.getDisplayName())));
+                            showAction->setCheckable(true);
+                            showAction->setChecked(subWidget->isVisible());
+                            connect(showAction, &QAction::triggered, [subWidget]() {
+                                subWidget->setVisible(!subWidget->isVisible());
+                            });
+                        }
+                    }
+                }
             }
 
             auto editName = menu.addAction(tr("Edit Name"));
@@ -544,38 +593,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
             QAction* delprocessor = menu.addAction(QIcon(":/svgicons/edit-delete.svg"),
                                                    tr("Delete && &Keep Connections"));
-            connect(delprocessor, &QAction::triggered, [this, processor]() {
-                RenderContext::getPtr()->activateDefaultRenderContext();
-
-                auto p = processor->getProcessor();
-                for (auto& prop : p->getPropertiesRecursive()) {
-                    auto links = network_->getPropertiesLinkedTo(prop);
-                    auto bidirectional = util::copy_if(links, [&](Property* dst) {
-                        return network_->isLinkedBidirectional(prop, dst);
-                    });
-                    if (bidirectional.size() > 1) {
-                        for (size_t i = 1; i < bidirectional.size(); ++i) {
-                            network_->addLink(bidirectional[0], bidirectional[i]);
-                            network_->addLink(bidirectional[i], bidirectional[0]);
-                        }
-                    }
-                }
-
-                auto& inports = p->getInports();
-                auto& outports = p->getOutports();
-                for (size_t i = 0; i < std::min(inports.size(), outports.size()); ++i) {
-                    if (inports[i]->isConnected() && outports[i]->isConnected()) {
-                        auto out = inports[i]->getConnectedOutport();
-                        auto ins = outports[i]->getConnectedInports();
-                        network_->removeConnection(out, inports[i]);
-                        for (auto in : ins) {
-                            network_->removeConnection(outports[i], in);
-                            network_->addConnection(out, in);
-                        }
-                    }
-                }
-                network_->removeProcessor(p);
-            });
+            connect(delprocessor, &QAction::triggered,
+                    [this, processor]() { deleteAndKeepConnections(processor); });
 
             menu.addSeparator();
             QAction* invalidateOutputAction = menu.addAction(tr("Invalidate &Output"));
@@ -671,6 +690,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             }
         });
         expandAction->setDisabled(selectedComposites.empty());
+
+        auto selectPropAction =
+            menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
+        selectPropAction->setEnabled(selectedComposites.size() == 1);
+        connect(selectPropAction, &QAction::triggered, this, [this, selectedComposites]() {
+            auto dialog = new SubPropertySelectionDialog(*selectedComposites.begin(), mainwindow_);
+            dialog->show();
+        });
 
         auto saveCompAction = menu.addAction(QIcon(":/svgicons/save.svg"), tr("&Save Composite"));
         connect(saveCompAction, &QAction::triggered, this, [this, selectedComposites]() {

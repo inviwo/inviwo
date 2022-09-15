@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/util/iterrange.h>
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-
-namespace inviwo {
-
-class IVW_MODULE_BASE_API ImageContourProcessor : public Processor {
-public:
-    ImageContourProcessor();
-    virtual ~ImageContourProcessor() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    ImageInport image_;
-    MeshOutport mesh_;
-    IntSizeTProperty channel_;
-    DoubleProperty isoValue_;
-    FloatVec4Property color_;
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

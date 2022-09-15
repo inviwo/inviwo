@@ -107,7 +107,6 @@ protected:
     virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override;
     virtual void onSetReadOnly(Property* property, bool readonly) override;
     virtual void onSetVisible(Property* property, bool visible) override;
-    virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
 
     virtual void setVisible(bool visible) override;
     virtual void setCollapsed(bool value);
