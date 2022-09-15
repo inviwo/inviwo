@@ -30,21 +30,32 @@
 #pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/volumeport.h>
+
+#include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/shader/shader.h>
-
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/clock.h>
+#include <inviwo/core/util/glmvec.h>                                                    // for vec4
+#include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/timer.h>
-
+#include <modules/opengl/shader/shader.h>
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
+
 namespace inviwo {
+class InviwoApplication;
+class Mesh;
 
 /** \docpage{org.inviwo.StreamParticles, Stream Particles}
  * ![](org.inviwo.StreamParticles.png?classIdentifier=org.inviwo.StreamParticles)

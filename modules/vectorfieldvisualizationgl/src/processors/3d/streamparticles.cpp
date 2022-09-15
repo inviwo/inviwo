@@ -29,21 +29,62 @@
 
 #include <modules/vectorfieldvisualizationgl/processors/3d/streamparticles.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/geometry/typedmesh.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/volumesequenceutils.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/common/inviwoapplication.h>                       // for InviwoApplication
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferUsage, Buff...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFunction
+#include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/minmaxproperty.h>                      // for FloatMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/util/clock.h>                                     // for Clock
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/util/glmutils.h>                                  // for Matrix
+#include <inviwo/core/util/glmvec.h>                                    // for vec4, vec3
+#include <inviwo/core/util/logcentral.h>                                // for log, LogLevel
+#include <inviwo/core/util/pathtype.h>                                  // for PathType, PathTyp...
+#include <inviwo/core/util/rendercontext.h>                             // for RenderContext
+#include <inviwo/core/util/staticstring.h>                              // for operator+
+#include <inviwo/core/util/stringconversion.h>                          // for toString
+#include <inviwo/core/util/timer.h>                                     // for Timer, Timer::Mil...
+#include <inviwo/core/util/zip.h>                                       // for get, zip, zipIter...
+#include <modules/opengl/buffer/buffergl.h>                             // for BufferGL
+#include <modules/opengl/inviwoopengl.h>                                // for GL_SHADER_STORAGE...
+#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
+#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
+#include <modules/opengl/shader/shaderutils.h>                          // for setUniforms
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
+#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>      // for SeedPoints3DInport
 
-#include <modules/opengl/buffer/buffergl.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumeutils.h>
+#include <algorithm>                                                    // for transform, fill, min
+#include <cstddef>                                                      // for size_t
+#include <limits>                                                       // for numeric_limits
+#include <random>                                                       // for mt19937, uniform_...
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for pair
 
-#include <random>
+#include <glm/detail/qualifier.hpp>                                     // for tvec2
+#include <glm/mat4x4.hpp>                                               // for operator*, mat
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec4.hpp>                                                 // for operator*, operator+
 
 namespace inviwo {
 

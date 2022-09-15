@@ -30,15 +30,25 @@
 #pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
+
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+
+#include <functional>
 #include <random>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

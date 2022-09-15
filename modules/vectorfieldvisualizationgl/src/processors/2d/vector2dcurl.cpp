@@ -28,10 +28,20 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualizationgl/processors/2d/vector2dcurl.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/shader/shaderutils.h>
+
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorOnly
+#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Experimental
+#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
+#include <inviwo/core/util/formats.h>                     // for DataFormat, DataVec4Float32
+#include <modules/opengl/shader/shader.h>                 // for Shader
+#include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, bindAnd...
+
+#include <string>                                         // for string
+#include <string_view>                                    // for string_view
 
 namespace inviwo {
 

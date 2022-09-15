@@ -30,10 +30,12 @@
 #pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
+
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {

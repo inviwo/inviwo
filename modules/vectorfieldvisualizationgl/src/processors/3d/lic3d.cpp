@@ -28,16 +28,33 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualizationgl/processors/3d/lic3d.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/base/algorithm/dataminmax.h>
-#include <modules/opengl/volume/volumeutils.h>
 
-#include <random>
+#include <inviwo/core/datastructures/datamapper.h>                         // for DataMapper
+#include <inviwo/core/datastructures/transferfunction.h>                   // for TransferFunction
+#include <inviwo/core/ports/volumeport.h>                                  // for VolumeInport
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
+#include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>                           // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>                        // for FloatProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>               // for TransferFuncti...
+#include <inviwo/core/util/formats.h>                                      // for DataFormat
+#include <inviwo/core/util/glmvec.h>                                       // for dvec2, vec4
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <modules/opengl/shader/shader.h>                                  // for Shader
+#include <modules/opengl/shader/shaderutils.h>                             // for setUniforms
+#include <modules/opengl/texture/textureutils.h>                           // for bindAndSetUnif...
+#include <modules/opengl/volume/volumeutils.h>                             // for bindAndSetUnif...
+
+#include <string>                                                          // for string
+#include <string_view>                                                     // for string_view
+#include <type_traits>                                                     // for remove_extent_t
+
+#include <glm/mat3x3.hpp>                                                  // for mat
+#include <glm/matrix.hpp>                                                  // for inverse
 
 namespace inviwo {
+class TextureUnitContainer;
 
 const ProcessorInfo LIC3D::processorInfo_{
     "org.inviwo.LIC3D",            // Class identifier
