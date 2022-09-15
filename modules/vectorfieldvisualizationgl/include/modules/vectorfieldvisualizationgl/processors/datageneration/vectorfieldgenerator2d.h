@@ -33,10 +33,10 @@
 
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {

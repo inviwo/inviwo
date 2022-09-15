@@ -30,10 +30,15 @@
 #pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
+
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 
+#include <memory>
+
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldVisualizationGLModule
     : public InviwoModule {
