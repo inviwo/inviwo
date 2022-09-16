@@ -28,9 +28,15 @@
  *********************************************************************************/
 
 #include <modules/nifti/niftimodule.h>
-#include <modules/nifti/niftireader.h>
+
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/io/datareader.h>        // for DataReader
+#include <modules/nifti/niftireader.h>        // for NiftiReader
+
+#include <memory>                             // for make_unique
 
 namespace inviwo {
+class InviwoApplication;
 
 NiftiModule::NiftiModule(InviwoApplication* app) : InviwoModule(app, "Nifti") {
     // Add a directory to the search path of the Shadermanager
