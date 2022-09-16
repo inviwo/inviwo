@@ -29,10 +29,12 @@
 
 #pragma once
 
-#include <modules/nifti/niftimoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/nifti/niftimoduledefine.h>  // for IVW_MODULE_NIFTI_API
+
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_NIFTI_API NiftiModule : public InviwoModule {
 public:

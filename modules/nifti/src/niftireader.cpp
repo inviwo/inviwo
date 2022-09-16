@@ -28,28 +28,49 @@
  *********************************************************************************/
 
 #include <modules/nifti/niftireader.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/volume/volumedisk.h>
-#include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/formatconversion.h>
-#include <inviwo/core/util/formatdispatching.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/safecstr.h>
-#include <inviwo/core/io/datareaderexception.h>
 
-#include <modules/base/algorithm/dataminmax.h>
-
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <inviwo/core/datastructures/camera/camera.h>                   // for mat4
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/diskrepresentation.h>              // for DiskRepresentatio...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataReade...
+#include <inviwo/core/datastructures/volume/volumedisk.h>               // for VolumeDisk
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>       // for createVolumeRAM
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>     // for VolumeRepresentation
+#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
+#include <inviwo/core/metadata/metadata.h>                              // for StringMetaData
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/formats.h>                                   // for NumericType, Data...
+#include <inviwo/core/util/glmvec.h>                                    // for size3_t, dvec2, vec4
+#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
+#include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT, IVW_...
+#include <modules/base/algorithm/dataminmax.h>                          // for volumeMinMax
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <nifti1.h>
-#include <nifti1_io.h>
+#include <glm/common.hpp>                                               // for max, min
+#include <glm/fwd.hpp>                                                  // for mat4, mat4x4, vec3
+#include <glm/gtx/component_wise.hpp>                                   // for compMul
+#include <glm/mat4x4.hpp>                                               // for mat<>::col_type
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                                                 // for operator*, operat...
+#include <glm/vec4.hpp>                                                 // for operator*, operator+
+#include <glm/vector_relational.hpp>                                    // for any, equal
+#include <nifti1.h>                                                     // for DT_BINARY, DT_COM...
+#include <nifti1_io.h>                                                  // for nifti_image, nift...
+
 #include <warn/pop>
 
-#include <array>
+#include <array>                                                        // for array
+#include <cstring>                                                      // for size_t, memcpy
+#include <string>                                                       // for string
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for pair, move
 
 namespace inviwo {
 
