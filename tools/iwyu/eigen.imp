@@ -1,0 +1,9 @@
+# eigen headers
+[
+  { symbol: [ "Eigen::Matrix", private, "<Eigen/Core>", public ] },
+  { symbol: [ "Eigen::MatrixXf", private, "<Eigen/Core>", public ] },
+  { symbol: [ "Eigen::DenseCoeffsBase", private, "<Eigen/Core>", public ] },
+
+  { "include": ["@<src/Core/.*>", "private", "<Eigen/Core>", "public"] },
+  { "include": ["@<Eigen/src/Core/.*>", "private", "<Eigen/Core>", "public"] }
+]
