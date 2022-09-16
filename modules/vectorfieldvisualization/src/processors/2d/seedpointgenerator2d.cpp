@@ -28,8 +28,23 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h>
-#include <inviwo/core/util/zip.h>
-#include <modules/base/algorithm/randomutils.h>
+
+#include <inviwo/core/processors/processor.h>                       // for Processor
+#include <inviwo/core/processors/processorinfo.h>                   // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                  // for CodeState, CodeState:...
+#include <inviwo/core/processors/processortags.h>                   // for Tags
+#include <inviwo/core/properties/boolproperty.h>                    // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>               // for CompositeProperty
+#include <inviwo/core/properties/optionproperty.h>                  // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                 // for IntSizeTProperty, Int...
+#include <inviwo/core/util/glmvec.h>                                // for vec2
+#include <inviwo/core/util/staticstring.h>                          // for operator+
+#include <inviwo/core/util/zip.h>                                   // for get, zip, zipIterator
+#include <modules/base/algorithm/randomutils.h>                     // for haltonSequence, rando...
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>  // for SeedPoints2DOutport
+
+#include <memory>                                                   // for shared_ptr, make_shared
+#include <type_traits>                                              // for remove_extent_t
 
 namespace inviwo {
 

@@ -29,6 +29,30 @@
 
 #include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
 
+#include <inviwo/core/datastructures/buffer/buffer.h>                         // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>             // for BufferRAMPr...
+#include <inviwo/core/datastructures/representationconverter.h>               // for Representat...
+#include <inviwo/core/datastructures/representationconverterfactory.h>        // for Representat...
+#include <inviwo/core/util/glmmat.h>                                          // for dmat4
+#include <inviwo/core/util/glmvec.h>                                          // for dvec3, dvec4
+#include <inviwo/core/util/logcentral.h>                                      // for LogCentral
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>     // for IntegralLine
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>  // for IntegralLin...
+
+#include <algorithm>                                                          // for transform
+#include <cmath>                                                              // for acos
+#include <memory>                                                             // for unique_ptr
+#include <sstream>                                                            // for basic_strin...
+#include <type_traits>                                                        // for remove_exte...
+#include <unordered_map>                                                      // for unordered_map
+#include <unordered_set>                                                      // for unordered_set
+#include <vector>                                                             // for vector
+
+#include <glm/geometric.hpp>                                                  // for distance
+#include <glm/mat4x4.hpp>                                                     // for operator*, mat
+#include <glm/vec3.hpp>                                                       // for operator*
+#include <glm/vec4.hpp>                                                       // for operator*
+
 namespace inviwo {
 namespace util {
 IntegralLine curvature(const IntegralLine& line, dmat4 toWorld) {

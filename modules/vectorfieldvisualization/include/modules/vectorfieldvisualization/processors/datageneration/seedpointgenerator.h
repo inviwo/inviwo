@@ -29,21 +29,18 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
 
-#include <inviwo/core/util/timer.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/processors/processor.h>                                       // for Proce...
+#include <inviwo/core/processors/processorinfo.h>                                   // for Proce...
+#include <inviwo/core/properties/boolproperty.h>                                    // for BoolP...
+#include <inviwo/core/properties/compositeproperty.h>                               // for Compo...
+#include <inviwo/core/properties/minmaxproperty.h>                                  // for Float...
+#include <inviwo/core/properties/optionproperty.h>                                  // for Optio...
+#include <inviwo/core/properties/ordinalproperty.h>                                 // for Float...
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>                  // for SeedP...
 
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
-
-#include <random>
+#include <random>                                                                   // for mt19937
 
 namespace inviwo {
 

@@ -28,31 +28,50 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h>
+
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/ticpp.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/base/processors/inputselector.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
+#include <modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h>
+#include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
+#include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
+#include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
-
-#include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
-#include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
-#include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
-#include <modules/vectorfieldvisualization/processors/integrallinevectortomesh.h>
-
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
-
-#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
-#include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
-#include <modules/vectorfieldvisualization/processors/seed3dto4d.h>
-#include <modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h>
-#include <modules/vectorfieldvisualization/processors/seedsfrommasksequence.h>
 #include <modules/vectorfieldvisualization/processors/discardshortlines.h>
+#include <modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h>
+#include <modules/vectorfieldvisualization/processors/integrallinevectortomesh.h>
+#include <modules/vectorfieldvisualization/processors/seed3dto4d.h>
+#include <modules/vectorfieldvisualization/processors/seedsfrommasksequence.h>
+#include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
+#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 
-#include <modules/base/processors/inputselector.h>
-#include <modules/vectorfieldvisualization/integrallinetracer.h>
-#include <modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h>
-#include <modules/base/processors/volumetospatialsampler.h>
+#include <functional>
+#include <initializer_list>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+#include <fmt/core.h>
+#include <glm/gtx/io.hpp>
 
 namespace inviwo {
+class InviwoApplication;
+template <typename T> struct ProcessorTraits;
 
 using LineSetSelector = InputSelector<DataInport<IntegralLineSet, 0>, IntegralLineSetOutport>;
 template <>

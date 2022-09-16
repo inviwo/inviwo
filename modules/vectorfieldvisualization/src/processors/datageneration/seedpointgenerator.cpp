@@ -28,10 +28,32 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
-#include <modules/base/algorithm/randomutils.h>
 
-#include <glm/gtx/vector_angle.hpp>
-#include <math.h>
+#include <inviwo/core/processors/processor.h>                       // for Processor
+#include <inviwo/core/processors/processorinfo.h>                   // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                  // for CodeState, CodeState:...
+#include <inviwo/core/processors/processortags.h>                   // for Tags
+#include <inviwo/core/properties/boolproperty.h>                    // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>               // for CompositeProperty
+#include <inviwo/core/properties/minmaxproperty.h>                  // for FloatMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                  // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>                 // for FloatVec3Property
+#include <inviwo/core/util/glmvec.h>                                // for vec3, vec2
+#include <inviwo/core/util/logcentral.h>                            // for LogCentral, LogWarn
+#include <modules/base/algorithm/randomutils.h>                     // for randomNumber
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>  // for SeedPoints3DOutport
+
+#include <cmath>                                                    // for cos, sin, acos, pow
+#include <functional>                                               // for __base
+#include <memory>                                                   // for make_shared, shared_ptr
+#include <string>                                                   // for string
+#include <string_view>                                              // for string_view
+#include <type_traits>                                              // for remove_extent_t
+#include <vector>                                                   // for vector
+
+#include <glm/gtc/constants.hpp>                                    // for two_pi
+#include <glm/vec2.hpp>                                             // for vec, vec<>::(anonymous)
+#include <glm/vec3.hpp>                                             // for operator*, vec, opera...
 
 #define RND 1
 #define PLANE 2

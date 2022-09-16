@@ -29,10 +29,13 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+
+#include <inviwo/core/properties/ordinalproperty.h>                                 // for Doubl...
+#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>     // for Integ...
+
+#include <string>                                                                   // for string
+#include <string_view>                                                              // for strin...
 
 namespace inviwo {
 

@@ -29,15 +29,28 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/util/bufferutils.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/util/interpolation.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
 
-#include <map>
-#include <iosfwd>
+#include <inviwo/core/datastructures/buffer/buffer.h>                               // for Buffer
+#include <inviwo/core/util/exception.h>                                             // for Excep...
+#include <inviwo/core/util/formats.h>                                               // for DataF...
+#include <inviwo/core/util/glmutils.h>                                              // for same_...
+#include <inviwo/core/util/glmvec.h>                                                // for dvec3
+#include <inviwo/core/util/interpolation.h>                                         // for Inter...
+#include <inviwo/core/util/sourcecontext.h>                                         // for IVW_C...
+
+#include <cstddef>                                                                  // for size_t
+#include <cstdint>                                                                  // for uint32_t
+#include <map>                                                                      // for opera...
+#include <memory>                                                                   // for share...
+#include <sstream>                                                                  // for opera...
+#include <string>                                                                   // for string
+#include <type_traits>                                                              // for remov...
+#include <utility>                                                                  // for pair
+#include <vector>                                                                   // for vector
+
+#include <glm/geometric.hpp>                                                        // for distance
+#include <glm/vec3.hpp>                                                             // for opera...
 
 namespace inviwo {
 

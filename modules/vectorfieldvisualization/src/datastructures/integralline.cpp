@@ -28,11 +28,19 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/datastructures/integralline.h>
-#include <inviwo/core/util/interpolation.h>
 
-#include <iosfwd>
+#include <inviwo/core/util/bufferutils.h>    // for reverse
+#include <inviwo/core/util/exception.h>      // for Exception
+#include <inviwo/core/util/glmvec.h>         // for dvec3
+#include <inviwo/core/util/interpolation.h>  // for Interpolation
+#include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT
+
+#include <algorithm>                         // for reverse
+
+#include <glm/common.hpp>                    // for mix
 
 namespace inviwo {
+class BufferBase;
 
 const std::vector<dvec3>& IntegralLine::getPositions() const { return positions_; }
 std::vector<dvec3>& IntegralLine::getPositions() { return positions_; }
