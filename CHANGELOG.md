@@ -1,5 +1,19 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-09-29 Pre-compiled headers overhaul
+The generation of pre-compiled headers (PCH) was changed from Cotire to CMake. This enables using PCH in combination with Qt6.
+A single PCH file is generated for inviwo core including a number of standard includes. In addition, there is a PCH file for the qtwidgets modules with some Qt headers. These PCH files ar reused by all modules by default when depending on qtwidgets or core respectively, and assuming `IVW_CFG_PRECOMPILED_HEADERS` is checked. Use the `NO_PCH` option when calling `ivw_create_module()` to prevent the default PCH from being used in a module.
+```cmake
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES})
+```
+
+It is also possible to instead use a custom PCH by manually calling `ivw_compile_optimize_on_target()` after `ivw_create_module(NO_PCH ...)`.
+```cmake
+set(PCH_HEADERS header_1.h header_2.h ...)
+ivw_compile_optimize_on_target(inviwo-mymodule HEADERS ${PCH_HEADERS})
+```
+This will include files listed in `${PCH_HEADERS}` and all headers marked for PCH inclusion of all target dependendencies as listed in the respective `IVW_PCH_HEADERS` target properties. In contrast,  using`target_precompile_headers()` instead will only consider the given header files. Note that using `PUBLIC` or `INTERFACE` with `target_precompile_headers()` enforces the usage of PCH ontor all other targets depending on this one.
+
 ## 2022-09-14 Include cleanup and refactoring
 We cleaned up, removed, and broke some include dependencies in inviwo core to reduce the overall compile time.
 We have generally tried to reduce the use of big includes that have many transitive includes. Additionally, we tried to break up some headers into smaller parts to avoid having to include unused things.
