@@ -106,9 +106,6 @@ struct InitQtChangelogResources {
 
 #include <QPropertyAnimation>
 
-
-
-
 namespace inviwo {
 
 constexpr std::string_view placeholder = R"(<!DOCTYPE html>
@@ -524,11 +521,12 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             collapsibleChangeLog_ =
                 new HorisontalCollipsable("Changelog", changeLogCollapsibleContent, rightColumn_);
             collapsibleChangeLog_->setObjectName("changeLogCollapsible");
-            collapsibleChangeLog_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+            collapsibleChangeLog_->setSizePolicy(QSizePolicy::Minimum,
+                                                 QSizePolicy::MinimumExpanding);
 
             connect(collapsibleChangeLog_, &HorisontalCollipsable::toggled, this,
                     &WelcomeWidget::onChangelogCollapseChanged);
-            
+
             rightColumnHLayout->addWidget(collapsibleChangeLog_);
         }
 
@@ -576,12 +574,11 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     collapsibleChangeLog_->collapse(getSetting("changeLogCollapsed", true).toBool());
     onChangelogCollapseChanged(collapsibleChangeLog_->isCollapsed());
 
-    connect(this, &QSplitter::splitterMoved, this,
-            [this](int, int) { 
-                if (!collapsibleChangeLog_->isCollapsed()) {
-                    setSetting("mainSplitterState", saveState());
-                }
-            });
+    connect(this, &QSplitter::splitterMoved, this, [this](int, int) {
+        if (!collapsibleChangeLog_->isCollapsed()) {
+            setSetting("mainSplitterState", saveState());
+        }
+    });
     connect(leftSplitter, &QSplitter::splitterMoved, this, [this, leftSplitter](int, int) {
         setSetting("leftSplitterState", leftSplitter->saveState());
     });

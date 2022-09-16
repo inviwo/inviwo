@@ -47,7 +47,7 @@ class VerticalLabel;
 /**
  * Collapse/expand content.
  * Content will be placed to the right of the collapse label/button.
- * L  |  
+ * L  |
  * a  |
  * b  |  Content
  * e  |

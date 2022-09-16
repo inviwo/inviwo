@@ -36,8 +36,6 @@
 
 namespace inviwo {
 
-
-
 VerticalLabel::VerticalLabel(QWidget* parent) : QLabel(parent) {}
 
 VerticalLabel::VerticalLabel(const QString& text, QWidget* parent) : QLabel(text, parent) {}

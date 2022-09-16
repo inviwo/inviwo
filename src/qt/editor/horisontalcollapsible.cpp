@@ -38,10 +38,9 @@
 
 namespace inviwo {
 
-    
 HorisontalCollipsable::HorisontalCollipsable(const QString& title, QWidget* content,
                                              QWidget* parent)
-    : QWidget(parent), content_(content) {  
+    : QWidget(parent), content_(content) {
     toggleButton_ = new QToolButton(this);
     toggleButton_->setObjectName("collapseButton");
     toggleButton_->setArrowType(Qt::ArrowType::LeftArrow);
@@ -77,7 +76,7 @@ HorisontalCollipsable::HorisontalCollipsable(const QString& title, QWidget* cont
     connect(toggleButton_, &QToolButton::clicked, this, &HorisontalCollipsable::collapse);
 }
 
- bool HorisontalCollipsable::isCollapsed() const { return toggleButton_->isChecked(); }
+bool HorisontalCollipsable::isCollapsed() const { return toggleButton_->isChecked(); }
 
 void HorisontalCollipsable::collapse(bool collapse) {
     setUpdatesEnabled(false);
@@ -87,11 +86,8 @@ void HorisontalCollipsable::collapse(bool collapse) {
     content_->setVisible(!collapse);
     setUpdatesEnabled(true);
     adjustSize();
-    
+
     emit toggled(collapse);
 }
-
-
-
 
 }  // namespace inviwo
