@@ -29,6 +29,12 @@
 
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
+#include <inviwo/core/util/glmmat.h>                                       // for mat4
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>  // for IntegralLine
+
+#include <cstdint>  // for uint32_t
+#include <utility>  // for move
+
 namespace inviwo {
 
 IntegralLineSet::IntegralLineSet(mat4 modelMatrix, mat4 worldMatrix)

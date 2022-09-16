@@ -28,13 +28,34 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/processors/seedsfrommasksequence.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/util/volumeramutils.h>
-#include <inviwo/core/util/glm.h>
-#include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/util/volumesequenceutils.h>
-#include <random>
+
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>       // IWYU pragma: keep
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeSequenceInport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/util/glmconvert.h>                                // for glm_convert
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t
+#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
+#include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxel
+#include <inviwo/core/util/volumesequenceutils.h>                       // for getTimestamp, has...
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>      // for SeedPoint4DVector
+
+#include <cstddef>        // for size_t
+#include <memory>         // for shared_ptr, make_...
+#include <random>         // for mt19937, uniform_...
+#include <string>         // for string
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+#include <vector>         // for vector
+
+#include <glm/vec3.hpp>  // for operator*, operator+
 
 namespace inviwo {
 

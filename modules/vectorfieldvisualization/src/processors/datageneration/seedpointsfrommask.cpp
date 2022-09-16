@@ -28,11 +28,40 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/util/volumeramutils.h>
-#include <inviwo/core/util/indexmapper.h>
+
+#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>       // IWYU pragma: keep
+#include <inviwo/core/ports/datainport.h>                               // for DataInport
+#include <inviwo/core/ports/inportiterable.h>                           // for InportIterable<>:...
+#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterable
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
+#include <inviwo/core/properties/ordinalproperty.h>                     // for IntProperty, Doub...
+#include <inviwo/core/util/glmconvert.h>                                // for glm_convert_norma...
+#include <inviwo/core/util/glmutils.h>                                  // for Matrix
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4, uvec3
+#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
+#include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxel
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>      // for SeedPoints3DOutport
+
+#include <functional>     // for __base
+#include <memory>         // for shared_ptr, make_...
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+
+#include <fmt/core.h>      // for format_to, basic_...
+#include <glm/mat4x4.hpp>  // for operator*, mat
+#include <glm/vec3.hpp>    // for operator*, operator+
+#include <glm/vec4.hpp>    // for operator*, operator+
 
 namespace inviwo {
 

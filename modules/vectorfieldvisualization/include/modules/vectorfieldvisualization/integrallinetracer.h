@@ -29,14 +29,21 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/util/spatialsampler.h>
-#include <inviwo/core/util/spatial4dsampler.h>
-#include <inviwo/core/util/bufferutils.h>
-#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
-#include <modules/vectorfieldvisualization/datastructures/integralline.h>
+#include <inviwo/core/util/glmconvert.h>                                   // for glm_convert
+#include <inviwo/core/util/glmutils.h>                                     // for Matrix
+#include <inviwo/core/util/glmvec.h>                                       // for dvec3
+#include <inviwo/core/util/spatialsampler.h>                               // IWUY pragma: keep
+#include <inviwo/core/util/spatial4dsampler.h>                             // IWUY pragma: keep
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>  // for Integral...
+#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>  // for Integral...
 
-#include <unordered_map>
+#include <cstddef>        // for size_t
+#include <limits>         // for numeric_...
+#include <memory>         // for shared_ptr
+#include <string>         // for string
+#include <unordered_map>  // for unordere...
+#include <utility>        // for pair
+#include <vector>         // for vector
 
 namespace inviwo {
 

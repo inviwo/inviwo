@@ -29,6 +29,13 @@
 
 #include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 
+#include <inviwo/core/datastructures/coordinatetransformer.h>  // for CoordinateSpace, Coordinat...
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>            // for FloatProperty, IntProperty
+#include <inviwo/core/util/staticstring.h>                     // for operator+
+
 namespace inviwo {
 
 IntegralLineProperties::IntegralLineProperties(std::string_view identifier,

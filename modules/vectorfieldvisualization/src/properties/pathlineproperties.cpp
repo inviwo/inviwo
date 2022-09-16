@@ -29,6 +29,9 @@
 
 #include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 
+#include <inviwo/core/properties/ordinalproperty.h>                              // for DoublePr...
+#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>  // for Integral...
+
 namespace inviwo {
 
 const std::string PathLineProperties::classIdentifier = "org.inviwo.PathLineProperties";

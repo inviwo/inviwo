@@ -29,6 +29,23 @@
 
 #include <modules/vectorfieldvisualization/processors/discardshortlines.h>
 
+#include <inviwo/core/processors/processor.h>                                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>                             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                            // for CodeState
+#include <inviwo/core/processors/processortags.h>                             // for Tags, Tags:...
+#include <inviwo/core/properties/invalidationlevel.h>                         // for Invalidatio...
+#include <inviwo/core/properties/ordinalproperty.h>                           // for DoubleProperty
+#include <inviwo/core/properties/propertysemantics.h>                         // for PropertySem...
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>     // for IntegralLine
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>  // for IntegralLin...
+
+#include <algorithm>    // for max, min
+#include <functional>   // for __base
+#include <limits>       // for numeric_limits
+#include <memory>       // for make_shared
+#include <string>       // for string
+#include <string_view>  // for string_view
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

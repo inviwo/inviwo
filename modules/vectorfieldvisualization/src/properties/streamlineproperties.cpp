@@ -29,6 +29,8 @@
 
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 
+#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>  // for Integral...
+
 namespace inviwo {
 
 const std::string StreamLineProperties::classIdentifier = "org.inviwo.StreamLineProperties";
