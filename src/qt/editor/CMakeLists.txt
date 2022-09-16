@@ -5,6 +5,7 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/horisontalcollapsible.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
@@ -73,6 +74,7 @@ set(SOURCE_FILES
     editorgrapicsitem.cpp
     fileassociations.cpp
     helpwidget.cpp
+    horisontalcollapsible.cpp
     inviwoaboutwindow.cpp
     inviwoeditmenu.cpp
     inviwoeditmenu.cpp

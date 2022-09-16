@@ -1046,4 +1046,17 @@ QSplitter#WelcomeWidget QLineEdit {
     padding: 0.25em;
 }
 
+#changeLogCollapsible #collapseTitle,#collapseButton {
+    border: none;
+    font-size: 26pt;
+    color: #268bd2;
+}
+#changeLogCollapsible #collapseTitle:hover,#collapseButton:hover {
+    color: #5b5f62;
+
+}
+#changeLogCollapsible #collapseTitle:pressed,#collapseButton:pressed {
+    color: #1e70a8;
+}
+
 

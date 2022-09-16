@@ -48,6 +48,7 @@ class QSvgWidget;
 
 namespace inviwo {
 
+class HorisontalCollipsable;
 class WorkspaceTreeModel;
 class WorkspaceTreeView;
 class WorkspaceGridView;
@@ -91,6 +92,8 @@ private:
 
     void expandTreeView() const;
 
+    void onChangelogCollapseChanged(bool collapse);
+
     InviwoApplication* app_;
 
     WorkspaceTreeModel* model_;
@@ -98,7 +101,8 @@ private:
     WorkspaceTreeView* workspaceTreeView_;
     WorkspaceGridView* workspaceGridView_;
 
-    QVBoxLayout* rightColumnLayout;
+    QFrame* rightColumn_;
+    HorisontalCollipsable* collapsibleChangeLog_;
 
     QLineEdit* filterLineEdit_;
     QSvgWidget* dragAndDrop_;
