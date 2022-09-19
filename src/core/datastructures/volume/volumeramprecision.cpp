@@ -29,28 +29,4 @@
 
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
-namespace inviwo {
-
-struct VolumeRamCreationDispatcher {
-    using type = std::shared_ptr<VolumeRAM>;
-    template <typename Result, typename T>
-    std::shared_ptr<VolumeRAM> operator()(void* dataPtr, const size3_t& dimensions,
-                                          const SwizzleMask& swizzleMask,
-                                          InterpolationType interpolation,
-                                          const Wrapping3D& wrapping) {
-        using F = typename T::type;
-        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions,
-                                                       swizzleMask, interpolation, wrapping);
-    }
-};
-
-std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format,
-                                           void* dataPtr, const SwizzleMask& swizzleMask,
-                                           InterpolationType interpolation,
-                                           const Wrapping3D& wrapping) {
-    VolumeRamCreationDispatcher disp;
-    return dispatching::dispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
-        format->getId(), disp, dataPtr, dimensions, swizzleMask, interpolation, wrapping);
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

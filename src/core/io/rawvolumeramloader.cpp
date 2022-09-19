@@ -31,6 +31,8 @@
 
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
+#include <glm/gtx/component_wise.hpp>
+
 namespace inviwo {
 
 RawVolumeRAMLoader::RawVolumeRAMLoader(const std::string& rawFile, size_t offset, bool littleEndian)
