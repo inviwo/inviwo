@@ -29,6 +29,8 @@
 
 #include <modules/json/io/json/buttonpropertyjsonconverter.h>
 
+#include <inviwo/core/properties/buttonproperty.h>  // for ButtonProperty
+
 namespace inviwo {
 
 void to_json(json& j, const ButtonProperty&) { j = json{{"pressButton", true}}; }

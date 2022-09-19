@@ -29,15 +29,16 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/properties/property.h>
-#include <modules/json/io/json/propertyjsonconverter.h>
-#include <string>
+#include <modules/json/jsonmoduledefine.h>    // for IVW_MODULE_JSON_API
+
+#include <inviwo/core/properties/property.h>  // for PropertyTraits
+
+#include <memory>                             // for unique_ptr, make_unique
+#include <string>                             // for string
 
 namespace inviwo {
-
-class Property;
-class PropertyWidget;
+class PropertyJSONConverter;
+template <typename SrcProperty> class TemplatePropertyJSONConverter;
 
 class IVW_MODULE_JSON_API PropertyJSONConverterFactoryObject {
 public:

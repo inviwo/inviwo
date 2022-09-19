@@ -29,11 +29,12 @@
 
 #pragma once
 
-#include <modules/json/jsonmoduledefine.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <nlohmann/json.hpp>
+#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
+
+#include <nlohmann/json.hpp>                // for json
 
 namespace inviwo {
+class ButtonProperty;
 
 using json = ::nlohmann::json;
 

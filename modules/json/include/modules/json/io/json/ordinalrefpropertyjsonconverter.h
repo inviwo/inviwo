@@ -28,11 +28,10 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/json/io/json/glmjsonconverter.h>
-#include <inviwo/core/properties/ordinalrefproperty.h>
-#include <nlohmann/json.hpp>
+#include <nlohmann/json.hpp>  // for json
 
 namespace inviwo {
+template <typename T> class OrdinalRefProperty;
 
 using json = ::nlohmann::json;
 
