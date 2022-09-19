@@ -29,7 +29,16 @@
 
 #include <modules/eigenutils/processors/eigennormalize.h>
 
-#include <Eigen/Geometry>
+#include <inviwo/core/processors/processor.h>       // for Processor
+#include <inviwo/core/processors/processorstate.h>  // for CodeState, CodeState::Experimental
+#include <inviwo/core/processors/processortags.h>   // for Tags
+#include <inviwo/core/properties/optionproperty.h>  // for OptionPropertyOption, OptionProperty
+#include <modules/eigenutils/eigenports.h>          // for EigenMatrixOutport, EigenMatrixInport
+
+#include <memory>                                   // for make_shared, shared_ptr, shared_ptr<>...
+#include <type_traits>                              // for remove_extent_t
+
+#include <Eigen/Dense>
 
 namespace inviwo {
 

@@ -29,10 +29,12 @@
 
 #pragma once
 
-#include <modules/eigenutils/eigenutilsmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/eigenutils/eigenutilsmoduledefine.h>  // for IVW_MODULE_EIGENUTILS_API
+
+#include <inviwo/core/common/inviwomodule.h>            // for InviwoModule
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_EIGENUTILS_API EigenUtilsModule : public InviwoModule {
 public:

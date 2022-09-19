@@ -28,13 +28,30 @@
  *********************************************************************************/
 
 #include <modules/eigenutils/eigenutilsmodule.h>
-#include <modules/eigenutils/processors/eigenmatrixtoimage.h>
-#include <modules/eigenutils/eigenports.h>
-#include <modules/eigenutils/processors/eigenmix.h>
-#include <modules/eigenutils/processors/eigennormalize.h>
 
-#include <modules/eigenutils/processors/testmatrix.h>
+#include <inviwo/core/common/inviwomodule.h>                   // for InviwoModule
+#include <inviwo/core/common/modulepath.h>                     // for ModulePath, ModulePath::Po...
+#include <inviwo/core/ports/dataoutport.h>                     // for DataOutport (ptr only)
+#include <inviwo/core/ports/outportiterable.h>                 // for OutportIterable, OutportIt...
+#include <inviwo/core/util/exception.h>                        // for Exception
+#include <inviwo/core/util/glmvec.h>                           // for uvec3
+#include <inviwo/core/util/stringconversion.h>                 // for htmlEncode
+#include <modules/eigenutils/processors/eigenmatrixtoimage.h>  // for EigenMatrixToImage
+#include <modules/eigenutils/processors/eigenmix.h>            // for EigenMix
+#include <modules/eigenutils/processors/eigennormalize.h>      // for EigenNormalize
+#include <modules/eigenutils/processors/testmatrix.h>          // for TestMatrix
+
+#include <functional>                                          // for __base
+#include <memory>                                              // for unique_ptr, shared_ptr
+#include <string>                                              // for string, operator+
+#include <vector>                                              // for vector
+
+#include <Eigen/Core>                                          // for MatrixXf
+#include <fmt/core.h>                                          // for basic_string_view
+#include <glm/ext/vector_uint3.hpp>                            // for uvec3
+
 namespace inviwo {
+class InviwoApplication;
 
 EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "EigenUtils") {
     registerProcessor<EigenMatrixToImage>();
