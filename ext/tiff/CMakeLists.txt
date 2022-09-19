@@ -61,7 +61,7 @@ include(CompilerChecks)
 
 # Linker checks (version script, etc.)
 
-#[===[ Inviwo modification, cmake detects support for versionscript but xcode does not like it ]===)
+#[===[ Inviwo modification, cmake detects support for versionscript but xcode does not like it ]===]
 if(XCODE)
     set(HAVE_LD_VERSION_SCRIPT FALSE)
 else()
