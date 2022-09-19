@@ -30,8 +30,8 @@
 
 #include <modules/glfw/glfwmoduledefine.h>
 
-#include <inviwo/core/interaction/events/mousebuttons.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
 #include <inviwo/core/util/glmvec.h>
 
 #include <functional>
