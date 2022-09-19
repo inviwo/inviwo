@@ -64,7 +64,7 @@ public:
     // Allow implicit construction only from bool
     // clang-format off
     template <typename T, std::enable_if_t<std::is_same_v<T, bool>, int> = 0>
-    [[deprecated("Use Shader::Build::Yes or Shader::Build::No, instead of a true or false")]] 
+    [[deprecated("Use Shader::Build::Yes or Shader::Build::No, instead of a true or false")]]
     constexpr Build(T value) noexcept : value_{value} {}
     // clang-format on
 

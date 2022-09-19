@@ -58,167 +58,179 @@ class ResourceManager;
 
 namespace util {
 
-/** @name Factories */
 ///@{
-
 /**
  * Camera factory
- * @see Camera
- * @see CameraFactory
+ * @see Camera CameraFactory
  */
 IVW_CORE_API CameraFactory* getCameraFactory();
 IVW_CORE_API CameraFactory* getCameraFactory(InviwoApplication* app);
 IVW_CORE_API CameraFactory* getCameraFactory(Processor* processor);
 IVW_CORE_API CameraFactory* getCameraFactory(Property* property);
+///@}
 
+///@{
 /**
  * DataReader factory
- * @see DataReader
- * @see DataReaderFactory
+ * @see DataReader DataReaderFactory
  */
 IVW_CORE_API DataReaderFactory* getDataReaderFactory();
 IVW_CORE_API DataReaderFactory* getDataReaderFactory(InviwoApplication* app);
 IVW_CORE_API DataReaderFactory* getDataReaderFactory(Processor* processor);
 IVW_CORE_API DataReaderFactory* getDataReaderFactory(Property* property);
+///@}
 
+///@{
 /**
  * DataWriter factory
- * @see DataWriter
- * @see DataWriterFactory
+ * @see DataWriter DataWriterFactory
  */
 IVW_CORE_API DataWriterFactory* getDataWriterFactory();
 IVW_CORE_API DataWriterFactory* getDataWriterFactory(InviwoApplication* app);
 IVW_CORE_API DataWriterFactory* getDataWriterFactory(Processor* processor);
 IVW_CORE_API DataWriterFactory* getDataWriterFactory(Property* property);
+///@}
 
+///@{
 /**
  * Dialog factory
- * @see Dialog
- * @see DialogFactory
+ * @see Dialog DialogFactory
  */
 IVW_CORE_API DialogFactory* getDialogFactory();
 IVW_CORE_API DialogFactory* getDialogFactory(InviwoApplication* app);
 IVW_CORE_API DialogFactory* getDialogFactory(Processor* processor);
 IVW_CORE_API DialogFactory* getDialogFactory(Property* property);
+///@}
 
+///@{
 /**
  * MeshDrawer factory
- * @see MeshDrawer
- * @see MeshDrawerFactory
+ * @see MeshDrawer MeshDrawerFactory
  */
 IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory();
 IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory(InviwoApplication* app);
 IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory(Processor* processor);
 IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory(Property* property);
+///@}
+
+///@{
 /**
  * MetaData factory
- * @see MetaData
- * @see MetaDataFactory
+ * @see MetaData MetaDataFactory
  */
 IVW_CORE_API MetaDataFactory* getMetaDataFactory();
 IVW_CORE_API MetaDataFactory* getMetaDataFactory(InviwoApplication* app);
 IVW_CORE_API MetaDataFactory* getMetaDataFactory(Processor* processor);
 IVW_CORE_API MetaDataFactory* getMetaDataFactory(Property* property);
+///@}
 
+///@{
 /**
  * Inport factory
- * @see Inport
- * @see InportFactory
+ * @see Inport InportFactory
  */
 IVW_CORE_API InportFactory* getInportFactory();
 IVW_CORE_API InportFactory* getInportFactory(InviwoApplication* app);
 IVW_CORE_API InportFactory* getInportFactory(Processor* processor);
 IVW_CORE_API InportFactory* getInportFactory(Property* property);
+///@}
 
+///@{
 /**
  * Outport factory
- * @see Outport
- * @see OutportFactory
+ * @see Outport OutportFactory
  */
 IVW_CORE_API OutportFactory* getOutportFactory();
 IVW_CORE_API OutportFactory* getOutportFactory(InviwoApplication* app);
 IVW_CORE_API OutportFactory* getOutportFactory(Processor* processor);
 IVW_CORE_API OutportFactory* getOutportFactory(Property* property);
+///@}
 
+///@{
 /**
  * PortInspector factory
- * @see PortInspector
- * @see PortInspectorFactory
+ * @see PortInspector PortInspectorFactory
  */
 IVW_CORE_API PortInspectorFactory* getPortInspectorFactory();
 IVW_CORE_API PortInspectorFactory* getPortInspectorFactory(InviwoApplication* app);
 IVW_CORE_API PortInspectorFactory* getPortInspectorFactory(Processor* processor);
 IVW_CORE_API PortInspectorFactory* getPortInspectorFactory(Property* property);
+///@}
 
+///@{
 /**
  * Processor factory
- * @see Processor
- * @see ProcessorFactory
+ * @see Processor ProcessorFactory
  */
 IVW_CORE_API ProcessorFactory* getProcessorFactory();
 IVW_CORE_API ProcessorFactory* getProcessorFactory(InviwoApplication* app);
 IVW_CORE_API ProcessorFactory* getProcessorFactory(Processor* processor);
 IVW_CORE_API ProcessorFactory* getProcessorFactory(Property* property);
+///@}
 
+///@{
 /**
  * ProcessorWidget factory
- * @see ProcessorWidget
- * @see ProcessorWidgetFactory
+ * @see ProcessorWidget ProcessorWidgetFactory
  */
 IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory();
 IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory(InviwoApplication* app);
 IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory(Processor* processor);
 IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory(Property* property);
+///@}
 
+///@{
 /**
  * PropertyConverterManager
- * @see PropertyConverter
- * @see PropertyConverterManager
+ * @see PropertyConverter PropertyConverterManager
  */
-PropertyConverterManager* getPropertyConverterManager();
+IVW_CORE_API PropertyConverterManager* getPropertyConverterManager();
+IVW_CORE_API PropertyConverterManager* getPropertyConverterManager(InviwoApplication* app);
+IVW_CORE_API PropertyConverterManager* getPropertyConverterManager(Processor* processor);
+IVW_CORE_API PropertyConverterManager* getPropertyConverterManager(Property* property);
+///@}
 
+///@{
 /**
  * Property factory
- * @see Property
- * @see PropertyFactory
+ * @see Property PropertyFactory
  */
 IVW_CORE_API PropertyFactory* getPropertyFactory();
 IVW_CORE_API PropertyFactory* getPropertyFactory(InviwoApplication* app);
 IVW_CORE_API PropertyFactory* getPropertyFactory(Processor* processor);
 IVW_CORE_API PropertyFactory* getPropertyFactory(Property* property);
+///@}
 
+///@{
 /**
  * PropertyWidget factory
- * @see PropertyWidget
- * @see PropertyWidgetFactory
+ * @see PropertyWidget PropertyWidgetFactory
  */
 IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory();
 IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory(InviwoApplication* app);
 IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory(Processor* processor);
 IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory(Property* property);
+///@}
 
+///@{
 /**
  * The Representation Meta Factory holds RepresentationFactories for various kinds of
  * representations (Volume Representation, Layer Representation, Buffer Representation, etc)
- * @see Data
- * @see DataRepresentation
- * @see RepresentationFactory
- * @see RepresentationMetaFactory
+ * @see Data DataRepresentation RepresentationFactory RepresentationMetaFactory
  */
 IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory();
 IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory(InviwoApplication* app);
 IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory(Processor* processor);
 IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory(Property* property);
+///@}
 
+///@{
 /**
  * The Representation Converter Meta Factory holds RepresentationConverterFactories for
  * various kinds of representations (Volume Representation, Layer Representation, Buffer
  * Representation, etc)
- * @see Data
- * @see DataRepresentation
- * @see RepresentationConverter
- * @see RepresentationConverterFactory
- * @see RepresentationConverterMetaFactory
+ * @see Data DataRepresentation RepresentationConverter RepresentationConverterFactory
+ * RepresentationConverterMetaFactory
  */
 IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory();
 IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory(
@@ -227,13 +239,17 @@ IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaF
     Processor* processor);
 IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory(
     Property* property);
-
 ///@}
 
+///@{
+/**
+ * Resource Manager
+ */
 IVW_CORE_API ResourceManager* getResourceManager();
 IVW_CORE_API ResourceManager* getResourceManager(InviwoApplication* app);
 IVW_CORE_API ResourceManager* getResourceManager(Processor* processor);
 IVW_CORE_API ResourceManager* getResourceManager(Property* property);
+///@}
 
 }  // namespace util
 

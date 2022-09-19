@@ -200,6 +200,22 @@ ProcessorWidgetFactory* getProcessorWidgetFactory(Property* property) {
     return getProcessorWidgetFactory(property->getOwner()->getProcessor());
 }
 
+PropertyConverterManager* getPropertyConverterManager() {
+    return getPropertyConverterManager(InviwoApplication::getPtr());
+}
+PropertyConverterManager* getPropertyConverterManager(InviwoApplication* app) {
+    if (!app) return nullptr;
+    return app->getPropertyConverterManager();
+}
+PropertyConverterManager* getPropertyConverterManager(Processor* processor) {
+    if (!processor) return nullptr;
+    return getPropertyConverterManager(processor->getInviwoApplication());
+}
+PropertyConverterManager* getPropertyConverterManager(Property* property) {
+    if (!property) return nullptr;
+    return getPropertyConverterManager(property->getOwner()->getProcessor());
+}
+
 PropertyFactory* getPropertyFactory() { return getPropertyFactory(InviwoApplication::getPtr()); }
 PropertyFactory* getPropertyFactory(InviwoApplication* app) {
     if (!app) return nullptr;

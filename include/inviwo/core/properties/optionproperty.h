@@ -378,7 +378,7 @@ bool operator!=(const U& lhs, const OptionProperty<T>& rhs) {
 template <typename T>
 struct PropertyTraits<OptionProperty<T>> {
     static const std::string& classIdentifier() {
-        return OrdinalPropertyTraits<T>::classIdentifier();
+        return OptionPropertyTraits<T>::classIdentifier();
     }
 };
 

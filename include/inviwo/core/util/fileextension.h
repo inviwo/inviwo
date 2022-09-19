@@ -102,7 +102,7 @@ public:
 };
 
 template <>
-struct OrdinalPropertyTraits<FileExtension> {
+struct OptionPropertyTraits<FileExtension> {
     static const std::string& classIdentifier() {
         static const std::string id{"org.inviwo.OptionPropertyFileExtension"};
         return id;

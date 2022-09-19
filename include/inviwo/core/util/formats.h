@@ -569,25 +569,6 @@ using DefaultDataFormats = std::tuple<
     DataVec3UInt64, DataVec4Float16, DataVec4Float32, DataVec4Float64, DataVec4Int8, DataVec4Int16,
     DataVec4Int32, DataVec4Int64, DataVec4UInt8, DataVec4UInt16, DataVec4UInt32, DataVec4UInt64>;
 
-/*
-namespace util {
-
-namespace detail {
-template <typename T, typename TypeList>
-struct HasDataFormatImpl;
-
-template <typename T, typename... Types>
-struct HasDataFormatImpl<T, std::tuple<Types...>>
-    : std::conditional_t<(std::is_same_v<T, typename Types::type> || ...), std::true_type,
-                         std::false_type> {};
-}  // namespace detail
-
-template <typename T>
-struct HasDataFormat : detail::HasDataFormatImpl<T, DefaultDataFormats> {};
-}  // namespace util
-
-*/
-
 template <typename T, typename... Args>
 auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type {
     using R = typename T::type;
