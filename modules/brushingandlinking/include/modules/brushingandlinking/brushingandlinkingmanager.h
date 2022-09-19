@@ -29,27 +29,34 @@
 
 #pragma once
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/datastructures/bitset.h>
-#include <inviwo/core/io/serialization/serializable.h>
-#include <inviwo/core/util/callback.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>  // for IVW_MODULE_BRUSHI...
 
-#include <modules/brushingandlinking/datastructures/indexlist.h>
-#include <modules/brushingandlinking/datastructures/brushingaction.h>
+#include <inviwo/core/datastructures/bitset.h>                         // for BitSet
+#include <inviwo/core/io/serialization/serializable.h>                 // for Serializable
+#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
+#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingTarget, hash
+#include <modules/brushingandlinking/datastructures/indexlist.h>       // for IndexList
 
-#include <variant>
-#include <array>
-#include <unordered_set>
-#include <map>
+#include <algorithm>      // for find
+#include <array>          // for array
+#include <cstddef>        // for size_t
+#include <cstdint>        // for uint32_t
+#include <functional>     // for function
+#include <string_view>    // for string_view
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for pair
+#include <variant>        // for variant
+#include <vector>         // for vector, vector<>:...
+
+#include <flags/flags.h>  // for any, flags, opera...
 
 namespace inviwo {
 
 class BrushingAndLinkingInport;
 class BrushingAndLinkingOutport;
-class Processor;
-class Serializer;
 class Deserializer;
+class Serializer;
 
 /*
  * @brief Combination of brushing targets (row, column), actions (selection/filtering/highlight),
