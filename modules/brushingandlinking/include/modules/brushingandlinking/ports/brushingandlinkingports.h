@@ -29,17 +29,31 @@
 
 #pragma once
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <inviwo/core/ports/inport.h>
-#include <inviwo/core/ports/outport.h>
-#include <inviwo/core/ports/porttraits.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>  // for IVW_MODULE_BRUSHI...
 
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
-#include <modules/brushingandlinking/datastructures/brushingaction.h>
+#include <inviwo/core/datastructures/bitset.h>                          // for BitSet
+#include <inviwo/core/ports/inport.h>                                   // for Inport
+#include <inviwo/core/ports/outport.h>                                  // for Outport
+#include <inviwo/core/ports/porttraits.h>                               // for PortTraits
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/util/document.h>                                  // for Document
+#include <inviwo/core/util/glmvec.h>                                    // for uvec3
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>       // for BrushingTargetsIn...
+#include <modules/brushingandlinking/datastructures/brushingaction.h>   // for BrushingTarget
+
+#include <cstddef>                                                      // for size_t
+#include <cstdint>                                                      // for uint32_t
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <vector>                                                       // for vector
+
+#include <flags/flags.h>                                                // for any
+#include <glm/ext/vector_uint3.hpp>                                     // for uvec3
 
 namespace inviwo {
-
-class BrushingAndLinkingOutport;
+class Deserializer;
+class Port;
+class Serializer;
 
 /**
  * \ingroup ports

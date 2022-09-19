@@ -28,19 +28,30 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
-#include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-#include <inviwo/core/io/serialization/serializer.h>
-#include <inviwo/core/io/serialization/deserializer.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/datastructures/bitset.h>                         // for BitSet
+#include <inviwo/core/io/serialization/deserializer.h>                 // for MapDeserializer
+#include <inviwo/core/io/serialization/serializer.h>                   // for Serializer
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
+#include <inviwo/core/util/assertion.h>                                // for IVW_ASSERT
+#include <inviwo/core/util/exception.h>                                // for Exception
+#include <inviwo/core/util/sourcecontext.h>                            // for IVW_CONTEXT, IVW_C...
+#include <inviwo/core/util/stdextensions.h>                            // for has_key, transform
+#include <inviwo/core/util/stringconversion.h>                         // for toString
+#include <inviwo/core/util/typetraits.h>                               // for alwaysTrue, identity
+#include <inviwo/core/util/zip.h>                                      // for zip, zipIterator
+#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingTarget
+#include <modules/brushingandlinking/datastructures/indexlist.h>       // for IndexList
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
 
-#include <stack>
+#include <stack>                                                       // for stack
+#include <string>                                                      // for string
+#include <tuple>                                                       // for tuple_element<>::type
+#include <type_traits>                                                 // for add_const<>::type
 
-#include <fmt/format.h>
+#include <flags/flags.h>                                               // for operator&, flags
+#include <fmt/core.h>                                                  // for basic_string_view
 
 namespace inviwo {
 

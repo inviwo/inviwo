@@ -28,11 +28,16 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/brushingandlinkingmodule.h>
-#include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/common/inviwomodule.h>                                    // for InviwoModule
+#include <inviwo/core/util/exception.h>                                         // for Exception
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>           // for BrushingA...
+#include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>  // for BrushingA...
+
+#include <memory>                                                               // for unique_ptr
 
 namespace inviwo {
+class InviwoApplication;
 
 BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)
     : InviwoModule(app, "BrushingAndLinking") {
