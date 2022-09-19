@@ -29,8 +29,11 @@
 
 #pragma once
 
-#include <modules/glfw/glfwmoduledefine.h>
-#include <inviwo/core/util/exception.h>
+#include <modules/glfw/glfwmoduledefine.h>  // for IVW_MODULE_GLFW_API
+
+#include <inviwo/core/util/exception.h>     // for ExceptionContext, Exception, ModuleInitException
+
+#include <string>                           // for string
 
 namespace inviwo {
 

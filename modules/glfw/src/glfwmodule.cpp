@@ -28,19 +28,34 @@
  *********************************************************************************/
 
 #include <modules/glfw/glfwmodule.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
-#include <modules/opengl/canvasprocessorgl.h>
-#include <modules/glfw/canvasprocessorwidgetglfw.h>
-#include <modules/glfw/canvasglfw.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/glfw/glfwexception.h>
-#include <modules/opengl/sharedopenglresources.h>
 
-#include <memory>
+#include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication, dispatchFront
+#include <inviwo/core/common/inviwomodule.h>                // for InviwoModule
+#include <inviwo/core/common/modulemanager.h>               // for ModuleManager
+#include <inviwo/core/network/processornetworkevaluator.h>  // for ProcessorNetworkEvaluator
+#include <inviwo/core/util/canvas.h>                        // for Canvas, Canvas::ContextID
+#include <inviwo/core/util/exception.h>                     // for ModuleInitException
+#include <inviwo/core/util/glmvec.h>                        // for uvec2
+#include <inviwo/core/util/logcentral.h>                    // for LogCentral, LogError
+#include <inviwo/core/util/rendercontext.h>                 // for RenderContext, ContextHolder
+#include <inviwo/core/util/sourcecontext.h>                 // for IVW_CONTEXT
+#include <modules/glfw/canvasglfw.h>                        // for CanvasGLFW
+#include <modules/glfw/canvasprocessorwidgetglfw.h>         // for CanvasProcessorWidgetGLFW
+#include <modules/glfw/glfwexception.h>                     // for GLFWInitException
+#include <modules/opengl/canvasgl.h>                        // for CanvasGL
+#include <modules/opengl/canvasprocessorgl.h>               // for CanvasProcessorGL
+#include <modules/opengl/inviwoopengl.h>                    // for GL_SYNC_FLUSH_COMMANDS_BIT
+#include <modules/opengl/openglcapabilities.h>              // for OpenGLCapabilities
+#include <modules/opengl/sharedopenglresources.h>           // for SharedOpenGLResources
+
+#include <functional>                                       // for __base
+#include <future>                                           // for future
+#include <memory>                                           // for make_unique, unique_ptr
+#include <string_view>                                      // for string_view
+#include <vector>                                           // for vector
 
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>                                     // for glfwGetCurrentContext, glfwInit
 
 namespace inviwo {
 

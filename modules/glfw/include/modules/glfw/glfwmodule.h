@@ -29,13 +29,17 @@
 
 #pragma once
 
-#include <modules/glfw/glfwmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <modules/glfw/canvasglfw.h>
-#include <inviwo/core/network/processornetworkevaluationobserver.h>
-#include <inviwo/core/util/rendercontext.h>
+#include <modules/glfw/glfwmoduledefine.h>                           // for IVW_MODULE_GLFW_API
+
+#include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule
+#include <inviwo/core/network/processornetworkevaluationobserver.h>  // for ProcessorNetworkEval...
+
+#include <memory>                                                    // for unique_ptr
 
 namespace inviwo {
+class CanvasGLFW;
+class ContextHolder;
+class InviwoApplication;
 
 class IVW_MODULE_GLFW_API GLFWModule : public InviwoModule,
                                        public ProcessorNetworkEvaluationObserver {
