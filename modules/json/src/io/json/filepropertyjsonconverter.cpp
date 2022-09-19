@@ -29,6 +29,15 @@
 
 #include <modules/json/io/json/filepropertyjsonconverter.h>
 
+#include <inviwo/core/properties/fileproperty.h>  // for FileProperty
+#include <inviwo/core/util/filedialogstate.h>     // for AcceptMode, FileMode
+#include <inviwo/core/util/fileextension.h>       // for FileExtension
+
+#include <stdexcept>  // for out_of_range
+#include <string>     // for string, basic_string
+
+#include <nlohmann/json.hpp>  // for basic_json<>::object_t, basic_json
+
 namespace inviwo {
 
 void to_json(json& j, const FileExtension& p) {

@@ -29,11 +29,12 @@
 
 #pragma once
 
-#include <modules/json/jsonmoduledefine.h>
-#include <inviwo/core/properties/directoryproperty.h>
-#include <nlohmann/json.hpp>
+#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
+
+#include <nlohmann/json.hpp>  // for json
 
 namespace inviwo {
+class DirectoryProperty;
 
 using json = ::nlohmann::json;
 

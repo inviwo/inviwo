@@ -29,11 +29,19 @@
 
 #pragma once
 
-#include <modules/json/jsonmoduledefine.h>
-#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>
-#include <inviwo/core/util/factory.h>
+#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
+
+#include <inviwo/core/util/factory.h>                                 // for StandardFactory
+#include <modules/json/io/json/propertyjsonconverter.h>               // for PropertyJSONConverter
+#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
+
+#include <memory>  // for unique_ptr
+#include <string>  // for string
+#include <vector>  // for vector
 
 namespace inviwo {
+class Property;
+
 /**
  * Factory for creating converters between a Property and JSON.
  */

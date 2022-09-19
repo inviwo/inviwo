@@ -29,6 +29,8 @@
 
 #include <modules/json/io/json/boolpropertyjsonconverter.h>
 
+#include <inviwo/core/properties/boolproperty.h>  // for BoolProperty
+
 namespace inviwo {
 
 void to_json(json& j, const BoolProperty& p) { j = json{{"value", p.get()}}; }

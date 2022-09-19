@@ -28,7 +28,16 @@
  *********************************************************************************/
 
 #include <modules/json/io/json/directorypropertyjsonconverter.h>
-#include <modules/json/io/json/filepropertyjsonconverter.h>
+
+#include <inviwo/core/properties/directoryproperty.h>        // for DirectoryProperty
+#include <inviwo/core/util/filedialogstate.h>                // for AcceptMode, FileMode
+#include <inviwo/core/util/fileextension.h>                  // for FileExtension
+#include <modules/json/io/json/filepropertyjsonconverter.h>  // for json
+
+#include <stdexcept>  // for out_of_range
+#include <string>     // for string, basic_string
+
+#include <nlohmann/json.hpp>  // for basic_json, basic_json<>::ob...
 
 namespace inviwo {
 
