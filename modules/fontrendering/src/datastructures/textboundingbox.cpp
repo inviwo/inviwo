@@ -29,6 +29,10 @@
 
 #include <modules/fontrendering/datastructures/textboundingbox.h>
 
+#include <inviwo/core/util/glmvec.h>  // for ivec2, size2_t
+
+#include <glm/vec2.hpp>  // for vec<>::(anonymous)
+
 namespace inviwo {
 
 TextBoundingBox::TextBoundingBox(const size2_t& textExt, const ivec2& glyphsOrigin,

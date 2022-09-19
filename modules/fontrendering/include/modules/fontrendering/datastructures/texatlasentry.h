@@ -29,13 +29,14 @@
 
 #pragma once
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <modules/fontrendering/datastructures/textboundingbox.h>
+#include <modules/fontrendering/fontrenderingmoduledefine.h>  // for IVW_MODULE_FONTRENDERI...
 
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmmat.h>                               // for mat4
+#include <inviwo/core/util/glmvec.h>                               // for ivec2, vec4
+#include <modules/fontrendering/datastructures/textboundingbox.h>  // for TextBoundingBox
 
-#include <string>
-#include <vector>
+#include <string>  // for string
+#include <vector>  // for vector
 
 namespace inviwo {
 

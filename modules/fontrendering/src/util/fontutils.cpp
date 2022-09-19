@@ -28,16 +28,18 @@
  *********************************************************************************/
 
 #include <modules/fontrendering/util/fontutils.h>
-#include <modules/fontrendering/fontrenderingmodule.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/stringconversion.h>
 
-#include <algorithm>
-#include <tuple>
-#include <fmt/format.h>
+#include <inviwo/core/common/inviwoapplication.h>       // for InviwoApplication
+#include <inviwo/core/util/filesystem.h>                // for getDirectoryContents, getFileExte...
+#include <inviwo/core/util/stdextensions.h>             // for contains, erase_remove_if
+#include <inviwo/core/util/stringconversion.h>          // for toLower
+#include <modules/fontrendering/fontrenderingmodule.h>  // for FontRenderingModule
+
+#include <algorithm>  // for sort, transform
+#include <cctype>     // for toupper
+#include <iterator>   // for back_insert_iterator, back_inserter
+
+#include <fmt/core.h>  // for format
 
 namespace inviwo {
 
