@@ -29,6 +29,18 @@
 
 #include <modules/eigenutils/processors/eigenmix.h>
 
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Experimental
+#include <inviwo/core/processors/processortags.h>    // for Tags
+#include <inviwo/core/properties/ordinalproperty.h>  // for FloatProperty
+#include <modules/eigenutils/eigenports.h>           // for EigenMatrixInport, EigenMatrixOutport
+
+#include <memory>       // for make_shared, shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+
+#include <Eigen/Core>  // for MatrixXf, Matrix
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

@@ -29,6 +29,23 @@
 
 #include <modules/eigenutils/processors/eigenmatrixtoimage.h>
 
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/imageport.h>                                // for ImageOutport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <modules/eigenutils/eigenports.h>                              // for EigenMatrixInport
+#include <modules/eigenutils/eigenutils.h>                              // for eigenMatToImage
+
+#include <memory>         // for shared_ptr<>::ele...
+#include <string>         // for string
+#include <string_view>    // for string_view
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for move
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

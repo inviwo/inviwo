@@ -29,11 +29,13 @@
 
 #pragma once
 
-#include <modules/eigenutils/eigenutilsmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <modules/eigenutils/eigenports.h>
+#include <modules/eigenutils/eigenutilsmoduledefine.h>  // for IVW_MODULE_EIGENUTILS_API
+
+#include <inviwo/core/ports/imageport.h>           // for ImageOutport
+#include <inviwo/core/processors/processor.h>      // for Processor
+#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>   // for BoolProperty
+#include <modules/eigenutils/eigenports.h>         // for EigenMatrixInport
 
 namespace inviwo {
 
