@@ -28,10 +28,11 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>
+#include <modules/fontrendering/fontrenderingmoduledefine.h>  // for IVW_MODULE_FONTRENDERING_API
 
-#include <vector>
-#include <string>
+#include <string>                                             // for string
+#include <utility>                                            // for pair
+#include <vector>                                             // for vector
 
 namespace inviwo {
 

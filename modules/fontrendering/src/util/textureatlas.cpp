@@ -29,16 +29,35 @@
 
 #include <modules/fontrendering/util/textureatlas.h>
 
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/openglutils.h>
+#include <inviwo/core/datastructures/camera/camera.h>              // for mat4
+#include <inviwo/core/util/exception.h>                            // for Exception
+#include <inviwo/core/util/glmmat.h>                               // for mat4
+#include <inviwo/core/util/glmvec.h>                               // for ivec2, vec2, size2_t
+#include <inviwo/core/util/sourcecontext.h>                        // for IVW_CONTEXT
+#include <inviwo/core/util/zip.h>                                  // for proxy, zip, zipIterator
+#include <modules/fontrendering/datastructures/texatlasentry.h>    // for TexAtlasEntry, TexAtla...
+#include <modules/fontrendering/datastructures/textboundingbox.h>  // for TextBoundingBox
+#include <modules/fontrendering/textrenderer.h>                    // for TextRenderer
+#include <modules/opengl/inviwoopengl.h>                           // for GL_RGBA, GL_LINEAR
+#include <modules/opengl/openglutils.h>                            // for BlendModeState
+#include <modules/opengl/texture/texture2d.h>                      // for Texture2D
 
-#include <inviwo/core/util/zip.h>
+#include <algorithm>                                               // for transform, max, sort
+#include <cmath>                                                   // for sqrt
+#include <cstddef>                                                 // for size_t
+#include <iterator>                                                // for back_insert_iterator
+#include <numeric>                                                 // for accumulate, iota, part...
+#include <string_view>                                             // for string_view
+#include <type_traits>                                             // for remove_extent_t, is_co...
+#include <utility>                                                 // for move
 
-#include <array>
-#include <algorithm>
-#include <numeric>
-#include <cmath>
-#include <type_traits>
+#include <glm/detail/setup.hpp>                                    // for size_t
+#include <glm/ext/matrix_transform.hpp>                            // for scale
+#include <glm/gtx/transform.hpp>                                   // for scale
+#include <glm/mat4x4.hpp>                                          // for mat<>::col_type
+#include <glm/vec2.hpp>                                            // for vec<>::(anonymous), vec
+#include <glm/vec4.hpp>                                            // for operator*
+#include <glm/vector_relational.hpp>                               // for any, lessThan
 
 namespace inviwo {
 

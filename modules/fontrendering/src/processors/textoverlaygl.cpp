@@ -28,27 +28,44 @@
  *********************************************************************************/
 
 #include <modules/fontrendering/processors/textoverlaygl.h>
-#include <modules/fontrendering/util/fontutils.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/image/imagegl.h>
-#include <inviwo/core/util/assertion.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>              // for ImageType, ImageTyp...
+#include <inviwo/core/ports/imageport.h>                              // for ImageInport, ImageO...
+#include <inviwo/core/processors/processor.h>                         // for Processor
+#include <inviwo/core/processors/processorinfo.h>                     // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                    // for CodeState, CodeStat...
+#include <inviwo/core/processors/processortags.h>                     // for Tags
+#include <inviwo/core/properties/boolproperty.h>                      // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
+#include <inviwo/core/properties/listproperty.h>                      // for ListProperty, ListP...
+#include <inviwo/core/properties/ordinalproperty.h>                   // for IntProperty, Double...
+#include <inviwo/core/properties/property.h>                          // for Property
+#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
+#include <inviwo/core/util/glmvec.h>                                  // for vec2, ivec2, vec4
+#include <inviwo/core/util/logcentral.h>                              // for LogCentral, LogWarn
+#include <inviwo/core/util/rendercontext.h>                           // for RenderContext
+#include <inviwo/core/util/stdextensions.h>                           // for any_of
+#include <inviwo/core/util/zip.h>                                     // for zip, zipIterator
+#include <modules/fontrendering/datastructures/textboundingbox.h>     // for TextBoundingBox
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
+#include <modules/fontrendering/properties/fontproperty.h>            // for FontProperty
+#include <modules/fontrendering/textrenderer.h>                       // for TextTextureObject
+#include <modules/opengl/inviwoopengl.h>                              // for GL_ALWAYS, GL_ONE
+#include <modules/opengl/openglutils.h>                               // for BlendModeState, Dep...
+#include <modules/opengl/rendering/texturequadrenderer.h>             // for TextureQuadRenderer
+#include <modules/opengl/texture/textureutils.h>                      // for activateAndClearTarget
 
-#include <cctype>
-#include <locale>
+#include <memory>                                                     // for unique_ptr, make_un...
 
-#include <fmt/format.h>
+#include <flags/flags.h>                                              // for operator|
+#include <fmt/core.h>                                                 // for arg, format_context
+#include <fmt/format.h>                                               // for format_error
+#include <glm/vec2.hpp>                                               // for operator*, operator+
 
 #if __has_include(<fmt/args.h>)  // New in fmt v8
-#include <fmt/args.h>
+#include <fmt/args.h>                                                 // for dynamic_format_arg_...
 #endif
 
 namespace inviwo {

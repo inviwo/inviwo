@@ -29,7 +29,10 @@
 
 #include <modules/fontrendering/datastructures/fontdata.h>
 
-#include <type_traits>
+#include <inviwo/core/util/glmvec.h>                            // for vec2
+#include <modules/fontrendering/datastructures/fontsettings.h>  // for FontSettings
+
+#include <type_traits>                                          // for is_copy_assignable_v, is_...
 
 namespace inviwo {
 FontData::FontData(const FontSettings& s)

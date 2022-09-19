@@ -29,8 +29,13 @@
 
 #include <modules/fontrendering/properties/fontproperty.h>
 
-#include <inviwo/core/util/filesystem.h>
-#include <modules/fontrendering/util/fontutils.h>
+#include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                   // for IntProperty, FloatP...
+#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
+#include <inviwo/core/util/glmvec.h>                                  // for vec2
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
+#include <modules/fontrendering/util/fontutils.h>                     // for getFont, FontType
 
 namespace inviwo {
 

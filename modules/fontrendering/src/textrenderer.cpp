@@ -30,22 +30,46 @@
 
 #include <modules/fontrendering/textrenderer.h>
 
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/zip.h>
+#include <inviwo/core/datastructures/camera/camera.h>              // for mat4
+#include <inviwo/core/util/exception.h>                            // for Exception, FileException
+#include <inviwo/core/util/glmvec.h>                               // for ivec2, vec2, size2_t
+#include <inviwo/core/util/logcentral.h>                           // for LogCentral, LogWarn
+#include <inviwo/core/util/sourcecontext.h>                        // for IVW_CONTEXT
+#include <inviwo/core/util/stdextensions.h>                        // for hash
+#include <inviwo/core/util/zip.h>                                  // for get, zip, zipIterator
+#include <modules/fontrendering/datastructures/fontsettings.h>     // for FontSettings
+#include <modules/fontrendering/datastructures/texatlasentry.h>    // for TexAtlasEntry
+#include <modules/fontrendering/datastructures/textboundingbox.h>  // for TextBoundingBox
+#include <modules/opengl/buffer/framebufferobject.h>               // for FrameBufferObject, Act...
+#include <modules/opengl/geometry/meshgl.h>                        // for MeshGL
+#include <modules/opengl/inviwoopengl.h>                           // for glTexSubImage2D, GL_RED
+#include <modules/opengl/openglutils.h>                            // for ViewportState, DepthMa...
+#include <modules/opengl/shader/shader.h>                          // for Shader
+#include <modules/opengl/sharedopenglresources.h>                  // for SharedOpenGLResources
+#include <modules/opengl/texture/texture2d.h>                      // for Texture2D
+#include <modules/opengl/texture/textureunit.h>                    // for TextureUnit
 
-#include <modules/opengl/buffer/buffergl.h>
-#include <modules/opengl/buffer/bufferobjectarray.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/texture2d.h>  // for Texture2D
-#include <modules/opengl/sharedopenglresources.h>
+#include <algorithm>                                               // for max, sort
+#include <cstddef>                                                 // for size_t
+#include <cstdint>                                                 // for uint32_t
+#include <limits>                                                  // for numeric_limits
+#include <numeric>                                                 // for iota, partial_sum
+#include <ostream>                                                 // for operator<<, basic_ostream
+#include <string_view>                                             // for string_view
+#include <type_traits>                                             // for remove_extent_t, is_co...
 
-#include <utf8.h>
-
-#include <type_traits>
+#include <freetype/freetype.h>                                     // for FT_FaceRec_, FT_GlyphS...
+#include <freetype/fterrors.h>                                     // for FT_Err_Unknown_File_Fo...
+#include <freetype/ftimage.h>                                      // for FT_Bitmap, FT_Vector
+#include <glm/common.hpp>                                          // for max, min
+#include <glm/detail/setup.hpp>                                    // for size_t
+#include <glm/ext/matrix_transform.hpp>                            // for scale, translate
+#include <glm/gtx/transform.hpp>                                   // for scale, translate
+#include <glm/mat4x4.hpp>                                          // for operator*, mat
+#include <glm/vec3.hpp>                                            // for vec<>::(anonymous)
+#include <glm/vec4.hpp>                                            // for operator*, operator+
+#include <utf8/checked.h>                                          // for iterator
+#include <utf8/core.h>                                             // for find_invalid
 
 namespace inviwo {
 

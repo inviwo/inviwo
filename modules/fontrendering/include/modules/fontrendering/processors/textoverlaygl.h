@@ -29,26 +29,27 @@
 
 #pragma once
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <modules/fontrendering/textrenderer.h>
-#include <modules/fontrendering/properties/fontproperty.h>
+#include <modules/fontrendering/fontrenderingmoduledefine.h>  // for IVW_MODULE_FONTRENDERING_API
 
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/ports/imageport.h>                      // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
+#include <inviwo/core/properties/listproperty.h>              // for ListProperty
+#include <inviwo/core/properties/ordinalproperty.h>           // for FloatVec2Property, FloatVec...
+#include <inviwo/core/properties/propertysemantics.h>         // for PropertySemantics, Property...
+#include <inviwo/core/properties/stringproperty.h>            // for StringProperty
+#include <modules/fontrendering/properties/fontproperty.h>    // for FontProperty
+#include <modules/fontrendering/textrenderer.h>               // for TextTextureObject, TextRend...
+#include <modules/opengl/rendering/texturequadrenderer.h>     // for TextureQuadRenderer
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/rendering/texturequadrenderer.h>
+#include <string>                                             // for string
+#include <string_view>                                        // for string_view
+#include <vector>                                             // for vector
 
 namespace inviwo {
-
-class Image;
-class ImageGL;
 
 class IVW_MODULE_FONTRENDERING_API TextOverlayProperty : public CompositeProperty {
 public:

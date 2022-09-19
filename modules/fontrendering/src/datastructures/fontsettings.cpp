@@ -29,6 +29,10 @@
 
 #include <modules/fontrendering/datastructures/fontsettings.h>
 
+#include <inviwo/core/util/glmvec.h>  // for vec2
+
+#include <glm/vec2.hpp>               // for operator==
+
 namespace inviwo {
 bool operator==(const FontSettings& a, const FontSettings& b) {
     return a.getFontSize() == b.getFontSize() && a.getFontFace() == b.getFontFace() &&
