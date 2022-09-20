@@ -28,15 +28,42 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/sphererenderer.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/openglutils.h>
 
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/algorithm/boundingbox.h>                         // for boundingBox
+#include <inviwo/core/datastructures/geometry/geometrytype.h>          // for BufferType, DrawType
+#include <inviwo/core/datastructures/geometry/mesh.h>                  // for Mesh::MeshInfo, Mesh
+#include <inviwo/core/ports/imageport.h>                               // for ImageOutport, Base...
+#include <inviwo/core/ports/meshport.h>                                // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
+#include <inviwo/core/processors/processortags.h>                      // for Tags
+#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>                     // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>                  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                     // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                    // for FloatProperty, ord...
+#include <inviwo/core/util/glmvec.h>                                   // for size2_t, vec4
+#include <inviwo/core/util/staticstring.h>                             // for operator+
+#include <modules/basegl/datastructures/meshshadercache.h>             // for MeshShaderCache::R...
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <modules/opengl/geometry/meshgl.h>                            // for MeshGL
+#include <modules/opengl/inviwoopengl.h>                               // for glDrawElements
+#include <modules/opengl/openglutils.h>                                // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>                     // for MeshDrawerGL, Mesh...
+#include <modules/opengl/shader/shader.h>                              // for Shader
+#include <modules/opengl/shader/shaderobject.h>                        // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                          // for ShaderType, Shader...
+#include <modules/opengl/shader/shaderutils.h>                         // for addDefines, setSha...
+#include <modules/opengl/texture/textureunit.h>                        // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                       // for activateTargetAndC...
+
+#include <map>                                                         // for __map_iterator, map
+#include <tuple>                                                       // for tuple_element<>::type
+#include <type_traits>                                                 // for remove_extent_t
+
+#include <glm/vec2.hpp>                                                // for vec<>::(anonymous)
 
 namespace inviwo {
 

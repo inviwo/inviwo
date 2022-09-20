@@ -28,15 +28,21 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <inviwo/core/properties/cameraproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>                // for IVW_MODULE_BASEGL_API
 
-#include <string_view>
-#include <functional>
-#include <optional>
+#include <inviwo/core/properties/cameraproperty.h>            // for CameraProperty
+#include <inviwo/core/util/glmmat.h>                          // for mat4
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+
+#include <functional>                                         // for function
+#include <optional>                                           // for optional
+#include <string_view>                                        // for string_view
+#include <vector>                                             // for vector
 
 namespace inviwo {
+class Property;
+class Shader;
+class TextureUnitContainer;
 
 /**
  * Adds a CameraProperty and binds it the the `<name>` CameraParameters uniform

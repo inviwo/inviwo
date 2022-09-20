@@ -29,25 +29,70 @@
 
 #include <modules/basegl/shadercomponents/atlascomponent.h>
 
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-#include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/datastructures/bitset.h>                          // for BitSet, BitSet::B...
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for InterpolationType
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAMPrecision
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/tfprimitive.h>                     // for TFPrimitive
+#include <inviwo/core/datastructures/tfprimitiveset.h>                  // for TFPrimitiveSet
+#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFunction
+#include <inviwo/core/interaction/events/keyboardkeys.h>                // for KeyModifier, KeyM...
+#include <inviwo/core/interaction/events/pickingevent.h>                // for PickingEvent
+#include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
+#include <inviwo/core/interaction/pickingstate.h>                       // for PickingHoverState
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
+#include <inviwo/core/properties/buttongroupproperty.h>                 // for ButtonGroupProper...
+#include <inviwo/core/properties/constraintbehavior.h>                  // for ConstraintBehavior
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/properties/property.h>                            // for Property
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/util/colorbrewer.h>                               // for getColormap, getF...
+#include <inviwo/core/util/formats.h>                                   // for DataFormat
+#include <inviwo/core/util/glmvec.h>                                    // for vec4, vec3, size2_t
+#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
+#include <inviwo/core/util/staticstring.h>                              // for operator+
+#include <inviwo/core/util/stdextensions.h>                             // for any_of, ref
+#include <inviwo/core/util/stringconversion.h>                          // for trim
+#include <inviwo/core/util/transformiterator.h>                         // for TransformIterator
+#include <modules/basegl/shadercomponents/shadercomponent.h>            // for ShaderComponent::...
+#include <modules/basegl/shadercomponents/timecomponent.h>              // for TimeComponent
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>   // for BrushingAndLinkin...
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/texture/texture2d.h>                           // for Texture2D
+#include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
+#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/texture2d.h>
+#include <algorithm>                                                    // for clamp, fill_n
+#include <array>                                                        // for array
+#include <cstddef>                                                      // for size_t
+#include <cstdint>                                                      // for uint32_t
+#include <functional>                                                   // for function, __base
+#include <limits>                                                       // for numeric_limits
+#include <memory>                                                       // for unique_ptr, share...
+#include <optional>                                                     // for nullopt, optional
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
 
-#include <modules/basegl/shadercomponents/timecomponent.h>
-
-#include <algorithm>
-#include <functional>
+#include <fmt/core.h>                                                   // for format
+#include <fmt/format.h>                                                 // for operator""_a, udl...
+#include <glm/common.hpp>                                               // for mix
+#include <glm/fwd.hpp>                                                  // for uint8
+#include <glm/gtx/component_wise.hpp>                                   // for compMul
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                                                 // for operator*, operator+
+#include <glm/vec4.hpp>                                                 // for vec
 
 namespace inviwo {
+class Inport;
+class TextureUnitContainer;
 
 namespace {
 

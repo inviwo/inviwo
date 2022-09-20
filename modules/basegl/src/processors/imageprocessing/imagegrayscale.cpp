@@ -28,10 +28,20 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagegrayscale.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shader.h>
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
+#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
+#include <inviwo/core/properties/optionproperty.h>                       // for OptionPropertyInt
+#include <inviwo/core/util/glmvec.h>                                     // for vec3
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <modules/opengl/shader/shader.h>                                // for Shader
+
+#include <string>                                                        // for string
+#include <string_view>                                                   // for string_view
 
 namespace inviwo {
+class TextureUnitContainer;
 
 const ProcessorInfo ImageGrayscale::processorInfo_{
     "org.inviwo.ImageGrayscale",  // Class identifier

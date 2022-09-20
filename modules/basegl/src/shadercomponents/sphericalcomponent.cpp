@@ -28,12 +28,23 @@
  *********************************************************************************/
 
 #include <modules/basegl/shadercomponents/sphericalcomponent.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/core/util/stringconversion.h>
 
-#include <fmt/format.h>
+#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
+#include <inviwo/core/properties/minmaxproperty.h>            // for FloatMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyString
+#include <inviwo/core/util/stringconversion.h>                // for trim
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
+#include <modules/opengl/shader/shaderutils.h>                // for setUniforms
+
+#include <string>                                             // for basic_string, string
+
+#include <fmt/core.h>                                         // for format
+#include <fmt/format.h>                                       // for operator""_a, udl_arg, lite...
 
 namespace inviwo {
+class Property;
+class Shader;
+class TextureUnitContainer;
 
 SphericalComponent::SphericalComponent()
     : ShaderComponent()

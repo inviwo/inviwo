@@ -28,13 +28,29 @@
  *********************************************************************************/
 
 #include <modules/basegl/shadercomponents/timecomponent.h>
-#include <modules/opengl/shader/shader.h>
 
-#include <chrono>
-#include <functional>
-#include <fmt/format.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>     // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
+#include <inviwo/core/properties/constraintbehavior.h>        // for ConstraintBehavior, Constra...
+#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
+#include <inviwo/core/properties/ordinalproperty.h>           // for IntProperty
+#include <inviwo/core/properties/propertysemantics.h>         // for PropertySemantics, Property...
+#include <inviwo/core/util/timer.h>                           // for Timer
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
+#include <modules/opengl/shader/shader.h>                     // for Shader
+
+#include <chrono>                                             // for duration, duration_cast
+#include <functional>                                         // for __base, function
+#include <ratio>                                              // for milli
+#include <type_traits>                                        // for remove_reference, remove_re...
+#include <utility>                                            // for move
+
+#include <fmt/core.h>                                         // for format
+#include <fmt/format.h>                                       // for compile_string_to_view, FMT...
 
 namespace inviwo {
+class Property;
+class TextureUnitContainer;
 
 TimeComponent::TimeComponent(std::string_view name,
                              std::function<void(InvalidationLevel)> invalidate)

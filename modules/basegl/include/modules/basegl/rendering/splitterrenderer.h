@@ -28,19 +28,22 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>               // for IVW_MODULE_BASEGL_API
 
-#include <modules/basegl/datastructures/splittersettings.h>
-#include <inviwo/core/interaction/pickingmapper.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>        // for Mesh
+#include <inviwo/core/interaction/pickingmapper.h>           // for PickingMapper
+#include <inviwo/core/util/glmvec.h>                         // for size2_t
+#include <modules/basegl/datastructures/splittersettings.h>  // for Direction, Direction::Vertical
+#include <modules/opengl/shader/shader.h>                    // for Shader
 
-#include <functional>
+#include <cstddef>                                           // for size_t
+#include <functional>                                        // for function
+#include <vector>                                            // for vector
 
 namespace inviwo {
 
-class Processor;
 class PickingEvent;
+class Processor;
 
 /**
  * \brief utility class for rendering vertical or horizontal splitters and providing drag

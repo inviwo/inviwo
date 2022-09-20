@@ -28,17 +28,59 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/lightvolumegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <inviwo/core/datastructures/light/pointlight.h>
-#include <inviwo/core/datastructures/light/directionallight.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/openglutils.h>
-#include <cmath>
+
+#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/light/baselightsource.h>           // for LightSourceType
+#include <inviwo/core/datastructures/light/directionallight.h>          // for DirectionalLight
+#include <inviwo/core/datastructures/light/pointlight.h>                // for PointLight
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFunction
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/ports/datainport.h>                               // for DataInport
+#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterable
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport, Vol...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyInt
+#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, vec4
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
+#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/openglutils.h>                                 // for DepthFuncState
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
+#include <modules/opengl/sharedopenglresources.h>                       // for SharedOpenGLResou...
+#include <modules/opengl/texture/texture3d.h>                           // for Texture3D
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
+#include <modules/opengl/texture/textureutils.h>                        // for multiDrawImagePla...
+#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
+#include <modules/opengl/volume/volumeutils.h>                          // for setShaderUniforms
+
+#include <cmath>                                                        // for acos, M_PI
+#include <cstddef>                                                      // for size_t
+#include <functional>                                                   // for __base
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+
+#include <fmt/core.h>                                                   // for format_to, basic_...
+#include <glm/common.hpp>                                               // for abs
+#include <glm/geometric.hpp>                                            // for dot, length, norm...
+#include <glm/mat4x4.hpp>                                               // for operator*, mat<>:...
+#include <glm/matrix.hpp>                                               // for inverse
+#include <glm/vec3.hpp>                                                 // for operator*, operator-
+#include <glm/vec4.hpp>                                                 // for operator*, operator+
+#include <glm/vector_relational.hpp>                                    // for any, notEqual
 
 namespace inviwo {
 

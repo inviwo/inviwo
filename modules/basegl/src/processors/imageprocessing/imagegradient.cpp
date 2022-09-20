@@ -29,7 +29,26 @@
 
 #include <modules/basegl/processors/imageprocessing/imagegradient.h>
 
+#include <inviwo/core/datastructures/image/imagetypes.h>                 // for ImageChannel
+#include <inviwo/core/ports/imageport.h>                                 // for ImageInport
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
+#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>                         // for BoolProperty
+#include <inviwo/core/properties/optionproperty.h>                       // for OptionPropertyInt
+#include <inviwo/core/util/formats.h>                                    // for DataFormat, Data...
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <modules/opengl/shader/shader.h>                                // for Shader
+
+#include <functional>                                                    // for __base
+#include <memory>                                                        // for shared_ptr
+#include <sstream>                                                       // for stringstream
+#include <string>                                                        // for char_traits, string
+#include <string_view>                                                   // for string_view
+#include <type_traits>                                                   // for remove_extent_t
+
 namespace inviwo {
+class TextureUnitContainer;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageGradient::processorInfo_{

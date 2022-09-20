@@ -28,11 +28,21 @@
  *********************************************************************************/
 
 #include <modules/basegl/shadercomponents/lightcomponent.h>
-#include <modules/opengl/shader/shaderutils.h>
 
-#include <string_view>
+#include <inviwo/core/datastructures/light/lightingstate.h>   // for ShadingMode, ShadingMode::None
+#include <inviwo/core/properties/optionproperty.h>            // for operator!=, OptionProperty
+#include <inviwo/core/properties/simplelightingproperty.h>    // for SimpleLightingProperty
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
+#include <modules/opengl/shader/shaderutils.h>                // for addShaderDefines, setUniforms
+
+#include <string>                                             // for string
+#include <string_view>                                        // for string_view
 
 namespace inviwo {
+class CameraProperty;
+class Property;
+class Shader;
+class TextureUnitContainer;
 
 LightComponent::LightComponent(CameraProperty* camera)
     : ShaderComponent(), lighting_("lighting", "Lighting", camera) {}

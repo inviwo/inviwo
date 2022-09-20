@@ -28,21 +28,61 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeraycaster.h>
-#include <inviwo/core/io/serialization/serialization.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
+#include <inviwo/core/datastructures/histogram.h>                       // for HistogramSelection
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/light/lightingstate.h>             // for ShadingMode, Shad...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/interaction/events/keyboardkeys.h>                // for IvwKey, IvwKey::L
+#include <inviwo/core/io/serialization/versionconverter.h>              // for renamePort
+#include <inviwo/core/ports/imageport.h>                                // for ImageInport, Imag...
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
+#include <inviwo/core/processors/poolprocessor.h>                       // for PoolProcessor
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags
+#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
+#include <inviwo/core/properties/eventproperty.h>                       // for EventProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/isotfproperty.h>                       // for IsoTFProperty
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/properties/raycastingproperty.h>                  // for RaycastingProperty
+#include <inviwo/core/properties/simplelightingproperty.h>              // for SimpleLightingPro...
+#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
+#include <inviwo/core/properties/volumeindicatorproperty.h>             // for VolumeIndicatorPr...
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/stringconversion.h>                          // for toString
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                                // for glFinish
+#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
+#include <modules/opengl/shader/shaderutils.h>                          // for addDefines, addSh...
+#include <modules/opengl/texture/texture2d.h>                           // for Texture2D
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
+#include <modules/opengl/volume/volumegl.h>                             // IWYU pragma: keep
+#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+
+#include <bitset>                                                       // for bitset<>::reference
+#include <cstddef>                                                      // for size_t
+#include <functional>                                                   // for __base
+#include <memory>                                                       // for shared_ptr, uniqu...
+#include <string>                                                       // for string, operator+
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for pair
+#include <vector>                                                       // for vector
 
 namespace inviwo {
+class Deserializer;
+class Event;
 
 const ProcessorInfo VolumeRaycaster::processorInfo_{
     "org.inviwo.VolumeRaycaster",  // Class identifier

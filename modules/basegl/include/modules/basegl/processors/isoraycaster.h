@@ -29,19 +29,21 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/simpleraycastingproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/inviwoopengl.h>
+#include <modules/basegl/baseglmoduledefine.h>                // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/ports/imageport.h>                      // for ImageInport, ImageOutport
+#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/properties/cameraproperty.h>            // for CameraProperty
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>           // for FloatVec4Property
+#include <inviwo/core/properties/simplelightingproperty.h>    // for SimpleLightingProperty
+#include <inviwo/core/properties/simpleraycastingproperty.h>  // for SimpleRaycastingProperty
+#include <modules/opengl/shader/shader.h>                     // for Shader
 
 namespace inviwo {
+class Deserializer;
 
 /** \docpage{org.inviwo.ISORaycaster, ISO Raycaster}
  * ![](org.inviwo.ISORaycaster.png?classIdentifier=org.inviwo.ISORaycaster)

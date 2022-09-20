@@ -28,10 +28,26 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/linerendererprocessor.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>               // for boundingBox
+#include <inviwo/core/ports/imageport.h>                     // for ImageInport, ImageOutport
+#include <inviwo/core/ports/inportiterable.h>                // for InportIterable<>::const_iter...
+#include <inviwo/core/ports/meshport.h>                      // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>                // for Processor
+#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>           // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>            // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>             // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>           // for CameraProperty
+#include <modules/basegl/properties/linesettingsproperty.h>  // for LineSettingsProperty
+#include <modules/basegl/rendering/linerenderer.h>           // for LineRenderer
+#include <modules/opengl/inviwoopengl.h>                     // for GL_LEQUAL, GL_ONE_MINUS_SRC_...
+#include <modules/opengl/openglutils.h>                      // for BlendModeState, DepthFuncState
+#include <modules/opengl/texture/textureutils.h>             // for activateTargetAndClearOrCopy...
+
+#include <memory>                                            // for shared_ptr
+#include <string>                                            // for string
+#include <string_view>                                       // for string_view
 
 namespace inviwo {
 

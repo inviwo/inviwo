@@ -28,10 +28,30 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagemapping.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/shader/shader.h>
+
+#include <inviwo/core/datastructures/image/layer.h>                      // for Layer
+#include <inviwo/core/datastructures/representationconverter.h>          // for RepresentationCo...
+#include <inviwo/core/datastructures/representationconverterfactory.h>   // for RepresentationCo...
+#include <inviwo/core/datastructures/transferfunction.h>                 // for TransferFunction
+#include <inviwo/core/ports/imageport.h>                                 // for ImageInport
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
+#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
+#include <inviwo/core/properties/transferfunctionproperty.h>             // for TransferFunction...
+#include <inviwo/core/util/formats.h>                                    // for DataFormatBase
+#include <inviwo/core/util/logcentral.h>                                 // for LogCentral, LogWarn
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <modules/opengl/image/layergl.h>                                // for LayerGL
+#include <modules/opengl/shader/shader.h>                                // for Shader
+#include <modules/opengl/texture/textureunit.h>                          // for TextureUnit
+
+#include <cstddef>                                                       // for size_t
+#include <memory>                                                        // for shared_ptr, uniq...
+#include <ostream>                                                       // for operator<<, basi...
+#include <string>                                                        // for string
+#include <string_view>                                                   // for string_view
+#include <type_traits>                                                   // for remove_extent_t
+#include <unordered_set>                                                 // for unordered_set
 
 namespace inviwo {
 

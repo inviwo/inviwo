@@ -29,12 +29,31 @@
 
 #include <modules/basegl/processors/imageprocessing/imagescaling.h>
 
-#include <inviwo/core/interaction/events/resizeevent.h>
-#include <inviwo/core/util/raiiutils.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/interaction/events/event.h>        // for Event
+#include <inviwo/core/interaction/events/resizeevent.h>  // for ResizeEvent
+#include <inviwo/core/ports/imageport.h>                 // for ImageOutport, ImageInport
+#include <inviwo/core/ports/inport.h>                    // for Inport
+#include <inviwo/core/processors/processor.h>            // for Processor
+#include <inviwo/core/processors/processorinfo.h>        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>       // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>        // for Tags
+#include <inviwo/core/properties/boolproperty.h>         // for BoolProperty
+#include <inviwo/core/properties/optionproperty.h>       // for OptionPropertyOption, OptionProp...
+#include <inviwo/core/properties/ordinalproperty.h>      // for IntSize2Property, DoubleProperty
+#include <inviwo/core/util/glmvec.h>                     // for size2_t, dvec2
+#include <inviwo/core/util/raiiutils.h>                  // for KeepTrueWhileInScope
+#include <modules/opengl/texture/textureutils.h>         // for activateTargetAndCopySource, dea...
+
+#include <functional>                                    // for __base
+#include <string>                                        // for string, operator==
+#include <string_view>                                   // for string_view
+#include <vector>                                        // for vector
+
+#include <glm/vec2.hpp>                                  // for operator/
 
 namespace inviwo {
+class Deserializer;
+class Outport;
 
 const ProcessorInfo ImageScaling::processorInfo_{
     "org.inviwo.ImageScaling",  // Class identifier

@@ -28,9 +28,19 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagegamma.h>
-#include <modules/opengl/shader/shader.h>
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
+#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
+#include <inviwo/core/properties/ordinalproperty.h>                      // for FloatProperty
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <modules/opengl/shader/shader.h>                                // for Shader
+
+#include <string>                                                        // for string
+#include <string_view>                                                   // for string_view
 
 namespace inviwo {
+class TextureUnitContainer;
 
 const ProcessorInfo ImageGamma::processorInfo_{
     "org.inviwo.ImageGamma",  // Class identifier

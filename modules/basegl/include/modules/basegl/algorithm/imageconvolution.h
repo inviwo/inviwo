@@ -29,12 +29,19 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/opengl/shader/shader.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/image.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/util/glmvec.h>            // for ivec2, vec2
+#include <modules/opengl/shader/shader.h>       // for Shader, Shader::Build
+
+#include <functional>                           // for function
+#include <memory>                               // for shared_ptr
+#include <string_view>                          // for string_view
+#include <vector>                               // for vector
 
 namespace inviwo {
+class Image;
+class Layer;
 
 class IVW_MODULE_BASEGL_API ImageConvolution {
 public:

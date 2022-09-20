@@ -29,20 +29,37 @@
 
 #include <modules/basegl/processors/splitimage.h>
 
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/datastructures/camera/camera.h>        // for mat4
+#include <inviwo/core/ports/imageport.h>                     // for ImageInport, BaseImageInport
+#include <inviwo/core/processors/processor.h>                // for Processor
+#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>           // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>            // for Tags, Tags::GL
+#include <inviwo/core/properties/invalidationlevel.h>        // for InvalidationLevel, Invalidat...
+#include <inviwo/core/properties/optionproperty.h>           // for OptionPropertyOption, Option...
+#include <inviwo/core/properties/ordinalproperty.h>          // for FloatProperty
+#include <inviwo/core/util/glmvec.h>                         // for ivec2, ivec4
+#include <inviwo/core/util/staticstring.h>                   // for operator+
+#include <inviwo/core/util/stringconversion.h>               // for toString
+#include <modules/basegl/datastructures/splittersettings.h>  // for Direction, Direction::Vertical
+#include <modules/basegl/properties/splitterproperty.h>      // for SplitterProperty
+#include <modules/basegl/rendering/splitterrenderer.h>       // for SplitterRenderer
+#include <modules/opengl/image/imagegl.h>                    // for ImageGL
+#include <modules/opengl/image/layergl.h>                    // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                     // for glDisable, glEnable, GL_SCIS...
+#include <modules/opengl/openglutils.h>                      // for ScissorState
+#include <modules/opengl/shader/shader.h>                    // for Shader
+#include <modules/opengl/shader/shaderutils.h>               // for ImageInport
+#include <modules/opengl/sharedopenglresources.h>            // for SharedOpenGLResources
+#include <modules/opengl/texture/textureunit.h>              // for TextureUnit, TextureUnitCont...
+#include <modules/opengl/texture/textureutils.h>             // for singleDrawImagePlaneRect
 
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <cstddef>                                           // for size_t
+#include <memory>                                            // for shared_ptr, shared_ptr<>::el...
+#include <type_traits>                                       // for remove_extent_t
+#include <utility>                                           // for move
+
+#include <glm/vec2.hpp>                                      // for vec<>::(anonymous)
 
 namespace inviwo {
 

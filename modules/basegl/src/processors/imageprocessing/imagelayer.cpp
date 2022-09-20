@@ -29,12 +29,29 @@
 
 #include <modules/basegl/processors/imageprocessing/imagelayer.h>
 
-#include <inviwo/core/datastructures/image/image.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/image/layergl.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorDept...
+#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>         // for Tags
+#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
+#include <inviwo/core/properties/optionproperty.h>        // for OptionPropertyOption, OptionPro...
+#include <modules/opengl/image/imagegl.h>                 // for ImageGL
+#include <modules/opengl/image/layergl.h>                 // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                  // for GL_ALWAYS
+#include <modules/opengl/openglutils.h>                   // for DepthFuncState
+#include <modules/opengl/shader/shader.h>                 // for Shader
+#include <modules/opengl/texture/textureunit.h>           // for TextureUnit
+#include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, bindDep...
+
+#include <cstddef>                                        // for size_t
+#include <functional>                                     // for __base
+#include <memory>                                         // for shared_ptr, shared_ptr<>::eleme...
+#include <string>                                         // for operator+, to_string, string
+#include <string_view>                                    // for string_view
+#include <type_traits>                                    // for remove_extent_t
+#include <vector>                                         // for vector
 
 namespace inviwo {
 

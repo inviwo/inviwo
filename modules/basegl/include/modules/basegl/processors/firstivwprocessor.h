@@ -29,16 +29,20 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/buffergl.h>
+#include <modules/basegl/baseglmoduledefine.h>         // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/datastructures/buffer/buffer.h>  // for Buffer
+#include <inviwo/core/ports/imageport.h>               // for ImageOutport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatVec3Property
+#include <inviwo/core/util/glmvec.h>                   // for vec2
+#include <modules/opengl/shader/shader.h>              // for Shader
+
+#include <memory>                                      // for shared_ptr
 
 namespace inviwo {
+class BufferGL;
 
 /** \docpage{org.inviwo.FirstIVWProcessor, First Processor}
  * ![](org.inviwo.FirstIVWProcessor.png?classIdentifier=org.inviwo.FirstIVWProcessor)

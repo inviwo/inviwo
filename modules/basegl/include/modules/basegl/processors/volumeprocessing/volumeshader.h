@@ -29,12 +29,16 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>                             // for IVW_MODULE_BAS...
+
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/properties/stringproperty.h>                         // for StringProperty
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+
+#include <memory>                                                          // for shared_ptr
 
 namespace inviwo {
+class StringShaderResource;
 
 class IVW_MODULE_BASEGL_API VolumeShader : public VolumeGLProcessor {
 public:

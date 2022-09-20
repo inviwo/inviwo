@@ -29,30 +29,55 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/basegl/datastructures/meshshadercache.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/basegl/baseglmoduledefine.h>                          // for IVW_MODULE_BASEGL...
 
-#include <inviwo/core/util/zip.h>
-#include <unordered_map>
+#include <inviwo/core/datastructures/bitset.h>                          // for BitSet
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferTarget, Buf...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/interaction/cameratrackball.h>                    // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                                // for ImageInport, Imag...
+#include <inviwo/core/ports/inport.h>                                   // for Inport
+#include <inviwo/core/ports/meshport.h>                                 // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>               // for BoolCompositeProp...
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/properties/simplelightingproperty.h>              // for SimpleLightingPro...
+#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/util/formats.h>                                   // for DataFormat, DataF...
+#include <inviwo/core/util/glmvec.h>                                    // for vec4
+#include <inviwo/core/util/staticstring.h>                              // for operator+
+#include <inviwo/core/util/stdextensions.h>                             // for contains, map_era...
+#include <inviwo/core/util/zip.h>                                       // for make_sequence
+#include <modules/basegl/datastructures/meshshadercache.h>              // for MeshShaderCache
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>   // for BrushingAndLinkin...
+
+#include <algorithm>                                                    // for copy_if, transform
+#include <cstddef>                                                      // for size_t
+#include <cstdint>                                                      // for uint32_t
+#include <functional>                                                   // for __base
+#include <iterator>                                                     // for back_insert_iterator
+#include <memory>                                                       // for unique_ptr
+#include <string>                                                       // for operator==, string
+#include <string_view>                                                  // for operator==, strin...
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for pair
+#include <vector>                                                       // for vector, operator!=
 
 namespace inviwo {
+class Outport;
+class Shader;
 
 class IVW_MODULE_BASEGL_API SphereRendererSelection {
 public:

@@ -29,13 +29,15 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>                           // for IVW_MODULE_BASEG...
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>                         // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>                      // for IntProperty
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.ImageHighPass, Image High Pass}
  * ![](org.inviwo.ImageHighPass.png?classIdentifier=org.inviwo.ImageHighPass)

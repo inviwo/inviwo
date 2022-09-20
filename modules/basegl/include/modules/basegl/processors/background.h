@@ -29,13 +29,21 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/baseglmoduledefine.h>       // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/ports/imageport.h>             // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/buttonproperty.h>   // for ButtonProperty
+#include <inviwo/core/properties/optionproperty.h>   // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for FloatVec4Property, IntVec2Property
+#include <inviwo/core/util/staticstring.h>           // for operator+
+#include <modules/opengl/shader/shader.h>            // for Shader
+
+#include <functional>                                // for __base
+#include <string>                                    // for operator==, string
+#include <string_view>                               // for operator==
+#include <vector>                                    // for operator!=, vector, operator==
 
 namespace inviwo {
 

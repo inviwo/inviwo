@@ -28,13 +28,47 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/drawlines.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/openglutils.h>
+
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for Vec2BufferRAM
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/interaction/events/keyboardevent.h>               // for KeyboardEvent
+#include <inviwo/core/interaction/events/keyboardkeys.h>                // for KeyModifier, KeyM...
+#include <inviwo/core/interaction/events/mousebuttons.h>                // for MouseStates, Mous...
+#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
+#include <inviwo/core/ports/imageport.h>                                // for ImageInport, Imag...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
+#include <inviwo/core/properties/buttonproperty.h>                      // for ButtonProperty
+#include <inviwo/core/properties/eventproperty.h>                       // for EventProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/util/glmvec.h>                                    // for vec2, vec4
+#include <modules/opengl/inviwoopengl.h>                                // for GLint, glGetIntegerv
+#include <modules/opengl/openglutils.h>                                 // for GlBoolState
+#include <modules/opengl/rendering/meshdrawergl.h>                      // for MeshDrawerGL
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/texture/textureutils.h>                        // for activateTargetAnd...
+
+#include <functional>                                                   // for __base
+#include <memory>                                                       // for unique_ptr, make_...
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+
+#include <flags/flags.h>                                                // for any
+#include <glm/vec3.hpp>                                                 // for vec, vec<>::(anon...
 
 namespace inviwo {
+class Event;
 
 const ProcessorInfo DrawLines::processorInfo_{
     "org.inviwo.DrawLines",  // Class identifier

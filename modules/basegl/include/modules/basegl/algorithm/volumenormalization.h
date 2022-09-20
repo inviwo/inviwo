@@ -29,14 +29,20 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/opengl/shader/shader.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <modules/opengl/buffer/framebufferobject.h>
-#include <array>
-#include <string_view>
+#include <modules/basegl/baseglmoduledefine.h>        // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/util/glmvec.h>                  // for bvec4
+#include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
+#include <modules/opengl/shader/shader.h>             // for Shader
+
+#include <array>                                      // for array
+#include <cstddef>                                    // for size_t
+#include <memory>                                     // for shared_ptr
+#include <string_view>                                // for basic_string_view, string_view
 
 namespace inviwo {
+class Volume;
+
 /** \class VolumeNormalization
  *
  * GL implementation of volume normalization. The algorithm takes in a volume and normalized its

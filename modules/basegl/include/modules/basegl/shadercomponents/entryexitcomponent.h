@@ -28,11 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <inviwo/core/ports/imageport.h>
+#include <modules/basegl/baseglmoduledefine.h>                // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/ports/imageport.h>                      // for ImageInport
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+
+#include <string>                                             // for string
+#include <string_view>                                        // for string_view
+#include <tuple>                                              // for tuple
+#include <vector>                                             // for vector
 
 namespace inviwo {
+class Inport;
+class Shader;
+class TextureUnitContainer;
 
 /**
  * Adds an entry and an exit Image port. Binds the images into samplers `entryColor`, `entryDepth`,

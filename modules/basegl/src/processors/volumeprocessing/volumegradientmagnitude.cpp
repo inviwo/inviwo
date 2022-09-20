@@ -27,10 +27,29 @@
  *
  *********************************************************************************/
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/basegl/processors/volumeprocessing/volumegradientmagnitude.h>
+#include <inviwo/core/datastructures/datamapper.h>                               // for DataMapper
+#include <inviwo/core/datastructures/unitsystem.h>                               // for Axis, Unit
+#include <inviwo/core/ports/volumeport.h>                                        // for VolumeIn...
+#include <inviwo/core/processors/processorinfo.h>                                // for Processo...
+#include <inviwo/core/processors/processorstate.h>                               // for CodeState
+#include <inviwo/core/processors/processortags.h>                                // for Tags
+#include <inviwo/core/properties/optionproperty.h>                               // for OptionPr...
+#include <inviwo/core/util/formats.h>                                            // for DataFloat32
+#include <inviwo/core/util/glmvec.h>                                             // for dvec2
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>        // for VolumeGL...
+#include <modules/basegl/processors/volumeprocessing/volumegradientmagnitude.h>  // for VolumeGr...
+#include <modules/opengl/shader/shader.h>                                        // for Shader
+
+#include <array>                                                                 // for array
+#include <memory>                                                                // for shared_ptr
+#include <sstream>                                                               // for stringst...
+#include <string>                                                                // for char_traits
+#include <string_view>                                                           // for string_view
+#include <type_traits>                                                           // for remove_e...
 
 namespace inviwo {
+class TextureUnitContainer;
+
 const ProcessorInfo VolumeGradientMagnitude::processorInfo_{
     "org.inviwo.VolumeGradientMagnitude",  // Class identifier
     "Volume Gradient Magnitude",           // Display name

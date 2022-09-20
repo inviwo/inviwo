@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <modules/opengl/shader/shader.h>
-#include <vector>
+#include <modules/basegl/baseglmoduledefine.h>        // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/interaction/cameratrackball.h>  // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>              // for ImageInport, ImageOutport
+#include <inviwo/core/ports/meshport.h>               // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>         // for Processor
+#include <inviwo/core/processors/processorinfo.h>     // for ProcessorInfo
+#include <inviwo/core/properties/cameraproperty.h>    // for CameraProperty
+#include <inviwo/core/properties/ordinalproperty.h>   // for FloatProperty, FloatVec4Property
+#include <modules/opengl/shader/shader.h>             // for Shader
 
 namespace inviwo {
 

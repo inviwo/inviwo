@@ -29,12 +29,14 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <modules/basegl/algorithm/volumenormalization.h>
+#include <modules/basegl/baseglmoduledefine.h>             // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/ports/volumeport.h>                  // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
+#include <modules/basegl/algorithm/volumenormalization.h>  // for VolumeNormalization
 
 namespace inviwo {
 

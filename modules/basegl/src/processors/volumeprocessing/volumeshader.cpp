@@ -28,17 +28,28 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeprocessing/volumeshader.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/filesystem.h>
 
-#include <string_view>
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
+#include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::GL
+#include <inviwo/core/properties/invalidationlevel.h>                      // for InvalidationLevel
+#include <inviwo/core/properties/propertysemantics.h>                      // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>                         // for StringProperty
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <modules/opengl/shader/shader.h>                                  // for Shader
+#include <modules/opengl/shader/shaderresource.h>                          // for StringShaderRe...
+
+#include <functional>                                                      // for __base
+#include <string>                                                          // for string, basic_...
+#include <string_view>                                                     // for string_view
+#include <type_traits>                                                     // for remove_extent_t
 
 namespace inviwo {
 
 namespace {
 
 constexpr std::string_view defaultFrag = R"(
-#include "utils/sampler3d.glsl" 
+#include "utils/sampler3d.glsl"
 
 uniform sampler3D volume;
 uniform VolumeParameters volumeParameters;

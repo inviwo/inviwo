@@ -29,24 +29,36 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/datastructures/light/baselightsource.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/buffer/framebufferobject.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/texture3d.h>
-#include <modules/opengl/glformats.h>
+#include <modules/basegl/baseglmoduledefine.h>                 // for IVW_MODULE_BASEGL_API
 
-#include <array>
+#include <inviwo/core/datastructures/camera/camera.h>          // for mat4
+#include <inviwo/core/datastructures/light/baselightsource.h>  // for LightSource, LightSourceType
+#include <inviwo/core/ports/datainport.h>                      // for DataInport
+#include <inviwo/core/ports/outportiterable.h>                 // for OutportIterable
+#include <inviwo/core/ports/volumeport.h>                      // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyInt
+#include <inviwo/core/properties/transferfunctionproperty.h>   // for TransferFunctionProperty
+#include <inviwo/core/util/formats.h>                          // for DataUInt8, DataFormatId
+#include <inviwo/core/util/glmvec.h>                           // for vec3, vec4, size3_t, uvec3
+#include <modules/opengl/buffer/framebufferobject.h>           // for FrameBufferObject
+#include <modules/opengl/glformats.h>                          // for GLFormats
+#include <modules/opengl/inviwoopengl.h>                       // for glTexParameteri, GL_TEXTUR...
+#include <modules/opengl/shader/shader.h>                      // for Shader
+#include <modules/opengl/texture/texture3d.h>                  // for Texture3D
+
+#include <array>                                               // for array
+#include <memory>                                              // for shared_ptr
+#include <string>                                              // for string
+#include <vector>                                              // for vector
+
+#include <fmt/core.h>                                          // for format_to, basic_string_view
+#include <glm/gtc/type_ptr.hpp>                                // for value_ptr
 
 namespace inviwo {
+class Volume;
 
 /** \docpage{org.inviwo.LightVolumeGL, Light Volume}
  * ![](org.inviwo.LightVolumeGL.png?classIdentifier=org.inviwo.LightVolumeGL)

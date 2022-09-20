@@ -29,17 +29,29 @@
 
 #include <modules/basegl/datavisualizer/imagebackgroundvisualizer.h>
 
-#include <modules/base/processors/imagesource.h>
-#include <modules/opengl/canvasprocessorgl.h>
-#include <modules/basegl/processors/background.h>
-#include <inviwo/core/processors/processorutils.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/common/inviwoapplication.h>    // for InviwoApplication
+#include <inviwo/core/io/datareaderfactory.h>        // for DataReaderFactory
+#include <inviwo/core/network/processornetwork.h>    // for ProcessorNetwork
+#include <inviwo/core/ports/imageport.h>             // for ImageOutport
+#include <inviwo/core/ports/outport.h>               // for Outport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorutils.h>   // for makeProcessor, GridPos
+#include <inviwo/core/properties/optionproperty.h>   // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for FloatVec4Property
+#include <inviwo/core/rendering/datavisualizer.h>    // for DataVisualizer
+#include <inviwo/core/util/document.h>               // for Document, Document::DocumentHandle
+#include <inviwo/core/util/fileextension.h>          // for FileExtension
+#include <inviwo/core/util/glmvec.h>                 // for vec4
+#include <modules/base/processors/imagesource.h>     // for ImageSource
+#include <modules/basegl/processors/background.h>    // for Background, Background::BackgroundStyle
+#include <modules/opengl/canvasprocessorgl.h>        // for CanvasProcessorGL
 
-#include <inviwo/core/io/datareaderfactory.h>
+#include <map>                                       // for map
+#include <memory>                                    // for unique_ptr
 
 namespace inviwo {
+class Inport;
+class Layer;
 
 using GP = util::GridPos;
 

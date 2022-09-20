@@ -29,23 +29,33 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/interaction/interactionhandler.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/basegl/viewmanager.h>
+#include <modules/basegl/baseglmoduledefine.h>             // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/ports/imageport.h>                   // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
+#include <inviwo/core/properties/optionproperty.h>         // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>        // for FloatVec2Property, IntVec2Prop...
+#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
+#include <inviwo/core/util/glmvec.h>                       // for ivec2, ivec4
+#include <inviwo/core/util/staticstring.h>                 // for operator+
+#include <modules/basegl/viewmanager.h>                    // for ViewManager
+#include <modules/opengl/inviwoopengl.h>                   // for GLint, GL_NONE, GL_SRC_ALPHA
+#include <modules/opengl/shader/shader.h>                  // for Shader
+
+#include <functional>                                      // for __base
+#include <string>                                          // for operator==, string
+#include <string_view>                                     // for operator==
+#include <vector>                                          // for operator!=, vector, operator==
 
 namespace inviwo {
-
-class Shader;
+class Deserializer;
+class Event;
+class Outport;
 
 /*! \class OverlayProperty
  *

@@ -29,10 +29,13 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <modules/basegl/baseglmoduledefine.h>                             // for IVW_MODULE_BAS...
+
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.VectorMagnitude, Vector Magnitude}
  * ![](org.inviwo.VectorMagnitude.png?classIdentifier=org.inviwo.VectorMagnitude)

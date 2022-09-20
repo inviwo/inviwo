@@ -28,15 +28,32 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderresource.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/shader/standardshaders.h>
-#include <modules/opengl/buffer/framebufferobject.h>
+
+#include <inviwo/core/datastructures/image/image.h>       // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for SwizzleMask, ImageType, ImageTy...
+#include <inviwo/core/datastructures/image/layer.h>       // for Layer
+#include <inviwo/core/ports/imageport.h>                  // for ImageOutport, ImageInport, Base...
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
+#include <inviwo/core/util/glmvec.h>                      // for size2_t
+#include <modules/opengl/shader/shader.h>                 // for Shader, Shader::Build
+#include <modules/opengl/shader/shadertype.h>             // for ShaderType, ShaderType::Fragment
+#include <modules/opengl/shader/shaderutils.h>            // for ImageInport, findShaderResource
+#include <modules/opengl/shader/standardshaders.h>        // for imgQuadVert
+#include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer, TextureUnit
+#include <modules/opengl/texture/textureutils.h>          // for activateTargetAndCopySource
+
+#include <array>                                          // for operator!=, array
+#include <functional>                                     // for __base
+#include <string_view>                                    // for string_view
+#include <type_traits>                                    // for remove_extent_t
+#include <utility>                                        // for pair, move
+
+#include <glm/vec2.hpp>                                   // for operator!=
 
 namespace inviwo {
+class DataFormatBase;
+class ShaderResource;
 
 ImageGLProcessor::ImageGLProcessor(const std::string& fragmentShader, bool buildShader)
     : ImageGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}

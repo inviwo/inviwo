@@ -29,13 +29,40 @@
 
 #include <modules/basegl/processors/axisalignedcutplane.h>
 
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/algorithm/boundingbox.h>                 // for boundingBox
+#include <inviwo/core/common/inviwoapplication.h>              // for InviwoApplication
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, Connecti...
+#include <inviwo/core/datastructures/geometry/simplemesh.h>    // for SimpleMesh
+#include <inviwo/core/datastructures/image/imagetypes.h>       // for ImageType, ImageType::Colo...
+#include <inviwo/core/datastructures/transferfunction.h>       // for TransferFunction
+#include <inviwo/core/interaction/cameratrackball.h>           // for CameraTrackball
+#include <inviwo/core/ports/datainport.h>                      // for DataInport
+#include <inviwo/core/ports/imageport.h>                       // for BaseImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Expe...
+#include <inviwo/core/processors/processortags.h>              // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
+#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyOption, Opti...
+#include <inviwo/core/properties/ordinalproperty.h>            // for FloatVec4Property, FloatPr...
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Propert...
+#include <inviwo/core/properties/transferfunctionproperty.h>   // for TransferFunctionProperty
+#include <inviwo/core/rendering/meshdrawer.h>                  // for MeshDrawer
+#include <inviwo/core/rendering/meshdrawerfactory.h>           // for MeshDrawerFactory
+#include <inviwo/core/util/formats.h>                          // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                           // for vec3, vec4
+#include <modules/opengl/inviwoopengl.h>                       // for glTexParameteri, GL_TEXTUR...
+#include <modules/opengl/openglutils.h>                        // for GlBoolState, PolygonModeState
+#include <modules/opengl/shader/shader.h>                      // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderutils.h>                 // for setUniforms, ImageInport
+#include <modules/opengl/texture/textureunit.h>                // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>               // for VolumeInport, activateAndC...
+#include <modules/opengl/volume/volumeutils.h>                 // for bindAndSetUniforms
+
+#include <algorithm>                                           // for min
+#include <functional>                                          // for __base
 
 namespace inviwo {
 

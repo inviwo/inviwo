@@ -28,7 +28,23 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imageresample.h>
-#include <modules/opengl/shader/shader.h>
+
+#include <inviwo/core/ports/imageport.h>                                 // for ImageOutport
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
+#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
+#include <inviwo/core/properties/optionproperty.h>                       // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>                      // for IntVec2Property
+#include <inviwo/core/util/glmvec.h>                                     // for ivec2
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <modules/opengl/shader/shader.h>                                // for Shader
+#include <modules/opengl/shader/shaderobject.h>                          // for ShaderObject
+
+#include <functional>                                                    // for __base
+#include <string>                                                        // for string
+#include <string_view>                                                   // for string_view
+
+#include <glm/vec2.hpp>                                                  // for operator!=, vec
 
 namespace inviwo {
 

@@ -28,10 +28,21 @@
  *********************************************************************************/
 
 #include <modules/basegl/shadercomponents/cameracomponent.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/core/util/stringconversion.h>
+
+#include <inviwo/core/properties/cameraproperty.h>            // for CameraProperty
+#include <inviwo/core/util/glmmat.h>                          // for mat4
+#include <inviwo/core/util/stringconversion.h>                // for trim
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
+#include <modules/opengl/shader/shaderutils.h>                // for addDefines, setUniforms
+
+#include <string>                                             // for string
+
+#include <fmt/core.h>                                         // for format
 
 namespace inviwo {
+class Property;
+class Shader;
+class TextureUnitContainer;
 
 CameraComponent::CameraComponent(std::string_view name,
                                  std::function<std::optional<mat4>()> boundingBox)

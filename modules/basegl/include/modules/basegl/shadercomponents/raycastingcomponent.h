@@ -28,18 +28,25 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>                // for IVW_MODULE_BASEGL_API
 
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <inviwo/core/properties/raycastingproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyInt
+#include <inviwo/core/properties/raycastingproperty.h>        // for RaycastingProperty
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
 
-#include <functional>
+#include <array>                                              // for array
+#include <cstddef>                                            // for size_t
+#include <functional>                                         // for reference_wrapper
+#include <string>                                             // for string
+#include <string_view>                                        // for string_view
+#include <vector>                                             // for vector
 
 namespace inviwo {
 
 class IsoTFProperty;
+class Property;
+class Shader;
+class TextureUnitContainer;
 
 /**
  * The voxel data from `<volume>Voxel[channel]` will be classified using the transferfunction and

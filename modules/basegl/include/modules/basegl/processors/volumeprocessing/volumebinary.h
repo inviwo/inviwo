@@ -29,13 +29,21 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>                             // for IVW_MODULE_BAS...
+
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>                         // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                        // for FloatProperty
+#include <inviwo/core/util/staticstring.h>                                 // for operator+
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+
+#include <functional>                                                      // for __base
+#include <string>                                                          // for operator==
+#include <string_view>                                                     // for operator==
+#include <vector>                                                          // for operator!=
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.VolumeBinary, Volume Binary}
  * ![](org.inviwo.VolumeBinary.png?classIdentifier=org.inviwo.VolumeBinary)

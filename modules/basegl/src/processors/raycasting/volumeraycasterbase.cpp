@@ -29,16 +29,13 @@
 
 #include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
 
-#include <inviwo/core/util/rendercontext.h>
+#include <modules/basegl/processors/shadercomponentprocessorbase.h>  // for ShaderComponentProce...
+#include <modules/opengl/shader/shadertype.h>                        // for ShaderType, ShaderTy...
+#include <modules/opengl/shader/shaderutils.h>                       // for findShaderResource
+#include <modules/opengl/shader/standardshaders.h>                   // for imgIdentityVert
 
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/shader/shadermanager.h>
-#include <modules/opengl/shader/standardshaders.h>
-
-#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <memory>                                                    // for shared_ptr
+#include <utility>                                                   // for pair
 
 namespace inviwo {
 

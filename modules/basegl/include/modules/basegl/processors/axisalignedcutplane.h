@@ -29,25 +29,37 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <modules/basegl/baseglmoduledefine.h>                 // for IVW_MODULE_BASEGL_API
 
-#include <memory>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/rendering/meshdrawerfactory.h>
-#include <inviwo/core/rendering/meshdrawer.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/datastructures/geometry/simplemesh.h>
+#include <inviwo/core/common/inviwoapplication.h>              // for InviwoApplication
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, Connecti...
+#include <inviwo/core/datastructures/geometry/simplemesh.h>    // for SimpleMesh
+#include <inviwo/core/interaction/cameratrackball.h>           // for CameraTrackball
+#include <inviwo/core/ports/datainport.h>                      // for DataInport
+#include <inviwo/core/ports/imageport.h>                       // for BaseImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>      // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
+#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>            // for IntProperty, FloatProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>   // for TransferFunctionProperty
+#include <inviwo/core/rendering/meshdrawer.h>                  // for MeshDrawer
+#include <inviwo/core/rendering/meshdrawerfactory.h>           // for MeshDrawerFactory
+#include <inviwo/core/util/glmvec.h>                           // for vec3, vec4, size3_t
+#include <modules/opengl/shader/shader.h>                      // for Shader
+#include <modules/opengl/shader/shaderobject.h>                // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                 // for setShaderUniforms, ImageIn...
+#include <modules/opengl/texture/textureutils.h>               // for VolumeInport
+
+#include <memory>                                              // for unique_ptr, shared_ptr
+#include <string>                                              // for string
+#include <string_view>                                         // for string_view
+#include <type_traits>                                         // for remove_extent_t
 
 namespace inviwo {
+class Volume;
 
 class IVW_MODULE_BASEGL_API AxisAlignedCutPlane : public Processor {
     enum class Axis { X = 0, Y = 1, Z = 2 };

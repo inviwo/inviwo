@@ -28,15 +28,42 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/isoraycaster.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>                // for boundingBox
+#include <inviwo/core/datastructures/image/imagetypes.h>      // for ImageType, ImageType::Color...
+#include <inviwo/core/io/serialization/versionconverter.h>    // for renamePort
+#include <inviwo/core/ports/imageport.h>                      // for ImageInport, ImageOutport
+#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>            // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>             // for Tags, Tags::GL
+#include <inviwo/core/properties/cameraproperty.h>            // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyInt, OptionPr...
+#include <inviwo/core/properties/ordinalproperty.h>           // for FloatVec4Property
+#include <inviwo/core/properties/propertysemantics.h>         // for PropertySemantics, Property...
+#include <inviwo/core/properties/simplelightingproperty.h>    // for SimpleLightingProperty
+#include <inviwo/core/properties/simpleraycastingproperty.h>  // for SimpleRaycastingProperty
+#include <inviwo/core/util/formats.h>                         // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                          // for vec4
+#include <modules/opengl/shader/shader.h>                     // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderutils.h>                // for addShaderDefines, addShader...
+#include <modules/opengl/texture/textureunit.h>               // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>              // for bindAndSetUniforms, activat...
+#include <modules/opengl/volume/volumeutils.h>                // for bindAndSetUniforms
+
+#include <cstddef>                                            // for size_t
+#include <functional>                                         // for __base
+#include <memory>                                             // for shared_ptr
+#include <sstream>                                            // for stringstream, operator<<
+#include <string>                                             // for char_traits, string, basic_...
+#include <string_view>                                        // for string_view
+#include <type_traits>                                        // for remove_extent_t
+#include <utility>                                            // for pair
 
 namespace inviwo {
+class Deserializer;
 
 const ProcessorInfo ISORaycaster::processorInfo_{
     "org.inviwo.ISORaycaster",  // Class identifier

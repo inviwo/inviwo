@@ -28,7 +28,17 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/redgreenprocessor.h>
-#include <modules/opengl/texture/textureutils.h>
+
+#include <inviwo/core/ports/imageport.h>            // for ImageOutport
+#include <inviwo/core/processors/processor.h>       // for Processor
+#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>  // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>   // for Tags, Tags::GL
+#include <modules/opengl/inviwoopengl.h>            // for glClearColor, glClear, GL_COLOR_BUFFE...
+#include <modules/opengl/texture/textureutils.h>    // for activateTarget, deactivateCurrentTarget
+
+#include <string>                                   // for string
+#include <string_view>                              // for string_view
 
 namespace inviwo {
 

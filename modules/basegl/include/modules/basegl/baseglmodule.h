@@ -29,11 +29,16 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
+#include <modules/basegl/baseglmoduledefine.h>              // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/common/inviwomodule.h>                // for InviwoModule
+#include <inviwo/core/io/serialization/ticpp.h>             // for TxElement
+#include <inviwo/core/io/serialization/versionconverter.h>  // for VersionConverter
+
+#include <memory>                                           // for unique_ptr
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_BASEGL_API BaseGLModule : public InviwoModule {
 public:

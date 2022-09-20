@@ -28,7 +28,27 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeprocessing/volumenormalizationprocessor.h>
-#include <inviwo/core/network/networklock.h>
+
+#include <inviwo/core/ports/volumeport.h>                  // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>         // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>          // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
+#include <inviwo/core/properties/property.h>               // for Property
+#include <inviwo/core/util/formats.h>                      // for DataFormatBase, NumericType
+#include <inviwo/core/util/logcentral.h>                   // for LogCentral, LogWarn
+#include <modules/basegl/algorithm/volumenormalization.h>  // for VolumeNormalization
+
+#include <cstddef>                                         // for size_t
+#include <functional>                                      // for __base
+#include <memory>                                          // for shared_ptr
+#include <string>                                          // for string
+#include <string_view>                                     // for string_view
+#include <type_traits>                                     // for remove_extent_t
+#include <vector>                                          // for vector
 
 namespace inviwo {
 

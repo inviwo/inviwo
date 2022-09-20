@@ -29,14 +29,16 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <modules/opengl/inviwoopengl.h>
+#include <modules/basegl/baseglmoduledefine.h>                           // for IVW_MODULE_BASEG...
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>                         // for BoolProperty
+#include <inviwo/core/properties/stringproperty.h>                       // for StringProperty
+#include <inviwo/core/util/glmvec.h>                                     // for dvec4
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.ImageNormalization, Image Normalization}
  * ![](org.inviwo.ImageNormalization.png?classIdentifier=org.inviwo.ImageNormalization)

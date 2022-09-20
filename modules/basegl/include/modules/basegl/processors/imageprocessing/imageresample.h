@@ -29,10 +29,12 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>                           // for IVW_MODULE_BASEG...
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>                       // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>                      // for IntVec2Property
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
 
 namespace inviwo {
 

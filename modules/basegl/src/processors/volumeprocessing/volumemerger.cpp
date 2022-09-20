@@ -28,9 +28,25 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeprocessing/volumemerger.h>
-#include <modules/opengl/volume/volumeutils.h>
+
+#include <inviwo/core/ports/volumeport.h>                                  // for VolumeInport
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
+#include <inviwo/core/processors/processortags.h>                          // for Tags
+#include <inviwo/core/util/formats.h>                                      // for DataFormatBase
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <modules/opengl/shader/shader.h>                                  // for Shader
+#include <modules/opengl/shader/shaderobject.h>                            // for ShaderObject
+#include <modules/opengl/volume/volumeutils.h>                             // for bindAndSetUnif...
+
+#include <functional>                                                      // for __base
+#include <memory>                                                          // for shared_ptr
+#include <string>                                                          // for string
+#include <string_view>                                                     // for string_view
+#include <type_traits>                                                     // for remove_extent_t
 
 namespace inviwo {
+class TextureUnitContainer;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeMerger::processorInfo_{
