@@ -29,22 +29,27 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/interaction/pickingmapper.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <random>
+#include <inviwo/core/datastructures/buffer/buffer.h>  // for Buffer
+#include <inviwo/core/interaction/pickingmapper.h>     // for PickingMapper
+#include <inviwo/core/ports/meshport.h>                // for MeshOutport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>     // for ButtonProperty
+#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty, Int64Property, IntV...
+#include <inviwo/core/util/glmvec.h>                   // for vec3
+
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <random>      // for mt19937, uniform_real_distribution
 
 namespace inviwo {
 
+class Camera;
 class PickingEvent;
-class Mesh;
 
 /** \docpage{org.inviwo.RandomSphereGenerator, Random Sphere Generator}
  * ![](org.inviwo.RandomSphereGenerator.png?classIdentifier=org.inviwo.RandomSphereGenerator)

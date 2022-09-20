@@ -29,16 +29,21 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>  // for size3_t, vec4
 
-#include <array>
+#include <array>          // for array
+#include <bitset>         // for bitset
+#include <cstddef>        // for size_t
+#include <functional>     // for function
+#include <memory>         // for shared_ptr
+#include <unordered_map>  // for unordered_map
+#include <vector>         // for vector
 
 namespace inviwo {
+class Mesh;
+class Volume;
 
 namespace util {
 

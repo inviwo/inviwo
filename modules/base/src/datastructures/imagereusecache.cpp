@@ -29,7 +29,10 @@
 
 #include <modules/base/datastructures/imagereusecache.h>
 
+#include <algorithm>  // for find_if
+
 namespace inviwo {
+class Image;
 
 std::shared_ptr<Image> ImageReuseCache::getUnused() {
     auto it = std::find_if(imageCache_.begin(), imageCache_.end(),

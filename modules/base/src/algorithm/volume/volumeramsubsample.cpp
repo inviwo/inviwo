@@ -28,9 +28,18 @@
  *********************************************************************************/
 
 #include <modules/base/algorithm/volume/volumeramsubsample.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/util/indexmapper.h>
+
+#include <inviwo/core/datastructures/volume/volumeram.h>  // for VolumeRAM
+#include <inviwo/core/util/formatdispatching.h>           // for PrecisionValueType
+#include <inviwo/core/util/glmutils.h>                    // for same_extent
+#include <inviwo/core/util/glmvec.h>                      // for size3_t
+#include <inviwo/core/util/indexmapper.h>                 // for IndexMapper, IndexMapper3D
+
+#include <cstddef>  // for size_t
+
+#include <glm/vec2.hpp>  // for operator*
+#include <glm/vec3.hpp>  // for operator*, vec<>::(anonymous)
+#include <glm/vec4.hpp>  // for operator*
 
 #ifdef IVW_USE_OPENMP
 #include <omp.h>

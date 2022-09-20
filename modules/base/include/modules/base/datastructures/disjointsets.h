@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/assertion.h>  // for IVW_ASSERT
 
-#include <cstddef>
-#include <vector>
+#include <cstddef>      // for size_t
+#include <type_traits>  // for is_signed
+#include <vector>       // for vector
 
 namespace inviwo {
 

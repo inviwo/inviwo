@@ -28,13 +28,35 @@
  *********************************************************************************/
 
 #include <modules/base/properties/basisproperty.h>
-#include <inviwo/core/util/foreacharg.h>
-#include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/raiiutils.h>
 
-#include <glm/gtx/matrix_operation.hpp>
+#include <inviwo/core/algorithm/markdown.h>                       // for operator""_help
+#include <inviwo/core/datastructures/spatialdata.h>               // for SpatialEntity, Structur...
+#include <inviwo/core/io/serialization/serializationexception.h>  // for SerializationException
+#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>             // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>             // for InvalidationLevel, Inva...
+#include <inviwo/core/properties/optionproperty.h>                // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>               // for FloatVec3Property, ordi...
+#include <inviwo/core/properties/propertysemantics.h>             // for PropertySemantics
+#include <inviwo/core/properties/valuewrapper.h>                  // for ValueWrapper, operator!=
+#include <inviwo/core/util/foreacharg.h>                          // for for_each_argument, for_...
+#include <inviwo/core/util/glmmat.h>                              // for mat4, mat3
+#include <inviwo/core/util/glmvec.h>                              // for vec3, vec4
+#include <inviwo/core/util/raiiutils.h>                           // for KeepTrueWhileInScope
+#include <inviwo/core/util/staticstring.h>                        // for operator+
+#include <inviwo/core/util/utilities.h>                           // for hide, show
+
+#include <utility>  // for move
+
+#include <glm/geometric.hpp>             // for dot, length
+#include <glm/gtx/matrix_operation.hpp>  // for diagonal3x3
+#include <glm/mat3x3.hpp>                // for mat, mat<>::col_type
+#include <glm/vec3.hpp>                  // for operator-, operator*, vec
 
 namespace inviwo {
+class Deserializer;
+class Serializer;
 
 const std::string BasisProperty::classIdentifier = "org.inviwo.VolumeBasisProperty";
 std::string BasisProperty::getClassIdentifier() const { return classIdentifier; }

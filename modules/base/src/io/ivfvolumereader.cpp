@@ -28,15 +28,33 @@
  *********************************************************************************/
 
 #include <modules/base/io/ivfvolumereader.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/volume/volumedisk.h>
-#include <inviwo/core/datastructures/unitsystem.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/io/rawvolumeramloader.h>
 
-#include <units/units.hpp>
+#include <inviwo/core/common/factoryutil.h>                       // for getMetaDataFactory
+#include <inviwo/core/datastructures/camera/camera.h>             // for mat4
+#include <inviwo/core/datastructures/datamapper.h>                // for DataMapper
+#include <inviwo/core/datastructures/image/imagetypes.h>          // for InterpolationType, Inte...
+#include <inviwo/core/datastructures/unitsystem.h>                // for Axis, Unit
+#include <inviwo/core/datastructures/volume/volume.h>             // for Volume, DataReaderType
+#include <inviwo/core/datastructures/volume/volumedisk.h>         // for VolumeDisk
+#include <inviwo/core/io/datareader.h>                            // for DataReaderType
+#include <inviwo/core/io/rawvolumeramloader.h>                    // for RawVolumeRAMLoader
+#include <inviwo/core/io/serialization/deserializer.h>            // for Deserializer
+#include <inviwo/core/io/serialization/serializationexception.h>  // for SerializationException
+#include <inviwo/core/metadata/metadata.h>                        // for BoolMetaData
+#include <inviwo/core/metadata/metadatafactory.h>                 // for MetaDataFactory
+#include <inviwo/core/metadata/metadatamap.h>                     // for MetaDataMap
+#include <inviwo/core/util/fileextension.h>                       // for FileExtension
+#include <inviwo/core/util/filesystem.h>                          // for getFileDirectory
+#include <inviwo/core/util/formats.h>                             // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                              // for size3_t
+
+#include <array>        // for array
+#include <cstddef>      // for size_t
+#include <functional>   // for __base
+#include <string>       // for string, basic_string<>:...
+#include <type_traits>  // for remove_extent_t
+
+#include <units/units.hpp>  // for unit_from_string
 
 namespace inviwo {
 

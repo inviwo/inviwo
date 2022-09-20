@@ -29,15 +29,40 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/util/volumeramutils.h>
-#include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/util/templatesampler.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <units/units.hpp>
+#include <inviwo/core/datastructures/coordinatetransformer.h>           // for CoordinateSpace
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/unitsystem.h>                      // for Axis, Unit
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/util/formats.h>                                   // for DataFormat
+#include <inviwo/core/util/glmcomp.h>                                   // for glmcomp
+#include <inviwo/core/util/glmmat.h>                                    // for dmat4
+#include <inviwo/core/util/glmutils.h>                                  // for same_extent
+#include <inviwo/core/util/glmvec.h>                                    // for dvec3, dvec2, siz...
+#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper3D
+#include <inviwo/core/util/templatesampler.h>                           // for TemplateVolumeSam...
+#include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxelParallel
+
+#include <algorithm>      // for max
+#include <array>          // for array
+#include <cstdlib>        // for abs, size_t
+#include <limits>         // for numeric_limits
+#include <memory>         // for shared_ptr, share...
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+
+#include <glm/gtx/matrix_operation.hpp>  // for diagonal3x3
+#include <glm/mat3x3.hpp>                // for mat
+#include <glm/mat4x4.hpp>                // for operator*, mat
+#include <glm/vec3.hpp>                  // for operator-, operator+
+#include <glm/vec4.hpp>                  // for operator*, operator+
+#include <units/units_decl.hpp>          // for precise_unit
 
 namespace inviwo {
+class Volume;
 
 namespace util {
 

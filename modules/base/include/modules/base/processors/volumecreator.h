@@ -29,15 +29,27 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <modules/base/properties/basisproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>             // for IntProperty, IntSize3Prop...
+#include <inviwo/core/util/formats.h>                           // for DataFormatId
+#include <inviwo/core/util/staticstring.h>                      // for operator+
+#include <modules/base/properties/basisproperty.h>              // for BasisProperty
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, opera...
 
 namespace inviwo {
+class Deserializer;
+class Volume;
 
 /** \docpage{org.inviwo.VolumeCreator, Volume Creator}
  * ![](org.inviwo.VolumeCreator.png?classIdentifier=org.inviwo.VolumeCreator)

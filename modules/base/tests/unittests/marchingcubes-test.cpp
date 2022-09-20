@@ -33,6 +33,9 @@
 #include <warn/pop>
 
 #include <cmath>
+
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/base/algorithm/volume/volumegeneration.h>
 
 #include <modules/base/algorithm/volume/marchingcubes.h>

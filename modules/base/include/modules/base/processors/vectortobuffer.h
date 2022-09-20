@@ -29,12 +29,22 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/bufferport.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>          // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/datatraits.h>             // for DataTraits
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferTarget, BufferTarget...
+#include <inviwo/core/ports/bufferport.h>                      // for BufferOutport
+#include <inviwo/core/ports/datainport.h>                      // for DataInport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortraits.h>            // for ProcessorTraits
+#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty, OptionProp...
+
+#include <memory>       // for make_shared
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
 

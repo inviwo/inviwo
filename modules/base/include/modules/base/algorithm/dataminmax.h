@@ -29,27 +29,32 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <modules/base/algorithm/algorithmoptions.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/formats.h>                 // for DataFormat
+#include <inviwo/core/util/glm.h>                     // for isfinite
+#include <inviwo/core/util/glmcomp.h>                 // for glmcomp
+#include <inviwo/core/util/glmconvert.h>              // for glm_convert
+#include <inviwo/core/util/glmutils.h>                // for is_floating_point, flat_extent
+#include <inviwo/core/util/glmvec.h>                  // for dvec4
+#include <modules/base/algorithm/algorithmoptions.h>  // for IgnoreSpecialValues, IgnoreSpecialV...
 
-#include <glm/common.hpp>
-#include <glm/gtx/compatibility.hpp>
+#include <algorithm>    // for max, min
+#include <cstddef>      // for size_t
+#include <numeric>      // for accumulate
+#include <type_traits>  // for enable_if
+#include <utility>      // for pair
 
-#include <inviwo/core/util/formats.h>
-
-#include <numeric>
+#include <glm/common.hpp>  // for max, min
 
 namespace inviwo {
 
-class VolumeRAM;
-class LayerRAM;
-class BufferRAM;
-
-class Volume;
-class Layer;
 class BufferBase;
+class BufferRAM;
+class Layer;
+class LayerRAM;
+class Volume;
+class VolumeRAM;
 
 namespace util {
 

@@ -29,9 +29,11 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/util/glm.h>
-#include <memory>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/util/glmvec.h>  // for size3_t
+
+#include <memory>  // for shared_ptr
 
 namespace inviwo {
 

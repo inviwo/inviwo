@@ -33,8 +33,8 @@
 
 #include <inviwo/core/util/glmvec.h>
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace inviwo {
 

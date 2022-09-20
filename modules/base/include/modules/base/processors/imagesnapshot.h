@@ -29,13 +29,20 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/imageport.h>             // for ImageOutport, ImageInport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/buttonproperty.h>   // for ButtonProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for IntProperty
+
+#include <memory>  // for shared_ptr
+#include <vector>  // for vector
 
 namespace inviwo {
+class Deserializer;
+class Image;
 
 /** \docpage{org.inviwo.ImageSnapshot, Image Snapshot}
  * ![](org.inviwo.ImageSnapshot.png?classIdentifier=org.inviwo.ImageSnapshot)

@@ -29,16 +29,26 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/bufferport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/bufferport.h>                               // for BufferOutport
+#include <inviwo/core/ports/imageport.h>                                // for ImageInport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                      // for ButtonProperty
+#include <inviwo/core/properties/ordinalproperty.h>                     // for IntProperty, IntV...
+#include <inviwo/core/util/glmvec.h>                                    // for ivec2
+
+#include <memory>         // for unique_ptr, share...
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
 
 namespace inviwo {
+class Event;
 
 /** \docpage{org.inviwo.PixelToBufferProcessor, Pixel to buffer}
  * ![](org.inviwo.PixelToBufferProcessor.png?classIdentifier=org.inviwo.PixelToBufferProcessor)

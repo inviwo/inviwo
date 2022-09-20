@@ -28,13 +28,38 @@
  *********************************************************************************/
 
 #include <modules/base/processors/noiseprocessor.h>
-#include <inviwo/core/datastructures/image/imageram.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/util/imagesampler.h>
-#include <inviwo/core/util/zip.h>
-#include <modules/base/algorithm/randomutils.h>
+
+#include <inviwo/core/algorithm/markdown.h>               // for operator""_help, operator""_uni...
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for luminance
+#include <inviwo/core/datastructures/image/layer.h>       // for Layer
+#include <inviwo/core/ports/imageport.h>                  // for ImageOutport, HandleResizeEvents
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Experimental
+#include <inviwo/core/processors/processortags.h>         // for Tag, Tag::CPU
+#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>     // for CompositeProperty
+#include <inviwo/core/properties/constraintbehavior.h>    // for ConstraintBehavior, ConstraintB...
+#include <inviwo/core/properties/minmaxproperty.h>        // for IntMinMaxProperty, FloatMinMaxP...
+#include <inviwo/core/properties/optionproperty.h>        // for OptionPropertyOption, OptionPro...
+#include <inviwo/core/properties/ordinalproperty.h>       // for IntProperty, IntSizeTProperty
+#include <inviwo/core/util/formats.h>                     // for DataFloat32, DataFormat
+#include <inviwo/core/util/glmvec.h>                      // for ivec2
+#include <inviwo/core/util/staticstring.h>                // for operator+
+#include <inviwo/core/util/zip.h>                         // for zipper
+#include <modules/base/algorithm/randomutils.h>           // for haltonSequence, nextPow2, perli...
+
+#include <algorithm>    // for max
+#include <cmath>        // for log, round
+#include <memory>       // for shared_ptr
+#include <type_traits>  // for remove_extent_t
+
+#include <glm/detail/qualifier.hpp>   // for tvec2
+#include <glm/vec2.hpp>               // for vec, vec<>::(anonymous)
+#include <glm/vector_relational.hpp>  // for any, greaterThanEqual, lessThan
 
 namespace inviwo {
+class Image;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo NoiseProcessor::processorInfo_{"org.inviwo.NoiseProcessor",  // Class identifier

@@ -29,6 +29,8 @@
 
 #include <modules/base/processors/inputselector.h>
 
+#include <inviwo/core/ports/imageport.h>  // for BaseImageInport, ImageMultiInport, ImageOutport
+
 namespace inviwo {
 
 template <>

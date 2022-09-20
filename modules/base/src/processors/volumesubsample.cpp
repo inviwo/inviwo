@@ -28,8 +28,30 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumesubsample.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
+
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport, Vol...
+#include <inviwo/core/processors/poolprocessor.h>                       // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>                     // for IntVec3Property
+#include <inviwo/core/util/glmvec.h>                                    // for ivec3, size3_t
+#include <modules/base/algorithm/volume/volumeramsubsample.h>           // for volumeSubSample
+
+#include <functional>     // for __base
+#include <string>         // for string
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+
+#include <glm/common.hpp>  // for max, min
+#include <glm/vec3.hpp>    // for operator!=, vec
 
 namespace inviwo {
 

@@ -29,13 +29,14 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/imageport.h>             // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/minmaxproperty.h>   // for FloatMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>   // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>  // for FloatProperty
 
 namespace inviwo {
 

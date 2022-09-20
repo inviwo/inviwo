@@ -28,13 +28,40 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumesequencesource.h>
-#include <modules/base/processors/datasource.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/common/factoryutil.h>
+
+#include <inviwo/core/common/factoryutil.h>                     // for getDataReaderFactory
+#include <inviwo/core/datastructures/volume/volume.h>           // for VolumeSequence, Volume
+#include <inviwo/core/io/datareader.h>                          // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                 // for DataReaderException
+#include <inviwo/core/io/datareaderfactory.h>                   // for DataReaderFactory
+#include <inviwo/core/metadata/metadata.h>                      // for StringMetaData
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeSequenceOutport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>               // for Tags, Tags::CPU
+#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
+#include <inviwo/core/properties/directoryproperty.h>           // for DirectoryProperty
+#include <inviwo/core/properties/fileproperty.h>                // for FileProperty
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty, OptionPro...
+#include <inviwo/core/properties/property.h>                    // for OverwriteState, Overwrite...
+#include <inviwo/core/properties/stringproperty.h>              // for StringProperty
+#include <inviwo/core/util/fileextension.h>                     // for FileExtension, operator==
+#include <inviwo/core/util/filesystem.h>                        // for fileExists, getDirectoryC...
+#include <inviwo/core/util/logcentral.h>                        // for LogCentral, LogProcessorE...
+#include <inviwo/core/util/statecoordinator.h>                  // for StateCoordinator
+#include <inviwo/core/util/staticstring.h>                      // for operator+
+#include <modules/base/processors/datasource.h>                 // for updateFilenameFilters
+#include <modules/base/properties/basisproperty.h>              // for BasisProperty
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+
+#include <map>          // for map, operator!=
+#include <ostream>      // for operator<<
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for move
 
 namespace inviwo {
+class Deserializer;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeSequenceSource::processorInfo_{

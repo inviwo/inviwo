@@ -29,15 +29,21 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/geometry/plane.h>
-#include <functional>
-#include <optional>
-#include <vector>
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/util/glmvec.h>                   // for vec2, vec3
+
+#include <cstdint>     // for uint32_t
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <optional>    // for optional
+#include <vector>      // for vector
+
+#include <glm/fwd.hpp>  // for u32vec2, u32vec3
 
 namespace inviwo {
+class Plane;
 
 namespace meshutil {
 

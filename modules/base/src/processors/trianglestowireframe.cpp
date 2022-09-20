@@ -28,7 +28,24 @@
  *********************************************************************************/
 
 #include <modules/base/processors/trianglestowireframe.h>
-#include <modules/base/algorithm/meshutils.h>
+
+#include <inviwo/core/datastructures/buffer/buffer.h>          // for IndexBuffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>       // for IndexBufferRAM
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for DrawType, DrawType::Lines
+#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::BufferVector
+#include <inviwo/core/ports/meshport.h>                        // for MeshInport, MeshOutport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>              // for Tags, Tags::CPU
+#include <modules/base/algorithm/meshutils.h>                  // for forEachLineSegment, forEac...
+
+#include <cstdint>      // for uint32_t
+#include <memory>       // for shared_ptr, make_shared
+#include <string>       // for string
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for pair
+#include <vector>       // for vector
 
 namespace inviwo {
 

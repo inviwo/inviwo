@@ -29,10 +29,14 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <modules/base/processors/vectorelementselectorprocessor.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/volume/volume.h>                // for DataInport
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/util/glmvec.h>                                 // for uvec3
+#include <modules/base/processors/vectorelementselectorprocessor.h>  // for VectorElementSelecto...
+
+#include <string>  // for string
 
 namespace inviwo {
 

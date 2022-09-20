@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <memory>  // for unique_ptr
 
 namespace inviwo {
 

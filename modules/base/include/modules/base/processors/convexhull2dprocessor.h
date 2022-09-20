@@ -29,12 +29,19 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/meshport.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/meshport.h>              // for MeshInport, MeshOutport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/ordinalproperty.h>  // for FloatVec3Property
+#include <inviwo/core/util/glmvec.h>                 // for dvec2
+
+#include <memory>  // for shared_ptr
+#include <vector>  // for vector
 
 namespace inviwo {
+class Mesh;
 
 /**
  * \brief Processor computing the convex hull of a given 2D input geometry

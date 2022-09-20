@@ -29,10 +29,32 @@
 
 #include <modules/base/processors/tfselector.h>
 
-#include <inviwo/core/util/utilities.h>
-#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/datastructures/transferfunction.h>      // for TransferFunction
+#include <inviwo/core/interaction/events/event.h>             // for Event
+#include <inviwo/core/interaction/events/keyboardkeys.h>      // for IvwKey, KeyState, KeyState:...
+#include <inviwo/core/network/networklock.h>                  // for NetworkLock
+#include <inviwo/core/ports/imageport.h>                      // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>            // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>             // for Tags
+#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
+#include <inviwo/core/properties/eventproperty.h>             // for EventProperty, EventPropert...
+#include <inviwo/core/properties/listproperty.h>              // for ListProperty
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyOption, Optio...
+#include <inviwo/core/properties/property.h>                  // for Property
+#include <inviwo/core/properties/propertyownerobserver.h>     // for PropertyOwnerObservable
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+
+#include <functional>   // for __base
+#include <memory>       // for make_unique, unique_ptr
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
+class Deserializer;
+class PropertyOwner;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TFSelector::processorInfo_{

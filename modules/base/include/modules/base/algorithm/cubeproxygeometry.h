@@ -29,18 +29,17 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <modules/base/algorithm/meshutils.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmvec.h>           // for size3_t, vec3
+#include <modules/base/algorithm/meshutils.h>  // for IncludeNormals
 
-#include <tuple>
-#include <memory>
+#include <memory>  // for shared_ptr
 
 namespace inviwo {
 
-class Volume;
 class Mesh;
+class Volume;
 
 namespace algorithm {
 

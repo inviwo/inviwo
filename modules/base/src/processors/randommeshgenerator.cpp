@@ -28,15 +28,46 @@
  *********************************************************************************/
 
 #include <modules/base/processors/randommeshgenerator.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
 
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/core/interaction/events/wheelevent.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/camera/camera.h>                   // for mat4
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh
+#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for BasicMesh, TypedMesh
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/interaction/events/pickingevent.h>                // for PickingEvent
+#include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
+#include <inviwo/core/interaction/pickingstate.h>                       // for PickingPressItem
+#include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                      // for ButtonProperty
+#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                     // for IntProperty, Floa...
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, ivec2, vec4
+#include <modules/base/algorithm/meshutils.h>                           // for cone, cube, cylinder
 
-#include <modules/base/algorithm/meshutils.h>
+#include <algorithm>      // for fill
+#include <cstdint>        // for uint32_t
+#include <memory>         // for shared_ptr, make_...
+#include <string>         // for string
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+
+#include <glm/ext/matrix_transform.hpp>  // for rotate, scale
+#include <glm/geometric.hpp>             // for normalize
+#include <glm/gtc/type_precision.hpp>    // for i64
+#include <glm/vec3.hpp>                  // for operator*, operator+
+#include <glm/vec4.hpp>                  // for operator*, operator+
 
 namespace inviwo {
 

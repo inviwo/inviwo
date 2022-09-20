@@ -29,16 +29,24 @@
 
 #include <modules/base/datavisualizer/imageinformationvisualizer.h>
 
-#include <inviwo/core/common/factoryutil.h>
-#include <modules/base/processors/imagesource.h>
-#include <modules/base/processors/imageinformation.h>
-#include <inviwo/core/processors/processorutils.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/common/factoryutil.h>            // for getDataReaderFactory
+#include <inviwo/core/io/datareaderfactory.h>          // for DataReaderFactory
+#include <inviwo/core/network/processornetwork.h>      // for ProcessorNetwork
+#include <inviwo/core/ports/imageport.h>               // for ImageOutport
+#include <inviwo/core/ports/outport.h>                 // for Outport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorutils.h>     // for makeProcessor, GridPos
+#include <inviwo/core/rendering/datavisualizer.h>      // for DataVisualizer
+#include <inviwo/core/util/document.h>                 // for Document, Document::DocumentHandle
+#include <inviwo/core/util/fileextension.h>            // for FileExtension
+#include <modules/base/processors/imageinformation.h>  // for ImageInformation
+#include <modules/base/processors/imagesource.h>       // for ImageSource
 
-#include <inviwo/core/io/datareaderfactory.h>
+#include <map>  // for map
 
 namespace inviwo {
+class Inport;
+class Layer;
 
 using GP = util::GridPos;
 

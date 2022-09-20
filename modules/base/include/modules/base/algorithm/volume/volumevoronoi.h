@@ -28,19 +28,21 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/util/glm.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/volumeramutils.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <vector>
-#include <optional>
-#include <memory>
+#include <inviwo/core/datastructures/camera/camera.h>     // for mat4
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for Wrapping3D
+#include <inviwo/core/util/glmvec.h>                      // for size3_t, vec3
+
+#include <cstdint>   // for uint32_t
+#include <memory>    // for shared_ptr
+#include <optional>  // for optional
+#include <utility>   // for pair
+#include <vector>    // for vector
 
 namespace inviwo {
+class Volume;
+
 namespace util {
 
 /**
