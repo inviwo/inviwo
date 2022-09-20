@@ -30,10 +30,12 @@
 #include <modules/basegl/processors/lightvolumegl.h>
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/light/pointlight.h>
 #include <inviwo/core/datastructures/light/directionallight.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/openglutils.h>
 #include <cmath>

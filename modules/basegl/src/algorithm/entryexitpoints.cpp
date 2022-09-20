@@ -40,6 +40,7 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/image/layergl.h>
+#include <modules/opengl/texture/textureunit.h>
 
 #include <glm/gtx/handed_coordinate_space.hpp>
 

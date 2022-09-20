@@ -33,9 +33,10 @@
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/textureunit.h>
 
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/texture/textureutils.h>
+
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/algorithm/boundingbox.h>
