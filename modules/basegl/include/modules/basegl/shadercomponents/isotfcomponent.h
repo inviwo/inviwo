@@ -28,21 +28,29 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
+#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
+#include <inviwo/core/properties/isotfproperty.h>             // for IsoTFProperty
+#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
+#include <inviwo/core/properties/property.h>                  // for Property
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <inviwo/core/util/stdextensions.h>                   // for make_array
+#include <inviwo/core/util/stringconversion.h>                // for StrBuffer
+#include <inviwo/core/util/zip.h>                             // for enumerate
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
+#include <modules/opengl/shader/shader.h>                     // for Shader
+#include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
+#include <modules/opengl/texture/textureunit.h>               // for TextureUnit, TextureUnitCon...
+#include <modules/opengl/image/layergl.h>                     // IWYU pragma: keep
 
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/properties/isotfproperty.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
+#include <algorithm>    // for max
+#include <array>        // for array
+#include <cstddef>      // for size_t
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/texture.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/shader/shader.h>
-
-#include <fmt/format.h>
-#include <array>
+#include <fmt/core.h>  // for format
 
 namespace inviwo {
 

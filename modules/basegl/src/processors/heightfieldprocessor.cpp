@@ -29,21 +29,32 @@
 
 #include <modules/basegl/processors/heightfieldprocessor.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
-#include <inviwo/core/datastructures/light/directionallight.h>
-#include <inviwo/core/interaction/trackball.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/rendering/meshdrawerfactory.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/algorithm/boundingbox.h>         // for boundingBox
+#include <inviwo/core/algorithm/markdown.h>            // for operator""_help, operator""_uninde...
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/ports/imageport.h>               // for ImageInport, BaseImageInport, Outp...
+#include <inviwo/core/ports/inportiterable.h>          // for InportIterable<>::const_iterator
+#include <inviwo/core/ports/meshport.h>                // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::GL
+#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/optionproperty.h>     // for OptionPropertyOption, OptionProper...
+#include <inviwo/core/properties/ordinalproperty.h>    // for ordinalLength, OrdinalPropertyState
+#include <modules/opengl/geometry/meshgl.h>            // for MeshGL
+#include <modules/opengl/rendering/meshdrawergl.h>     // for MeshDrawerGL::DrawObject, MeshDraw...
+#include <modules/opengl/shader/shader.h>              // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderutils.h>         // for addShaderDefines, setShaderUniforms
+#include <modules/opengl/texture/textureunit.h>        // for TextureUnit
+#include <modules/opengl/texture/textureutils.h>       // for bindColorTexture, activateTargetAn...
+
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr, shared_ptr<>::element_...
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
 
 namespace inviwo {
 

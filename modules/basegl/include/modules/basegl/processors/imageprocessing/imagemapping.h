@@ -29,11 +29,14 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEG...
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/properties/transferfunctionproperty.h>             // for TransferFunction...
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.ImageMapping, Image Mapping}
  * Maps the input image to an output image with the help of a transfer function.

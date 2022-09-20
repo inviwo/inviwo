@@ -29,19 +29,35 @@
 
 #include <modules/basegl/processors/mesh2drenderprocessorgl.h>
 
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/interaction/trackball.h>
-#include <inviwo/core/rendering/meshdrawerfactory.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/algorithm/markdown.h>            // for operator""_help, operator""_uninde...
+#include <inviwo/core/datastructures/camera/camera.h>  // for mat4
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for hasPickIDBuffer, Mesh
+#include <inviwo/core/ports/imageport.h>               // for ImageInport
+#include <inviwo/core/ports/inportiterable.h>          // for InportIterable<>::const_iterator
+#include <inviwo/core/ports/meshport.h>                // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty
+#include <modules/opengl/geometry/meshgl.h>            // for MeshGL
+#include <modules/opengl/inviwoopengl.h>               // for GL_DEPTH_TEST, GL_ONE_MINUS_SRC_ALPHA
+#include <modules/opengl/openglutils.h>                // for BlendModeState, GlBoolState
+#include <modules/opengl/rendering/meshdrawergl.h>     // for MeshDrawerGL::DrawObject, MeshDraw...
+#include <modules/opengl/shader/shader.h>              // for Shader
+#include <modules/opengl/shader/shaderutils.h>         // for setShaderUniforms
+#include <modules/opengl/texture/textureutils.h>       // for activateTargetAndClearOrCopySource
 
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/openglutils.h>
-#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr, shared_ptr<>::element_...
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+
+#include <glm/ext/matrix_clip_space.hpp>  // for ortho
 
 namespace inviwo {
 

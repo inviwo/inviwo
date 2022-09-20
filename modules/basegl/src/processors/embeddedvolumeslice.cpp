@@ -28,27 +28,58 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/embeddedvolumeslice.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/openglutils.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/geometry/plane.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/algorithm/cubeplaneintersection.h>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
+#include <inviwo/core/algorithm/cubeplaneintersection.h>                // for cubePlaneIntersec...
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for IndexBuffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCameraC...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh::BufferInfo
+#include <inviwo/core/datastructures/geometry/plane.h>                  // for Plane
+#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for TypedMesh, Positi...
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/interaction/events/pickingevent.h>                // for PickingEvent
+#include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
+#include <inviwo/core/interaction/pickingstate.h>                       // for PickingHoverState
+#include <inviwo/core/ports/imageport.h>                                // for ImageInport, Base...
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
+#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatVec3Property
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, dvec3
+#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
+#include <modules/opengl/rendering/meshdrawergl.h>                      // for MeshDrawerGL::Dra...
+#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
+#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                          // for setShaderUniforms
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
+#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
 
-#include <limits>
-#include <numeric>
+#include <functional>     // for __base, function
+#include <memory>         // for shared_ptr, share...
+#include <optional>       // for optional
+#include <string>         // for string
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+#include <vector>         // for vector
+
+#include <fmt/core.h>         // for basic_string_view
+#include <glm/common.hpp>     // for clamp
+#include <glm/geometric.hpp>  // for normalize
+#include <glm/gtx/io.hpp>     // for operator<<
+#include <glm/mat4x4.hpp>     // for operator*, mat
+#include <glm/vec3.hpp>       // for operator*, vec<>:...
+#include <glm/vec4.hpp>       // for operator*, operator+
 
 namespace inviwo {
 

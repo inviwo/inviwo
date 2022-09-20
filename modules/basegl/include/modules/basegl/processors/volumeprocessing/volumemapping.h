@@ -29,12 +29,14 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BAS...
 
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/properties/transferfunctionproperty.h>               // for TransferFuncti...
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.VolumeMapping, Volume Mapping}
  * ![](org.inviwo.VolumeMapping.png?classIdentifier=org.inviwo.VolumeMapping)

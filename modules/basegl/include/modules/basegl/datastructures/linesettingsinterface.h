@@ -28,11 +28,11 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-
-#include <modules/basegl/properties/stipplingproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
 namespace inviwo {
+class StipplingSettingsInterface;
+
 /*
  * \brief Settings for line rendering
  */

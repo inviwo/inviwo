@@ -29,7 +29,15 @@
 
 #include <modules/basegl/properties/linesettingsproperty.h>
 
+#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>     // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
+#include <inviwo/core/properties/ordinalproperty.h>       // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>     // for PropertySemantics
+#include <modules/basegl/properties/stipplingproperty.h>  // for StipplingProperty
+
 namespace inviwo {
+class StipplingSettingsInterface;
 
 const std::string LineSettingsProperty::classIdentifier = "org.inviwo.LineSettingsProperty";
 std::string LineSettingsProperty::getClassIdentifier() const { return classIdentifier; }

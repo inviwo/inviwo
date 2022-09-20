@@ -28,13 +28,21 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/datastructures/linesettingsinterface.h>
-#include <modules/basegl/properties/stipplingproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>             // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>             // for InvalidationLevel, Inva...
+#include <inviwo/core/properties/ordinalproperty.h>               // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>             // for PropertySemantics, Prop...
+#include <modules/basegl/datastructures/linesettingsinterface.h>  // for LineSettingsInterface
+#include <modules/basegl/properties/stipplingproperty.h>          // for StipplingProperty
+
+#include <string>       // for string
+#include <string_view>  // for string_view
 
 namespace inviwo {
+class StipplingSettingsInterface;
 
 class IVW_MODULE_BASEGL_API LineSettingsProperty : public LineSettingsInterface,
                                                    public CompositeProperty {

@@ -29,13 +29,21 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/ports/imageport.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for SwizzleMask
+#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/util/glmvec.h>                      // for size2_t
+#include <modules/opengl/shader/shader.h>                 // for Shader
+
+#include <memory>  // for shared_ptr
+#include <string>  // for string
 
 namespace inviwo {
+class DataFormatBase;
+class ShaderResource;
+class TextureUnitContainer;
 
 /*! \class ImageGLProcessor
  *

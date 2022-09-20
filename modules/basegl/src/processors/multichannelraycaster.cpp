@@ -28,21 +28,42 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/multichannelraycaster.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/textureunit.h>
 
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumeutils.h>
+#include <inviwo/core/algorithm/boundingbox.h>                // for boundingBox
+#include <inviwo/core/datastructures/histogram.h>             // for HistogramSelection
+#include <inviwo/core/datastructures/image/imagetypes.h>      // for ImageType, ImageType::Color...
+#include <inviwo/core/io/serialization/deserializer.h>        // for Deserializer
+#include <inviwo/core/io/serialization/ticpp.h>               // for TxElement
+#include <inviwo/core/io/serialization/versionconverter.h>    // for getElement, renamePort, Nod...
+#include <inviwo/core/ports/imageport.h>                      // for ImageInport, ImageOutport
+#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>            // for CodeState, CodeState::Exper...
+#include <inviwo/core/processors/processortags.h>             // for Tags, Tags::GL
+#include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <inviwo/core/util/formats.h>                         // for DataFormatBase
+#include <inviwo/core/util/stringconversion.h>                // for StrBuffer
+#include <inviwo/core/util/zip.h>                             // for enumerate, zipIterator, zipper
+#include <modules/opengl/shader/shader.h>                     // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                // for addShaderDefines, addShader...
+#include <modules/opengl/texture/textureunit.h>               // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>              // for bindAndSetUniforms, activat...
+#include <modules/opengl/volume/volumeutils.h>                // for bindAndSetUniforms
 
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <bitset>       // for bitset<>::reference
+#include <cstddef>      // for size_t
+#include <functional>   // for __base, function
+#include <memory>       // for shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for pair
 
-#include <fmt/format.h>
+#include <fmt/core.h>  // for format, basic_string_view
 
 namespace inviwo {
 

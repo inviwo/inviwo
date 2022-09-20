@@ -28,33 +28,33 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/listproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/rendering/meshdrawer.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/interaction/cameratrackball.h>        // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
+#include <inviwo/core/ports/meshport.h>                     // for MeshInport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/properties/cameraproperty.h>          // for CameraProperty
+#include <inviwo/core/properties/listproperty.h>            // for ListProperty
+#include <inviwo/core/properties/propertyownerobserver.h>   // for PropertyOwnerObserver
+#include <inviwo/core/properties/simplelightingproperty.h>  // for SimpleLightingProperty
+#include <inviwo/core/properties/stringproperty.h>          // for StringProperty
+#include <modules/opengl/shader/shader.h>                   // for Shader
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shadersegment.h>
-
-#include <vector>
-#include <tuple>
+#include <array>       // for array
+#include <cstddef>     // for size_t
+#include <functional>  // for function
+#include <memory>      // for unique_ptr, shared_ptr
+#include <vector>      // for vector
 
 namespace inviwo {
 
+class Inport;
 class InstanceRenderer;
+class Property;
+class ShaderObject;
+class StringShaderResource;
 
 namespace detail {
 /**

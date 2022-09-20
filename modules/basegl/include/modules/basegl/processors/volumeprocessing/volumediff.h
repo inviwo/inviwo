@@ -29,11 +29,14 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BAS...
 
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <inviwo/core/ports/volumeport.h>                                  // for VolumeInport
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.VolumeDiff, Volume Difference}
  * ![](org.inviwo.VolumeDiff.png?classIdentifier=org.inviwo.VolumeDiff)

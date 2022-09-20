@@ -29,6 +29,16 @@
 
 #include <modules/basegl/properties/stipplingproperty.h>
 
+#include <inviwo/core/properties/compositeproperty.h>                  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                     // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                    // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                  // for PropertySemantics
+#include <inviwo/core/util/staticstring.h>                             // for operator+
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>  // for StipplingSettingsI...
+#include <modules/opengl/shader/shader.h>                              // for Shader
+#include <modules/opengl/shader/shaderobject.h>                        // for ShaderObject
+
 namespace inviwo {
 
 const std::string StipplingProperty::classIdentifier = "org.inviwo.StipplingProperty";

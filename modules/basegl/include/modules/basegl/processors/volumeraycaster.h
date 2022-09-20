@@ -29,21 +29,25 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/isotfproperty.h>
-#include <inviwo/core/properties/raycastingproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/properties/volumeindicatorproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/ports/imageport.h>                     // for ImageInport, ImageOutport
+#include <inviwo/core/ports/volumeport.h>                    // for VolumeInport
+#include <inviwo/core/processors/poolprocessor.h>            // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
+#include <inviwo/core/properties/cameraproperty.h>           // for CameraProperty
+#include <inviwo/core/properties/eventproperty.h>            // for EventProperty
+#include <inviwo/core/properties/isotfproperty.h>            // for IsoTFProperty
+#include <inviwo/core/properties/optionproperty.h>           // for OptionPropertyInt
+#include <inviwo/core/properties/raycastingproperty.h>       // for RaycastingProperty
+#include <inviwo/core/properties/simplelightingproperty.h>   // for SimpleLightingProperty
+#include <inviwo/core/properties/volumeindicatorproperty.h>  // for VolumeIndicatorProperty
+#include <modules/opengl/shader/shader.h>                    // for Shader
 
 namespace inviwo {
+class Deserializer;
+class Event;
+class Volume;
 
 /** \docpage{org.inviwo.VolumeRaycaster, Volume Raycaster}
  * ![](org.inviwo.VolumeRaycaster.png?classIdentifier=org.inviwo.VolumeRaycaster)

@@ -29,14 +29,35 @@
 
 #include <modules/basegl/processors/background.h>
 
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/datastructures/image/image.h>       // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::AllLayers
+#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
+#include <inviwo/core/properties/buttonproperty.h>        // for ButtonProperty
+#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
+#include <inviwo/core/properties/optionproperty.h>        // for OptionPropertyOption, OptionPro...
+#include <inviwo/core/properties/ordinalproperty.h>       // for IntVec2Property, FloatVec4Property
+#include <inviwo/core/util/formats.h>                     // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                      // for ivec2, vec4
+#include <inviwo/core/util/staticstring.h>                // for operator+
+#include <inviwo/core/util/stringconversion.h>            // for StrBuffer, toString
+#include <modules/opengl/image/imagegl.h>                 // for ImageGL
+#include <modules/opengl/image/layergl.h>                 // for LayerGL
+#include <modules/opengl/shader/shader.h>                 // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>           // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>            // for setUniforms
+#include <modules/opengl/texture/textureunit.h>           // for TextureUnit, TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>          // for activateTarget, bindAndSetUniforms
 
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/inviwoopengl.h>
+#include <cstddef>      // for size_t
+#include <memory>       // for shared_ptr, make_shared, shared...
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for move
+
+#include <fmt/core.h>  // for basic_string_view, format_to
 
 namespace inviwo {
 

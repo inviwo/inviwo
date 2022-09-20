@@ -28,11 +28,13 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/datastructures/linesettingsinterface.h>
-#include <modules/basegl/datastructures/stipplingsettings.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <modules/basegl/datastructures/linesettingsinterface.h>  // for LineSettingsInterface
+#include <modules/basegl/datastructures/stipplingsettings.h>      // for StipplingSettings
 
 namespace inviwo {
+class StipplingSettingsInterface;
 
 /**
  * \brief Basic implementation of the LineSettingsInterface

@@ -28,7 +28,24 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/geometryentryexitpoints.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>         // for boundingBox
+#include <inviwo/core/interaction/cameratrackball.h>   // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>               // for ImageOutport
+#include <inviwo/core/ports/meshport.h>                // for MeshInport
+#include <inviwo/core/ports/volumeport.h>              // for VolumeInport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/util/formats.h>                  // for DataFormat, DataVec4UInt16
+#include <modules/basegl/algorithm/entryexitpoints.h>  // for CapNearClip, EntryExitPointsHelper
+
+#include <string>       // for string
+#include <string_view>  // for string_view
 
 namespace inviwo {
 

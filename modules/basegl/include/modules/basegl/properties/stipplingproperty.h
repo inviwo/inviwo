@@ -28,16 +28,23 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>                  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                     // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                    // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                  // for PropertySemantics
+#include <inviwo/core/util/staticstring.h>                             // for operator+
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>  // for StipplingSettingsI...
 
-#include <modules/opengl/shader/shader.h>
+#include <functional>   // for __base
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==, string...
+#include <vector>       // for operator!=, vector
 
 namespace inviwo {
+class Shader;
 
 class IVW_MODULE_BASEGL_API StipplingProperty : public CompositeProperty,
                                                 public StipplingSettingsInterface {

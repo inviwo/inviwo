@@ -29,12 +29,14 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <modules/basegl/algorithm/imageconvolution.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/ports/imageport.h>                // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>           // for Processor
+#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>     // for FloatProperty, IntProperty
+#include <modules/basegl/algorithm/imageconvolution.h>  // for ImageConvolution
 
 namespace inviwo {
 

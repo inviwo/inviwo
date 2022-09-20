@@ -28,13 +28,49 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/cuberenderer.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/basegl/datastructures/meshshadercache.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>                 // for boundingBox
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferType, BufferType::Co...
+#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh
+#include <inviwo/core/interaction/cameratrackball.h>           // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                       // for ImageOutport, BaseImageInport
+#include <inviwo/core/ports/inportiterable.h>                  // for InportIterable<>::const_it...
+#include <inviwo/core/ports/meshport.h>                        // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>              // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
+#include <inviwo/core/properties/ordinalproperty.h>            // for FloatVec4Property, FloatPr...
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Propert...
+#include <inviwo/core/properties/simplelightingproperty.h>     // for SimpleLightingProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>   // for TransferFunctionProperty
+#include <inviwo/core/util/glmvec.h>                           // for vec4, size2_t
+#include <modules/basegl/datastructures/meshshadercache.h>     // for MeshShaderCache::Requirement
+#include <modules/opengl/geometry/meshgl.h>                    // for MeshGL
+#include <modules/opengl/inviwoopengl.h>                       // for GL_ONE_MINUS_SRC_ALPHA
+#include <modules/opengl/openglutils.h>                        // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>             // for MeshDrawerGL, MeshDrawerGL...
+#include <modules/opengl/shader/shader.h>                      // for Shader
+#include <modules/opengl/shader/shaderobject.h>                // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                  // for ShaderType, ShaderType::Ve...
+#include <modules/opengl/shader/shaderutils.h>                 // for addDefines, setShaderUniforms
+#include <modules/opengl/texture/textureunit.h>                // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>               // for activateTargetAndClearOrCo...
+
+#include <functional>   // for __base, function
+#include <map>          // for __map_iterator, map, opera...
+#include <memory>       // for shared_ptr, shared_ptr<>::...
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for pair
+#include <vector>       // for vector
+
+#include <glm/vec2.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
 

@@ -28,13 +28,22 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagelowpass.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/texture2d.h>
+
+#include <inviwo/core/ports/imageport.h>                // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>           // for Processor
+#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>      // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>       // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>   // for InvalidationLevel, InvalidationLe...
+#include <inviwo/core/properties/ordinalproperty.h>     // for IntProperty, FloatProperty
+#include <modules/basegl/algorithm/imageconvolution.h>  // for ImageConvolution
+
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
 
 namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

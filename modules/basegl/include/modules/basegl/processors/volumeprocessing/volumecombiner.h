@@ -29,22 +29,37 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderresource.h>
-#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/datastructures/volume/volume.h>      // for Volume
+#include <inviwo/core/ports/datainport.h>                  // for DataInport
+#include <inviwo/core/ports/outportiterable.h>             // for OutportIterable
+#include <inviwo/core/ports/volumeport.h>                  // for VolumeOutport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>         // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
+#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>         // for OptionProperty, OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>        // for FloatVec4Property
+#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
+#include <inviwo/core/util/glmvec.h>                       // for uvec3
+#include <inviwo/core/util/staticstring.h>                 // for operator+
+#include <modules/opengl/buffer/framebufferobject.h>       // for FrameBufferObject
+#include <modules/opengl/shader/shader.h>                  // for Shader
+
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, operator==
+
+#include <fmt/core.h>  // for format_to, basic_string_view
 
 namespace inviwo {
+class StringShaderResource;
 
 /** \docpage{org.inviwo.VolumeCombiner, Volume Combiner}
  * Combines/fuses volumes into a single volume. Resolution and data type of the

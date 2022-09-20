@@ -29,15 +29,16 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BAS...
+
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>                  // for BoolCompositeP...
+#include <inviwo/core/properties/boolproperty.h>                           // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>                        // for FloatProperty
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.VolumeLowPass, Volume Low Pass}
  * ![](org.inviwo.VolumeLowPass.png?classIdentifier=org.inviwo.VolumeLowPass)
