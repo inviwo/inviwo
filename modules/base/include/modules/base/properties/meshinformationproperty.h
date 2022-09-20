@@ -28,11 +28,19 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <modules/base/basemoduledefine.h>                 // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
+#include <inviwo/core/properties/ordinalproperty.h>        // for FloatVec3Property, FloatMat4Pr...
+#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
+#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
+
+#include <cstddef>                                         // for size_t
+#include <string>                                          // for string
+#include <string_view>                                     // for string_view
+#include <tuple>                                           // for tie
 
 namespace inviwo {
 

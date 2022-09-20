@@ -29,14 +29,20 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/propertyowner.h>
-#include <inviwo/core/util/formats.h>
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/ordinalproperty.h>    // for DoubleProperty, OrdinalProperty
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
+#include <inviwo/core/util/glmvec.h>                   // for dvec2, dvec3
+
+#include <cmath>                                       // for exp, M_PI
+#include <string>                                      // for string
+#include <string_view>                                 // for string_view
+
+#include <glm/gtx/norm.hpp>                            // for distance2
 
 namespace inviwo {
+template <typename T> struct PropertyTraits;
 
 /**
  * \ingroup properties

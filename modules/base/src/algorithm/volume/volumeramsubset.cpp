@@ -29,6 +29,18 @@
 
 #include <modules/base/algorithm/volume/volumeramsubset.h>
 
+#include <inviwo/core/datastructures/volume/volumeborder.h>          // for VolumeBorders
+#include <inviwo/core/datastructures/volume/volumeram.h>             // for VolumeRAM
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
+#include <inviwo/core/util/formatdispatching.h>                      // for dispatch, All
+#include <inviwo/core/util/formats.h>                                // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                 // for size3_t, ivec3
+
+#include <cstring>                                                   // for size_t, memcpy
+
+#include <glm/common.hpp>                                            // for max, min
+#include <glm/vec3.hpp>                                              // for operator-, operator+
+
 #ifdef IVW_USE_OPENMP
 #include <omp.h>
 #endif

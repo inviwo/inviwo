@@ -28,9 +28,17 @@
  *********************************************************************************/
 
 #include <modules/base/io/ivfsequencevolumereader.h>
-#include <modules/base/io/ivfvolumewriter.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datareaderexception.h>
+
+#include <inviwo/core/datastructures/volume/volume.h>   // for VolumeSequence
+#include <inviwo/core/io/datareader.h>                  // for DataReaderType
+#include <inviwo/core/io/serialization/deserializer.h>  // for Deserializer
+#include <inviwo/core/util/filesystem.h>                // for cleanupPath, getFileDirectory
+#include <modules/base/io/ivfvolumereader.h>            // for IvfVolumeReader
+
+#include <functional>                                   // for __base
+#include <string>                                       // for string, basic_string<>::value_type
+#include <type_traits>                                  // for remove_extent_t
+#include <vector>                                       // for vector
 
 namespace inviwo {
 IvfSequenceVolumeReader::IvfSequenceVolumeReader() {

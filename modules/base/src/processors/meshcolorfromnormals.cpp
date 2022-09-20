@@ -29,6 +29,35 @@
 
 #include <modules/base/processors/meshcolorfromnormals.h>
 
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Buffe...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/meshport.h>                                 // for MeshInport, MeshO...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::None
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/staticstring.h>                              // for operator+
+
+#include <algorithm>                                                    // for transform
+#include <memory>                                                       // for shared_ptr, share...
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+
+#include <glm/common.hpp>                                               // for abs
+#include <glm/vec2.hpp>                                                 // for operator+, operator/
+#include <glm/vec3.hpp>                                                 // for operator+, operator/
+#include <glm/vec4.hpp>                                                 // for operator+, operator/
+#include <half/half.hpp>                                                // for operator+, operator/
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

@@ -28,11 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <modules/base/basemoduledefine.h>             // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh, Mesh::BufferInfo
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/ordinalproperty.h>    // for IntProperty, IntSizeTProperty
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
+#include <inviwo/core/properties/stringproperty.h>     // for StringProperty
+
+#include <string>                                      // for string
+#include <string_view>                                 // for string_view
+#include <tuple>                                       // for tie
 
 namespace inviwo {
 

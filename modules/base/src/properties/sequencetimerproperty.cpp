@@ -28,9 +28,22 @@
  *********************************************************************************/
 
 #include <modules/base/properties/sequencetimerproperty.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
+
+#include <inviwo/core/interaction/events/keyboardkeys.h>  // for IvwKey, IvwKey::P, KeyState
+#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>     // for CompositeProperty
+#include <inviwo/core/properties/eventproperty.h>         // for EventProperty, EventProperty::A...
+#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
+#include <inviwo/core/properties/ordinalproperty.h>       // for IntSizeTProperty
+#include <inviwo/core/properties/propertysemantics.h>     // for PropertySemantics
+#include <inviwo/core/properties/valuewrapper.h>          // for PropertySerializationMode, Prop...
+#include <inviwo/core/util/timer.h>                       // for Timer
+
+#include <chrono>                                         // for milliseconds
+#include <functional>                                     // for __base, function
 
 namespace inviwo {
+class Event;
 
 const std::string SequenceTimerProperty::classIdentifier = "org.inviwo.SequenceTimerProperty";
 std::string SequenceTimerProperty::getClassIdentifier() const { return classIdentifier; }

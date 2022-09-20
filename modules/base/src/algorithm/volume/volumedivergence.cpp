@@ -29,12 +29,34 @@
 
 #include <modules/base/algorithm/volume/volumedivergence.h>
 
-#include <inviwo/core/util/volumeramutils.h>
-#include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/util/templatesampler.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
+#include <inviwo/core/datastructures/data.h>                            // for noData
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/unitsystem.h>                      // for Axis, Unit
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAMPrecision
+#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
+#include <inviwo/core/util/glmutils.h>                                  // for Vector
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, dvec2
+#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
+#include <inviwo/core/util/templatesampler.h>                           // for TemplateVolumeSam...
+#include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxel
+
+#include <stdlib.h>                                                     // for abs
+#include <algorithm>                                                    // for max, min
+#include <array>                                                        // for array
+#include <cmath>                                                        // for abs
+#include <limits>                                                       // for numeric_limits
+#include <string>                                                       // for string
+#include <type_traits>                                                  // for conditional_t
+#include <unordered_set>                                                // for unordered_set
+
+#include <glm/common.hpp>                                               // for mix
+#include <glm/mat4x4.hpp>                                               // for operator*, mat
+#include <glm/vec3.hpp>                                                 // for operator/, operator*
+#include <glm/vec4.hpp>                                                 // for operator*, operator+
 
 namespace inviwo {
 namespace util {

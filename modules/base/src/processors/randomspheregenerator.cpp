@@ -28,18 +28,52 @@
  *********************************************************************************/
 
 #include <modules/base/processors/randomspheregenerator.h>
-#include <inviwo/core/util/indexmapper.h>
 
-#include <inviwo/core/interaction/events/pickingevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/core/interaction/events/wheelevent.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/camera/camera.h>                   // for Camera
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Buffe...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/interaction/events/interactionevent.h>            // for InteractionEvent
+#include <inviwo/core/interaction/events/mousebuttons.h>                // for MouseButton, Mous...
+#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
+#include <inviwo/core/interaction/events/pickingevent.h>                // for PickingEvent
+#include <inviwo/core/interaction/events/touchevent.h>                  // for TouchEvent, Touch...
+#include <inviwo/core/interaction/events/touchstate.h>                  // for TouchState, Touch...
+#include <inviwo/core/interaction/events/wheelevent.h>                  // for WheelEvent
+#include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
+#include <inviwo/core/interaction/pickingstate.h>                       // for PickingState, Pic...
+#include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                      // for ButtonProperty
+#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4, ivec3
+#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper
 
-#include <numeric>
+#include <cstdint>                                                      // for uint32_t
+#include <numeric>                                                      // for iota
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <vector>                                                       // for vector, vector<>:...
+
+#include <flags/flags.h>                                                // for operator&, flags
+#include <glm/common.hpp>                                               // for clamp
+#include <glm/gtc/type_precision.hpp>                                   // for i64
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                                                 // for vec<>::(anonymous)
 
 namespace inviwo {
 

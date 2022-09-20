@@ -28,8 +28,22 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumeboundingbox.h>
-#include <modules/base/algorithm/meshutils.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
+
+#include <inviwo/core/ports/meshport.h>                // for MeshOutport
+#include <inviwo/core/ports/volumeport.h>              // for VolumeInport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::None
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatVec4Property
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
+#include <inviwo/core/util/glmvec.h>                   // for vec4
+#include <modules/base/algorithm/meshutils.h>          // for boundingBoxAdjacency
+
+#include <memory>                                      // for shared_ptr, shared_ptr<>::element_...
+#include <string>                                      // for string
+#include <string_view>                                 // for string_view
+#include <type_traits>                                 // for remove_extent_t
 
 namespace inviwo {
 

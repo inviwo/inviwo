@@ -29,6 +29,15 @@
 
 #include <modules/base/processors/volumeexport.h>
 
+#include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/ports/datainport.h>              // for DataInport
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
+
+#include <memory>                                      // for shared_ptr
+#include <string>                                      // for string
+
 namespace inviwo {
 
 const ProcessorInfo VolumeExport::processorInfo_{

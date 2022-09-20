@@ -28,12 +28,22 @@
  *********************************************************************************/
 
 #include <modules/base/algorithm/dataminmax.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/util/glmvec.h>                                    // for dvec4
+#include <modules/base/algorithm/algorithmoptions.h>                    // for IgnoreSpecialValues
+
+#include <memory>                                                       // for unique_ptr
+#include <unordered_set>                                                // for unordered_set
+
+#include <half/half.hpp>                                                // for operator<
 
 namespace inviwo {
 

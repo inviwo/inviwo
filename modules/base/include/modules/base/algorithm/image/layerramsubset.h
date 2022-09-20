@@ -29,14 +29,23 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/base/basemoduledefine.h>                              // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
+#include <inviwo/core/util/glmconvert.h>                                // for glm_convert_norma...
+#include <inviwo/core/util/glmvec.h>                                    // for ivec2, size2_t
 
-#include <algorithm>
+#include <algorithm>                                                    // for copy, fill
+#include <cstddef>                                                      // for size_t
+#include <memory>                                                       // for shared_ptr, make_...
+#include <unordered_set>                                                // for unordered_set
+
+#include <glm/common.hpp>                                               // for max, min
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
 
 namespace inviwo {
 

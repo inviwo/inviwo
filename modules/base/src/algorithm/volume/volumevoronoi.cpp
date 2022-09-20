@@ -29,7 +29,31 @@
 
 #include <modules/base/algorithm/volume/volumevoronoi.h>
 
-#include <array>
+#include <inviwo/core/datastructures/datamapper.h>        // for DataMapper
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for Wrapping, Wrapping3D, Wrapping:...
+#include <inviwo/core/datastructures/volume/volume.h>     // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>  // for VolumeRAMPrecision
+#include <inviwo/core/util/exception.h>                   // for Exception
+#include <inviwo/core/util/glmmat.h>                      // for mat4
+#include <inviwo/core/util/glmvec.h>                      // for vec3, size3_t, vec4, dvec2
+#include <inviwo/core/util/indexmapper.h>                 // for IndexMapper, IndexMapper3D
+#include <inviwo/core/util/sourcecontext.h>               // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/volumeramutils.h>              // for forEachVoxelParallel
+#include <inviwo/core/util/zip.h>                         // for zip, zipper
+
+#include <algorithm>                                      // for max_element, min_element
+#include <array>                                          // for array<>::value_type, array
+#include <cstddef>                                        // for size_t
+#include <functional>                                     // for __base
+#include <string>                                         // for string
+#include <string_view>                                    // for string_view
+#include <type_traits>                                    // for remove_extent_t, integral_constant
+
+#include <glm/geometric.hpp>                              // for dot
+#include <glm/gtx/norm.hpp>                               // for length2
+#include <glm/mat4x4.hpp>                                 // for operator*
+#include <glm/vec3.hpp>                                   // for operator-, operator*
+#include <glm/vec4.hpp>                                   // for operator*, operator+
 
 namespace inviwo {
 namespace util {

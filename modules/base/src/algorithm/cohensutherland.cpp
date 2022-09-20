@@ -29,7 +29,10 @@
 
 #include <modules/base/algorithm/cohensutherland.h>
 
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>  // for vec2
+
+#include <glm/common.hpp>             // for step
+#include <glm/vec2.hpp>               // for vec<>::(anonymous), operator-, vec
 
 namespace inviwo {
 

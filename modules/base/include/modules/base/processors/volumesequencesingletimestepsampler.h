@@ -29,13 +29,29 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/util/spatialsampler.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/util/volumesampler.h>
+#include <modules/base/basemoduledefine.h>                     // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/coordinatetransformer.h>  // for CoordinateSpace, Coordinat...
+#include <inviwo/core/datastructures/volume/volume.h>          // for Volume
+#include <inviwo/core/ports/dataoutport.h>                     // for DataOutport
+#include <inviwo/core/ports/volumeport.h>                      // for VolumeSequenceInport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/properties/ordinalproperty.h>            // for DoubleProperty
+#include <inviwo/core/util/glmutils.h>                         // for Vector
+#include <inviwo/core/util/glmvec.h>                           // for dvec3
+#include <inviwo/core/util/spatialsampler.h>                   // for SpatialSampler
+#include <inviwo/core/util/volumesampler.h>                    // for VolumeDoubleSampler
+
+#include <memory>                                              // for shared_ptr
+#include <string>                                              // for operator+, string
+
+#include <fmt/core.h>                                          // for format
+#include <glm/common.hpp>                                      // for mix
+#include <glm/fwd.hpp>                                         // for uvec3
+#include <glm/mat4x4.hpp>                                      // for operator*
+#include <glm/vec3.hpp>                                        // for operator/, operator*, oper...
+#include <glm/vec4.hpp>                                        // for operator*, operator+
 
 namespace inviwo {
 

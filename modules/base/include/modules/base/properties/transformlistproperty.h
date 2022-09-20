@@ -29,12 +29,28 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/listproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/util/glm.h>
+#include <modules/base/basemoduledefine.h>             // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/listproperty.h>       // for ListProperty
+#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatVec3Property, FloatMat4Property
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
+#include <inviwo/core/util/defaultvalues.h>            // for Defaultvalues
+#include <inviwo/core/util/glm.h>                      // for filled
+#include <inviwo/core/util/glmmat.h>                   // for mat4
+#include <inviwo/core/util/glmvec.h>                   // for vec3
+#include <inviwo/core/util/staticstring.h>             // for operator+
+
+#include <functional>                                  // for __base
+#include <string>                                      // for operator==, string
+#include <string_view>                                 // for string_view, operator==
+#include <vector>                                      // for operator!=, vector, operator==
+
+#include <glm/ext/scalar_constants.hpp>                // for pi
+#include <glm/mat4x4.hpp>                              // for operator+
+#include <glm/vec4.hpp>                                // for operator+
 
 namespace inviwo {
 

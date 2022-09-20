@@ -29,19 +29,22 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/meshport.h>
+#include <modules/base/basemoduledefine.h>                 // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/ports/meshport.h>                    // for MeshOutport
+#include <inviwo/core/ports/volumeport.h>                  // for VolumeInport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/minmaxproperty.h>         // for FloatMinMaxProperty
+#include <inviwo/core/properties/ordinalproperty.h>        // for FloatProperty, FloatVec4Property
+#include <inviwo/core/properties/property.h>               // for Property::OnChangeBlocker
+#include <inviwo/core/util/stdextensions.h>                // for make_array
 
-#include <array>
-#include <string_view>
+#include <array>                                           // for array
+#include <cstddef>                                         // for size_t
+#include <string_view>                                     // for string_view
 
 namespace inviwo {
 

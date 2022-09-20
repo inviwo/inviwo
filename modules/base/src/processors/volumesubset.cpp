@@ -28,9 +28,36 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumesubset.h>
-#include <modules/base/algorithm/volume/volumeramsubset.h>
-#include <inviwo/core/network/networklock.h>
-#include <glm/gtx/vector_angle.hpp>
+
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/network/networklock.h>                            // for NetworkLock
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport, Vol...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/minmaxproperty.h>                      // for IntSizeTMinMaxPro...
+#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
+#include <inviwo/core/util/glmmat.h>                                    // for mat3
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t
+#include <modules/base/algorithm/volume/volumeramsubset.h>              // for VolumeRAMSubSet
+
+#include <functional>                                                   // for __base
+#include <memory>                                                       // for shared_ptr, share...
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+
+#include <glm/detail/qualifier.hpp>                                     // for tvec2
+#include <glm/mat3x3.hpp>                                               // for mat<>::col_type
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                                                 // for operator/, operator+
 
 namespace inviwo {
 

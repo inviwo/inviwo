@@ -29,10 +29,13 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/cameraproperty.h>
+#include <modules/base/basemoduledefine.h>           // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/meshport.h>              // for MeshOutport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/cameraproperty.h>   // for CameraProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for FloatVec4Property
 
 namespace inviwo {
 

@@ -28,7 +28,23 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>
-#include <inviwo/core/util/volumesequencesampler.h>
+
+#include <inviwo/core/ports/dataoutport.h>           // for DataOutport
+#include <inviwo/core/ports/outportiterable.h>       // for OutportIterableImpl<>::const_iterator
+#include <inviwo/core/ports/volumeport.h>            // for VolumeSequenceInport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Experimental
+#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::None
+#include <inviwo/core/properties/boolproperty.h>     // for BoolProperty
+#include <inviwo/core/util/spatial4dsampler.h>       // for Spatial4DSampler
+#include <inviwo/core/util/volumesequencesampler.h>  // for VolumeSequenceSampler
+
+#include <functional>                                // for __base
+#include <memory>                                    // for make_shared, shared_ptr
+#include <string_view>                               // for string_view
+
+#include <fmt/core.h>                                // for format
 
 namespace inviwo {
 

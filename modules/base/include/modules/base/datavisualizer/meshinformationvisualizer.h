@@ -28,12 +28,22 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/rendering/datavisualizer.h>
+#include <modules/base/basemoduledefine.h>         // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/rendering/datavisualizer.h>  // for DataVisualizer
+#include <inviwo/core/util/document.h>             // for Document
+
+#include <string>                                  // for string
+#include <utility>                                 // for pair
+#include <vector>                                  // for vector
 
 namespace inviwo {
 
+class FileExtension;
 class InviwoApplication;
+class Outport;
+class Processor;
+class ProcessorNetwork;
 
 class IVW_MODULE_BASE_API MeshInformationVisualizer : public DataVisualizer {
 public:

@@ -28,12 +28,26 @@
  *********************************************************************************/
 
 #include <modules/base/algorithm/mesh/meshcameraalgorithms.h>
-#include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/algorithm/camerautils.h>
+
+#include <inviwo/core/algorithm/camerautils.h>                   // for computeCameraNearFar
+#include <inviwo/core/network/networklock.h>                     // for NetworkLock
+#include <inviwo/core/properties/cameraproperty.h>               // for CameraProperty
+#include <inviwo/core/properties/ordinalrefproperty.h>           // for FloatVec3RefProperty
+#include <inviwo/core/util/glmvec.h>                             // for vec3, vec4
+#include <modules/base/algorithm/mesh/axisalignedboundingbox.h>  // for axisAlignedBoundingBox
+
+#include <algorithm>                                             // for max
+
+#include <glm/common.hpp>                                        // for abs, max, min
+#include <glm/ext/matrix_transform.hpp>                          // for scale
+#include <glm/geometric.hpp>                                     // for distance
+#include <glm/gtx/transform.hpp>                                 // for scale
+#include <glm/mat4x4.hpp>                                        // for mat, mat<>::col_type
+#include <glm/vec3.hpp>                                          // for operator*, operator-, vec
+#include <glm/vec4.hpp>                                          // for operator*
 
 namespace inviwo {
+class Mesh;
 
 namespace meshutil {
 

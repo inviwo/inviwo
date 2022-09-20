@@ -31,11 +31,13 @@
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/base/algorithm/volume/volumegeneration.h>
 #include <benchmark/benchmark.h>
 #include <array>
 #include <vector>
 #include <inviwo/volume/algorithm/volumemap.h>
+
 
 using namespace inviwo;
 

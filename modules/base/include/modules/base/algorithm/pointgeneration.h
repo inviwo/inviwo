@@ -28,15 +28,25 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <modules/base/algorithm/randomutils.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/volumeramutils.h>
+#include <inviwo/core/util/glmmat.h>             // for dmat4
+#include <inviwo/core/util/glmvec.h>             // for dvec3, dvec2, size3_t, dvec4
+#include <inviwo/core/util/stdextensions.h>      // for overloaded
+#include <inviwo/core/util/volumeramutils.h>     // for forEachVoxel
+#include <modules/base/algorithm/randomutils.h>  // for randomNumber
 
-#include <optional>
-#include <random>
-#include <variant>
+#include <cmath>                                 // for cos, sin, acos, pow
+#include <cstddef>                               // for size_t
+#include <optional>                              // for optional, nullopt
+#include <random>                                // for mt19937_64, random_device
+#include <type_traits>                           // for remove_reference<>::type
+#include <variant>                               // for variant, visit
+
+#include <glm/detail/qualifier.hpp>              // for vec
+#include <glm/gtc/constants.hpp>                 // for two_pi
+#include <glm/gtx/transform.hpp>                 // for scale
+#include <glm/mat4x4.hpp>                        // for operator*, mat
+#include <glm/vec2.hpp>                          // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                          // for vec<>::(anonymous), operator+
 
 namespace inviwo {
 

@@ -29,16 +29,23 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <modules/base/basemoduledefine.h>             // for IVW_MODULE_BASE_API
 
-#include <random>
+#include <inviwo/core/ports/volumeport.h>              // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/minmaxproperty.h>     // for FloatMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>    // for IntSizeTProperty, IntProperty, Int...
+#include <inviwo/core/util/staticstring.h>             // for operator+
+
+#include <functional>                                  // for __base
+#include <random>                                      // for mt19937, random_device
+#include <string>                                      // for operator==, string
+#include <string_view>                                 // for operator==
+#include <vector>                                      // for operator!=, vector, operator==
 
 namespace inviwo {
 

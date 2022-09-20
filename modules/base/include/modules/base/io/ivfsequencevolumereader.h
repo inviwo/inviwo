@@ -29,10 +29,14 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/io/datareader.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <modules/base/io/ivfvolumereader.h>
+#include <modules/base/basemoduledefine.h>             // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/volume/volume.h>  // for VolumeSequence, DataReaderType
+#include <inviwo/core/io/datareader.h>                 // for DataReaderType
+#include <modules/base/io/ivfvolumereader.h>           // for IvfVolumeReader
+
+#include <memory>                                      // for shared_ptr
+#include <string_view>                                 // for string_view
 
 namespace inviwo {
 /**

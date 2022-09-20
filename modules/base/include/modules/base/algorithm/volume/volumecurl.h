@@ -29,11 +29,12 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <modules/base/algorithm/algorithmoptions.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <memory>                           // for unique_ptr, shared_ptr
 
 namespace inviwo {
+class Volume;
 
 namespace util {
 

@@ -29,10 +29,18 @@
 
 #include <modules/base/algorithm/cubeproxygeometry.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volume.h> // IWYU pragma: keep
+#include <inviwo/core/util/glmvec.h>           // for vec3, size3_t
+#include <inviwo/core/util/volumeutils.h>      // for getVolumeMargins, hasMargins, getVolumeDim...
+#include <modules/base/algorithm/meshutils.h>  // for parallelepiped, IncludeNormals
 
-#include <inviwo/core/metadata/metadata.h>
-#include <inviwo/core/util/volumeutils.h>
+#include <tuple>                               // for tie, tuple
+#include <type_traits>                         // for remove_extent_t
+
+#include <glm/common.hpp>                      // for min, max
+#include <glm/fwd.hpp>                         // for vec3, vec4
+#include <glm/vec3.hpp>                        // for vec, vec<>::(anonymous), operator+, operator*
+#include <glm/vec4.hpp>                        // for operator*, operator+, vec
 
 namespace inviwo {
 

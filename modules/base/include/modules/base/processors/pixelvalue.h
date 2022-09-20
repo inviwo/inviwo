@@ -29,14 +29,19 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
+#include <modules/base/basemoduledefine.h>           // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/imageport.h>             // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/eventproperty.h>    // for EventProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for DoubleVec4Property, FloatVec4Property
+#include <inviwo/core/properties/stringproperty.h>   // for StringProperty
+
+#include <vector>                                    // for vector
 
 namespace inviwo {
+class Event;
 
 /** docpage{org.inviwo.PixelValue, Pixel Value}
  * ![](org.inviwo.PixelValue.png?classIdentifier=org.inviwo.PixelValue)

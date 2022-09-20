@@ -28,11 +28,38 @@
  *********************************************************************************/
 
 #include <modules/base/processors/imageexport.h>
-#include <inviwo/core/network/networkutils.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/network/portconnection.h>
-#include <inviwo/core/interaction/events/resizeevent.h>
-#include <inviwo/core/util/stdextensions.h>
+
+#include <inviwo/core/datastructures/image/layer.h>      // for Layer
+#include <inviwo/core/interaction/events/resizeevent.h>  // for ResizeEvent
+#include <inviwo/core/io/datawriter.h>                   // for DataWriterType
+#include <inviwo/core/io/datawriterexception.h>          // for DataWriterException
+#include <inviwo/core/network/networkutils.h>            // for getSuccessors
+#include <inviwo/core/network/portconnection.h>          // for PortConnection
+#include <inviwo/core/network/processornetwork.h>        // for ProcessorNetwork
+#include <inviwo/core/ports/imageport.h>                 // for ImageInport, BaseImageInport
+#include <inviwo/core/ports/inport.h>                    // for Inport
+#include <inviwo/core/ports/outportiterable.h>           // for OutportIterable
+#include <inviwo/core/processors/processor.h>            // for Processor
+#include <inviwo/core/processors/processorinfo.h>        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>       // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>        // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>         // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>      // for IntSize2Property, OrdinalProperty
+#include <inviwo/core/util/glmvec.h>                     // for size2_t, uvec3
+#include <inviwo/core/util/stdextensions.h>              // for contains
+#include <modules/base/processors/dataexport.h>          // for DataExport
+
+#include <functional>                                    // for __base
+#include <memory>                                        // for shared_ptr
+#include <string>                                        // for string
+#include <string_view>                                   // for string_view
+#include <type_traits>                                   // for remove_extent_t
+#include <unordered_map>                                 // for operator!=
+#include <unordered_set>                                 // for unordered_set
+#include <vector>                                        // for vector
+
+#include <fmt/core.h>                                    // for format_to, basic_string_view
+#include <glm/vec2.hpp>                                  // for operator!=
 
 namespace inviwo {
 

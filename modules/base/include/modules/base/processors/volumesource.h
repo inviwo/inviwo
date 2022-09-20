@@ -29,20 +29,30 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <modules/base/properties/basisproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-#include <modules/base/properties/sequencetimerproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/util/fileextension.h>
+#include <modules/base/basemoduledefine.h>                      // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
+#include <inviwo/core/properties/fileproperty.h>                // for FileProperty
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
+#include <inviwo/core/util/fileextension.h>                     // for FileExtension, operator==
+#include <modules/base/properties/basisproperty.h>              // for BasisProperty
+#include <modules/base/properties/sequencetimerproperty.h>      // for SequenceTimerProperty
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+
+#include <functional>                                           // for __base
+#include <memory>                                               // for shared_ptr
+#include <string>                                               // for operator==, string
+#include <string_view>                                          // for operator==
+#include <vector>                                               // for operator!=, vector, opera...
 
 namespace inviwo {
 
+class Deserializer;
 class InviwoApplication;
+class Volume;
 
 class IVW_MODULE_BASE_API VolumeSource : public Processor {
 public:

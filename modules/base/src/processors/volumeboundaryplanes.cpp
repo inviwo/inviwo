@@ -29,6 +29,31 @@
 
 #include <modules/base/processors/volumeboundaryplanes.h>
 
+#include <inviwo/core/datastructures/coordinatetransformer.h>  // for StructuredCoordinateTransf...
+#include <inviwo/core/datastructures/geometry/plane.h>         // for Plane
+#include <inviwo/core/ports/dataoutport.h>                     // for DataOutport
+#include <inviwo/core/ports/outportiterable.h>                 // for OutportIterableImpl<>::con...
+#include <inviwo/core/ports/volumeport.h>                      // for VolumeInport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>              // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/util/glmmat.h>                           // for mat3
+#include <inviwo/core/util/glmvec.h>                           // for vec4, vec3
+
+#include <functional>                                          // for __base
+#include <memory>                                              // for shared_ptr, make_shared
+#include <string_view>                                         // for string_view
+#include <type_traits>                                         // for remove_extent_t
+
+#include <fmt/core.h>                                          // for format
+#include <glm/mat3x3.hpp>                                      // for operator*, mat, mat<>::col...
+#include <glm/mat4x4.hpp>                                      // for operator*, mat
+#include <glm/matrix.hpp>                                      // for inverse, transpose
+#include <glm/vec3.hpp>                                        // for operator*
+#include <glm/vec4.hpp>                                        // for operator*, operator+, oper...
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

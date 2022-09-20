@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
+
 #include <memory>
 
 namespace inviwo {

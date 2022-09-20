@@ -29,21 +29,35 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/propertyfactory.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/util/timer.h>
+#include <modules/base/basemoduledefine.h>             // for IVW_MODULE_BASE_API
 
-#include <glm/vector_relational.hpp>
-#include <iosfwd>
-#include <tuple>
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>     // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>     // for OptionPropertyOption, OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>    // for OrdinalProperty, IntProperty
+#include <inviwo/core/properties/property.h>           // for Property (ptr only), PropertyTraits
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics
+#include <inviwo/core/util/defaultvalues.h>            // for Defaultvalues
+#include <inviwo/core/util/glmutils.h>                 // for rank, value_type
+#include <inviwo/core/util/glmvec.h>                   // for dvec2, dvec3, dvec4, ivec2, ivec3
+#include <inviwo/core/util/staticstring.h>             // for operator+
+#include <inviwo/core/util/timer.h>                    // for Timer
+
+#include <functional>                                  // for function, __base
+#include <iosfwd>                                      // for ostream
+#include <memory>                                      // for unique_ptr, make_unique
+#include <string>                                      // for operator==, string
+#include <string_view>                                 // for string_view, operator==
+#include <tuple>                                       // for tuple
+#include <type_traits>                                 // for enable_if
+#include <vector>                                      // for operator!=, vector, operator==
 
 namespace inviwo {
+class Deserializer;
 
 class IVW_MODULE_BASE_API BaseOrdinalAnimationProperty : public CompositeProperty {
 public:

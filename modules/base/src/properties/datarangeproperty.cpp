@@ -29,7 +29,23 @@
 
 #include <modules/base/properties/datarangeproperty.h>
 
+#include <inviwo/core/datastructures/datamapper.h>         // for DataMapper
+#include <inviwo/core/ports/volumeport.h>                  // for VolumeInport
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
+#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
+#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
+#include <inviwo/core/properties/valuewrapper.h>           // for PropertySerializationMode, Pro...
+#include <inviwo/core/util/formats.h>                      // for DataFloat64
+#include <inviwo/core/util/glmvec.h>                       // for dvec2
+
+#include <functional>                                      // for __base, function
+#include <limits>                                          // for numeric_limits
+#include <type_traits>                                     // for remove_extent_t
+
 namespace inviwo {
+class Volume;
 
 const std::string DataRangeProperty::classIdentifier = "org.inviwo.DataRangeProperty";
 std::string DataRangeProperty::getClassIdentifier() const { return classIdentifier; }

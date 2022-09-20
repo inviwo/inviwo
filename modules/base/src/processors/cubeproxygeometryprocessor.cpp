@@ -28,12 +28,34 @@
  *********************************************************************************/
 
 #include <modules/base/processors/cubeproxygeometryprocessor.h>
-#include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/util/volumeutils.h>
-#include <modules/base/algorithm/cubeproxygeometry.h>
+
+#include <inviwo/core/algorithm/markdown.h>            // for operator""_help, operator""_uninde...
+#include <inviwo/core/network/networklock.h>           // for NetworkLock
+#include <inviwo/core/ports/meshport.h>                // for MeshOutport
+#include <inviwo/core/ports/volumeport.h>              // for VolumeInport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
+#include <inviwo/core/properties/minmaxproperty.h>     // for IntMinMaxProperty, MinMaxProperty
+#include <inviwo/core/properties/valuewrapper.h>       // for PropertySerializationMode, Propert...
+#include <inviwo/core/util/glmvec.h>                   // for ivec2, size3_t
+#include <inviwo/core/util/volumeutils.h>              // for getVolumeDimensions
+#include <modules/base/algorithm/cubeproxygeometry.h>  // for createCubeProxyGeometry
+#include <modules/base/algorithm/meshutils.h>          // for IncludeNormals, IncludeNormals::No
+
+#include <functional>                                  // for __base
+#include <memory>                                      // for shared_ptr
+#include <string>                                      // for string
+#include <string_view>                                 // for string_view
+
+#include <glm/detail/qualifier.hpp>                    // for tvec2
+#include <glm/vec2.hpp>                                // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                                // for vec, operator!=, vec<>::(anonymous)
 
 namespace inviwo {
+class Mesh;
 
 const ProcessorInfo CubeProxyGeometry::processorInfo_{
     "org.inviwo.CubeProxyGeometry",  // Class identifier

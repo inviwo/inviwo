@@ -28,11 +28,48 @@
  *********************************************************************************/
 
 #include <modules/base/algorithm/mesh/meshclipping.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
-#include <algorithm>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/coordinatetransformer.h>           // for SpatialCoordinate...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/datastructures/geometry/plane.h>                  // for Plane
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionType
+#include <inviwo/core/util/formats.h>                                   // for DataFormat, Numer...
+#include <inviwo/core/util/glmutils.h>                                  // for same_extent
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec2, vec4
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWa...
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+
+#include <algorithm>                                                    // for transform, find_if
+#include <cstddef>                                                      // for size_t
+#include <iterator>                                                     // for back_insert_iterator
+#include <numeric>                                                      // for accumulate, iota
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <tuple>                                                        // for make_tuple, tuple...
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for pair
+
+#include <glm/common.hpp>                                               // for abs, max
+#include <glm/ext/scalar_relational.hpp>                                // for equal
+#include <glm/ext/vector_relational.hpp>                                // for equal
+#include <glm/fwd.hpp>                                                  // for u32vec2, u32vec3
+#include <glm/geometric.hpp>                                            // for dot, cross, length
+#include <glm/gtc/type_ptr.hpp>                                         // for value_ptr
+#include <glm/gtx/component_wise.hpp>                                   // for compMax
+#include <glm/gtx/scalar_relational.hpp>                                // for all
+#include <glm/mat4x4.hpp>                                               // for operator*, mat
+#include <glm/matrix.hpp>                                               // for inverse
+#include <glm/vec2.hpp>                                                 // for operator*, vec
+#include <glm/vec3.hpp>                                                 // for operator*, operator-
+#include <glm/vec4.hpp>                                                 // for operator*, operator+
+#include <glm/vector_relational.hpp>                                    // for all
 
 namespace inviwo {
 

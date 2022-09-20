@@ -28,9 +28,37 @@
  *********************************************************************************/
 
 #include <modules/base/algorithm/volume/marchingtetrahedron.h>
-#include <modules/base/algorithm/volume/surfaceextraction.h>
+
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for IndexBufferRAM
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
+#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for TypedMesh<>::Vertex
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // IWYU pragma: keep
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/util/assertion.h>                                 // for ivwAssert
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
+#include <inviwo/core/util/glmvec.h>                                    // for size3_t, vec3, vec4
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWa...
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <modules/base/algorithm/volume/surfaceextraction.h>            // for interpolate, addT...
+#include <modules/base/datastructures/kdtree.h>                         // for K3DTree
+
+#include <algorithm>                                                    // for max
+#include <array>                                                        // for array, array<>::v...
+#include <cstddef>                                                      // for size_t
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+#include <vector>                                                       // for vector
+
+#include <glm/detail/setup.hpp>                                         // for size_t
+#include <glm/fwd.hpp>                                                  // for vec3
+#include <glm/geometric.hpp>                                            // for normalize
+#include <glm/vec3.hpp>                                                 // for vec<>::(anonymous)
 
 namespace inviwo {
+class Mesh;
 
 std::shared_ptr<Mesh> MarchingTetrahedron::apply(
     std::shared_ptr<const Volume> volume, double iso, const vec4& color, bool invert, bool enclose,

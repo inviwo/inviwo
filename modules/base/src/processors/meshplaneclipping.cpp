@@ -28,9 +28,27 @@
  *********************************************************************************/
 
 #include <modules/base/processors/meshplaneclipping.h>
-#include <modules/base/algorithm/mesh/meshclipping.h>
+
+#include <inviwo/core/datastructures/geometry/plane.h>  // for Plane
+#include <inviwo/core/ports/datainport.h>               // for FlatMultiDataInport
+#include <inviwo/core/ports/inportiterable.h>           // for InportIterable<>::const_iterator
+#include <inviwo/core/ports/meshport.h>                 // for MeshInport, MeshOutport
+#include <inviwo/core/ports/outportiterable.h>          // for OutportIterable
+#include <inviwo/core/processors/processor.h>           // for Processor
+#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>      // for CodeState, CodeState::Experimental
+#include <inviwo/core/processors/processortags.h>       // for Tags, Tags::None
+#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
+#include <inviwo/core/util/glmvec.h>                    // for uvec3
+#include <modules/base/algorithm/mesh/meshclipping.h>   // for clipMeshAgainstPlane
+
+#include <memory>                                       // for shared_ptr
+#include <string_view>                                  // for string_view
+
+#include <fmt/core.h>                                   // for format_to, basic_string_view, format
 
 namespace inviwo {
+class Mesh;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MeshPlaneClipping::processorInfo_{

@@ -28,7 +28,22 @@
  *********************************************************************************/
 
 #include <modules/base/processors/stereocamerasyncer.h>
-#include <inviwo/core/util/raiiutils.h>
+
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Experimental
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::None
+#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty
+#include <inviwo/core/util/glmvec.h>                   // for vec3
+#include <inviwo/core/util/raiiutils.h>                // for KeepTrueWhileInScope
+
+#include <functional>                                  // for __base
+#include <string>                                      // for string
+#include <string_view>                                 // for string_view
+
+#include <glm/vec3.hpp>                                // for operator*, operator+, operator-, vec
 
 namespace inviwo {
 

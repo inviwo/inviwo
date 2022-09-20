@@ -29,11 +29,18 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/base/processors/dataexport.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/ports/meshport.h>
+#include <modules/base/basemoduledefine.h>             // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/io/datawriter.h>                 // for DataWriterType
+#include <inviwo/core/io/datawriterexception.h>        // for DataWriterException
+#include <inviwo/core/ports/meshport.h>                // for MeshInport
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <modules/base/processors/dataexport.h>        // for DataExport
+
+#include <functional>                                  // for __base
+#include <map>                                         // for map, operator!=
+#include <vector>                                      // for vector
 
 namespace inviwo {
 

@@ -29,7 +29,18 @@
 
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                   // for CodeState, CodeState...
+#include <inviwo/core/processors/processortags.h>                    // for Tags, Tags::CPU
+#include <inviwo/core/properties/ordinalproperty.h>                  // for IntSizeTProperty
+#include <inviwo/core/util/glmvec.h>                                 // for uvec3
+#include <modules/base/processors/vectorelementselectorprocessor.h>  // for VectorElementSelecto...
+#include <modules/base/properties/sequencetimerproperty.h>           // for SequenceTimerProperty
+
+#include <functional>                                                // for __base
+
 namespace inviwo {
+class Volume;
 
 const ProcessorInfo VolumeSequenceElementSelectorProcessor::processorInfo_{
     "org.inviwo.TimeStepSelector",       // Class identifier

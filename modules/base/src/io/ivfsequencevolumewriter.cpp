@@ -28,10 +28,20 @@
  *********************************************************************************/
 
 #include <modules/base/io/ivfsequencevolumewriter.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datawriterexception.h>
 
-#include <fmt/format.h>
+#include <inviwo/core/datastructures/volume/volume.h>  // for VolumeSequence
+#include <inviwo/core/io/datawriter.h>                 // for DataWriter, Overwrite
+#include <inviwo/core/io/serialization/serializer.h>   // for Serializer
+#include <inviwo/core/util/filesystem.h>               // for getFileDirectory, cleanupPath, cre...
+#include <inviwo/core/util/typetraits.h>               // for alwaysTrue, identity
+#include <modules/base/io/ivfvolumewriter.h>           // for IvfVolumeWriter
+
+#include <cmath>                                       // for log10
+#include <cstddef>                                     // for size_t
+#include <memory>                                      // for shared_ptr
+#include <vector>                                      // for vector
+
+#include <fmt/core.h>                                  // for format
 
 namespace inviwo {
 

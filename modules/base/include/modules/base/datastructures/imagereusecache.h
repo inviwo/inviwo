@@ -29,14 +29,23 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/base/basemoduledefine.h>           // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/datastructures/image/image.h>  // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layer.h>  // for Layer
+#include <inviwo/core/util/formats.h>                // for DataFormat
+#include <inviwo/core/util/glmvec.h>                 // for size2_t
+
+#include <memory>                                    // for shared_ptr, make_shared
+#include <type_traits>                               // for remove_extent_t
+#include <utility>                                   // for pair
+#include <vector>                                    // for vector
+
+#include <glm/vec2.hpp>                              // for operator==
 
 namespace inviwo {
+class LayerRAM;
+template <typename T> class LayerRAMPrecision;
 
 class IVW_MODULE_BASE_API ImageReuseCache {
 public:

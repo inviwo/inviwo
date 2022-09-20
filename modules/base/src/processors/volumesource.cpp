@@ -28,23 +28,45 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumesource.h>
-#include <modules/base/processors/datasource.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/io/rawvolumereader.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/resourcemanager/resource.h>
-#include <inviwo/core/resourcemanager/resourcemanager.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/metadata/metadata.h>
 
-#include <algorithm>
-#include <cmath>
+#include <inviwo/core/algorithm/markdown.h>                     // for operator""_help
+#include <inviwo/core/common/factoryutil.h>                     // for getDataReaderFactory, get...
+#include <inviwo/core/datastructures/volume/volume.h>           // for Volume
+#include <inviwo/core/io/datareader.h>                          // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                 // for DataReaderException
+#include <inviwo/core/io/datareaderfactory.h>                   // for DataReaderFactory
+#include <inviwo/core/metadata/metadata.h>                      // for StringMetaData
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>               // for Tags, Tags::CPU
+#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
+#include <inviwo/core/properties/fileproperty.h>                // for FileProperty
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>             // for IntSizeTProperty
+#include <inviwo/core/properties/property.h>                    // for OverwriteState, Overwrite...
+#include <inviwo/core/resourcemanager/resourcemanager.h>        // for ResourceManager
+#include <inviwo/core/util/fileextension.h>                     // for FileExtension, operator==
+#include <inviwo/core/util/filesystem.h>                        // for fileExists
+#include <inviwo/core/util/logcentral.h>                        // for LogCentral, LogProcessorE...
+#include <inviwo/core/util/statecoordinator.h>                  // for StateCoordinator
+#include <modules/base/processors/datasource.h>                 // for updateFilenameFilters
+#include <modules/base/properties/basisproperty.h>              // for BasisProperty
+#include <modules/base/properties/sequencetimerproperty.h>      // for SequenceTimerProperty
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+
+#include <algorithm>                                            // for min
+#include <cstddef>                                              // for size_t
+#include <map>                                                  // for map, operator!=
+#include <ostream>                                              // for operator<<
+#include <type_traits>                                          // for remove_extent_t
+#include <utility>                                              // for move
+
+#include <fmt/core.h>                                           // for format
 
 namespace inviwo {
+class Deserializer;
 
 const ProcessorInfo VolumeSource::processorInfo_{
     "org.inviwo.VolumeSource",  // Class identifier

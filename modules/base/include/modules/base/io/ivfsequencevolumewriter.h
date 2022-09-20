@@ -29,9 +29,14 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/io/datawriter.h>
-#include <modules/base/io/ivfvolumewriter.h>
+#include <modules/base/basemoduledefine.h>             // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/volume/volume.h>  // for VolumeSequence
+#include <inviwo/core/io/datawriter.h>                 // for DataWriterType, Overwrite, Overwri...
+#include <modules/base/io/ivfvolumewriter.h>           // for IvfVolumeWriter
+
+#include <string>                                      // for string
+#include <string_view>                                 // for string_view
 
 namespace inviwo {
 /**

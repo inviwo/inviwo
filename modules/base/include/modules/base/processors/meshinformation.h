@@ -29,12 +29,14 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/util/metadatatoproperty.h>
-#include <modules/base/properties/meshinformationproperty.h>
+#include <modules/base/basemoduledefine.h>                    // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/meshport.h>                       // for MeshInport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
+#include <inviwo/core/util/metadatatoproperty.h>              // for MetaDataToProperty
+#include <modules/base/properties/meshinformationproperty.h>  // for MeshInformationProperty
 
 namespace inviwo {
 

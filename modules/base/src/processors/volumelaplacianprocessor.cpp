@@ -29,7 +29,24 @@
 
 #include <modules/base/processors/volumelaplacianprocessor.h>
 
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport, VolumeInport
+#include <inviwo/core/processors/poolprocessor.h>               // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeState::Exp...
+#include <inviwo/core/processors/processortags.h>               // for Tags, Tags::CPU
+#include <inviwo/core/properties/invalidationlevel.h>           // for InvalidationLevel, Invali...
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty, OptionPro...
+#include <inviwo/core/properties/ordinalproperty.h>             // for DoubleProperty
+#include <inviwo/core/properties/property.h>                    // for OverwriteState, Overwrite...
+#include <inviwo/core/properties/propertysemantics.h>           // for PropertySemantics, Proper...
+#include <inviwo/core/util/staticstring.h>                      // for operator+
+#include <modules/base/algorithm/volume/volumelaplacian.h>      // for VolumeLaplacianPostProces...
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+
+#include <memory>                                               // for shared_ptr
+
 namespace inviwo {
+class Volume;
 
 const ProcessorInfo VolumeLaplacianProcessor::processorInfo_{
     "org.inviwo.VolumeLaplacianProcessor",  // Class identifier

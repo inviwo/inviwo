@@ -29,8 +29,22 @@
 
 #include <modules/base/properties/bufferinformationproperty.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>          // for BufferBase
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for operator<<
+#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh::BufferInfo, Mesh::Me...
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
+#include <inviwo/core/properties/ordinalproperty.h>            // for OrdinalProperty, IntProperty
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>             // for StringProperty
+#include <inviwo/core/properties/templateproperty.h>           // for TemplateProperty
+#include <inviwo/core/properties/valuewrapper.h>               // for PropertySerializationMode
+#include <inviwo/core/util/foreacharg.h>                       // for for_each_in_tuple
+#include <inviwo/core/util/formats.h>                          // for DataFormatBase
+#include <inviwo/core/util/stringconversion.h>                 // for toString
+
+#include <cstddef>                                             // for size_t
+#include <limits>                                              // for numeric_limits
 
 namespace inviwo {
 

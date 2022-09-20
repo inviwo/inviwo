@@ -29,17 +29,24 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/network/processornetworkobserver.h>
+#include <modules/base/basemoduledefine.h>                 // for IVW_MODULE_BASE_API
 
-#include <modules/base/processors/dataexport.h>
+#include <inviwo/core/datastructures/image/layer.h>        // for Layer
+#include <inviwo/core/io/datawriter.h>                     // for DataWriterType
+#include <inviwo/core/io/datawriterexception.h>            // for DataWriterException
+#include <inviwo/core/network/processornetworkobserver.h>  // for ProcessorNetworkObserver
+#include <inviwo/core/ports/imageport.h>                   // for ImageInport
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>        // for IntSize2Property
+#include <inviwo/core/util/glmvec.h>                       // for size2_t
+#include <modules/base/processors/dataexport.h>            // for DataExport
+
+#include <map>                                             // for operator!=, map
 
 namespace inviwo {
+class PortConnection;
+class ProcessorNetwork;
 
 /** \docpage{org.inviwo.ImageExport, Image Export}
  * ![](org.inviwo.ImageExport.png?classIdentifier=org.inviwo.ImageExport)

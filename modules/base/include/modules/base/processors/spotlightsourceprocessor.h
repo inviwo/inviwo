@@ -29,14 +29,21 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/light/baselightsource.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/positionproperty.h>
-#include <inviwo/core/processors/processor.h>
+#include <modules/base/basemoduledefine.h>                     // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/light/baselightsource.h>  // for LightSource
+#include <inviwo/core/ports/dataoutport.h>                     // for DataOutport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/ordinalproperty.h>            // for FloatProperty, FloatVec2Pr...
+#include <inviwo/core/properties/positionproperty.h>           // for PositionProperty
+
+#include <memory>                                              // for shared_ptr
+#include <string>                                              // for operator+
+
+#include <fmt/core.h>                                          // for format
 
 namespace inviwo {
 

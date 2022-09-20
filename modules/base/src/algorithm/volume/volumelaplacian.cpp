@@ -29,6 +29,20 @@
 
 #include <modules/base/algorithm/volume/volumelaplacian.h>
 
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/util/formatdispatching.h>                         // for dispatch, All
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmutils.h>                                  // for Vector
+
+#include <functional>                                                   // for __base
+#include <unordered_map>                                                // for unordered_map
+#include <vector>                                                       // for vector
+
+#include <glm/common.hpp>                                               // for max, min, mix
+#include <glm/vec2.hpp>                                                 // for operator+, operator*
+
 namespace inviwo {
 
 std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volume,

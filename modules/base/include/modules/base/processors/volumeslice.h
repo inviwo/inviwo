@@ -29,18 +29,27 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/datastructures/geometry/geometrytype.h>
-#include <modules/base/datastructures/imagereusecache.h>
+#include <modules/base/basemoduledefine.h>                     // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for CartesianCoordinateAxis
+#include <inviwo/core/ports/imageport.h>                       // for ImageOutport
+#include <inviwo/core/ports/volumeport.h>                      // for VolumeInport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/eventproperty.h>              // for EventProperty
+#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>            // for IntSizeTProperty
+#include <inviwo/core/util/staticstring.h>                     // for operator+
+#include <modules/base/datastructures/imagereusecache.h>       // for ImageReuseCache
+
+#include <functional>                                          // for __base
+#include <string>                                              // for operator==
+#include <string_view>                                         // for operator==
+#include <vector>                                              // for operator!=, vector, operat...
 
 namespace inviwo {
+class Event;
 
 /** \docpage{org.inviwo.VolumeSlice, Volume Slice}
  * ![](org.inviwo.VolumeSlice.png?classIdentifier=org.inviwo.VolumeSlice)

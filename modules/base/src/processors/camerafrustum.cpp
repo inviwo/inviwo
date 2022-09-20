@@ -28,8 +28,21 @@
  *********************************************************************************/
 
 #include <modules/base/processors/camerafrustum.h>
-#include <modules/base/algorithm/meshutils.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>       // for boundingBox
+#include <inviwo/core/algorithm/markdown.h>          // for operator""_help, operator""_unindent...
+#include <inviwo/core/ports/meshport.h>              // for MeshOutport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::CPU
+#include <inviwo/core/properties/cameraproperty.h>   // for CameraProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for ordinalColor, FloatVec4Property, Ord...
+#include <inviwo/core/util/glmvec.h>                 // for vec4
+#include <modules/base/algorithm/meshutils.h>        // for cameraFrustum
+
+#include <string>                                    // for string
+#include <string_view>                               // for string_view
 
 namespace inviwo {
 

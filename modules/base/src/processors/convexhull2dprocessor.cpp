@@ -29,11 +29,43 @@
 
 #include <modules/base/processors/convexhull2dprocessor.h>
 
-#include <modules/base/algorithm/convexhull.h>
-#include <modules/base/algorithm/convexhullmesh.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/algorithm/markdown.h>                             // for operator""_help
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/camera/camera.h>                   // for mat4
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh::BufferVector
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/meshport.h>                                 // for MeshInport, MeshO...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
+#include <inviwo/core/properties/constraintbehavior.h>                  // for ConstraintBehavior
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatVec3Property
+#include <inviwo/core/util/glmmat.h>                                    // for mat3
+#include <inviwo/core/util/glmvec.h>                                    // for vec2, vec3
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <modules/base/algorithm/convexhull.h>                          // for convexHull, isConvex
+#include <modules/base/algorithm/convexhullmesh.h>                      // for convertHullToMesh
 
-#include <glm/gtc/epsilon.hpp>
+#include <cmath>                                                        // for abs
+#include <cstdlib>                                                      // for abs, size_t
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for pair
+
+#include <glm/ext/matrix_double2x3.hpp>                                 // for dmat2x3
+#include <glm/ext/matrix_double3x2.hpp>                                 // for dmat3x2
+#include <glm/ext/scalar_constants.hpp>                                 // for epsilon
+#include <glm/geometric.hpp>                                            // for cross, normalize
+#include <glm/mat3x2.hpp>                                               // for operator*, mat
+#include <glm/mat3x3.hpp>                                               // for mat<>::col_type
+#include <glm/matrix.hpp>                                               // for transpose
+#include <glm/vec2.hpp>                                                 // for operator-
+#include <glm/vec3.hpp>                                                 // for operator*
 
 namespace inviwo {
 

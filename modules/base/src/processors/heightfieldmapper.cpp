@@ -28,8 +28,42 @@
  *********************************************************************************/
 
 #include <modules/base/processors/heightfieldmapper.h>
-#include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
-#include <inviwo/core/datastructures/image/layerram.h>
+
+#include <inviwo/core/algorithm/markdown.h>                             // for operator""_help
+#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/imageport.h>                                // for ImageInport, Imag...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
+#include <inviwo/core/properties/constraintbehavior.h>                  // for ConstraintBehavior
+#include <inviwo/core/properties/minmaxproperty.h>                      // for FloatMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                    // for size2_t, dvec2
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+
+#include <algorithm>                                                    // for copy, max, max_el...
+#include <cmath>                                                        // for abs
+#include <cstdlib>                                                      // for size_t, abs
+#include <functional>                                                   // for __base
+#include <memory>                                                       // for shared_ptr, uniqu...
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+
+#include <glm/ext/vector_float2.hpp>                                    // for vec2
+#include <glm/ext/vector_uint2.hpp>                                     // for uvec2
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec4.hpp>                                                 // for vec<>::(anonymous)
 
 namespace inviwo {
 

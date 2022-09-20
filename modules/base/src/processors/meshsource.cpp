@@ -29,7 +29,22 @@
 
 #include <modules/base/processors/meshsource.h>
 
+#include <inviwo/core/io/datareader.h>              // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>     // for DataReaderException
+#include <inviwo/core/ports/meshport.h>             // for MeshOutport
+#include <inviwo/core/ports/outportiterable.h>      // for OutportIterableImpl<>::const_iterator
+#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>  // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>   // for Tags, Tags::CPU
+#include <inviwo/core/properties/fileproperty.h>    // for FileProperty
+#include <modules/base/processors/datasource.h>     // for DataSource
+
+#include <functional>                               // for __base
+#include <memory>                                   // for shared_ptr
+
 namespace inviwo {
+class InviwoApplication;
+class Mesh;
 
 const ProcessorInfo MeshSource::processorInfo_{
     "org.inviwo.GeometrySource",  // Class identifier

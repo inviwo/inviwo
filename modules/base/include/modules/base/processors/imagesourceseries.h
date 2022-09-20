@@ -29,17 +29,22 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/filepatternproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <modules/base/basemoduledefine.h>               // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/imageport.h>                 // for ImageOutport
+#include <inviwo/core/processors/processor.h>            // for Processor
+#include <inviwo/core/processors/processorinfo.h>        // for ProcessorInfo
+#include <inviwo/core/properties/buttonproperty.h>       // for ButtonProperty
+#include <inviwo/core/properties/filepatternproperty.h>  // for FilePatternProperty
+#include <inviwo/core/properties/ordinalproperty.h>      // for IntProperty
+#include <inviwo/core/properties/stringproperty.h>       // for StringProperty
+#include <inviwo/core/util/fileextension.h>              // for FileExtension
+
+#include <string>                                        // for string
+#include <vector>                                        // for vector
 
 namespace inviwo {
 
-class FileExtension;
 class InviwoApplication;
 
 /** \docpage{org.inviwo.ImageSourceSeries, Image Series Source}

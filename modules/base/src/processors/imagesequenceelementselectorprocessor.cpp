@@ -29,6 +29,21 @@
 
 #include <modules/base/processors/imagesequenceelementselectorprocessor.h>
 
+#include <inviwo/core/datastructures/image/image.h>                  // for Image
+#include <inviwo/core/ports/imageport.h>                             // for ImageOutport
+#include <inviwo/core/ports/outportiterable.h>                       // for OutportIterable
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                   // for CodeState, CodeState...
+#include <inviwo/core/processors/processortags.h>                    // for Tags, Tags::CPU
+#include <inviwo/core/properties/ordinalproperty.h>                  // for IntSizeTProperty
+#include <inviwo/core/util/glmvec.h>                                 // for uvec3
+#include <modules/base/processors/vectorelementselectorprocessor.h>  // for VectorElementSelecto...
+#include <modules/base/properties/sequencetimerproperty.h>           // for SequenceTimerProperty
+
+#include <functional>                                                // for __base
+
+#include <fmt/core.h>                                                // for basic_string_view
+
 namespace inviwo {
 
 const ProcessorInfo ImageSequenceElementSelectorProcessor::processorInfo_{

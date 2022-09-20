@@ -29,15 +29,19 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/base/algorithm/volume/volumeramsubsample.h>
-#include <inviwo/core/processors/activityindicator.h>
+#include <modules/base/basemoduledefine.h>           // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/volumeport.h>            // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/poolprocessor.h>    // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>     // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for IntVec3Property
+#include <inviwo/core/util/glmvec.h>                 // for size3_t
+
+#include <memory>                                    // for shared_ptr
 
 namespace inviwo {
+class Volume;
 
 /** \docpage{org.inviwo.VolumeSubsample, Volume Subsample}
  * ![](org.inviwo.VolumeSubsample.png?classIdentifier=org.inviwo.VolumeSubsample)

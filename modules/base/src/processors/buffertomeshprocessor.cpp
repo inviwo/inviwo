@@ -29,6 +29,24 @@
 
 #include <modules/base/processors/buffertomeshprocessor.h>
 
+#include <inviwo/core/algorithm/markdown.h>                    // for operator""_help, operator"...
+#include <inviwo/core/datastructures/buffer/buffer.h>          // for IndexBuffer
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, DrawType
+#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/ports/bufferport.h>                      // for BufferInport
+#include <inviwo/core/ports/meshport.h>                        // for MeshOutport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>              // for Tags, Tags::CPU
+#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyOption, Opti...
+#include <inviwo/core/util/exception.h>                        // for Exception
+#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT
+#include <inviwo/core/util/staticstring.h>                     // for operator+
+
+#include <memory>                                              // for const_pointer_cast, shared...
+#include <type_traits>                                         // for remove_extent_t
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

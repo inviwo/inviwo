@@ -28,18 +28,39 @@
  *********************************************************************************/
 
 #include <modules/base/io/datvolumewriter.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/unitsystem.h>
-#include <inviwo/core/io/datawriterexception.h>
 
-#include <glm/gtx/range.hpp>
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for enumToStr, Swizzl...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/unitsystem.h>                      // for Axis, Unit
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataWrite...
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
+#include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
+#include <inviwo/core/metadata/metadata.h>                              // for StringMetaData
+#include <inviwo/core/metadata/metadatamap.h>                           // for MetaDataMap
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/filesystem.h>                                // for ofstream, getFile...
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stdextensions.h>                             // for overloaded
 
-#include <fmt/format.h>
-#include <fmt/ranges.h>
-#include <fmt/ostream.h>
+#include <array>                                                        // for array
+#include <fstream>                                                      // for stringstream, bas...
+#include <memory>                                                       // for unique_ptr
+#include <string>                                                       // for char_traits, string
+#include <unordered_set>                                                // for unordered_set
+#include <vector>                                                       // for vector
+
+#include <fmt/core.h>                                                   // for basic_string_view
+#include <fmt/format.h>                                                 // for join
+#include <fmt/ostream.h>                                                // for print
+#include <glm/fwd.hpp>                                                  // for mat4, mat3, vec3
+#include <glm/gtc/type_ptr.hpp>                                         // for value_ptr
+#include <glm/gtx/range.hpp>                                            // for begin, end
+#include <glm/mat3x3.hpp>                                               // for mat<>::col_type
+#include <glm/mat4x4.hpp>                                               // for mat<>::col_type
+#include <glm/matrix.hpp>                                               // for transpose
 
 namespace inviwo {
 

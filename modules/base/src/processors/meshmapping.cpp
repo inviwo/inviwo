@@ -29,16 +29,50 @@
 
 #include <modules/base/processors/meshmapping.h>
 
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/util/zip.h>
-#include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Buffe...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/tfprimitive.h>                     // for TFPrimitiveData
+#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFunction
+#include <inviwo/core/ports/meshport.h>                                 // for MeshInport, MeshO...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/minmaxproperty.h>                      // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/properties/property.h>                            // for Property
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmcomp.h>                                   // for glmcomp
+#include <inviwo/core/util/glmvec.h>                                    // for vec4, dvec2
+#include <inviwo/core/util/zip.h>                                       // for enumerate, zipIte...
+#include <modules/base/algorithm/dataminmax.h>                          // for bufferMinMax
 
-#include <algorithm>
+#include <algorithm>                                                    // for transform
+#include <array>                                                        // for array
+#include <cstddef>                                                      // for size_t
+#include <functional>                                                   // for __base
+#include <limits>                                                       // for numeric_limits
+#include <memory>                                                       // for shared_ptr, make_...
+#include <string>                                                       // for string
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for move, pair
+#include <vector>                                                       // for vector
 
-#include <fmt/format.h>
+#include <fmt/core.h>                                                   // for format, basic_str...
+#include <glm/vec2.hpp>                                                 // for vec, vec<>::(anon...
+#include <glm/vec4.hpp>                                                 // for vec
 
 namespace inviwo {
 

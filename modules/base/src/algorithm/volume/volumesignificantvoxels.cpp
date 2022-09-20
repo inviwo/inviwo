@@ -28,12 +28,19 @@
  *********************************************************************************/
 
 #include <modules/base/algorithm/volume/volumesignificantvoxels.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>  // for VolumeRAM
+#include <inviwo/core/util/formatdispatching.h>           // for PrecisionValueType
+#include <inviwo/core/util/glm.h>                         // for any, all
+#include <modules/base/algorithm/algorithmoptions.h>      // for IgnoreSpecialValues, IgnoreSpec...
 
-#include <cstddef>
-#include <algorithm>
+#include <algorithm>                                      // for count_if
+#include <cstddef>                                        // for size_t
+
+#include <glm/vec2.hpp>                                   // for operator!=, operator+
+#include <glm/vec3.hpp>                                   // for operator!=, operator+
+#include <glm/vec4.hpp>                                   // for operator!=, operator+
+#include <half/half.hpp>                                  // for operator+, operator!=, operator==
 
 namespace inviwo {
 

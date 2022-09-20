@@ -28,7 +28,17 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumecurlcpuprocessor.h>
-#include <modules/base/algorithm/volume/volumecurl.h>
+
+#include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/ports/volumeport.h>              // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
+#include <modules/base/algorithm/volume/volumecurl.h>  // for curlVolume
+
+#include <string>                                      // for string
+#include <string_view>                                 // for string_view
 
 namespace inviwo {
 

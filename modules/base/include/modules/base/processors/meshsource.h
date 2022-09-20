@@ -29,12 +29,21 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/base/processors/datasource.h>
+#include <modules/base/basemoduledefine.h>         // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/io/datareader.h>             // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>    // for DataReaderException
+#include <inviwo/core/ports/meshport.h>            // for MeshOutport
+#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <modules/base/processors/datasource.h>    // for DataSource
+
+#include <map>                                     // for map, operator!=
+#include <string>                                  // for string
 
 namespace inviwo {
+class InviwoApplication;
+class Mesh;
+
 /** \docpage{org.inviwo.GeometrySource, Mesh Source}
  * ![](org.inviwo.GeometrySource.png?classIdentifier=org.inviwo.GeometrySource)
  *

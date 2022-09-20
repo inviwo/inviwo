@@ -29,18 +29,55 @@
 
 #include <modules/base/processors/surfaceextractionprocessor.h>
 
-#include <inviwo/core/properties/propertysemantics.h>
-#include <modules/base/algorithm/volume/marchingtetrahedron.h>
-#include <modules/base/algorithm/volume/marchingcubes.h>
-#include <modules/base/algorithm/volume/marchingcubesopt.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
-#include <numeric>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Buffe...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/ports/datainport.h>                               // for DataInport
+#include <inviwo/core/ports/dataoutport.h>                              // for DataOutport
+#include <inviwo/core/ports/inportiterable.h>                           // for InportIterable<>:...
+#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterable
+#include <inviwo/core/processors/poolprocessor.h>                       // for Progress, Option
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatVec4Property
+#include <inviwo/core/properties/property.h>                            // for Property
+#include <inviwo/core/properties/propertyowner.h>                       // for PropertyOwner
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
+#include <inviwo/core/util/formats.h>                                   // for DataFormat, DataF...
+#include <inviwo/core/util/glmvec.h>                                    // for vec4, dvec2, uvec3
+#include <inviwo/core/util/rendercontext.h>                             // for RenderContext
+#include <inviwo/core/util/staticstring.h>                              // for operator+
+#include <inviwo/core/util/zip.h>                                       // for zipIterator, zipper
+#include <modules/base/algorithm/volume/marchingcubes.h>                // for marchingcubes
+#include <modules/base/algorithm/volume/marchingcubesopt.h>             // for marchingCubesOpt
+#include <modules/base/algorithm/volume/marchingtetrahedron.h>          // for marchingtetrahedron
 
-#include <inviwo/core/util/rendercontext.h>
-#include <fmt/format.h>
+#include <algorithm>                                                    // for max, min
+#include <cstddef>                                                      // for size_t
+#include <iterator>                                                     // for distance
+#include <limits>                                                       // for numeric_limits<>:...
+#include <numeric>                                                      // for accumulate
+#include <tuple>                                                        // for tuple_element<>::...
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for pair, make_pair
+
+#include <flags/flags.h>                                                // for operator|
+#include <fmt/core.h>                                                   // for format, format_to
+#include <glm/fwd.hpp>                                                  // for uvec3
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec4.hpp>                                                 // for operator/
 
 namespace inviwo {
 

@@ -28,15 +28,41 @@
  *********************************************************************************/
 
 #include <modules/base/io/wavefrontwriter.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datawriterexception.h>
-#include <modules/base/algorithm/meshutils.h>
 
-#include <fstream>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase, Index...
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM, IndexB...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, DrawType
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Index...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
+#include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/formatdispatching.h>                         // for Vec3s, Vec2s
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmmat.h>                                    // for mat3
+#include <inviwo/core/util/glmutils.h>                                  // for Matrix
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <modules/base/algorithm/meshutils.h>                           // for forEachTriangle
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <cstdint>                                                      // for uint32_t
+#include <fstream>                                                      // for basic_ofstream
+#include <numeric>                                                      // for iota
+#include <string>                                                       // for basic_string
+#include <tuple>                                                        // for tuple_element<>::...
+#include <type_traits>                                                  // for decay, remove_ref...
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for move, pair
+
+#include <fmt/core.h>                                                   // for basic_string_view
+#include <fmt/ostream.h>                                                // for print
+#include <glm/detail/qualifier.hpp>                                     // for tvec4, tvec3
+#include <glm/mat3x3.hpp>                                               // for operator*
+#include <glm/mat4x4.hpp>                                               // for operator*
+#include <glm/matrix.hpp>                                               // for inverse, transpose
+#include <glm/vec3.hpp>                                                 // for operator/
+#include <glm/vec4.hpp>                                                 // for operator*, operator+
+#include <half/half.hpp>                                                // for operator/
 
 namespace inviwo {
 
