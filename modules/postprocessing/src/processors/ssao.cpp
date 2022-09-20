@@ -80,6 +80,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <modules/opengl/shader/shadertype.h>                     // for ShaderType, ShaderType:...
 #include <modules/opengl/sharedopenglresources.h>                 // for SharedOpenGLResources
 #include <modules/opengl/texture/textureutils.h>                  // for activateTargetAndCopySo...
+#include <modules/opengl/texture/texture2d.h>                     // IWYU pragma: keep
 
 #include <algorithm>                                              // for max
 #include <array>                                                  // for operator!=, array
