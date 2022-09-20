@@ -36,6 +36,7 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 

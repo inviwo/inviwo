@@ -31,6 +31,7 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
 #include <inviwo/core/algorithm/boundingbox.h>

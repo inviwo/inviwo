@@ -38,6 +38,7 @@
 
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/texture.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/shader/shader.h>
 
 #include <fmt/format.h>

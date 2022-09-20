@@ -40,6 +40,7 @@ https://prideout.net/blog/old/blog/index.html@p=61.html
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/algorithm/boundingbox.h>
 

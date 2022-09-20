@@ -41,6 +41,8 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 
+#include <inviwo/core/util/glm.h>
+
 namespace inviwo {
 
 SplitterRenderer::SplitterRenderer(Processor* processor)
