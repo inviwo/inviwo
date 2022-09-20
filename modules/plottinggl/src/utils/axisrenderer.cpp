@@ -49,6 +49,7 @@
 #include <modules/opengl/shader/shaderobject.h>                    // for ShaderObject
 #include <modules/opengl/shader/shadertype.h>                      // for ShaderType, ShaderType...
 #include <modules/opengl/shader/shaderutils.h>                     // for setShaderUniforms
+#include <modules/opengl/texture/texture2d.h>                      // IWYU pragma: keep
 #include <modules/plotting/datastructures/axissettings.h>          // for AxisSettings
 #include <modules/plotting/datastructures/majortickdata.h>         // for MajorTickData
 #include <modules/plotting/datastructures/majorticksettings.h>     // for MajorTickSettings
