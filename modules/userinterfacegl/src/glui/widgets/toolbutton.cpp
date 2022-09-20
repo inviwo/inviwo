@@ -30,6 +30,7 @@
 #include <modules/userinterfacegl/glui/widgets/toolbutton.h>
 
 #include <inviwo/core/common/factoryutil.h>                             // for getDataReaderFactory
+#include <inviwo/core/datastructures/image/layer.h>                     // IWYU pragma: keep
 #include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
