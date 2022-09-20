@@ -29,33 +29,48 @@
 
 #include <modules/opengl/texture/textureutils.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/properties/isotfproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for makeBuffer, Buffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFunction
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/ports/imageport.h>                                // for ImageOutport, Ima...
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/properties/isotfproperty.h>                       // for IsoTFProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/util/glmvec.h>                                    // for vec2
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogEr...
+#include <inviwo/core/util/stringconversion.h>                          // for StrBuffer
+#include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
+#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
+#include <modules/opengl/image/imagegl.h>                               // for ImageGL
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                                // for GLenum, glActiveT...
+#include <modules/opengl/openglutils.h>                                 // for DepthFuncState
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/sharedopenglresources.h>                       // for SharedOpenGLResou...
+#include <modules/opengl/texture/texture.h>                             // for Texture
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit, Text...
+#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
 
-#include <modules/opengl/canvasgl.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/buffer/bufferobjectarray.h>
-#include <modules/opengl/buffer/buffergl.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/buffer/bufferobjectarray.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/texture.h>
-#include <modules/opengl/texture/textureunit.h>
+#include <sstream>                                                      // for operator<<, basic...
+#include <string>                                                       // for char_traits, string
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for move
 
-#include <fmt/format.h>
+#include <fmt/core.h>                                                   // for basic_string_view
+#include <glm/mat3x3.hpp>                                               // for mat
+#include <glm/vec2.hpp>                                                 // for vec, operator/
 
 namespace inviwo {
 

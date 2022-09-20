@@ -29,10 +29,14 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
-#include <string>
+#include <modules/opengl/inviwoopengl.h>        // for GLenum
+
+#include <cstddef>                              // for size_t
+#include <functional>                           // for hash
+#include <memory>                               // for hash
+#include <string>                               // for string
 
 namespace inviwo {
 

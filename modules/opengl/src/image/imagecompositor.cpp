@@ -29,11 +29,18 @@
 
 #include <modules/opengl/image/imagecompositor.h>
 
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/openglutils.h>
+#include <inviwo/core/datastructures/image/image.h>       // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorDept...
+#include <inviwo/core/ports/imageport.h>                  // for BaseImageInport, ImageOutport
+#include <inviwo/core/util/assertion.h>                   // for IVW_ASSERT
+#include <modules/opengl/inviwoopengl.h>                  // for GL_DEPTH_TEST
+#include <modules/opengl/openglutils.h>                   // for GlBoolState
+#include <modules/opengl/shader/shader.h>                 // for Shader
+#include <modules/opengl/shader/shaderutils.h>            // for ImageInport
+#include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>          // for bindAndSetUniforms, activateTarget
+
+#include <memory>                                         // for make_shared, shared_ptr
 
 namespace inviwo {
 

@@ -28,12 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
-#include <modules/opengl/shader/shaderresource.h>
-#include <modules/opengl/shader/shadertype.h>
+#include <memory>                               // for shared_ptr
+#include <utility>                              // for pair
 
 namespace inviwo {
+class ShaderResource;
+class ShaderType;
 
 namespace utilgl {
 

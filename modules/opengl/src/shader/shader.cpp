@@ -29,22 +29,37 @@
 
 #include <modules/opengl/shader/shader.h>
 
-#include <modules/opengl/shader/shadermanager.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <modules/opengl/shader/shaderresource.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/shader/standardshaders.h>
-#include <modules/opengl/texture/textureunit.h>
+#include <inviwo/core/datastructures/camera/camera.h>  // for mat4
+#include <inviwo/core/util/callback.h>                 // for CallBackList, BaseCallBack
+#include <inviwo/core/util/glmmat.h>                   // for mat2, mat3
+#include <inviwo/core/util/glmvec.h>                   // for ivec4, ivec3, ivec2, uvec4, vec4
+#include <inviwo/core/util/iterrange.h>                // for as_range, iter_range
+#include <inviwo/core/util/logcentral.h>               // for log, LogAudience, LogAudience::User
+#include <inviwo/core/util/safecstr.h>                 // for SafeCStr
+#include <inviwo/core/util/sourcecontext.h>            // for IVW_CONTEXT
+#include <inviwo/core/util/stdextensions.h>            // for all_of
+#include <inviwo/core/util/stringconversion.h>         // for toString, toLower
+#include <inviwo/core/util/transformiterator.h>        // for TransformIterator, makeTransformIt...
+#include <modules/opengl/inviwoopengl.h>               // for LGL_ERROR, LGL_ERROR_CLASS
+#include <modules/opengl/openglexception.h>            // for OpenGLException
+#include <modules/opengl/shader/shadermanager.h>       // for ShaderManager
+#include <modules/opengl/shader/shaderobject.h>        // for ShaderObject, ShaderObject::InDecl...
+#include <modules/opengl/shader/shadertype.h>          // for ShaderType, ShaderType::Fragment
+#include <modules/opengl/shader/shaderutils.h>         // for findShaderResource, getProgramInfoLog
+#include <modules/opengl/shader/standardshaders.h>     // for imgIdentityVert
+#include <modules/opengl/texture/textureunit.h>        // for TextureUnit
 
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/transformiterator.h>
-#include <inviwo/core/util/safecstr.h>
+#include <algorithm>                                   // for find_if
+#include <cstddef>                                     // for size_t
+#include <istream>                                     // for operator<<, basic_ostream, ostring...
 
-#include <glm/gtc/type_ptr.hpp>
-
-#include <fmt/format.h>
+#include <fmt/core.h>                                  // for format, basic_string_view
+#include <fmt/format.h>                                // for join
+#include <glm/gtc/type_ptr.hpp>                        // for value_ptr
+#include <tcb/span.hpp>                                // for span
 
 namespace inviwo {
+class ShaderResource;
 
 const detail::Build detail::Build::Yes{};
 const detail::Build detail::Build::No{nullptr};

@@ -28,17 +28,45 @@
  *********************************************************************************/
 
 #include <modules/opengl/image/imagegl.h>
-#include <inviwo/core/util/formats.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <modules/opengl/texture/texture.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/canvasgl.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <inviwo/core/util/rendercontext.h>
 
-#include <tcb/span.hpp>
+#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/image/imagerepresentation.h>       // for ImageRepresentation
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for LayerType, typeCo...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/formats.h>                                   // for DataFormat, DataF...
+#include <inviwo/core/util/glmvec.h>                                    // for ivec2, size2_t
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/stdextensions.h>                             // for all_of
+#include <inviwo/core/util/stringconversion.h>                          // for toString
+#include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                                // for GLenum, glReadBuffer
+#include <modules/opengl/openglexception.h>                             // for OpenGLException
+#include <modules/opengl/openglutils.h>                                 // for DepthMaskState
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/sharedopenglresources.h>                       // for SharedOpenGLResou...
+#include <modules/opengl/texture/texture2d.h>                           // IWYU pragma: keep
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit, Text...
+#include <modules/opengl/texture/textureutils.h>                        // for singleDrawImagePl...
+
+#include <array>                                                        // for array
+#include <cstddef>                                                      // for size_t
+#include <memory>                                                       // for shared_ptr, share...
+#include <string>                                                       // for operator+, basic_...
+#include <string_view>                                                  // for string_view
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for move
+
+#include <glm/ext/matrix_transform.hpp>                                 // for scale
+#include <glm/fwd.hpp>                                                  // for vec3
+#include <glm/gtx/transform.hpp>                                        // for scale
+#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
+#include <glm/vec4.hpp>                                                 // for operator*
+#include <tcb/span.hpp>                                                 // for span
 
 namespace inviwo {
 

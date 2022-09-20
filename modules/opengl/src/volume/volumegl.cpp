@@ -28,11 +28,17 @@
  *********************************************************************************/
 
 #include <modules/opengl/volume/volumegl.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/glformats.h>
-#include <modules/opengl/openglutils.h>
-#include <algorithm>
+
+#include <inviwo/core/datastructures/image/imagetypes.h>             // for InterpolationType
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
+#include <inviwo/core/util/assertion.h>                              // for IVW_ASSERT
+#include <inviwo/core/util/formats.h>                                // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                 // for size3_t
+#include <modules/opengl/glformats.h>                                // for GLFormats
+#include <modules/opengl/openglutils.h>                              // for convertWrappingToGL
+#include <modules/opengl/texture/texture3d.h>                        // for Texture3D
+
+#include <type_traits>                                               // for remove_extent_t
 
 namespace inviwo {
 

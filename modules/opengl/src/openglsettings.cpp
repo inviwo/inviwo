@@ -27,12 +27,19 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <modules/opengl/openglmodule.h>
-#include <modules/opengl/openglsettings.h>
-#include <modules/opengl/shader/shader.h>
-#include <inviwo/core/util/formatconversion.h>
-#include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/properties/boolproperty.h>    // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>  // for ButtonProperty
+#include <inviwo/core/properties/optionproperty.h>  // for OptionPropertyOption, OptionProperty
+#include <inviwo/core/util/settings/settings.h>     // for Settings
+#include <inviwo/core/util/staticstring.h>          // for operator+
+#include <modules/opengl/debugmessages.h>           // for BreakLevel, Severity, Mode, operator<<
+#include <modules/opengl/openglsettings.h>          // for OpenGLSettings
+#include <modules/opengl/shader/shader.h>           // for Shader::UniformWarning, Shader::OnError
+
+#include <functional>                               // for __base
+#include <string>                                   // for operator==, string
+#include <string_view>                              // for operator==, string_view
+#include <vector>                                   // for operator!=, vector, operator==
 
 namespace inviwo {
 

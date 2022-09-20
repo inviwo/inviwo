@@ -29,8 +29,7 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
 namespace inviwo {
 

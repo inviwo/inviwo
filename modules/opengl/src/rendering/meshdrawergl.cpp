@@ -28,8 +28,17 @@
  *********************************************************************************/
 
 #include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/buffer/buffergl.h>
-#include <inviwo/core/util/exception.h>
+
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, DrawType
+#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/util/exception.h>                        // for RangeException, NullPointe...
+#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT
+#include <modules/opengl/buffer/buffergl.h>                    // for BufferGL
+#include <modules/opengl/geometry/meshgl.h>                    // for MeshGL
+#include <modules/opengl/openglutils.h>                        // for Enable
+
+#include <string>                                              // for allocator, operator+, to_s...
+#include <string_view>                                         // for string_view
 
 namespace inviwo {
 

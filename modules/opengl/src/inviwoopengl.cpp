@@ -28,9 +28,11 @@
  *********************************************************************************/
 
 #include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/demangle.h>
-#include <sstream>
+
+#include <inviwo/core/util/demangle.h>    // for parseTypeIdName
+#include <inviwo/core/util/logcentral.h>  // for LogCentral, LogAudience, LogAudience::Developer
+
+#include <GL/glew.h>                      // for glGetError, GL_NO_ERROR, GLenum, GLuint, GL_INV...
 
 #if defined(_WIN32)
 #include <inviwo/core/util/stringconversion.h>

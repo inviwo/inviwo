@@ -28,10 +28,25 @@
  *********************************************************************************/
 
 #include <modules/opengl/buffer/framebufferobject.h>
-#include <inviwo/core/util/assertion.h>
 
-#include <fmt/format.h>
-#include <string_view>
+#include <inviwo/core/util/assertion.h>             // for IVW_ASSERT, assertion, assertions
+#include <inviwo/core/util/canvas.h>                // for Canvas, Canvas::ContextID
+#include <inviwo/core/util/rendercontext.h>         // for RenderContext
+#include <inviwo/core/util/sourcecontext.h>         // for IVW_SOURCE_LOCATION, SourceLocation
+#include <inviwo/core/util/stdextensions.h>         // for any_of
+#include <modules/opengl/openglexception.h>         // for OpenGLException
+#include <modules/opengl/texture/texture2d.h>       // for Texture2D
+#include <modules/opengl/texture/texture2darray.h>  // for Texture2DArray
+#include <modules/opengl/texture/texture3d.h>       // for Texture3D
+
+#include <algorithm>                                // for find
+#include <chrono>                                   // for literals
+#include <iterator>                                 // for distance
+#include <string>                                   // for basic_string
+#include <string_view>                              // for operator""sv, string_view
+#include <utility>                                  // for move
+
+#include <fmt/core.h>                               // for format
 
 namespace inviwo {
 

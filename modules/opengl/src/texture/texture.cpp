@@ -29,8 +29,24 @@
 
 #include <modules/opengl/texture/texture.h>
 
-#include <modules/opengl/openglutils.h>
-#include <inviwo/core/util/zip.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for SwizzleMask, InterpolationType
+#include <inviwo/core/util/formats.h>                     // for DataFormatBase
+#include <inviwo/core/util/observer.h>                    // for Observable
+#include <inviwo/core/util/sourcecontext.h>               // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/zip.h>                         // for enumerate, zipIterator, zipper
+#include <modules/opengl/glformats.h>                     // for GLFormat, GLFormats
+#include <modules/opengl/inviwoopengl.h>                  // for GLenum, glBindTexture, glTexPar...
+#include <modules/opengl/openglexception.h>               // for OpenGLException
+#include <modules/opengl/openglutils.h>                   // for convertSwizzleMaskToGL, convert...
+#include <modules/opengl/texture/textureobserver.h>       // for TextureObserver
+
+#include <algorithm>                                      // for find_if
+#include <cstring>                                        // for memcpy
+#include <string>                                         // for string
+#include <string_view>                                    // for string_view
+#include <type_traits>                                    // for remove_reference<>::type
+
+#include <tcb/span.hpp>                                   // for span
 
 namespace inviwo {
 

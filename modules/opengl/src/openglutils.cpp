@@ -29,9 +29,22 @@
 
 #include <modules/opengl/openglutils.h>
 
-#include <modules/opengl/openglexception.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageChannel, Wrapping, Interpo...
+#include <inviwo/core/util/glmvec.h>                      // for vec4, bvec4, ivec4
+#include <inviwo/core/util/moveonlyvalue.h>               // for MoveOnlyValue
+#include <inviwo/core/util/sourcecontext.h>               // for IVW_CONTEXT_CUSTOM
+#include <modules/opengl/openglexception.h>               // for OpenGLException
+#include <modules/opengl/texture/textureunit.h>           // for TextureUnit
 
-#include <algorithm>
+#include <algorithm>                                      // for transform, max, min
+#include <optional>                                       // for optional
+#include <string>                                         // for string
+#include <type_traits>                                    // for remove_reference<>::type
+#include <utility>                                        // for move, swap
+#include <vector>                                         // for vector
+
+#include <glm/gtc/type_ptr.hpp>                           // for value_ptr
+#include <glm/vec4.hpp>                                   // for vec<>::(anonymous), vec, operat...
 
 namespace inviwo {
 namespace utilgl {

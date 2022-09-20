@@ -27,9 +27,25 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/buffer/buffergl.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh::MeshInfo, Mesh
+#include <inviwo/core/datastructures/geometry/meshrepresentation.h>     // for MeshRepresentation
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/assertion.h>                                 // for ivwAssert
+#include <inviwo/core/util/stdextensions.h>                             // for all_of
+#include <modules/opengl/buffer/buffergl.h>                             // for BufferGL
+#include <modules/opengl/buffer/bufferobjectarray.h>                    // for BufferObjectArray
+#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
+#include <modules/opengl/inviwoopengl.h>                                // for GLuint
+
+#include <cstddef>                                                      // for size_t
+#include <memory>                                                       // for shared_ptr, share...
+#include <type_traits>                                                  // for remove_extent_t
+#include <typeindex>                                                    // for type_index
+#include <unordered_map>                                                // for unordered_map
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for pair
+#include <vector>                                                       // for vector
 
 namespace inviwo {
 

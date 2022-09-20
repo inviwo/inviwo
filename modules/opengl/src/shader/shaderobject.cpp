@@ -29,27 +29,39 @@
 
 #include <modules/opengl/shader/shaderobject.h>
 
-#include <inviwo/core/io/textfilereader.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/ostreamjoiner.h>
-#include <modules/opengl/openglexception.h>
-#include <modules/opengl/shader/shadermanager.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/openglcapabilities.h>
+#include <inviwo/core/util/assertion.h>                // for IVW_ASSERT
+#include <inviwo/core/util/dispatcher.h>               // for Dispatcher
+#include <inviwo/core/util/filesystem.h>               // for getFileExtension
+#include <inviwo/core/util/logcentral.h>               // for log, LogAudience, LogAudience::User
+#include <inviwo/core/util/sourcecontext.h>            // for IVW_CONTEXT, SourceContext, IVW_CO...
+#include <inviwo/core/util/stdextensions.h>            // for find_if, find
+#include <inviwo/core/util/stringconversion.h>         // for forEachStringPart, splitByLast
+#include <modules/opengl/inviwoopengl.h>               // for getGLErrorString, glGetError, GLuint
+#include <modules/opengl/openglcapabilities.h>         // for OpenGLCapabilities, OpenGLCapabili...
+#include <modules/opengl/openglexception.h>            // for OpenGLException
+#include <modules/opengl/shader/linenumberresolver.h>  // for LineNumberResolver
+#include <modules/opengl/shader/shadermanager.h>       // for ShaderManager
+#include <modules/opengl/shader/shadersegment.h>       // for ShaderSegment, ShaderSegment::Plac...
+#include <modules/opengl/shader/shadertype.h>          // for ShaderType, operator==, ShaderType...
+#include <modules/opengl/shader/shaderutils.h>         // for getShaderInfoLog, findShaderResource
 
-#include <fmt/format.h>
+#include <algorithm>                                   // for find, count, max, mismatch, remove_if
+#include <cctype>                                      // for isblank
+#include <exception>                                   // for exception_ptr, current_exception
+#include <fstream>                                     // for operator<<, basic_ostream, left
+#include <iomanip>                                     // for operator<<, setw
+#include <iterator>                                    // for back_insert_iterator, back_inserter
+#include <string>                                      // for string, char_traits, basic_string
+#include <tuple>                                       // for tie, operator<, tuple
+#include <type_traits>                                 // for remove_extent_t, remove_reference<...
 
-#include <cstdio>
-#include <fstream>
-#include <string>
-#include <cctype>
+#include <fmt/core.h>                                  // for format, arg, basic_string_view
+#include <sml/sml.hpp>                                 // for zero_wrapper, state, event, state_...
 
-#include <sml/sml.hpp>
 namespace sml = boost::sml;
 
 namespace inviwo {
+class ShaderResource;
 
 namespace psm {
 

@@ -29,17 +29,20 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/util/canvas.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <modules/opengl/openglmoduledefine.h>            // for IVW_MODULE_OPENGL_API
+
+#include <inviwo/core/datastructures/geometry/mesh.h>     // for Mesh
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
+#include <inviwo/core/util/canvas.h>                      // for Canvas
+#include <inviwo/core/util/glmvec.h>                      // for size2_t, dvec2, ivec2
+
+#include <cstddef>                                        // for size_t
+#include <memory>                                         // for shared_ptr, unique_ptr, weak_ptr
 
 namespace inviwo {
 
-class ImageGL;
-class LayerRAM;
+class Image;
 class MeshGL;
-class BufferObjectArray;
-class ProcessorWidget;
 class Shader;
 
 class IVW_MODULE_OPENGL_API CanvasGL : public Canvas {

@@ -29,33 +29,35 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/datastructures/image/imagetypes.h>
-#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglmoduledefine.h>            // for IVW_MODULE_OPENGL_API
+
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::AllLayers
+#include <modules/opengl/inviwoopengl.h>                  // for GLenum
+
+#include <cstddef>                                        // for size_t
+#include <memory>                                         // for unique_ptr
+#include <string_view>                                    // for string_view
 
 namespace inviwo {
 
-class BufferObjectArray;
-class Texture;
-class Shader;
-class MeshGL;
-class Mesh;
-class TransferFunctionProperty;
+class Image;
+class ImageOutport;
 class IsoTFProperty;
+class Mesh;
+class Shader;
+class Texture;
 class TextureUnit;
 class TextureUnitContainer;
-class Shader;
-class Image;
-
-class ImageOutport;
+class TransferFunctionProperty;
 class Volume;
-
 template <typename T, size_t N, bool Flat>
 class DataInport;
+
 using VolumeInport = DataInport<Volume, 1, false>;
 
 template <size_t>
 class BaseImageInport;
+
 using ImageInport = BaseImageInport<1>;
 
 namespace utilgl {

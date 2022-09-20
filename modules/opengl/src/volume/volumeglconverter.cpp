@@ -28,7 +28,15 @@
  *********************************************************************************/
 
 #include <modules/opengl/volume/volumeglconverter.h>
-#include <inviwo/core/datastructures/volume/volumerepresentation.h>
+
+#include <inviwo/core/datastructures/volume/volumeram.h>  // for VolumeRAM (ptr only), createVol...
+#include <inviwo/core/util/formats.h>                     // for DataFormatBase
+#include <inviwo/core/util/logcentral.h>                  // for LogCentral, LogError
+#include <modules/opengl/volume/volumegl.h>               // for VolumeGL
+#include <modules/opengl/texture/texture3d.h>             // IWYU pragma: keep
+
+#include <ostream>                                        // for operator<<, char_traits
+#include <type_traits>                                    // for remove_extent_t
 
 namespace inviwo {
 

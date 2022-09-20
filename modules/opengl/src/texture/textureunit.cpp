@@ -28,8 +28,14 @@
  *********************************************************************************/
 
 #include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/openglexception.h>
-#include <inviwo/core/util/assertion.h>
+
+#include <inviwo/core/util/assertion.h>      // for ivwAssert
+#include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT
+#include <modules/opengl/openglexception.h>  // for OpenGLException
+
+#include <algorithm>                         // for max
+#include <string_view>                       // for string_view
+#include <utility>                           // for swap, move
 
 namespace inviwo {
 

@@ -28,7 +28,15 @@
  *********************************************************************************/
 
 #include <modules/opengl/buffer/bufferglconverter.h>
-#include <inviwo/core/util/exception.h>
+
+#include <inviwo/core/datastructures/buffer/bufferram.h>         // for createBufferRAM
+#include <inviwo/core/datastructures/representationconverter.h>  // for ConverterException
+#include <inviwo/core/util/formats.h>                            // for DataFormatBase
+#include <inviwo/core/util/sourcecontext.h>                      // for IVW_CONTEXT
+#include <modules/opengl/buffer/buffergl.h>                      // for BufferGL
+
+#include <string>                                                // for operator+, string
+#include <type_traits>                                           // for remove_extent_t
 
 namespace inviwo {
 

@@ -28,10 +28,13 @@
  *********************************************************************************/
 
 #include <modules/opengl/shader/shaderresource.h>
-#include <inviwo/core/common/inviwoapplicationutil.h>
-#include <inviwo/core/util/filesystem.h>
 
-#include <sstream>
+#include <inviwo/core/common/inviwoapplicationutil.h>  // for getInviwoApplication
+#include <inviwo/core/util/dispatcher.h>               // for Dispatcher
+#include <inviwo/core/util/fileobserver.h>             // for FileObserver
+#include <inviwo/core/util/filesystem.h>               // for ifstream, ofstream
+
+#include <sstream>                                     // IWYU pragma: keep
 
 namespace inviwo {
 

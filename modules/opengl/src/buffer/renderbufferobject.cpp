@@ -29,6 +29,8 @@
 
 #include <modules/opengl/buffer/renderbufferobject.h>
 
+#include <modules/opengl/inviwoopengl.h>  // for GL_RENDERBUFFER_EXT, glBindRenderbufferEXT, glD...
+
 namespace inviwo {
 
 RenderBufferObject::RenderBufferObject() { glGenRenderbuffersEXT(1, &id_); }
