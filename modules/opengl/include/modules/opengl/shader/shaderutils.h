@@ -29,33 +29,50 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
-#include <inviwo/core/datastructures/spatialdata.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/selectioncolorproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/raycastingproperty.h>
-#include <inviwo/core/datastructures/light/lightingstate.h>
-#include <inviwo/core/ports/port.h>
-#include <inviwo/core/util/glm.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/datastructures/light/lightingstate.h>  // for ShadingMode
+#include <inviwo/core/datastructures/spatialdata.h>          // for SpatialEntity
+#include <inviwo/core/properties/raycastingproperty.h>       // for RaycastingProperty, Raycasti...
+#include <modules/opengl/inviwoopengl.h>                     // for GLuint
+#include <modules/opengl/shader/shader.h>                    // IWYU pragma: keep
+#include <modules/opengl/texture/textureutils.h>             // IWYU pragma: keep
+
+#include <cstddef>      // for size_t
+#include <memory>       // for shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for enable_if, is_base_of, is_enum
+#include <utility>      // for pair
+#include <vector>       // for vector
 
 namespace inviwo {
 
 class Camera;
 class CameraProperty;
-class SimpleRaycastingProperty;
-class IsoValueProperty;
+class DataFormatBase;
 class IsoTFProperty;
+class IsoValueProperty;
+class Port;
+class Property;
+class SelectionColorProperty;
+class ShaderResource;
+class ShaderType;
+class SimpleLightingProperty;
+class SimpleRaycastingProperty;
 class VolumeIndicatorProperty;
-
+struct SelectionColorState;
 template <size_t>
 class BaseImageInport;
+template <typename T>
+class MinMaxProperty;
+template <typename T>
+class OptionProperty;
+template <typename T>
+class OrdinalProperty;
+template <typename T>
+class TemplateProperty;
+
 using ImageInport = BaseImageInport<1>;
 
 namespace utilgl {

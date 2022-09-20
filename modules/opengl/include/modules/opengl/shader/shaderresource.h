@@ -29,12 +29,16 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/util/fileobserver.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
-#include <string>
-#include <string_view>
+#include <inviwo/core/util/dispatcher.h>    // for Dispatcher
+#include <inviwo/core/util/fileobserver.h>  // for FileObserver
+
+#include <functional>   // for function
+#include <memory>       // for unique_ptr, shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <utility>      // for forward
 
 namespace inviwo {
 

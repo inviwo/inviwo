@@ -28,9 +28,20 @@
  *********************************************************************************/
 
 #include <modules/opengl/debugmessages.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <modules/opengl/openglsettings.h>
-#include <inviwo/core/util/rendercontext.h>
+
+#include <inviwo/core/common/inviwoapplication.h>   // for InviwoApplication
+#include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
+#include <inviwo/core/util/assertion.h>             // for debugBreak
+#include <inviwo/core/util/canvas.h>                // for Canvas, Canvas::ContextID
+#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogInfoCustom, LogAudience
+#include <inviwo/core/util/rendercontext.h>         // for RenderContext, ContextHolder
+#include <modules/opengl/openglsettings.h>          // for OpenGLSettings
+
+#include <ostream>        // for operator<<, basic_ostream
+#include <string>         // for char_traits, string
+#include <thread>         // for get_id, operator==, __thread_id, thread
+#include <type_traits>    // for __underlying_type_impl<>::type, under...
+#include <unordered_map>  // for unordered_map
 
 namespace inviwo {
 

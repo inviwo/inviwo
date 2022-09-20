@@ -29,16 +29,35 @@
 
 #include <modules/opengl/rendering/texturequadrenderer.h>
 
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/util/zip.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/datastructures/camera/camera.h>                   // for mat4, Camera
+#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for LayerType, LayerT...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/glmmat.h>                                    // for mat4
+#include <inviwo/core/util/glmvec.h>                                    // for ivec2, size2_t, vec3
+#include <inviwo/core/util/zip.h>                                       // for proxy, zip, zipIt...
+#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                                // for glDrawArrays, GL_...
+#include <modules/opengl/openglutils.h>                                 // for DepthFuncState
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/sharedopenglresources.h>                       // for SharedOpenGLResou...
+#include <modules/opengl/texture/texture2d.h>                           // for Texture2D
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
+
+#include <cmath>          // for round
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for move
+
+#include <glm/common.hpp>                // for round
+#include <glm/ext/matrix_transform.hpp>  // for scale, translate
+#include <glm/gtx/transform.hpp>         // for scale, translate
+#include <glm/mat4x4.hpp>                // for operator*, mat
+#include <glm/vec2.hpp>                  // for operator*, vec
+#include <glm/vec4.hpp>                  // for operator*, operator+
 
 namespace inviwo {
 

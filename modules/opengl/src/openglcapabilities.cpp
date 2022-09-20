@@ -28,18 +28,25 @@
  *********************************************************************************/
 
 #include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/util/formatconversion.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <modules/opengl/openglsettings.h>
-#include <inviwo/core/util/settings/systemsettings.h>
-#include <modules/opengl/shader/shadermanager.h>
-#include <inviwo/core/util/unindent.h>
 
-#include <fmt/format.h>
+#include <inviwo/core/properties/buttonproperty.h>  // for ButtonProperty
+#include <inviwo/core/util/exception.h>             // for Exception
+#include <inviwo/core/util/formatconversion.h>      // for formatBytesToString, kilobytes_to_bytes
+#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogWarn, LogError
+#include <inviwo/core/util/sourcecontext.h>         // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/staticstring.h>          // for StaticString
+#include <inviwo/core/util/stringconversion.h>      // for stringTo, splitStringView, toString
+#include <inviwo/core/util/unindent.h>              // for length, unindent, IVW_UNINDENT
+#include <modules/opengl/inviwoopengl.h>            // for glGetIntegerv, GLint, glGetString
+#include <modules/opengl/openglexception.h>         // for OpenGLInitException
+#include <modules/opengl/openglsettings.h>          // for OpenGLSettings
+#include <modules/opengl/texture/textureunit.h>     // for TextureUnit
+
+#include <algorithm>   // for min, remove_if, sort
+#include <cctype>      // for toupper, isalnum, isspace
+#include <functional>  // for __base
+
+#include <fmt/core.h>  // for format
 
 namespace inviwo {
 

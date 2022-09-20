@@ -29,22 +29,45 @@
 
 #include <modules/opengl/shader/shaderutils.h>
 
-#include <inviwo/core/datastructures/coordinatetransformer.h>
-#include <inviwo/core/properties/simpleraycastingproperty.h>
-#include <inviwo/core/properties/isotfproperty.h>
-#include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/datastructures/camera.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/volumeindicatorproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/datastructures/camera/camera.h>          // for Camera, mat4
+#include <inviwo/core/datastructures/coordinatetransformer.h>  // for SpatialCoordinateTransformer
+#include <inviwo/core/datastructures/isovaluecollection.h>     // for IsoValueCollection
+#include <inviwo/core/datastructures/light/lightingstate.h>    // for ShadingMode, LightingState
+#include <inviwo/core/datastructures/spatialdata.h>            // for SpatialEntity
+#include <inviwo/core/ports/imageport.h>                       // for ImageInport
+#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
+#include <inviwo/core/properties/isotfproperty.h>              // for IsoTFProperty
+#include <inviwo/core/properties/isovalueproperty.h>           // for IsoValueProperty
+#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyString, Opti...
+#include <inviwo/core/properties/ordinalproperty.h>            // for FloatProperty, FloatVec3Pr...
+#include <inviwo/core/properties/planeproperty.h>              // for PlaneProperty
+#include <inviwo/core/properties/raycastingproperty.h>         // for RaycastingProperty, Raycas...
+#include <inviwo/core/properties/selectioncolorproperty.h>     // for SelectionColorProperty
+#include <inviwo/core/properties/simplelightingproperty.h>     // for SimpleLightingProperty
+#include <inviwo/core/properties/simpleraycastingproperty.h>   // for SimpleRaycastingProperty
+#include <inviwo/core/properties/volumeindicatorproperty.h>    // for VolumeIndicatorProperty
+#include <inviwo/core/util/formats.h>                          // for DataFormatBase, NumericType
+#include <inviwo/core/util/glmvec.h>                           // for vec4
+#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stringconversion.h>                 // for StrBuffer, splitStringView
+#include <modules/opengl/inviwoopengl.h>                       // for LGL_ERROR
+#include <modules/opengl/openglexception.h>                    // for OpenGLException
+#include <modules/opengl/shader/shader.h>                      // for Shader
+#include <modules/opengl/shader/shadermanager.h>               // for ShaderManager
+#include <modules/opengl/shader/shaderobject.h>                // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                  // for ShaderType
 
-#include <modules/opengl/shader/shadermanager.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/volume/volumeutils.h>
+#include <algorithm>  // for max
+#include <istream>    // for basic_istream, stringstream
 
-#include <fmt/format.h>
+#include <fmt/core.h>      // for basic_string_view, format_to
+#include <glm/fwd.hpp>     // for mat3
+#include <glm/mat4x4.hpp>  // for operator*
+#include <glm/matrix.hpp>  // for inverse, transpose
+#include <glm/vec4.hpp>    // for operator*, operator+, oper...
 
 namespace inviwo {
+class ShaderResource;
 
 namespace utilgl {
 

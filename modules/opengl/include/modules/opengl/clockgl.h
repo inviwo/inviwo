@@ -29,14 +29,15 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/util/clock.h>
-#include <inviwo/core/util/demangle.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
-#include <chrono>
-#include <vector>
-#include <array>
+#include <inviwo/core/util/clock.h>       // for IVW_ADDLINE, ScopedClock
+#include <modules/opengl/inviwoopengl.h>  // for GLuint
+
+#include <array>    // for array
+#include <chrono>   // for seconds, nanoseconds
+#include <cstddef>  // for size_t
+#include <vector>   // for vector
 
 namespace inviwo {
 

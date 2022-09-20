@@ -29,13 +29,16 @@
 
 #pragma once
 
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/rendering/meshdrawer.h>
-#include <modules/opengl/openglutils.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
-#include <vector>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, DrawType
+#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/rendering/meshdrawer.h>                  // for MeshDrawer
+#include <modules/opengl/geometry/meshgl.h>                    // for MeshGL
+#include <modules/opengl/inviwoopengl.h>                       // for GLenum
+#include <modules/opengl/openglutils.h>                        // for Enable
+
+#include <cstddef>  // for size_t
 
 namespace inviwo {
 

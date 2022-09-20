@@ -30,9 +30,10 @@
 #pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
+
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/logcentral.h>
+#include <modules/opengl/inviwoopengl.h>
 
 #include <iosfwd>
 

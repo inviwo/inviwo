@@ -28,14 +28,31 @@
  *********************************************************************************/
 
 #include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/glformats.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
 
-#include <fmt/format.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>  // for StructuredCoordinateTransf...
+#include <inviwo/core/datastructures/datamapper.h>             // for DataMapper
+#include <inviwo/core/datastructures/volume/volume.h>          // for Volume
+#include <inviwo/core/ports/datainport.h>                      // for DataInport
+#include <inviwo/core/util/formats.h>                          // for DataFormatBase
+#include <inviwo/core/util/glmmat.h>                           // for mat3
+#include <inviwo/core/util/glmvec.h>                           // for dvec2, vec3
+#include <inviwo/core/util/stringconversion.h>                 // for StrBuffer
+#include <modules/opengl/glformats.h>                          // for Normalization, GLFormat
+#include <modules/opengl/shader/shader.h>                      // for Shader
+#include <modules/opengl/texture/textureunit.h>                // for TextureUnit, TextureUnitCo...
+#include <modules/opengl/texture/textureutils.h>               // for VolumeInport, bindTexture
 
-#include <glm/gtc/matrix_inverse.hpp>
+#include <memory>   // for shared_ptr
+#include <string>   // for string
+#include <utility>  // for move
+
+#include <fmt/core.h>                    // for basic_string_view, format_to
+#include <glm/ext/matrix_transform.hpp>  // for scale
+#include <glm/gtc/matrix_inverse.hpp>    // for inverseTranspose
+#include <glm/mat4x4.hpp>                // for mat
+#include <glm/vec2.hpp>                  // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                  // for operator/
+#include <glm/vec4.hpp>                  // for operator*
 
 namespace inviwo {
 

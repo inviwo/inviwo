@@ -29,15 +29,19 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/util/singleton.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/util/singleton.h>                // for Singleton
+#include <modules/opengl/shader/shader.h>              // for Shader
+
+#include <cstddef>        // for size_t
+#include <memory>         // for unique_ptr
+#include <unordered_map>  // for unordered_map
 
 namespace inviwo {
 
-class Mesh;
 class MeshGL;
-class Shader;
 
 /**
  * \class SharedOpenGLResources

@@ -29,14 +29,20 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/buffer/bufferglobjectid.h>
-#include <modules/opengl/buffer/bufferobject.h>
-#include <modules/opengl/buffer/bufferobjectarray.h>
-#include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+
+#include <inviwo/core/datastructures/buffer/bufferrepresentation.h>  // for BufferRepresentation
+#include <inviwo/core/datastructures/geometry/geometrytype.h>        // for BufferTarget, Buffer...
+#include <modules/opengl/inviwoopengl.h>                             // for GLenum, GLsizeiptr
+
+#include <cstddef>    // for size_t
+#include <memory>     // for shared_ptr, unique_ptr
+#include <typeindex>  // for type_index
 
 namespace inviwo {
+class BufferObject;
+class BufferObjectArray;
+class DataFormatBase;
 
 /**
  * \ingroup datastructures

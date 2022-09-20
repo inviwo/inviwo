@@ -29,17 +29,22 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/glm.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/util/moveonlyvalue.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
-#include <functional>
-#include <array>
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for Wrapping, InterpolationType
+#include <inviwo/core/util/glmvec.h>                      // for vec4, bvec4, ivec4, bvec2, bvec3
+#include <inviwo/core/util/moveonlyvalue.h>               // for MoveOnlyValue
+#include <inviwo/core/util/stdextensions.h>               // for make_array, index_of
+#include <modules/opengl/inviwoopengl.h>                  // for GLint, GLenum, GLboolean, GLAPI...
+
+#include <array>        // for array, operator==
+#include <cstddef>      // for size_t
+#include <cstdint>      // for int32_t, uint32_t
+#include <string_view>  // for basic_string_view, string_view
+#include <tuple>        // for tuple
 
 namespace inviwo {
+class TextureUnit;
 
 namespace utilgl {
 
