@@ -36,6 +36,8 @@
 #include <modules/animationqt/widgets/editorconstants.h>
 #include <modules/animationqt/widgets/keyframewidgetqt.h>
 
+#include <unordered_map>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsItem>

@@ -31,6 +31,7 @@
 
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/keyframe.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/stringconversion.h>
