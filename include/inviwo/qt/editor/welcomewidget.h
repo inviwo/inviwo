@@ -35,20 +35,18 @@
 #include <QModelIndex>
 #include <QSplitter>
 #include <QStringList>
-#include <QTextEdit>
 #include <warn/pop>
 
-class QTabWidget;
 class QToolButton;
 class QLineEdit;
 class QTextEdit;
+class QStackedWidget;
 class QScrollArea;
 class QSortFilterProxyModel;
-class QSvgWidget;
+class QSplitterHandle;
 
 namespace inviwo {
 
-class HorisontalCollipsable;
 class WorkspaceTreeModel;
 class WorkspaceTreeView;
 class WorkspaceGridView;
@@ -80,6 +78,7 @@ protected:
     virtual void hideEvent(QHideEvent* event) override;
 
     virtual void keyPressEvent(QKeyEvent* event) override;
+    virtual QSplitterHandle* createHandle() override;
 
 private:
     WelcomeWidget& setSetting(const QString& key, const QVariant& value);
@@ -92,8 +91,6 @@ private:
 
     void expandTreeView() const;
 
-    void onChangelogCollapseChanged(bool collapse);
-
     InviwoApplication* app_;
 
     WorkspaceTreeModel* model_;
@@ -101,11 +98,9 @@ private:
     WorkspaceTreeView* workspaceTreeView_;
     WorkspaceGridView* workspaceGridView_;
 
-    QFrame* rightColumn_;
-    HorisontalCollipsable* collapsibleChangeLog_;
-
+    QSplitter* workspaceSplitter_;
     QLineEdit* filterLineEdit_;
-    QSvgWidget* dragAndDrop_;
+    QStackedWidget* centerStackedWidget_;
     QTextEdit* details_;
     ChangeLog* changelog_;
     QToolButton* loadWorkspaceBtn_;

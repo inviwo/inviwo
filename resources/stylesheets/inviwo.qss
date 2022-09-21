@@ -1011,32 +1011,26 @@ QDockWidget#ResourceManager QTableView QHeaderView::section {
 WelcomeWidget
 ************************/
 QLabel#WelcomeHeader {
-    font-size: 60pt;
+    font-size: 48pt;
     color: #268bd2;
 }
-
 QLabel#ChangeLog {
     font-size: 26pt;
     color: #268bd2;
 }
-
 QFrame#WelcomeRightColumn {
     background-color: #434345;
 }
-
 QSplitter#WelcomeWidget::handle {
     background: #434345;
     border: none;
 }
-
 QSplitter#WelcomeWidget::handle:horizontal:hover {
     background: #5b5f62;
 }
-
 QSplitter#WelcomeWidget::handle:horizontal:pressed {
     background: #1e70a8;
 }
-
 QSplitter#WelcomeWidget QToolButton {
     font-size: 14pt;
 }
@@ -1045,15 +1039,8 @@ QSplitter#WelcomeWidget QLineEdit {
     font-size: 14pt;
     padding: 0.25em;
 }
-
-#changeLogCollapsible #collapseTitle {
-    font-size: 20pt;
-}
-
-#changeLogCollapsible #collapseButton {
-    width: 0.75em;
-    height: 0.75em;
-}
-#changeLogCollapsible #collapseButton:open {
+QSplitter#WelcomeWidget QLabel#splitterHandleTitle {
+    font-size: 11pt;
+    font-weight: 600;
     color: #268bd2;
 }

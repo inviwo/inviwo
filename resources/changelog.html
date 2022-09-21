@@ -29,7 +29,7 @@
 <h2>2022-09-14 Include cleanup and refactoring</h2>
 <p>We cleaned up, removed, and broke some include dependencies in inviwo core to reduce the overall compile time.<br>
 We have generally tried to reduce the use of big includes that have many transitive includes. Additionally, we tried to break up some headers into smaller parts to avoid having to include unused things.<br>
-For example the <code class="notranslate">inviwo/core/util/glm.h</code> header has been broken up into several smaller headers: <code class="notranslate">glmvec.h</code>, <code class="notranslate">glmmat.h</code>, <code class="notranslate">glmcomp.h</code>, <code class="notranslate">glmconver.h</code>, and<code class="notranslate">glmutils.h</code>.<br>
+For example the <code class="notranslate">inviwo/core/util/glm.h</code> header has been broken up into several smaller headers: <code class="notranslate">glmvec.h</code>, <code class="notranslate">glmmat.h</code>, <code class="notranslate">glmcomp.h</code>, <code class="notranslate">glmconvert.h</code>, and <code class="notranslate">glmutils.h</code>.<br>
 Several new utility headers have also been added or extended. For example, <code class="notranslate">inviwo/core/common/inviwoapplicationutil.h</code> can now be used to get an <code class="notranslate">InviwoApplication</code> pointer without the need of including all of <code class="notranslate">inviwoapplication.h</code>.<br>
 Similarly there is a <code class="notranslate">inviwo/core/common/factoryutil.h</code> to easily access various factories, and a <code class="notranslate">inviwo/core/util/moduleutils.h</code> to get to various inviwo modules.</p>
 <h2>2022-09-14 New CompositeProcessor property configuration dialog</h2>

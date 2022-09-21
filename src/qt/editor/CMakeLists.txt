@@ -5,13 +5,11 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/horisontalcollapsible.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/verticallabel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/subpropertyselectiondialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/verticallabel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
@@ -74,7 +72,6 @@ set(SOURCE_FILES
     editorgrapicsitem.cpp
     fileassociations.cpp
     helpwidget.cpp
-    horisontalcollapsible.cpp
     inviwoaboutwindow.cpp
     inviwoeditmenu.cpp
     inviwoeditmenu.cpp
@@ -187,9 +184,7 @@ if(IVW_CFG_BUILD_CHANGELOG)
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CopyIfFound.cmake"
         CONTENT 
             "if (EXISTS \"${buildFile}\")
-
                 file(COPY \"${buildFile}\" DESTINATION \"${destDir}\")
-
             endif()"
     )
 
