@@ -289,6 +289,6 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: Inviwo-*
         file_glob: true
-        tag: ${{ github.ref }}
+        tag: latest
         overwrite: true
         body: "The latest inviwo build, updated for every merged pull request."
