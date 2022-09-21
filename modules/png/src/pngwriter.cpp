@@ -29,16 +29,34 @@
 
 #include <inviwo/png/pngwriter.h>
 
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer, DataWriter...
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
+#include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/filesystem.h>                                // for fopen
+#include <inviwo/core/util/formats.h>                                   // for DataFormat, Numer...
+#include <inviwo/core/util/glmconvert.h>                                // for glm_convert_norma...
+#include <inviwo/core/util/glmutils.h>                                  // for same_extent, valu...
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWa...
+#include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
 
-#include <fmt/format.h>
+#include <algorithm>                                                    // for min, transform
+#include <functional>                                                   // for __base
+#include <string>                                                       // for string
+#include <type_traits>                                                  // for enable_if, is_int...
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for move
 
-#include <png.h>
-#include <algorithm>
+#include <glm/common.hpp>                                               // for max, min, clamp
+#include <glm/fwd.hpp>                                                  // for uint16
+#include <glm/gtx/component_wise.hpp>                                   // for compMul
+#include <half/half.hpp>                                                // for operator<
+#include <png.h>                                                        // for png_structp, png_...
+#include <pngconf.h>                                                    // for png_const_charp
 
 namespace inviwo {
 
