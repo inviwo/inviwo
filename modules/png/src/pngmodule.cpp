@@ -28,11 +28,20 @@
  *********************************************************************************/
 
 #include <inviwo/png/pngmodule.h>
-#include <inviwo/png/pngreader.h>
-#include <inviwo/png/pngwriter.h>
-#include <inviwo/png/pngutils.h>
+
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/io/datareader.h>        // for DataReader
+#include <inviwo/core/io/datawriter.h>        // for DataWriter
+#include <inviwo/core/util/logcentral.h>      // for LogCentral, LogInfo
+#include <inviwo/png/pngreader.h>             // for PNGLayerReader
+#include <inviwo/png/pngutils.h>              // for getLibPNGVesrion
+#include <inviwo/png/pngwriter.h>             // for PNGLayerWriter
+
+#include <memory>   // for make_unique
+#include <ostream>  // for operator<<, char_traits
 
 namespace inviwo {
+class InviwoApplication;
 
 pngModule::pngModule(InviwoApplication* app) : InviwoModule(app, "png") {
 
