@@ -28,12 +28,29 @@
  *********************************************************************************/
 
 #include <modules/pvm/pvmvolumewriter.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/io/datawriterexception.h>
-#include <inviwo/core/util/safecstr.h>
 
-#include <tidds/ddsbase.h>
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataWrite...
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
+#include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
+#include <inviwo/core/metadata/metadata.h>                              // for MetaDataPrimitive...
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmmat.h>                                    // for mat3
+#include <inviwo/core/util/glmvec.h>                                    // for size3_t, vec3
+#include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+
+#include <cstring>                                                      // for strncpy, memcpy
+#include <memory>                                                       // for allocator, unique...
+#include <string>                                                       // for basic_string, ope...
+#include <unordered_set>                                                // for unordered_set
+
+#include <glm/mat3x3.hpp>                                               // for mat<>::col_type
+#include <glm/vec3.hpp>                                                 // for vec<>::(anonymous)
+#include <tidds/ddsbase.h>                                              // for swapbytes, writeP...
 
 namespace inviwo {
 

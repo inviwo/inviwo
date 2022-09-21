@@ -28,15 +28,35 @@
  *********************************************************************************/
 
 #include <modules/pvm/mpvmvolumereader.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/formatconversion.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/io/datareaderexception.h>
 
-#include <tidds/ddsbase.h>
-#include <modules/pvm/pvmvolumereader.h>
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataReade...
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for createVolumeRAM
+#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
+#include <inviwo/core/metadata/metadata.h>                              // for StringMetaData
+#include <inviwo/core/metadata/metadataowner.h>                         // for MetaDataOwner
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/filesystem.h>                                // for getFileDirectory
+#include <inviwo/core/util/formatconversion.h>                          // for formatBytesToString
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                    // for size3_t
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogInfo
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/stringconversion.h>                          // for replaceInString
+#include <modules/pvm/pvmvolumereader.h>                                // for PVMVolumeReader
+
+#include <cstddef>                                                      // for size_t
+#include <fstream>                                                      // for operator<<, basic...
+#include <string>                                                       // for string, char_traits
+#include <type_traits>                                                  // for remove_extent_t
+#include <unordered_set>                                                // for unordered_set
+#include <utility>                                                      // for move
+#include <vector>                                                       // for vector
+
+#include <glm/fwd.hpp>                                                  // for mat3
+#include <glm/vec3.hpp>                                                 // for operator+, vec<>:...
 
 namespace inviwo {
 
