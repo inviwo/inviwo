@@ -29,10 +29,23 @@
 
 #include <modules/python3/volumepy.h>
 
-#include <modules/python3/pybindutils.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>             // for SwizzleMask, Wrapping3D
+#include <inviwo/core/datastructures/volume/volumeram.h>             // for createVolumeRAM
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
+#include <inviwo/core/util/exception.h>                              // for Exception
+#include <inviwo/core/util/formatdispatching.h>                      // for PrecisionValueType
+#include <inviwo/core/util/formats.h>                                // for DataFormatBase
+#include <inviwo/core/util/glmutils.h>                               // for extent, value_type
+#include <inviwo/core/util/glmvec.h>                                 // for size3_t
+#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT, IVW_CON...
+#include <modules/python3/pybindutils.h>                             // for toNumPyFormat, getDa...
 
-#include <inviwo/core/util/formatdispatching.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <cstring>      // for memcpy, size_t
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+
+#include <glm/vec3.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
 

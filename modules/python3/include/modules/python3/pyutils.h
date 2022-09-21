@@ -29,6 +29,7 @@
 #pragma once
 
 #include <modules/python3/python3moduledefine.h>
+
 #include <string>
 
 namespace inviwo {

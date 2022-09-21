@@ -28,14 +28,23 @@
  *********************************************************************************/
 
 #include <modules/python3/pythonprocessorfolderobserver.h>
-#include <modules/python3/pythonprocessorfactoryobject.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwomodule.h>                // for InviwoModule
+#include <inviwo/core/processors/processorfactoryobject.h>  // for ProcessorFactoryObject
+#include <inviwo/core/util/exception.h>                     // for Exception
+#include <inviwo/core/util/fileobserver.h>                  // for FileObserver
+#include <inviwo/core/util/filesystem.h>                    // for getFileExtension, directoryEx...
+#include <inviwo/core/util/logcentral.h>                    // for LogCentral, log, LogInfo, Log...
+#include <modules/python3/pythonprocessorfactoryobject.h>   // for PythonProcessorFactoryObject
 
-#include <algorithm>
+#include <algorithm>  // for count
+#include <exception>  // for exception
+#include <fstream>    // for operator<<, basic_ifstream
+#include <memory>     // for allocator, make_unique
+#include <utility>    // for move
 
 namespace inviwo {
+class InviwoApplication;
 
 PythonProcessorFolderObserver::PythonProcessorFolderObserver(InviwoApplication* app,
                                                              const std::string& directory,

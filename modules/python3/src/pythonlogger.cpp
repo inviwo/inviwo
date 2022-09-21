@@ -29,7 +29,8 @@
 
 #include <modules/python3/pythonlogger.h>
 
-#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/logcentral.h>                      // for LogCentral, LogError, LogInfo
+#include <modules/python3/pythonexecutionoutputobservable.h>  // for PythonOutputType, PythonOut...
 
 namespace inviwo {
 

@@ -29,8 +29,11 @@
 
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
+#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
+
+#include <modules/python3/pythonexecutionoutputobservable.h>  // for PythonExecutionOutputObeserver
+
+#include <string>  // for string
 
 namespace inviwo {
 

@@ -29,9 +29,20 @@
 
 #include <modules/python3/processortrampoline.h>
 
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
+
 #include <warn/push>
 #include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
+#include <pybind11/pybind11.h>  // for get_override, PYBIND11_OVERLOAD
+
+namespace inviwo {
+class Event;
+class Outport;
+class Property;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

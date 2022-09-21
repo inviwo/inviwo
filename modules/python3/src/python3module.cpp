@@ -29,26 +29,40 @@
 
 #include <warn/push>
 #include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
+#include <pybind11/pybind11.h>   // for module
+#include <tclap/ArgException.h>  // for ArgParseException
+#include <tclap/ValueArg.h>      // for ValueArg
+
 #include <warn/pop>
-#include <modules/python3/python3module.h>
+#include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule
+#include <inviwo/core/datastructures/datarepresentation.h>           // for DataRepresentation<>...
+#include <inviwo/core/datastructures/representationconverter.h>      // for RepresentationConver...
+#include <inviwo/core/datastructures/representationfactoryobject.h>  // for RepresentationFactor...
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
+#include <inviwo/core/util/commandlineparser.h>                      // for CommandLineParser
+#include <inviwo/core/util/exception.h>                              // for ModuleInitException
+#include <inviwo/core/util/filesystem.h>                             // for fileExists
+#include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogWarn
+#include <inviwo/core/util/pathtype.h>                               // for PathType, PathType::...
+#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
+#include <modules/python3/processors/numpymandelbrot.h>              // for NumpyMandelbrot
+#include <modules/python3/processors/numpymeshcreatetest.h>          // for NumPyMeshCreateTest
+#include <modules/python3/processors/numpyvolume.h>                  // for NumPyVolume
+#include <modules/python3/processors/pythonscriptprocessor.h>        // for PythonScriptProcessor
+#include <modules/python3/python3module.h>                           // for Python3Module
+#include <modules/python3/pythoninterpreter.h>                       // for PythonInterpreter
+#include <modules/python3/pythonlogger.h>                            // for PythonLogger
+#include <modules/python3/pythonscript.h>                            // for PythonScriptDisk
+#include <modules/python3/volumepy.h>                                // for VolumePy, VolumePy2R...
 
-#include <modules/python3/pythoninterpreter.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
-
-#include <modules/python3/processors/numpymandelbrot.h>
-#include <modules/python3/processors/numpyvolume.h>
-#include <modules/python3/processors/numpymeshcreatetest.h>
-
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/commandlineparser.h>
-#include <inviwo/core/util/filesystem.h>
-#include <modules/python3/pythonscript.h>
-#include <modules/python3/pythonlogger.h>
-#include <modules/python3/processors/pythonscriptprocessor.h>
-
-#include <modules/python3/pythonprocessorfactoryobject.h>
-#include <modules/python3/volumepy.h>
+#include <exception>    // for exception
+#include <functional>   // for __base, function
+#include <memory>       // for make_unique, unique_ptr
+#include <ostream>      // for operator<<
+#include <string>       // for string, operator+
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
 
