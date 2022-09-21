@@ -29,9 +29,14 @@
 
 #include <modules/assimp/assimpmodule.h>
 
-#include <modules/assimp/assimpreader.h>
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/io/datareader.h>        // for DataReader
+#include <modules/assimp/assimpreader.h>      // for AssimpReader
+
+#include <memory>                             // for make_unique
 
 namespace inviwo {
+class InviwoApplication;
 
 AssimpModule::AssimpModule(InviwoApplication* app) : InviwoModule(app, "assimp") {
     // Add a directory to the search path of the Shadermanager
