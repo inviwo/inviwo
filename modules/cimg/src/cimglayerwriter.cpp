@@ -28,8 +28,11 @@
  *********************************************************************************/
 
 #include <modules/cimg/cimglayerwriter.h>
-#include <modules/cimg/cimgutils.h>
-#include <inviwo/core/util/filesystem.h>
+
+#include <inviwo/core/datastructures/image/layer.h>  // for Layer (ptr only), DataWriterType
+#include <inviwo/core/io/datawriter.h>               // for DataWriterType
+#include <inviwo/core/util/fileextension.h>          // for FileExtension
+#include <modules/cimg/cimgutils.h>                  // for saveLayer, saveLayerToBuffer
 
 namespace inviwo {
 

@@ -28,12 +28,26 @@
  *********************************************************************************/
 
 #include <modules/cimg/cimgvolumereader.h>
-#include <modules/cimg/cimgutils.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/volume/volumedisk.h>
-#include <inviwo/core/util/formatdispatching.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datareaderexception.h>
+
+#include <inviwo/core/datastructures/volume/volume.h>                // for Volume, DataReaderType
+#include <inviwo/core/datastructures/volume/volumedisk.h>            // for VolumeDisk
+#include <inviwo/core/datastructures/volume/volumeram.h>             // for createVolumeRAM
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
+#include <inviwo/core/io/datareader.h>                               // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                      // for DataReaderException
+#include <inviwo/core/metadata/metadata.h>                           // for StringMetaData, Meta...
+#include <inviwo/core/metadata/metadataowner.h>                      // for MetaDataOwner
+#include <inviwo/core/util/fileextension.h>                          // for FileExtension
+#include <inviwo/core/util/filesystem.h>                             // for fileExists, addBasePath
+#include <inviwo/core/util/formats.h>                                // for DataFormatId, DataFo...
+#include <inviwo/core/util/glmvec.h>                                 // for size3_t
+#include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogInfo
+#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
+#include <inviwo/core/util/stringconversion.h>                       // for replaceInString
+#include <modules/cimg/cimgutils.h>                                  // for loadVolumeData
+
+#include <ostream>                                                   // for operator<<, basic_os...
+#include <type_traits>                                               // for remove_extent_t
 
 namespace inviwo {
 
