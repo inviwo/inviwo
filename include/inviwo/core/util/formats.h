@@ -183,6 +183,9 @@ public:
     auto dispatch(T& obj, Args&&... args) const -> typename T::type;
     // clang-format on
 
+    template <typename T>
+    static constexpr DataFormatId typeToId() noexcept;
+
 protected:
     static const DataFormatBase* getPointer(DataFormatId id);
 
@@ -260,6 +263,11 @@ DataFormat<T>::DataFormat()
 
 template <typename T>
 constexpr DataFormatId DataFormat<T>::id() {
+    return typeToId<T>();
+}
+
+template <typename T>
+constexpr DataFormatId DataFormatBase::typeToId() noexcept {
     // clang-format off
     if constexpr(std::is_same_v<T, half_float::half>) { return DataFormatId::Float16; }
     else if constexpr(std::is_same_v<T, glm::f32>) { return DataFormatId::Float32; }
@@ -560,29 +568,6 @@ using DefaultDataFormats = std::tuple<
     DataVec3Int16, DataVec3Int32, DataVec3Int64, DataVec3UInt8, DataVec3UInt16, DataVec3UInt32,
     DataVec3UInt64, DataVec4Float16, DataVec4Float32, DataVec4Float64, DataVec4Int8, DataVec4Int16,
     DataVec4Int32, DataVec4Int64, DataVec4UInt8, DataVec4UInt16, DataVec4UInt32, DataVec4UInt64>;
-
-namespace util {
-
-namespace detail {
-
-template <typename T, typename Formats>
-struct HasDataFormatImpl;
-
-template <typename T, typename Head, typename... Rest>
-struct HasDataFormatImpl<T, std::tuple<Head, Rest...>> : HasDataFormatImpl<T, std::tuple<Rest...>> {
-};
-
-template <typename Head, typename... Rest>
-struct HasDataFormatImpl<typename Head::type, std::tuple<Head, Rest...>> : std::true_type {};
-
-template <typename T>
-struct HasDataFormatImpl<T, std::tuple<>> : std::false_type {};
-
-}  // namespace detail
-
-template <typename T>
-struct HasDataFormat : detail::HasDataFormatImpl<T, DefaultDataFormats> {};
-}  // namespace util
 
 template <typename T, typename... Args>
 auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type {

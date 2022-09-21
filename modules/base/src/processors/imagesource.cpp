@@ -29,7 +29,7 @@
 
 #include <modules/base/processors/imagesource.h>
 #include <modules/base/processors/datasource.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/datastructures/image/layerdisk.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -51,7 +51,7 @@ const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo
 
 ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     : Processor()
-    , rf_(app->getDataReaderFactory())
+    , rf_(util::getDataReaderFactory(app))
     , outport_("image", DataVec4UInt8::get(), false)
     , file_("imageFileName", "File name", file, "image")
     , reader_("reader", "Data Reader")

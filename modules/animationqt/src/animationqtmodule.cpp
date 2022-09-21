@@ -29,7 +29,7 @@
 
 #include <modules/animationqt/animationqtmodule.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/util/raiiutils.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -64,6 +64,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/glm.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -167,8 +168,8 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             });
         };
 
-        addWidgetLazy("Animation Editor", Qt::BottomDockWidgetArea, [this, app, win]() {
-            auto* animationModule = app->getModuleByType<AnimationModule>();
+        addWidgetLazy("Animation Editor", Qt::BottomDockWidgetArea, [this, win]() {
+            auto* animationModule = util::getModuleByType<AnimationModule>();
             editor_ = std::make_unique<AnimationEditorDockWidgetQt>(
                 animationModule->getWorkspaceAnimations(), animationModule->getAnimationManager(),
                 "Animation Editor", getTrackWidgetQtFactory(), getSequenceEditorFactory(), win);
@@ -178,8 +179,8 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             return editor_.get();
         });
 
-        addWidgetLazy("Demo Navigator", Qt::RightDockWidgetArea, [this, app, win]() {
-            auto* animationModule = app->getModuleByType<AnimationModule>();
+        addWidgetLazy("Demo Navigator", Qt::RightDockWidgetArea, [this, win]() {
+            auto* animationModule = util::getModuleByType<AnimationModule>();
             auto& demoController = animationModule->getDemoController();
             navigator_ =
                 std::make_unique<DemoNavigatorDockWidgetQt>(demoController, "Demo Navigator", win);

@@ -32,6 +32,7 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 

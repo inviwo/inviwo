@@ -32,6 +32,7 @@
 #include <modules/animation/workspaceanimations.h>
 #include <inviwo/core/common/modulecallback.h>
 #include <inviwo/core/common/moduleaction.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 

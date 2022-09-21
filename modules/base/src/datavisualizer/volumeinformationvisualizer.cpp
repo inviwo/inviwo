@@ -29,12 +29,13 @@
 
 #include <modules/base/datavisualizer/volumeinformationvisualizer.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/volumeinformation.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 
@@ -53,7 +54,7 @@ Document VolumeInformationVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> VolumeInformationVisualizer::getSupportedFileExtensions() const {
-    auto rf = app_->getDataReaderFactory();
+    auto rf = util::getDataReaderFactory(app_);
     auto exts = rf->getExtensionsForType<Volume>();
     auto exts2 = rf->getExtensionsForType<VolumeSequence>();
     exts.insert(exts.end(), exts2.begin(), exts2.end());

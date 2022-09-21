@@ -30,11 +30,15 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <glm/mat4x4.hpp>
 
 #include <optional>
+#include <string>
 
 namespace inviwo {
+
+using mat4 = glm::mat4;
 
 namespace cameradefaults {
 constexpr vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f);

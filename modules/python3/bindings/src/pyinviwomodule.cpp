@@ -30,6 +30,7 @@
 #include <inviwopy/pyinviwomodule.h>
 
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/common/version.h>

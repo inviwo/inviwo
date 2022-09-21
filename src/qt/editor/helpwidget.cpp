@@ -34,12 +34,14 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/fileobserver.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-
+#include <inviwo/core/ports/portfactory.h>
+#include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/util/docbuilder.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/network/networkutils.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <fmt/format.h>
 

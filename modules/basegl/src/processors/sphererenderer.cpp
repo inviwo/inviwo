@@ -185,8 +185,8 @@ void SphereRenderer::process() {
         // render selection only for first mesh input
         if (auto indices = selection_.getIndices(port, *mesh)) {
             shader.setUniform("selectionMix", 1.0f);
-            shader.setUniform("selectionScaleFactor", selection_.radiusFactor);
-            shader.setUniform("selectionColor", selection_.color);
+            shader.setUniform("selectionScaleFactor", selection_.radiusFactor.get());
+            shader.setUniform("selectionColor", selection_.color.get());
             glDrawElements(GL_POINTS, static_cast<GLsizei>(indices->size()), GL_UNSIGNED_INT,
                            indices->data());
             // reset selection flag

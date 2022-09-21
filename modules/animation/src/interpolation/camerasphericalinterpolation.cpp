@@ -30,6 +30,7 @@
 #include <modules/animation/interpolation/camerasphericalinterpolation.h>
 
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace inviwo {
 

@@ -30,46 +30,38 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwoapplication.h>
-
-#include <inviwo/core/datastructures/camera/camerafactory.h>
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/common/modulepath.h>
 #include <inviwo/core/datastructures/camera/camerafactoryobject.h>
-
 #include <inviwo/core/datastructures/representationfactory.h>
 #include <inviwo/core/datastructures/representationfactoryobject.h>
-
+#include <inviwo/core/datastructures/representationmetafactory.h>
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
-
-#include <inviwo/core/ports/portfactory.h>
+#include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/ports/portfactoryobject.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
-
-#include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/processors/compositesink.h>
 #include <inviwo/core/processors/compositesource.h>
-
-#include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/properties/propertywidgetfactoryobject.h>
-
-#include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/dialogfactoryobject.h>
 #include <inviwo/core/util/demangle.h>
 
 #include <type_traits>
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 #include <vector>
 #include <memory>
 
 namespace inviwo {
 
+class InviwoApplication;
 class Settings;
 class MetaData;
 class Capabilities;
@@ -80,24 +72,6 @@ class MeshDrawer;
 class PropertyConverter;
 class VersionConverter;
 class DataVisualizer;
-
-enum class ModulePath {
-    Data,               // /data
-    Images,             // /data/images
-    PortInspectors,     // /data/portinspectors
-    Scripts,            // /data/scripts
-    TransferFunctions,  // /data/transferfunctions
-    Volumes,            // /data/volumes
-    Workspaces,         // /data/workspaces
-    Docs,               // /docs
-    Tests,              // /tests
-    TestImages,         // /tests/images
-    TestVolumes,        // /tests/volumes
-    UnitTests,          // /tests/unittests
-    RegressionTests,    // /tests/regression
-    GLSL,               // /glsl
-    CL                  // /cl
-};
 
 /**
  * \class InviwoModule
@@ -444,11 +418,13 @@ template <typename BaseRepr>
 void InviwoModule::registerRepresentationConverter(
     std::unique_ptr<RepresentationConverter<BaseRepr>> converter) {
 
-    if (auto factory = app_->getRepresentationConverterFactory<BaseRepr>()) {
-        if (factory->registerObject(converter.get())) {
-            representationConvertersUnRegFunctors_.push_back(
-                [factory, conv = converter.get()]() { factory->unRegisterObject(conv); });
-            representationConverters_.push_back(std::move(converter));
+    if (auto metaFactory = util::getRepresentationConverterMetaFactory(app_)) {
+        if (auto factory = metaFactory->getConverterFactory<BaseRepr>()) {
+            if (factory->registerObject(converter.get())) {
+                representationConvertersUnRegFunctors_.push_back(
+                    [factory, conv = converter.get()]() { factory->unRegisterObject(conv); });
+                representationConverters_.push_back(std::move(converter));
+            }
         }
     }
 }
@@ -456,11 +432,14 @@ void InviwoModule::registerRepresentationConverter(
 template <typename BaseRepr>
 void InviwoModule::registerRepresentationFactoryObject(
     std::unique_ptr<RepresentationFactoryObject<BaseRepr>> representation) {
-    if (auto factory = app_->getRepresentationFactory<BaseRepr>()) {
-        if (factory->registerObject(representation.get())) {
-            representationUnRegFunctors_.push_back(
-                [factory, repr = representation.get()]() { factory->unRegisterObject(repr); });
-            representationFactoryObjects_.push_back(std::move(representation));
+
+    if (auto metaFactory = util::getRepresentationMetaFactory(app_)) {
+        if (auto factory = metaFactory->getRepresentationFactory<BaseRepr>()) {
+            if (factory->registerObject(representation.get())) {
+                representationUnRegFunctors_.push_back(
+                    [factory, repr = representation.get()]() { factory->unRegisterObject(repr); });
+                representationFactoryObjects_.push_back(std::move(representation));
+            }
         }
     }
 }

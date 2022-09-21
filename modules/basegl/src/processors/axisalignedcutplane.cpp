@@ -156,7 +156,7 @@ void AxisAlignedCutPlane::process() {
 
     if (!boundingBoxDrawer_) {
         boundingBoxDrawer_ =
-            getNetwork()->getApplication()->getMeshDrawerFactory()->create(boundingBoxMesh_.get());
+            getInviwoApplication()->getMeshDrawerFactory()->create(boundingBoxMesh_.get());
     }
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);

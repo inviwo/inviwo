@@ -55,7 +55,7 @@ AbstractButton::AbstractButton(const std::string& label, Processor& processor, R
     // normal, pressed, checked, corresponding halo (3x) and border (3x)
     uiTextureMap_ = {{0, 1, 2, 3, 3, 3, 4, 4, 4}};
     uiTextures_ = uiRenderer_->createUITextures(
-        "button", btnFiles, module::getModulePath("UserInterfaceGL", ModulePath::Images));
+        "button", btnFiles, util::getModulePath("UserInterfaceGL", ModulePath::Images));
 }
 
 ivec2 AbstractButton::computeLabelPos(int descent) const {

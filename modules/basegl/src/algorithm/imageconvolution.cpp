@@ -131,7 +131,7 @@ std::shared_ptr<Image> ImageConvolution::convolution(const Layer& layer, int kw,
     utilgl::bindAndSetUniforms(shader_, cont, *layer.getRepresentation<LayerGL>()->getTexture(),
                                "tex");
 
-    shader_.setUniform("kernel", kw * kh, kernel.data());
+    shader_.setUniform("kernel", kernel);
     shader_.setUniform("kernelScale", kernelScale);
     shader_.setUniform("reciprocalDimensions", vec2(1) / vec2(layer.getDimensions()));
 

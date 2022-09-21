@@ -32,6 +32,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
 
 #include <inviwo/meta/creator.hpp>
 

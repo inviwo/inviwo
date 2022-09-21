@@ -104,10 +104,10 @@ public:
     const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
     template <class T>
     T* getModuleByType() const;
-    InviwoModule* getModuleByIdentifier(const std::string& identifier) const;
-    std::vector<InviwoModule*> getModulesByAlias(const std::string& alias) const;
-    InviwoModuleFactoryObject* getFactoryObject(const std::string& identifier) const;
-    std::vector<std::string> findDependentModules(const std::string& module) const;
+    InviwoModule* getModuleByIdentifier(std::string_view identifier) const;
+    std::vector<InviwoModule*> getModulesByAlias(std::string_view alias) const;
+    InviwoModuleFactoryObject* getFactoryObject(std::string_view identifier) const;
+    std::vector<std::string> findDependentModules(std::string_view module) const;
 
     /**
      * \brief Register callback for monitoring when modules have been registered.
@@ -128,10 +128,10 @@ public:
      * @return Module identifiers of modules
      */
     const IdSet& getProtectedModuleIdentifiers() const;
-    bool isProtected(const std::string& module) const;
-    void addProtectedIdentifier(const std::string& id);
+    bool isProtected(std::string_view module) const;
+    void addProtectedIdentifier(std::string_view id);
 
-    static std::function<bool(const std::string&)> getEnabledFilter();
+    static std::function<bool(std::string_view)> getEnabledFilter();
     void reloadModules();
 
 private:

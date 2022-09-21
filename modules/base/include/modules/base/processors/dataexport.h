@@ -41,7 +41,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filedialogstate.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 
 namespace inviwo {
 
@@ -79,8 +79,7 @@ DataExport<DataType, PortType>::DataExport()
     , export_("export", "Export")
     , overwrite_("overwrite", "Overwrite", false) {
 
-    for (auto& ext :
-         InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<DataType>()) {
+    for (auto& ext : util::getDataWriterFactory()->getExtensionsForType<DataType>()) {
         file_.addNameFilter(ext.toString());
     }
 
@@ -106,7 +105,7 @@ void DataExport<DataType, PortType>::exportData() {
     auto data = getData();
 
     if (data && !file_.get().empty()) {
-        auto factory = getNetwork()->getApplication()->getDataWriterFactory();
+        auto factory = util::getDataWriterFactory();
 
         auto writer = factory->template getWriterForTypeAndExtension<DataType>(
             file_.getSelectedExtension(), file_.get());

@@ -32,7 +32,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 
 namespace inviwo {
 
@@ -63,7 +63,7 @@ std::string getFirstFileInFolder(const std::string& folder, const std::string& f
 
 VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     : Processor()
-    , rf_{app->getDataReaderFactory()}
+    , rf_{util::getDataReaderFactory(app)}
     , outport_("data")
     , inputType_("inputType", "Input type",
                  {{"singlefile", "Single File", InputType::SingleFile},

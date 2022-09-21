@@ -76,8 +76,7 @@ protected:
     void addObservation(ObservableInterface* observable);
 
     // Storing observables connected to this observer enables removal upon destruction.
-    using ObservableSet = std::unordered_set<ObservableInterface*>;
-    ObservableSet observables_;
+    std::unordered_set<ObservableInterface*> observables_;
 
 private:
     // The internal ones will not call observable->add/remove

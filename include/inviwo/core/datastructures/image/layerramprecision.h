@@ -33,6 +33,8 @@
 
 #include <algorithm>
 
+#include <glm/gtx/component_wise.hpp>
+
 namespace inviwo {
 
 /**

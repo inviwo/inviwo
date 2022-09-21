@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 
+#include <glm/gtc/constants.hpp>
+
 namespace inviwo {
 
 class IVW_CORE_API DirectionalLight : public LightSource {

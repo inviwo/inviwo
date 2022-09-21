@@ -32,6 +32,7 @@
 
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <modules/python3qt/pythonmenu.h>

@@ -34,11 +34,11 @@
 #include <modules/animationqt/factories/trackwidgetqtfactory.h>
 #include <modules/animationqt/factories/sequenceeditorfactoryobject.h>
 #include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
 class AnimationQtModule;
+class InviwoApplication;
 
 namespace animation {
 

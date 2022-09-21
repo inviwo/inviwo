@@ -38,6 +38,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <modules/opengl/canvasgl.h>
 #include <modules/opengl/volume/volumegl.h>

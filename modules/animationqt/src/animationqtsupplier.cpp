@@ -29,6 +29,7 @@
 
 #include <modules/animationqt/animationqtsupplier.h>
 #include <modules/animationqt/animationqtmodule.h>
+#include <inviwo/core/util/moduleutils.h>
 
 namespace inviwo {
 
@@ -38,11 +39,9 @@ AnimationQtSupplier::AnimationQtSupplier(AnimationQtModule& animationQtModule)
     : animationQtModule_{animationQtModule} {}
 
 AnimationQtSupplier::AnimationQtSupplier(InviwoApplication* app)
-    : animationQtModule_{[app]() -> AnimationQtModule& {
-        if (app) {
-            if (auto animationmodule = app->getModuleByType<AnimationQtModule>()) {
-                return *animationmodule;
-            }
+    : animationQtModule_{[&]() -> AnimationQtModule& {
+        if (auto animationmodule = util::getModuleByType<AnimationQtModule>(app)) {
+            return *animationmodule;
         }
         throw Exception("Was not able to find the animation qt module",
                         IVW_CONTEXT_CUSTOM("AnimationQtSupplier"));

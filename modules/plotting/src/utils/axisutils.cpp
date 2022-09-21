@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/glm.h>
 
 #include <algorithm>
 #include <tuple>

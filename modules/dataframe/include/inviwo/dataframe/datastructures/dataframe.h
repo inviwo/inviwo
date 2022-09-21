@@ -36,13 +36,14 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmfmt.h>
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/dataframe/datastructures/column.h>
 
 #include <unordered_map>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 namespace inviwo {
 
@@ -244,7 +245,7 @@ struct DataTraits<DataFrame> {
 
         auto range = [](const Column* col) {
             if (col->getCustomRange()) {
-                return toString(*col->getCustomRange());
+                return fmt::to_string(*col->getCustomRange());
             } else {
                 return std::string("-");
             }

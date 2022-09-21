@@ -33,6 +33,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmcomp.h>
 #include <inviwo/core/util/glmconvert.h>
 #include <inviwo/core/util/glmmatext.h>
 #include <inviwo/core/util/glmfmt.h>

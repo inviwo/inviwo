@@ -29,6 +29,7 @@
 
 #include <inviwo/dataframe/processors/dataframemetadata.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 

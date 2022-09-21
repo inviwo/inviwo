@@ -33,7 +33,6 @@
 #include <modules/base/algorithm/volume/marchingtetrahedron.h>
 #include <modules/base/algorithm/volume/marchingcubes.h>
 #include <modules/base/algorithm/volume/marchingcubesopt.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/stdextensions.h>

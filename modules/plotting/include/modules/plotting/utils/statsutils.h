@@ -34,6 +34,8 @@
 #include <inviwo/core/util/formatdispatching.h>
 #include <iosfwd>
 
+#include <glm/common.hpp>
+
 namespace inviwo {
 
 namespace statsutil {
@@ -86,7 +88,7 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
 template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
 std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
     auto noNaN =
-        std::partition(data.begin(), data.end(), [](const auto& a) { return util::isnan(a); });
+        std::partition(data.begin(), data.end(), [](const auto& a) { return glm::isnan(a); });
     std::sort(noNaN, data.end());
     std::vector<T> result;
     result.reserve(percentiles.size());

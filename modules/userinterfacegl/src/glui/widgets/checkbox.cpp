@@ -56,7 +56,7 @@ CheckBox::CheckBox(const std::string& label, Processor& processor, Renderer& uiR
                                              "checkbox-checked.png", "checkbox-unchecked-halo.png",
                                              "checkbox-checked-halo.png"};
     uiTextures_ = uiRenderer_->createUITextures(
-        "checkbox", textureFiles, module::getModulePath("UserInterfaceGL", ModulePath::Images));
+        "checkbox", textureFiles, util::getModulePath("UserInterfaceGL", ModulePath::Images));
 
     // for a checkbox, the main UI components are stored in the border
     // unchecked, checked, checked, corresponding halo (3x) and border (3x)
@@ -71,7 +71,7 @@ void CheckBox::renderWidget(const ivec2& origin, const size2_t&) {
     // bind textures
     auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
-    uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
+    uiShader.setUniform("arrayTexMap", uiTextureMap_);
 
     uiShader.setUniform("origin", vec2(origin + widgetPos_));
     uiShader.setUniform("extent", vec2(getWidgetExtentScaled()));

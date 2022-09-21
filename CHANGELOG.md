@@ -1,5 +1,12 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-09-14 Include cleanup and refactoring
+We cleaned up, removed, and broke some include dependencies in inviwo core to reduce the overall compile time.
+We have generally tried to reduce the use of big includes that have many transitive includes. Additionally, we tried to break up some headers into smaller parts to avoid having to include unused things.
+For example the `inviwo/core/util/glm.h` header has been broken up into several smaller headers: `glmvec.h`, `glmmat.h`, `glmcomp.h`, `glmconver.h`, and`glmutils.h`.
+Several new utility headers have also been added or extended. For example, `inviwo/core/common/inviwoapplicationutil.h` can now be used to get an `InviwoApplication` pointer without the need of including all of `inviwoapplication.h`.
+Similarly there is a `inviwo/core/common/factoryutil.h` to easily access various factories, and a `inviwo/core/util/moduleutils.h` to get to various inviwo modules.
+
 ## 2022-09-14 New CompositeProcessor property configuration dialog
 The long deprecated UsageMode has now been removed and with that the only way to select which properties was shown in a `CompositeProcessor`. 
 To fix that, the `CompositeProcessor` got a new dialog `Configure Properties`, accessable from the context menu in the network editor.

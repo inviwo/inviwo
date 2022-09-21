@@ -356,6 +356,7 @@ IVW_CORE_API bool iCaseLess(std::string_view l, std::string_view r);
  */
 struct IVW_CORE_API CaseInsensitiveCompare {
     bool operator()(std::string_view a, std::string_view b) const;
+    using is_transparent = int;
 };
 
 [[deprecated("use util::parseTypeIdName() in demangle.h instead")]] IVW_CORE_API std::string

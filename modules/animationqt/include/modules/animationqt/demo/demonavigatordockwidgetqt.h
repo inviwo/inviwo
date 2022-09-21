@@ -31,7 +31,7 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/demo/democontrollerobserver.h>
 #include <modules/animation/demo/democontroller.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
@@ -47,7 +47,7 @@ class IVW_MODULE_ANIMATIONQT_API DemoNavigatorDockWidgetQt : public InviwoDockWi
 public:
     DemoNavigatorDockWidgetQt(DemoController& controller, const std::string& widgetName,
                               QWidget* parent,
-                              InviwoApplication* app = InviwoApplication::getPtr());
+                              InviwoApplication* app = util::getInviwoApplication());
     virtual ~DemoNavigatorDockWidgetQt();
 
     virtual InviwoApplication* getInviwoApplication() override;

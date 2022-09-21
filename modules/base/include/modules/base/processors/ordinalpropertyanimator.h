@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/optionproperty.h>

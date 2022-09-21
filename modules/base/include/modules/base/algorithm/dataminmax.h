@@ -33,6 +33,10 @@
 #include <modules/base/algorithm/algorithmoptions.h>
 
 #include <inviwo/core/util/glm.h>
+
+#include <glm/common.hpp>
+#include <glm/gtx/compatibility.hpp>
+
 #include <inviwo/core/util/formats.h>
 
 #include <numeric>

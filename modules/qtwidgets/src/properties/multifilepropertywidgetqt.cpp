@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/assertion.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/filepathlineeditqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
@@ -85,7 +86,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
 #if defined(IVW_DEBUG)
     QObject::connect(lineEdit_, &LineEditQt::editingCanceled, this, [this]() {
         // undo textual changes by resetting the contents of the line edit
-        ivwAssert(
+        IVW_ASSERT(
             lineEdit_->getPath() == (!property_->get().empty() ? property_->get().front() : ""),
             "MultiFilePropertyWidgetQt: paths not equal after canceling edit");
     });

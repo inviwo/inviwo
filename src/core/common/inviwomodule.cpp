@@ -31,22 +31,27 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/moduleaction.h>
+#include <inviwo/core/datastructures/camera/camerafactory.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/metadatafactory.h>
+#include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/ports/portinspectorfactory.h>
 #include <inviwo/core/ports/portinspectorfactoryobject.h>
+#include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/compositeprocessorfactoryobject.h>
+#include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertyconverter.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/rendering/datavisualizer.h>
 #include <inviwo/core/rendering/datavisualizermanager.h>
+#include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/settings.h>

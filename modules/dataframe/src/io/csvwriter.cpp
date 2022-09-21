@@ -31,6 +31,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/glm.h>
 
 #include <fmt/format.h>
 

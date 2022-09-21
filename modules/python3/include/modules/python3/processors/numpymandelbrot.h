@@ -63,7 +63,7 @@ namespace inviwo {
  */
 class IVW_MODULE_PYTHON3_API NumpyMandelbrot : public Processor {
 public:
-    NumpyMandelbrot();
+    NumpyMandelbrot(InviwoApplication* app);
     virtual ~NumpyMandelbrot() = default;
 
     virtual void process() override;

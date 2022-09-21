@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 
 #include <memory>
+#include <glm/matrix.hpp>
 
 namespace inviwo {
 

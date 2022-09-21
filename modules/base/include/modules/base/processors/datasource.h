@@ -30,7 +30,8 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -96,7 +97,7 @@ public:
      * @param content A content type passed into the FileProperty, usually 'volume', 'image' etc.
      * @see FileProperty
      */
-    DataSource(InviwoApplication* app = InviwoApplication::getPtr(), const std::string& file = "",
+    DataSource(InviwoApplication* app = util::getInviwoApplication(), const std::string& file = "",
                const std::string& content = "");
     virtual ~DataSource() = default;
 
@@ -127,7 +128,7 @@ template <typename DataType, typename PortType>
 DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::string& file,
                                            const std::string& content)
     : Processor()
-    , rf_(app->getDataReaderFactory())
+    , rf_(util::getDataReaderFactory(app))
     , port_("data")
     , file_("filename", "File", file, content)
     , reader_("reader", "Data Reader")

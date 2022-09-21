@@ -30,11 +30,77 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <inviwo/core/util/threadpool.h>
+
 #include <string>
 #include <thread>
+#include <future>
+#include <functional>
 
-namespace inviwo::util {
+namespace inviwo {
+
+class InviwoApplication;
+
+namespace util {
 
 IVW_CORE_API void setThreadDescription(std::thread& thread, const std::string& desc);
 
-}  // namespace inviwo::util
+IVW_CORE_API ThreadPool& getThreadPool();
+IVW_CORE_API ThreadPool& getThreadPool(InviwoApplication* app);
+IVW_CORE_API void waitForPool();
+IVW_CORE_API void waitForPool(InviwoApplication* app);
+IVW_CORE_API size_t processFront();
+IVW_CORE_API size_t processFront(InviwoApplication* app);
+
+/**
+ * Utility function to query the pool size of the InviwoApplication
+ * @return pool size of the InviwoApplication, 0 if the application is not initialized
+ * @see InviwoApplication::getPoolSize(), InviwoApplication::isInitialized
+ */
+IVW_CORE_API size_t getPoolSize();
+
+template <class F, class... Args>
+auto dispatchPool(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>> {
+    return getThreadPool().enqueue(std::forward<F>(f), std::forward<Args>(args)...);
+}
+
+template <class F, class... Args>
+auto dispatchPool(InviwoApplication* app, F&& f, Args&&... args)
+    -> std::future<std::invoke_result_t<F, Args...>> {
+    return getThreadPool(app).enqueue(std::forward<F>(f), std::forward<Args>(args)...);
+}
+
+IVW_CORE_API void dispatchFrontAndForget(std::function<void()> fun);
+IVW_CORE_API void dispatchFrontAndForget(InviwoApplication* app, std::function<void()> fun);
+
+template <class F, class... Args>
+auto dispatchFront(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>> {
+    using return_type = std::invoke_result_t<F, Args...>;
+
+    auto task = std::make_shared<std::packaged_task<return_type()>>(
+        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+
+    std::future<return_type> res = task->get_future();
+
+    dispatchFrontAndForget(task);
+
+    return res;
+}
+
+template <class F, class... Args>
+auto dispatchFront(InviwoApplication* app, F&& f, Args&&... args)
+    -> std::future<std::invoke_result_t<F, Args...>> {
+    using return_type = std::invoke_result_t<F, Args...>;
+
+    auto task = std::make_shared<std::packaged_task<return_type()>>(
+        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+
+    std::future<return_type> res = task->get_future();
+
+    dispatchFrontAndForget(app, task);
+
+    return res;
+}
+
+}  // namespace util
+}  // namespace inviwo

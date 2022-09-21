@@ -30,13 +30,34 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulepath.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/vectoroperations.h>
+
+#include <memory>
+#include <vector>
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 
-namespace module {
+class ModuleManager;
+class InviwoModule;
+class InviwoApplication;
+
+namespace util {
+
+IVW_CORE_API ModuleManager& getModuleManager();
+IVW_CORE_API ModuleManager& getModuleManager(InviwoApplication* app);
+
+IVW_CORE_API const std::vector<std::unique_ptr<InviwoModule>>& getModules();
+IVW_CORE_API const std::vector<std::unique_ptr<InviwoModule>>& getModules(InviwoApplication* app);
+IVW_CORE_API InviwoModule* getModuleByIdentifier(std::string_view identifier);
+IVW_CORE_API InviwoModule* getModuleByIdentifier(InviwoApplication* app,
+                                                 std::string_view identifier);
+
+IVW_CORE_API std::string getModulePath(InviwoModule* module);
+IVW_CORE_API std::string getModulePath(InviwoModule* module, ModulePath pathType);
 
 /**
  * \brief return the path for a specific type located within the requested module
@@ -45,7 +66,21 @@ namespace module {
  * @param pathType     type of the requested path
  * @return subdirectory of the module matching the type
  */
-IVW_CORE_API std::string getModulePath(const std::string& identifier, ModulePath pathType);
+IVW_CORE_API std::string getModulePath(std::string_view identifier, ModulePath pathType);
+IVW_CORE_API std::string getModulePath(InviwoApplication* app, std::string_view identifier,
+                                       ModulePath pathType);
+IVW_CORE_API std::string getModulePath(std::string_view identifier);
+IVW_CORE_API std::string getModulePath(InviwoApplication* app, std::string_view identifier);
+
+template <class T>
+T* getModuleByType(InviwoApplication* app) {
+    return getTypeFromVector<T>(getModules(app));
+}
+
+template <class T>
+T* getModuleByType() {
+    return getTypeFromVector<T>(getModules());
+}
 
 /**
  * \brief return the path for a specific type located within the requested module of type T
@@ -54,12 +89,9 @@ IVW_CORE_API std::string getModulePath(const std::string& identifier, ModulePath
  * @return subdirectory of the module matching the type
  */
 template <typename T>
-std::string getModulePath(ModulePath pathType);
-
-template <typename T>
 std::string getModulePath(ModulePath pathType) {
     std::string path;
-    if (auto m = InviwoApplication::getPtr()->getModuleByType<T>()) {
+    if (auto m = getModuleByType<T>()) {
         path = m->getPath(pathType);
         if (path.empty() || path == m->getPath()) {
             throw Exception("Could not locate module path for specified path type",
@@ -71,6 +103,21 @@ std::string getModulePath(ModulePath pathType) {
     return path;
 }
 
-}  // namespace module
+template <typename T>
+std::string getModulePath(InviwoApplication* app, ModulePath pathType) {
+    std::string path;
+    if (auto m = getModuleByType<T>(app)) {
+        path = m->getPath(pathType);
+        if (path.empty() || path == m->getPath()) {
+            throw Exception("Could not locate module path for specified path type",
+                            IVW_CONTEXT_CUSTOM("module::getModulePath"));
+        }
+    } else {
+        throw Exception("Could not locate module", IVW_CONTEXT_CUSTOM("module::getModulePath"));
+    }
+    return path;
+}
+
+}  // namespace util
 
 }  // namespace inviwo

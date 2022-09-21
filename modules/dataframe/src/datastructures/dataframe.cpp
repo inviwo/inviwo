@@ -34,6 +34,7 @@
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/glm.h>
 
 #include <utility>
 

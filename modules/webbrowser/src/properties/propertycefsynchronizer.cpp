@@ -32,6 +32,7 @@
 
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <fmt/format.h>
 

@@ -31,7 +31,6 @@
 
 #include <modules/opencl/openclmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/singleton.h>
 #include <modules/opencl/inviwoopencl.h>

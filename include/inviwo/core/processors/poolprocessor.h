@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/threadutil.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/activityindicator.h>
@@ -38,7 +38,7 @@
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <atomic>
 #include <chrono>
@@ -403,7 +403,7 @@ inline void PoolProcessor::callDone(
     };
 
     if (state->count.fetch_sub(1) == 1) {
-        app->dispatchFrontAndForget([state]() {
+        util::dispatchFrontAndForget(app, [state]() {
             if (auto wrapper = state->processor.lock()) {
                 auto& p = wrapper->processor;
                 const bool isLast = p.removeState(state);
@@ -445,7 +445,7 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
     auto state = makeState<Result, Done>(jobs.size(), std::forward<Done>(done));
     Submission sub{state, {}, [this]() { setupProgress<Job>(); }};
 
-    auto app = getNetwork()->getApplication();
+    auto app = getInviwoApplication();
     size_t i = 0;
     for (auto& job : jobs) {
         auto task = makeTask<Result>(std::move(job), state->getStop(), state->getProgress(i++));
@@ -496,7 +496,7 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     auto state = makeState<Result, Done>(1, std::forward<Done>(done));
     auto task = makeTask<Result>(std::forward<Job>(job), state->getStop(), state->getProgress(0));
     state->futures.push_back(task->get_future());
-    auto app = getNetwork()->getApplication();
+    auto app = getInviwoApplication();
 
     Submission sub{state,
                    {[state, task, app]() {

@@ -35,6 +35,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/buffer/bufferobject.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>

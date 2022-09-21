@@ -85,9 +85,8 @@ public:
                 const auto colors = isotf.isovalues_.get().getColors();
                 const auto name = isotf.isovalues_.getIdentifier();
                 StrBuffer buff;
-                shader.setUniform(buff.replace("{}.values", name), positions.size(),
-                                  positions.data());
-                shader.setUniform(buff.replace("{}.colors", name), colors.size(), colors.data());
+                shader.setUniform(buff.replace("{}.values", name), positions);
+                shader.setUniform(buff.replace("{}.colors", name), colors);
                 shader.setUniform(buff.replace("{}.size", name), static_cast<int>(colors.size()));
             }
         }

@@ -36,6 +36,7 @@
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/util/glm.h>
 
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/inviwoqtutils.h>

@@ -55,7 +55,7 @@ namespace inviwo {
  */
 class IVW_MODULE_PYTHON3_API NumPyVolume : public Processor {
 public:
-    NumPyVolume();
+    NumPyVolume(InviwoApplication* app);
     virtual ~NumPyVolume() = default;
 
     virtual void process() override;

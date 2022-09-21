@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/iterrange.h>
 #include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/logcentral.h>

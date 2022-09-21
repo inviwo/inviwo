@@ -407,7 +407,7 @@ void CameraWidget::saveInitialCameraState() {
 
 void CameraWidget::loadMesh() {
     auto load = [this](std::string_view file) -> std::shared_ptr<const Mesh> {
-        auto app = getNetwork()->getApplication();
+        auto app = getInviwoApplication();
         auto module = app->getModuleByIdentifier("UserInterfaceGL");
         if (!module) {
             throw Exception("Could not locate module 'UserInterfaceGL'", IVW_CONTEXT);

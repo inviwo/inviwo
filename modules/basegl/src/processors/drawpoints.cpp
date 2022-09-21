@@ -86,7 +86,7 @@ void DrawPoints::process() {
     {
         utilgl::PointSizeState pointsize(static_cast<GLfloat>(pointSize_));
         pointShader_.activate();
-        pointShader_.setUniform("color", pointColor_);
+        pointShader_.setUniform("color", pointColor_.get());
         pointDrawer_.draw();
         pointShader_.deactivate();
     }

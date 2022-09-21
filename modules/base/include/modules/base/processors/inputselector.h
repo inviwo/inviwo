@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 

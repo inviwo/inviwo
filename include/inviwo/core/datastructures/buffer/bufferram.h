@@ -33,7 +33,7 @@
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/formatdispatching.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 

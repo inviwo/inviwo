@@ -11,6 +11,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/permutations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/searchdsl.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/factoryutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplicationutil.h
@@ -22,6 +23,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulemanager.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulepath.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/runtimemoduleregistration.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/version.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/bitset.h
@@ -243,6 +245,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/multifileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionpropertytraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalrefproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/planeproperty.h
@@ -322,6 +325,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmcomp.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmconvert.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmfmt.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmmat.h
@@ -403,6 +407,7 @@ set(SOURCE_FILES
     algorithm/markdown.cpp
     algorithm/permutations.cpp
     algorithm/searchdsl.cpp
+    common/factoryutil.cpp
     common/inviwoapplication.cpp
     common/inviwoapplicationutil.cpp
     common/inviwocore.cpp
@@ -411,6 +416,7 @@ set(SOURCE_FILES
     common/inviwomodulelibraryobserver.cpp
     common/moduleaction.cpp
     common/modulemanager.cpp
+    common/modulepath.cpp
     common/version.cpp
     datastructures/bitset.cpp
     datastructures/buffer/buffer.cpp
@@ -600,6 +606,7 @@ set(SOURCE_FILES
     properties/listproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
+    properties/optionpropertytraits.cpp
     properties/ordinalproperty.cpp
     properties/ordinalrefproperty.cpp
     properties/planeproperty.cpp
@@ -667,6 +674,7 @@ set(SOURCE_FILES
     util/formatdispatching.cpp
     util/formats.cpp
     util/glm.cpp
+    util/glmcomp.cpp
     util/glmconvert.cpp
     util/glmfmt.cpp
     util/glmmat.cpp

@@ -33,8 +33,8 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmfmt.h>
 #include <inviwo/core/util/introspection.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/colorconversion.h>
 
 #include <type_traits>
@@ -120,7 +120,8 @@ IVW_CORE_API std::string appendIfNotEmpty(std::string_view a, std::string_view b
 
 // Specializations for data format types
 template <typename T>
-struct DataTraits<T, std::enable_if_t<util::HasDataFormat<T>::value>> {
+struct DataTraits<T,
+                  std::enable_if_t<DataFormatBase::typeToId<T>() != DataFormatId::NotSpecialized>> {
     static const std::string& classIdentifier() {
         static const std::string classId{"org.inviwo." + DataFormat<T>::staticStr()};
         return classId;
@@ -136,7 +137,7 @@ struct DataTraits<T, std::enable_if_t<util::HasDataFormat<T>::value>> {
     static Document info(const T& data) {
         Document doc;
         doc.append("p", dataName());
-        doc.append("p", toString(data));
+        doc.append("p", fmt::to_string(data));
         return doc;
     }
 };

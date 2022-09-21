@@ -30,6 +30,7 @@
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/version.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/sharedlibrary.h>
@@ -108,7 +109,7 @@ void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFact
     onModulesDidRegister_.invoke();
 }
 
-std::function<bool(const std::string&)> ModuleManager::getEnabledFilter() {
+std::function<bool(std::string_view)> ModuleManager::getEnabledFilter() {
     // Load enabled modules if file "application_name-enabled-modules.txt" exists,
     // otherwise load all modules
     const auto enabledModuleFileName =
@@ -122,7 +123,7 @@ std::function<bool(const std::string&)> ModuleManager::getEnabledFilter() {
     std::string enabledModulesFilePath(exepath + "/" + enabledModuleFileName);
 #endif
     if (!filesystem::fileExists(enabledModulesFilePath)) {
-        return [](const std::string&) { return true; };
+        return [](std::string_view) { return true; };
     }
 
     std::ifstream enabledModulesFile{enabledModulesFilePath};
@@ -131,7 +132,7 @@ std::function<bool(const std::string&)> ModuleManager::getEnabledFilter() {
               std::istream_iterator<std::string>(), std::back_inserter(enabledModules));
     std::for_each(std::begin(enabledModules), std::end(enabledModules), toLower);
 
-    return [=](const std::string& file) {
+    return [=](std::string_view file) {
         const auto name = util::stripModuleFileNameDecoration(file);
         return util::contains(enabledModules, name);
     };
@@ -290,7 +291,7 @@ ModuleManager::getModuleFactoryObjects() const {
     return factoryObjects_;
 }
 
-InviwoModule* ModuleManager::getModuleByIdentifier(const std::string& identifier) const {
+InviwoModule* ModuleManager::getModuleByIdentifier(std::string_view identifier) const {
     const auto it =
         std::find_if(modules_.begin(), modules_.end(), [&](const std::unique_ptr<InviwoModule>& m) {
             return iCaseCmp(m->getIdentifier(), identifier);
@@ -302,7 +303,7 @@ InviwoModule* ModuleManager::getModuleByIdentifier(const std::string& identifier
     }
 }
 
-std::vector<InviwoModule*> ModuleManager::getModulesByAlias(const std::string& alias) const {
+std::vector<InviwoModule*> ModuleManager::getModulesByAlias(std::string_view alias) const {
     std::vector<InviwoModule*> res;
     for (const auto& mfo : factoryObjects_) {
         if (util::contains(mfo->aliases, alias)) {
@@ -314,7 +315,7 @@ std::vector<InviwoModule*> ModuleManager::getModulesByAlias(const std::string& a
     return res;
 }
 
-InviwoModuleFactoryObject* ModuleManager::getFactoryObject(const std::string& identifier) const {
+InviwoModuleFactoryObject* ModuleManager::getFactoryObject(std::string_view identifier) const {
     auto it = util::find_if(factoryObjects_,
                             [&](const auto& module) { return iCaseCmp(module->name, identifier); });
     // Check if dependent module is of correct version
@@ -325,7 +326,7 @@ InviwoModuleFactoryObject* ModuleManager::getFactoryObject(const std::string& id
     }
 }
 
-std::vector<std::string> ModuleManager::findDependentModules(const std::string& module) const {
+std::vector<std::string> ModuleManager::findDependentModules(std::string_view module) const {
     std::vector<std::string> dependencies;
     for (const auto& item : factoryObjects_) {
         if (util::contains_if(item->dependencies, [&](auto& dep) { return dep.first == module; })) {
@@ -357,11 +358,11 @@ const std::set<std::string, CaseInsensitiveCompare>& ModuleManager::getProtected
     return protected_;
 }
 
-bool ModuleManager::isProtected(const std::string& module) const {
+bool ModuleManager::isProtected(std::string_view module) const {
     return protected_.count(module) != 0;
 }
 
-void ModuleManager::addProtectedIdentifier(const std::string& id) { protected_.insert(id); }
+void ModuleManager::addProtectedIdentifier(std::string_view id) { protected_.emplace(id); }
 
 bool ModuleManager::checkDependencies(const InviwoModuleFactoryObject& obj) const {
     std::stringstream err;
@@ -425,7 +426,7 @@ auto ModuleManager::getProtectedDependencies(
     const IdSet& ptotectedIds,
     const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& modules) -> IdSet {
     IdSet dependencies;
-    std::function<void(const std::string&)> getDeps = [&](const std::string& module) {
+    std::function<void(std::string_view)> getDeps = [&](std::string_view module) {
         auto it = util::find_if(modules, [&](const auto& m) { return iCaseCmp(m->name, module); });
         if (it != modules.end()) {
             for (const auto& dep : (*it)->dependencies) {

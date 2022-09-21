@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datagrouprepresentation.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 

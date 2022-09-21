@@ -31,6 +31,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

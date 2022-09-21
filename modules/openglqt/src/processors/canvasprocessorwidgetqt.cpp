@@ -35,6 +35,9 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/metadata/processormetadata.h>
+
+#include <glm/gtx/scalar_multiplication.hpp>
 
 #include <warn/push>
 #include <warn/ignore/all>

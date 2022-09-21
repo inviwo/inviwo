@@ -42,6 +42,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/glmcomp.h>
 
 namespace inviwo {
 

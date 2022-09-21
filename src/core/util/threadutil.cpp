@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/threadutil.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -58,6 +59,31 @@ void util::setThreadDescription(std::thread& thread, const std::string& desc) {
 #else
     pthread_setname_np(thread.native_handle(), desc.c_str());
 #endif
+}
+
+ThreadPool& util::getThreadPool() { return getThreadPool(InviwoApplication::getPtr()); }
+
+ThreadPool& util::getThreadPool(InviwoApplication* app) { return app->getThreadPool(); }
+
+void util::waitForPool(InviwoApplication* app) { app->waitForPool(); }
+
+void util::waitForPool() { waitForPool(InviwoApplication::getPtr()); }
+
+size_t util::getPoolSize() {
+    if (InviwoApplication::isInitialized()) {
+        return InviwoApplication::getPtr()->getPoolSize();
+    }
+    return 0u;
+}
+
+size_t util::processFront() { return processFront(InviwoApplication::getPtr()); }
+size_t util::processFront(InviwoApplication* app) { return app->processFront(); }
+
+void util::dispatchFrontAndForget(std::function<void()> fun) {
+    dispatchFrontAndForget(InviwoApplication::getPtr(), std::move(fun));
+}
+void util::dispatchFrontAndForget(InviwoApplication* app, std::function<void()> fun) {
+    app->dispatchFrontAndForget(std::move(fun));
 }
 
 }  // namespace inviwo

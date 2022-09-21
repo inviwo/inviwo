@@ -40,6 +40,7 @@
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 

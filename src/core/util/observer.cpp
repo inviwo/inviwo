@@ -71,7 +71,8 @@ void Observer::removeObservations() {
 }
 
 void Observer::addObservation(ObservableInterface* observed) {
-    std::pair<ObservableSet::iterator, bool> inserted = observables_.insert(observed);
+    std::pair<std::unordered_set<ObservableInterface*>::iterator, bool> inserted =
+        observables_.insert(observed);
     if (inserted.second) observed->addObserverInternal(this);
 }
 

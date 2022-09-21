@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <modules/basegl/algorithm/imageconvolution.h>
 
 namespace inviwo {

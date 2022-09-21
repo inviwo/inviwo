@@ -30,8 +30,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/threadutil.h>
 
 #include <utility>
 
@@ -83,9 +83,8 @@ void forEach(const Iterable& iterable, Callback&& callback) {
 template <typename Iterable, typename Callback, typename OnDoneCallback>
 std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback&& callback,
                                                     size_t jobs, OnDoneCallback&& onTaskDone) {
-    auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    const auto poolSize = settings->poolSize_.get();
 
+    const auto poolSize = util::getPoolSize();
     if (poolSize == 0) {
         forEach(iterable, std::forward<Callback>(callback));
         onTaskDone();

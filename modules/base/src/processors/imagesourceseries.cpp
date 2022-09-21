@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/base/processors/imagesourceseries.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/datastructures/image/layerdisk.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -64,7 +64,7 @@ ImageSourceSeries::ImageSourceSeries(InviwoApplication* app)
     addProperty(currentImageIndex_);
     addProperty(imageFileName_);
 
-    validExtensions_ = app->getDataReaderFactory()->getExtensionsForType<Layer>();
+    validExtensions_ = util::getDataReaderFactory(app)->getExtensionsForType<Layer>();
     imageFilePattern_.addNameFilters(validExtensions_);
 
     imageFilePattern_.onChange([&]() {
@@ -110,7 +110,7 @@ void ImageSourceSeries::process() {
     const auto currentFileName = fileList_[index];
     const auto sext = imageFilePattern_.getSelectedExtension();
 
-    auto factory = getNetwork()->getApplication()->getDataReaderFactory();
+    auto factory = util::getDataReaderFactory(getInviwoApplication());
     auto reader = factory->getReaderForTypeAndExtension<Layer>(sext, currentFileName);
 
     // there should always be a reader since we asked the reader for valid extensions

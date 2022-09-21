@@ -29,7 +29,6 @@
 
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/datasource.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -38,7 +37,7 @@
 #include <inviwo/core/resourcemanager/resource.h>
 #include <inviwo/core/resourcemanager/resourcemanager.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/metadata/metadata.h>
 
@@ -77,7 +76,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     addProperties(file_, reader_, reload_, information_, basis_, volumeSequence_);
     volumeSequence_.setVisible(false);
 
-    util::updateFilenameFilters<Volume, VolumeSequence>(*app_->getDataReaderFactory(), file_,
+    util::updateFilenameFilters<Volume, VolumeSequence>(*util::getDataReaderFactory(app), file_,
                                                         reader_);
     reader_.setCurrentStateAsDefault();
 
@@ -103,8 +102,8 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
 void VolumeSource::load(bool deserialize) {
     if (file_.get().empty()) return;
 
-    auto rf = app_->getDataReaderFactory();
-    auto rm = app_->getResourceManager();
+    auto rf = util::getDataReaderFactory(app_);
+    auto rm = util::getResourceManager(app_);
 
     const auto sext = reader_.getSelectedValue();
 
@@ -179,7 +178,7 @@ void VolumeSource::process() {
 
 void VolumeSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    util::updateFilenameFilters<Volume, VolumeSequence>(*app_->getDataReaderFactory(), file_,
+    util::updateFilenameFilters<Volume, VolumeSequence>(*util::getDataReaderFactory(app_), file_,
                                                         reader_);
     deserialized_ = true;
 }

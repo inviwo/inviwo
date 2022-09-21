@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

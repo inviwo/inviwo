@@ -29,7 +29,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/io/datawriter.h>
@@ -54,7 +54,7 @@ namespace util {
 template <typename T>
 void saveData(const T& data, std::string_view filePath, const FileExtension& extension,
               Overwrite overwrite) {
-    auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
+    auto factory = util::getDataWriterFactory();
     if (auto writer = factory->getWriterForTypeAndExtension<T>(extension, filePath)) {
         writer->setOverwrite(overwrite);
         writer->writeData(&data, filePath);
@@ -81,7 +81,7 @@ template <typename T>
 std::optional<std::string> saveData(const T& data, std::string_view path, std::string_view name,
                                     const std::vector<FileExtension>& extensions,
                                     Overwrite overwrite) {
-    auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
+    auto factory = util::getDataWriterFactory();
 
     for (const auto& extension : extensions) {
         if (auto writer = factory->getWriterForTypeAndExtension<T>(extension.extension_)) {

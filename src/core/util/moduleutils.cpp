@@ -28,29 +28,74 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/moduleutils.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-namespace module {
+namespace util {
 
-std::string getModulePath(const std::string& identifier, ModulePath pathType) {
+ModuleManager& getModuleManager(InviwoApplication* app) { return app->getModuleManager(); }
+
+ModuleManager& getModuleManager() { return getModuleManager(InviwoApplication::getPtr()); }
+
+const std::vector<std::unique_ptr<InviwoModule>>& getModules(InviwoApplication* app) {
+    return getModuleManager(app).getModules();
+}
+
+const std::vector<std::unique_ptr<InviwoModule>>& getModules() {
+    return getModules(InviwoApplication::getPtr());
+}
+
+InviwoModule* getModuleByIdentifier(InviwoApplication* app, std::string_view identifier) {
+    return getModuleManager(app).getModuleByIdentifier(identifier);
+}
+InviwoModule* getModuleByIdentifier(std::string_view identifier) {
+    return getModuleByIdentifier(InviwoApplication::getPtr(), identifier);
+}
+
+std::string getModulePath(InviwoModule* module) { return module->getPath(); }
+
+std::string getModulePath(InviwoModule* module, ModulePath pathType) {
+    return module->getPath(pathType);
+}
+
+std::string getModulePath(InviwoApplication* app, std::string_view identifier) {
+    if (auto m = getModuleByIdentifier(app, identifier)) {
+        return m->getPath();
+    } else {
+        throw Exception(IVW_CONTEXT_CUSTOM("module::getModulePath"),
+                        "Could not locate module \"{}\"", identifier);
+    }
+}
+
+std::string getModulePath(std::string_view identifier) {
+    return getModulePath(InviwoApplication::getPtr(), identifier);
+}
+
+std::string getModulePath(InviwoApplication* app, std::string_view identifier,
+                          ModulePath pathType) {
     std::string path;
-    if (auto m = InviwoApplication::getPtr()->getModuleByIdentifier(identifier)) {
+    if (auto m = getModuleByIdentifier(app, identifier)) {
         path = m->getPath(pathType);
         if (path.empty() || path == m->getPath()) {
             // if the result of getPath(pathType) is identical with getPath(),
             // i.e. the module path, the specific path does not exist.
-            throw Exception("Could not locate module path for specified path type (module \"" +
-                                identifier + "\")",
-                            IVW_CONTEXT_CUSTOM("module::getModulePath"));
+            throw Exception(IVW_CONTEXT_CUSTOM("module::getModulePath"),
+                            "Could not locate module path for specified path type (module \"{}\")",
+                            identifier);
         }
     } else {
-        throw Exception("Could not locate module \"" + identifier + "\"",
-                        IVW_CONTEXT_CUSTOM("module::getModulePath"));
+        throw Exception(IVW_CONTEXT_CUSTOM("module::getModulePath"),
+                        "Could not locate module \"{}\"", identifier);
     }
     return path;
 }
 
-}  // namespace module
+std::string getModulePath(std::string_view identifier, ModulePath pathType) {
+    return getModulePath(InviwoApplication::getPtr(), identifier, pathType);
+}
+
+}  // namespace util
 
 }  // namespace inviwo

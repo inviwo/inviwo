@@ -40,6 +40,7 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/network/networkvisitor.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <fmt/format.h>
 

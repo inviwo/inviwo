@@ -31,6 +31,7 @@
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/glm.h>
 #include <modules/base/algorithm/dataminmax.h>
 #include <modules/base/algorithm/volume/volumesignificantvoxels.h>
 

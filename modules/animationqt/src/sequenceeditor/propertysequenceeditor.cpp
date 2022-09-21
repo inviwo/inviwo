@@ -30,7 +30,7 @@
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
 #include <modules/animationqt/sequenceeditor/keyframeeditorwidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/property.h>
@@ -94,8 +94,7 @@ public:
         });
         property_->setOwner(nullptr);
 
-        auto propWidget =
-            util::getInviwoApplication()->getPropertyWidgetFactory()->create(property_.get());
+        auto propWidget = util::getPropertyWidgetFactory()->create(property_.get());
         propertyWidget_ = static_cast<PropertyWidgetQt*>(propWidget.release());
 
         if (auto label = propertyWidget_->findChild<EditableLabelQt*>()) {
