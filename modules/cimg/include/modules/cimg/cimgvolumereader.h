@@ -29,13 +29,19 @@
 
 #pragma once
 
-#include <modules/cimg/cimgmoduledefine.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/volume/volumedisk.h>
-#include <inviwo/core/io/datareader.h>
+#include <modules/cimg/cimgmoduledefine.h>  // for IVW_MODULE_CIMG_API
+
+#include <inviwo/core/datastructures/diskrepresentation.h>           // for DiskRepresentationLo...
+#include <inviwo/core/datastructures/volume/volume.h>                // for DataReaderType
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
+#include <inviwo/core/io/datareader.h>                               // for DataReaderType
+
+#include <memory>       // for shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
 
 namespace inviwo {
+class MetaDataOwner;
 
 /**
  * \ingroup dataio

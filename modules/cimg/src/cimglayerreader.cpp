@@ -28,11 +28,21 @@
  *********************************************************************************/
 
 #include <modules/cimg/cimglayerreader.h>
-#include <modules/cimg/cimgutils.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datareaderexception.h>
+
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
+#include <inviwo/core/datastructures/image/layer.h>       // for Layer, DataReaderType
+#include <inviwo/core/datastructures/image/layerram.h>    // IWYU pragma: keep
+#include <inviwo/core/io/datareader.h>                    // for DataReaderType
+#include <inviwo/core/util/fileextension.h>               // for FileExtension
+#include <inviwo/core/util/formatdispatching.h>           // for dispatch, All
+#include <inviwo/core/util/formats.h>                     // for DataFormatId, DataFormatId::Not...
+#include <inviwo/core/util/glmvec.h>                      // for uvec2
+#include <modules/cimg/cimgutils.h>                       // for loadLayerData
+
+#include <cstddef>  // for size_t
 
 namespace inviwo {
+class LayerRepresentation;
 
 CImgLayerReader::CImgLayerReader() : DataReaderType<Layer>() {
 #ifdef cimg_use_jpeg
