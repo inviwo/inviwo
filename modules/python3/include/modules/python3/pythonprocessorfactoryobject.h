@@ -28,16 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
+#include <modules/python3/python3moduledefine.h>            // for IVW_MODULE_PYTHON3_API
 
-#include <inviwo/core/processors/processorfactoryobject.h>
-#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/processors/processorfactoryobject.h>  // for ProcessorFactoryObject
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/util/document.h>                      // for Document
+#include <inviwo/core/util/fileobserver.h>                  // for FileObserver
 
-#include <string>
+#include <memory>                                           // for unique_ptr
+#include <string>                                           // for string
 
 namespace inviwo {
 
 class InviwoApplication;
+class Processor;
 
 struct IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectData {
     ProcessorInfo info;

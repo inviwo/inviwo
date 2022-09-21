@@ -29,13 +29,16 @@
 
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/python3/pythonscript.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <modules/python3/python3moduledefine.h>     // for IVW_MODULE_PYTHON3_API
+
+#include <inviwo/core/ports/volumeport.h>            // for VolumeOutport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/ordinalproperty.h>  // for IntSize3Property
+#include <modules/python3/pythonscript.h>            // for PythonScriptDisk
 
 namespace inviwo {
+class InviwoApplication;
 
 /** \docpage{org.inviwo.NumPyVolume, NumPy Volume}
  * ![](org.inviwo.NumPyVolume.png?classIdentifier=org.inviwo.NumPyVolume)

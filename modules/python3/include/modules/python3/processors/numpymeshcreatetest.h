@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/python3/pythonscript.h>
-#include <inviwo/core/ports/meshport.h>
+#include <modules/python3/python3moduledefine.h>   // for IVW_MODULE_PYTHON3_API
+
+#include <inviwo/core/ports/meshport.h>            // for MeshOutport
+#include <inviwo/core/processors/processor.h>      // for Processor
+#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <modules/python3/pythonscript.h>          // for PythonScriptDisk
 
 namespace inviwo {
 

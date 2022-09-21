@@ -29,14 +29,17 @@
 
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/python3/pythonscript.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <modules/python3/python3moduledefine.h>     // for IVW_MODULE_PYTHON3_API
+
+#include <inviwo/core/ports/imageport.h>             // for ImageOutport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/minmaxproperty.h>   // for FloatMinMaxProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for FloatProperty, IntSize2Property, Int...
+#include <modules/python3/pythonscript.h>            // for PythonScriptDisk
 
 namespace inviwo {
+class InviwoApplication;
 
 /** \docpage{org.inviwo.NumpyMandelbrot, NumPy Mandelbrot}
  * ![](org.inviwo.NumpyMandelbrot.png?classIdentifier=org.inviwo.NumpyMandelbrot)

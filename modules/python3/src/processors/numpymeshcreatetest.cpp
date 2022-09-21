@@ -28,10 +28,25 @@
  *********************************************************************************/
 
 #include <modules/python3/processors/numpymeshcreatetest.h>
-#include <modules/python3/python3module.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <pybind11/pybind11.h>
+
+#include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication
+#include <inviwo/core/common/modulepath.h>                  // for ModulePath, ModulePath::Scripts
+#include <inviwo/core/datastructures/geometry/typedmesh.h>  // for BasicMesh
+#include <inviwo/core/ports/meshport.h>                     // for MeshOutport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>          // for CodeState, CodeState::Experim...
+#include <inviwo/core/properties/invalidationlevel.h>       // for InvalidationLevel, Invalidati...
+#include <modules/python3/python3module.h>                  // for Python3Module
+#include <modules/python3/pythonscript.h>                   // for PythonScriptDisk
+
+#include <functional>                                       // for __base
+#include <memory>                                           // for shared_ptr
+#include <string>                                           // for operator+, string
+#include <string_view>                                      // for string_view
+
+#include <pybind11/cast.h>                                  // for object::cast
+#include <pybind11/pytypes.h>                               // for object, accessor, dict, objec...
 
 namespace inviwo {
 

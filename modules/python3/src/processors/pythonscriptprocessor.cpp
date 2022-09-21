@@ -28,9 +28,30 @@
  *********************************************************************************/
 
 #include <modules/python3/processors/pythonscriptprocessor.h>
-#include <modules/python3/python3module.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
+
+#include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
+#include <inviwo/core/common/modulepath.h>             // for ModulePath, ModulePath::Data
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Deprecated
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::PY
+#include <inviwo/core/properties/fileproperty.h>       // for FileProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
+#include <inviwo/core/util/logcentral.h>               // for LogCentral, LogError
+#include <inviwo/core/util/statecoordinator.h>         // for StateCoordinator
+#include <modules/python3/python3module.h>             // for Python3Module
+#include <modules/python3/pythonscript.h>              // for PythonScriptDisk
+
+#include <array>                                       // for array
+#include <exception>                                   // for exception
+#include <functional>                                  // for __base
+#include <string>                                      // for operator+, string, basic_string
+#include <string_view>                                 // for string_view
+
+#include <pybind11/cast.h>                             // for cast, object_api::operator()
+#include <pybind11/detail/common.h>                    // for pybind11
+#include <pybind11/pybind11.h>                         // for globals
 
 namespace inviwo {
 

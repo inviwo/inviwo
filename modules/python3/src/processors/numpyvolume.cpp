@@ -28,9 +28,30 @@
  *********************************************************************************/
 
 #include <modules/python3/processors/numpyvolume.h>
-#include <modules/python3/python3module.h>
-#include <pybind11/pybind11.h>
-#include <inviwo/core/common/inviwoapplication.h>
+
+#include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
+#include <inviwo/core/common/modulepath.h>             // for ModulePath, ModulePath::Scripts
+#include <inviwo/core/datastructures/datamapper.h>     // for DataMapper
+#include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/ports/volumeport.h>              // for VolumeOutport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Experimental
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/ordinalproperty.h>    // for IntSize3Property
+#include <inviwo/core/util/formats.h>                  // for DataFloat32
+#include <inviwo/core/util/glmvec.h>                   // for size3_t, dvec2
+#include <modules/python3/python3module.h>             // for Python3Module
+#include <modules/python3/pythonscript.h>              // for PythonScriptDisk
+
+#include <functional>                                  // for __base
+#include <memory>                                      // for make_shared, shared_ptr
+#include <string>                                      // for string, hash, operator+, operator==
+#include <string_view>                                 // for string_view
+#include <type_traits>                                 // for remove_extent_t
+
+#include <pybind11/cast.h>                             // for cast
+#include <pybind11/pytypes.h>                          // for object
 
 namespace inviwo {
 
