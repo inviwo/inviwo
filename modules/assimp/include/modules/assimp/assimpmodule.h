@@ -29,10 +29,12 @@
 
 #pragma once
 
-#include <modules/assimp/assimpmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/assimp/assimpmoduledefine.h>  // for IVW_MODULE_ASSIMP_API
+
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_ASSIMP_API AssimpModule : public InviwoModule {
 public:
