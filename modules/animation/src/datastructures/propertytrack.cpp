@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/propertytrack.h>
-#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 namespace animation {

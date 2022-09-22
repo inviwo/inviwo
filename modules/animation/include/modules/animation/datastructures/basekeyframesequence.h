@@ -28,17 +28,28 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
+#include <inviwo/core/io/serialization/deserializer.h>          // for Deserializer, IndexedDese...
+#include <inviwo/core/io/serialization/serializer.h>            // for Serializer
+#include <inviwo/core/util/exception.h>                         // for Exception
+#include <inviwo/core/util/indirectiterator.h>                  // for makeIndirectIterator, Ind...
+#include <inviwo/core/util/sourcecontext.h>                     // for IVW_CONTEXT
+#include <inviwo/core/util/stdextensions.h>                     // for dynamic_unique_ptr_cast
+#include <modules/animation/datastructures/animationtime.h>     // for Seconds
+#include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObserver
+#include <modules/animation/datastructures/keyframesequence.h>  // for KeyframeSequence
 
-#include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/keyframesequence.h>
-#include <inviwo/core/util/indirectiterator.h>
-
-#include <type_traits>
+#include <algorithm>    // for min, find_if, stable_sort
+#include <cstddef>      // for size_t
+#include <memory>       // for unique_ptr, make_unique
+#include <string_view>  // for string_view
+#include <type_traits>  // for is_base_of
+#include <utility>      // for move
+#include <vector>       // for vector
 
 namespace inviwo {
 
 namespace animation {
+class Keyframe;
 
 template <typename Key>
 class BaseKeyframeSequence : public KeyframeSequence, public KeyframeObserver {

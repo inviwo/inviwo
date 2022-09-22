@@ -28,7 +28,16 @@
  *********************************************************************************/
 
 #include <modules/animation/factories/trackfactory.h>
-#include <modules/animation/datastructures/propertytrack.h>
+
+#include <inviwo/core/properties/property.h>                 // for Property
+#include <inviwo/core/util/exception.h>                      // for Exception
+#include <inviwo/core/util/logcentral.h>                     // for LogCentral, LogWarn
+#include <modules/animation/datastructures/propertytrack.h>  // for BasePropertyTrack
+#include <modules/animation/datastructures/track.h>          // for Track
+#include <modules/animation/factories/trackfactoryobject.h>  // for TrackFactoryObject
+
+#include <ostream>  // for operator<<
+#include <utility>  // for pair
 
 namespace inviwo {
 namespace animation {

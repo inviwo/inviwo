@@ -28,13 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/util/factory.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/factories/trackfactoryobject.h>
+#include <inviwo/core/util/factory.h>                        // for StandardFactory, Factory
+#include <modules/animation/datastructures/track.h>          // for Track
+#include <modules/animation/factories/trackfactoryobject.h>  // for TrackFactoryObject
 
-#include <map>
+#include <functional>   // for less
+#include <map>          // for map
+#include <memory>       // for unique_ptr
+#include <string>       // for string, operator<
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
 

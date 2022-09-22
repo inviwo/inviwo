@@ -28,9 +28,19 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/basekeyframesequence.h>
-#include <modules/animation/datastructures/buttonkeyframe.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+
+#include <inviwo/core/io/serialization/deserializer.h>              // for ContainerWrapper<>::Item
+#include <inviwo/core/util/exception.h>                             // for Exception
+#include <modules/animation/datastructures/animationtime.h>         // for Seconds
+#include <modules/animation/datastructures/basekeyframesequence.h>  // for BaseKeyframeSequence
+#include <modules/animation/datastructures/buttonkeyframe.h>        // for ButtonKeyframe
+#include <modules/animation/datastructures/keyframe.h>              // for operator<
+
+#include <functional>  // for __base
+#include <memory>      // for unique_ptr
+#include <string>      // for basic_string
+#include <vector>      // for vector
 
 namespace inviwo {
 

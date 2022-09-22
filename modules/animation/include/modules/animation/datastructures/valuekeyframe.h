@@ -28,8 +28,11 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/basekeyframe.h>
+#include <inviwo/core/io/serialization/serializer.h>    // IWYU pragma: keep
+#include <inviwo/core/io/serialization/deserializer.h>  // IWYU pragma: keep
+
+#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <modules/animation/datastructures/basekeyframe.h>   // for BaseKeyframe
 
 namespace inviwo {
 

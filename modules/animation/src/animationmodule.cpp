@@ -29,32 +29,77 @@
 
 #include <modules/animation/animationmodule.h>
 
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/ordinalrefproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/common/inviwomodule.h>                               // for InviwoModule
+#include <inviwo/core/datastructures/camera/camera.h>                      // for mat4
+#include <inviwo/core/io/serialization/deserializer.h>                     // for ContainerWrapp...
+#include <inviwo/core/io/serialization/serializationexception.h>           // for SerializationE...
+#include <inviwo/core/io/serialization/ticpp.h>                            // for TxElement, Ele...
+#include <inviwo/core/io/serialization/versionconverter.h>                 // for ElementMatcher
+#include <inviwo/core/properties/boolproperty.h>                           // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                         // for ButtonProperty
+#include <inviwo/core/properties/cameraproperty.h>                         // for CameraProperty
+#include <inviwo/core/properties/fileproperty.h>                           // for FileProperty
+#include <inviwo/core/properties/minmaxproperty.h>                         // for MinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                         // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                        // for OrdinalProperty
+#include <inviwo/core/properties/ordinalrefproperty.h>                     // for OrdinalRefProp...
+#include <inviwo/core/properties/property.h>                               // for PropertyTraits
+#include <inviwo/core/properties/stringproperty.h>                         // for StringProperty
+#include <inviwo/core/util/exception.h>                                    // for Exception
+#include <inviwo/core/util/foreacharg.h>                                   // for for_each_type
+#include <inviwo/core/util/glmmat.h>                                       // for dmat2, dmat3
+#include <inviwo/core/util/glmmatext.h>                                    // for mix
+#include <inviwo/core/util/glmvec.h>                                       // for dvec2, dvec3
+#include <inviwo/core/util/staticstring.h>                                 // for operator+
+#include <inviwo/core/util/stringconversion.h>                             // for replaceInString
+#include <modules/animation/animationmanager.h>                            // for AnimationManager
+#include <modules/animation/animationsupplier.h>                           // for AnimationSupplier
+#include <modules/animation/datastructures/animationtime.h>                // for animation
+#include <modules/animation/datastructures/basetrack.h>                    // for BaseTrack<>::k...
+#include <modules/animation/datastructures/buttonkeyframe.h>               // for ButtonKeyframe
+#include <modules/animation/datastructures/buttonkeyframesequence.h>       // for ButtonKeyframe...
+#include <modules/animation/datastructures/buttontrack.h>                  // IWYU pragma: keep
+#include <modules/animation/datastructures/callbacktrack.h>                // for CallbackTrack
+#include <modules/animation/datastructures/camerakeyframe.h>               // for CameraKeyframe
+#include <modules/animation/datastructures/cameratrack.h>                  // IWYU pragma: keep
+#include <modules/animation/datastructures/controltrack.h>                 // for ControlTrack
+#include <modules/animation/datastructures/easing.h>                       // for ease
+#include <modules/animation/datastructures/keyframe.h>                     // for operator<
+#include <modules/animation/datastructures/keyframesequence.h>             // for operator<
+#include <modules/animation/datastructures/propertytrack.h>                // for PropertyTrack
+#include <modules/animation/datastructures/valuekeyframe.h>                // for ValueKeyframe
+#include <modules/animation/datastructures/valuekeyframesequence.h>        // for KeyframeSequen...
+#include <modules/animation/factories/interpolationfactory.h>              // for InterpolationF...
+#include <modules/animation/interpolation/cameralinearinterpolation.h>     // for CameraLinearIn...
+#include <modules/animation/interpolation/camerasphericalinterpolation.h>  // for CameraSpherica...
+#include <modules/animation/interpolation/constantinterpolation.h>         // for ConstantInterp...
+#include <modules/animation/interpolation/interpolation.h>                 // for InterpolationT...
+#include <modules/animation/interpolation/linearinterpolation.h>           // for LinearInterpol...
+#include <modules/animation/workspaceanimations.h>                         // for WorkspaceAnima...
 
-#include <modules/animation/datastructures/buttonkeyframesequence.h>
-#include <modules/animation/datastructures/callbacktrack.h>
-#include <modules/animation/datastructures/buttontrack.h>
-#include <modules/animation/datastructures/cameratrack.h>
-#include <modules/animation/datastructures/controltrack.h>
-#include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/propertytrack.h>
-#include <modules/animation/interpolation/constantinterpolation.h>
-#include <modules/animation/interpolation/cameralinearinterpolation.h>
-#include <modules/animation/interpolation/camerasphericalinterpolation.h>
-#include <modules/animation/interpolation/linearinterpolation.h>
+#include <cstddef>     // for size_t
+#include <functional>  // for __base
+#include <map>         // for map
+#include <string>      // for string, basic_...
+#include <tuple>       // for tuple
+#include <vector>      // for vector
+
+#include <glm/common.hpp>        // for clamp, max, min
+#include <glm/gtc/type_ptr.hpp>  // for value_ptr
+#include <glm/mat2x2.hpp>        // for operator+
+#include <glm/mat3x3.hpp>        // for operator+
+#include <glm/mat4x4.hpp>        // for operator+
+#include <glm/vec2.hpp>          // for operator!=
+#include <glm/vec3.hpp>          // for operator+, ope...
+#include <glm/vec4.hpp>          // for operator+, ope...
 
 namespace inviwo {
+class InviwoApplication;
+
+namespace animation {
+class DemoController;
+class MainAnimation;
+}  // namespace animation
 
 namespace {
 

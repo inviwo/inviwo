@@ -28,10 +28,31 @@
  *********************************************************************************/
 
 #include <modules/animation/interpolation/cameralinearinterpolation.h>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
+
+#include <inviwo/core/io/serialization/serializebase.h>       // for SerializationTarget, Serial...
+#include <inviwo/core/io/serialization/serializer.h>          // for Serializer
+#include <inviwo/core/util/glmvec.h>                          // for dvec3
+#include <modules/animation/datastructures/animationtime.h>   // for Seconds
+#include <modules/animation/datastructures/camerakeyframe.h>  // for CameraKeyframe, CameraKeyfr...
+#include <modules/animation/datastructures/easing.h>          // for ease, EasingType
+#include <modules/animation/interpolation/interpolation.h>    // for Interpolation
+
+#include <algorithm>  // for upper_bound
+#include <chrono>     // for operator-, operator<, opera...
+#include <iterator>   // for prev
+#include <ratio>      // for ratio
+
+#include <glm/common.hpp>                    // for mix
+#include <glm/detail/qualifier.hpp>          // for defaultp
+#include <glm/detail/type_quat.hpp>          // for operator*, qua::qua<T, Q>
+#include <glm/ext/quaternion_common.hpp>     // for slerp
+#include <glm/ext/quaternion_geometric.hpp>  // for dot
+#include <glm/geometric.hpp>                 // for cross, normalize, dot
+#include <glm/gtx/quaternion.hpp>            // for quat_identity, rotation
+#include <glm/vec3.hpp>                      // for operator*, operator+
 
 namespace inviwo {
+class Deserializer;
 
 namespace animation {
 

@@ -28,10 +28,35 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/animation.h>
-#include <modules/animation/datastructures/propertytrack.h>
-#include <modules/animation/animationmanager.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/io/serialization/deserializer.h>           // for IndexedDeserializer, Con...
+#include <inviwo/core/io/serialization/serializer.h>             // for Serializer
+#include <inviwo/core/properties/property.h>                     // for Property
+#include <inviwo/core/properties/propertyowner.h>                // for PropertyOwner
+#include <inviwo/core/properties/propertyownerobserver.h>        // for PropertyOwnerObserver
+#include <inviwo/core/util/exception.h>                          // for Exception
+#include <inviwo/core/util/indirectiterator.h>                   // for makeIndirectIterator
+#include <inviwo/core/util/logcentral.h>                         // for LogCentral, LogWarn, Log...
+#include <inviwo/core/util/sourcecontext.h>                      // for IVW_CONTEXT
+#include <inviwo/core/util/stdextensions.h>                      // for erase_remove
+#include <inviwo/core/util/typetraits.h>                         // for alwaysTrue, identity
+#include <modules/animation/animationmanager.h>                  // for AnimationManager
+#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObservable
+#include <modules/animation/datastructures/animationstate.h>     // for AnimationTimeState, Anim...
+#include <modules/animation/datastructures/animationtime.h>      // for Seconds
+#include <modules/animation/datastructures/keyframe.h>           // for Keyframe
+#include <modules/animation/datastructures/keyframesequence.h>   // for KeyframeSequence
+#include <modules/animation/datastructures/propertytrack.h>      // for BasePropertyTrack
+#include <modules/animation/datastructures/track.h>              // for Track
+#include <modules/animation/datastructures/trackobserver.h>      // for TrackObserver
+#include <modules/animation/factories/trackfactory.h>            // for TrackFactory
+
+#include <algorithm>   // for find_if, max_element
+#include <chrono>      // for operator<
+#include <functional>  // for __base
+#include <iterator>    // for distance
+#include <ostream>     // for operator<<, basic_ostream
+#include <utility>     // for move
 
 namespace inviwo {
 

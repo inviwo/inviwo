@@ -28,7 +28,15 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/callbacktrack.h>
-#include <modules/animation/algorithm/animationrange.h>
+
+#include <inviwo/core/io/serialization/deserializer.h>                  // for ContainerWrapper<...
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <modules/animation/algorithm/animationrange.h>                 // for animateRange
+#include <modules/animation/datastructures/animationstate.h>            // for AnimationState
+#include <modules/animation/datastructures/animationtime.h>             // for Seconds
+#include <modules/animation/datastructures/basetrack.h>                 // for BaseTrack<>::key_...
+#include <modules/animation/datastructures/callbackkeyframe.h>          // for CallbackKeyframe
+#include <modules/animation/datastructures/callbackkeyframesequence.h>  // for CallbackKeyframeS...
 
 namespace inviwo {
 
