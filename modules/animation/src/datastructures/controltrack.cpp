@@ -29,6 +29,20 @@
 
 #include <modules/animation/datastructures/controltrack.h>
 
+#include <inviwo/core/io/serialization/deserializer.h>                 // for ContainerWrapper<>...
+#include <inviwo/core/util/exception.h>                                // for Exception
+#include <inviwo/core/util/indirectiterator.h>                         // for IndirectIterator
+#include <modules/animation/datastructures/animationstate.h>           // for AnimationState
+#include <modules/animation/datastructures/animationtime.h>            // for Seconds
+#include <modules/animation/datastructures/basetrack.h>                // for BaseTrack<>::key_type
+#include <modules/animation/datastructures/controlkeyframe.h>          // for ControlKeyframe
+#include <modules/animation/datastructures/controlkeyframesequence.h>  // for ControlKeyframeSeq...
+#include <modules/animation/datastructures/keyframesequence.h>         // for operator<
+
+#include <algorithm>                                                   // for upper_bound
+#include <chrono>                                                      // for operator<, operator>
+#include <iterator>                                                    // for prev
+
 namespace inviwo {
 
 namespace animation {

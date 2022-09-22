@@ -28,12 +28,22 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/animationmoduledefine.h>                   // for IVW_MODULE_ANIMATI...
 
-#include <modules/animation/datastructures/basetrack.h>
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/animationstate.h>
-#include <modules/animation/datastructures/controlkeyframesequence.h>
+#include <inviwo/core/io/serialization/deserializer.h>                 // for ContainerWrapper<>...
+#include <inviwo/core/util/exception.h>                                // for Exception
+#include <modules/animation/datastructures/animationstate.h>           // for AnimationState
+#include <modules/animation/datastructures/animationtime.h>            // for Seconds
+#include <modules/animation/datastructures/basetrack.h>                // for BaseTrack<>::key_type
+#include <modules/animation/datastructures/controlkeyframe.h>          // for ControlKeyframe
+#include <modules/animation/datastructures/controlkeyframesequence.h>  // for ControlKeyframeSeq...
+#include <modules/animation/datastructures/keyframe.h>                 // for operator<
+#include <modules/animation/datastructures/keyframesequence.h>         // for operator<
+
+#include <functional>                                                  // for __base
+#include <memory>                                                      // for unique_ptr
+#include <string>                                                      // for basic_string, string
+#include <vector>                                                      // for vector
 
 namespace inviwo {
 

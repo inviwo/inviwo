@@ -28,17 +28,17 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/animationstate.h>
-#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/animationstate.h>  // for AnimationTimeState, Animati...
+#include <modules/animation/datastructures/animationtime.h>   // for Seconds
 
-#include <algorithm>
-#include <iterator>
+#include <algorithm>                                          // for max, min, lower_bound, uppe...
+#include <chrono>                                             // for operator<=, duration, opera...
+#include <iterator>                                           // for make_reverse_iterator
 
 namespace inviwo {
 
 namespace animation {
+class KeyframeSequence;
 
 namespace detail {
 

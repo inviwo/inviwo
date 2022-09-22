@@ -28,15 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/util/observer.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+
+#include <inviwo/core/util/observer.h>                // for Observable, Observer
+
+#include <vector>                                     // for vector
 
 namespace inviwo {
 
 namespace animation {
 
-class Track;
 class KeyframeSequence;
+class Track;
 
 class IVW_MODULE_ANIMATION_API TrackObserver : public Observer {
 public:

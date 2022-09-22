@@ -29,6 +29,20 @@
 
 #include <modules/animation/datastructures/camerakeyframe.h>
 
+#include <inviwo/core/datastructures/camera/camera.h>             // for Camera
+#include <inviwo/core/io/serialization/deserializer.h>            // for Deserializer
+#include <inviwo/core/io/serialization/serializationexception.h>  // for SerializationException
+#include <inviwo/core/io/serialization/serializer.h>              // for Serializer
+#include <inviwo/core/util/glmvec.h>                              // for vec3
+#include <modules/animation/datastructures/animationtime.h>       // for Seconds
+#include <modules/animation/datastructures/basekeyframe.h>        // for BaseKeyframe
+
+#include <chrono>                                                 // for operator==
+
+#include <glm/geometric.hpp>                                      // for normalize
+#include <glm/vec3.hpp>                                           // for operator*, operator-
+#include <glm/vector_relational.hpp>                              // for any, notEqual
+
 namespace inviwo {
 
 namespace animation {

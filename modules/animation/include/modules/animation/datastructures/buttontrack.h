@@ -28,15 +28,16 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/buttonkeyframesequence.h>
-#include <modules/animation/datastructures/propertytrack.h>
-
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>                    // for ButtonProperty
+#include <modules/animation/datastructures/animationstate.h>          // for AnimationState, Ani...
+#include <modules/animation/datastructures/animationtime.h>           // for Seconds
+#include <modules/animation/datastructures/buttonkeyframesequence.h>  // for ButtonKeyframeSequence
+#include <modules/animation/datastructures/propertytrack.h>           // for PropertyTrack
 
 namespace inviwo {
 
 namespace animation {
+class ButtonKeyframe;
 
 using ButtonTrack = PropertyTrack<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>;
 

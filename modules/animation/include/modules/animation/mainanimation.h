@@ -28,19 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
-#include <modules/animation/datastructures/animation.h>
-#include <modules/animation/animationcontroller.h>
-
-#include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/network/workspacemanager.h>     // for WorkspaceManager, WorkspaceManager:...
+#include <modules/animation/animationcontroller.h>    // for AnimationController
 
 namespace inviwo {
 
 class AnimationModule;
+class InviwoApplication;
+class Property;
 
 namespace animation {
-class WorkspaceAnimations;
+class Animation;
+
 /**
  * \brief Responsible for the main AnimationController and saving it in the workspace.
  *

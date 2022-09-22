@@ -28,21 +28,62 @@
  *********************************************************************************/
 
 #include <modules/animation/animationcontroller.h>
-#include <modules/animation/animationcontrollerobserver.h>
-#include <modules/animation/datastructures/controltrack.h>
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/io/datawriterfactory.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/processors/canvasprocessor.h>
-#include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/stringconversion.h>
 
-#include <string_view>
+#include <inviwo/core/common/factoryutil.h>                       // for getDataWriterFactory
+#include <inviwo/core/common/inviwoapplication.h>                 // for InviwoApplication
+#include <inviwo/core/io/datawriterfactory.h>                     // for DataWriterFactory
+#include <inviwo/core/io/serialization/deserializer.h>            // for Deserializer
+#include <inviwo/core/io/serialization/serializationexception.h>  // for SerializationException
+#include <inviwo/core/io/serialization/serializer.h>              // for Serializer
+#include <inviwo/core/network/networklock.h>                      // for NetworkLock
+#include <inviwo/core/network/processornetwork.h>                 // for ProcessorNetwork
+#include <inviwo/core/processors/canvasprocessor.h>               // for CanvasProcessor
+#include <inviwo/core/processors/processor.h>                     // for Processor
+#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>             // for CompositeProperty
+#include <inviwo/core/properties/constraintbehavior.h>            // for ConstraintBehavior, Con...
+#include <inviwo/core/properties/directoryproperty.h>             // for DirectoryProperty
+#include <inviwo/core/properties/invalidationlevel.h>             // for InvalidationLevel, Inva...
+#include <inviwo/core/properties/minmaxproperty.h>                // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>               // for IntVec2Property, IntSiz...
+#include <inviwo/core/properties/ordinalrefproperty.h>            // for DoubleRefProperty
+#include <inviwo/core/properties/propertyowner.h>                 // for PropertyOwner
+#include <inviwo/core/properties/propertysemantics.h>             // for PropertySemantics, Prop...
+#include <inviwo/core/properties/stringproperty.h>                // for StringProperty
+#include <inviwo/core/properties/valuewrapper.h>                  // for PropertySerializationMode
+#include <inviwo/core/util/assertion.h>                           // for ivwAssert
+#include <inviwo/core/util/fileextension.h>                       // for FileExtension, operator<<
+#include <inviwo/core/util/glmvec.h>                              // for ivec2, dvec2
+#include <inviwo/core/util/staticstring.h>                        // for operator+
+#include <inviwo/core/util/stdextensions.h>                       // for transform
+#include <inviwo/core/util/stringconversion.h>                    // for toString
+#include <inviwo/core/util/timer.h>                               // for Timer
+#include <inviwo/core/util/utilities.h>                           // for saveAllCanvases
+#include <modules/animation/datastructures/animation.h>           // for Animation
+#include <modules/animation/datastructures/animationstate.h>      // for AnimationState, Playbac...
+#include <modules/animation/datastructures/animationtime.h>       // for Seconds
+#include <modules/animation/datastructures/controltrack.h>        // for ControlTrack
+#include <modules/animation/datastructures/track.h>               // for Track
+
+#include <algorithm>                                              // for max, copy_if, find_if, min
+#include <chrono>                                                 // for milliseconds, duration
+#include <cstdlib>                                                // for abs, size_t
+#include <iomanip>                                                // for operator<<, setfill, setw
+#include <iterator>                                               // for back_insert_iterator
+#include <map>                                                    // for map
+#include <memory>                                                 // for make_unique
+#include <ratio>                                                  // for ratio
+#include <sstream>                                                // for operator<<, basic_ostream
+#include <string_view>                                            // for string_view, operator==
+#include <unordered_map>                                          // for unordered_map
+#include <utility>                                                // for move
+
+#include <glm/vec2.hpp>                                           // for vec<>::(anonymous), ope...
 
 namespace inviwo {
+class Layer;
 
 namespace animation {
 

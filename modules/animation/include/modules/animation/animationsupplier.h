@@ -28,17 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/animationmanager.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+#include <modules/animation/factories/interpolationfactoryobject.h> // IWYU pragma: keep
+#include <modules/animation/factories/trackfactoryobject.h> // IWYU pragma: keep
 
-#include <modules/animation/factories/interpolationfactoryobject.h>
-#include <modules/animation/factories/trackfactoryobject.h>
+#include <memory>                                     // for unique_ptr, make_unique
+#include <string>                                     // for string
+#include <vector>                                     // for vector
 
 namespace inviwo {
 
 class InviwoApplication;
 
 namespace animation {
+class AnimationManager;
 
 /**
  * \class AnimationSupplier

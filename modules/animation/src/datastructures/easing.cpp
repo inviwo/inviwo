@@ -29,7 +29,13 @@
 
 #include <modules/animation/datastructures/easing.h>
 
-#include <ostream>
+#include <inviwo/core/util/exception.h>      // for Exception
+#include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT_CUSTOM
+
+#include <ostream>                           // for operator<<
+#include <string>                            // for string
+#include <string_view>                       // for string_view
+#include <type_traits>                       // for __underlying_type_impl<>::type, underlying_type
 
 namespace inviwo {
 namespace animation {

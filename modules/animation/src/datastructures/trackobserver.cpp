@@ -28,8 +28,6 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/trackobserver.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/keyframesequence.h>
 
 namespace inviwo {
 

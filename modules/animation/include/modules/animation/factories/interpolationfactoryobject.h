@@ -28,12 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
-#include <modules/animation/interpolation/interpolation.h>
+#include <memory>                                     // for unique_ptr, make_unique
+#include <string>                                     // for string
 
 namespace inviwo {
 namespace animation {
+class Interpolation;
 
 class IVW_MODULE_ANIMATION_API InterpolationFactoryObject {
 public:

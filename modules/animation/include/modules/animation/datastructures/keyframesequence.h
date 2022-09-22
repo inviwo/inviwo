@@ -28,16 +28,22 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/keyframeobserver.h>
-#include <modules/animation/datastructures/keyframesequenceobserver.h>
+#include <modules/animation/animationmoduledefine.h>                    // for IVW_MODULE_ANIMAT...
 
-#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/io/serialization/serializable.h>                  // for Serializable
+#include <modules/animation/datastructures/animationtime.h>             // for Seconds
+#include <modules/animation/datastructures/keyframesequenceobserver.h>  // for KeyframeSequenceO...
+
+#include <cstddef>                                                      // for size_t
+#include <memory>                                                       // for unique_ptr
+#include <utility>                                                      // for pair
 
 namespace inviwo {
+class Deserializer;
+class Serializer;
 
 namespace animation {
+class Keyframe;
 
 /** \class KeyframeSequence
  * Interface for a sequence of keyframes, which will be evaluated during an animation.

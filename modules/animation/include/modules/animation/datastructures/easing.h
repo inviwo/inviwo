@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/animationtime.h>
-#include <inviwo/core/util/formats.h>
-#include <inviwo/core/util/assertion.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
-#include <iosfwd>
+#include <inviwo/core/util/assertion.h>               // for ivwAssert
+
+#include <cmath>                                      // for pow, sin, exp, sqrt, M_PI, cos, M_PI_2
+#include <iosfwd>                                     // for ostream
 
 namespace inviwo {
 

@@ -28,12 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/datastructures/camera/camera.h>
-#include <inviwo/core/datastructures/camera/perspectivecamera.h>
-#include <modules/animation/datastructures/basekeyframe.h>
+#include <modules/animation/animationmoduledefine.h>         // for IVW_MODULE_ANIMATION_API
+
+#include <inviwo/core/datastructures/camera/camera.h>        // for Camera, lookFrom, lookTo
+#include <inviwo/core/util/glmvec.h>                         // for vec3
+#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <modules/animation/datastructures/basekeyframe.h>   // for BaseKeyframe
+
+#include <string>                                            // for string
 
 namespace inviwo {
+class Deserializer;
+class Serializer;
 
 namespace animation {
 

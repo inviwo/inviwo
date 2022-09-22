@@ -28,10 +28,16 @@
  *********************************************************************************/
 
 #include <modules/animation/animationmanager.h>
-#include <modules/animation/datastructures/animation.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/properties/property.h>
+
+#include <inviwo/core/common/inviwoapplication.h>              // for InviwoApplication
+#include <inviwo/core/io/serialization/deserializer.h>         // for IndexedDeserializer, Conta...
+#include <inviwo/core/network/workspacemanager.h>              // for WorkspaceManager
+#include <modules/animation/datastructures/animation.h>        // for Animation
+#include <modules/animation/factories/interpolationfactory.h>  // for InterpolationFactory
+#include <modules/animation/factories/trackfactory.h>          // for TrackFactory
+
+#include <functional>                                          // for __base
+#include <string>                                              // for basic_string
 
 namespace inviwo {
 

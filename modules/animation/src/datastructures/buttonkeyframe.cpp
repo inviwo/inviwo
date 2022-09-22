@@ -29,6 +29,11 @@
 
 #include <modules/animation/datastructures/buttonkeyframe.h>
 
+#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <modules/animation/datastructures/basekeyframe.h>   // for BaseKeyframe
+
+#include <chrono>                                            // for duration, operator<, operator<=
+
 namespace inviwo {
 
 namespace animation {

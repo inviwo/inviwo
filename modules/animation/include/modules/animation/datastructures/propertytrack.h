@@ -28,28 +28,39 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/animationmoduledefine.h>                 // for IVW_MODULE_ANIMATION...
 
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/templateproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/ordinalrefproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/io/serialization/deserializer.h>               // for Deserializer
+#include <inviwo/core/io/serialization/serializationexception.h>     // for SerializationException
+#include <inviwo/core/network/processornetwork.h>                    // for ProcessorNetwork
+#include <inviwo/core/properties/property.h>                         // for Property, PropertyTr...
+#include <inviwo/core/util/assertion.h>                              // for IVW_ASSERT
+#include <inviwo/core/util/exception.h>                              // for Exception
+#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
+#include <modules/animation/datastructures/animationstate.h>         // for AnimationState, Anim...
+#include <modules/animation/datastructures/animationtime.h>          // for Seconds
+#include <modules/animation/datastructures/basetrack.h>              // for BaseTrack
+#include <modules/animation/datastructures/valuekeyframe.h>          // IWYU pragma: keep
+#include <modules/animation/datastructures/valuekeyframesequence.h>  // for DefaultInterpolation...
+#include <modules/animation/interpolation/interpolation.h>           // for InterpolationTyped
 
-#include <modules/animation/datastructures/valuekeyframe.h>
-#include <modules/animation/datastructures/basetrack.h>
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/keyframesequence.h>
-#include <modules/animation/datastructures/valuekeyframesequence.h>
-#include <modules/animation/interpolation/constantinterpolation.h>
+#include <algorithm>                                                 // for upper_bound
+#include <iterator>                                                  // for prev
+#include <memory>                                                    // for unique_ptr, make_unique
+#include <string>                                                    // for operator+, string
+#include <string_view>                                               // for string_view
+#include <type_traits>                                               // for is_same, is_construc...
+#include <utility>                                                   // for move
+#include <vector>                                                    // for vector
 
 namespace inviwo {
+class Serializer;
+template <typename T> class OptionProperty;
 
 namespace animation {
+class Keyframe;
+class KeyframeSequence;
+class Track;
 
 namespace detail {
 

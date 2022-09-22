@@ -29,6 +29,15 @@
 
 #include <modules/animation/datastructures/controlkeyframe.h>
 
+#include <inviwo/core/io/serialization/deserializer.h>            // for Deserializer
+#include <inviwo/core/io/serialization/serializationexception.h>  // for SerializationException
+#include <inviwo/core/io/serialization/serializer.h>              // for Serializer
+#include <modules/animation/datastructures/animationstate.h>      // for AnimationState, Animati...
+#include <modules/animation/datastructures/animationtime.h>       // for Seconds
+#include <modules/animation/datastructures/basekeyframe.h>        // for BaseKeyframe
+
+#include <chrono>                                                 // for duration<>::rep, operat...
+
 namespace inviwo {
 namespace animation {
 

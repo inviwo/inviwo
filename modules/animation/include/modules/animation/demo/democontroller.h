@@ -28,17 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/animationmoduledefine.h>        // for IVW_MODULE_ANIMATION_API
 
-#include <inviwo/core/util/timer.h>
-#include <inviwo/core/common/inviwoapplicationutil.h>
-#include <inviwo/core/properties/propertyowner.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>       // for getInviwoApplication
+#include <inviwo/core/properties/fileproperty.h>            // for FileProperty
+#include <inviwo/core/properties/optionproperty.h>          // for OptionPropertyInt
+#include <inviwo/core/properties/propertyowner.h>           // for PropertyOwner
+#include <modules/animation/demo/democontrollerobserver.h>  // for DemoControllerObservable
 
-#include <modules/animation/demo/democontrollerobserver.h>
+#include <string>                                           // for string
 
 namespace inviwo {
+class InviwoApplication;
 
 namespace animation {
 

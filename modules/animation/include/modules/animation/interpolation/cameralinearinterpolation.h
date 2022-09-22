@@ -28,11 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/camerakeyframe.h>
-#include <modules/animation/interpolation/interpolation.h>
+#include <modules/animation/animationmoduledefine.h>          // for IVW_MODULE_ANIMATION_API
+
+#include <modules/animation/datastructures/animationtime.h>   // for Seconds
+#include <modules/animation/datastructures/camerakeyframe.h>  // for CameraKeyframe, CameraKeyfr...
+#include <modules/animation/datastructures/easing.h>          // for EasingType
+#include <modules/animation/interpolation/interpolation.h>    // for InterpolationTyped
+
+#include <memory>                                             // for unique_ptr
+#include <string>                                             // for string
+#include <vector>                                             // for vector
 
 namespace inviwo {
+class Deserializer;
+class Serializer;
 
 namespace animation {
 

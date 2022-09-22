@@ -28,21 +28,36 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/basekeyframesequence.h>
-#include <modules/animation/datastructures/camerakeyframe.h>
-#include <modules/animation/datastructures/valuekeyframe.h>
-#include <modules/animation/interpolation/interpolation.h>
-#include <modules/animation/interpolation/constantinterpolation.h>
-#include <modules/animation/interpolation/linearinterpolation.h>
-#include <modules/animation/factories/interpolationfactory.h>
-#include <modules/animation/factories/interpolationfactoryobject.h>
+#include <modules/animation/animationmoduledefine.h>                // for IVW_MODULE_ANIMATION_API
 
-#include <inviwo/core/util/observer.h>
+#include <inviwo/core/io/serialization/deserializer.h>              // for Deserializer
+#include <inviwo/core/io/serialization/serializer.h>                // for Serializer
+#include <inviwo/core/util/exception.h>                             // for Exception
+#include <inviwo/core/util/observer.h>                              // for Observable, Observer
+#include <inviwo/core/util/sourcecontext.h>                         // for IVW_CONTEXT
+#include <inviwo/core/util/stdextensions.h>                         // for dynamic_unique_ptr_cast
+#include <modules/animation/datastructures/animationtime.h>         // for Seconds
+#include <modules/animation/datastructures/basekeyframesequence.h>  // for BaseKeyframeSequence
+#include <modules/animation/datastructures/easing.h>                // for EasingType, EasingTyp...
+#include <modules/animation/factories/interpolationfactory.h>       // IWYU pragma: keep
+#include <modules/animation/interpolation/constantinterpolation.h>  // for ConstantInterpolation
+#include <modules/animation/interpolation/interpolation.h>          // for InterpolationTyped
+#include <modules/animation/interpolation/linearinterpolation.h>    // for LinearInterpolation
+
+#include <memory>                                                   // for unique_ptr, make_unique
+#include <string_view>                                              // for string_view
+#include <type_traits>                                              // for is_base_of
+#include <utility>                                                  // for move
+#include <vector>                                                   // for vector
+
+#include <glm/fwd.hpp>                                              // IWYU pragma: keep
 
 namespace inviwo {
 
 namespace animation {
+class InterpolationFactoryObject;
+class Keyframe;
+template <typename T> class ValueKeyframe;
 
 namespace detail {
 
