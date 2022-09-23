@@ -71,5 +71,4 @@ std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType ty
         format->getId(), disp, dimensions, type, swizzleMask, interpolation, wrapping);
 }
 
-
 }  // namespace inviwo
