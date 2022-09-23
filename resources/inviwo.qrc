@@ -50,6 +50,8 @@
 
         <file>svgicons/arrow-down-enabled.svg</file>
         <file>svgicons/arrow-down-disabled.svg</file>
+        <file>svgicons/arrow-left-disabled.svg</file>
+        <file>svgicons/arrow-left-enabled.svg</file>
         <file>svgicons/arrow-right-enabled.svg</file>
         <file>svgicons/arrow-right-disabled.svg</file>
         <file>svgicons/arrow-up-enabled.svg</file>

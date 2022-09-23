@@ -11,6 +11,7 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/subpropertyselectiondialog.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/verticallabel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacegridview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacetreemodel.h
@@ -101,6 +102,7 @@ set(SOURCE_FILES
     subpropertyselectiondialog.cpp
     toolsmenu.cpp
     undomanager.cpp
+    verticallabel.cpp
     welcomewidget.cpp
     workspaceannotationsqt.cpp
     workspacegridview.cpp
