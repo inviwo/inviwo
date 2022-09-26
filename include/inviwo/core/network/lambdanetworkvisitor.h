@@ -94,8 +94,8 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     using ProcessorOverload = decltype(std::declval<T>()(std::declval<Processor&>()));
 
     template <typename T>
-    using ProcessorEnter = decltype(
-        std::declval<T>()(std::declval<Processor&>(), std::declval<NetworkVisitorEnter>()));
+    using ProcessorEnter = decltype(std::declval<T>()(std::declval<Processor&>(),
+                                                      std::declval<NetworkVisitorEnter>()));
     template <typename T>
     using ProcessorExit =
         decltype(std::declval<T>()(std::declval<Processor&>(), std::declval<NetworkVisitorExit>()));
@@ -104,14 +104,23 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     using CompositeOverload = decltype(std::declval<T>()(std::declval<CompositeProperty&>()));
 
     template <typename T>
-    using CompositeEnter = decltype(
-        std::declval<T>()(std::declval<CompositeProperty&>(), std::declval<NetworkVisitorEnter>()));
+    using CompositeEnter = decltype(std::declval<T>()(std::declval<CompositeProperty&>(),
+                                                      std::declval<NetworkVisitorEnter>()));
     template <typename T>
-    using CompositeExit = decltype(
-        std::declval<T>()(std::declval<CompositeProperty&>(), std::declval<NetworkVisitorExit>()));
+    using CompositeExit = decltype(std::declval<T>()(std::declval<CompositeProperty&>(),
+                                                     std::declval<NetworkVisitorExit>()));
 
     template <typename T>
     using PropertyOverload = decltype(std::declval<T>()(std::declval<Property&>()));
+
+    template <typename T>
+    static constexpr auto isOverloadCalled =
+        util::is_detected_v<ProcessorOverload, T> || util::is_detected_v<ProcessorEnter, T> ||
+        util::is_detected_v<ProcessorExit, T> || util::is_detected_v<CompositeOverload, T> ||
+        util::is_detected_v<CompositeEnter, T> || util::is_detected_v<CompositeExit, T> ||
+        util::is_detected_v<PropertyOverload, T>;
+
+    static_assert((isOverloadCalled<Funcs> && ...), "Some overloads will never be called");
 
     virtual bool enter([[maybe_unused]] Processor& processor) override {
         if constexpr (util::is_detected_exact_v<bool, ProcessorEnter, decltype(*this)>) {

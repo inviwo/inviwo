@@ -28,13 +28,10 @@
     {
       "name": "vcpkg",
       "hidden": true,
-      "environment": {
-        "VCPKG_OVERLAY_PORTS" : "${sourceDir}/tools/vcpkg"
-      },
       "toolchainFile": "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE" : "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "IVW_CFG_VCPKG_OVERLAYS": "${sourceDir}/tools/vcpkg",
+        "CMAKE_TOOLCHAIN_FILE":       "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_OVERLAY_PORTS":        "${sourceDir}/tools/vcpkg",
         "IVW_USE_EXTERNAL_ASSIMP":    { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_BENCHMARK": { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_EIGEN":     { "type": "BOOL", "value": "ON"},

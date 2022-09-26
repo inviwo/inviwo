@@ -149,8 +149,7 @@ if(NOT IVW_USE_EXTERNAL_TINYDIR)
         FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
     )
 else()
-    ivw_vcpkg_paths(INCLUDE vcpkgInclude) # get the vcpkg include path as a hint if available
-    find_path(TINYDIR_INCLUDE_DIR NAMES tinydir.h HINTS ${vcpkgInclude} REQUIRED)
+    find_path(TINYDIR_INCLUDE_DIR NAMES tinydir.h REQUIRED)
     add_library(tinydir INTERFACE)
     add_library(inviwo::tinydir ALIAS tinydir)
     target_include_directories(tinydir INTERFACE $<BUILD_INTERFACE:${TINYDIR_INCLUDE_DIR}>)
