@@ -1,0 +1,64 @@
+{
+  "version": 4,
+  "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "dome-base",
+      "hidden" : true,
+
+      "cacheVariables": {
+        // We use a static build
+        "VCPKG_TARGET_TRIPLET":       "x64-windows-static-md",
+        "BUILD_SHARED_LIBS":          { "type": "BOOL", "value": "OFF" },
+        "IVW_CFG_MSVC_FORCE_SHARED_CRT": { "type": "BOOL", "value": "ON" },
+
+        // Enable inviwo-dome
+        "IVW_CFG_PROJECT_NAME":       "inviwo-dome",
+        "IVW_MODULE_SGCT":            { "type": "BOOL", "value": "ON" },
+        "IVW_APP_INVIWO_DOME":        { "type": "BOOL", "value": "ON" },
+        "IVW_USE_TRACY":              { "type": "BOOL", "value": "ON" },
+
+        // Config
+        "IVW_CFG_PROFILING":          { "type": "BOOL", "value": "OFF" },
+        "IVW_CFG_FORCE_ASSERTIONS":   { "type": "BOOL", "value": "ON" },
+        "IVW_CFG_BUILD_CHANGELOG":    { "type": "BOOL", "value": "OFF" },
+
+        // Packaging
+        "IVW_PACKAGE_INSTALLER":      { "type": "BOOL", "value": "ON" },
+        "IVW_PACKAGE_SELECT_APP":     "inviwo-dome",
+
+        // Disable all python (We can't use python in a static build yet)
+        "IVW_APP_PYTHON":             { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_DATAFRAMEPYTHON": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_MOLVISPYTHON":    { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_NANOVGPY":        { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_PYTHON3":         { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_PYTHON3QT":       { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_PYTHON3GL":       { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_PYTHONTOOLS":     { "type": "BOOL", "value": "OFF" },
+        "IVW_PACKAGE_EMBED_PYTHON":   { "type": "BOOL", "value": "OFF" },
+
+        // Diable all qt modules
+        "IVW_APP_QTBASE":             { "type": "BOOL", "value": "OFF" },
+        "IVW_APP_INVIWO":             { "type": "BOOL", "value": "OFF" },
+        "IVW_APP_MINIMAL_QT":         { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_ANIMATIONQT":     { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_DATAFRAMEQT":     { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_QTWIDGETS":       { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_OPENGLQT":        { "type": "BOOL", "value": "OFF" },
+
+
+        // OpenCL Needs to use glfw
+        "IVW_MODULE_OPENCL_OpenGLSupplier": "InviwoGLFWModule",
+
+        // Disauble other target not needed for doem
+        "IVW_APP_META_CLI":           { "type": "BOOL", "value": "OFF" },
+        "IVW_APP_MINIMAL_GLFW":       { "type": "BOOL", "value": "OFF" },
+        "IVW_TEST_UNIT_TESTS":        { "type": "BOOL", "value": "OFF" },
+        "IVW_TEST_INTEGRATION_TESTS": { "type": "BOOL", "value": "OFF" },
+        "IVW_TEST_META_BUILD_TESTS":  { "type": "BOOL", "value": "OFF" },
+        "IVW_TEST_BENCHMARKS":        { "type": "BOOL", "value": "OFF" }
+      }
+    }
+  ]
+}

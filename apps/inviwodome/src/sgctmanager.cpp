@@ -45,6 +45,8 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/network/networkvisitor.h>
 #include <inviwo/core/network/lambdanetworkvisitor.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networkutils.h>
 
 #include <modules/opengl/canvasgl.h>
 #include <modules/opengl/texture/textureunit.h>
@@ -133,8 +135,10 @@ void SgctManager::loadWorkspace(const std::string& filename) {
 
     auto net = app.getProcessorNetwork();
 
-    LambdaNetworkVisitor visitor{[&](CanvasProcessor& processor) {
-                                     canvases.push_back(&processor);
+    LambdaNetworkVisitor visitor{[&](Processor& processor) {
+                                     if (auto cp = dynamic_cast<CanvasProcessor*>(&processor)) {
+                                         canvases.push_back(cp);
+                                     }
                                      return true;
                                  },
                                  [&](Property& property) {
@@ -169,7 +173,7 @@ void SgctManager::loadWorkspace(const std::string& filename) {
         eventPropagator = [canvas](Event* e) { canvas->propagateEvent(e, nullptr); };
         canvas->setEvaluateWhenHidden(true);
         if (auto widget = canvas->getProcessorWidget()) {
-            widget->hide();
+            widget->setVisible(false);
         }
     }
 }
