@@ -1,5 +1,0 @@
-Source: sgct
-Version: 3.0.0
-Description: Simple Graphics Cluster Toolkit
-Homepage: https://github.com/sgct/sgct
-Build-Depends: freetype, glfw3, zlib, minizip, libpng, glm, fmt, tinyxml2, glad[wgl,loader], tracy

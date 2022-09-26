@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # Inviwo Dome Application
-project(inviwodome)
+project(inviwo-dome)
 
 set(HEADER_FILES
     include/inviwo/dome/sgctmanager.h
@@ -26,16 +26,16 @@ foreach(module ${enabled_modules})
     endif()
 endforeach()
 
-add_executable(inviwodome ${HEADER_FILES} ${SOURCE_FILES})
-target_include_directories(inviwodome PUBLIC include)
+add_executable(inviwo-dome ${HEADER_FILES} ${SOURCE_FILES})
+target_include_directories(inviwo-dome PUBLIC include)
 
 find_package(glfw3 REQUIRED)
 find_package(sgct CONFIG REQUIRED)
-find_package(unofficial-tracy)
+find_package(Tracy CONFIG REQUIRED)
     
-target_link_libraries(inviwodome 
-    PUBLIC
-        inviwo::tracy
+target_link_libraries(inviwo-dome 
+    PRIVATE
+        Tracy::TracyClient
         sgct::sgct
         glfw
         inviwo::module::glfw
@@ -43,18 +43,18 @@ target_link_libraries(inviwodome
         Dbghelp.lib
 )
 
-set_target_properties(inviwodome PROPERTIES 
-    VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:inviwodome>
+set_target_properties(inviwo-dome PROPERTIES 
+    VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:inviwo-dome>
     SGCT_CONFIG_DIR ${CMAKE_CURRENT_LIST_DIR}/scripts
-    TRACY_EXE ${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/tools/tracy/TracyProfiler.exe   
+    TRACY_EXE ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/tracy/Tracy.exe
 )
 
-ivw_configure_application_module_dependencies(inviwodome ${enabled_modules})
-ivw_define_standard_definitions(inviwodome inviwodome)
-ivw_define_standard_properties(inviwodome)
+ivw_configure_application_module_dependencies(inviwo-dome ${enabled_modules})
+ivw_define_standard_definitions(inviwo-dome inviwo-dome)
+ivw_define_standard_properties(inviwo-dome)
 
 # Add application to pack
-ivw_default_install_targets(inviwodome)
+ivw_default_install_targets(inviwo-dome)
 
 get_property(packageApps CACHE IVW_PACKAGE_SELECT_APP PROPERTY STRINGS)
 list(APPEND packageApps ${PROJECT_NAME})
@@ -70,7 +70,7 @@ file(GENERATE
     OUTPUT ${IVW_BINARY_DIR}/run.$<CONFIG>.ps1
     CONTENT [=[
 param ([int]$nodes=2, $config='???.xml', [bool]$tracy=0)
-$scriptdir = '$<TARGET_PROPERTY:inviwodome,SGCT_CONFIG_DIR>'
+$scriptdir = '$<TARGET_PROPERTY:inviwo-dome,SGCT_CONFIG_DIR>'
 if ($config -eq '???.xml') {
      $config = "$scriptdir/${nodes}_nodes.xml"
 }
@@ -80,18 +80,18 @@ if (!(Test-Path $config)) {
     }
 }
 
-Write-Host "Nodes: $nodes, Config: $config"
-Write-Host "Run: $<TARGET_FILE:inviwodome> -config $config &"
-$<TARGET_FILE:inviwodome> -config $config &
+Write-Host "Nodes: $nodes, Config: $config, Tracy: $tracy"
+Write-Host "Run: $<TARGET_FILE:inviwo-dome> --config $config &"
+$<TARGET_FILE:inviwo-dome> --config $config &
 for ( $i = 1; $i -lt $nodes; $i++ ) {
-    Write-Host "Run: $<TARGET_FILE:inviwodome> -config $config -local $i -client &"
-    $<TARGET_FILE:inviwodome> -config $config -local $i -client &
+    Write-Host "Run: $<TARGET_FILE:inviwo-dome> --config $config --local $i --client &"
+    $<TARGET_FILE:inviwo-dome> --config $config --local $i --client &
 }
 if ($tracy) {
     for( $i = 0; $i -lt $nodes; $i++ ) {
         $port = $i + 8086
-        Write-Host "Run: $<TARGET_PROPERTY:inviwodome,TRACY_EXE> -a localhost -p $port"
-        $<TARGET_PROPERTY:inviwodome,TRACY_EXE> -a localhost -p $port &
+        Write-Host "Run: $<TARGET_PROPERTY:inviwo-dome,TRACY_EXE> -a localhost -p $port"
+        $<TARGET_PROPERTY:inviwo-dome,TRACY_EXE> -a localhost -p $port &
     }
 }
 ]=]
