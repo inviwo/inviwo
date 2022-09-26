@@ -58,7 +58,7 @@ else()
     set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}/${IVW_VERSION}")
 endif()
 
-set(CPACK_PACKAGE_EXECUTABLES "inviwo" "inviwo")
+set(CPACK_PACKAGE_EXECUTABLES "inviwo" "Inviwo")
 set(CPACK_CREATE_DESKTOP_LINKS "inviwo")
 option(IVW_PACKAGE_INSTALLER "Use NSIS to create installer" OFF)
 

@@ -38,6 +38,8 @@
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>
 #include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 
+#include <sgct/sgct.h>
+
 namespace inviwo {
 
 SGCTCamera::SGCTCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane,

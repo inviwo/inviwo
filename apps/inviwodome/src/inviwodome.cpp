@@ -133,6 +133,9 @@ int main(int argc, char** argv) {
         std::vector<std::string> arg(argv + 1, argv + argc);
         const auto config = sgct::parseArguments(arg);
         const auto cluster = sgct::loadCluster(config.configFilename);
+        if (!cluster.success) {
+            return -1;
+        }
 
         inviwo::SgctManager state(app);
 
