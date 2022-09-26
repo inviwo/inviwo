@@ -13,9 +13,10 @@ target_include_directories(inviwo-tracy INTERFACE include)
 
 option(IVW_USE_TRACY "Enable profiling using Tracy" OFF)
 if(IVW_USE_TRACY)
-	find_package(unofficial-tracy REQUIRED)
-	target_compile_definitions(inviwo-tracy INTERFACE TRACY_ENABLE)
-	target_link_libraries(inviwo-tracy INTERFACE unofficial::tracy::tracy)
+    find_package(Threads REQUIRED)
+    find_package(Tracy CONFIG REQUIRED)
+    target_compile_definitions(inviwo-tracy INTERFACE TRACY_ENABLE)
+    target_link_libraries(inviwo-tracy INTERFACE Tracy::TracyClient)
 endif()
 
 add_custom_target(inviwo-tracy_dummy SOURCES ${HEADER_FILES})
