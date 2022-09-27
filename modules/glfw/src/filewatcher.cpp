@@ -36,7 +36,18 @@
 #include <algorithm>                         // for find
 
 #ifdef WIN32
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/threadutil.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/fileobserver.h>
+
 #include <Windows.h>
+#include <array>
+#include <mutex>
+#include <atomic>
+#include <chrono>
 #endif
 
 namespace inviwo {
