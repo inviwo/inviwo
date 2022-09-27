@@ -32,6 +32,7 @@
 
 #include <inviwo/core/util/factory.h>                             // for StandardFactory
 #include <modules/userinterfacegl/glui/widgetfactoryobject.h>     // IWYU pragma: keep
+#include <modules/userinterfacegl/glui/element.h>                 // IWYU pragma: keep
 
 #include <memory>                                                 // for unique_ptr
 #include <string_view>                                            // for string_view
@@ -44,7 +45,6 @@ class Property;
 
 namespace glui {
 
-class Element;
 class Renderer;
 
 class IVW_MODULE_USERINTERFACEGL_API WidgetFactory
