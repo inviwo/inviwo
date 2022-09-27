@@ -66,10 +66,10 @@
 #include <unordered_map>                                                // for unordered_map
 #include <unordered_set>                                                // for unordered_set
 #include <variant>                                                      // for visit
+#include <cerrno>                                                       // for errno
 
 #include <fmt/core.h>                                                   // for format
 #include <glm/gtc/type_ptr.hpp>                                         // for value_ptr
-#include <sys/errno.h>                                                  // for errno
 #include <units/units.hpp>                                              // for unit_from_string
 
 namespace inviwo {
