@@ -31,6 +31,8 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
+#include <glm/gtx/component_wise.hpp>
+
 namespace inviwo {
 
 void HistogramCalculationState::whenDone(std::function<void(const HistogramContainer&)> callback) {

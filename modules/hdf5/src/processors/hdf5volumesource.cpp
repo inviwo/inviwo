@@ -37,6 +37,7 @@
 #include <limits>
 
 #include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 

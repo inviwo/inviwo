@@ -43,6 +43,7 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/io/datareaderexception.h>
 
 #include <algorithm>

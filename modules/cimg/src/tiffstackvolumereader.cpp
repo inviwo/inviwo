@@ -32,8 +32,10 @@
 #include <tiffio.h>
 
 #include <modules/cimg/cimgutils.h>
+
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/glm.h>
 
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 

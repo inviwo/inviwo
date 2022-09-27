@@ -30,6 +30,8 @@
 #include <modules/base/algorithm/volume/volumesignificantvoxels.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
+#include <inviwo/core/util/glm.h>
+
 #include <cstddef>
 #include <algorithm>
 

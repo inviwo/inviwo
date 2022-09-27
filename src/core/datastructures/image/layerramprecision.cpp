@@ -29,29 +29,4 @@
 
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
-namespace inviwo {
-
-struct LayerRAMCreationDispatcher {
-    using type = std::shared_ptr<LayerRAM>;
-    template <typename Result, typename T>
-    std::shared_ptr<LayerRAM> operator()(const size2_t& dimensions, LayerType type,
-                                         const SwizzleMask& swizzleMask,
-                                         InterpolationType interpolation,
-                                         const Wrapping2D& wrapping) {
-        using F = typename T::type;
-        return std::make_shared<LayerRAMPrecision<F>>(dimensions, type, swizzleMask, interpolation,
-                                                      wrapping);
-    }
-};
-
-std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType type,
-                                         const DataFormatBase* format,
-                                         const SwizzleMask& swizzleMask,
-                                         InterpolationType interpolation,
-                                         const Wrapping2D& wrapping) {
-    LayerRAMCreationDispatcher disp;
-    return dispatching::dispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
-        format->getId(), disp, dimensions, type, swizzleMask, interpolation, wrapping);
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
