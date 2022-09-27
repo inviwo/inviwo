@@ -34,12 +34,10 @@
 // push/pop warning state to prevent disabling some warnings by pybind headers
 #include <warn/push>
 #include <warn/ignore/shadow>
-#include <Python.h>                               // for PyObject
 #include <pybind11/cast.h>                        // for cast, object::cast
 #include <pybind11/detail/common.h>               // for value_error, pybind11
 #include <pybind11/numpy.h>                       // for array, dtype
 #include <pybind11/pytypes.h>                     // for handle, reinterpret_borrow, reinterpret...
-
 #include <warn/pop>
 
 #include <inviwo/core/util/formats.h>             // for DataFormat, DataFormatBase

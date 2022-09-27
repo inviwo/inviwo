@@ -43,14 +43,10 @@
 #include <iterator>                                           // for istreambuf_iterator
 #include <utility>                                            // for pair
 
-#include <Python.h>                                           // for PyArg_ParseTuple, PyDict_Copy
-#include <frameobject.h>                                      // for _frame
 #include <pybind11/cast.h>                                    // for cast, handle::cast, object:...
 #include <pybind11/detail/common.h>                           // for pybind11
 #include <pybind11/pybind11.h>                                // for globals
 #include <pybind11/pytypes.h>                                 // for object, dict, str, handle
-#include <pyframe.h>                                          // for PyFrameObject, PyFrame_GetL...
-#include <pythonrun.h>                                        // for Py_CompileString
 
 #define BYTE_CODE static_cast<PyObject*>(byteCode_)
 

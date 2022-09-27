@@ -31,13 +31,11 @@
 
 #include <warn/push>
 #include <warn/ignore/shadow>
-#include <Python.h>                                         // for PyExc_ModuleNotFoundError
 #include <pybind11/cast.h>                                  // for object::cast, object_api::ope...
 #include <pybind11/detail/common.h>                         // for pybind11
 #include <pybind11/eval.h>                                  // for eval, exec, eval_expr
 #include <pybind11/pybind11.h>                              // for globals, module_, module
 #include <pybind11/pytypes.h>                               // for object, error_already_set
-
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication

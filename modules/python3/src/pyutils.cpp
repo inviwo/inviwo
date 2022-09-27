@@ -38,7 +38,6 @@
 
 #include <warn/push>
 #include <warn/ignore/shadow>
-#include <Python.h>                             // for Py_IsInitialized
 #include <pybind11/cast.h>                      // for object_api::operator(), object::cast
 #include <pybind11/detail/common.h>             // for pybind11
 #include <pybind11/pybind11.h>                  // for module_, module

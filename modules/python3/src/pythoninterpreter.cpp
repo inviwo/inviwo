@@ -29,7 +29,6 @@
 
 #include <warn/push>
 #include <warn/ignore/shadow>
-#include <Python.h>                             // for Py_IsInitialized, Py_GetVersion, Py_SetPr...
 #include <pybind11/cast.h>                      // for object_api::operator()
 #include <pybind11/detail/common.h>             // for pybind11
 #include <pybind11/embed.h>                     // for finalize_interpreter, initialize_interpreter
