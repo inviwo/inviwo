@@ -83,7 +83,7 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
     : PropertyWidgetQt(property)
     , property_{property}
     , label_{new EditableLabelQt(this, property_)}
-    , lineEdits_{util::make_array<N>([](auto i) { return new LineEditQt(); })}
+    , lineEdits_{util::make_array<N>([]([[maybe_unused]] auto i) { return new LineEditQt(); })}
     , delegates_{util::make_array<N>([&](auto i) {
         auto p = &(property_->strings[i]);
         return PropertyWidgetDelegate(p, [p, l = lineEdits_[i]]() {
