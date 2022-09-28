@@ -61,12 +61,12 @@ source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-openglqt PRIVATE 
+target_link_libraries(inviwo-module-openglqt PUBLIC 
     Qt${QT_VERSION_MAJOR}::OpenGL
     Qt${QT_VERSION_MAJOR}::Svg
 )
 if(QT_VERSION_MAJOR EQUAL 6)
-    target_link_libraries(inviwo-module-openglqt PRIVATE Qt6::OpenGLWidgets)
+    target_link_libraries(inviwo-module-openglqt PUBLIC Qt6::OpenGLWidgets)
 endif()
 
 target_compile_definitions(inviwo-module-openglqt PUBLIC 

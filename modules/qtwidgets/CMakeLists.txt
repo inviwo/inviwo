@@ -199,7 +199,7 @@ source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc ${QRC_FILE})
 ivw_create_module(NO_PCH QT ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES}
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/qt5.natvis>
 )
-target_link_libraries(inviwo-module-qtwidgets PRIVATE
+target_link_libraries(inviwo-module-qtwidgets PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
