@@ -144,14 +144,17 @@ public:
 
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override {
         if (!parent.isValid()) {
-            return processors_.size();
+            return static_cast<int>(processors_.size());
         } else if (auto owner = toOwner(parent)) {
-            return owner->size();
+            return static_cast<int>(owner->size());
         } else {
             return 0;
         }
     }
-    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override { return 3; }
+    virtual int columnCount(
+        [[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override {
+        return 3;
+    }
 
     Qt::ItemFlags flags(const QModelIndex& index) const override {
         if (index.column() == 0) {
@@ -314,25 +317,25 @@ public:
     }
 
     // PropertyOwnerObserver overrides
-    virtual void onWillAddProperty(PropertyOwner* owner, Property* property, size_t pos) override {
-        beginInsertRows(index(owner), pos, pos);
+    virtual void onWillAddProperty(PropertyOwner* owner, Property*, size_t pos) override {
+        beginInsertRows(index(owner), static_cast<int>(pos), static_cast<int>(pos));
     }
     virtual void onDidAddProperty(Property* property, size_t) override {
         endInsertRows();
-        LambdaNetworkVisitor ownerVisitor{[&](PropertyOwner* o) { o->addObserver(this); }};
+        LambdaNetworkVisitor ownerVisitor{[&](PropertyOwner& o) { o.addObserver(this); }};
         property->accept(ownerVisitor);
 
-        LambdaNetworkVisitor propVisitor{[&](Property* o) { o->addObserver(this); }};
+        LambdaNetworkVisitor propVisitor{[&](Property& o) { o.addObserver(this); }};
         property->accept(propVisitor);
     };
 
     virtual void onWillRemoveProperty(Property* property, size_t pos) override {
-        LambdaNetworkVisitor ownerVisitor{[&](PropertyOwner* o) { o->removeObserver(this); }};
+        LambdaNetworkVisitor ownerVisitor{[&](PropertyOwner& o) { o.removeObserver(this); }};
         property->accept(ownerVisitor);
 
-        LambdaNetworkVisitor propVisitor{[&](Property* o) { o->removeObserver(this); }};
+        LambdaNetworkVisitor propVisitor{[&](Property& o) { o.removeObserver(this); }};
         property->accept(propVisitor);
-        beginRemoveRows(index(property->getOwner()), pos, pos);
+        beginRemoveRows(index(property->getOwner()), static_cast<int>(pos), static_cast<int>(pos));
     }
     virtual void onDidRemoveProperty(PropertyOwner*, Property*, size_t) override {
         endRemoveRows();
@@ -435,7 +438,10 @@ public:
     CompositeProcessorTreeModel(CompositeProcessor* cp, QObject* parent)
         : NetworkTreeModel{{cp}, parent}, cp_{cp} {}
 
-    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override { return 4; }
+    virtual int columnCount(
+        [[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override {
+        return 4;
+    }
 
     Qt::ItemFlags flags(const QModelIndex& index) const override {
         if (index.column() == column::name) {
@@ -535,8 +541,9 @@ public:
         return true;
     }
 
-    bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column,
-                      const QModelIndex& parent) override {
+    bool dropMimeData(const QMimeData* data,[[maybe_unused]] Qt::DropAction action, [[maybe_unused]] int row,
+                      [[maybe_unused]] int column,
+                      [[maybe_unused]] const QModelIndex& parent) override {
         try {
             if (auto* propData = SuperPropertyMimeData::toSuperPropertyMimeData(data)) {
                 for (auto* subProperty : propData->properties) {
