@@ -1,6 +1,6 @@
 
 
-From the bild dir
+From the build dir
 
 	cmake -S ../../inviwo -B . --preset iwyu
 	../../inviwo/tools/iwyu/run.sh mymodule
