@@ -541,8 +541,8 @@ public:
         return true;
     }
 
-    bool dropMimeData(const QMimeData* data,[[maybe_unused]] Qt::DropAction action, [[maybe_unused]] int row,
-                      [[maybe_unused]] int column,
+    bool dropMimeData(const QMimeData* data, [[maybe_unused]] Qt::DropAction action,
+                      [[maybe_unused]] int row, [[maybe_unused]] int column,
                       [[maybe_unused]] const QModelIndex& parent) override {
         try {
             if (auto* propData = SuperPropertyMimeData::toSuperPropertyMimeData(data)) {
