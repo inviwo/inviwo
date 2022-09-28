@@ -36,7 +36,7 @@
     url = https://github.com/pantor/inja.git
 [submodule "modules/cimg/ext/openexr/openexr"]
     path = modules/cimg/ext/openexr/openexr
-    url = https://github.com/inviwo/openexr.git
+    url = https://github.com/AcademySoftwareFoundation/openexr.git
 [submodule "modules/assimp/ext/assimp/assimp"]
     path = modules/assimp/ext/assimp/assimp
     url = https://github.com/inviwo/assimp.git

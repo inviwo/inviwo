@@ -75,51 +75,17 @@ option(IVW_USE_EXTERNAL_OPENEXR  "OpenEXR is provided externaly" OFF)
 if(IVW_USE_OPENEXR)
     target_compile_definitions(inviwo-module-cimg PRIVATE cimg_use_openexr)
     if(IVW_USE_EXTERNAL_OPENEXR)
-        find_package(IlmBase CONFIG REQUIRED)
         find_package(OpenEXR CONFIG REQUIRED)
-        target_link_libraries(inviwo-module-cimg PRIVATE 
-            IlmBase::Iex IlmBase::Half IlmBase::Imath IlmBase::IexMath
-            OpenEXR::IlmImf OpenEXR::IlmImfUtil OpenEXR::IlmImfConfig
-        )
-
+        target_link_libraries(inviwo-module-cimg PRIVATE OpenEXR::OpenEXR)
         ivw_vcpkg_install(openexr MODULE CImg)
     else()
         add_subdirectory(ext/openexr)
-        ivw_register_license_file(NAME "OpenEXR" TARGET OpenEXR::IlmImf MODULE CImg
+        ivw_register_license_file(NAME "OpenEXR" TARGET OpenEXR::OpenEXR MODULE CImg
             URL "http://www.openexr.com"
             TYPE "Modified BSD License"
             FILES ext/openexr/openexr/LICENSE.md
         )
-        ivw_default_install_targets(
-            Half
-            Iex
-            IexMath
-            Imath
-            IlmThread
-            IlmImf
-            IlmImfUtil
-        )
-        target_link_libraries(inviwo-module-cimg
-            PRIVATE
-                IlmBase::Half
-                IlmBase::Iex
-                IlmBase::IexMath
-                IlmBase::Imath
-                IlmBase::IlmThread
-                OpenEXR::IlmImf
-                OpenEXR::IlmImfUtil
-        )
-        target_include_directories(inviwo-module-cimg PRIVATE 
-            ${CMAKE_CURRENT_BINARY_DIR}/ext/openexr/openexr/IlmBase/config
-            ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Half
-            ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Iex
-            ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/IexMath
-            ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Imath
-            ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/IlmThread
-            ${CMAKE_CURRENT_BINARY_DIR}/ext/openexr/openexr/OpenEXR/config
-            ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/OpenEXR/IlmImf
-            ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/OpenEXR/IlmImfUtil
-        )
+        target_link_libraries(inviwo-module-cimg PRIVATE  OpenEXR::OpenEXR)
     endif()
 endif()
 

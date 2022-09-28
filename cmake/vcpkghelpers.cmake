@@ -32,54 +32,6 @@ if(VCPKG_TOOLCHAIN)
     ivw_git_get_hash(${Z_VCPKG_ROOT_DIR} ivw_vcpkg_sha)
 endif()
 
-# A helper function to get to various vcpkg paths
-# If vcpkg is not used we just return empty strings
-# There are not "offically" exposed so we always use this helper to get then if needed
-# then we only need to update here if vcpkg changes. 
-# This is mostly used to provide hints when trying to find headers etc for libs that don't have
-# a proper FindFoo.cmake of FooConfig.cmake.
-function(ivw_vcpkg_paths)
-    set(options "")
-    set(oneValueArgs BIN INCLUDE LIB SHARE BASE)
-    set(multiValueArgs "")
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    if(NOT VCPKG_TOOLCHAIN)
-        if(ARG_BIN)
-            set(${ARG_BIN} "" PARENT_SCOPE)
-        endif()
-        if(ARG_INCLUDE)
-            set(${ARG_INCLUDE} "" PARENT_SCOPE)
-        endif()
-        if(ARG_LIB)
-            set(${ARG_LIB} "" PARENT_SCOPE)
-        endif()
-        if(ARG_SHARE)
-            set(${ARG_SHARE} "" PARENT_SCOPE)
-        endif()
-        if(ARG_BASE)
-            set(${ARG_BASE} "" PARENT_SCOPE)
-        endif()
-        return()
-    endif()
-
-    if(ARG_BIN)
-        set(${ARG_BIN} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/bin" PARENT_SCOPE)
-    endif()
-    if(ARG_INCLUDE)
-        set(${ARG_INCLUDE} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/include" PARENT_SCOPE)
-    endif()
-    if(ARG_LIB)
-        set(${ARG_LIB} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/lib" PARENT_SCOPE)
-    endif()
-    if(ARG_SHARE)
-        set(${ARG_SHARE} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share" PARENT_SCOPE)
-    endif()
-    if(ARG_BASE)
-        set(${ARG_SHARE} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}" PARENT_SCOPE)
-    endif()
-endfunction()
-
 # A helper function to install vcpkg libs. Will install dll/so, lib, pdb, stc. into the 
 # correspnding folders by globing the vcpkg package folders. 
 # It will also try and install eny transitive dependencies autoamtically 
@@ -101,22 +53,9 @@ function(ivw_vcpkg_install name)
 
 	string(TOLOWER "${name}" lowercase_name)
 
-    if(DEFINED IVW_CFG_VCPKG_OVERLAYS)
-        set(overlay "--overlay" "${IVW_CFG_VCPKG_OVERLAYS}")
-    else()
-        set(overlay "")
-    endif()
-
-    if(VCPKG_MANIFEST_MODE AND EXISTS "${CMAKE_SOURCE_DIR}/vcpkg_installed")
-        set(install "--install" "${CMAKE_SOURCE_DIR}/vcpkg_installed")
-        set(installdir "${CMAKE_SOURCE_DIR}/vcpkg_installed/")
-    elseif(VCPKG_MANIFEST_MODE AND EXISTS "${CMAKE_BINARY_DIR}/vcpkg_installed")
-        set(install "--install" "${CMAKE_BINARY_DIR}/vcpkg_installed")
-        set(installdir "${CMAKE_BINARY_DIR}/vcpkg_installed/")
-    else()
-        set(install "")
-        set(installdir "${Z_VCPKG_ROOT_DIR}/installed/")
-    endif()
+    set(overlay "--overlay" "${VCPKG_OVERLAY_PORTS}")
+    set(install "--install" "${VCPKG_INSTALLED_DIR}")
+    set(installdir "${VCPKG_INSTALLED_DIR}/")
 
     if(NOT DEFINED ivw_vcpkg_info_${lowercase_name} OR 
         NOT ivw_vcpkg_info_${lowercase_name}_sha STREQUAL ivw_vcpkg_sha)
@@ -258,7 +197,9 @@ function(ivw_vcpkg_install name)
     if(INFO_VCPKG_DEPENDENCIES)
         list(TRANSFORM INFO_VCPKG_DEPENDENCIES REPLACE ":.*" "")
         foreach(dep IN LISTS INFO_VCPKG_DEPENDENCIES)
-            ivw_vcpkg_install(${dep} MODULE ${ARG_MODULE} ${ext})
+            if(NOT dep MATCHES "^vcpkg-")
+                ivw_vcpkg_install(${dep} MODULE ${ARG_MODULE} ${ext})
+            endif()
         endforeach()
     endif()
     

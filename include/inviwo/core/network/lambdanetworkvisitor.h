@@ -113,6 +113,15 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     template <typename T>
     using PropertyOverload = decltype(std::declval<T>()(std::declval<Property&>()));
 
+    template <typename T>
+    static constexpr auto isOverloadCalled =
+        util::is_detected_v<ProcessorOverload, T> || util::is_detected_v<ProcessorEnter, T> ||
+        util::is_detected_v<ProcessorExit, T> || util::is_detected_v<CompositeOverload, T> ||
+        util::is_detected_v<CompositeEnter, T> || util::is_detected_v<CompositeExit, T> ||
+        util::is_detected_v<PropertyOverload, T>;
+
+    static_assert((isOverloadCalled<Funcs> && ...), "Some overloads will never be called");
+
     virtual bool enter([[maybe_unused]] Processor& processor) override {
         if constexpr (util::is_detected_exact_v<bool, ProcessorEnter, decltype(*this)>) {
             return this->operator()(processor, NetworkVisitorEnter{});
