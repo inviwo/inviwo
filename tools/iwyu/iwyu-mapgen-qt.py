@@ -121,6 +121,17 @@ def add_mapping_rules(header, symbols_map, includes_map):
         includes_map += [(header.modulename, include, header.classname)]
 
 
+def normalizeName(x):
+    if x.startswith("Qt"):
+        return x[2:].casefold()
+    if x.startswith("qt"):
+        return x[2:].casefold()
+    if x.startswith("Q"):
+        return x[1:].casefold()
+    if x.startswith("q"):
+        return x[1:].casefold()
+
+
 def main(qtroot):
     """ Entry point. """
     symbols_map = []
@@ -150,10 +161,32 @@ def main(qtroot):
     for header in deferred_headers:
         add_mapping_rules(header, symbols_map, includes_map)
 
+    inc_map = {}
+    for module, include, header in includes_map:
+        if include in inc_map:
+            inc_map[include].append((module, header))
+        else:
+            inc_map[include] = [(module, header)]
+
+    filtered_includes_map = []
+    for include, candidateHeaders in inc_map.items():
+        if len(candidateHeaders) > 1:
+            match = next(((module, header) for (module, header) in candidateHeaders
+                          if (header.casefold() == include.casefold() or
+                              normalizeName(header) == normalizeName(include))), None)
+            if match:
+                filtered_includes_map.append((match[0], include, match[1]))
+                # print("# {} -> {}".format(include, match[1]))
+            else:
+                pass
+                # print("{} -> {}".format(include, ", ".join(h for (_, h) in candidateHeaders)))
+
+
+
     # Print mappings
     print(OUTFILEHDR)
     print("[")
-    print(",\n".join(generate_imp_lines(symbols_map, includes_map)))
+    print(",\n".join(generate_imp_lines(sorted(symbols_map), sorted(filtered_includes_map))))
     print("]")
     return 0
 
