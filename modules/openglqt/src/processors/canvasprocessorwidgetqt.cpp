@@ -46,6 +46,7 @@
 #include <QGridLayout>
 #include <QAction>
 #include <QMenu>
+#include <QMainWindow>
 #include <warn/pop>
 
 namespace inviwo {
