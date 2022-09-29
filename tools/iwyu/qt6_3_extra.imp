@@ -1,5 +1,6 @@
 [
   {"include": ["@[\"<](QtCore/)?qnamespace\\.h[\">]", "private", "<Qt>", "public"]},
+  {"include": ["@[\"<](QtCore/)?qcoreevent\\.h[\">]", "private", "<QEvent>", "public"]},
   {"include": ["@[\"<](QtGui/)?qbrush\\.h[\">]", "private", "<QBrush>", "public"]},
   {"include": ["@[\"<](QtGui/)?qpainterpath\\.h[\">]", "private", "<QPainterPath>", "public"]}
 ]
