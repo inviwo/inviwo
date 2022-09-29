@@ -53,6 +53,7 @@
 #include <warn/ignore/all>
 #include <QInputDialog>
 #include <QCoreApplication>
+#include <QMainWindow>
 #include <warn/pop>
 
 namespace inviwo {
