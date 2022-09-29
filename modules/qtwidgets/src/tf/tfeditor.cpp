@@ -29,42 +29,63 @@
 
 #include <modules/qtwidgets/tf/tfeditor.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/datastructures/tfprimitive.h>
-#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/datastructures/datamapper.h>          // for DataMapper
+#include <inviwo/core/datastructures/tfprimitive.h>         // for TFPrimitive, operator==, TFPr...
+#include <inviwo/core/datastructures/tfprimitiveset.h>      // for TFPrimitiveSet, alignAlphaToB...
+#include <inviwo/core/datastructures/transferfunction.h>    // for TransferFunction
+#include <inviwo/core/network/networklock.h>                // for NetworkLock
+#include <inviwo/core/ports/volumeport.h>                   // for VolumeInport
+#include <inviwo/core/properties/property.h>                // for Property
+#include <inviwo/core/util/raiiutils.h>                     // for KeepTrueWhileInScope
+#include <inviwo/core/util/stdextensions.h>                 // for contains
+#include <inviwo/core/util/transformiterator.h>             // for TransformIterator
+#include <inviwo/core/util/typetraits.h>                    // for identity
+#include <inviwo/core/util/vectoroperations.h>              // for comparePtr
+#include <inviwo/core/util/zip.h>                           // for make_sequence, sequence, sequ...
+#include <modules/qtwidgets/inviwoqtutils.h>                // for clamp, toQString
+#include <modules/qtwidgets/tf/tfcontrolpointconnection.h>  // for TFControlPointConnection
+#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>      // for TFEditorControlPoint, operator<
+#include <modules/qtwidgets/tf/tfeditorisovalue.h>          // for TFEditorIsovalue, operator<
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>         // for TFEditorPrimitive, TFEditorPr...
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>         // for TFPropertyConcept
+#include <modules/qtwidgets/tf/tfutils.h>                   // for addTFColorbrewerPresetsMenu
 
-#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
-#include <modules/qtwidgets/tf/tfeditorisovalue.h>
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>
-#include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
-#include <modules/qtwidgets/tf/tfutils.h>
-#include <modules/qtwidgets/tf/tfpropertyconcept.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/raiiutils.h>
+#include <stdlib.h>                                         // for abs, size_t
+#include <algorithm>                                        // for stable_sort, find_if, max
+#include <array>                                            // for array
+#include <cmath>                                            // for abs
+#include <initializer_list>                                 // for initializer_list
+#include <iterator>                                         // for back_insert_iterator, back_in...
+#include <type_traits>                                      // for remove_extent_t
+#include <utility>                                          // for pair, forward
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QApplication>
-#include <QGuiApplication>
-#include <QBrush>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsView>
-#include <QKeyEvent>
-#include <QLineF>
-#include <QPainter>
-#include <QPen>
-#include <QMenu>
-#include <QAction>
-#include <QGraphicsPixmapItem>
-#include <QRectF>
-#include <QTransform>
-#include <warn/pop>
+#include <QAction>                                          // for QAction
+#include <QFlags>                                           // for QFlags, operator==
+#include <QGraphicsItem>                                    // for qgraphicsitem_cast, QGraphics...
+#include <QGraphicsSceneContextMenuEvent>                   // for QGraphicsSceneContextMenuEvent
+#include <QGraphicsSceneMouseEvent>                         // for QGraphicsSceneMouseEvent
+#include <QGraphicsView>                                    // for QGraphicsView, QGraphicsView:...
+#include <QGuiApplication>                                  // for QGuiApplication
+#include <QKeyEvent>                                        // for QKeyEvent
+#include <QList>                                            // for QList, QList<>::iterator
+#include <QMenu>                                            // for QMenu
+#include <QPoint>                                           // for operator-, operator+
+#include <QRectF>                                           // for QRectF
+#include <QSizeF>                                           // for QSizeF
+#include <QString>                                          // for QString
+#include <QTransform>                                       // for QTransform
+#include <QWidget>                                          // for QWidget
+#include <QtCore/qnamespace.h>                              // for ControlModifier, ShiftModifier
+#include <fmt/core.h>                                       // for format
+#include <glm/common.hpp>                                   // for clamp
+#include <glm/vec2.hpp>                                     // for vec<>::(anonymous), vec
 
-#include <fmt/format.h>
+class QGraphicsSceneMouseEvent;
+class QKeyEvent;
+
+#include <warn/pop>
 
 namespace inviwo {
 

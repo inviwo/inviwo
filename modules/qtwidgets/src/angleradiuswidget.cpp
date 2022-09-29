@@ -29,19 +29,35 @@
 
 #include <modules/qtwidgets/angleradiuswidget.h>
 
-#include <inviwo/core/util/glm.h>
-#include <inviwo/core/util/formats.h>
+#include <algorithm>              // for max, min
+#include <cmath>                  // for atan2, cos, sin, sqrt, M_PI
+#include <sstream>                // for stringstream, basic_ostream, fixed
 
-#include <cmath>
-#include <iostream>
-#include <sstream>
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QMouseEvent>
-#include <QPainterPath>
-#include <QPointF>
-#include <QStylePainter>
+#include <QChar>                  // for QChar
+#include <QFontMetrics>           // for QFontMetrics
+#include <QLineF>                 // for QLineF
+#include <QMouseEvent>            // for QMouseEvent
+#include <QPainter>               // for QPainter, QPainter::Antialiasing
+#include <QPalette>               // for QPalette, QPalette::Base
+#include <QPen>                   // for QPen
+#include <QPoint>                 // for QPoint, operator-
+#include <QPointF>                // for QPointF
+#include <QString>                // for QString, operator+
+#include <QStylePainter>          // for QStylePainter
+#include <Qt>                     // for MiterJoin, SquareCap, SolidLine, DashLine, LeftButton
+#include <QtGlobal>               // for qMin, qreal, QT_VERSION, QT_VERSION_CHECK
+#include <QBrush>                 // for QBrush
+#include <QPainterPath>           // for QPainterPath
 #include <warn/pop>
+
+#include <glm/common.hpp>         // for clamp
+#include <glm/trigonometric.hpp>  // for degrees
+
+class QMouseEvent;
+class QPaintEvent;
+
 
 namespace inviwo {
 

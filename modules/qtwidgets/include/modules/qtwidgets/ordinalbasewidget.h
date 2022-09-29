@@ -29,8 +29,7 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior
 
 namespace inviwo {
 

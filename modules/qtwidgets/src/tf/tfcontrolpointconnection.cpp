@@ -28,14 +28,22 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
-#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
+
+#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>  // for TFEditorControlPoint
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QPainterPathStroker>
-#include <QGraphicsScene>
-#include <QRectF>
-#include <QPainter>
+#include <QColor>                                       // for QColor
+#include <QGraphicsScene>                               // for QGraphicsScene
+#include <QPainter>                                     // for QPainter, QPainter::Antialiasing
+#include <QPainterPathStroker>                          // for QPainterPathStroker
+#include <QPen>                                         // for QPen
+#include <QPoint>                                       // for operator==
+#include <QRectF>                                       // for QRectF
+
+class QStyleOptionGraphicsItem;
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

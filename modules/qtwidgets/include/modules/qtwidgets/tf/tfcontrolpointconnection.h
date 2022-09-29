@@ -29,13 +29,23 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>   // for TFEditorPrimitive, TFEditorPrimitiv...
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsItem>
+#include <QGraphicsItem>                              // for QGraphicsItem, QGraphicsItem::UserType
+#include <QPointF>                                    // for QPointF
+#include <QRectF>                                     // for QRectF
+#include <qpainterpath.h>                             // for QPainterPath
+
+class QPainter;
+class QPointF;
+class QRectF;
+class QStyleOptionGraphicsItem;
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

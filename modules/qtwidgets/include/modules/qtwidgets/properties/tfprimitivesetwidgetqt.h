@@ -29,20 +29,23 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/ports/volumeport.h>                   // for VolumeInport
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+
+#include <memory>                                           // for unique_ptr
+#include <string>                                           // for string
+#include <vector>                                           // for vector
 
 namespace inviwo {
 
-class IsoValueProperty;
-class TransferFunctionProperty;
-class MultilineTextEdit;
 class EditableLabelQt;
-
+class IsoValueProperty;
+class MultilineTextEdit;
 class TFPrimitiveSet;
+class TransferFunctionProperty;
+struct TFPrimitiveData;
 
 /**
  * \class TFPrimitiveSetWidgetQt

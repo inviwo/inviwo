@@ -29,20 +29,27 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/propertyobserver.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <inviwo/core/properties/propertyobserver.h>  // for PropertyObserver
+
+#include <string>                                     // for string
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
+#include <QObject>                                    // for Q_OBJECT, signals
+#include <QSize>                                      // for QSize
+#include <QString>                                    // for QString
+#include <QWidget>                                    // for QWidget
+
+class QEvent;
+
 #include <warn/pop>
 
-class QLineEdit;
 class QLabel;
-class QMenu;
+class QLineEdit;
 class QMouseEvent;
 class QResizeEvent;
-class QAction;
 
 namespace inviwo {
 

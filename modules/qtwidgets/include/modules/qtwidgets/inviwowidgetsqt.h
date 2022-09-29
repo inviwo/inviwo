@@ -29,13 +29,18 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QComboBox>
+#include <QComboBox>                                  // for QComboBox
+#include <QLineEdit>                                  // for QLineEdit
+#include <QObject>                                    // for Q_OBJECT
+#include <QPushButton>                                // for QPushButton
+#include <QSize>                                      // for QSize
+
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

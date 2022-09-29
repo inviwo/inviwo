@@ -29,19 +29,18 @@
 
 #include <modules/qtwidgets/tf/tflineedit.h>
 
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmvec.h>                              // for dvec2
+#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>  // for DoubleValueDragSpinBox
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QDoubleValidator>
-#include <QLocale>
-#include <QSizePolicy>
-#include <QSignalBlocker>
-#include <QLayout>
-#include <warn/pop>
+#include <QSignalBlocker>                                         // for QSignalBlocker
+#include <QSizePolicy>                                            // for QSizePolicy, QSizePolic...
+#include <glm/vec2.hpp>                                           // for vec<>::(anonymous)
 
-#include <sstream>
-#include <limits>
+class QLayout;
+
+#include <warn/pop>
 
 namespace inviwo {
 

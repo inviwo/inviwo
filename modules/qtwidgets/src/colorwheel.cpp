@@ -39,15 +39,27 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QPainter>
-#include <QResizeEvent>
-#include <QStyleOption>
-#include <QtCore/qmath.h>
-#include <QPainterPath>
+#include <QConicalGradient>     // for QConicalGradient
+#include <QMouseEvent>          // for QMouseEvent
+#include <QPainter>             // for QPainter, QPainter::Antialiasing
+#include <QPen>                 // for QPen
+#include <QPointF>              // for QPointF
+#include <QRect>                // for QRect
+#include <QRectF>               // for QRectF
+#include <QResizeEvent>         // for QResizeEvent
+#include <QRgb>                 // for qRgb, QRgb
+#include <QStyle>               // for QStyle, QStyle::PE_Widget
+#include <QStyleOption>         // for QStyleOption
+#include <QtCore/qmath.h>       // for qSqrt, qAtan2, qPow
+#include <QtCore/qnamespace.h>  // for NoBrush, red, white, CrossCursor, NoPen, black, blue, cyan
+#include <QtGlobal>             // for qMin, qreal
+#include <QtGui/qbrush.h>       // for QBrush
+#include <qpainterpath.h>       // for QPainterPath
+
 #include <warn/pop>
 
-#include <algorithm>
-#include <cmath>
+#include <algorithm>            // for max
+#include <cmath>                // for sqrt
 
 namespace {
 

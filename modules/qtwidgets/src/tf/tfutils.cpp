@@ -29,35 +29,58 @@
 
 #include <modules/qtwidgets/tf/tfutils.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/colorbrewer.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/io/datawriterexception.h>
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include "inviwo/core/util/colorbrewer-generated.h"           // for Category, Family, operator<<
+#include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>                  // for InviwoModule
+#include <inviwo/core/common/modulepath.h>                    // for ModulePath, ModulePath::Tra...
+#include <inviwo/core/datastructures/datamapper.h>            // for DataMapper
+#include <inviwo/core/datastructures/tfprimitiveset.h>        // for TFPrimitiveSet
+#include <inviwo/core/datastructures/transferfunction.h>      // for TransferFunction
+#include <inviwo/core/io/datareaderexception.h>               // for DataReaderException
+#include <inviwo/core/io/datawriterexception.h>               // for DataWriterException
+#include <inviwo/core/network/networklock.h>                  // for NetworkLock
+#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <inviwo/core/util/colorbrewer.h>                     // for getTransferFunction
+#include <inviwo/core/util/exception.h>                       // for AbortException
+#include <inviwo/core/util/filedialogstate.h>                 // for AcceptMode, FileMode, Accep...
+#include <inviwo/core/util/fileextension.h>                   // for FileExtension
+#include <inviwo/core/util/filesystem.h>                      // for directoryExists, getDirecto...
+#include <inviwo/core/util/logcentral.h>                      // for log, LogAudience, LogAudien...
+#include <inviwo/core/util/sourcecontext.h>                   // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stringconversion.h>                // for toString
+#include <modules/qtwidgets/inviwofiledialog.h>               // for InviwoFileDialog
+#include <modules/qtwidgets/inviwoqtutils.h>                  // for toQString, emToPx, toQPixmap
 
-#include <modules/qtwidgets/inviwofiledialog.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-
-#include <fmt/format.h>
+#include <initializer_list>                                   // for initializer_list
+#include <limits>                                             // for numeric_limits
+#include <memory>                                             // for unique_ptr, shared_ptr
+#include <string>                                             // for basic_string, operator+
+#include <string_view>                                        // for string_view
+#include <type_traits>                                        // for remove_reference, remove_re...
+#include <utility>                                            // for move
+#include <vector>                                             // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QMenu>
-#include <QAction>
-#include <QSpinBox>
-#include <QDialog>
-#include <QGridLayout>
-#include <QLabel>
-#include <QWidget>
-#include <QDialogButtonBox>
-#include <QCheckBox>
+#include <QAction>                                            // for QAction
+#include <QCheckBox>                                          // for QCheckBox
+#include <QDialog>                                            // for QDialog
+#include <QDialogButtonBox>                                   // for QDialogButtonBox, operator|
+#include <QDoubleSpinBox>                                     // for QDoubleSpinBox
+#include <QGridLayout>                                        // for QGridLayout
+#include <QIcon>                                              // for QIcon
+#include <QLabel>                                             // for QLabel
+#include <QList>                                              // for QList
+#include <QMenu>                                              // for QMenu
+#include <QObject>                                            // for QObject
+#include <QSize>                                              // for QSize
+#include <QSpinBox>                                           // for QSpinBox
+#include <QString>                                            // for QString
+#include <QStringList>                                        // for QStringList
+#include <QWidget>                                            // for QWidget
+#include <fmt/core.h>                                         // for format
+
 #include <warn/pop>
 
 namespace inviwo {

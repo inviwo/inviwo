@@ -29,19 +29,22 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QLabel>
+#include <QLabel>                                     // for QLabel
+#include <QObject>                                    // for Q_OBJECT, signals
+
 #include <warn/pop>
 
-#include <inviwo/core/util/glmvec.h>
-#include <memory>
+#include <inviwo/core/util/glmvec.h>                  // for dvec3, dvec2
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QRadialGradient>
-#include <QPixmap>
+#include <QPixmap>                                    // for QPixmap
+#include <QRadialGradient>                            // for QRadialGradient
+
 #include <warn/pop>
 
 class QMouseEvent;

@@ -29,28 +29,47 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/properties/colorlineedit.h>
+#include <inviwo/core/metadata/metadata.h>                  // for IntMetaData
+#include <inviwo/core/properties/property.h>                // for Property
+#include <inviwo/core/util/glmutils.h>                      // for extent
+#include <inviwo/core/util/glmvec.h>                        // for vec3, vec4, ivec3, ivec4, dvec3
+#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
+#include <modules/qtwidgets/inviwoqtutils.h>                // for getApplicationMainWindow, Wid...
+#include <modules/qtwidgets/properties/colorlineedit.h>     // for ColorLineEdit, ColorLineEdit:...
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/metadata/metadata.h>
+#include <algorithm>                                        // for max
+#include <memory>                                           // for unique_ptr
+#include <string>                                           // for string
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QColor>
-#include <QHBoxLayout>
-#include <QColorDialog>
-#include <QSignalBlocker>
-#include <QAction>
-#include <QActionGroup>
-#include <QMenu>
-#include <QToolButton>
+#include <QAction>                                          // for QAction
+#include <QActionGroup>                                     // for QActionGroup
+#include <QColor>                                           // for QColor
+#include <QColorDialog>                                     // for QColorDialog, QColorDialog::N...
+#include <QHBoxLayout>                                      // for QHBoxLayout
+#include <QMainWindow>                                      // for QMainWindow
+#include <QObject>                                          // for QObject
+#include <QRect>                                            // for QRect
+#include <QSignalBlocker>                                   // for QSignalBlocker
+#include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Fixed
+#include <QString>                                          // for QString
+#include <QToolButton>                                      // for QToolButton
+#include <QWidget>                                          // for QWidget
+#include <QMenu>                                            // IWYU pragma: keep
+#include <Qt>                                               // for ClickFocus, NonModal, WA_Dele...
 #include <warn/pop>
+
+#include <glm/common.hpp>                                   // for clamp, max, min
+#include <glm/vec3.hpp>                                     // for vec, vec<>::(anonymous), oper...
+#include <glm/vec4.hpp>                                     // for vec, vec<>::(anonymous), oper...
+
+class QHBoxLayout;
+
+namespace inviwo {
+template <typename T> class OrdinalProperty;
+}  // namespace inviwo
 
 namespace inviwo {
 

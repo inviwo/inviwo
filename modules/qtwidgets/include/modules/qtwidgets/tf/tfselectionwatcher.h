@@ -29,19 +29,23 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/datastructures/tfprimitive.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <inviwo/core/datastructures/tfprimitive.h>   // for TFPrimitive, TFPrimitiveObserver
+
+#include <vector>                                     // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QObject>
-#include <QColor>
+#include <QColor>                                     // for QColor
+#include <QObject>                                    // for QObject, Q_OBJECT, signals, slots
+
 #include <warn/pop>
 
 namespace inviwo {
 
-class TFPrimitiveSet;
 class Property;
+class TFPrimitiveSet;
 
 /**
  * \class TFSelectionWatcher

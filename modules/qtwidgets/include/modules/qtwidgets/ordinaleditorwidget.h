@@ -29,16 +29,21 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>    // for IVW_MODULE_QTWIDGETS_API
 
-#include <modules/qtwidgets/ordinalbasewidget.h>
-#include <modules/qtwidgets/numberlineedit.h>
-#include <modules/qtwidgets/qstringhelper.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior
+#include <modules/qtwidgets/inviwoqtutils.h>            // for decimals
+#include <modules/qtwidgets/ordinalbasewidget.h>        // for OrdinalBaseWidget
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
+#include <QObject>                                      // for Q_OBJECT, signals
+#include <QWidget>                                      // for QWidget
+
+namespace inviwo {
+class NumberLineEdit;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

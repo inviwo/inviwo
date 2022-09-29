@@ -30,11 +30,13 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+
 #include <modules/qtwidgets/inviwodockwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QObject>
+
 #include <warn/pop>
 
 #include <memory>

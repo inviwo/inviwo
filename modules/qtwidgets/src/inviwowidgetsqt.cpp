@@ -31,7 +31,10 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QSizePolicy>
+#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::Minimum
+
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

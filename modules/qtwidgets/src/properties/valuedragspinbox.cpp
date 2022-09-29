@@ -28,12 +28,19 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/valuedragspinbox.h>
-#include <modules/qtwidgets/properties/valuedragger.h>
-#include <modules/qtwidgets/numberlineedit.h>
+
+#include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
+#include <modules/qtwidgets/properties/valuedragger.h>  // for ValueDragger
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QHBoxLayout>
+#include <QAbstractSpinBox>                             // for QAbstractSpinBox, QAbstractSpinBo...
+#include <QDoubleSpinBox>                               // for QDoubleSpinBox
+#include <QHBoxLayout>                                  // for QHBoxLayout
+#include <QSpinBox>                                     // for QSpinBox
+#include <QtCore/qnamespace.h>                          // for ClickFocus, WheelFocus
+#include <QtGlobal>                                     // for QT_VERSION, QT_VERSION_CHECK
+
 #include <warn/pop>
 
 namespace inviwo {

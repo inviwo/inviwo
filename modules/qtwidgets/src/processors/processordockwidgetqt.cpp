@@ -28,18 +28,32 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/processors/processordockwidgetqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/propertylistwidget.h>
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processor.h>        // for Processor, Processor::NameDispatcher...
+#include <inviwo/core/processors/processorwidget.h>  // for ProcessorWidget
+#include <modules/qtwidgets/inviwodockwidget.h>      // for InviwoDockWidget
+#include <modules/qtwidgets/inviwoqtutils.h>         // for toQString, getApplicationMainWindow
+
+#include <functional>                                // for __base
+#include <string_view>                               // for string_view
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QMainWindow>                               // for QMainWindow
 // Qt
-#include <QMoveEvent>
-#include <QMainWindow>
+#include <QMoveEvent>                                // for QMoveEvent
+#include <QPoint>                                    // for QPoint
+#include <QResizeEvent>                              // for QResizeEvent
+#include <QSize>                                     // for QSize
+#include <QtCore/qnamespace.h>                       // for RightDockWidgetArea
+#include <glm/vec2.hpp>                              // for vec<>::(anonymous)
+
+class QHideEvent;
+class QMoveEvent;
+class QResizeEvent;
+class QShowEvent;
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

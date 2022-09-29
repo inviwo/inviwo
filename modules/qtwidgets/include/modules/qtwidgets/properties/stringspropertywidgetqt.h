@@ -28,24 +28,34 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/stringsproperty.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
 
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/lineeditqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/properties/propertywidget.h>          // for PropertyWidget
+#include <inviwo/core/util/stdextensions.h>                 // for make_array
+#include <inviwo/core/util/zip.h>                           // for zip
+#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
+#include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
+#include <modules/qtwidgets/lineeditqt.h>                   // for LineEditQt
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <array>
+#include <array>                                            // for array
+#include <cstddef>                                          // for size_t
+#include <functional>                                       // for function
+#include <string>                                           // for string
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QLineEdit>
-#include <QHBoxLayout>
-#include <QSignalBlocker>
-#include <QToolButton>
+#include <QHBoxLayout>                                      // for QHBoxLayout
+#include <QSignalBlocker>                                   // for QSignalBlocker
+#include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Min...
+#include <QWidget>                                          // for QWidget
+
+class QHBoxLayout;
+namespace inviwo {
+class Property;
+template <size_t N> class StringsProperty;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

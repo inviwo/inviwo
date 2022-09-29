@@ -29,21 +29,34 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/datastructures/tfprimitive.h>
-#include <inviwo/core/util/observer.h>
+#include <inviwo/core/util/glmvec.h>                  // for vec4, dvec2, vec3
+#include <inviwo/core/util/observer.h>                // for Observable, Observer
+
+#include <memory>                                     // for unique_ptr
+#include <vector>                                     // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsItem>
+#include <QGraphicsItem>                              // for QGraphicsItem, QGraphicsItem::Graph...
+#include <QGraphicsSimpleTextItem>                    // for QGraphicsSimpleTextItem
+#include <QPointF>                                    // for QPointF
+#include <QVariant>                                   // for QVariant
+
+class QGraphicsSceneMouseEvent;
+class QPointF;
+class QStyleOptionGraphicsItem;
+class QWidget;
+namespace inviwo {
+class TFPrimitive;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 class QGraphicsScene;
 class QGraphicsSceneHoverEvent;
 class QPainter;
-class QGraphicsSimpleTextItem;
-class QGraphicsMouseEvent;
 
 namespace inviwo {
 

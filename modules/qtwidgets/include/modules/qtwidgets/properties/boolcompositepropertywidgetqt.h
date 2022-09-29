@@ -29,14 +29,19 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/compositepropertyobserver.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>                   // for IVW_MODULE_QTWIDGE...
+
+#include <inviwo/core/properties/compositepropertyobserver.h>          // for CompositePropertyO...
+#include <inviwo/core/properties/propertyobserver.h>                   // for PropertyObserverDe...
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
+
+#include <cstddef>                                                     // for size_t
+#include <string>                                                      // for string
 
 namespace inviwo {
 
 class BoolCompositeProperty;
+class Property;
 
 class IVW_MODULE_QTWIDGETS_API BoolCompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt,
                                                                public CompositePropertyObserver {

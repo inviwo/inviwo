@@ -28,15 +28,26 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
-#include <modules/qtwidgets/properties/valuedragger.h>
-#include <modules/qtwidgets/numberlineedit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>            // for emToPx, localizeStream
+#include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
+#include <modules/qtwidgets/properties/valuedragger.h>  // for ValueDragger
+
+#include <ostream>                                      // for ostringstream, basic_ostream
+#include <string>                                       // for string
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QHBoxLayout>
-#include <QSignalBlocker>
-#include <QLocale>
+#include <QAbstractSpinBox>                             // for QAbstractSpinBox, QAbstractSpinBo...
+#include <QByteArray>                                   // for QByteArray
+#include <QDoubleSpinBox>                               // for QDoubleSpinBox
+#include <QHBoxLayout>                                  // for QHBoxLayout
+#include <QLocale>                                      // for QLocale
+#include <QSignalBlocker>                               // for QSignalBlocker
+#include <QSpinBox>                                     // for QSpinBox
+#include <QtCore/qnamespace.h>                          // for AlignRight, NoFocus
+#include <QtGlobal>                                     // for QT_VERSION, QT_VERSION_CHECK
+
 #include <warn/pop>
 
 namespace inviwo {

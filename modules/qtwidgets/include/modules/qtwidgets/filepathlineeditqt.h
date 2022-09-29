@@ -29,10 +29,19 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/lineeditqt.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
+#include <modules/qtwidgets/lineeditqt.h>             // for LineEditQt
+
+#include <string>                                     // for string
+
+#include <QObject>                                    // for Q_OBJECT
+
+class QFocusEvent;
 class QLabel;
+class QMouseEvent;
+class QResizeEvent;
+class QWidget;
 
 namespace inviwo {
 

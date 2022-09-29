@@ -29,16 +29,21 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/properties/isotfproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/util/detected.h>
+#include <inviwo/core/datastructures/histogram.h>     // for HistogramMode, HistogramSelection
+#include <inviwo/core/ports/volumeport.h>             // for VolumeInport
+#include <inviwo/core/util/glmvec.h>                  // for dvec2
+
+#include <utility>                                    // for declval
 
 namespace inviwo {
 
+class IsoValueProperty;
+class Property;
+class TFPrimitiveSet;
 class TFPropertyObserver;
+class TransferFunctionProperty;
 
 namespace util {
 

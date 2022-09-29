@@ -29,21 +29,24 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
 
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+
+#include <memory>                                           // for unique_ptr
+
+class QFocusEvent;
 class QKeyEvent;
 class QMouseEvent;
-class QFocusEvent;
 
 namespace inviwo {
 
-class IvwPushButton;
 class EditableLabelQt;
-class EventProperty;
 class EventMatcher;
-class MouseEventMatcher;
+class EventProperty;
+class IvwPushButton;
 class KeyboardEventMatcher;
+class MouseEventMatcher;
 
 class IVW_MODULE_QTWIDGETS_API EventPropertyWidgetQt : public PropertyWidgetQt {
 

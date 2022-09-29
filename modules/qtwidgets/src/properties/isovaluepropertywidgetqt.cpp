@@ -29,16 +29,26 @@
 
 #include <modules/qtwidgets/properties/isovaluepropertywidgetqt.h>
 
-#include <inviwo/core/properties/isovalueproperty.h>
-#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/inviwowidgetsqt.h>
-#include <modules/qtwidgets/tf/tfutils.h>
+#include <inviwo/core/datastructures/isovaluecollection.h>    // for IsoValueCollection
+#include <inviwo/core/network/networklock.h>                  // for NetworkLock
+#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
+#include <inviwo/core/properties/property.h>                  // for Property
+#include <modules/qtwidgets/editablelabelqt.h>                // for EditableLabelQt
+#include <modules/qtwidgets/inviwowidgetsqt.h>                // for IvwPushButton
+#include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
+#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>  // for TFPushButton
+#include <modules/qtwidgets/tf/tfpropertydialog.h>            // for TFPropertyDialog
+#include <modules/qtwidgets/tf/tfutils.h>                     // for exportToFile, importFromFile
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QHBoxLayout>
+#include <QAction>                                            // for QAction
+#include <QHBoxLayout>                                        // for QHBoxLayout
+#include <QMenu>                                              // for QMenu
+#include <QSizePolicy>                                        // for QSizePolicy, QSizePolicy::F...
+
+class QHBoxLayout;
+
 #include <warn/pop>
 
 namespace inviwo {

@@ -29,28 +29,36 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
-#include <inviwo/core/properties/propertyownerobserver.h>
-#include <inviwo/core/network/processornetworkevaluationobserver.h>
-#include <inviwo/core/network/processornetworkobserver.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>                 // for IVW_MODULE_QTWIDGETS...
+
+#include <inviwo/core/network/processornetworkevaluationobserver.h>  // for ProcessorNetworkEval...
+#include <inviwo/core/network/processornetworkobserver.h>            // for ProcessorNetworkObse...
+#include <inviwo/core/properties/propertyownerobserver.h>            // for PropertyOwnerObserver
+#include <modules/qtwidgets/inviwodockwidget.h>                      // for InviwoDockWidget
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
-#include <QEvent>
-#include <warn/pop>
-#include <unordered_map>
+#include <QEvent>                                                    // for QEvent
+#include <QObject>                                                   // for Q_GADGET
+#include <QSize>                                                     // for QSize
+#include <QWidget>                                                   // for QWidget
+#include <qcoreevent.h>                                              // for QEvent::Type, QEvent...
 
-class QVBoxLayout;
+class QPaintEvent;
+
+#include <warn/pop>
+#include <cstddef>                                                   // for size_t
+#include <string>                                                    // for string
+#include <unordered_map>                                             // for unordered_map
+
 class QScrollArea;
+class QVBoxLayout;
 
 namespace inviwo {
 
-class CollapsibleGroupBoxWidgetQt;
+class InviwoApplication;
 class Processor;
 class Property;
-class InviwoApplication;
 class PropertyWidgetFactory;
 
 class IVW_MODULE_QTWIDGETS_API PropertyListFrame : public QWidget,
