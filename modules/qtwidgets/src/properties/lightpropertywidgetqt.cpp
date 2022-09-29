@@ -40,12 +40,10 @@
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for OrdinalLikePropertySe...
 #include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
 
-#include <stdlib.h>                                                 // for abs
+#include <cstdlib>                                                  // for abs
 #include <cmath>                                                    // for abs
 #include <sstream>                                                  // for basic_stringbuf<>::in...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                                  // for QAction
 #include <QCheckBox>                                                // for QCheckBox
 #include <QGridLayout>                                              // for QGridLayout
@@ -55,7 +53,7 @@
 #include <QSignalBlocker>                                           // for QSignalBlocker
 #include <QSizePolicy>                                              // for QSizePolicy
 #include <QWidget>                                                  // for QWidget
-#include <QtCore/qnamespace.h>                                      // for operator|, AlignTop
+#include <Qt>                                                       // for operator|, AlignTop
 #include <fmt/core.h>                                               // for format, basic_string_...
 #include <glm/geometric.hpp>                                        // for length
 #include <glm/vec3.hpp>                                             // for vec, operator*, opera...
@@ -63,7 +61,6 @@
 
 class QHBoxLayout;
 
-#include <warn/pop>
 
 namespace inviwo {
 

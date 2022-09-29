@@ -43,8 +43,6 @@
 #include <modules/qtwidgets/tf/tfpropertydialog.h>            // for TFPropertyDialog
 #include <modules/qtwidgets/tf/tfutils.h>                     // for addTFPresetsMenu, exportToFile
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                            // for QAction
 #include <QGridLayout>                                        // for QGridLayout
 #include <QHBoxLayout>                                        // for QHBoxLayout
@@ -54,8 +52,6 @@
 #include <QWidget>                                            // for QWidget
 
 class QHBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 

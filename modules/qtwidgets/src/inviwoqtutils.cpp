@@ -54,8 +54,6 @@
 #include <inviwo/core/util/zip.h>                             // for enumerate, zipIterator, zipper
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>           // for TFPropertyConcept
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                            // for QAction
 #include <QApplication>                                       // for QApplication
 #include <QBuffer>                                            // for QBuffer
@@ -89,7 +87,6 @@
 #include <QEvent>                                             // for QEvent (ptr only), QEvent::...
 #include <Qt>                                                 // for Tool, WindowFlags, WindowFu...
 #include <QBrush>                                             // for QBrush
-#include <warn/pop>
 
 #include <fmt/core.h>                                         // for format
 

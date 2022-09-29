@@ -35,17 +35,12 @@
 
 #include <string>                                     // for string
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QObject>                                    // for Q_OBJECT, signals
 #include <QSize>                                      // for QSize
 #include <QString>                                    // for QString
 #include <QWidget>                                    // for QWidget
 
 class QEvent;
-
-#include <warn/pop>
-
 class QLabel;
 class QLineEdit;
 class QMouseEvent;
@@ -57,10 +52,7 @@ class Property;
 class PropertyWidgetQt;
 
 class IVW_MODULE_QTWIDGETS_API EditableLabelQt : public QWidget, public PropertyObserver {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText = true);
     EditableLabelQt(PropertyWidgetQt* parent, const std::string& text, bool shortenText = true);

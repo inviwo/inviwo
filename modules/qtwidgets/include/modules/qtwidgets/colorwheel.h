@@ -39,8 +39,6 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>                                     // for QColor
 #include <QImage>                                     // for QImage
 #include <QObject>                                    // for slots, Q_OBJECT, signals
@@ -50,9 +48,6 @@
 #include <QWidget>                                    // for QWidget
 
 class QPainter;
-
-#include <warn/pop>
-
 class QMouseEvent;
 class QPaintEvent;
 class QResizeEvent;
@@ -60,10 +55,7 @@ class QResizeEvent;
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API ColorWheel : public QWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     explicit ColorWheel(const QSize& initialSize = QSize(200, 200), QWidget* parent = 0);
 

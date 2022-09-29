@@ -38,8 +38,6 @@
 
 #include <memory>                                                   // for unique_ptr
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                                  // for QAction
 #include <QHBoxLayout>                                              // for QHBoxLayout
 #include <QSignalBlocker>                                           // for QSignalBlocker
@@ -47,8 +45,6 @@
 
 class QHBoxLayout;
 class QMenu;
-
-#include <warn/pop>
 
 namespace inviwo {
 

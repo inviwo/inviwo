@@ -60,11 +60,7 @@ namespace inviwo {
  */
 class IVW_MODULE_QTWIDGETS_API ProcessorDockWidgetQt : public InviwoDockWidget,
                                                        public ProcessorWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
-
 public:
     ProcessorDockWidgetQt(Processor* p, const QString& title = QString("ProcessorDockWidgetQt"),
                           QWidget* parent = nullptr);

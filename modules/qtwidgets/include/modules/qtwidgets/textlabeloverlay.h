@@ -30,20 +30,15 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QLabel>                                     // for QLabel
 #include <QSize>                                      // for QSize
-
-class QWidget;
-
-#include <warn/pop>
 
 #include <chrono>                                     // for milliseconds
 #include <memory>                                     // for unique_ptr
 #include <string>                                     // for string
 
 class QTimer;
+class QWidget;
 
 namespace inviwo {
 

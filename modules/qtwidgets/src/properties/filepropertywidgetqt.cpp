@@ -44,8 +44,6 @@
 #include <string>                                             // for basic_string, operator+
 #include <vector>                                             // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDesktopServices>                                   // for QDesktopServices
 #include <QDragEnterEvent>                                    // for QDragEnterEvent
 #include <QDragMoveEvent>                                     // for QDragMoveEvent
@@ -61,12 +59,8 @@
 #include <QWidget>                                            // for QWidget
 
 namespace inviwo {
+
 class PropertyEditorWidget;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
     : PropertyWidgetQt(property), property_(property), lineEdit_{new FilePathLineEditQt(this)} {

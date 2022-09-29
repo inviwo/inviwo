@@ -35,23 +35,18 @@
 #include <inviwo/core/util/glmvec.h>                  // for dvec2, vec4
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>   // for TFEditorPrimitive, TFEditorPrimitiv...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsScene>                             // for QGraphicsScene
 #include <QObject>                                    // for Q_OBJECT, signals
 #include <QPointF>                                    // for QPointF
-
-class QGraphicsSceneMouseEvent;
-class QKeyEvent;
-class QPointF;
-class QWidget;
-
-#include <warn/pop>
 
 #include <functional>                                 // for function
 #include <memory>                                     // for shared_ptr
 #include <vector>                                     // for vector
 
+class QGraphicsSceneMouseEvent;
+class QKeyEvent;
+class QPointF;
+class QWidget;
 class QGraphicsSceneContextMenuEvent;
 
 namespace inviwo {

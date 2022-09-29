@@ -32,18 +32,13 @@
 
 #include <inviwo/core/util/fileobserver.h>            // for FileObserver
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QObject>                                    // for QObject
 #include <QString>                                    // for QString
-
-class QEvent;
-
-#include <warn/pop>
 
 #include <functional>                                 // for function
 #include <string>                                     // for string
 
+class QEvent;
 class QWidget;
 
 namespace inviwo {

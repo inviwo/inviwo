@@ -42,8 +42,6 @@
 #include <string_view>                                               // for string_view
 #include <vector>                                                    // for __vector_base<>::val...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                                   // for QAction
 #include <QCursor>                                                   // for QCursor
 #include <QHBoxLayout>                                               // for QHBoxLayout
@@ -56,8 +54,6 @@
 #include <sys/types.h>                                               // for size_t, uint
 
 class QHBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 

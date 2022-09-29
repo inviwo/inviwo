@@ -40,16 +40,12 @@
 #include <modules/qtwidgets/tf/tfpropertydialog.h>            // for TFPropertyDialog
 #include <modules/qtwidgets/tf/tfutils.h>                     // for exportToFile, importFromFile
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                            // for QAction
 #include <QHBoxLayout>                                        // for QHBoxLayout
 #include <QMenu>                                              // for QMenu
 #include <QSizePolicy>                                        // for QSizePolicy, QSizePolicy::F...
 
 class QHBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 

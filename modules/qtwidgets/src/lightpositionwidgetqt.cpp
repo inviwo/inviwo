@@ -32,11 +32,9 @@
 #include <inviwo/core/util/glmvec.h>          // for dvec2, dvec3
 #include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx, toGLM
 
-#include <stdlib.h>                           // for abs
+#include <cstdlib>                            // for abs
 #include <cmath>                              // for sqrt, abs
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>                             // for QColor
 #include <QFlags>                             // for QFlags
 #include <QMouseEvent>                        // for QMouseEvent
@@ -46,12 +44,10 @@
 #include <QPointF>                            // for QPointF
 #include <QRadialGradient>                    // for QRadialGradient
 #include <QRectF>                             // for QRectF
-#include <QtCore/qnamespace.h>                // for LeftButton, MouseButton, transparent
+#include <Qt>                                 // for LeftButton, MouseButton, transparent
 #include <glm/geometric.hpp>                  // for length
 #include <glm/vec2.hpp>                       // for operator*, operator/, vec<>::(anonymous), vec
 #include <glm/vec3.hpp>                       // for operator*, vec<>::(anonymous)
-
-#include <warn/pop>
 
 namespace inviwo {
 

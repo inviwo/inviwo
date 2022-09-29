@@ -31,8 +31,14 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx
 
-#include <warn/push>
-#include <warn/ignore/all>
+#include <algorithm>                          // for max, min
+#include <array>                              // for array
+#include <cmath>                              // for floor, log10, abs
+#include <cstdlib>                            // for size_t, abs
+#include <iterator>                           // for reverse_iterator
+#include <unordered_map>                      // for unordered_map, __hash_map_iterator, operator==
+#include <utility>                            // for pair
+
 #include <QAbstractSpinBox>                   // for QAbstractSpinBox, QAbstractSpinBox::NoButtons
 #include <QChar>                              // for operator==, QChar
 #include <QDoubleValidator>                   // for QDoubleValidator
@@ -46,23 +52,13 @@
 #include <QStyle>                             // for QStyle, QStyle::CT_SpinBox
 #include <QStyleOptionSpinBox>                // for QStyleOptionSpinBox
 #include <QTimerEvent>                        // for QTimerEvent
-#include <QtCore/qcoreevent.h>                // for QEvent (ptr only), QEvent::LocaleChange
-#include <QtCore/qnamespace.h>                // for StrongFocus
+#include <QEvent>                             // for QEvent (ptr only), QEvent::LocaleChange
+#include <Qt>                                 // for StrongFocus
 
 class QFocusEvent;
 class QResizeEvent;
 class QWheelEvent;
 class QWidget;
-
-#include <warn/pop>
-
-#include <algorithm>                          // for max, min
-#include <array>                              // for array
-#include <cmath>                              // for floor, log10, abs
-#include <cstdlib>                            // for size_t, abs
-#include <iterator>                           // for reverse_iterator
-#include <unordered_map>                      // for unordered_map, __hash_map_iterator, operator==
-#include <utility>                            // for pair
 
 namespace inviwo {
 

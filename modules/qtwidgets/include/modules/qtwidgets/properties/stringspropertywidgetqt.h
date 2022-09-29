@@ -43,8 +43,6 @@
 #include <functional>                                       // for function
 #include <string>                                           // for string
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QHBoxLayout>                                      // for QHBoxLayout
 #include <QSignalBlocker>                                   // for QSignalBlocker
 #include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Min...
@@ -55,8 +53,6 @@ namespace inviwo {
 class Property;
 template <size_t N> class StringsProperty;
 }  // namespace inviwo
-
-#include <warn/pop>
 
 namespace inviwo {
 

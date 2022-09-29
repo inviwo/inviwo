@@ -37,8 +37,6 @@
 
 #include <modules/qtwidgets/colorwheel.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QConicalGradient>     // for QConicalGradient
 #include <QMouseEvent>          // for QMouseEvent
 #include <QPainter>             // for QPainter, QPainter::Antialiasing
@@ -50,13 +48,12 @@
 #include <QRgb>                 // for qRgb, QRgb
 #include <QStyle>               // for QStyle, QStyle::PE_Widget
 #include <QStyleOption>         // for QStyleOption
-#include <QtCore/qmath.h>       // for qSqrt, qAtan2, qPow
-#include <QtCore/qnamespace.h>  // for NoBrush, red, white, CrossCursor, NoPen, black, blue, cyan
+#include <qmath.h>              // for qSqrt, qAtan2, qPow
+#include <Qt>                   // for NoBrush, red, white, CrossCursor, NoPen, black, blue, cyan
 #include <QtGlobal>             // for qMin, qreal
-#include <QtGui/qbrush.h>       // for QBrush
-#include <qpainterpath.h>       // for QPainterPath
+#include <QBrush>               // for QBrush
+#include <QPainterPath>         // for QPainterPath
 
-#include <warn/pop>
 
 #include <algorithm>            // for max
 #include <cmath>                // for sqrt

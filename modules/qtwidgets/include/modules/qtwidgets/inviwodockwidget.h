@@ -31,8 +31,6 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDockWidget>                                // for QDockWidget
 #include <QObject>                                    // for Q_OBJECT, signals
 #include <QString>                                    // for QString
@@ -40,9 +38,6 @@
 class QCloseEvent;
 class QShowEvent;
 class QWidget;
-
-#include <warn/pop>
-
 class QKeyEvent;
 class QLayout;
 
@@ -59,11 +54,7 @@ class InviwoDockWidgetTitleBar;
  * \see QWidget::setWindowTitle
  */
 class IVW_MODULE_QTWIDGETS_API InviwoDockWidget : public QDockWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
-
 public:
     InviwoDockWidget(QString title, QWidget* parent);
     InviwoDockWidget(QString title, QWidget* parent, QString objname);

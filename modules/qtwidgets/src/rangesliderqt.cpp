@@ -33,8 +33,6 @@
 
 #include <algorithm>                            // for min
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QEvent>                               // for QEvent
 #include <QFrame>                               // for QFrame
 #include <QHelpEvent>                           // for QHelpEvent
@@ -47,13 +45,11 @@
 #include <QString>                              // for QString
 #include <QToolTip>                             // for QToolTip
 #include <QWidget>                              // for QWidget
-#include <QtCore/qcoreevent.h>                  // for QEvent::MouseButtonRelease, QEvent (ptr o...
+#include <QEvent>                               // for QEvent::MouseButtonRelease, QEvent (ptr o...
 #include <glm/vec2.hpp>                         // for vec<>::(anonymous)
 
 class QHelpEvent;
 class QMouseEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

@@ -37,12 +37,7 @@
 #include <winuser.h>
 #endif
 
-// for Qt key codes
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QKeyEvent>                                      // for QKeyEvent
-
-#include <warn/pop>
 
 namespace inviwo {
 

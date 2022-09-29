@@ -51,14 +51,10 @@
 #include <QTextFormat>                            // for QTextFormat, QTextFormat::FullWidthSele...
 #include <QTextOption>                            // for QTextOption, QTextOption::NoWrap
 #include <QtGlobal>                               // for QT_VERSION, QT_VERSION_CHECK, qMax, qreal
+#include <QBrush>                                 // for QBrush
+#include <Qt>                                     // for AlignRight, Key_Tab
 #include <fmt/core.h>                             // for format
 #include <glm/vec3.hpp>                           // for vec, vec<>::(anonymous)
-#include <qbrush.h>                               // for QBrush
-#include <qnamespace.h>                           // for AlignRight, Key_Tab
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <warn/pop>
 
 namespace inviwo {
 

@@ -34,16 +34,12 @@
 #include <modules/qtwidgets/tf/tfeditor.h>                  // for TFEditor
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>         // for TFEditorPrimitive
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsScene>                                   // for QGraphicsScene
 #include <QObject>                                          // for qobject_cast
 #include <QPainter>                                         // for QPainter
 #include <glm/ext/scalar_constants.hpp>                     // for epsilon
 
 class QPointF;
-
-#include <warn/pop>
 
 namespace inviwo {
 

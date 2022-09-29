@@ -36,10 +36,7 @@
 #include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/datastructures/histogramtools.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsView>
-#include <warn/pop>
 
 class QWheelEvent;
 

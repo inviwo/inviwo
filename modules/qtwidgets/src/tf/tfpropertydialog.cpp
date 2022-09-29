@@ -63,8 +63,6 @@
 #include <type_traits>                                            // for remove_extent_t
 #include <utility>                                                // for move
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>                                                 // for QColor
 #include <QColorDialog>                                           // for QColorDialog, QColorDia...
 #include <QComboBox>                                              // for QComboBox
@@ -88,15 +86,13 @@
 #include <QVBoxLayout>                                            // for QVBoxLayout
 #include <QVariant>                                               // for QVariant
 #include <QWidget>                                                // for QWidget
-#include <QtCore/qnamespace.h>                                    // for operator|, ScrollBarAlw...
+#include <Qt>                                                     // for operator|, ScrollBarAlw...
 #include <fmt/core.h>                                             // for format
 #include <glm/common.hpp>                                         // for mix
 #include <glm/vec2.hpp>                                           // for vec<>::(anonymous)
 
 class QHBoxLayout;
 class QVBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 

@@ -38,10 +38,6 @@
 #include <QSize>                                                  // for QSize
 #include <QWidget>                                                // for QWidget
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <warn/pop>
-
 namespace inviwo {
 
 /**
@@ -49,10 +45,7 @@ namespace inviwo {
  * \brief widget for entering double values within certain bounds and optional range mapping
  */
 class IVW_MODULE_QTWIDGETS_API TFLineEdit : public QWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     TFLineEdit(QWidget* parent = nullptr);
     virtual ~TFLineEdit() = default;

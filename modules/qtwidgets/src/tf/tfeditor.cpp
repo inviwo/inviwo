@@ -50,7 +50,7 @@
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>         // for TFPropertyConcept
 #include <modules/qtwidgets/tf/tfutils.h>                   // for addTFColorbrewerPresetsMenu
 
-#include <stdlib.h>                                         // for abs, size_t
+#include <cstdlib>                                          // for abs, size_t
 #include <algorithm>                                        // for stable_sort, find_if, max
 #include <array>                                            // for array
 #include <cmath>                                            // for abs
@@ -59,8 +59,6 @@
 #include <type_traits>                                      // for remove_extent_t
 #include <utility>                                          // for pair, forward
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                          // for QAction
 #include <QFlags>                                           // for QFlags, operator==
 #include <QGraphicsItem>                                    // for qgraphicsitem_cast, QGraphics...
@@ -77,15 +75,13 @@
 #include <QString>                                          // for QString
 #include <QTransform>                                       // for QTransform
 #include <QWidget>                                          // for QWidget
-#include <QtCore/qnamespace.h>                              // for ControlModifier, ShiftModifier
+#include <Qt>                                               // for ControlModifier, ShiftModifier
 #include <fmt/core.h>                                       // for format
 #include <glm/common.hpp>                                   // for clamp
 #include <glm/vec2.hpp>                                     // for vec<>::(anonymous), vec
 
 class QGraphicsSceneMouseEvent;
 class QKeyEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

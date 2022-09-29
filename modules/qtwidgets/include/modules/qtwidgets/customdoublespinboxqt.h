@@ -31,17 +31,12 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDoubleSpinBox>                             // for QDoubleSpinBox
 #include <QObject>                                    // for Q_OBJECT
 #include <QSize>                                      // for QSize
 #include <QString>                                    // for QString
 
 class QWidget;
-
-#include <warn/pop>
-
 class QTimerEvent;
 
 namespace inviwo {
@@ -52,10 +47,7 @@ namespace inviwo {
  * QDoubleSpinBox does.
  */
 class IVW_MODULE_QTWIDGETS_API CustomDoubleSpinBoxQt : public QDoubleSpinBox {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     explicit CustomDoubleSpinBoxQt(QWidget* parent = 0);
     virtual QString textFromValue(double value) const;

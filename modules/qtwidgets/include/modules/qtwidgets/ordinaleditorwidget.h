@@ -35,24 +35,15 @@
 #include <modules/qtwidgets/inviwoqtutils.h>            // for decimals
 #include <modules/qtwidgets/ordinalbasewidget.h>        // for OrdinalBaseWidget
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QObject>                                      // for Q_OBJECT, signals
 #include <QWidget>                                      // for QWidget
 
 namespace inviwo {
+
 class NumberLineEdit;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API BaseOrdinalEditorWidget : public QWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     BaseOrdinalEditorWidget(bool intMode);
     virtual ~BaseOrdinalEditorWidget();

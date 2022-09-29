@@ -33,20 +33,16 @@
 
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>   // for TFEditorPrimitive, TFEditorPrimitiv...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsItem>                              // for QGraphicsItem, QGraphicsItem::UserType
 #include <QPointF>                                    // for QPointF
 #include <QRectF>                                     // for QRectF
-#include <qpainterpath.h>                             // for QPainterPath
+#include <QPainterPath>                               // for QPainterPath
 
 class QPainter;
 class QPointF;
 class QRectF;
 class QStyleOptionGraphicsItem;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

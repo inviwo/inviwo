@@ -43,8 +43,6 @@
 #include <fstream>                                                // for basic_ifstream, basic_o...
 #include <vector>                                                 // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                                // for QAction
 #include <QFileDialog>                                            // for QFileDialog, QFileDialo...
 #include <QIcon>                                                  // for QIcon
@@ -59,16 +57,13 @@
 #include <QStringList>                                            // for QStringList
 #include <QTextDocument>                                          // for QTextDocument
 #include <QToolBar>                                               // for QToolBar
-#include <QtCore/qnamespace.h>                                    // for WidgetWithChildrenShortcut
+#include <Qt>                                                     // for WidgetWithChildrenShortcut
 
 class QCloseEvent;
+
 namespace inviwo {
+
 class FileExtension;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 TextEditorDockWidget::TextEditorDockWidget(Property* property)
     : PropertyEditorWidgetQt(property, "Edit", "TextEditorDockWidget")

@@ -61,8 +61,6 @@
 #include <utility>                                         // for pair
 #include <vector>                                          // for vector, __vector_base<>::value...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                         // for QAction
 #include <QActionGroup>                                    // for QActionGroup
 #include <QApplication>                                    // for QApplication
@@ -89,15 +87,13 @@
 #include <QStyleOption>                                    // for QStyleOption
 #include <QToolTip>                                        // for QToolTip
 #include <QVariant>                                        // for QVariant
-#include <QtCore/qcoreevent.h>                             // for QEvent (ptr only), QEvent::Mou...
-#include <QtCore/qnamespace.h>                             // for LeftButton, MSWindowsFixedSize...
+#include <QEvent>                                          // for QEvent (ptr only), QEvent::Mou...
+#include <Qt>                                              // for LeftButton, MSWindowsFixedSize...
 
 class QAction;
 class QHelpEvent;
 class QMouseEvent;
 class QPaintEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

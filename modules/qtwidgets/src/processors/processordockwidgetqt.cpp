@@ -37,15 +37,12 @@
 #include <functional>                                // for __base
 #include <string_view>                               // for string_view
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QMainWindow>                               // for QMainWindow
-// Qt
 #include <QMoveEvent>                                // for QMoveEvent
 #include <QPoint>                                    // for QPoint
 #include <QResizeEvent>                              // for QResizeEvent
 #include <QSize>                                     // for QSize
-#include <QtCore/qnamespace.h>                       // for RightDockWidgetArea
+#include <Qt>                                        // for RightDockWidgetArea
 #include <glm/vec2.hpp>                              // for vec<>::(anonymous)
 
 class QHideEvent;
@@ -53,8 +50,6 @@ class QMoveEvent;
 class QResizeEvent;
 class QShowEvent;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

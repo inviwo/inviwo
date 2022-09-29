@@ -31,13 +31,9 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QObject>                                    // for Q_OBJECT, signals, slots
 #include <QString>                                    // for QString
 #include <QWidget>                                    // for QWidget
-
-#include <warn/pop>
 
 namespace inviwo {
 
@@ -46,10 +42,7 @@ template <typename T>
 class ValueDragger;
 
 class IVW_MODULE_QTWIDGETS_API ValueDragSpinBox : public QWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     explicit ValueDragSpinBox(QWidget* parent = nullptr);
     virtual ~ValueDragSpinBox() override = default;

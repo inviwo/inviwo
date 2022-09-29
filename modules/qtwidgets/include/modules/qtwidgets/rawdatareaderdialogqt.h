@@ -38,8 +38,6 @@
 #include <cstddef>                                    // for size_t
 #include <string>                                     // for string
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDialog>                                    // for QDialog
 
 class QComboBox;
@@ -47,13 +45,10 @@ class QDoubleSpinBox;
 class QLabel;
 class QLineEdit;
 class QSpinBox;
+
 namespace inviwo {
+
 class DataFormatBase;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API RawDataReaderDialogQt : public VolumeDataReaderDialog,
                                                        public QDialog {

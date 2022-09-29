@@ -35,8 +35,6 @@
 
 #include <memory>                                           // for unique_ptr
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                          // for QAction
 #include <QEvent>                                           // for QEvent
 #include <QFontMetrics>                                     // for QFontMetrics
@@ -48,12 +46,10 @@
 #include <QMouseEvent>                                      // for QMouseEvent
 #include <QSizeF>                                           // for QSizeF
 #include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Fixed
-#include <QtCore/qcoreevent.h>                              // for QEvent (ptr only), QEvent::Mo...
-#include <QtCore/qnamespace.h>                              // for AlignLeft, ElideRight, Preven...
+#include <QEvent>                                           // for QEvent (ptr only), QEvent::Mo...
+#include <Qt>                                               // for AlignLeft, ElideRight, Preven...
 
 class QHBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 

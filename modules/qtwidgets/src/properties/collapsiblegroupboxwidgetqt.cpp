@@ -58,8 +58,6 @@
 #include <functional>                                       // for __base
 #include <ostream>                                          // for operator<<, stringstream, bas...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                          // for QAction
 #include <QApplication>                                     // for QApplication
 #include <QByteArray>                                       // for QByteArray
@@ -85,17 +83,14 @@
 #include <QToolButton>                                      // for QToolButton
 #include <QVBoxLayout>                                      // for QVBoxLayout
 #include <QWidget>                                          // for QWidget
-#include <QtCore/qnamespace.h>                              // for NoFocus, RightToLeft, AlignTop
+#include <Qt>                                               // for NoFocus, RightToLeft, AlignTop
 
 class QHBoxLayout;
 class QVBoxLayout;
+
 namespace inviwo {
+
 class PropertySemantics;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(CompositeProperty* property,
                                                          bool isCheckable)

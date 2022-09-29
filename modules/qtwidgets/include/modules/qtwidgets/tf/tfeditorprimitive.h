@@ -37,29 +37,23 @@
 #include <memory>                                     // for unique_ptr
 #include <vector>                                     // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsItem>                              // for QGraphicsItem, QGraphicsItem::Graph...
 #include <QGraphicsSimpleTextItem>                    // for QGraphicsSimpleTextItem
 #include <QPointF>                                    // for QPointF
 #include <QVariant>                                   // for QVariant
 
-class QGraphicsSceneMouseEvent;
-class QPointF;
-class QStyleOptionGraphicsItem;
-class QWidget;
-namespace inviwo {
-class TFPrimitive;
-}  // namespace inviwo
-
-#include <warn/pop>
 
 class QGraphicsScene;
 class QGraphicsSceneHoverEvent;
 class QPainter;
+class QGraphicsSceneMouseEvent;
+class QPointF;
+class QStyleOptionGraphicsItem;
+class QWidget;
 
 namespace inviwo {
 
+class TFPrimitive;
 class TFEditorPrimitive;
 
 class IVW_MODULE_QTWIDGETS_API TFEditorPrimitiveObserver : public Observer {

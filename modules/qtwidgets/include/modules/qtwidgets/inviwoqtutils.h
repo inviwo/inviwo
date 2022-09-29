@@ -42,8 +42,6 @@
 #include <utility>                                        // for pair
 #include <vector>                                         // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QByteArray>                                     // for QByteArray
 #include <QColor>                                         // for QColor
 #include <QIcon>                                          // for QIcon
@@ -62,16 +60,13 @@
 #include <glm/vec3.hpp>                                   // for vec<>::(anonymous), operator*
 #include <glm/vec4.hpp>                                   // for vec<>::(anonymous), operator*
 
+#include <string_view>                                    // for string_view
+
 class QEvent;
 class QMainWindow;
 class QMenu;
 class QRectF;
 class QWidget;
-
-#include <warn/pop>
-
-#include <string_view>                                    // for string_view
-
 class QFontMetrics;
 
 namespace inviwo {

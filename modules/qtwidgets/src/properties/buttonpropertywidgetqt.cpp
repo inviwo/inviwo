@@ -33,8 +33,6 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                          // for QAction
 #include <QHBoxLayout>                                      // for QHBoxLayout
 #include <QInputDialog>                                     // for QInputDialog
@@ -44,13 +42,10 @@
 #include <QString>                                          // for QString
 
 class QHBoxLayout;
+
 namespace inviwo {
+
 class Property;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
     : PropertyWidgetQt(property), property_(property) {

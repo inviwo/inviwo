@@ -42,8 +42,6 @@
 #include <string>                                           // for string, basic_string, operator+
 #include <vector>                                           // for vector, __vector_base<>::valu...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDesktopServices>                                 // for QDesktopServices
 #include <QDragEnterEvent>                                  // for QDragEnterEvent
 #include <QDragMoveEvent>                                   // for QDragMoveEvent
@@ -58,7 +56,6 @@
 #include <QToolButton>                                      // for QToolButton
 #include <QUrl>                                             // for QUrl, QUrl::TolerantMode
 #include <QWidget>                                          // for QWidget
-#include <warn/pop>
 
 class QHBoxLayout;
 

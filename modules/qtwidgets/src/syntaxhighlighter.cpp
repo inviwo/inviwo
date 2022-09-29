@@ -31,10 +31,6 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, toQColor, getDefaultMonoSpaceFon...
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <warn/pop>
-
 #include <chrono>                             // for literals
 #include <string_view>                        // for string_view
 

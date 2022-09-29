@@ -36,8 +36,6 @@
 
 #include <limits>                                   // for numeric_limits
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QChar>                                    // for QChar
 #include <QComboBox>                                // for QComboBox
 #include <QDialogButtonBox>                         // for QDialogButtonBox, operator|, QDialogB...
@@ -57,8 +55,6 @@
 #include <glm/fwd.hpp>                              // for dvec3
 #include <glm/vec2.hpp>                             // for vec<>::(anonymous)
 #include <glm/vec3.hpp>                             // for vec<>::(anonymous)
-
-#include <warn/pop>
 
 #include <units/units.hpp>                          // for to_string, unit_from_string
 

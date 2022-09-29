@@ -40,14 +40,8 @@
 #include <vector>                                                      // for vector
 
 namespace inviwo {
+
 class Property;
-}  // namespace inviwo
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <warn/pop>
-
-namespace inviwo {
 
 BoolCompositePropertyWidgetQt::BoolCompositePropertyWidgetQt(BoolCompositeProperty* property)
     : CollapsibleGroupBoxWidgetQt(property, true)

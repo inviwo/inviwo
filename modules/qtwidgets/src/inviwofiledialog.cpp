@@ -38,8 +38,6 @@
 #include <ostream>                            // for operator<<
 #include <utility>                            // for pair
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDialog>                            // for QDialog, QDialog::Accepted
 #include <QDir>                               // for QDir
 #include <QSettings>                          // for QSettings
@@ -47,8 +45,6 @@
 #include <QVariant>                           // for QVariant
 
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 
