@@ -38,7 +38,7 @@
 #include <QGraphicsItem>                              // for QGraphicsItem::UserType
 #include <QPointF>                                    // for QPointF
 #include <QRectF>                                     // for QRectF
-#include <QtGui/qpainterpath.h>                       // for QPainterPath
+#include <QPainterPath>                               // for QPainterPath
 
 class QGraphicsScene;
 class QPainter;

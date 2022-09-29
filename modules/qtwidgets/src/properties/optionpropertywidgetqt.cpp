@@ -39,8 +39,6 @@
 #include <cstddef>                                          // for size_t
 #include <memory>                                           // for unique_ptr
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QComboBox>                                        // for QComboBox
 #include <QGridLayout>                                      // for QGridLayout
 #include <QHBoxLayout>                                      // for QHBoxLayout
@@ -49,12 +47,11 @@
 #include <QSizePolicy>                                      // for QSizePolicy
 #include <QString>                                          // for operator!=, QString
 #include <QWidget>                                          // for QWidget
-#include <QtCore/qnamespace.h>                              // for CustomContextMenu
+#include <Qt>                                               // for CustomContextMenu
 
 class QHBoxLayout;
 class QPoint;
 
-#include <warn/pop>
 
 namespace inviwo {
 

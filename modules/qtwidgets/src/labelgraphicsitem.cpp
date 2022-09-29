@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
+#include <modules/qtwidgets/labelgraphicsitem.h>  // for LabelGraphicsItem, LabelGraphicsItemObs...
+
 #include <QFlags>                                 // for QFlags
 #include <QFont>                                  // for QFont
 #include <QFontMetrics>                           // for QFontMetrics
@@ -41,16 +41,12 @@
 #include <QTextCursor>                            // for QTextCursor
 #include <QTextDocument>                          // for QTextDocument
 #include <QTransform>                             // for QTransform
-#include <QtCore/qnamespace.h>                    // for Alignment, AlignBottom, AlignHCenter
+#include <Qt>                                     // for Alignment, AlignBottom, AlignHCenter
+
+#include <vector>                                 // for vector
 
 class QFocusEvent;
 class QKeyEvent;
-
-#include <warn/pop>
-
-#include <modules/qtwidgets/labelgraphicsitem.h>  // for LabelGraphicsItem, LabelGraphicsItemObs...
-
-#include <vector>                                 // for vector
 
 namespace inviwo {
 

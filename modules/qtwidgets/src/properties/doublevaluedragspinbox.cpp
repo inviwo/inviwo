@@ -36,8 +36,6 @@
 #include <ostream>                                      // for ostringstream, basic_ostream
 #include <string>                                       // for string
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAbstractSpinBox>                             // for QAbstractSpinBox, QAbstractSpinBo...
 #include <QByteArray>                                   // for QByteArray
 #include <QDoubleSpinBox>                               // for QDoubleSpinBox
@@ -45,10 +43,9 @@
 #include <QLocale>                                      // for QLocale
 #include <QSignalBlocker>                               // for QSignalBlocker
 #include <QSpinBox>                                     // for QSpinBox
-#include <QtCore/qnamespace.h>                          // for AlignRight, NoFocus
+#include <Qt>                                           // for AlignRight, NoFocus
 #include <QtGlobal>                                     // for QT_VERSION, QT_VERSION_CHECK
 
-#include <warn/pop>
 
 namespace inviwo {
 

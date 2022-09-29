@@ -39,8 +39,6 @@
 
 #include <string>                                             // for operator==, string
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QHBoxLayout>                                        // for QHBoxLayout
 #include <QIcon>                                              // for QIcon
 #include <QLineEdit>                                          // for QLineEdit, QLineEdit::Passw...
@@ -50,12 +48,8 @@
 #include <QWidget>                                            // for QWidget
 
 namespace inviwo {
+
 class PropertyEditorWidget;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
     : PropertyWidgetQt(property), property_(property), lineEdit_{new LineEditQt()} {

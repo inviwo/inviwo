@@ -111,11 +111,6 @@
 #include <glm/vec3.hpp>                                                      // for operator+, vec
 #include <glm/vec4.hpp>                                                      // for operator+
 
-namespace inviwo {
-class FileExtension;
-class InviwoApplication;
-}  // namespace inviwo
-
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtResources {
     // Needed for loading of resources when building statically
@@ -126,6 +121,9 @@ struct InitQtResources {
 #endif
 
 namespace inviwo {
+
+class FileExtension;
+class InviwoApplication;
 
 namespace {
 

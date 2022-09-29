@@ -34,8 +34,6 @@
 #include <inviwo/core/util/glmconvert.h>              // for glm_convert
 #include <inviwo/core/util/glmvec.h>                  // for dvec4, ivec3, ivec4, dvec3, vec3, vec4
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QLineEdit>                                  // for QLineEdit
 #include <QObject>                                    // for Q_OBJECT, signals, slots
 #include <glm/vec4.hpp>                               // for operator*
@@ -45,17 +43,12 @@ class QFocusEvent;
 class QKeyEvent;
 class QWidget;
 
-#include <warn/pop>
-
 class QRegularExpressionValidator;
 
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API ColorLineEdit : public QLineEdit {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     enum class ColorRepresentation { Integer, FloatingPoint, Hexadecimal };
 

@@ -36,8 +36,6 @@
 #include <cstddef>                                          // for size_t
 #include <optional>                                         // for optional
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QHBoxLayout>                                      // for QHBoxLayout
 #include <QIcon>                                            // for QIcon
 #include <QLayoutItem>                                      // for QLayoutItem
@@ -45,8 +43,6 @@
 #include <QWidget>                                          // for QWidget
 
 class QHBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 

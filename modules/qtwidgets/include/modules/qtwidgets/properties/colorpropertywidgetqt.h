@@ -42,8 +42,6 @@
 #include <memory>                                           // for unique_ptr
 #include <string>                                           // for string
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                          // for QAction
 #include <QActionGroup>                                     // for QActionGroup
 #include <QColor>                                           // for QColor
@@ -59,7 +57,6 @@
 #include <QWidget>                                          // for QWidget
 #include <QMenu>                                            // IWYU pragma: keep
 #include <Qt>                                               // for ClickFocus, NonModal, WA_Dele...
-#include <warn/pop>
 
 #include <glm/common.hpp>                                   // for clamp, max, min
 #include <glm/vec3.hpp>                                     // for vec, vec<>::(anonymous), oper...

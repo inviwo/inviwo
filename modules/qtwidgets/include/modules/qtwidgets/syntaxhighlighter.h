@@ -33,17 +33,12 @@
 
 #include <inviwo/core/util/glmvec.h>                  // for vec4
 
-// QT includes
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QObject>                                    // for Q_OBJECT, signals
 #include <QRegularExpression>                         // for QRegularExpression
 #include <QString>                                    // for QString
 #include <QSyntaxHighlighter>                         // for QSyntaxHighlighter
 #include <QTextCharFormat>                            // for QTextCharFormat
 #include <glm/vec4.hpp>                               // for operator/
-
-#include <warn/pop>
 
 #include <string>                                     // for string
 #include <string_view>                                // for string_view
@@ -100,10 +95,7 @@ constexpr vec4 main = sea_green;
 }  // namespace syntax
 
 class IVW_MODULE_QTWIDGETS_API SyntaxHighlighter : public QSyntaxHighlighter {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 
 public:
     SyntaxHighlighter(QTextDocument* parent);

@@ -33,8 +33,6 @@
 #include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, fromQString
 #include <modules/qtwidgets/lineeditqt.h>     // for LineEditQt
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QCursor>                            // for QCursor
 #include <QFocusEvent>                        // for QFocusEvent
 #include <QLabel>                             // for QLabel
@@ -43,14 +41,12 @@
 #include <QSize>                              // for QSize
 #include <QString>                            // for QString, operator!=
 #include <QStyle>                             // for QStyle, QStyle::PM_DefaultFrameWidth
-#include <QtCore/qnamespace.h>                // for MouseFocusReason
+#include <Qt>                                 // for MouseFocusReason
 
 class QFocusEvent;
 class QMouseEvent;
 class QResizeEvent;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

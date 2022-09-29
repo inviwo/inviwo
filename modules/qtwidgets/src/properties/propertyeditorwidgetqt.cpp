@@ -36,8 +36,6 @@
 
 #include <utility>                               // for move
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDebug>                                // for operator<<
 #include <QMainWindow>                           // for QMainWindow
 #include <QMoveEvent>                            // for QMoveEvent
@@ -47,9 +45,7 @@
 #include <QSettings>                             // for QSettings
 #include <QSize>                                 // for QSize
 #include <QVariant>                              // for QVariant
-#include <QtCore/qnamespace.h>                   // for DockWidgetArea, operator|, qt_getEnumMet...
-
-#include <warn/pop>
+#include <Qt>                                    // for DockWidgetArea, operator|, qt_getEnumMet...
 
 namespace inviwo {
 

@@ -30,12 +30,12 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDoubleSpinBox>                             // for QDoubleSpinBox
 #include <QSize>                                      // for QSize
 #include <QString>                                    // for QString
 #include <QValidator>                                 // for QValidator, QValidator::State
+
+#include <memory>                                     // for unique_ptr
 
 class QEvent;
 class QFocusEvent;
@@ -43,10 +43,6 @@ class QResizeEvent;
 class QTimerEvent;
 class QWheelEvent;
 class QWidget;
-
-#include <warn/pop>
-
-#include <memory>                                     // for unique_ptr
 
 namespace inviwo {
 

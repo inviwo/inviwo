@@ -31,8 +31,6 @@
 
 #include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>  // for TFEditorControlPoint
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>                                       // for QColor
 #include <QGraphicsScene>                               // for QGraphicsScene
 #include <QPainter>                                     // for QPainter, QPainter::Antialiasing
@@ -43,8 +41,6 @@
 
 class QStyleOptionGraphicsItem;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

@@ -35,8 +35,6 @@
 
 #include <string>                                // for string, hash, operator==
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                               // for QAction
 #include <QList>                                 // for QList
 #include <QMenu>                                 // for QMenu
@@ -47,7 +45,6 @@
 #include <QWidget>                               // for QWidget
 #include <Qt>                                    // for operator|, LeftDockWidgetArea, RightDock...
 #include <QMainWindow>                           // IWYU pargma: keep
-#include <warn/pop>
 
 namespace inviwo {
 

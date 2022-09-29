@@ -33,10 +33,8 @@
 #include <modules/qtwidgets/numberlineedit.h>              // for NumberLineEdit
 #include <modules/qtwidgets/properties/indicatorwidget.h>  // for IndicatorWidget
 
-#include <stdlib.h>                                        // for abs
+#include <cstdlib>                                        // for abs
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>                                          // for QColor
 #include <QFlags>                                          // for QFlags
 #include <QMouseEvent>                                     // for QMouseEvent
@@ -55,19 +53,17 @@
 #include <QToolTip>                                        // for QToolTip
 #include <QTransform>                                      // for QTransform
 #include <QWidget>                                         // for QWidget
-#include <QtCore/qnamespace.h>                             // for LeftButton, NoBrush, FlatCap
-#include <qpainterpath.h>                                  // for QPainterPath
-
-class QMouseEvent;
-class QPaintEvent;
-class QTimerEvent;
-
-#include <warn/pop>
+#include <Qt>                                              // for LeftButton, NoBrush, FlatCap
+#include <QPainterPath>                                    // for QPainterPath
 
 #include <algorithm>                                       // for max, min
 #include <cmath>                                           // for pow, remainder, abs
 #include <memory>                                          // for unique_ptr, make_unique
 #include <type_traits>                                     // for enable_if_t, is_integral
+
+class QMouseEvent;
+class QPaintEvent;
+class QTimerEvent;
 
 namespace inviwo {
 

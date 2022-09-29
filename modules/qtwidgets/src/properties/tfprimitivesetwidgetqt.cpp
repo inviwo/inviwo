@@ -48,22 +48,18 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>                 // for PropertyWidgetQt
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>  // for MultilineTextEdit
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QHBoxLayout>                                                     // for QHBoxLayout
 #include <QSizePolicy>                                                     // for QSizePolicy
 #include <QString>                                                         // for operator!=
 #include <QTextCursor>                                                     // for QTextCursor
 #include <glm/vec2.hpp>                                                    // for vec<>::(anonym...
 
-class QHBoxLayout;
-
-#include <warn/pop>
-
 #include <cstddef>                                                         // for size_t
 #include <sstream>                                                         // for char_traits
 #include <stdexcept>                                                       // for invalid_argument
 #include <type_traits>                                                     // for remove_extent_t
+
+class QHBoxLayout;
 
 namespace inviwo {
 

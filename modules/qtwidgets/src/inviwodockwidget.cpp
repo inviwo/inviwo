@@ -32,8 +32,6 @@
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>  // for InviwoDockWidgetTitleBar
 #include <modules/qtwidgets/inviwoqtutils.h>             // for getApplicationMainWindow, movePo...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDebug>                                        // for operator<<
 #include <QFlags>                                        // for QFlags, operator==
 #include <QKeyEvent>                                     // for QKeyEvent
@@ -43,12 +41,10 @@
 #include <QSize>                                         // for QSize
 #include <QVariant>                                      // for QVariant
 #include <QWidget>                                       // for QWidget
-#include <QtCore/qnamespace.h>                           // for qt_getEnumName, RightDockWidgetArea
+#include <Qt>                                            // for qt_getEnumName, RightDockWidgetArea
 
 class QCloseEvent;
 class QShowEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

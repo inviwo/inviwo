@@ -33,16 +33,12 @@
 
 #include <limits>                              // for numeric_limits
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDoubleSpinBox>                      // for QDoubleSpinBox
 #include <QHBoxLayout>                         // for QHBoxLayout
 #include <QSignalBlocker>                      // for QSignalBlocker
 #include <QSizePolicy>                         // for QSizePolicy, QSizePolicy::Minimum
 
 class QHBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 

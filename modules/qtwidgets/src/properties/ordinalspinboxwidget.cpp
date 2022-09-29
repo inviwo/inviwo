@@ -31,15 +31,11 @@
 
 #include <modules/qtwidgets/properties/doublevaluedragspinbox.h>  // for DoubleValueDragSpinBox
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QHBoxLayout>                                            // for QHBoxLayout
 #include <QSignalBlocker>                                         // for QSignalBlocker
 #include <QSizePolicy>                                            // for QSizePolicy, QSizePolic...
 
 class QHBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 

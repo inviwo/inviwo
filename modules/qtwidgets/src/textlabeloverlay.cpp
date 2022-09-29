@@ -31,13 +31,9 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>  // for toQString
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QTimer>                             // for QTimer
 #include <QWidget>                            // for QWidget
-#include <QtCore/qnamespace.h>                // for operator|, AlignLeft, AlignTop, WA_NoSystem...
-
-#include <warn/pop>
+#include <Qt>                                 // for operator|, AlignLeft, AlignTop, WA_NoSystem...
 
 namespace inviwo {
 

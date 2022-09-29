@@ -32,6 +32,7 @@
 #include <inviwo/core/metadata/metadata.h>                          // for BoolMetaData
 #include <inviwo/core/properties/constraintbehavior.h>              // for ConstraintBehavior
 #include <inviwo/core/properties/property.h>                        // for Property
+#include <inviwo/core/properties/minmaxproperty.h>                  // IWYU pragma: keep
 #include <inviwo/core/util/glm.h>                                   // for almostEqual
 #include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
 #include <modules/qtwidgets/ordinaleditorwidget.h>                  // for OrdinalEditorWidget
@@ -41,8 +42,6 @@
 #include <cstddef>                                                  // for size_t
 #include <memory>                                                   // for unique_ptr
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                                  // for QAction
 #include <QHBoxLayout>                                              // for QHBoxLayout
 #include <QLabel>                                                   // for QLabel
@@ -54,11 +53,6 @@
 
 class QHBoxLayout;
 class QMenu;
-namespace inviwo {
-template <typename T> class MinMaxProperty;
-}  // namespace inviwo
-
-#include <warn/pop>
 
 namespace inviwo {
 

@@ -29,7 +29,7 @@
 
 #include <modules/qtwidgets/tf/tfutils.h>
 
-#include "inviwo/core/util/colorbrewer-generated.h"           // for Category, Family, operator<<
+#include <inviwo/core/util/colorbrewer-generated.h>           // for Category, Family, operator<<
 #include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
 #include <inviwo/core/common/inviwomodule.h>                  // for InviwoModule
 #include <inviwo/core/common/modulepath.h>                    // for ModulePath, ModulePath::Tra...
@@ -61,8 +61,6 @@
 #include <utility>                                            // for move
 #include <vector>                                             // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>                                            // for QAction
 #include <QCheckBox>                                          // for QCheckBox
 #include <QDialog>                                            // for QDialog
@@ -80,8 +78,6 @@
 #include <QStringList>                                        // for QStringList
 #include <QWidget>                                            // for QWidget
 #include <fmt/core.h>                                         // for format
-
-#include <warn/pop>
 
 namespace inviwo {
 

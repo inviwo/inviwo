@@ -45,8 +45,6 @@
 #include <type_traits>                               // for remove_extent_t
 #include <vector>                                    // for vector, __vector_base<>::value_type
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>                                    // for QColor
 #include <QFlags>                                    // for QFlags
 #include <QFont>                                     // for QFont
@@ -64,17 +62,15 @@
 #include <QString>                                   // for QString
 #include <QVector>                                   // for QVector
 #include <QWheelEvent>                               // for QWheelEvent
-#include <QtCore/qnamespace.h>                       // for operator|, AlignRight, AlignTop, Con...
+#include <Qt>                                        // for operator|, AlignRight, AlignTop, Con...
+#include <QBrush>                                    // for QBrush
 #include <QtGlobal>                                  // for operator==, QT_VERSION, QT_VERSION_C...
 #include <glm/vec2.hpp>                              // for vec<>::(anonymous), vec, operator!=
-#include <qbrush.h>                                  // for QBrush
 
 class QLineF;
 class QResizeEvent;
 class QWheelEvent;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

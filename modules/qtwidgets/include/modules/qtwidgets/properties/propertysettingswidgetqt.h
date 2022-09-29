@@ -49,11 +49,8 @@
 #include <string>                                       // for allocator, operator+, char_traits
 #include <vector>                                       // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QCheckBox>                                    // for QCheckBox
 #include <QCloseEvent>                                  // for QCloseEvent
-// Qt
 #include <QDialog>                                      // for QDialog
 #include <QGridLayout>                                  // for QGridLayout
 #include <QKeyEvent>                                    // for QKeyEvent
@@ -74,8 +71,6 @@ namespace inviwo {
 template <typename T> class OrdinalProperty;
 template <typename T> class OrdinalRefProperty;
 }  // namespace inviwo
-
-#include <warn/pop>
 
 namespace inviwo {
 

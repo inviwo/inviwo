@@ -33,29 +33,21 @@
 
 #include <inviwo/core/util/glmvec.h>                  // for ivec2
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QObject>                                    // for Q_OBJECT, signals
 #include <QSplitter>                                  // for QSplitter
-#include <QtCore/qnamespace.h>                        // for Horizontal, Orientation
-
-class QEvent;
-class QWidget;
-
-#include <warn/pop>
+#include <Qt>                                         // for Horizontal, Orientation
 
 #include <functional>                                 // for function
 #include <string>                                     // for string
 
+class QEvent;
+class QWidget;
 class QResizeEvent;
 
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API RangeSliderQt : public QSplitter {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     RangeSliderQt(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = nullptr,
                   bool showTooltip = false);

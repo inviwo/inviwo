@@ -33,10 +33,7 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/processor.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QWidget>
-#include <warn/pop>
 
 namespace inviwo {
 

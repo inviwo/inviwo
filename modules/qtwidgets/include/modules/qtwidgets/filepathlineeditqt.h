@@ -52,10 +52,7 @@ namespace inviwo {
  * shown to indicate non-existing files and paths.
  */
 class IVW_MODULE_QTWIDGETS_API FilePathLineEditQt : public LineEditQt {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     FilePathLineEditQt(QWidget* parent = nullptr);
     virtual ~FilePathLineEditQt() = default;

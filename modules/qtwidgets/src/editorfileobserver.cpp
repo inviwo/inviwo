@@ -34,16 +34,12 @@
 #include <inviwo/core/util/filesystem.h>               // for getFileNameWithExtension
 #include <modules/qtwidgets/inviwoqtutils.h>           // for toQString
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QEvent>                                      // for QEvent
 #include <QList>                                       // for QList
 #include <QMessageBox>                                 // for QMessageBox, operator|, QMessageBo...
 #include <QWidget>                                     // for QWidget
-#include <QtCore/qnamespace.h>                         // for WindowModal
-#include <qcoreevent.h>                                // for QEvent (ptr only), QEvent::FocusIn
-
-#include <warn/pop>
+#include <Qt>                                          // for WindowModal
+#include <QEvent>                                      // for QEvent (ptr only), QEvent::FocusIn
 
 #include <algorithm>                                   // for any_of
 

@@ -51,7 +51,6 @@
 #include <utility>                                                  // for swap
 #include <vector>                                                   // for vector
 
-#include <warn/push>
 #include <QAction>                                                  // for QAction
 #include <QGridLayout>                                              // for QGridLayout
 #include <QHBoxLayout>                                              // for QHBoxLayout
@@ -61,8 +60,6 @@
 #include <QSizePolicy>                                              // for QSizePolicy, QSizePol...
 #include <QWidget>                                                  // for QWidget
 #include <QMenu>                                                    // IWYU pragma: keep
-#include <warn/ignore/all>
-#include <warn/pop>
 
 #include <glm/geometric.hpp>                                        // for length
 

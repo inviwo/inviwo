@@ -30,11 +30,9 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <warn/push>
-#include <warn/ignore/all>
+
 #include <QString>
 #include <QLocale>
-#include <warn/pop>
 
 namespace inviwo {
 

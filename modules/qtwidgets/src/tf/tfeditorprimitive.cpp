@@ -35,11 +35,9 @@
 #include <modules/qtwidgets/inviwoqtutils.h>         // for clamp, toQColor, toQString
 #include <modules/qtwidgets/tf/tfeditor.h>           // for TFEditor
 
-#include <stdlib.h>                                  // for abs
+#include <cstdlib>                                   // for abs
 #include <cmath>                                     // for abs
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>                                    // for QColor
 #include <QFlags>                                    // for QFlags, operator==
 #include <QFont>                                     // for QFont
@@ -52,16 +50,14 @@
 #include <QPoint>                                    // for operator!=, operator-
 #include <QRectF>                                    // for QRectF
 #include <QString>                                   // for QString
-#include <QtCore/qnamespace.h>                       // for ShiftModifier, RoundCap, SolidLine
-#include <QtGui/qbrush.h>                            // for QBrush
+#include <Qt>                                        // for ShiftModifier, RoundCap, SolidLine
+#include <QBrush>                                    // for QBrush
 #include <fmt/core.h>                                // for basic_string_view, format
 #include <glm/vec4.hpp>                              // for operator==, vec<>::(anonymous)
 
 class QGraphicsSceneMouseEvent;
 class QStyleOptionGraphicsItem;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

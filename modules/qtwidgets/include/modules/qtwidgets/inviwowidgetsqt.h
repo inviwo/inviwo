@@ -31,8 +31,6 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QComboBox>                                  // for QComboBox
 #include <QLineEdit>                                  // for QLineEdit
 #include <QObject>                                    // for Q_OBJECT
@@ -41,15 +39,10 @@
 
 class QWidget;
 
-#include <warn/pop>
-
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API IvwLineEdit : public QLineEdit {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     IvwLineEdit(QWidget* parent);
     virtual ~IvwLineEdit();
@@ -58,10 +51,7 @@ public:
 };
 
 class IVW_MODULE_QTWIDGETS_API IvwPushButton : public QPushButton {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     IvwPushButton(QWidget* parent);
     virtual ~IvwPushButton();
@@ -71,10 +61,7 @@ public:
 };
 
 class IVW_MODULE_QTWIDGETS_API IvwComboBox : public QComboBox {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     IvwComboBox(QWidget* parent);
     virtual ~IvwComboBox();

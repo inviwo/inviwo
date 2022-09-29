@@ -36,8 +36,6 @@
 
 #include <string>                                           // for string
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAbstractScrollArea>                              // for QAbstractScrollArea, QAbstrac...
 #include <QFlags>                                           // for QFlags
 #include <QFontMetrics>                                     // for QFontMetrics
@@ -49,7 +47,7 @@
 #include <QString>                                          // for QString, operator!=
 #include <QTextCursor>                                      // for QTextCursor, QTextCursor::Start
 #include <QTextDocument>                                    // for QTextDocument
-#include <QtCore/qnamespace.h>                              // for ControlModifier, Key_Enter
+#include <Qt>                                               // for ControlModifier, Key_Enter
 #include <QtGlobal>                                         // for QT_VERSION, QT_VERSION_CHECK
 #include <glm/common.hpp>                                   // for clamp
 
@@ -59,8 +57,6 @@ class QHBoxLayout;
 class QKeyEvent;
 class QResizeEvent;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

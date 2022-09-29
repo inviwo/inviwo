@@ -48,8 +48,6 @@
 #include <utility>                                                     // for pair
 #include <vector>                                                      // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QFrame>                                                      // for QFrame, QFrame::No...
 #include <QLayout>                                                     // for QLayout, QLayout::...
 #include <QPainter>                                                    // for QPainter
@@ -60,11 +58,9 @@
 #include <QStyle>                                                      // for QStyle, QStyle::PE...
 #include <QStyleOption>                                                // for QStyleOption
 #include <QVBoxLayout>                                                 // for QVBoxLayout
-#include <QtCore/qnamespace.h>                                         // for AlignTop, operator|
+#include <Qt>                                                          // for AlignTop, operator|
 
 class QPaintEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

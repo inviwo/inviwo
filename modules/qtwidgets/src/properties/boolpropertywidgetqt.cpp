@@ -35,8 +35,6 @@
 #include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QCheckBox>                                        // for QCheckBox
 #include <QHBoxLayout>                                      // for QHBoxLayout
 #include <QLineEdit>                                        // for QLineEdit
@@ -47,8 +45,6 @@
 #include <QString>                                          // for QString
 
 class QHBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 

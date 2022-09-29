@@ -33,19 +33,15 @@
 #include <algorithm>            // for max
 #include <cmath>                // for abs
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>               // for QColor
 #include <QPaintEvent>          // for QPaintEvent
 #include <QPainter>             // for QPainter, QPainter::Antialiasing
 #include <QPen>                 // for QPen
 #include <QSize>                // for QSize
-#include <QtCore/qnamespace.h>  // for operator|, AbsoluteSize, FramelessWindowHint, WA_Transluc...
-#include <QtGui/qbrush.h>       // for QBrush
+#include <Qt>                   // for operator|, AbsoluteSize, FramelessWindowHint, WA_Transluc...
+#include <QBrush>               // for QBrush
 
 class QPaintEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

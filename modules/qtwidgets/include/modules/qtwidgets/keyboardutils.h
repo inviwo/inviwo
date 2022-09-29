@@ -32,11 +32,7 @@
 
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QtCore/qnamespace.h>
-
-#include <warn/pop>
+#include <Qt>
 
 class QKeyEvent;
 

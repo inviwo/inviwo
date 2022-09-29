@@ -33,8 +33,6 @@
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QObject>                                          // for Q_OBJECT, signals
 #include <QPlainTextEdit>                                   // for QPlainTextEdit
 
@@ -47,8 +45,6 @@ namespace inviwo {
 class EditableLabelQt;
 class StringProperty;
 }  // namespace inviwo
-
-#include <warn/pop>
 
 namespace inviwo {
 

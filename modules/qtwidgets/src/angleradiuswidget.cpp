@@ -33,8 +33,6 @@
 #include <cmath>                  // for atan2, cos, sin, sqrt, M_PI
 #include <sstream>                // for stringstream, basic_ostream, fixed
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QChar>                  // for QChar
 #include <QFontMetrics>           // for QFontMetrics
 #include <QLineF>                 // for QLineF
@@ -50,7 +48,6 @@
 #include <QtGlobal>               // for qMin, qreal, QT_VERSION, QT_VERSION_CHECK
 #include <QBrush>                 // for QBrush
 #include <QPainterPath>           // for QPainterPath
-#include <warn/pop>
 
 #include <glm/common.hpp>         // for clamp
 #include <glm/trigonometric.hpp>  // for degrees

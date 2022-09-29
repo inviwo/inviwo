@@ -33,8 +33,6 @@
 #include <inviwo/core/util/colorconversion.h>  // for hex2rgba, rgb2hex, rgba2hex
 #include <modules/qtwidgets/inviwoqtutils.h>   // for toQString, fromQString
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QEvent>                              // for QEvent
 #include <QKeyEvent>                           // for QKeyEvent
 #include <QList>                               // for QList
@@ -44,15 +42,13 @@
 #include <QString>                             // for QString
 #include <QStringList>                         // for QStringList
 #include <QStyle>                              // for QStyle
-#include <QtCore/qcoreevent.h>                 // for QEvent (ptr only), QEvent::LocaleChange
-#include <QtCore/qnamespace.h>                 // for Key_Escape
+#include <QEvent>                              // for QEvent (ptr only), QEvent::LocaleChange
+#include <Qt>                                  // for Key_Escape
 #include <glm/common.hpp>                      // for clamp, max, min
 
 class QFocusEvent;
 class QKeyEvent;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

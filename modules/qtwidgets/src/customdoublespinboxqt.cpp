@@ -29,8 +29,6 @@
 
 #include <modules/qtwidgets/customdoublespinboxqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <limits>          // for numeric_limits, numeric_limits<>::max_exponent
 
 #include <QLocale>         // for QLocale
@@ -38,8 +36,6 @@
 #include <QTimerEvent>     // for QTimerEvent
 
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

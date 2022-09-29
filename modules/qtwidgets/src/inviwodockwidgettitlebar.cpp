@@ -32,8 +32,6 @@
 #include <inviwo/core/util/raiiutils.h>       // for KeepTrueWhileInScope
 #include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx, windowTitleHelper
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QDockWidget>                        // for QDockWidget
 #include <QEvent>                             // for QEvent
 #include <QHBoxLayout>                        // for QHBoxLayout
@@ -46,12 +44,10 @@
 #include <QStyle>                             // for QStyle, QStyle::PE_Widget
 #include <QStyleOption>                       // for QStyleOption
 #include <QToolButton>                        // for QToolButton
-#include <qcoreevent.h>                       // for QEvent (ptr only), QEvent::ModifiedChange
+#include <QEvent>                             // for QEvent (ptr only), QEvent::ModifiedChange
 
 class QHBoxLayout;
 class QShowEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

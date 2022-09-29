@@ -33,16 +33,12 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>          // for emToPx
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QPoint>                                     // for QPoint
 #include <QRect>                                      // for QRect
 #include <QTransform>                                 // for QTransform
 #include <QWidget>                                    // for QWidget
 
 class QPaintEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

@@ -40,8 +40,6 @@
 #include <unordered_map>                              // for unordered_map
 #include <vector>                                     // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QFileDialog>                                // for QFileDialog
 #include <QList>                                      // for QList
 #include <QObject>                                    // for Q_OBJECT, slots
@@ -51,15 +49,10 @@
 
 class QWidget;
 
-#include <warn/pop>
-
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API InviwoFileDialog : public QFileDialog, public FileDialog {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     InviwoFileDialog(QWidget* parent = nullptr, const std::string& title = "",
                      const std::string& pathType = "default", const std::string& path = "");

@@ -37,8 +37,6 @@
 
 #include <limits>                                       // for numeric_limits
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QObject>                                      // for Q_OBJECT, signals
 #include <QWidget>                                      // for QWidget
 
@@ -46,15 +44,10 @@ namespace inviwo {
 class DoubleValueDragSpinBox;
 }  // namespace inviwo
 
-#include <warn/pop>
-
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API BaseOrdinalSpinBoxWidget : public QWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     BaseOrdinalSpinBoxWidget();
     virtual ~BaseOrdinalSpinBoxWidget();

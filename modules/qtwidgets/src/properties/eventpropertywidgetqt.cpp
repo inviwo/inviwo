@@ -41,8 +41,6 @@
 
 #include <ostream>                                          // for stringstream, operator<<, ost...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGridLayout>                                      // for QGridLayout
 #include <QHBoxLayout>                                      // for QHBoxLayout
 #include <QKeyEvent>                                        // for QKeyEvent
@@ -50,12 +48,10 @@
 #include <QSizePolicy>                                      // for QSizePolicy
 #include <QString>                                          // for QString
 #include <QWidget>                                          // for QWidget
-#include <QtCore/qnamespace.h>                              // for Key_Enter, Key_Escape, Key_Re...
+#include <Qt>                                               // for Key_Enter, Key_Escape, Key_Re...
 #include <flags/flags.h>                                    // for operator!=, none
 
 class QHBoxLayout;
-
-#include <warn/pop>
 
 namespace inviwo {
 
