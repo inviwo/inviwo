@@ -29,19 +29,23 @@
 
 #include <modules/qtwidgets/editorfileobserver.h>
 
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/common/inviwoapplicationutil.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>  // for getInviwoApplication
+#include <inviwo/core/util/fileobserver.h>             // for FileObserver
+#include <inviwo/core/util/filesystem.h>               // for getFileNameWithExtension
+#include <modules/qtwidgets/inviwoqtutils.h>           // for toQString
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QEvent>
+#include <QEvent>                                      // for QEvent
+#include <QList>                                       // for QList
+#include <QMessageBox>                                 // for QMessageBox, operator|, QMessageBo...
+#include <QWidget>                                     // for QWidget
+#include <QtCore/qnamespace.h>                         // for WindowModal
+#include <qcoreevent.h>                                // for QEvent (ptr only), QEvent::FocusIn
+
 #include <warn/pop>
 
-#include <algorithm>
+#include <algorithm>                                   // for any_of
 
 namespace inviwo {
 

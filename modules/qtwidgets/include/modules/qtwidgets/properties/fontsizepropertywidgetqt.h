@@ -29,16 +29,17 @@
 
 #pragma once
 
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>         // for IntProperty
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <array>
+#include <array>                                            // for array
 
 namespace inviwo {
 
-class IvwComboBox;
 class EditableLabelQt;
+class IvwComboBox;
 
 class IVW_MODULE_QTWIDGETS_API FontSizePropertyWidgetQt : public PropertyWidgetQt {
 public:

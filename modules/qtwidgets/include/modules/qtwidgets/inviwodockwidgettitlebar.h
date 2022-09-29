@@ -29,16 +29,23 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
+#include <QObject>                                    // for Q_OBJECT, Q_PROPERTY, signals, slots
+#include <QWidget>                                    // for QWidget
+#include <QtCore/qnamespace.h>                        // for DockWidgetAreas
+
+class QEvent;
+class QShowEvent;
+
 #include <warn/pop>
 
-class QPaintEvent;
 class QDockWidget;
-class QToolButton;
 class QLabel;
+class QPaintEvent;
+class QToolButton;
 
 namespace inviwo {
 

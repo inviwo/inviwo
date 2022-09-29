@@ -29,15 +29,25 @@
 
 #include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
 
-#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
+#include <inviwo/core/properties/propertysemantics.h>       // for operator==, PropertySemantics
+#include <inviwo/core/util/rendercontext.h>                 // for RenderContext
+#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QRegularExpression>
-#include <QRegularExpressionValidator>
-#include <QHBoxLayout>
+#include <QCheckBox>                                        // for QCheckBox
+#include <QHBoxLayout>                                      // for QHBoxLayout
+#include <QLineEdit>                                        // for QLineEdit
+#include <QRegularExpression>                               // for QRegularExpression
+#include <QRegularExpressionValidator>                      // for QRegularExpressionValidator
+#include <QSize>                                            // for QSize
+#include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Fixed
+#include <QString>                                          // for QString
+
+class QHBoxLayout;
+
 #include <warn/pop>
 
 namespace inviwo {

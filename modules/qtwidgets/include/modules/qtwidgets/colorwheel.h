@@ -37,19 +37,25 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
-#include <QImage>
-#include <QPixmap>
-#include <QColor>
-#include <QPainter>
+#include <QColor>                                     // for QColor
+#include <QImage>                                     // for QImage
+#include <QObject>                                    // for slots, Q_OBJECT, signals
+#include <QPoint>                                     // for QPoint
+#include <QRegion>                                    // for QRegion
+#include <QSize>                                      // for QSize
+#include <QWidget>                                    // for QWidget
+
+class QPainter;
+
 #include <warn/pop>
 
 class QMouseEvent;
-class QResizeEvent;
 class QPaintEvent;
+class QResizeEvent;
 
 namespace inviwo {
 

@@ -28,28 +28,42 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/properties/propertyowner.h>
-#include <modules/qtwidgets/filepathlineeditqt.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <inviwo/core/properties/fileproperty.h>              // for FileProperty
+#include <inviwo/core/properties/propertysemantics.h>         // for operator==, PropertySemantics
+#include <inviwo/core/util/filedialogstate.h>                 // for FileMode, AcceptMode, Accep...
+#include <inviwo/core/util/fileextension.h>                   // for FileExtension
+#include <inviwo/core/util/filesystem.h>                      // for directoryExists, getFileDir...
+#include <modules/qtwidgets/editablelabelqt.h>                // for EditableLabelQt
+#include <modules/qtwidgets/filepathlineeditqt.h>             // for FilePathLineEditQt
+#include <modules/qtwidgets/inviwofiledialog.h>               // for InviwoFileDialog
+#include <modules/qtwidgets/inviwoqtutils.h>                  // for fromQString, toQString
+#include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
+
+#include <string>                                             // for basic_string, operator+
+#include <vector>                                             // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QStandardPaths>
-#include <QDesktopServices>
-#include <QDir>
-#include <QFileDialog>
-#include <QList>
-#include <QSettings>
-#include <QUrl>
-#include <QDropEvent>
-#include <QMimeData>
-#include <QHBoxLayout>
-#include <QToolButton>
+#include <QDesktopServices>                                   // for QDesktopServices
+#include <QDragEnterEvent>                                    // for QDragEnterEvent
+#include <QDragMoveEvent>                                     // for QDragMoveEvent
+#include <QDropEvent>                                         // for QDropEvent
+#include <QHBoxLayout>                                        // for QHBoxLayout
+#include <QIcon>                                              // for QIcon
+#include <QList>                                              // for QList
+#include <QMimeData>                                          // for QMimeData
+#include <QSizePolicy>                                        // for QSizePolicy
+#include <QString>                                            // for QString
+#include <QToolButton>                                        // for QToolButton
+#include <QUrl>                                               // for QUrl, QUrl::TolerantMode
+#include <QWidget>                                            // for QWidget
+
+namespace inviwo {
+class PropertyEditorWidget;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

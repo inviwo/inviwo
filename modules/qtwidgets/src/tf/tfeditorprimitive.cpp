@@ -28,21 +28,39 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>
-#include <modules/qtwidgets/tf/tfeditor.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/datastructures/datamapper.h>
 
-#include <fmt/format.h>
+#include <inviwo/core/datastructures/datamapper.h>   // for DataMapper
+#include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive
+#include <inviwo/core/datastructures/unitsystem.h>   // for Axis
+#include <modules/qtwidgets/inviwoqtutils.h>         // for clamp, toQColor, toQString
+#include <modules/qtwidgets/tf/tfeditor.h>           // for TFEditor
+
+#include <stdlib.h>                                  // for abs
+#include <cmath>                                     // for abs
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsScene>
-#include <QPainter>
-#include <QGraphicsSimpleTextItem>
-#include <QFont>
-#include <QGuiApplication>
-#include <QGraphicsSceneMouseEvent>
-#include <QMenu>
+#include <QColor>                                    // for QColor
+#include <QFlags>                                    // for QFlags, operator==
+#include <QFont>                                     // for QFont
+#include <QGraphicsScene>                            // for QGraphicsScene
+#include <QGraphicsSimpleTextItem>                   // for QGraphicsSimpleTextItem
+#include <QGuiApplication>                           // for QGuiApplication
+#include <QObject>                                   // for qobject_cast
+#include <QPainter>                                  // for QPainter, QPainter::Antialiasing
+#include <QPen>                                      // for QPen
+#include <QPoint>                                    // for operator!=, operator-
+#include <QRectF>                                    // for QRectF
+#include <QString>                                   // for QString
+#include <QtCore/qnamespace.h>                       // for ShiftModifier, RoundCap, SolidLine
+#include <QtGui/qbrush.h>                            // for QBrush
+#include <fmt/core.h>                                // for basic_string_view, format
+#include <glm/vec4.hpp>                              // for operator==, vec<>::(anonymous)
+
+class QGraphicsSceneMouseEvent;
+class QStyleOptionGraphicsItem;
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

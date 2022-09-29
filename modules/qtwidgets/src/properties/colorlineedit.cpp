@@ -28,18 +28,30 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/colorlineedit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/util/colorconversion.h>
-#include <inviwo/core/util/assertion.h>
+
+#include <inviwo/core/util/assertion.h>        // for ivwAssert
+#include <inviwo/core/util/colorconversion.h>  // for hex2rgba, rgb2hex, rgba2hex
+#include <modules/qtwidgets/inviwoqtutils.h>   // for toQString, fromQString
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QRegularExpressionValidator>
-#include <QRegularExpression>
-#include <QLocale>
-#include <QStyle>
-#include <QEvent>
-#include <QKeyEvent>
+#include <QEvent>                              // for QEvent
+#include <QKeyEvent>                           // for QKeyEvent
+#include <QList>                               // for QList
+#include <QLocale>                             // for QLocale
+#include <QRegularExpression>                  // for QRegularExpression
+#include <QRegularExpressionValidator>         // for QRegularExpressionValidator
+#include <QString>                             // for QString
+#include <QStringList>                         // for QStringList
+#include <QStyle>                              // for QStyle
+#include <QtCore/qcoreevent.h>                 // for QEvent (ptr only), QEvent::LocaleChange
+#include <QtCore/qnamespace.h>                 // for Key_Escape
+#include <glm/common.hpp>                      // for clamp, max, min
+
+class QFocusEvent;
+class QKeyEvent;
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

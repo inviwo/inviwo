@@ -29,10 +29,18 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
+#include <QObject>                                    // for Q_OBJECT, signals
+#include <QSize>                                      // for QSize
+#include <QWidget>                                    // for QWidget
+
+class QMouseEvent;
+class QPaintEvent;
+class QPoint;
+
 #include <warn/pop>
 
 namespace inviwo {

@@ -29,19 +29,23 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>          // for IVW_MODULE_QTWIDGETS_API
 
-class QDropEvent;
+#include <inviwo/core/properties/fileproperty.h>              // for FileRequestable
+#include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
+
+#include <memory>                                             // for unique_ptr
+
 class QDragEnterEvent;
 class QDragMoveEvent;
+class QDropEvent;
 class QHBoxLayout;
 
 namespace inviwo {
 
 class FilePathLineEditQt;
-class TextEditorDockWidget;
+class PropertyEditorWidget;
 
 class IVW_MODULE_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt,
                                                       public FileRequestable {

@@ -29,14 +29,25 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
+
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QPlainTextEdit>
+#include <QObject>                                          // for Q_OBJECT, signals
+#include <QPlainTextEdit>                                   // for QPlainTextEdit
+
+class QContextMenuEvent;
+class QFocusEvent;
+class QKeyEvent;
+class QResizeEvent;
+class QWidget;
+namespace inviwo {
+class EditableLabelQt;
+class StringProperty;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

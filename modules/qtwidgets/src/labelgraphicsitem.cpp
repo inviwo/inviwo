@@ -29,15 +29,28 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QFocusEvent>
-#include <QFont>
-#include <QPainter>
-#include <QTextCursor>
-#include <QFontMetrics>
-#include <QTextDocument>
+#include <QFlags>                                 // for QFlags
+#include <QFont>                                  // for QFont
+#include <QFontMetrics>                           // for QFontMetrics
+#include <QGraphicsItem>                          // for QGraphicsItem::GraphicsItemFlags
+#include <QGraphicsTextItem>                      // for QGraphicsTextItem
+#include <QKeyEvent>                              // for QKeyEvent
+#include <QRect>                                  // for QRect
+#include <QRectF>                                 // for QRectF
+#include <QString>                                // for QString, operator!=
+#include <QTextCursor>                            // for QTextCursor
+#include <QTextDocument>                          // for QTextDocument
+#include <QTransform>                             // for QTransform
+#include <QtCore/qnamespace.h>                    // for Alignment, AlignBottom, AlignHCenter
+
+class QFocusEvent;
+class QKeyEvent;
+
 #include <warn/pop>
 
-#include <modules/qtwidgets/labelgraphicsitem.h>
+#include <modules/qtwidgets/labelgraphicsitem.h>  // for LabelGraphicsItem, LabelGraphicsItemObs...
+
+#include <vector>                                 // for vector
 
 namespace inviwo {
 

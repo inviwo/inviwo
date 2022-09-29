@@ -29,15 +29,16 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
+
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
 class QCheckBox;
 class QLineEdit;
 
 namespace inviwo {
+class BoolProperty;
+class EditableLabelQt;
 
 class IVW_MODULE_QTWIDGETS_API BoolPropertyWidgetQt : public PropertyWidgetQt {
 public:

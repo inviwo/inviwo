@@ -29,24 +29,29 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <inviwo/core/util/glmvec.h>                  // for vec4
 
 // QT includes
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QSyntaxHighlighter>
-#include <QRegularExpression>
+#include <QObject>                                    // for Q_OBJECT, signals
+#include <QRegularExpression>                         // for QRegularExpression
+#include <QString>                                    // for QString
+#include <QSyntaxHighlighter>                         // for QSyntaxHighlighter
+#include <QTextCharFormat>                            // for QTextCharFormat
+#include <glm/vec4.hpp>                               // for operator/
+
 #include <warn/pop>
 
-#include <fmt/format.h>
-#include <tcb/span.hpp>
+#include <string>                                     // for string
+#include <string_view>                                // for string_view
+#include <vector>                                     // for vector
 
-#include <functional>
-#include <memory>
-#include <vector>
-#include <string_view>
+#include <tcb/span.hpp>                               // for span
 
+class QTextCharFormat;
 class QTextDocument;
 
 namespace inviwo {

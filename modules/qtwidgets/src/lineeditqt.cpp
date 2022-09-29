@@ -31,7 +31,14 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QKeyEvent>
+#include <QColor>               // for QColor
+#include <QKeyEvent>            // for QKeyEvent
+#include <QPalette>             // for QPalette, QPalette::PlaceholderText
+#include <QtCore/qnamespace.h>  // for Key_Escape
+
+class QPaintEvent;
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

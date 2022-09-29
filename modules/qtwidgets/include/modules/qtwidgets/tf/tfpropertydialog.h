@@ -29,36 +29,43 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/datastructures/tfprimitiveset.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/qtwidgets/tf/tfeditor.h>
-#include <modules/qtwidgets/tf/tfeditorview.h>
-#include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
-#include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
-#include <inviwo/core/properties/propertywidget.h>
-#include <modules/qtwidgets/tf/tfpropertyconcept.h>
-#include <inviwo/core/util/observer.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>              // for IVW_MODULE_QTWIDGETS_API
 
-class QPushButton;
+#include <inviwo/core/datastructures/tfprimitive.h>               // for TFPrimitive
+#include <inviwo/core/datastructures/tfprimitiveset.h>            // for TFPrimitiveSetObserver
+#include <inviwo/core/processors/processor.h>                     // for Processor, Processor::N...
+#include <inviwo/core/properties/transferfunctionproperty.h>      // for TFPropertyObserver, Tra...
+#include <inviwo/core/util/glmvec.h>                              // for dvec2
+#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>  // for PropertyEditorWidgetQt
+
+#include <functional>                                             // for function
+#include <memory>                                                 // for unique_ptr, shared_ptr
+#include <string>                                                 // for string
+#include <vector>                                                 // for vector
+
+#include <QSize>                                                  // for QSize
+
+class QColorDialog;
 class QComboBox;
 class QLabel;
 class QResizeEvent;
 class QShowEvent;
-class QColorDialog;
 
 namespace inviwo {
 
 class ColorWheel;
-class RangeSliderQt;
-class TFPropertyWidgetQt;
-class TFSelectionWatcher;
-class TFLineEdit;
-class TFColorEdit;
-class TransferFunctionProperty;
-class IsoValueProperty;
 class IsoTFProperty;
+class IsoValueProperty;
+class Property;
+class RangeSliderQt;
+class TFColorEdit;
+class TFEditor;
+class TFEditorView;
+class TFLineEdit;
+class TFSelectionWatcher;
+namespace util {
+struct TFPropertyConcept;
+}  // namespace util
 
 class IVW_MODULE_QTWIDGETS_API TFPropertyDialog : public PropertyEditorWidgetQt,
                                                   public TFPrimitiveSetObserver,

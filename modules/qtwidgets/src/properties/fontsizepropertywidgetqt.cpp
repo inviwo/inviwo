@@ -28,18 +28,34 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/fontsizepropertywidgetqt.h>
-#include <modules/qtwidgets/inviwowidgetsqt.h>
-#include <modules/qtwidgets/editablelabelqt.h>
 
-#include <typeinfo>
-#include <algorithm>
+#include <inviwo/core/properties/ordinalproperty.h>         // for IntProperty
+#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
+#include <modules/qtwidgets/inviwowidgetsqt.h>              // for IvwComboBox
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+
+#include <algorithm>                                        // for find
+#include <iterator>                                         // for distance
+#include <memory>                                           // for unique_ptr
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QHBoxLayout>
-#include <QSignalBlocker>
-#include <QMenu>
-#include <QIntValidator>
+#include <QComboBox>                                        // for QComboBox, QComboBox::NoInsert
+#include <QGridLayout>                                      // for QGridLayout
+#include <QHBoxLayout>                                      // for QHBoxLayout
+#include <QIntValidator>                                    // for QIntValidator
+#include <QLineEdit>                                        // for QLineEdit
+#include <QMenu>                                            // for QMenu
+#include <QSignalBlocker>                                   // for QSignalBlocker
+#include <QSizePolicy>                                      // for QSizePolicy
+#include <QString>                                          // for QString
+#include <QVariant>                                         // for QVariant
+#include <QWidget>                                          // for QWidget
+#include <QtCore/qnamespace.h>                              // for CustomContextMenu
+
+class QHBoxLayout;
+class QPoint;
+
 #include <warn/pop>
 
 namespace inviwo {

@@ -29,18 +29,28 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/util/filedialog.h>
-#include <inviwo/core/util/pathtype.h>
-#include <string>
-#include <unordered_map>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <inviwo/core/util/filedialog.h>              // for FileDialog
+#include <inviwo/core/util/filedialogstate.h>         // for AcceptMode, FileMode
+#include <inviwo/core/util/fileextension.h>           // for FileExtension
+#include <inviwo/core/util/pathtype.h>                // for PathType
+
+#include <string>                                     // for string, hash, operator==
+#include <unordered_map>                              // for unordered_map
+#include <vector>                                     // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QFileDialog>
-#include <QUrl>
-#include <QSettings>
+#include <QFileDialog>                                // for QFileDialog
+#include <QList>                                      // for QList
+#include <QObject>                                    // for Q_OBJECT, slots
+#include <QString>                                    // for QString
+#include <QStringList>                                // for QStringList
+#include <QUrl>                                       // for QUrl
+
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

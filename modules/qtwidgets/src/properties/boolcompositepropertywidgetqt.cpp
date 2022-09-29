@@ -28,14 +28,23 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/boolcompositepropertywidgetqt.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/properties/property.h>
+
+#include <inviwo/core/properties/boolcompositeproperty.h>              // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
+#include <inviwo/core/properties/compositepropertyobserver.h>          // for CompositePropertyO...
+#include <inviwo/core/properties/propertyownerobserver.h>              // for PropertyOwnerObser...
+#include <modules/qtwidgets/editablelabelqt.h>                         // for EditableLabelQt
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
+
+#include <functional>                                                  // for __base, function
+#include <vector>                                                      // for vector
+
+namespace inviwo {
+class Property;
+}  // namespace inviwo
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QCheckBox>
 #include <warn/pop>
 
 namespace inviwo {

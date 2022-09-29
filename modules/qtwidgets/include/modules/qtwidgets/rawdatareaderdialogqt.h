@@ -29,15 +29,28 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/io/volumedatareaderdialog.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <inviwo/core/datastructures/datamapper.h>    // for DataMapper
+#include <inviwo/core/io/volumedatareaderdialog.h>    // for VolumeDataReaderDialog
+#include <inviwo/core/util/glmvec.h>                  // for dvec3, uvec3
+
+#include <cstddef>                                    // for size_t
+#include <string>                                     // for string
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QComboBox>
-#include <QDialog>
-#include <QLabel>
-#include <QSpinBox>
+#include <QDialog>                                    // for QDialog
+
+class QComboBox;
+class QDoubleSpinBox;
+class QLabel;
+class QLineEdit;
+class QSpinBox;
+namespace inviwo {
+class DataFormatBase;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

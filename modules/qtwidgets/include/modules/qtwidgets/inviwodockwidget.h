@@ -29,10 +29,18 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QDockWidget>
+#include <QDockWidget>                                // for QDockWidget
+#include <QObject>                                    // for Q_OBJECT, signals
+#include <QString>                                    // for QString
+
+class QCloseEvent;
+class QShowEvent;
+class QWidget;
+
 #include <warn/pop>
 
 class QKeyEvent;

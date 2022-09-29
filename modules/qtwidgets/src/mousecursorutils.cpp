@@ -29,6 +29,8 @@
 
 #include <modules/qtwidgets/mousecursorutils.h>
 
+#include <inviwo/core/interaction/events/mousecursors.h>  // for MouseCursor, MouseCursor::Arrow
+
 namespace inviwo {
 
 namespace util {

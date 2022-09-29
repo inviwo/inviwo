@@ -28,21 +28,35 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/listpropertywidgetqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/inviwowidgetsqt.h>
 
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/listproperty.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/properties/listproperty.h>                     // for ListProperty, ListPr...
+#include <inviwo/core/properties/property.h>                         // for Property
+#include <inviwo/core/util/exception.h>                              // for Exception
+#include <inviwo/core/util/rendercontext.h>                          // for RenderContext
+#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
+#include <inviwo/core/util/zip.h>                                    // for enumerate, zipIterator
+#include <modules/qtwidgets/inviwoqtutils.h>                         // for toQString
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>  // for CompositePropertyWid...
+
+#include <string>                                                    // for operator+, string
+#include <string_view>                                               // for string_view
+#include <vector>                                                    // for __vector_base<>::val...
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QMenu>
-#include <QAction>
-#include <QToolButton>
-#include <QHBoxLayout>
+#include <QAction>                                                   // for QAction
+#include <QCursor>                                                   // for QCursor
+#include <QHBoxLayout>                                               // for QHBoxLayout
+#include <QLayout>                                                   // for QLayout
+#include <QLayoutItem>                                               // for QLayoutItem
+#include <QMenu>                                                     // for QMenu
+#include <QToolButton>                                               // for QToolButton
+#include <QVariant>                                                  // for QVariant
+#include <flags/flags.h>                                             // for operator&, flags
+#include <sys/types.h>                                               // for size_t, uint
+
+class QHBoxLayout;
+
 #include <warn/pop>
 
 namespace inviwo {

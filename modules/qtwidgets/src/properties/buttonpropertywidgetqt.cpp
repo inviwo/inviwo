@@ -28,18 +28,26 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
-#include <inviwo/core/properties/buttonproperty.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/properties/buttonproperty.h>          // for ButtonProperty
+#include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QInputDialog>
-#include <QMenu>
-#include <QAction>
+#include <QAction>                                          // for QAction
+#include <QHBoxLayout>                                      // for QHBoxLayout
+#include <QInputDialog>                                     // for QInputDialog
+#include <QLineEdit>                                        // for QLineEdit, QLineEdit::Normal
+#include <QMenu>                                            // for QMenu
+#include <QPushButton>                                      // for QPushButton
+#include <QString>                                          // for QString
+
+class QHBoxLayout;
+namespace inviwo {
+class Property;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

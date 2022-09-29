@@ -31,9 +31,9 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
+#include <inviwo/core/interaction/events/gesturestate.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/interaction/events/mousebuttons.h>
-#include <inviwo/core/interaction/events/gesturestate.h>
 
 class QMouseEvent;
 class QWheelEvent;

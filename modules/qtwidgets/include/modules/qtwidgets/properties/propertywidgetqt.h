@@ -29,23 +29,33 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/propertywidget.h>
-#include <inviwo/core/properties/propertyobserver.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <inviwo/core/properties/propertyobserver.h>  // for PropertyObserver
+#include <inviwo/core/properties/propertywidget.h>    // for PropertyWidget
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
+#include <QPoint>                                     // for QPoint
+#include <QSize>                                      // for QSize
+#include <QWidget>                                    // for QWidget
+
+class QEvent;
+class QLayout;
+class QMouseEvent;
+class QPaintEvent;
+
 #include <warn/pop>
-#include <memory>
+#include <functional>                                 // for function
+#include <memory>                                     // for unique_ptr
 
 class QMenu;
 class QMimeData;
 
 namespace inviwo {
 
-class Property;
 class InviwoApplication;
+class Property;
 
 class IVW_MODULE_QTWIDGETS_API PropertyWidgetQt : public QWidget,
                                                   public PropertyWidget,

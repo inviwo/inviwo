@@ -31,9 +31,14 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <limits>
-#include <QTimerEvent>
-#include <QSignalBlocker>
+#include <limits>          // for numeric_limits, numeric_limits<>::max_exponent
+
+#include <QLocale>         // for QLocale
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QTimerEvent>     // for QTimerEvent
+
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {

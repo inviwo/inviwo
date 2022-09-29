@@ -29,15 +29,19 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/ordinalbasewidget.h>
-#include <inviwo/core/properties/constraintbehavior.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>    // for IVW_MODULE_QTWIDGETS_API
+
+#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior
+#include <modules/qtwidgets/inviwoqtutils.h>            // for decimals
+#include <modules/qtwidgets/ordinalbasewidget.h>        // for OrdinalBaseWidget
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
-#include <QLocale>
+#include <QObject>                                      // for Q_OBJECT, signals
+#include <QWidget>                                      // for QWidget
+
+class QEvent;
+
 #include <warn/pop>
 
 class QSlider;

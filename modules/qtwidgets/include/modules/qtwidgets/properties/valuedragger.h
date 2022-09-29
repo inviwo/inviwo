@@ -29,27 +29,45 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/inviwoqtutils.h>               // for emToPx
+#include <modules/qtwidgets/numberlineedit.h>              // for NumberLineEdit
+#include <modules/qtwidgets/properties/indicatorwidget.h>  // for IndicatorWidget
 
-#include <modules/qtwidgets/properties/indicatorwidget.h>
-#include <modules/qtwidgets/numberlineedit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <stdlib.h>                                        // for abs
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
-#include <QTimerEvent>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QHoverEvent>
-#include <QPainter>
-#include <QPainterPath>
-#include <QToolTip>
-#include <QStyleOption>
+#include <QColor>                                          // for QColor
+#include <QFlags>                                          // for QFlags
+#include <QMouseEvent>                                     // for QMouseEvent
+#include <QPainter>                                        // for QPainter, QPainter::Antialiasing
+#include <QPalette>                                        // for QPalette, QPalette::Active
+#include <QPen>                                            // for QPen
+#include <QPoint>                                          // for QPoint
+#include <QPointF>                                         // for QPointF
+#include <QSize>                                           // for QSize
+#include <QSizeF>                                          // for QSizeF
+#include <QSizePolicy>                                     // for QSizePolicy, QSizePolicy::Fixed
+#include <QString>                                         // for QString
+#include <QStyle>                                          // for QStyle, QStyle::State_Enabled
+#include <QStyleOption>                                    // for QStyleOption
+#include <QTimerEvent>                                     // for QTimerEvent
+#include <QToolTip>                                        // for QToolTip
+#include <QTransform>                                      // for QTransform
+#include <QWidget>                                         // for QWidget
+#include <QtCore/qnamespace.h>                             // for LeftButton, NoBrush, FlatCap
+#include <qpainterpath.h>                                  // for QPainterPath
+
+class QMouseEvent;
+class QPaintEvent;
+class QTimerEvent;
+
 #include <warn/pop>
 
-#include <type_traits>
-#include <algorithm>
+#include <algorithm>                                       // for max, min
+#include <cmath>                                           // for pow, remainder, abs
+#include <memory>                                          // for unique_ptr, make_unique
+#include <type_traits>                                     // for enable_if_t, is_integral
 
 namespace inviwo {
 

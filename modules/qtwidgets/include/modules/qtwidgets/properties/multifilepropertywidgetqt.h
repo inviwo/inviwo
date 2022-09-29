@@ -30,8 +30,9 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+
 #include <inviwo/core/properties/fileproperty.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
 class QDropEvent;
 class QDragEnterEvent;

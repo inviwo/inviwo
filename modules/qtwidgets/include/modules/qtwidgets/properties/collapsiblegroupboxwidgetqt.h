@@ -29,26 +29,35 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/propertyownerobserver.h>
-#include <inviwo/core/processors/processor.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
 
-class QLineEdit;
-class QToolButton;
-class QGroupBox;
-class QPushButton;
-class QLabel;
-class QGridLayout;
+#include <inviwo/core/processors/processor.h>               // for Processor, Processor::NameDis...
+#include <inviwo/core/properties/propertyownerobserver.h>   // for PropertyOwnerObserver
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+
+#include <cstddef>                                          // for size_t
+#include <memory>                                           // for unique_ptr
+#include <string>                                           // for string
+#include <string_view>                                      // for string_view
+#include <vector>                                           // for vector
+
+#include <QSize>                                            // for QSize
+
 class QCheckBox;
+class QGridLayout;
+class QLabel;
+class QMenu;
 class QMimeData;
+class QToolButton;
+class QWidget;
 
 namespace inviwo {
 
-class Property;
 class CompositeProperty;
-class PropertyOwner;
 class EditableLabelQt;
+class Property;
+class PropertyOwner;
+class PropertySemantics;
 class Settings;
 
 class IVW_MODULE_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,

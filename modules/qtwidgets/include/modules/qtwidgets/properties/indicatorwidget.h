@@ -29,13 +29,19 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <modules/qtwidgets/inviwoqtutils.h>          // for emToPx
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
-#include <QTransform>
+#include <QPoint>                                     // for QPoint
+#include <QRect>                                      // for QRect
+#include <QTransform>                                 // for QTransform
+#include <QWidget>                                    // for QWidget
+
+class QPaintEvent;
+
 #include <warn/pop>
 
 namespace inviwo {

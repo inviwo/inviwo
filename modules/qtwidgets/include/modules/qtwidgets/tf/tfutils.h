@@ -28,15 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/datastructures/tfprimitiveset.h>
-
-class QWidget;
 class QMenu;
+class QWidget;
 
 namespace inviwo {
 
+class TFPrimitiveSet;
 class TransferFunctionProperty;
 
 namespace util {

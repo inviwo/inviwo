@@ -28,19 +28,33 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/sliderwidgetqt.h>
-#include <modules/qtwidgets/numberlineedit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <limits>
-#include <cmath>
+#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
+#include <modules/qtwidgets/inviwoqtutils.h>            // for refSpacePx
+#include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
+
+#include <cmath>                                        // for fabs
+#include <limits>                                       // for numeric_limits
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QStyle>
-#include <QSlider>
-#include <QHBoxLayout>
-#include <QSignalBlocker>
-#include <QMouseEvent>
+#include <QDoubleSpinBox>                               // for QDoubleSpinBox
+#include <QEvent>                                       // for QEvent
+#include <QHBoxLayout>                                  // for QHBoxLayout
+#include <QMouseEvent>                                  // for QMouseEvent
+#include <QPoint>                                       // for QPoint
+#include <QSignalBlocker>                               // for QSignalBlocker
+#include <QSizePolicy>                                  // for QSizePolicy, QSizePolicy::Fixed
+#include <QSlider>                                      // for QSlider
+#include <QStyle>                                       // for QStyle
+#include <QVariant>                                     // for QVariant
+#include <QtCore/qcoreevent.h>                          // for QEvent (ptr only), QEvent::MouseB...
+#include <QtCore/qnamespace.h>                          // for ClickFocus, Horizontal, LeftButton
+
+class QHBoxLayout;
+class QMouseEvent;
+class QWheelEvent;
+
 #include <warn/pop>
 
 namespace inviwo {

@@ -28,35 +28,75 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/metadata/containermetadata.h>
-#include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/propertywidgetfactory.h>
-#include <inviwo/core/properties/propertyowner.h>
-#include <inviwo/core/properties/propertypresetmanager.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/network/workspacemanager.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/common/moduleaction.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/rendercontext.h>
+
+#include <inviwo/core/common/inviwoapplication.h>          // for InviwoApplication
+#include <inviwo/core/common/inviwoapplicationutil.h>      // for getInviwoApplication
+#include <inviwo/core/common/inviwomodule.h>               // for InviwoModule
+#include <inviwo/core/common/moduleaction.h>               // for ModuleCallbackAction
+#include <inviwo/core/common/modulecallback.h>             // for ModuleCallback
+#include <inviwo/core/io/serialization/deserializer.h>     // for Deserializer
+#include <inviwo/core/io/serialization/serializer.h>       // for Serializer
+#include <inviwo/core/network/networklock.h>               // for NetworkLock
+#include <inviwo/core/network/workspacemanager.h>          // for WorkspaceManager
+#include <inviwo/core/properties/property.h>               // for Property
+#include <inviwo/core/properties/propertypresetmanager.h>  // for PropertyPresetType, operator<<
+#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, operator==
+#include <inviwo/core/properties/propertywidget.h>         // for PropertyWidget
+#include <inviwo/core/properties/propertywidgetfactory.h>  // for PropertyWidgetFactory
+#include <inviwo/core/util/document.h>                     // for Document, Document::DocumentHa...
+#include <inviwo/core/util/exception.h>                    // for Exception, AbortException
+#include <inviwo/core/util/rendercontext.h>                // for RenderContext
+#include <inviwo/core/util/stringconversion.h>             // for toString
+#include <inviwo/core/util/typetraits.h>                   // for alwaysTrue, identity
+#include <inviwo/core/util/unindent.h>                     // for operator""_unindent
+#include <modules/qtwidgets/inviwoqtutils.h>               // for toQString, emToPx, refEm, from...
+
+#include <algorithm>                                       // for find_if
+#include <array>                                           // for array, array<>::value_type
+#include <initializer_list>                                // for initializer_list
+#include <map>                                             // for map, __map_iterator, operator!=
+#include <ostream>                                         // for operator<<, stringstream, basi...
+#include <string>                                          // for string, char_traits, basic_string
+#include <string_view>                                     // for string_view
+#include <utility>                                         // for pair
+#include <vector>                                          // for vector, __vector_base<>::value...
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QApplication>
-#include <QStyleOption>
-#include <QPainter>
-#include <QToolTip>
-#include <QHelpEvent>
-#include <QInputDialog>
-#include <QClipboard>
-#include <QDrag>
-#include <QMenu>
-#include <QLayout>
-#include <QMimeData>
-#include <QMessageBox>
-#include <QActionGroup>
+#include <QAction>                                         // for QAction
+#include <QActionGroup>                                    // for QActionGroup
+#include <QApplication>                                    // for QApplication
+#include <QByteArray>                                      // for QByteArray
+#include <QClipboard>                                      // for QClipboard
+#include <QDrag>                                           // for QDrag
+#include <QEvent>                                          // for QEvent
+#include <QFlags>                                          // for QFlags
+#include <QHelpEvent>                                      // for QHelpEvent
+#include <QIcon>                                           // for QIcon
+#include <QInputDialog>                                    // for QInputDialog
+#include <QLayout>                                         // for QLayout
+#include <QLineEdit>                                       // for QLineEdit, QLineEdit::Normal
+#include <QList>                                           // for QList
+#include <QMenu>                                           // for QMenu
+#include <QMessageBox>                                     // for QMessageBox, QMessageBox::No
+#include <QMimeData>                                       // for QMimeData
+#include <QMouseEvent>                                     // for QMouseEvent
+#include <QObject>                                         // for QObject
+#include <QPainter>                                        // for QPainter
+#include <QString>                                         // for QString
+#include <QStringList>                                     // for QStringList
+#include <QStyle>                                          // for QStyle, QStyle::PE_Widget
+#include <QStyleOption>                                    // for QStyleOption
+#include <QToolTip>                                        // for QToolTip
+#include <QVariant>                                        // for QVariant
+#include <QtCore/qcoreevent.h>                             // for QEvent (ptr only), QEvent::Mou...
+#include <QtCore/qnamespace.h>                             // for LeftButton, MSWindowsFixedSize...
+
+class QAction;
+class QHelpEvent;
+class QMouseEvent;
+class QPaintEvent;
+
 #include <warn/pop>
 
 namespace inviwo {
