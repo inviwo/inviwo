@@ -84,6 +84,7 @@
 #include <QItemSelectionModel>
 #include <QApplication>
 #include <QSplitterHandle>
+#include <QMainWindow>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QWindow>
