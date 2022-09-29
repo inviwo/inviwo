@@ -42,8 +42,8 @@
 #include <QPoint>                                            // for QPoint
 #include <QResizeEvent>                                      // for QResizeEvent
 #include <QWidget>                                           // for QWidget
-#include <Qt>                                               // for Tool, Window, WindowFlags
-#include <glm/fwd.hpp>                                       // for ivec2
+#include <Qt>                                                // for Tool, Window, WindowFlags
+#include <glm/ext/vector_int2.hpp>                           // for ivec2
 #include <glm/vec2.hpp>                                      // for vec<>::(anonymous), operator!=
 
 class QCloseEvent;

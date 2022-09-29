@@ -31,9 +31,11 @@
 
 #include <inviwo/core/util/assertion.h>        // for ivwAssert
 #include <inviwo/core/util/colorconversion.h>  // for hex2rgba, rgb2hex, rgba2hex
+#include <inviwo/core/util/glmconvert.h>       // for glm_convert
+#include <inviwo/core/util/glmvec.h>           // for ivec4, dvec4, ivec3, dvec3, vec3, vec4
 #include <modules/qtwidgets/inviwoqtutils.h>   // for toQString, fromQString
 
-#include <QEvent>                              // for QEvent
+#include <QEvent>                              // for QEvent, QEvent::LocaleChange
 #include <QKeyEvent>                           // for QKeyEvent
 #include <QList>                               // for QList
 #include <QLocale>                             // for QLocale
@@ -42,9 +44,8 @@
 #include <QString>                             // for QString
 #include <QStringList>                         // for QStringList
 #include <QStyle>                              // for QStyle
-#include <QEvent>                              // for QEvent (ptr only), QEvent::LocaleChange
 #include <Qt>                                  // for Key_Escape
-#include <glm/common.hpp>                      // for clamp, max, min
+#include <glm/common.hpp>                      // for clamp
 
 class QFocusEvent;
 class QKeyEvent;

@@ -30,12 +30,12 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
+#include <memory>                                     // for unique_ptr
+
 #include <QDoubleSpinBox>                             // for QDoubleSpinBox
 #include <QSize>                                      // for QSize
 #include <QString>                                    // for QString
 #include <QValidator>                                 // for QValidator, QValidator::State
-
-#include <memory>                                     // for unique_ptr
 
 class QEvent;
 class QFocusEvent;

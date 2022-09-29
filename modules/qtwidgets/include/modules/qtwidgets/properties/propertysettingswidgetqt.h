@@ -60,13 +60,15 @@
 #include <QPushButton>                                  // for QPushButton
 #include <QSignalBlocker>                               // for QSignalBlocker
 #include <QString>                                      // for QString
-#include <QtCore/qnamespace.h>                          // for Key_Enter, Key_Escape, Key_Return
+#include <Qt>                                           // for Key_Enter, Key_Escape, Key_Return
+#include <glm/common.hpp>                               // for max, min
 #include <glm/detail/qualifier.hpp>                     // for defaultp, tvec2
 #include <glm/vec2.hpp>                                 // for vec<>::(anonymous)
 
 class QCloseEvent;
 class QKeyEvent;
 class QWidget;
+
 namespace inviwo {
 template <typename T> class OrdinalProperty;
 template <typename T> class OrdinalRefProperty;

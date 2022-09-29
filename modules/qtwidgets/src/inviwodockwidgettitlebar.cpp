@@ -33,7 +33,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx, windowTitleHelper
 
 #include <QDockWidget>                        // for QDockWidget
-#include <QEvent>                             // for QEvent
+#include <QEvent>                             // for QEvent, QEvent::ModifiedChange, QEvent::Win...
 #include <QHBoxLayout>                        // for QHBoxLayout
 #include <QIcon>                              // for QIcon, QIcon::Normal, QIcon::Off, QIcon::On
 #include <QLabel>                             // for QLabel
@@ -44,7 +44,6 @@
 #include <QStyle>                             // for QStyle, QStyle::PE_Widget
 #include <QStyleOption>                       // for QStyleOption
 #include <QToolButton>                        // for QToolButton
-#include <QEvent>                             // for QEvent (ptr only), QEvent::ModifiedChange
 
 class QHBoxLayout;
 class QShowEvent;

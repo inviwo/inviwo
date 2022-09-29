@@ -39,6 +39,7 @@
 #include <locale>                                         // for locale
 #include <sstream>                                        // for basic_ostream
 #include <string>                                         // for string
+#include <string_view>                                    // for string_view
 #include <utility>                                        // for pair
 #include <vector>                                         // for vector
 
@@ -59,8 +60,6 @@
 #include <glm/vec2.hpp>                                   // for vec<>::(anonymous)
 #include <glm/vec3.hpp>                                   // for vec<>::(anonymous), operator*
 #include <glm/vec4.hpp>                                   // for vec<>::(anonymous), operator*
-
-#include <string_view>                                    // for string_view
 
 class QEvent;
 class QMainWindow;

@@ -29,10 +29,10 @@
 
 #pragma once
 
+#include <inviwo/core/properties/minmaxproperty.h>                  // IWYU pragma: keep
 #include <inviwo/core/properties/property.h>                        // for Property
 #include <inviwo/core/util/glm.h>                                   // for almostEqual
 #include <inviwo/core/util/glmutils.h>                              // for is_floating_point
-#include <inviwo/core/properties/minmaxproperty.h>                  // IWYU pragma: keep
 #include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
 #include <modules/qtwidgets/inviwoqtutils.h>                        // for emToPx, decimals
 #include <modules/qtwidgets/numberlineedit.h>                       // for NumberLineEdit
@@ -51,7 +51,7 @@
 #include <QSizePolicy>                                              // for QSizePolicy
 #include <QSplitterHandle>                                          // for QSplitterHandle
 #include <QWidget>                                                  // for QWidget
-#include <QtCore/qnamespace.h>                                      // for Horizontal
+#include <Qt>                                                       // for Horizontal
 #include <glm/detail/qualifier.hpp>                                 // for defaultp, tvec2
 #include <glm/gtc/type_precision.hpp>                               // for i64
 

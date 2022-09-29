@@ -32,11 +32,11 @@
 
 #include <inviwo/core/util/fileobserver.h>            // for FileObserver
 
-#include <QObject>                                    // for QObject
-#include <QString>                                    // for QString
-
 #include <functional>                                 // for function
 #include <string>                                     // for string
+
+#include <QObject>                                    // for QObject
+#include <QString>                                    // for QString
 
 class QEvent;
 class QWidget;

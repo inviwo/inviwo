@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/datamapper.h>                // for DataMapper
 #include <inviwo/core/datastructures/histogram.h>                 // for HistogramMode
 #include <inviwo/core/datastructures/isovaluecollection.h>        // for IsoValueCollection
+#include <inviwo/core/datastructures/tfprimitive.h>               // for TFPrimitive
 #include <inviwo/core/datastructures/tfprimitiveset.h>            // for TFPrimitiveSet, TFPrimi...
 #include <inviwo/core/datastructures/transferfunction.h>          // for TransferFunction
 #include <inviwo/core/ports/volumeport.h>                         // for VolumeInport
@@ -43,6 +44,7 @@
 #include <inviwo/core/properties/property.h>                      // for Property
 #include <inviwo/core/properties/propertyowner.h>                 // for PropertyOwner
 #include <inviwo/core/properties/transferfunctionproperty.h>      // for TransferFunctionProperty
+#include <inviwo/core/util/glmvec.h>                              // for dvec2, ivec2, vec2
 #include <inviwo/core/util/stringconversion.h>                    // for toString
 #include <modules/qtwidgets/colorwheel.h>                         // for ColorWheel
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>           // for InviwoDockWidgetTitleBar

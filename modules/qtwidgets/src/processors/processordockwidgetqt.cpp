@@ -31,6 +31,7 @@
 
 #include <inviwo/core/processors/processor.h>        // for Processor, Processor::NameDispatcher...
 #include <inviwo/core/processors/processorwidget.h>  // for ProcessorWidget
+#include <inviwo/core/util/glmvec.h>                 // for ivec2
 #include <modules/qtwidgets/inviwodockwidget.h>      // for InviwoDockWidget
 #include <modules/qtwidgets/inviwoqtutils.h>         // for toQString, getApplicationMainWindow
 
@@ -43,6 +44,7 @@
 #include <QResizeEvent>                              // for QResizeEvent
 #include <QSize>                                     // for QSize
 #include <Qt>                                        // for RightDockWidgetArea
+#include <glm/ext/vector_int2.hpp>                   // for ivec2
 #include <glm/vec2.hpp>                              // for vec<>::(anonymous)
 
 class QHideEvent;

@@ -36,15 +36,14 @@
 #include <inviwo/core/properties/propertyownerobserver.h>            // for PropertyOwnerObserver
 #include <modules/qtwidgets/inviwodockwidget.h>                      // for InviwoDockWidget
 
-#include <QEvent>                                                    // for QEvent
-#include <QObject>                                                   // for Q_GADGET
-#include <QSize>                                                     // for QSize
-#include <QWidget>                                                   // for QWidget
-#include <QEvent>                                              // for QEvent::Type, QEvent...
-
 #include <cstddef>                                                   // for size_t
 #include <string>                                                    // for string
 #include <unordered_map>                                             // for unordered_map
+
+#include <QEvent>                                                    // for QEvent, QEvent::Type
+#include <QObject>                                                   // for Q_GADGET
+#include <QSize>                                                     // for QSize
+#include <QWidget>                                                   // for QWidget
 
 class QPaintEvent;
 class QScrollArea;

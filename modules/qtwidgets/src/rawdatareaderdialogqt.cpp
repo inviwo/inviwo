@@ -29,8 +29,10 @@
 
 #include <modules/qtwidgets/rawdatareaderdialogqt.h>
 
+#include <inviwo/core/datastructures/datamapper.h>  // for DataMapper
 #include <inviwo/core/datastructures/unitsystem.h>  // for Axis, Unit
 #include <inviwo/core/util/formats.h>               // for DataFormatBase, DataFormatId, DataFor...
+#include <inviwo/core/util/glmvec.h>                // for uvec3, dvec2, dvec3
 #include <inviwo/core/util/rendercontext.h>         // for RenderContext
 #include <modules/qtwidgets/inviwoqtutils.h>        // for emToPx, fromLocalQString, toLocalQString
 
@@ -55,7 +57,6 @@
 #include <glm/fwd.hpp>                              // for dvec3
 #include <glm/vec2.hpp>                             // for vec<>::(anonymous)
 #include <glm/vec3.hpp>                             // for vec<>::(anonymous)
-
 #include <units/units.hpp>                          // for to_string, unit_from_string
 
 class QHBoxLayout;

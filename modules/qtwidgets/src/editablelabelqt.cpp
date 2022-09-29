@@ -36,7 +36,7 @@
 #include <memory>                                           // for unique_ptr
 
 #include <QAction>                                          // for QAction
-#include <QEvent>                                           // for QEvent
+#include <QEvent>                                           // for QEvent, QEvent::MouseButtonRe...
 #include <QFontMetrics>                                     // for QFontMetrics
 #include <QHBoxLayout>                                      // for QHBoxLayout
 #include <QLabel>                                           // for QLabel
@@ -46,7 +46,6 @@
 #include <QMouseEvent>                                      // for QMouseEvent
 #include <QSizeF>                                           // for QSizeF
 #include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Fixed
-#include <QEvent>                                           // for QEvent (ptr only), QEvent::Mo...
 #include <Qt>                                               // for AlignLeft, ElideRight, Preven...
 
 class QHBoxLayout;

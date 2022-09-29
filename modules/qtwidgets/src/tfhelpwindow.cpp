@@ -44,7 +44,7 @@
 #include <QVBoxLayout>                           // for QVBoxLayout
 #include <QWidget>                               // for QWidget
 #include <Qt>                                    // for operator|, LeftDockWidgetArea, RightDock...
-#include <QMainWindow>                           // IWYU pargma: keep
+#include <QMainWindow>                           // IWYU pragma: keep
 
 namespace inviwo {
 

@@ -42,7 +42,7 @@
 #include <QAbstractSpinBox>                   // for QAbstractSpinBox, QAbstractSpinBox::NoButtons
 #include <QChar>                              // for operator==, QChar
 #include <QDoubleValidator>                   // for QDoubleValidator
-#include <QEvent>                             // for QEvent
+#include <QEvent>                             // for QEvent, QEvent::LocaleChange, QEvent::Style...
 #include <QFont>                              // for qHash
 #include <QFontMetrics>                       // for QFontMetrics
 #include <QLineEdit>                          // for QLineEdit
@@ -52,7 +52,6 @@
 #include <QStyle>                             // for QStyle, QStyle::CT_SpinBox
 #include <QStyleOptionSpinBox>                // for QStyleOptionSpinBox
 #include <QTimerEvent>                        // for QTimerEvent
-#include <QEvent>                             // for QEvent (ptr only), QEvent::LocaleChange
 #include <Qt>                                 // for StrongFocus
 
 class QFocusEvent;

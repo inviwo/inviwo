@@ -36,9 +36,9 @@
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>   // for TFEditorPrimitive, TFEditorPrimitiv...
 
 #include <QGraphicsItem>                              // for QGraphicsItem::UserType
+#include <QPainterPath>                               // for QPainterPath
 #include <QPointF>                                    // for QPointF
 #include <QRectF>                                     // for QRectF
-#include <QPainterPath>                               // for QPainterPath
 
 class QGraphicsScene;
 class QPainter;

@@ -29,6 +29,8 @@
 
 #include <modules/qtwidgets/labelgraphicsitem.h>  // for LabelGraphicsItem, LabelGraphicsItemObs...
 
+#include <vector>                                 // for vector
+
 #include <QFlags>                                 // for QFlags
 #include <QFont>                                  // for QFont
 #include <QFontMetrics>                           // for QFontMetrics
@@ -42,8 +44,6 @@
 #include <QTextDocument>                          // for QTextDocument
 #include <QTransform>                             // for QTransform
 #include <Qt>                                     // for Alignment, AlignBottom, AlignHCenter
-
-#include <vector>                                 // for vector
 
 class QFocusEvent;
 class QKeyEvent;

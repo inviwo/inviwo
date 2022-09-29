@@ -29,11 +29,12 @@
 
 #include <modules/qtwidgets/rangesliderqt.h>
 
+#include <inviwo/core/util/glmvec.h>            // for ivec2
 #include <inviwo/core/util/stringconversion.h>  // for toString
 
 #include <algorithm>                            // for min
 
-#include <QEvent>                               // for QEvent
+#include <QEvent>                               // for QEvent, QEvent::MouseButtonRelease, QEven...
 #include <QFrame>                               // for QFrame
 #include <QHelpEvent>                           // for QHelpEvent
 #include <QList>                                // for QList
@@ -45,7 +46,6 @@
 #include <QString>                              // for QString
 #include <QToolTip>                             // for QToolTip
 #include <QWidget>                              // for QWidget
-#include <QEvent>                               // for QEvent::MouseButtonRelease, QEvent (ptr o...
 #include <glm/vec2.hpp>                         // for vec<>::(anonymous)
 
 class QHelpEvent;

@@ -36,6 +36,7 @@
 #include <inviwo/core/network/networklock.h>                // for NetworkLock
 #include <inviwo/core/ports/volumeport.h>                   // for VolumeInport
 #include <inviwo/core/properties/property.h>                // for Property
+#include <inviwo/core/util/glmvec.h>                        // for dvec2, vec4
 #include <inviwo/core/util/raiiutils.h>                     // for KeepTrueWhileInScope
 #include <inviwo/core/util/stdextensions.h>                 // for contains
 #include <inviwo/core/util/transformiterator.h>             // for TransformIterator
@@ -50,10 +51,10 @@
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>         // for TFPropertyConcept
 #include <modules/qtwidgets/tf/tfutils.h>                   // for addTFColorbrewerPresetsMenu
 
-#include <cstdlib>                                          // for abs, size_t
 #include <algorithm>                                        // for stable_sort, find_if, max
 #include <array>                                            // for array
 #include <cmath>                                            // for abs
+#include <cstdlib>                                          // for abs, size_t
 #include <initializer_list>                                 // for initializer_list
 #include <iterator>                                         // for back_insert_iterator, back_in...
 #include <type_traits>                                      // for remove_extent_t

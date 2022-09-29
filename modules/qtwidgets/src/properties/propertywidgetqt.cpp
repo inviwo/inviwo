@@ -67,7 +67,7 @@
 #include <QByteArray>                                      // for QByteArray
 #include <QClipboard>                                      // for QClipboard
 #include <QDrag>                                           // for QDrag
-#include <QEvent>                                          // for QEvent
+#include <QEvent>                                          // for QEvent, QEvent::MouseButtonRel...
 #include <QFlags>                                          // for QFlags
 #include <QHelpEvent>                                      // for QHelpEvent
 #include <QIcon>                                           // for QIcon
@@ -87,10 +87,8 @@
 #include <QStyleOption>                                    // for QStyleOption
 #include <QToolTip>                                        // for QToolTip
 #include <QVariant>                                        // for QVariant
-#include <QEvent>                                          // for QEvent (ptr only), QEvent::Mou...
 #include <Qt>                                              // for LeftButton, MSWindowsFixedSize...
 
-class QAction;
 class QHelpEvent;
 class QMouseEvent;
 class QPaintEvent;

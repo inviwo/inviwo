@@ -50,8 +50,8 @@
 #include <QMenu>                                                     // for QMenu
 #include <QToolButton>                                               // for QToolButton
 #include <QVariant>                                                  // for QVariant
+#include <QtGlobal>                                                  // for uint
 #include <flags/flags.h>                                             // for operator&, flags
-#include <sys/types.h>                                               // for size_t, uint
 
 class QHBoxLayout;
 

@@ -37,7 +37,7 @@
 #include <limits>                                       // for numeric_limits
 
 #include <QDoubleSpinBox>                               // for QDoubleSpinBox
-#include <QEvent>                                       // for QEvent
+#include <QEvent>                                       // for QEvent, QEvent::MouseButtonRelease
 #include <QHBoxLayout>                                  // for QHBoxLayout
 #include <QMouseEvent>                                  // for QMouseEvent
 #include <QPoint>                                       // for QPoint
@@ -46,7 +46,6 @@
 #include <QSlider>                                      // for QSlider
 #include <QStyle>                                       // for QStyle
 #include <QVariant>                                     // for QVariant
-#include <QEvent>                                       // for QEvent (ptr only), QEvent::MouseB...
 #include <Qt>                                           // for ClickFocus, Horizontal, LeftButton
 
 class QHBoxLayout;

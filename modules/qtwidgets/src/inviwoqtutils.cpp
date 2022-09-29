@@ -54,12 +54,20 @@
 #include <inviwo/core/util/zip.h>                             // for enumerate, zipIterator, zipper
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>           // for TFPropertyConcept
 
+#include <algorithm>                                          // for clamp, find_if, find
+#include <cmath>                                              // for pow, round
+#include <exception>                                          // for exception
+#include <ios>                                                // for ostringstream, ios_base
+#include <memory>                                             // for unique_ptr
+#include <unordered_map>                                      // for unordered_map
+
 #include <QAction>                                            // for QAction
 #include <QApplication>                                       // for QApplication
+#include <QBrush>                                             // for QBrush
 #include <QBuffer>                                            // for QBuffer
 #include <QByteArray>                                         // for QByteArray
 #include <QClipboard>                                         // for QClipboard
-#include <QEvent>                                             // for QEvent
+#include <QEvent>                                             // for QEvent, QEvent::Close
 #include <QEventLoop>                                         // for QEventLoop, QEventLoop::Exc...
 #include <QFlags>                                             // for QFlags
 #include <QFont>                                              // for QFont
@@ -84,18 +92,8 @@
 #include <QStringList>                                        // for QStringList
 #include <QStyle>                                             // for QStyle, QStyle::SH_TitleBar...
 #include <QWidget>                                            // for QWidget
-#include <QEvent>                                             // for QEvent (ptr only), QEvent::...
 #include <Qt>                                                 // for Tool, WindowFlags, WindowFu...
-#include <QBrush>                                             // for QBrush
-
 #include <fmt/core.h>                                         // for format
-
-#include <algorithm>                                          // for clamp, find_if, find
-#include <cmath>                                              // for pow, round
-#include <exception>                                          // for exception
-#include <ios>                                                // for ostringstream, ios_base
-#include <memory>                                             // for unique_ptr
-#include <unordered_map>                                      // for unordered_map
 
 namespace inviwo {
 

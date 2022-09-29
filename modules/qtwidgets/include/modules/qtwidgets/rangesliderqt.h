@@ -33,12 +33,12 @@
 
 #include <inviwo/core/util/glmvec.h>                  // for ivec2
 
+#include <functional>                                 // for function
+#include <string>                                     // for string
+
 #include <QObject>                                    // for Q_OBJECT, signals
 #include <QSplitter>                                  // for QSplitter
 #include <Qt>                                         // for Horizontal, Orientation
-
-#include <functional>                                 // for function
-#include <string>                                     // for string
 
 class QEvent;
 class QWidget;

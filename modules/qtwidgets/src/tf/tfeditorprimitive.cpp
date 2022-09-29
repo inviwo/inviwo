@@ -32,12 +32,14 @@
 #include <inviwo/core/datastructures/datamapper.h>   // for DataMapper
 #include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive
 #include <inviwo/core/datastructures/unitsystem.h>   // for Axis
+#include <inviwo/core/util/glmvec.h>                 // for vec4, vec3, dvec2
 #include <modules/qtwidgets/inviwoqtutils.h>         // for clamp, toQColor, toQString
 #include <modules/qtwidgets/tf/tfeditor.h>           // for TFEditor
 
-#include <cstdlib>                                   // for abs
 #include <cmath>                                     // for abs
+#include <cstdlib>                                   // for abs
 
+#include <QBrush>                                    // for QBrush
 #include <QColor>                                    // for QColor
 #include <QFlags>                                    // for QFlags, operator==
 #include <QFont>                                     // for QFont
@@ -51,7 +53,6 @@
 #include <QRectF>                                    // for QRectF
 #include <QString>                                   // for QString
 #include <Qt>                                        // for ShiftModifier, RoundCap, SolidLine
-#include <QBrush>                                    // for QBrush
 #include <fmt/core.h>                                // for basic_string_view, format
 #include <glm/vec4.hpp>                              // for operator==, vec<>::(anonymous)
 
