@@ -36,6 +36,8 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
 
+#include <QBrush>
+
 namespace inviwo {
 
 DataFrameModel::DataFrameModel(QObject* parent) : QAbstractTableModel(parent), manager_(nullptr) {}
