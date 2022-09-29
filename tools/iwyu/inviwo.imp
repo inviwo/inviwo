@@ -1,0 +1,11 @@
+[
+	{ "ref": "libcxx.imp"},
+	{ "ref": "libcxxgen.imp"},
+	{ "ref": "glm.imp" },
+	{ "ref": "python3.8.imp"},
+	{ "ref": "cheaders.imp"},
+	{ "ref": "eigen.imp"},
+	{ symbol: [ "BufferRAMPrecision", "private", "<inviwo/core/datastructures/buffer/bufferram.h>", "public" ] },
+	{ symbol: [ "LayerRAMPrecision", "private", "<inviwo/core/datastructures/image/layerram.h>", "public" ] },
+	{ symbol: [ "VolumeRAMPrecision", "private", "<inviwo/core/datastructures/volume/volumeram.h>", "public" ] }
+]
