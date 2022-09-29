@@ -31,12 +31,12 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>   // for TFEditorPrimitive, TFEditorPrimitiv...
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
 
-#include <QGraphicsItem>                              // for QGraphicsItem, QGraphicsItem::UserType
-#include <QPointF>                                    // for QPointF
-#include <QRectF>                                     // for QRectF
-#include <QPainterPath>                               // for QPainterPath
+#include <QGraphicsItem>  // for QGraphicsItem, QGraphicsItem::UserType
+#include <QPointF>        // for QPointF
+#include <QRectF>         // for QRectF
+#include <QPainterPath>   // for QPainterPath
 
 class QPainter;
 class QPointF;

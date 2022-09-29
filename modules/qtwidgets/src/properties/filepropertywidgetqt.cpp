@@ -41,22 +41,22 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
 
-#include <string>                                             // for basic_string, operator+
-#include <vector>                                             // for vector
+#include <string>  // for basic_string, operator+
+#include <vector>  // for vector
 
-#include <QDesktopServices>                                   // for QDesktopServices
-#include <QDragEnterEvent>                                    // for QDragEnterEvent
-#include <QDragMoveEvent>                                     // for QDragMoveEvent
-#include <QDropEvent>                                         // for QDropEvent
-#include <QHBoxLayout>                                        // for QHBoxLayout
-#include <QIcon>                                              // for QIcon
-#include <QList>                                              // for QList
-#include <QMimeData>                                          // for QMimeData
-#include <QSizePolicy>                                        // for QSizePolicy
-#include <QString>                                            // for QString
-#include <QToolButton>                                        // for QToolButton
-#include <QUrl>                                               // for QUrl, QUrl::TolerantMode
-#include <QWidget>                                            // for QWidget
+#include <QDesktopServices>  // for QDesktopServices
+#include <QDragEnterEvent>   // for QDragEnterEvent
+#include <QDragMoveEvent>    // for QDragMoveEvent
+#include <QDropEvent>        // for QDropEvent
+#include <QHBoxLayout>       // for QHBoxLayout
+#include <QIcon>             // for QIcon
+#include <QList>             // for QList
+#include <QMimeData>         // for QMimeData
+#include <QSizePolicy>       // for QSizePolicy
+#include <QString>           // for QString
+#include <QToolButton>       // for QToolButton
+#include <QUrl>              // for QUrl, QUrl::TolerantMode
+#include <QWidget>           // for QWidget
 
 namespace inviwo {
 

@@ -35,14 +35,14 @@
 #include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <QCheckBox>                                        // for QCheckBox
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QLineEdit>                                        // for QLineEdit
-#include <QRegularExpression>                               // for QRegularExpression
-#include <QRegularExpressionValidator>                      // for QRegularExpressionValidator
-#include <QSize>                                            // for QSize
-#include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Fixed
-#include <QString>                                          // for QString
+#include <QCheckBox>                    // for QCheckBox
+#include <QHBoxLayout>                  // for QHBoxLayout
+#include <QLineEdit>                    // for QLineEdit
+#include <QRegularExpression>           // for QRegularExpression
+#include <QRegularExpressionValidator>  // for QRegularExpressionValidator
+#include <QSize>                        // for QSize
+#include <QSizePolicy>                  // for QSizePolicy, QSizePolicy::Fixed
+#include <QString>                      // for QString
 
 class QHBoxLayout;
 

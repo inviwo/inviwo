@@ -31,14 +31,14 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/processors/processor.h>         // for Processor, Processor::NameDispatche...
-#include <inviwo/core/processors/processorwidget.h>   // for ProcessorWidget
-#include <inviwo/core/util/glmvec.h>                  // for ivec2
-#include <modules/qtwidgets/inviwodockwidget.h>       // for InviwoDockWidget
+#include <inviwo/core/processors/processor.h>        // for Processor, Processor::NameDispatche...
+#include <inviwo/core/processors/processorwidget.h>  // for ProcessorWidget
+#include <inviwo/core/util/glmvec.h>                 // for ivec2
+#include <modules/qtwidgets/inviwodockwidget.h>      // for InviwoDockWidget
 
-#include <QObject>                                    // for Q_OBJECT
-#include <QString>                                    // for QString
-#include <glm/ext/vector_int2.hpp>                    // for ivec2
+#include <QObject>                  // for Q_OBJECT
+#include <QString>                  // for QString
+#include <glm/ext/vector_int2.hpp>  // for ivec2
 
 class QHideEvent;
 class QMoveEvent;

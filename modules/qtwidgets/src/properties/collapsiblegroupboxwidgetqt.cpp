@@ -54,36 +54,36 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                // for emToPx, toQString
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt, PropertyWid...
 
-#include <algorithm>                                        // for max, find, find_if, min
-#include <functional>                                       // for __base
-#include <ostream>                                          // for operator<<, stringstream, bas...
+#include <algorithm>   // for max, find, find_if, min
+#include <functional>  // for __base
+#include <ostream>     // for operator<<, stringstream, bas...
 
-#include <QAction>                                          // for QAction
-#include <QApplication>                                     // for QApplication
-#include <QByteArray>                                       // for QByteArray
-#include <QCheckBox>                                        // for QCheckBox
-#include <QClipboard>                                       // for QClipboard
-#include <QFontMetrics>                                     // for QFontMetrics
-#include <QGridLayout>                                      // for QGridLayout
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QIcon>                                            // for QIcon
-#include <QLabel>                                           // for QLabel
-#include <QLayout>                                          // for QLayout
-#include <QLayoutItem>                                      // for QLayoutItem
-#include <QList>                                            // for QList
-#include <QMenu>                                            // for QMenu
-#include <QMimeData>                                        // for QMimeData
-#include <QObject>                                          // for QObject
-#include <QRect>                                            // for QRect
-#include <QSizeF>                                           // for QSizeF
-#include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Fixed
-#include <QSpacerItem>                                      // for QSpacerItem
-#include <QString>                                          // for QString
-#include <QStringList>                                      // for QStringList
-#include <QToolButton>                                      // for QToolButton
-#include <QVBoxLayout>                                      // for QVBoxLayout
-#include <QWidget>                                          // for QWidget
-#include <Qt>                                               // for NoFocus, RightToLeft, AlignTop
+#include <QAction>       // for QAction
+#include <QApplication>  // for QApplication
+#include <QByteArray>    // for QByteArray
+#include <QCheckBox>     // for QCheckBox
+#include <QClipboard>    // for QClipboard
+#include <QFontMetrics>  // for QFontMetrics
+#include <QGridLayout>   // for QGridLayout
+#include <QHBoxLayout>   // for QHBoxLayout
+#include <QIcon>         // for QIcon
+#include <QLabel>        // for QLabel
+#include <QLayout>       // for QLayout
+#include <QLayoutItem>   // for QLayoutItem
+#include <QList>         // for QList
+#include <QMenu>         // for QMenu
+#include <QMimeData>     // for QMimeData
+#include <QObject>       // for QObject
+#include <QRect>         // for QRect
+#include <QSizeF>        // for QSizeF
+#include <QSizePolicy>   // for QSizePolicy, QSizePolicy::Fixed
+#include <QSpacerItem>   // for QSpacerItem
+#include <QString>       // for QString
+#include <QStringList>   // for QStringList
+#include <QToolButton>   // for QToolButton
+#include <QVBoxLayout>   // for QVBoxLayout
+#include <QWidget>       // for QWidget
+#include <Qt>            // for NoFocus, RightToLeft, AlignTop
 
 class QHBoxLayout;
 class QVBoxLayout;

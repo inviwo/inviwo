@@ -33,12 +33,12 @@
 
 #include <inviwo/core/properties/propertyobserver.h>  // for PropertyObserver
 
-#include <string>                                     // for string
+#include <string>  // for string
 
-#include <QObject>                                    // for Q_OBJECT, signals
-#include <QSize>                                      // for QSize
-#include <QString>                                    // for QString
-#include <QWidget>                                    // for QWidget
+#include <QObject>  // for Q_OBJECT, signals
+#include <QSize>    // for QSize
+#include <QString>  // for QString
+#include <QWidget>  // for QWidget
 
 class QEvent;
 class QLabel;

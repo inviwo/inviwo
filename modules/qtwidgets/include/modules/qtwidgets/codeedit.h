@@ -31,14 +31,14 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/util/glmvec.h>                  // for vec4
+#include <inviwo/core/util/glmvec.h>  // for vec4
 
-#include <functional>                                 // for function
-#include <string>                                     // for string
+#include <functional>  // for function
+#include <string>      // for string
 
-#include <QPlainTextEdit>                             // for QPlainTextEdit
-#include <QSize>                                      // for QSize
-#include <QWidget>                                    // for QWidget
+#include <QPlainTextEdit>  // for QPlainTextEdit
+#include <QSize>           // for QSize
+#include <QWidget>         // for QWidget
 
 class QKeyEvent;
 class QPaintEvent;

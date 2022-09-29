@@ -36,7 +36,6 @@
 #include <inviwo/core/properties/buttongroupproperty.h>                      // for ButtonGroupP...
 #include <inviwo/core/properties/buttonproperty.h>                           // for ButtonProperty
 #include <inviwo/core/properties/compositeproperty.h>                        // for CompositePro...
-#include <inviwo/core/properties/constraintbehavior.h>                       // for enumToStr
 #include <inviwo/core/properties/eventproperty.h>                            // for EventProperty
 #include <inviwo/core/properties/fileproperty.h>                             // for FileProperty
 #include <inviwo/core/properties/isotfproperty.h>                            // for IsoTFProperty
@@ -74,10 +73,10 @@
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>              // for LightPropert...
 #include <modules/qtwidgets/properties/listpropertywidgetqt.h>               // for ListProperty...
 #include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>          // for MultiFilePro...
+#include <modules/qtwidgets/properties/optionpropertywidgetqt.h>             // IWYU pragma: keep
 #include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>      // for OrdinalMinMa...
 #include <modules/qtwidgets/properties/ordinalminmaxtextpropertywidgetqt.h>  // for OrdinalMinMa...
 #include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>            // for OrdinalPrope...
-#include <modules/qtwidgets/properties/optionpropertywidgetqt.h>             // IWYU pragma: keep
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>    // for StringMultil...
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>             // for StringProper...
 #include <modules/qtwidgets/properties/stringspropertywidgetqt.h>            // for StringsPrope...
@@ -86,30 +85,30 @@
 #include <modules/qtwidgets/rawdatareaderdialogqt.h>                         // for RawDataReade...
 #include <modules/qtwidgets/tfhelpwindow.h>                                  // for TFMenuHelper
 
-#include <array>                                                             // for array
-#include <cstddef>                                                           // for size_t
-#include <functional>                                                        // for __base
-#include <string>                                                            // for string
-#include <string_view>                                                       // for string_view
-#include <tuple>                                                             // for tuple
-#include <type_traits>                                                       // for conditional_t
-#include <vector>                                                            // for vector
+#include <array>        // for array
+#include <cstddef>      // for size_t
+#include <functional>   // for __base
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <tuple>        // for tuple
+#include <type_traits>  // for conditional_t
+#include <vector>       // for vector
 
-#include <QApplication>                                                      // for QApplication
-#include <fmt/core.h>                                                        // for format, basi...
-#include <glm/common.hpp>                                                    // for max, min, clamp
-#include <glm/detail/type_quat.hpp>                                          // for qua::operator[]
-#include <glm/ext/quaternion_double.hpp>                                     // for dquat
-#include <glm/ext/scalar_relational.hpp>                                     // for equal
-#include <glm/fwd.hpp>                                                       // for fquat
-#include <glm/geometric.hpp>                                                 // for length
-#include <glm/gtc/type_precision.hpp>                                        // for i64
-#include <glm/mat2x2.hpp>                                                    // for operator+
-#include <glm/mat3x3.hpp>                                                    // for operator+
-#include <glm/mat4x4.hpp>                                                    // for operator+
-#include <glm/vec2.hpp>                                                      // for operator!=
-#include <glm/vec3.hpp>                                                      // for operator+, vec
-#include <glm/vec4.hpp>                                                      // for operator+
+#include <QApplication>                   // for QApplication
+#include <fmt/core.h>                     // for format, basi...
+#include <glm/common.hpp>                 // for max, min, clamp
+#include <glm/detail/type_quat.hpp>       // for qua::operator[]
+#include <glm/ext/quaternion_double.hpp>  // for dquat
+#include <glm/ext/scalar_relational.hpp>  // for equal
+#include <glm/fwd.hpp>                    // for fquat
+#include <glm/geometric.hpp>              // for length
+#include <glm/gtc/type_precision.hpp>     // for i64
+#include <glm/mat2x2.hpp>                 // for operator+
+#include <glm/mat3x3.hpp>                 // for operator+
+#include <glm/mat4x4.hpp>                 // for operator+
+#include <glm/vec2.hpp>                   // for operator!=
+#include <glm/vec3.hpp>                   // for operator+, vec
+#include <glm/vec4.hpp>                   // for operator+
 
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtResources {

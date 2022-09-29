@@ -29,21 +29,21 @@
 
 #include <modules/qtwidgets/labelgraphicsitem.h>  // for LabelGraphicsItem, LabelGraphicsItemObs...
 
-#include <QFlags>                                 // for QFlags
-#include <QFont>                                  // for QFont
-#include <QFontMetrics>                           // for QFontMetrics
-#include <QGraphicsItem>                          // for QGraphicsItem::GraphicsItemFlags
-#include <QGraphicsTextItem>                      // for QGraphicsTextItem
-#include <QKeyEvent>                              // for QKeyEvent
-#include <QRect>                                  // for QRect
-#include <QRectF>                                 // for QRectF
-#include <QString>                                // for QString, operator!=
-#include <QTextCursor>                            // for QTextCursor
-#include <QTextDocument>                          // for QTextDocument
-#include <QTransform>                             // for QTransform
-#include <Qt>                                     // for Alignment, AlignBottom, AlignHCenter
+#include <vector>  // for vector
 
-#include <vector>                                 // for vector
+#include <QFlags>             // for QFlags
+#include <QFont>              // for QFont
+#include <QFontMetrics>       // for QFontMetrics
+#include <QGraphicsItem>      // for QGraphicsItem::GraphicsItemFlags
+#include <QGraphicsTextItem>  // for QGraphicsTextItem
+#include <QKeyEvent>          // for QKeyEvent
+#include <QRect>              // for QRect
+#include <QRectF>             // for QRectF
+#include <QString>            // for QString, operator!=
+#include <QTextCursor>        // for QTextCursor
+#include <QTextDocument>      // for QTextDocument
+#include <QTransform>         // for QTransform
+#include <Qt>                 // for Alignment, AlignBottom, AlignHCenter
 
 class QFocusEvent;
 class QKeyEvent;

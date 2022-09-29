@@ -31,9 +31,9 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <QObject>                                    // for Q_OBJECT, signals, slots
-#include <QString>                                    // for QString
-#include <QWidget>                                    // for QWidget
+#include <QObject>  // for Q_OBJECT, signals, slots
+#include <QString>  // for QString
+#include <QWidget>  // for QWidget
 
 namespace inviwo {
 

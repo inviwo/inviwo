@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>              // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <modules/qtwidgets/editorfileobserver.h>                 // for EditorFileObserver
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>  // for PropertyEditorWidgetQt
 
-#include <functional>                                             // for function
-#include <memory>                                                 // for shared_ptr
-#include <string>                                                 // for string
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <string>      // for string
 
 class QCloseEvent;
 

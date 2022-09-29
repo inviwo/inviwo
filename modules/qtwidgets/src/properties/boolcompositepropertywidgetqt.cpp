@@ -32,12 +32,13 @@
 #include <inviwo/core/properties/boolcompositeproperty.h>              // for BoolCompositeProperty
 #include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
 #include <inviwo/core/properties/compositepropertyobserver.h>          // for CompositePropertyO...
+#include <inviwo/core/properties/propertyobserver.h>                   // for PropertyObserverDe...
 #include <inviwo/core/properties/propertyownerobserver.h>              // for PropertyOwnerObser...
 #include <modules/qtwidgets/editablelabelqt.h>                         // for EditableLabelQt
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
 
-#include <functional>                                                  // for __base, function
-#include <vector>                                                      // for vector
+#include <functional>  // for __base, function
+#include <vector>      // for vector
 
 namespace inviwo {
 

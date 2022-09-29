@@ -32,19 +32,18 @@
 #include <inviwo/core/util/raiiutils.h>       // for KeepTrueWhileInScope
 #include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx, windowTitleHelper
 
-#include <QDockWidget>                        // for QDockWidget
-#include <QEvent>                             // for QEvent
-#include <QHBoxLayout>                        // for QHBoxLayout
-#include <QIcon>                              // for QIcon, QIcon::Normal, QIcon::Off, QIcon::On
-#include <QLabel>                             // for QLabel
-#include <QLayout>                            // for QLayout
-#include <QList>                              // for QList, QList<>::iterator
-#include <QPainter>                           // for QPainter
-#include <QSizeF>                             // for QSizeF
-#include <QStyle>                             // for QStyle, QStyle::PE_Widget
-#include <QStyleOption>                       // for QStyleOption
-#include <QToolButton>                        // for QToolButton
-#include <QEvent>                             // for QEvent (ptr only), QEvent::ModifiedChange
+#include <QDockWidget>   // for QDockWidget
+#include <QEvent>        // for QEvent, QEvent::ModifiedChange, QEvent::Win...
+#include <QHBoxLayout>   // for QHBoxLayout
+#include <QIcon>         // for QIcon, QIcon::Normal, QIcon::Off, QIcon::On
+#include <QLabel>        // for QLabel
+#include <QLayout>       // for QLayout
+#include <QList>         // for QList, QList<>::iterator
+#include <QPainter>      // for QPainter
+#include <QSizeF>        // for QSizeF
+#include <QStyle>        // for QStyle, QStyle::PE_Widget
+#include <QStyleOption>  // for QStyleOption
+#include <QToolButton>   // for QToolButton
 
 class QHBoxLayout;
 class QShowEvent;

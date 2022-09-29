@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>     // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <modules/qtwidgets/properties/colorlineedit.h>  // for ColorLineEdit
 
-#include <QColor>                                        // for QColor
-#include <QObject>                                       // for Q_OBJECT, signals
-#include <QSize>                                         // for QSize
+#include <QColor>   // for QColor
+#include <QObject>  // for Q_OBJECT, signals
+#include <QSize>    // for QSize
 
 class QWidget;
 

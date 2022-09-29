@@ -33,14 +33,14 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                // for toQString
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <cstddef>                                          // for size_t
-#include <optional>                                         // for optional
+#include <cstddef>   // for size_t
+#include <optional>  // for optional
 
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QIcon>                                            // for QIcon
-#include <QLayoutItem>                                      // for QLayoutItem
-#include <QPushButton>                                      // for QPushButton
-#include <QWidget>                                          // for QWidget
+#include <QHBoxLayout>  // for QHBoxLayout
+#include <QIcon>        // for QIcon
+#include <QLayoutItem>  // for QLayoutItem
+#include <QPushButton>  // for QPushButton
+#include <QWidget>      // for QWidget
 
 class QHBoxLayout;
 

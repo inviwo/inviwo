@@ -35,23 +35,22 @@
 #include <modules/qtwidgets/inviwowidgetsqt.h>              // for IvwComboBox
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <algorithm>                                        // for min
-#include <cstddef>                                          // for size_t
-#include <memory>                                           // for unique_ptr
+#include <algorithm>  // for min
+#include <cstddef>    // for size_t
+#include <memory>     // for unique_ptr
 
-#include <QComboBox>                                        // for QComboBox
-#include <QGridLayout>                                      // for QGridLayout
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QMenu>                                            // for QMenu
-#include <QSignalBlocker>                                   // for QSignalBlocker
-#include <QSizePolicy>                                      // for QSizePolicy
-#include <QString>                                          // for operator!=, QString
-#include <QWidget>                                          // for QWidget
-#include <Qt>                                               // for CustomContextMenu
+#include <QComboBox>       // for QComboBox
+#include <QGridLayout>     // for QGridLayout
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QMenu>           // for QMenu
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy
+#include <QString>         // for operator!=, QString
+#include <QWidget>         // for QWidget
+#include <Qt>              // for CustomContextMenu
 
 class QHBoxLayout;
 class QPoint;
-
 
 namespace inviwo {
 

@@ -29,10 +29,10 @@
 
 #include <modules/qtwidgets/lineeditqt.h>
 
-#include <QColor>               // for QColor
-#include <QKeyEvent>            // for QKeyEvent
-#include <QPalette>             // for QPalette, QPalette::PlaceholderText
-#include <Qt>                   // for Key_Escape
+#include <QColor>     // for QColor
+#include <QKeyEvent>  // for QKeyEvent
+#include <QPalette>   // for QPalette, QPalette::PlaceholderText
+#include <Qt>         // for Key_Escape
 
 class QPaintEvent;
 class QWidget;

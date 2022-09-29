@@ -36,36 +36,36 @@
 #include <modules/qtwidgets/tf/tfeditorview.h>       // for TFEditorView
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>  // for TFPropertyConcept
 
-#include <algorithm>                                 // for min, max
-#include <bitset>                                    // for __bitset<>::reference, bitset, bitse...
-#include <cmath>                                     // for log10, pow
-#include <cstddef>                                   // for size_t
-#include <functional>                                // for __base
-#include <memory>                                    // for shared_ptr, shared_ptr<>::element_type
-#include <type_traits>                               // for remove_extent_t
-#include <vector>                                    // for vector, __vector_base<>::value_type
+#include <algorithm>    // for min, max
+#include <bitset>       // for __bitset<>::reference, bitset, bitse...
+#include <cmath>        // for log10, pow
+#include <cstddef>      // for size_t
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr, shared_ptr<>::element_type
+#include <type_traits>  // for remove_extent_t
+#include <vector>       // for vector, __vector_base<>::value_type
 
-#include <QColor>                                    // for QColor
-#include <QFlags>                                    // for QFlags
-#include <QFont>                                     // for QFont
-#include <QGraphicsScene>                            // for QGraphicsScene
-#include <QGraphicsView>                             // for QGraphicsView, QGraphicsView::CacheB...
-#include <QLineF>                                    // for QLineF
-#include <QList>                                     // for QList
-#include <QPainter>                                  // for QPainter, QPainter::Antialiasing
-#include <QPen>                                      // for QPen
-#include <QPoint>                                    // for operator/, QPoint
-#include <QPointF>                                   // for QPointF
-#include <QPolygonF>                                 // for QPolygonF
-#include <QRect>                                     // for QRect
-#include <QRectF>                                    // for QRectF
-#include <QString>                                   // for QString
-#include <QVector>                                   // for QVector
-#include <QWheelEvent>                               // for QWheelEvent
-#include <Qt>                                        // for operator|, AlignRight, AlignTop, Con...
-#include <QBrush>                                    // for QBrush
-#include <QtGlobal>                                  // for operator==, QT_VERSION, QT_VERSION_C...
-#include <glm/vec2.hpp>                              // for vec<>::(anonymous), vec, operator!=
+#include <QColor>          // for QColor
+#include <QFlags>          // for QFlags
+#include <QFont>           // for QFont
+#include <QGraphicsScene>  // for QGraphicsScene
+#include <QGraphicsView>   // for QGraphicsView, QGraphicsView::CacheB...
+#include <QLineF>          // for QLineF
+#include <QList>           // for QList
+#include <QPainter>        // for QPainter, QPainter::Antialiasing
+#include <QPen>            // for QPen
+#include <QPoint>          // for operator/, QPoint
+#include <QPointF>         // for QPointF
+#include <QPolygonF>       // for QPolygonF
+#include <QRect>           // for QRect
+#include <QRectF>          // for QRectF
+#include <QString>         // for QString
+#include <QVector>         // for QVector
+#include <QWheelEvent>     // for QWheelEvent
+#include <Qt>              // for operator|, AlignRight, AlignTop, Con...
+#include <QBrush>          // for QBrush
+#include <QtGlobal>        // for operator==, QT_VERSION, QT_VERSION_C...
+#include <glm/vec2.hpp>    // for vec<>::(anonymous), vec, operator!=
 
 class QLineF;
 class QResizeEvent;

@@ -42,35 +42,36 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
 #include <modules/qtwidgets/sliderwidgetqt.h>                       // for SliderWidgetQt
 
-#include <array>                                                    // for array
-#include <cmath>                                                    // for sin, atan2, cos, M_PI
-#include <cstddef>                                                  // for size_t
-#include <limits>                                                   // for numeric_limits
-#include <memory>                                                   // for unique_ptr
-#include <type_traits>                                              // for remove_reference_t
-#include <utility>                                                  // for swap
-#include <vector>                                                   // for vector
+#include <array>        // for array
+#include <cmath>        // for sin, atan2, cos, M_PI
+#include <cstddef>      // for size_t
+#include <limits>       // for numeric_limits
+#include <memory>       // for unique_ptr
+#include <type_traits>  // for remove_reference_t
+#include <utility>      // for swap
+#include <vector>       // for vector
 
-#include <QAction>                                                  // for QAction
-#include <QGridLayout>                                              // for QGridLayout
-#include <QHBoxLayout>                                              // for QHBoxLayout
-#include <QLabel>                                                   // for QLabel
-#include <QLayoutItem>                                              // for QLayoutItem
-#include <QSize>                                                    // for QSize
-#include <QSizePolicy>                                              // for QSizePolicy, QSizePol...
-#include <QWidget>                                                  // for QWidget
-#include <QMenu>                                                    // IWYU pragma: keep
+#include <QAction>      // for QAction
+#include <QGridLayout>  // for QGridLayout
+#include <QHBoxLayout>  // for QHBoxLayout
+#include <QLabel>       // for QLabel
+#include <QLayoutItem>  // for QLayoutItem
+#include <QSize>        // for QSize
+#include <QSizePolicy>  // for QSizePolicy, QSizePol...
+#include <QWidget>      // for QWidget
+#include <QMenu>        // IWYU pragma: keep
 
-#include <glm/geometric.hpp>                                        // for length
+#include <glm/geometric.hpp>  // for length
 
 class QHBoxLayout;
 namespace inviwo {
-template <typename T> class OrdinalBaseWidget;
-template <typename T> class OrdinalProperty;
-template <typename T> class OrdinalRefProperty;
+template <typename T>
+class OrdinalBaseWidget;
+template <typename T>
+class OrdinalProperty;
+template <typename T>
+class OrdinalRefProperty;
 }  // namespace inviwo
-
-
 
 namespace inviwo {
 

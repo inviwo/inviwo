@@ -31,12 +31,12 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/datastructures/tfprimitive.h>   // for TFPrimitive, TFPrimitiveObserver
+#include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive, TFPrimitiveObserver
 
-#include <vector>                                     // for vector
+#include <vector>  // for vector
 
-#include <QColor>                                     // for QColor
-#include <QObject>                                    // for QObject, Q_OBJECT, signals, slots
+#include <QColor>   // for QColor
+#include <QObject>  // for QObject, Q_OBJECT, signals, slots
 
 namespace inviwo {
 

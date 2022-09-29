@@ -31,21 +31,21 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/util/filedialog.h>              // for FileDialog
-#include <inviwo/core/util/filedialogstate.h>         // for AcceptMode, FileMode
-#include <inviwo/core/util/fileextension.h>           // for FileExtension
-#include <inviwo/core/util/pathtype.h>                // for PathType
+#include <inviwo/core/util/filedialog.h>       // for FileDialog
+#include <inviwo/core/util/filedialogstate.h>  // for AcceptMode, FileMode
+#include <inviwo/core/util/fileextension.h>    // for FileExtension
+#include <inviwo/core/util/pathtype.h>         // for PathType
 
-#include <string>                                     // for string, hash, operator==
-#include <unordered_map>                              // for unordered_map
-#include <vector>                                     // for vector
+#include <string>         // for string, hash, operator==
+#include <unordered_map>  // for unordered_map
+#include <vector>         // for vector
 
-#include <QFileDialog>                                // for QFileDialog
-#include <QList>                                      // for QList
-#include <QObject>                                    // for Q_OBJECT, slots
-#include <QString>                                    // for QString
-#include <QStringList>                                // for QStringList
-#include <QUrl>                                       // for QUrl
+#include <QFileDialog>  // for QFileDialog
+#include <QList>        // for QList
+#include <QObject>      // for Q_OBJECT, slots
+#include <QString>      // for QString
+#include <QStringList>  // for QStringList
+#include <QUrl>         // for QUrl
 
 class QWidget;
 

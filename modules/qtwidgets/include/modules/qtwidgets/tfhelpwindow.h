@@ -33,9 +33,9 @@
 
 #include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <QObject>
-
 #include <memory>
+
+#include <QObject>
 
 class QAction;
 class QWidget;

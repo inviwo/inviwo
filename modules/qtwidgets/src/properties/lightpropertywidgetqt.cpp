@@ -40,27 +40,26 @@
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for OrdinalLikePropertySe...
 #include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
 
-#include <cstdlib>                                                  // for abs
-#include <cmath>                                                    // for abs
-#include <sstream>                                                  // for basic_stringbuf<>::in...
+#include <cstdlib>  // for abs
+#include <cmath>    // for abs
+#include <sstream>  // for basic_stringbuf<>::in...
 
-#include <QAction>                                                  // for QAction
-#include <QCheckBox>                                                // for QCheckBox
-#include <QGridLayout>                                              // for QGridLayout
-#include <QHBoxLayout>                                              // for QHBoxLayout
-#include <QLabel>                                                   // for QLabel
-#include <QMenu>                                                    // for QMenu
-#include <QSignalBlocker>                                           // for QSignalBlocker
-#include <QSizePolicy>                                              // for QSizePolicy
-#include <QWidget>                                                  // for QWidget
-#include <Qt>                                                       // for operator|, AlignTop
-#include <fmt/core.h>                                               // for format, basic_string_...
-#include <glm/geometric.hpp>                                        // for length
-#include <glm/vec3.hpp>                                             // for vec, operator*, opera...
-#include <glm/vector_relational.hpp>                                // for any, greaterThan, les...
+#include <QAction>                    // for QAction
+#include <QCheckBox>                  // for QCheckBox
+#include <QGridLayout>                // for QGridLayout
+#include <QHBoxLayout>                // for QHBoxLayout
+#include <QLabel>                     // for QLabel
+#include <QMenu>                      // for QMenu
+#include <QSignalBlocker>             // for QSignalBlocker
+#include <QSizePolicy>                // for QSizePolicy
+#include <QWidget>                    // for QWidget
+#include <Qt>                         // for operator|, AlignTop
+#include <fmt/core.h>                 // for format, basic_string_...
+#include <glm/geometric.hpp>          // for length
+#include <glm/vec3.hpp>               // for vec, operator*, opera...
+#include <glm/vector_relational.hpp>  // for any, greaterThan, les...
 
 class QHBoxLayout;
-
 
 namespace inviwo {
 

@@ -30,14 +30,15 @@
 #include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
 
 #include <inviwo/core/datastructures/tfprimitive.h>         // for TFPrimitive, operator==
+#include <inviwo/core/util/glmvec.h>                        // for dvec2
 #include <modules/qtwidgets/tf/tfcontrolpointconnection.h>  // for TFControlPointConnection
 #include <modules/qtwidgets/tf/tfeditor.h>                  // for TFEditor
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>         // for TFEditorPrimitive
 
-#include <QGraphicsScene>                                   // for QGraphicsScene
-#include <QObject>                                          // for qobject_cast
-#include <QPainter>                                         // for QPainter
-#include <glm/ext/scalar_constants.hpp>                     // for epsilon
+#include <QGraphicsScene>                // for QGraphicsScene
+#include <QObject>                       // for qobject_cast
+#include <QPainter>                      // for QPainter
+#include <glm/ext/scalar_constants.hpp>  // for epsilon
 
 class QPointF;
 

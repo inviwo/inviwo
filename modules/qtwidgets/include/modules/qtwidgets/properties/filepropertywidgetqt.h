@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>          // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <inviwo/core/properties/fileproperty.h>              // for FileRequestable
 #include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
 
-#include <memory>                                             // for unique_ptr
+#include <memory>  // for unique_ptr
 
 class QDragEnterEvent;
 class QDragMoveEvent;

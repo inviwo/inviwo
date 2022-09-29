@@ -31,17 +31,16 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/util/glmvec.h>                  // for vec4, dvec2, vec3
-#include <inviwo/core/util/observer.h>                // for Observable, Observer
+#include <inviwo/core/util/glmvec.h>    // for vec4, dvec2, vec3
+#include <inviwo/core/util/observer.h>  // for Observable, Observer
 
-#include <memory>                                     // for unique_ptr
-#include <vector>                                     // for vector
+#include <memory>  // for unique_ptr
+#include <vector>  // for vector
 
-#include <QGraphicsItem>                              // for QGraphicsItem, QGraphicsItem::Graph...
-#include <QGraphicsSimpleTextItem>                    // for QGraphicsSimpleTextItem
-#include <QPointF>                                    // for QPointF
-#include <QVariant>                                   // for QVariant
-
+#include <QGraphicsItem>            // for QGraphicsItem, QGraphicsItem::Graph...
+#include <QGraphicsSimpleTextItem>  // for QGraphicsSimpleTextItem
+#include <QPointF>                  // for QPointF
+#include <QVariant>                 // for QVariant
 
 class QGraphicsScene;
 class QGraphicsSceneHoverEvent;

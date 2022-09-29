@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <QObject>                                          // for Q_OBJECT, signals
-#include <QPlainTextEdit>                                   // for QPlainTextEdit
+#include <QObject>         // for Q_OBJECT, signals
+#include <QPlainTextEdit>  // for QPlainTextEdit
 
 class QContextMenuEvent;
 class QFocusEvent;

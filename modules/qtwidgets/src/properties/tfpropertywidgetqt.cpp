@@ -43,13 +43,13 @@
 #include <modules/qtwidgets/tf/tfpropertydialog.h>            // for TFPropertyDialog
 #include <modules/qtwidgets/tf/tfutils.h>                     // for addTFPresetsMenu, exportToFile
 
-#include <QAction>                                            // for QAction
-#include <QGridLayout>                                        // for QGridLayout
-#include <QHBoxLayout>                                        // for QHBoxLayout
-#include <QMenu>                                              // for QMenu
-#include <QSize>                                              // for QSize, operator-
-#include <QSizePolicy>                                        // for QSizePolicy, QSizePolicy::F...
-#include <QWidget>                                            // for QWidget
+#include <QAction>      // for QAction
+#include <QGridLayout>  // for QGridLayout
+#include <QHBoxLayout>  // for QHBoxLayout
+#include <QMenu>        // for QMenu
+#include <QSize>        // for QSize, operator-
+#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::F...
+#include <QWidget>      // for QWidget
 
 class QHBoxLayout;
 

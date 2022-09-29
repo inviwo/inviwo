@@ -31,9 +31,9 @@
 
 #include <inviwo/core/util/formats.h>  // for DataFloat64
 
-#include <QChar>                       // for QChar
-#include <QDoubleValidator>            // for QDoubleValidator
-#include <QWidget>                     // for QWidget
+#include <QChar>             // for QChar
+#include <QDoubleValidator>  // for QDoubleValidator
+#include <QWidget>           // for QWidget
 
 namespace inviwo {
 

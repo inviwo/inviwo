@@ -36,12 +36,12 @@
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for OrdinalPropertySettin...
 #include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
 
-#include <memory>                                                   // for unique_ptr
+#include <memory>  // for unique_ptr
 
-#include <QAction>                                                  // for QAction
-#include <QHBoxLayout>                                              // for QHBoxLayout
-#include <QSignalBlocker>                                           // for QSignalBlocker
-#include <QtCore/qnamespace.h>                                      // for AlignCenter
+#include <QAction>         // for QAction
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <Qt>              // for AlignCenter
 
 class QHBoxLayout;
 class QMenu;

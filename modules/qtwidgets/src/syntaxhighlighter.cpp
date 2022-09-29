@@ -31,12 +31,12 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, toQColor, getDefaultMonoSpaceFon...
 
-#include <chrono>                             // for literals
-#include <string_view>                        // for string_view
+#include <chrono>       // for literals
+#include <string_view>  // for string_view
 
-#include <QRegularExpressionMatchIterator>    // for QRegularExpressionMatchIterator
-#include <fmt/core.h>                         // for format
-#include <tcb/span.hpp>                       // for span
+#include <QRegularExpressionMatchIterator>  // for QRegularExpressionMatchIterator
+#include <fmt/core.h>                       // for format
+#include <tcb/span.hpp>                     // for span
 
 class QTextCharFormat;
 

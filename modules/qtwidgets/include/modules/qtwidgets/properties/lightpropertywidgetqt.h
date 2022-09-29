@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <inviwo/core/properties/ordinalproperty.h>         // for FloatVec3Property
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <array>                                            // for array
-#include <memory>                                           // for unique_ptr
+#include <array>   // for array
+#include <memory>  // for unique_ptr
 
 class QCheckBox;
 class QMenu;
@@ -44,7 +44,8 @@ namespace inviwo {
 
 class EditableLabelQt;
 class LightPositionWidgetQt;
-template <typename Prop> class OrdinalLikePropertySettingsWidgetQt;
+template <typename Prop>
+class OrdinalLikePropertySettingsWidgetQt;
 template <typename T>
 class OrdinalSpinBoxWidget;
 

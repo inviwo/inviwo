@@ -34,17 +34,17 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                 // for setFullScreenAndOnTop, toGLM
 #include <modules/qtwidgets/processors/processorwidgetqt.h>  // for ProcessorWidgetQt, Processor...
 
-#include <functional>                                        // for __base
-#include <string_view>                                       // for string_view
+#include <functional>   // for __base
+#include <string_view>  // for string_view
 
-#include <QMainWindow>                                       // for QMainWindow
-#include <QMoveEvent>                                        // for QMoveEvent
-#include <QPoint>                                            // for QPoint
-#include <QResizeEvent>                                      // for QResizeEvent
-#include <QWidget>                                           // for QWidget
-#include <Qt>                                               // for Tool, Window, WindowFlags
-#include <glm/fwd.hpp>                                       // for ivec2
-#include <glm/vec2.hpp>                                      // for vec<>::(anonymous), operator!=
+#include <QMainWindow>              // for QMainWindow
+#include <QMoveEvent>               // for QMoveEvent
+#include <QPoint>                   // for QPoint
+#include <QResizeEvent>             // for QResizeEvent
+#include <QWidget>                  // for QWidget
+#include <Qt>                       // for Tool, Window, WindowFlags
+#include <glm/ext/vector_int2.hpp>  // for ivec2
+#include <glm/vec2.hpp>             // for vec<>::(anonymous), operator!=
 
 class QCloseEvent;
 class QHideEvent;

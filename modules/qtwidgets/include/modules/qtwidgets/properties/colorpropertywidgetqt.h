@@ -38,34 +38,35 @@
 #include <modules/qtwidgets/properties/colorlineedit.h>     // for ColorLineEdit, ColorLineEdit:...
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <algorithm>                                        // for max
-#include <memory>                                           // for unique_ptr
-#include <string>                                           // for string
+#include <algorithm>  // for max
+#include <memory>     // for unique_ptr
+#include <string>     // for string
 
-#include <QAction>                                          // for QAction
-#include <QActionGroup>                                     // for QActionGroup
-#include <QColor>                                           // for QColor
-#include <QColorDialog>                                     // for QColorDialog, QColorDialog::N...
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QMainWindow>                                      // for QMainWindow
-#include <QObject>                                          // for QObject
-#include <QRect>                                            // for QRect
-#include <QSignalBlocker>                                   // for QSignalBlocker
-#include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Fixed
-#include <QString>                                          // for QString
-#include <QToolButton>                                      // for QToolButton
-#include <QWidget>                                          // for QWidget
-#include <QMenu>                                            // IWYU pragma: keep
-#include <Qt>                                               // for ClickFocus, NonModal, WA_Dele...
+#include <QAction>         // for QAction
+#include <QActionGroup>    // for QActionGroup
+#include <QColor>          // for QColor
+#include <QColorDialog>    // for QColorDialog, QColorDialog::N...
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QMainWindow>     // for QMainWindow
+#include <QObject>         // for QObject
+#include <QRect>           // for QRect
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy, QSizePolicy::Fixed
+#include <QString>         // for QString
+#include <QToolButton>     // for QToolButton
+#include <QWidget>         // for QWidget
+#include <QMenu>           // IWYU pragma: keep
+#include <Qt>              // for ClickFocus, NonModal, WA_Dele...
 
-#include <glm/common.hpp>                                   // for clamp, max, min
-#include <glm/vec3.hpp>                                     // for vec, vec<>::(anonymous), oper...
-#include <glm/vec4.hpp>                                     // for vec, vec<>::(anonymous), oper...
+#include <glm/common.hpp>  // for clamp, max, min
+#include <glm/vec3.hpp>    // for vec, vec<>::(anonymous), oper...
+#include <glm/vec4.hpp>    // for vec, vec<>::(anonymous), oper...
 
 class QHBoxLayout;
 
 namespace inviwo {
-template <typename T> class OrdinalProperty;
+template <typename T>
+class OrdinalProperty;
 }  // namespace inviwo
 
 namespace inviwo {

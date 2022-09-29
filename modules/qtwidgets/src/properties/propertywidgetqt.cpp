@@ -51,46 +51,44 @@
 #include <inviwo/core/util/unindent.h>                     // for operator""_unindent
 #include <modules/qtwidgets/inviwoqtutils.h>               // for toQString, emToPx, refEm, from...
 
-#include <algorithm>                                       // for find_if
-#include <array>                                           // for array, array<>::value_type
-#include <initializer_list>                                // for initializer_list
-#include <map>                                             // for map, __map_iterator, operator!=
-#include <ostream>                                         // for operator<<, stringstream, basi...
-#include <string>                                          // for string, char_traits, basic_string
-#include <string_view>                                     // for string_view
-#include <utility>                                         // for pair
-#include <vector>                                          // for vector, __vector_base<>::value...
+#include <algorithm>         // for find_if
+#include <array>             // for array, array<>::value_type
+#include <initializer_list>  // for initializer_list
+#include <map>               // for map, __map_iterator, operator!=
+#include <ostream>           // for operator<<, stringstream, basi...
+#include <string>            // for string, char_traits, basic_string
+#include <string_view>       // for string_view
+#include <utility>           // for pair
+#include <vector>            // for vector, __vector_base<>::value...
 
-#include <QAction>                                         // for QAction
-#include <QActionGroup>                                    // for QActionGroup
-#include <QApplication>                                    // for QApplication
-#include <QByteArray>                                      // for QByteArray
-#include <QClipboard>                                      // for QClipboard
-#include <QDrag>                                           // for QDrag
-#include <QEvent>                                          // for QEvent
-#include <QFlags>                                          // for QFlags
-#include <QHelpEvent>                                      // for QHelpEvent
-#include <QIcon>                                           // for QIcon
-#include <QInputDialog>                                    // for QInputDialog
-#include <QLayout>                                         // for QLayout
-#include <QLineEdit>                                       // for QLineEdit, QLineEdit::Normal
-#include <QList>                                           // for QList
-#include <QMenu>                                           // for QMenu
-#include <QMessageBox>                                     // for QMessageBox, QMessageBox::No
-#include <QMimeData>                                       // for QMimeData
-#include <QMouseEvent>                                     // for QMouseEvent
-#include <QObject>                                         // for QObject
-#include <QPainter>                                        // for QPainter
-#include <QString>                                         // for QString
-#include <QStringList>                                     // for QStringList
-#include <QStyle>                                          // for QStyle, QStyle::PE_Widget
-#include <QStyleOption>                                    // for QStyleOption
-#include <QToolTip>                                        // for QToolTip
-#include <QVariant>                                        // for QVariant
-#include <QEvent>                                          // for QEvent (ptr only), QEvent::Mou...
-#include <Qt>                                              // for LeftButton, MSWindowsFixedSize...
+#include <QAction>       // for QAction
+#include <QActionGroup>  // for QActionGroup
+#include <QApplication>  // for QApplication
+#include <QByteArray>    // for QByteArray
+#include <QClipboard>    // for QClipboard
+#include <QDrag>         // for QDrag
+#include <QEvent>        // for QEvent, QEvent::MouseButtonRel...
+#include <QFlags>        // for QFlags
+#include <QHelpEvent>    // for QHelpEvent
+#include <QIcon>         // for QIcon
+#include <QInputDialog>  // for QInputDialog
+#include <QLayout>       // for QLayout
+#include <QLineEdit>     // for QLineEdit, QLineEdit::Normal
+#include <QList>         // for QList
+#include <QMenu>         // for QMenu
+#include <QMessageBox>   // for QMessageBox, QMessageBox::No
+#include <QMimeData>     // for QMimeData
+#include <QMouseEvent>   // for QMouseEvent
+#include <QObject>       // for QObject
+#include <QPainter>      // for QPainter
+#include <QString>       // for QString
+#include <QStringList>   // for QStringList
+#include <QStyle>        // for QStyle, QStyle::PE_Widget
+#include <QStyleOption>  // for QStyleOption
+#include <QToolTip>      // for QToolTip
+#include <QVariant>      // for QVariant
+#include <Qt>            // for LeftButton, MSWindowsFixedSize...
 
-class QAction;
 class QHelpEvent;
 class QMouseEvent;
 class QPaintEvent;

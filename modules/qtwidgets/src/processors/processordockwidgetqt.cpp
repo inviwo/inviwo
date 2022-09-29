@@ -31,19 +31,21 @@
 
 #include <inviwo/core/processors/processor.h>        // for Processor, Processor::NameDispatcher...
 #include <inviwo/core/processors/processorwidget.h>  // for ProcessorWidget
+#include <inviwo/core/util/glmvec.h>                 // for ivec2
 #include <modules/qtwidgets/inviwodockwidget.h>      // for InviwoDockWidget
 #include <modules/qtwidgets/inviwoqtutils.h>         // for toQString, getApplicationMainWindow
 
-#include <functional>                                // for __base
-#include <string_view>                               // for string_view
+#include <functional>   // for __base
+#include <string_view>  // for string_view
 
-#include <QMainWindow>                               // for QMainWindow
-#include <QMoveEvent>                                // for QMoveEvent
-#include <QPoint>                                    // for QPoint
-#include <QResizeEvent>                              // for QResizeEvent
-#include <QSize>                                     // for QSize
-#include <Qt>                                        // for RightDockWidgetArea
-#include <glm/vec2.hpp>                              // for vec<>::(anonymous)
+#include <QMainWindow>              // for QMainWindow
+#include <QMoveEvent>               // for QMoveEvent
+#include <QPoint>                   // for QPoint
+#include <QResizeEvent>             // for QResizeEvent
+#include <QSize>                    // for QSize
+#include <Qt>                       // for RightDockWidgetArea
+#include <glm/ext/vector_int2.hpp>  // for ivec2
+#include <glm/vec2.hpp>             // for vec<>::(anonymous)
 
 class QHideEvent;
 class QMoveEvent;

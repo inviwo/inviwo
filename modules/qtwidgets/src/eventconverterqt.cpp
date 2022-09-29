@@ -34,13 +34,13 @@
 #include <inviwo/core/interaction/events/mousebuttons.h>  // for MouseButton, MouseButtons, Mous...
 #include <modules/qtwidgets/keyboardutils.h>              // for mapKeyFromQt
 
-#include <QFlags>                                         // for QFlags
-#include <QGesture>                                       // for QGesture
-#include <QInputEvent>                                    // for QInputEvent
-#include <QMouseEvent>                                    // for QMouseEvent
-#include <QWheelEvent>                                    // for QWheelEvent
-#include <Qt>                                             // for LeftButton, MiddleButton, Right...
-#include <flags/flags.h>                                  // for none
+#include <QFlags>         // for QFlags
+#include <QGesture>       // for QGesture
+#include <QInputEvent>    // for QInputEvent
+#include <QMouseEvent>    // for QMouseEvent
+#include <QWheelEvent>    // for QWheelEvent
+#include <Qt>             // for LeftButton, MiddleButton, Right...
+#include <flags/flags.h>  // for none
 
 namespace inviwo {
 

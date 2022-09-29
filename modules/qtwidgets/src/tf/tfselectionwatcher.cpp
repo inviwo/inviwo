@@ -39,9 +39,9 @@
 #include <inviwo/core/util/stdextensions.h>             // for contains
 #include <modules/qtwidgets/inviwoqtutils.h>            // for toQColor, tovec3
 
-#include <string_view>                                  // for string_view
+#include <string_view>  // for string_view
 
-#include <glm/vec3.hpp>                                 // for operator==
+#include <glm/vec3.hpp>  // for operator==
 
 namespace inviwo {
 

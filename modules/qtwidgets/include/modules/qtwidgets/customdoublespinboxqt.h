@@ -31,10 +31,10 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <QDoubleSpinBox>                             // for QDoubleSpinBox
-#include <QObject>                                    // for Q_OBJECT
-#include <QSize>                                      // for QSize
-#include <QString>                                    // for QString
+#include <QDoubleSpinBox>  // for QDoubleSpinBox
+#include <QObject>         // for Q_OBJECT
+#include <QSize>           // for QSize
+#include <QString>         // for QString
 
 class QWidget;
 class QTimerEvent;

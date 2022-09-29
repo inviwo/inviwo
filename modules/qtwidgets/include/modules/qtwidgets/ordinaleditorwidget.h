@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>    // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior
 #include <modules/qtwidgets/inviwoqtutils.h>            // for decimals
 #include <modules/qtwidgets/ordinalbasewidget.h>        // for OrdinalBaseWidget
 
-#include <QObject>                                      // for Q_OBJECT, signals
-#include <QWidget>                                      // for QWidget
+#include <QObject>  // for Q_OBJECT, signals
+#include <QWidget>  // for QWidget
 
 namespace inviwo {
 

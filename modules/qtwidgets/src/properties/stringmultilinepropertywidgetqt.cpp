@@ -34,22 +34,22 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <string>                                           // for string
+#include <string>  // for string
 
-#include <QAbstractScrollArea>                              // for QAbstractScrollArea, QAbstrac...
-#include <QFlags>                                           // for QFlags
-#include <QFontMetrics>                                     // for QFontMetrics
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QKeyEvent>                                        // for QKeyEvent
-#include <QMargins>                                         // for QMargins
-#include <QSizeF>                                           // for QSizeF
-#include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Pre...
-#include <QString>                                          // for QString, operator!=
-#include <QTextCursor>                                      // for QTextCursor, QTextCursor::Start
-#include <QTextDocument>                                    // for QTextDocument
-#include <Qt>                                               // for ControlModifier, Key_Enter
-#include <QtGlobal>                                         // for QT_VERSION, QT_VERSION_CHECK
-#include <glm/common.hpp>                                   // for clamp
+#include <QAbstractScrollArea>  // for QAbstractScrollArea, QAbstrac...
+#include <QFlags>               // for QFlags
+#include <QFontMetrics>         // for QFontMetrics
+#include <QHBoxLayout>          // for QHBoxLayout
+#include <QKeyEvent>            // for QKeyEvent
+#include <QMargins>             // for QMargins
+#include <QSizeF>               // for QSizeF
+#include <QSizePolicy>          // for QSizePolicy, QSizePolicy::Pre...
+#include <QString>              // for QString, operator!=
+#include <QTextCursor>          // for QTextCursor, QTextCursor::Start
+#include <QTextDocument>        // for QTextDocument
+#include <Qt>                   // for ControlModifier, Key_Enter
+#include <QtGlobal>             // for QT_VERSION, QT_VERSION_CHECK
+#include <glm/common.hpp>       // for clamp
 
 class QContextMenuEvent;
 class QFocusEvent;

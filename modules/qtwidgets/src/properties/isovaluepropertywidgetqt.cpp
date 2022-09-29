@@ -40,10 +40,10 @@
 #include <modules/qtwidgets/tf/tfpropertydialog.h>            // for TFPropertyDialog
 #include <modules/qtwidgets/tf/tfutils.h>                     // for exportToFile, importFromFile
 
-#include <QAction>                                            // for QAction
-#include <QHBoxLayout>                                        // for QHBoxLayout
-#include <QMenu>                                              // for QMenu
-#include <QSizePolicy>                                        // for QSizePolicy, QSizePolicy::F...
+#include <QAction>      // for QAction
+#include <QHBoxLayout>  // for QHBoxLayout
+#include <QMenu>        // for QMenu
+#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::F...
 
 class QHBoxLayout;
 

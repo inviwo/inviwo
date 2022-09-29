@@ -32,13 +32,12 @@
 #include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
 #include <modules/qtwidgets/properties/valuedragger.h>  // for ValueDragger
 
-#include <QAbstractSpinBox>                             // for QAbstractSpinBox, QAbstractSpinBo...
-#include <QDoubleSpinBox>                               // for QDoubleSpinBox
-#include <QHBoxLayout>                                  // for QHBoxLayout
-#include <QSpinBox>                                     // for QSpinBox
-#include <Qt>                                           // for ClickFocus, WheelFocus
-#include <QtGlobal>                                     // for QT_VERSION, QT_VERSION_CHECK
-
+#include <QAbstractSpinBox>  // for QAbstractSpinBox, QAbstractSpinBo...
+#include <QDoubleSpinBox>    // for QDoubleSpinBox
+#include <QHBoxLayout>       // for QHBoxLayout
+#include <QSpinBox>          // for QSpinBox
+#include <Qt>                // for ClickFocus, WheelFocus
+#include <QtGlobal>          // for QT_VERSION, QT_VERSION_CHECK
 
 namespace inviwo {
 

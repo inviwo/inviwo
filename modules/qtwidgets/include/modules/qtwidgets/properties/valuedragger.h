@@ -33,33 +33,33 @@
 #include <modules/qtwidgets/numberlineedit.h>              // for NumberLineEdit
 #include <modules/qtwidgets/properties/indicatorwidget.h>  // for IndicatorWidget
 
-#include <cstdlib>                                        // for abs
+#include <cstdlib>  // for abs
 
-#include <QColor>                                          // for QColor
-#include <QFlags>                                          // for QFlags
-#include <QMouseEvent>                                     // for QMouseEvent
-#include <QPainter>                                        // for QPainter, QPainter::Antialiasing
-#include <QPalette>                                        // for QPalette, QPalette::Active
-#include <QPen>                                            // for QPen
-#include <QPoint>                                          // for QPoint
-#include <QPointF>                                         // for QPointF
-#include <QSize>                                           // for QSize
-#include <QSizeF>                                          // for QSizeF
-#include <QSizePolicy>                                     // for QSizePolicy, QSizePolicy::Fixed
-#include <QString>                                         // for QString
-#include <QStyle>                                          // for QStyle, QStyle::State_Enabled
-#include <QStyleOption>                                    // for QStyleOption
-#include <QTimerEvent>                                     // for QTimerEvent
-#include <QToolTip>                                        // for QToolTip
-#include <QTransform>                                      // for QTransform
-#include <QWidget>                                         // for QWidget
-#include <Qt>                                              // for LeftButton, NoBrush, FlatCap
-#include <QPainterPath>                                    // for QPainterPath
+#include <QColor>        // for QColor
+#include <QFlags>        // for QFlags
+#include <QMouseEvent>   // for QMouseEvent
+#include <QPainter>      // for QPainter, QPainter::Antialiasing
+#include <QPalette>      // for QPalette, QPalette::Active
+#include <QPen>          // for QPen
+#include <QPoint>        // for QPoint
+#include <QPointF>       // for QPointF
+#include <QSize>         // for QSize
+#include <QSizeF>        // for QSizeF
+#include <QSizePolicy>   // for QSizePolicy, QSizePolicy::Fixed
+#include <QString>       // for QString
+#include <QStyle>        // for QStyle, QStyle::State_Enabled
+#include <QStyleOption>  // for QStyleOption
+#include <QTimerEvent>   // for QTimerEvent
+#include <QToolTip>      // for QToolTip
+#include <QTransform>    // for QTransform
+#include <QWidget>       // for QWidget
+#include <Qt>            // for LeftButton, NoBrush, FlatCap
+#include <QPainterPath>  // for QPainterPath
 
-#include <algorithm>                                       // for max, min
-#include <cmath>                                           // for pow, remainder, abs
-#include <memory>                                          // for unique_ptr, make_unique
-#include <type_traits>                                     // for enable_if_t, is_integral
+#include <algorithm>    // for max, min
+#include <cmath>        // for pow, remainder, abs
+#include <memory>       // for unique_ptr, make_unique
+#include <type_traits>  // for enable_if_t, is_integral
 
 class QMouseEvent;
 class QPaintEvent;

@@ -38,20 +38,20 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                         // for toQString
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>  // for CompositePropertyWid...
 
-#include <string>                                                    // for operator+, string
-#include <string_view>                                               // for string_view
-#include <vector>                                                    // for __vector_base<>::val...
+#include <string>       // for operator+, string
+#include <string_view>  // for string_view
+#include <vector>       // for __vector_base<>::val...
 
-#include <QAction>                                                   // for QAction
-#include <QCursor>                                                   // for QCursor
-#include <QHBoxLayout>                                               // for QHBoxLayout
-#include <QLayout>                                                   // for QLayout
-#include <QLayoutItem>                                               // for QLayoutItem
-#include <QMenu>                                                     // for QMenu
-#include <QToolButton>                                               // for QToolButton
-#include <QVariant>                                                  // for QVariant
-#include <flags/flags.h>                                             // for operator&, flags
-#include <sys/types.h>                                               // for size_t, uint
+#include <QAction>        // for QAction
+#include <QCursor>        // for QCursor
+#include <QHBoxLayout>    // for QHBoxLayout
+#include <QLayout>        // for QLayout
+#include <QLayoutItem>    // for QLayoutItem
+#include <QMenu>          // for QMenu
+#include <QToolButton>    // for QToolButton
+#include <QVariant>       // for QVariant
+#include <QtGlobal>       // for uint
+#include <flags/flags.h>  // for operator&, flags
 
 class QHBoxLayout;
 

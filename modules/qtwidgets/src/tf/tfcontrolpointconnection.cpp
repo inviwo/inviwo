@@ -31,13 +31,13 @@
 
 #include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>  // for TFEditorControlPoint
 
-#include <QColor>                                       // for QColor
-#include <QGraphicsScene>                               // for QGraphicsScene
-#include <QPainter>                                     // for QPainter, QPainter::Antialiasing
-#include <QPainterPathStroker>                          // for QPainterPathStroker
-#include <QPen>                                         // for QPen
-#include <QPoint>                                       // for operator==
-#include <QRectF>                                       // for QRectF
+#include <QColor>               // for QColor
+#include <QGraphicsScene>       // for QGraphicsScene
+#include <QPainter>             // for QPainter, QPainter::Antialiasing
+#include <QPainterPathStroker>  // for QPainterPathStroker
+#include <QPen>                 // for QPen
+#include <QPoint>               // for operator==
+#include <QRectF>               // for QRectF
 
 class QStyleOptionGraphicsItem;
 class QWidget;

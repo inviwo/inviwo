@@ -31,14 +31,14 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/datastructures/datamapper.h>    // for DataMapper
-#include <inviwo/core/io/volumedatareaderdialog.h>    // for VolumeDataReaderDialog
-#include <inviwo/core/util/glmvec.h>                  // for dvec3, uvec3
+#include <inviwo/core/datastructures/datamapper.h>  // for DataMapper
+#include <inviwo/core/io/volumedatareaderdialog.h>  // for VolumeDataReaderDialog
+#include <inviwo/core/util/glmvec.h>                // for dvec3, uvec3
 
-#include <cstddef>                                    // for size_t
-#include <string>                                     // for string
+#include <cstddef>  // for size_t
+#include <string>   // for string
 
-#include <QDialog>                                    // for QDialog
+#include <QDialog>  // for QDialog
 
 class QComboBox;
 class QDoubleSpinBox;

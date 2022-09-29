@@ -33,21 +33,20 @@
 #include <modules/qtwidgets/inviwoqtutils.h>            // for refSpacePx
 #include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
 
-#include <cmath>                                        // for fabs
-#include <limits>                                       // for numeric_limits
+#include <cmath>   // for fabs
+#include <limits>  // for numeric_limits
 
-#include <QDoubleSpinBox>                               // for QDoubleSpinBox
-#include <QEvent>                                       // for QEvent
-#include <QHBoxLayout>                                  // for QHBoxLayout
-#include <QMouseEvent>                                  // for QMouseEvent
-#include <QPoint>                                       // for QPoint
-#include <QSignalBlocker>                               // for QSignalBlocker
-#include <QSizePolicy>                                  // for QSizePolicy, QSizePolicy::Fixed
-#include <QSlider>                                      // for QSlider
-#include <QStyle>                                       // for QStyle
-#include <QVariant>                                     // for QVariant
-#include <QEvent>                                       // for QEvent (ptr only), QEvent::MouseB...
-#include <Qt>                                           // for ClickFocus, Horizontal, LeftButton
+#include <QDoubleSpinBox>  // for QDoubleSpinBox
+#include <QEvent>          // for QEvent, QEvent::MouseButtonRelease
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QMouseEvent>     // for QMouseEvent
+#include <QPoint>          // for QPoint
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy, QSizePolicy::Fixed
+#include <QSlider>         // for QSlider
+#include <QStyle>          // for QStyle
+#include <QVariant>        // for QVariant
+#include <Qt>              // for ClickFocus, Horizontal, LeftButton
 
 class QHBoxLayout;
 class QMouseEvent;

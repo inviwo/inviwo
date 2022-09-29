@@ -37,7 +37,7 @@
 #include <winuser.h>
 #endif
 
-#include <QKeyEvent>                                      // for QKeyEvent
+#include <QKeyEvent>  // for QKeyEvent
 
 namespace inviwo {
 

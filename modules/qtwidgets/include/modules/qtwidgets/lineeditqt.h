@@ -31,9 +31,9 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <QLineEdit>                                  // for QLineEdit
-#include <QObject>                                    // for Q_OBJECT, signals
-#include <QSize>                                      // for QSize
+#include <QLineEdit>  // for QLineEdit
+#include <QObject>    // for Q_OBJECT, signals
+#include <QSize>      // for QSize
 
 class QPaintEvent;
 class QWidget;

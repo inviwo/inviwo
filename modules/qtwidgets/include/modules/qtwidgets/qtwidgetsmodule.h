@@ -31,9 +31,9 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/common/inviwomodule.h>          // for InviwoModule
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
 
-#include <memory>                                     // for unique_ptr
+#include <memory>  // for unique_ptr
 
 namespace inviwo {
 class InviwoApplication;

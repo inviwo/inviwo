@@ -37,26 +37,25 @@
 
 #include <modules/qtwidgets/colorwheel.h>
 
-#include <QConicalGradient>     // for QConicalGradient
-#include <QMouseEvent>          // for QMouseEvent
-#include <QPainter>             // for QPainter, QPainter::Antialiasing
-#include <QPen>                 // for QPen
-#include <QPointF>              // for QPointF
-#include <QRect>                // for QRect
-#include <QRectF>               // for QRectF
-#include <QResizeEvent>         // for QResizeEvent
-#include <QRgb>                 // for qRgb, QRgb
-#include <QStyle>               // for QStyle, QStyle::PE_Widget
-#include <QStyleOption>         // for QStyleOption
-#include <qmath.h>              // for qSqrt, qAtan2, qPow
-#include <Qt>                   // for NoBrush, red, white, CrossCursor, NoPen, black, blue, cyan
-#include <QtGlobal>             // for qMin, qreal
-#include <QBrush>               // for QBrush
-#include <QPainterPath>         // for QPainterPath
+#include <QConicalGradient>  // for QConicalGradient
+#include <QMouseEvent>       // for QMouseEvent
+#include <QPainter>          // for QPainter, QPainter::Antialiasing
+#include <QPen>              // for QPen
+#include <QPointF>           // for QPointF
+#include <QRect>             // for QRect
+#include <QRectF>            // for QRectF
+#include <QResizeEvent>      // for QResizeEvent
+#include <QRgb>              // for qRgb, QRgb
+#include <QStyle>            // for QStyle, QStyle::PE_Widget
+#include <QStyleOption>      // for QStyleOption
+#include <qmath.h>           // for qSqrt, qAtan2, qPow
+#include <Qt>                // for NoBrush, red, white, CrossCursor, NoPen, black, blue, cyan
+#include <QtGlobal>          // for qMin, qreal
+#include <QBrush>            // for QBrush
+#include <QPainterPath>      // for QPainterPath
 
-
-#include <algorithm>            // for max
-#include <cmath>                // for sqrt
+#include <algorithm>  // for max
+#include <cmath>      // for sqrt
 
 namespace {
 

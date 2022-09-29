@@ -29,20 +29,21 @@
 
 #include <modules/qtwidgets/inviwofiledialog.h>
 
-#include <inviwo/core/util/fileextension.h>   // for FileExtension
-#include <inviwo/core/util/filesystem.h>      // for fileExists, directoryExists, findBasePath
-#include <inviwo/core/util/logcentral.h>      // for LogCentral, LogError
-#include <inviwo/core/util/pathtype.h>        // for PathType
-#include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, fromQString
+#include <inviwo/core/util/filedialogstate.h>  // for FileMode, AcceptMode, AcceptMode::Open
+#include <inviwo/core/util/fileextension.h>    // for FileExtension
+#include <inviwo/core/util/filesystem.h>       // for fileExists, directoryExists, findBasePath
+#include <inviwo/core/util/logcentral.h>       // for LogCentral, LogError
+#include <inviwo/core/util/pathtype.h>         // for PathType
+#include <modules/qtwidgets/inviwoqtutils.h>   // for toQString, fromQString
 
-#include <ostream>                            // for operator<<
-#include <utility>                            // for pair
+#include <ostream>  // for operator<<
+#include <utility>  // for pair
 
-#include <QDialog>                            // for QDialog, QDialog::Accepted
-#include <QDir>                               // for QDir
-#include <QSettings>                          // for QSettings
-#include <QStandardPaths>                     // for QStandardPaths, QStandardPaths::DesktopLoca...
-#include <QVariant>                           // for QVariant
+#include <QDialog>         // for QDialog, QDialog::Accepted
+#include <QDir>            // for QDir
+#include <QSettings>       // for QSettings
+#include <QStandardPaths>  // for QStandardPaths, QStandardPaths::DesktopLoc...
+#include <QVariant>        // for QVariant
 
 class QWidget;
 

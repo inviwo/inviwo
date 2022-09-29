@@ -43,22 +43,22 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
 #include <modules/qtwidgets/properties/propertywidgetqt.h>             // for PropertyWidgetQt
 
-#include <functional>                                                  // for __base
-#include <memory>                                                      // for unique_ptr
-#include <utility>                                                     // for pair
-#include <vector>                                                      // for vector
+#include <functional>  // for __base
+#include <memory>      // for unique_ptr
+#include <utility>     // for pair
+#include <vector>      // for vector
 
-#include <QFrame>                                                      // for QFrame, QFrame::No...
-#include <QLayout>                                                     // for QLayout, QLayout::...
-#include <QPainter>                                                    // for QPainter
-#include <QScrollArea>                                                 // for QScrollArea
-#include <QSizeF>                                                      // for QSizeF
-#include <QSizePolicy>                                                 // for QSizePolicy, QSize...
-#include <QString>                                                     // for QString
-#include <QStyle>                                                      // for QStyle, QStyle::PE...
-#include <QStyleOption>                                                // for QStyleOption
-#include <QVBoxLayout>                                                 // for QVBoxLayout
-#include <Qt>                                                          // for AlignTop, operator|
+#include <QFrame>        // for QFrame, QFrame::No...
+#include <QLayout>       // for QLayout, QLayout::...
+#include <QPainter>      // for QPainter
+#include <QScrollArea>   // for QScrollArea
+#include <QSizeF>        // for QSizeF
+#include <QSizePolicy>   // for QSizePolicy, QSize...
+#include <QString>       // for QString
+#include <QStyle>        // for QStyle, QStyle::PE...
+#include <QStyleOption>  // for QStyleOption
+#include <QVBoxLayout>   // for QVBoxLayout
+#include <Qt>            // for AlignTop, operator|
 
 class QPaintEvent;
 

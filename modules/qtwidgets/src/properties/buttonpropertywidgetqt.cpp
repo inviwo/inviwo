@@ -33,13 +33,13 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <QAction>                                          // for QAction
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QInputDialog>                                     // for QInputDialog
-#include <QLineEdit>                                        // for QLineEdit, QLineEdit::Normal
-#include <QMenu>                                            // for QMenu
-#include <QPushButton>                                      // for QPushButton
-#include <QString>                                          // for QString
+#include <QAction>       // for QAction
+#include <QHBoxLayout>   // for QHBoxLayout
+#include <QInputDialog>  // for QInputDialog
+#include <QLineEdit>     // for QLineEdit, QLineEdit::Normal
+#include <QMenu>         // for QMenu
+#include <QPushButton>   // for QPushButton
+#include <QString>       // for QString
 
 class QHBoxLayout;
 

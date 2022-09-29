@@ -29,38 +29,37 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>      // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
 #include <inviwo/core/util/glmvec.h>                      // for dvec2, ivec2, ivec4, ivec3, uvec4
 
-#include <cstddef>                                        // for size_t
-#include <ios>                                            // for ostringstream, istringstream
-#include <locale>                                         // for locale
-#include <sstream>                                        // for basic_ostream
-#include <string>                                         // for string
-#include <utility>                                        // for pair
-#include <vector>                                         // for vector
+#include <cstddef>      // for size_t
+#include <ios>          // for ostringstream, istringstream
+#include <locale>       // for locale
+#include <sstream>      // for basic_ostream
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <utility>      // for pair
+#include <vector>       // for vector
 
-#include <QByteArray>                                     // for QByteArray
-#include <QColor>                                         // for QColor
-#include <QIcon>                                          // for QIcon
-#include <QImage>                                         // for QImage
-#include <QLocale>                                        // for QLocale
-#include <QObject>                                        // for QObject
-#include <QPixmap>                                        // for QPixmap
-#include <QPoint>                                         // for QPoint
-#include <QPointF>                                        // for QPointF
-#include <QRectF>                                         // for QRectF
-#include <QSize>                                          // for QSize
-#include <QSizeF>                                         // for QSizeF
-#include <QString>                                        // for QString
-#include <QtGlobal>                                       // for QT_VERSION, QT_VERSION_CHECK
-#include <glm/vec2.hpp>                                   // for vec<>::(anonymous)
-#include <glm/vec3.hpp>                                   // for vec<>::(anonymous), operator*
-#include <glm/vec4.hpp>                                   // for vec<>::(anonymous), operator*
-
-#include <string_view>                                    // for string_view
+#include <QByteArray>    // for QByteArray
+#include <QColor>        // for QColor
+#include <QIcon>         // for QIcon
+#include <QImage>        // for QImage
+#include <QLocale>       // for QLocale
+#include <QObject>       // for QObject
+#include <QPixmap>       // for QPixmap
+#include <QPoint>        // for QPoint
+#include <QPointF>       // for QPointF
+#include <QRectF>        // for QRectF
+#include <QSize>         // for QSize
+#include <QSizeF>        // for QSizeF
+#include <QString>       // for QString
+#include <QtGlobal>      // for QT_VERSION, QT_VERSION_CHECK
+#include <glm/vec2.hpp>  // for vec<>::(anonymous)
+#include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*
+#include <glm/vec4.hpp>  // for vec<>::(anonymous), operator*
 
 class QEvent;
 class QMainWindow;

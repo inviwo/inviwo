@@ -34,12 +34,12 @@
 #include <inviwo/core/properties/propertyobserver.h>  // for PropertyObserver
 #include <inviwo/core/properties/propertywidget.h>    // for PropertyWidget
 
-#include <QPoint>                                     // for QPoint
-#include <QSize>                                      // for QSize
-#include <QWidget>                                    // for QWidget
+#include <functional>  // for function
+#include <memory>      // for unique_ptr
 
-#include <functional>                                 // for function
-#include <memory>                                     // for unique_ptr
+#include <QPoint>   // for QPoint
+#include <QSize>    // for QSize
+#include <QWidget>  // for QWidget
 
 class QEvent;
 class QLayout;

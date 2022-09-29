@@ -29,22 +29,21 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>                 // for IVW_MODULE_QTWIDGETS...
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS...
 
 #include <inviwo/core/network/processornetworkevaluationobserver.h>  // for ProcessorNetworkEval...
 #include <inviwo/core/network/processornetworkobserver.h>            // for ProcessorNetworkObse...
 #include <inviwo/core/properties/propertyownerobserver.h>            // for PropertyOwnerObserver
 #include <modules/qtwidgets/inviwodockwidget.h>                      // for InviwoDockWidget
 
-#include <QEvent>                                                    // for QEvent
-#include <QObject>                                                   // for Q_GADGET
-#include <QSize>                                                     // for QSize
-#include <QWidget>                                                   // for QWidget
-#include <QEvent>                                              // for QEvent::Type, QEvent...
+#include <cstddef>        // for size_t
+#include <string>         // for string
+#include <unordered_map>  // for unordered_map
 
-#include <cstddef>                                                   // for size_t
-#include <string>                                                    // for string
-#include <unordered_map>                                             // for unordered_map
+#include <QEvent>   // for QEvent, QEvent::Type
+#include <QObject>  // for Q_GADGET
+#include <QSize>    // for QSize
+#include <QWidget>  // for QWidget
 
 class QPaintEvent;
 class QScrollArea;

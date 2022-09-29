@@ -31,11 +31,11 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/datastructures/histogram.h>     // for HistogramMode, HistogramSelection
-#include <inviwo/core/ports/volumeport.h>             // for VolumeInport
-#include <inviwo/core/util/glmvec.h>                  // for dvec2
+#include <inviwo/core/datastructures/histogram.h>  // for HistogramMode, HistogramSelection
+#include <inviwo/core/ports/volumeport.h>          // for VolumeInport
+#include <inviwo/core/util/glmvec.h>               // for dvec2
 
-#include <utility>                                    // for declval
+#include <utility>  // for declval
 
 namespace inviwo {
 

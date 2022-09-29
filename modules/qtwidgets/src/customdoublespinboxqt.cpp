@@ -29,7 +29,7 @@
 
 #include <modules/qtwidgets/customdoublespinboxqt.h>
 
-#include <limits>          // for numeric_limits, numeric_limits<>::max_exponent
+#include <limits>  // for numeric_limits, numeric_limits<>::max_exponent
 
 #include <QLocale>         // for QLocale
 #include <QSignalBlocker>  // for QSignalBlocker

@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>                   // for IVW_MODULE_QTWIDGE...
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGE...
 
 #include <inviwo/core/properties/compositepropertyobserver.h>          // for CompositePropertyO...
 #include <inviwo/core/properties/propertyobserver.h>                   // for PropertyObserverDe...
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
 
-#include <cstddef>                                                     // for size_t
-#include <string>                                                      // for string
+#include <cstddef>  // for size_t
+#include <string>   // for string
 
 namespace inviwo {
 

@@ -31,9 +31,9 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <QObject>                                    // for Q_OBJECT, signals
-#include <QSize>                                      // for QSize
-#include <QWidget>                                    // for QWidget
+#include <QObject>  // for Q_OBJECT, signals
+#include <QSize>    // for QSize
+#include <QWidget>  // for QWidget
 
 class QMouseEvent;
 class QPaintEvent;

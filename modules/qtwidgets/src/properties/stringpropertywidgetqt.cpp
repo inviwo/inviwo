@@ -37,15 +37,15 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
 
-#include <string>                                             // for operator==, string
+#include <string>  // for operator==, string
 
-#include <QHBoxLayout>                                        // for QHBoxLayout
-#include <QIcon>                                              // for QIcon
-#include <QLineEdit>                                          // for QLineEdit, QLineEdit::Passw...
-#include <QSignalBlocker>                                     // for QSignalBlocker
-#include <QSizePolicy>                                        // for QSizePolicy
-#include <QToolButton>                                        // for QToolButton
-#include <QWidget>                                            // for QWidget
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QIcon>           // for QIcon
+#include <QLineEdit>       // for QLineEdit, QLineEdit::Passw...
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy
+#include <QToolButton>     // for QToolButton
+#include <QWidget>         // for QWidget
 
 namespace inviwo {
 

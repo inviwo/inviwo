@@ -33,19 +33,18 @@
 #include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
 #include <modules/qtwidgets/properties/valuedragger.h>  // for ValueDragger
 
-#include <ostream>                                      // for ostringstream, basic_ostream
-#include <string>                                       // for string
+#include <ostream>  // for ostringstream, basic_ostream
+#include <string>   // for string
 
-#include <QAbstractSpinBox>                             // for QAbstractSpinBox, QAbstractSpinBo...
-#include <QByteArray>                                   // for QByteArray
-#include <QDoubleSpinBox>                               // for QDoubleSpinBox
-#include <QHBoxLayout>                                  // for QHBoxLayout
-#include <QLocale>                                      // for QLocale
-#include <QSignalBlocker>                               // for QSignalBlocker
-#include <QSpinBox>                                     // for QSpinBox
-#include <Qt>                                           // for AlignRight, NoFocus
-#include <QtGlobal>                                     // for QT_VERSION, QT_VERSION_CHECK
-
+#include <QAbstractSpinBox>  // for QAbstractSpinBox, QAbstractSpinBo...
+#include <QByteArray>        // for QByteArray
+#include <QDoubleSpinBox>    // for QDoubleSpinBox
+#include <QHBoxLayout>       // for QHBoxLayout
+#include <QLocale>           // for QLocale
+#include <QSignalBlocker>    // for QSignalBlocker
+#include <QSpinBox>          // for QSpinBox
+#include <Qt>                // for AlignRight, NoFocus
+#include <QtGlobal>          // for QT_VERSION, QT_VERSION_CHECK
 
 namespace inviwo {
 

@@ -31,20 +31,20 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/util/glmvec.h>                  // for vec4
+#include <inviwo/core/util/glmvec.h>  // for vec4
 
-#include <QObject>                                    // for Q_OBJECT, signals
-#include <QRegularExpression>                         // for QRegularExpression
-#include <QString>                                    // for QString
-#include <QSyntaxHighlighter>                         // for QSyntaxHighlighter
-#include <QTextCharFormat>                            // for QTextCharFormat
-#include <glm/vec4.hpp>                               // for operator/
+#include <QObject>             // for Q_OBJECT, signals
+#include <QRegularExpression>  // for QRegularExpression
+#include <QString>             // for QString
+#include <QSyntaxHighlighter>  // for QSyntaxHighlighter
+#include <QTextCharFormat>     // for QTextCharFormat
+#include <glm/vec4.hpp>        // for operator/
 
-#include <string>                                     // for string
-#include <string_view>                                // for string_view
-#include <vector>                                     // for vector
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
-#include <tcb/span.hpp>                               // for span
+#include <tcb/span.hpp>  // for span
 
 class QTextCharFormat;
 class QTextDocument;

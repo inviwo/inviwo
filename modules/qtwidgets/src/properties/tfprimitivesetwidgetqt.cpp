@@ -48,16 +48,16 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>                 // for PropertyWidgetQt
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>  // for MultilineTextEdit
 
-#include <QHBoxLayout>                                                     // for QHBoxLayout
-#include <QSizePolicy>                                                     // for QSizePolicy
-#include <QString>                                                         // for operator!=
-#include <QTextCursor>                                                     // for QTextCursor
-#include <glm/vec2.hpp>                                                    // for vec<>::(anonym...
+#include <QHBoxLayout>   // for QHBoxLayout
+#include <QSizePolicy>   // for QSizePolicy
+#include <QString>       // for operator!=
+#include <QTextCursor>   // for QTextCursor
+#include <glm/vec2.hpp>  // for vec<>::(anonym...
 
-#include <cstddef>                                                         // for size_t
-#include <sstream>                                                         // for char_traits
-#include <stdexcept>                                                       // for invalid_argument
-#include <type_traits>                                                     // for remove_extent_t
+#include <cstddef>      // for size_t
+#include <sstream>      // for char_traits
+#include <stdexcept>    // for invalid_argument
+#include <type_traits>  // for remove_extent_t
 
 class QHBoxLayout;
 

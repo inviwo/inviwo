@@ -39,23 +39,23 @@
 #include <modules/qtwidgets/inviwofiledialog.h>             // for InviwoFileDialog
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <string>                                           // for string, basic_string, operator+
-#include <vector>                                           // for vector, __vector_base<>::valu...
+#include <string>  // for string, basic_string, operator+
+#include <vector>  // for vector, __vector_base<>::valu...
 
-#include <QDesktopServices>                                 // for QDesktopServices
-#include <QDragEnterEvent>                                  // for QDragEnterEvent
-#include <QDragMoveEvent>                                   // for QDragMoveEvent
-#include <QDropEvent>                                       // for QDropEvent
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QIcon>                                            // for QIcon
-#include <QList>                                            // for QList, QList<>::iterator
-#include <QMimeData>                                        // for QMimeData
-#include <QSizePolicy>                                      // for QSizePolicy
-#include <QString>                                          // for QString
-#include <QStringList>                                      // for QStringList
-#include <QToolButton>                                      // for QToolButton
-#include <QUrl>                                             // for QUrl, QUrl::TolerantMode
-#include <QWidget>                                          // for QWidget
+#include <QDesktopServices>  // for QDesktopServices
+#include <QDragEnterEvent>   // for QDragEnterEvent
+#include <QDragMoveEvent>    // for QDragMoveEvent
+#include <QDropEvent>        // for QDropEvent
+#include <QHBoxLayout>       // for QHBoxLayout
+#include <QIcon>             // for QIcon
+#include <QList>             // for QList, QList<>::iterator
+#include <QMimeData>         // for QMimeData
+#include <QSizePolicy>       // for QSizePolicy
+#include <QString>           // for QString
+#include <QStringList>       // for QStringList
+#include <QToolButton>       // for QToolButton
+#include <QUrl>              // for QUrl, QUrl::TolerantMode
+#include <QWidget>           // for QWidget
 
 class QHBoxLayout;
 

@@ -33,21 +33,20 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                // for emToPx
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <memory>                                           // for unique_ptr
+#include <memory>  // for unique_ptr
 
-#include <QAction>                                          // for QAction
-#include <QEvent>                                           // for QEvent
-#include <QFontMetrics>                                     // for QFontMetrics
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QLabel>                                           // for QLabel
-#include <QLayout>                                          // for QLayout
-#include <QLineEdit>                                        // for QLineEdit
-#include <QMenu>                                            // for QMenu
-#include <QMouseEvent>                                      // for QMouseEvent
-#include <QSizeF>                                           // for QSizeF
-#include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Fixed
-#include <QEvent>                                           // for QEvent (ptr only), QEvent::Mo...
-#include <Qt>                                               // for AlignLeft, ElideRight, Preven...
+#include <QAction>       // for QAction
+#include <QEvent>        // for QEvent, QEvent::MouseButtonRe...
+#include <QFontMetrics>  // for QFontMetrics
+#include <QHBoxLayout>   // for QHBoxLayout
+#include <QLabel>        // for QLabel
+#include <QLayout>       // for QLayout
+#include <QLineEdit>     // for QLineEdit
+#include <QMenu>         // for QMenu
+#include <QMouseEvent>   // for QMouseEvent
+#include <QSizeF>        // for QSizeF
+#include <QSizePolicy>   // for QSizePolicy, QSizePolicy::Fixed
+#include <Qt>            // for AlignLeft, ElideRight, Preven...
 
 class QHBoxLayout;
 

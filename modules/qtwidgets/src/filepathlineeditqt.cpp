@@ -33,15 +33,15 @@
 #include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, fromQString
 #include <modules/qtwidgets/lineeditqt.h>     // for LineEditQt
 
-#include <QCursor>                            // for QCursor
-#include <QFocusEvent>                        // for QFocusEvent
-#include <QLabel>                             // for QLabel
-#include <QLineEdit>                          // for QLineEdit
-#include <QPixmap>                            // for QPixmap
-#include <QSize>                              // for QSize
-#include <QString>                            // for QString, operator!=
-#include <QStyle>                             // for QStyle, QStyle::PM_DefaultFrameWidth
-#include <Qt>                                 // for MouseFocusReason
+#include <QCursor>      // for QCursor
+#include <QFocusEvent>  // for QFocusEvent
+#include <QLabel>       // for QLabel
+#include <QLineEdit>    // for QLineEdit
+#include <QPixmap>      // for QPixmap
+#include <QSize>        // for QSize
+#include <QString>      // for QString, operator!=
+#include <QStyle>       // for QStyle, QStyle::PM_DefaultFrameWidth
+#include <Qt>           // for MouseFocusReason
 
 class QFocusEvent;
 class QMouseEvent;

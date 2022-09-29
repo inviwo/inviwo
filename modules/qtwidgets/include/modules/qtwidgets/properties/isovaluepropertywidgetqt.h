@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 #include <modules/qtwidgets/tf/tfpropertydialog.h>          // for TFPropertyDialog
 
-#include <memory>                                           // for unique_ptr
+#include <memory>  // for unique_ptr
 
 class QMenu;
 

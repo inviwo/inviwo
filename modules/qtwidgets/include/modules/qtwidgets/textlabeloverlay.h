@@ -30,12 +30,12 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <QLabel>                                     // for QLabel
-#include <QSize>                                      // for QSize
+#include <QLabel>  // for QLabel
+#include <QSize>   // for QSize
 
-#include <chrono>                                     // for milliseconds
-#include <memory>                                     // for unique_ptr
-#include <string>                                     // for string
+#include <chrono>  // for milliseconds
+#include <memory>  // for unique_ptr
+#include <string>  // for string
 
 class QTimer;
 class QWidget;

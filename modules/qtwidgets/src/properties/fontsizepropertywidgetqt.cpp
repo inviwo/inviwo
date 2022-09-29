@@ -34,22 +34,22 @@
 #include <modules/qtwidgets/inviwowidgetsqt.h>              // for IvwComboBox
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <algorithm>                                        // for find
-#include <iterator>                                         // for distance
-#include <memory>                                           // for unique_ptr
+#include <algorithm>  // for find
+#include <iterator>   // for distance
+#include <memory>     // for unique_ptr
 
-#include <QComboBox>                                        // for QComboBox, QComboBox::NoInsert
-#include <QGridLayout>                                      // for QGridLayout
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QIntValidator>                                    // for QIntValidator
-#include <QLineEdit>                                        // for QLineEdit
-#include <QMenu>                                            // for QMenu
-#include <QSignalBlocker>                                   // for QSignalBlocker
-#include <QSizePolicy>                                      // for QSizePolicy
-#include <QString>                                          // for QString
-#include <QVariant>                                         // for QVariant
-#include <QWidget>                                          // for QWidget
-#include <Qt>                                               // for CustomContextMenu
+#include <QComboBox>       // for QComboBox, QComboBox::NoInsert
+#include <QGridLayout>     // for QGridLayout
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QIntValidator>   // for QIntValidator
+#include <QLineEdit>       // for QLineEdit
+#include <QMenu>           // for QMenu
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy
+#include <QString>         // for QString
+#include <QVariant>        // for QVariant
+#include <QWidget>         // for QWidget
+#include <Qt>              // for CustomContextMenu
 
 class QHBoxLayout;
 class QPoint;

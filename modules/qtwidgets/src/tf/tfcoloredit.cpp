@@ -33,7 +33,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>             // for toQColor, tovec3
 #include <modules/qtwidgets/properties/colorlineedit.h>  // for ColorLineEdit, ColorLineEdit::Co...
 
-#include <QSizePolicy>                                   // for QSizePolicy, QSizePolicy::Minimum
+#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::Minimum
 
 class QWidget;
 

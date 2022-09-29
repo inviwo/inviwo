@@ -36,6 +36,7 @@
 #include <inviwo/core/network/networklock.h>                // for NetworkLock
 #include <inviwo/core/ports/volumeport.h>                   // for VolumeInport
 #include <inviwo/core/properties/property.h>                // for Property
+#include <inviwo/core/util/glmvec.h>                        // for dvec2, vec4
 #include <inviwo/core/util/raiiutils.h>                     // for KeepTrueWhileInScope
 #include <inviwo/core/util/stdextensions.h>                 // for contains
 #include <inviwo/core/util/transformiterator.h>             // for TransformIterator
@@ -50,35 +51,35 @@
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>         // for TFPropertyConcept
 #include <modules/qtwidgets/tf/tfutils.h>                   // for addTFColorbrewerPresetsMenu
 
-#include <cstdlib>                                          // for abs, size_t
-#include <algorithm>                                        // for stable_sort, find_if, max
-#include <array>                                            // for array
-#include <cmath>                                            // for abs
-#include <initializer_list>                                 // for initializer_list
-#include <iterator>                                         // for back_insert_iterator, back_in...
-#include <type_traits>                                      // for remove_extent_t
-#include <utility>                                          // for pair, forward
+#include <algorithm>         // for stable_sort, find_if, max
+#include <array>             // for array
+#include <cmath>             // for abs
+#include <cstdlib>           // for abs, size_t
+#include <initializer_list>  // for initializer_list
+#include <iterator>          // for back_insert_iterator, back_in...
+#include <type_traits>       // for remove_extent_t
+#include <utility>           // for pair, forward
 
-#include <QAction>                                          // for QAction
-#include <QFlags>                                           // for QFlags, operator==
-#include <QGraphicsItem>                                    // for qgraphicsitem_cast, QGraphics...
-#include <QGraphicsSceneContextMenuEvent>                   // for QGraphicsSceneContextMenuEvent
-#include <QGraphicsSceneMouseEvent>                         // for QGraphicsSceneMouseEvent
-#include <QGraphicsView>                                    // for QGraphicsView, QGraphicsView:...
-#include <QGuiApplication>                                  // for QGuiApplication
-#include <QKeyEvent>                                        // for QKeyEvent
-#include <QList>                                            // for QList, QList<>::iterator
-#include <QMenu>                                            // for QMenu
-#include <QPoint>                                           // for operator-, operator+
-#include <QRectF>                                           // for QRectF
-#include <QSizeF>                                           // for QSizeF
-#include <QString>                                          // for QString
-#include <QTransform>                                       // for QTransform
-#include <QWidget>                                          // for QWidget
-#include <Qt>                                               // for ControlModifier, ShiftModifier
-#include <fmt/core.h>                                       // for format
-#include <glm/common.hpp>                                   // for clamp
-#include <glm/vec2.hpp>                                     // for vec<>::(anonymous), vec
+#include <QAction>                         // for QAction
+#include <QFlags>                          // for QFlags, operator==
+#include <QGraphicsItem>                   // for qgraphicsitem_cast, QGraphics...
+#include <QGraphicsSceneContextMenuEvent>  // for QGraphicsSceneContextMenuEvent
+#include <QGraphicsSceneMouseEvent>        // for QGraphicsSceneMouseEvent
+#include <QGraphicsView>                   // for QGraphicsView, QGraphicsView:...
+#include <QGuiApplication>                 // for QGuiApplication
+#include <QKeyEvent>                       // for QKeyEvent
+#include <QList>                           // for QList, QList<>::iterator
+#include <QMenu>                           // for QMenu
+#include <QPoint>                          // for operator-, operator+
+#include <QRectF>                          // for QRectF
+#include <QSizeF>                          // for QSizeF
+#include <QString>                         // for QString
+#include <QTransform>                      // for QTransform
+#include <QWidget>                         // for QWidget
+#include <Qt>                              // for ControlModifier, ShiftModifier
+#include <fmt/core.h>                      // for format
+#include <glm/common.hpp>                  // for clamp
+#include <glm/vec2.hpp>                    // for vec<>::(anonymous), vec
 
 class QGraphicsSceneMouseEvent;
 class QKeyEvent;

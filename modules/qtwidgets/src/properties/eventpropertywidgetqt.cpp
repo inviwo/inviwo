@@ -39,17 +39,17 @@
 #include <modules/qtwidgets/inviwowidgetsqt.h>              // for IvwPushButton
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <ostream>                                          // for stringstream, operator<<, ost...
+#include <ostream>  // for stringstream, operator<<, ost...
 
-#include <QGridLayout>                                      // for QGridLayout
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QKeyEvent>                                        // for QKeyEvent
-#include <QMouseEvent>                                      // for QMouseEvent
-#include <QSizePolicy>                                      // for QSizePolicy
-#include <QString>                                          // for QString
-#include <QWidget>                                          // for QWidget
-#include <Qt>                                               // for Key_Enter, Key_Escape, Key_Re...
-#include <flags/flags.h>                                    // for operator!=, none
+#include <QGridLayout>    // for QGridLayout
+#include <QHBoxLayout>    // for QHBoxLayout
+#include <QKeyEvent>      // for QKeyEvent
+#include <QMouseEvent>    // for QMouseEvent
+#include <QSizePolicy>    // for QSizePolicy
+#include <QString>        // for QString
+#include <QWidget>        // for QWidget
+#include <Qt>             // for Key_Enter, Key_Escape, Key_Re...
+#include <flags/flags.h>  // for operator!=, none
 
 class QHBoxLayout;
 

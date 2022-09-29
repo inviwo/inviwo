@@ -52,32 +52,32 @@
 #include <modules/qtwidgets/inviwofiledialog.h>               // for InviwoFileDialog
 #include <modules/qtwidgets/inviwoqtutils.h>                  // for toQString, emToPx, toQPixmap
 
-#include <initializer_list>                                   // for initializer_list
-#include <limits>                                             // for numeric_limits
-#include <memory>                                             // for unique_ptr, shared_ptr
-#include <string>                                             // for basic_string, operator+
-#include <string_view>                                        // for string_view
-#include <type_traits>                                        // for remove_reference, remove_re...
-#include <utility>                                            // for move
-#include <vector>                                             // for vector
+#include <initializer_list>  // for initializer_list
+#include <limits>            // for numeric_limits
+#include <memory>            // for unique_ptr, shared_ptr
+#include <string>            // for basic_string, operator+
+#include <string_view>       // for string_view
+#include <type_traits>       // for remove_reference, remove_re...
+#include <utility>           // for move
+#include <vector>            // for vector
 
-#include <QAction>                                            // for QAction
-#include <QCheckBox>                                          // for QCheckBox
-#include <QDialog>                                            // for QDialog
-#include <QDialogButtonBox>                                   // for QDialogButtonBox, operator|
-#include <QDoubleSpinBox>                                     // for QDoubleSpinBox
-#include <QGridLayout>                                        // for QGridLayout
-#include <QIcon>                                              // for QIcon
-#include <QLabel>                                             // for QLabel
-#include <QList>                                              // for QList
-#include <QMenu>                                              // for QMenu
-#include <QObject>                                            // for QObject
-#include <QSize>                                              // for QSize
-#include <QSpinBox>                                           // for QSpinBox
-#include <QString>                                            // for QString
-#include <QStringList>                                        // for QStringList
-#include <QWidget>                                            // for QWidget
-#include <fmt/core.h>                                         // for format
+#include <QAction>           // for QAction
+#include <QCheckBox>         // for QCheckBox
+#include <QDialog>           // for QDialog
+#include <QDialogButtonBox>  // for QDialogButtonBox, operator|
+#include <QDoubleSpinBox>    // for QDoubleSpinBox
+#include <QGridLayout>       // for QGridLayout
+#include <QIcon>             // for QIcon
+#include <QLabel>            // for QLabel
+#include <QList>             // for QList
+#include <QMenu>             // for QMenu
+#include <QObject>           // for QObject
+#include <QSize>             // for QSize
+#include <QSpinBox>          // for QSpinBox
+#include <QString>           // for QString
+#include <QStringList>       // for QStringList
+#include <QWidget>           // for QWidget
+#include <fmt/core.h>        // for format
 
 namespace inviwo {
 

@@ -31,17 +31,17 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/datastructures/datamapper.h>    // for DataMapper
-#include <inviwo/core/util/glmvec.h>                  // for dvec2, vec4
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>   // for TFEditorPrimitive, TFEditorPrimitiv...
+#include <inviwo/core/datastructures/datamapper.h>   // for DataMapper
+#include <inviwo/core/util/glmvec.h>                 // for dvec2, vec4
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
 
-#include <QGraphicsScene>                             // for QGraphicsScene
-#include <QObject>                                    // for Q_OBJECT, signals
-#include <QPointF>                                    // for QPointF
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <vector>      // for vector
 
-#include <functional>                                 // for function
-#include <memory>                                     // for shared_ptr
-#include <vector>                                     // for vector
+#include <QGraphicsScene>  // for QGraphicsScene
+#include <QObject>         // for Q_OBJECT, signals
+#include <QPointF>         // for QPointF
 
 class QGraphicsSceneMouseEvent;
 class QKeyEvent;

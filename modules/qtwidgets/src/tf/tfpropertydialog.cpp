@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/datamapper.h>                // for DataMapper
 #include <inviwo/core/datastructures/histogram.h>                 // for HistogramMode
 #include <inviwo/core/datastructures/isovaluecollection.h>        // for IsoValueCollection
+#include <inviwo/core/datastructures/tfprimitive.h>               // for TFPrimitive
 #include <inviwo/core/datastructures/tfprimitiveset.h>            // for TFPrimitiveSet, TFPrimi...
 #include <inviwo/core/datastructures/transferfunction.h>          // for TransferFunction
 #include <inviwo/core/ports/volumeport.h>                         // for VolumeInport
@@ -43,6 +44,7 @@
 #include <inviwo/core/properties/property.h>                      // for Property
 #include <inviwo/core/properties/propertyowner.h>                 // for PropertyOwner
 #include <inviwo/core/properties/transferfunctionproperty.h>      // for TransferFunctionProperty
+#include <inviwo/core/util/glmvec.h>                              // for dvec2, ivec2, vec2
 #include <inviwo/core/util/stringconversion.h>                    // for toString
 #include <modules/qtwidgets/colorwheel.h>                         // for ColorWheel
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>           // for InviwoDockWidgetTitleBar
@@ -58,38 +60,38 @@
 #include <modules/qtwidgets/tf/tfselectionwatcher.h>              // for TFSelectionWatcher
 #include <modules/qtwidgets/tf/tfutils.h>                         // for exportToFile, importFro...
 
-#include <algorithm>                                              // for all_of
-#include <string_view>                                            // for string_view
-#include <type_traits>                                            // for remove_extent_t
-#include <utility>                                                // for move
+#include <algorithm>    // for all_of
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for move
 
-#include <QColor>                                                 // for QColor
-#include <QColorDialog>                                           // for QColorDialog, QColorDia...
-#include <QComboBox>                                              // for QComboBox
-#include <QFrame>                                                 // for QFrame
-#include <QGridLayout>                                            // for QGridLayout
-#include <QHBoxLayout>                                            // for QHBoxLayout
-#include <QIcon>                                                  // for QIcon
-#include <QLabel>                                                 // for QLabel
-#include <QLayout>                                                // for QLayout
-#include <QObject>                                                // for QObject
-#include <QPoint>                                                 // for QPoint
-#include <QPolygonF>                                              // for QPolygonF
-#include <QRect>                                                  // for QRect
-#include <QRectF>                                                 // for QRectF
-#include <QSettings>                                              // for QSettings
-#include <QSignalBlocker>                                         // for QSignalBlocker
-#include <QSizeF>                                                 // for QSizeF
-#include <QSizePolicy>                                            // for QSizePolicy
-#include <QString>                                                // for QString
-#include <QToolButton>                                            // for QToolButton
-#include <QVBoxLayout>                                            // for QVBoxLayout
-#include <QVariant>                                               // for QVariant
-#include <QWidget>                                                // for QWidget
-#include <Qt>                                                     // for operator|, ScrollBarAlw...
-#include <fmt/core.h>                                             // for format
-#include <glm/common.hpp>                                         // for mix
-#include <glm/vec2.hpp>                                           // for vec<>::(anonymous)
+#include <QColor>          // for QColor
+#include <QColorDialog>    // for QColorDialog, QColorDia...
+#include <QComboBox>       // for QComboBox
+#include <QFrame>          // for QFrame
+#include <QGridLayout>     // for QGridLayout
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QIcon>           // for QIcon
+#include <QLabel>          // for QLabel
+#include <QLayout>         // for QLayout
+#include <QObject>         // for QObject
+#include <QPoint>          // for QPoint
+#include <QPolygonF>       // for QPolygonF
+#include <QRect>           // for QRect
+#include <QRectF>          // for QRectF
+#include <QSettings>       // for QSettings
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizeF>          // for QSizeF
+#include <QSizePolicy>     // for QSizePolicy
+#include <QString>         // for QString
+#include <QToolButton>     // for QToolButton
+#include <QVBoxLayout>     // for QVBoxLayout
+#include <QVariant>        // for QVariant
+#include <QWidget>         // for QWidget
+#include <Qt>              // for operator|, ScrollBarAlw...
+#include <fmt/core.h>      // for format
+#include <glm/common.hpp>  // for mix
+#include <glm/vec2.hpp>    // for vec<>::(anonymous)
 
 class QHBoxLayout;
 class QVBoxLayout;

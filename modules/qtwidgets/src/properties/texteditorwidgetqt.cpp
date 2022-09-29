@@ -40,24 +40,24 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                      // for fromQString, toQString
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>  // for PropertyEditorWidgetQt
 
-#include <fstream>                                                // for basic_ifstream, basic_o...
-#include <vector>                                                 // for vector
+#include <fstream>  // for basic_ifstream, basic_o...
+#include <vector>   // for vector
 
-#include <QAction>                                                // for QAction
-#include <QFileDialog>                                            // for QFileDialog, QFileDialo...
-#include <QIcon>                                                  // for QIcon
-#include <QKeySequence>                                           // for QKeySequence, QKeySeque...
-#include <QList>                                                  // for QList
-#include <QMainWindow>                                            // for QMainWindow
-#include <QMessageBox>                                            // for QMessageBox, operator|
-#include <QObject>                                                // for QObject
-#include <QPlainTextEdit>                                         // for QPlainTextEdit
-#include <QSizeF>                                                 // for QSizeF
-#include <QString>                                                // for operator+, QString
-#include <QStringList>                                            // for QStringList
-#include <QTextDocument>                                          // for QTextDocument
-#include <QToolBar>                                               // for QToolBar
-#include <Qt>                                                     // for WidgetWithChildrenShortcut
+#include <QAction>         // for QAction
+#include <QFileDialog>     // for QFileDialog, QFileDialo...
+#include <QIcon>           // for QIcon
+#include <QKeySequence>    // for QKeySequence, QKeySeque...
+#include <QList>           // for QList
+#include <QMainWindow>     // for QMainWindow
+#include <QMessageBox>     // for QMessageBox, operator|
+#include <QObject>         // for QObject
+#include <QPlainTextEdit>  // for QPlainTextEdit
+#include <QSizeF>          // for QSizeF
+#include <QString>         // for operator+, QString
+#include <QStringList>     // for QStringList
+#include <QTextDocument>   // for QTextDocument
+#include <QToolBar>        // for QToolBar
+#include <Qt>              // for WidgetWithChildrenShortcut
 
 class QCloseEvent;
 

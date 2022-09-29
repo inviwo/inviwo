@@ -28,7 +28,7 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>        // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <inviwo/core/properties/propertywidget.h>          // for PropertyWidget
 #include <inviwo/core/util/stdextensions.h>                 // for make_array
@@ -38,20 +38,21 @@
 #include <modules/qtwidgets/lineeditqt.h>                   // for LineEditQt
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <array>                                            // for array
-#include <cstddef>                                          // for size_t
-#include <functional>                                       // for function
-#include <string>                                           // for string
+#include <array>       // for array
+#include <cstddef>     // for size_t
+#include <functional>  // for function
+#include <string>      // for string
 
-#include <QHBoxLayout>                                      // for QHBoxLayout
-#include <QSignalBlocker>                                   // for QSignalBlocker
-#include <QSizePolicy>                                      // for QSizePolicy, QSizePolicy::Min...
-#include <QWidget>                                          // for QWidget
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy, QSizePolicy::Min...
+#include <QWidget>         // for QWidget
 
 class QHBoxLayout;
 namespace inviwo {
 class Property;
-template <size_t N> class StringsProperty;
+template <size_t N>
+class StringsProperty;
 }  // namespace inviwo
 
 namespace inviwo {

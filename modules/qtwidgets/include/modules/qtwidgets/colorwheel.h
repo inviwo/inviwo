@@ -39,13 +39,13 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <QColor>                                     // for QColor
-#include <QImage>                                     // for QImage
-#include <QObject>                                    // for slots, Q_OBJECT, signals
-#include <QPoint>                                     // for QPoint
-#include <QRegion>                                    // for QRegion
-#include <QSize>                                      // for QSize
-#include <QWidget>                                    // for QWidget
+#include <QColor>   // for QColor
+#include <QImage>   // for QImage
+#include <QObject>  // for slots, Q_OBJECT, signals
+#include <QPoint>   // for QPoint
+#include <QRegion>  // for QRegion
+#include <QSize>    // for QSize
+#include <QWidget>  // for QWidget
 
 class QPainter;
 class QMouseEvent;

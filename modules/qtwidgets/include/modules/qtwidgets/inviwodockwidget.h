@@ -31,9 +31,9 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <QDockWidget>                                // for QDockWidget
-#include <QObject>                                    // for Q_OBJECT, signals
-#include <QString>                                    // for QString
+#include <QDockWidget>  // for QDockWidget
+#include <QObject>      // for Q_OBJECT, signals
+#include <QString>      // for QString
 
 class QCloseEvent;
 class QShowEvent;
