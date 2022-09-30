@@ -28,18 +28,28 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/datastructures/animationobserver.h>
-#include <modules/animation/animationcontrollerobserver.h>
-#include <modules/animationqt/widgets/editorconstants.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+
+#include <modules/animation/animationcontrollerobserver.h>       // for AnimationControllerObserver
+#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsScene>
+#include <QGraphicsScene>  // for QGraphicsScene
+
+class QGraphicsLineItem;
+class QGraphicsSceneDragDropEvent;
+namespace inviwo {
+namespace animation {
+class Animation;
+class Track;
+}  // namespace animation
+}  // namespace inviwo
+
 #include <warn/pop>
 
-#include <unordered_map>
-#include <memory>
+#include <memory>         // for unique_ptr
+#include <unordered_map>  // for unordered_map
 
 class QKeyEvent;
 

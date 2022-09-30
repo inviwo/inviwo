@@ -28,21 +28,47 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationviewqt.h>
-#include <modules/animationqt/animationeditorqt.h>
-#include <modules/animation/animationcontroller.h>
-#include <modules/animationqt/animationeditorqt.h>
-#include <modules/animationqt/widgets/editorconstants.h>
+
+#include <modules/animation/animationcontroller.h>            // for AnimationController
+#include <modules/animation/animationcontrollerobserver.h>    // for AnimationControllerObservable
+#include <modules/animation/datastructures/animationstate.h>  // for AnimationState
+#include <modules/animation/datastructures/animationtime.h>   // for Seconds
+#include <modules/animationqt/animationeditorqt.h>            // for AnimationEditorQt
+#include <modules/animationqt/widgets/editorconstants.h>      // for FindDivisionsResult, widthP...
+
+#include <stdlib.h>  // for abs, size_t
+#include <cmath>     // for floor, abs
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWheelEvent>
-#include <QPainter>
-#include <QScrollBar>
-#include <qmath.h>
-#include <QGridLayout>
-#include <QScrollBar>
-#include <QGraphicsScene>
-#include <QStyleOption>
+#include <QColor>        // for QColor
+#include <QFlags>        // for QFlags, operator==
+#include <QFontMetrics>  // for QFontMetrics
+#include <QFrame>        // for QFrame, QFrame::NoFrame
+#include <QGridLayout>   // for QGridLayout
+#include <QKeyEvent>     // for QKeyEvent
+#include <QLineF>        // for QLineF
+#include <QMouseEvent>   // for QMouseEvent
+#include <QPainter>      // for QPainter, QPainter::Antiali...
+#include <QPen>          // for QPen
+#include <QPoint>        // for operator/, QPoint
+#include <QPointF>       // for QPointF
+#include <QRect>         // for QRect
+#include <QScrollBar>    // for QScrollBar
+#include <QString>       // for QString
+#include <QTransform>    // for QTransform
+#include <QVector>       // for QVector
+#include <QWheelEvent>   // for QWheelEvent
+#include <QWidget>       // for QWidget
+#include <Qt>            // for operator|, ControlModifier
+#include <qmath.h>       // for qPow
+
+class QKeyEvent;
+class QLineF;
+class QMouseEvent;
+class QPaintEvent;
+class QWheelEvent;
+
 #include <warn/pop>
 
 namespace inviwo {

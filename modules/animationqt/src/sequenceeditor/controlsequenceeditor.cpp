@@ -29,24 +29,29 @@
 
 #include <modules/animationqt/sequenceeditor/controlsequenceeditor.h>
 
-#include <modules/animation/datastructures/controlkeyframe.h>
-#include <modules/animation/datastructures/controlkeyframesequence.h>
-#include <modules/animation/datastructures/controltrack.h>
+#include <modules/animation/datastructures/animationtime.h>           // for Seconds
+#include <modules/animation/datastructures/controlkeyframe.h>         // for ControlKeyframe
+#include <modules/animation/datastructures/keyframe.h>                // for Keyframe
+#include <modules/animation/datastructures/keyframeobserver.h>        // for KeyframeObserver
+#include <modules/animation/datastructures/keyframesequence.h>        // for KeyframeSequence
+#include <modules/animation/datastructures/track.h>                   // for Track
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
+#include <modules/qtwidgets/inviwoqtutils.h>                          // for toQString
 
-#include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/keyframeobserver.h>
-#include <modules/animation/animationmanager.h>
-
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <cstddef>  // for size_t
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QComboBox>
-#include <QDoubleSpinBox>
+#include <QComboBox>       // for QComboBox
+#include <QDoubleSpinBox>  // for QDoubleSpinBox
+#include <QFont>           // for QFont
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QLabel>          // for QLabel
+#include <QVBoxLayout>     // for QVBoxLayout
+#include <QWidget>         // for QWidget
+
+class QDoubleSpinBox;
+
 #include <warn/pop>
 
 namespace inviwo {

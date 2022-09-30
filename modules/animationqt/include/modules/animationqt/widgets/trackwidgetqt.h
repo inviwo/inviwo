@@ -28,15 +28,29 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animation/datastructures/keyframesequence.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/trackobserver.h>
+#include <modules/animation/datastructures/trackobserver.h>  // for TrackObserver
+
+#include <memory>         // for unique_ptr
+#include <unordered_map>  // for unordered_map
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsItem>
+#include <QGraphicsItem>  // for QGraphicsItem
+#include <QRectF>         // for QRectF
+
+class QPainter;
+class QRectF;
+class QStyleOptionGraphicsItem;
+class QWidget;
+namespace inviwo {
+namespace animation {
+class KeyframeSequence;
+class Track;
+}  // namespace animation
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

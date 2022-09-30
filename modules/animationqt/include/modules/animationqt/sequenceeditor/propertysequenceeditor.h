@@ -28,18 +28,24 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIO...
 
-#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
-#include <modules/animation/datastructures/valuekeyframesequence.h>
+#include <modules/animation/datastructures/valuekeyframesequence.h>   // for ValueKeyframeSequen...
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
+
+#include <string>  // for string
 
 class QComboBox;
+class QWidget;
 
 namespace inviwo {
 
 namespace animation {
 
 class AnimationManager;
+class Keyframe;
+class KeyframeSequence;
+class Track;
 
 class IVW_MODULE_ANIMATIONQT_API PropertySequenceEditor : public SequenceEditorWidget,
                                                           public ValueKeyframeSequenceObserver {

@@ -28,17 +28,22 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/animationcontroller.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/trackobserver.h>
-#include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/keyframeobserver.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+
+#include <modules/animation/datastructures/trackobserver.h>  // for TrackObserver
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
-#include <QStandardItem>
+#include <QWidget>  // for QWidget
+
+class QStandardItem;
+namespace inviwo {
+namespace animation {
+class AnimationController;
+class Track;
+}  // namespace animation
+}  // namespace inviwo
+
 #include <warn/pop>
 
 class QHBoxLayout;

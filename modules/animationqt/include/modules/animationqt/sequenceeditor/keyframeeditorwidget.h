@@ -28,24 +28,32 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <inviwo/core/properties/property.h>
-#include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/keyframeobserver.h>
+#include <inviwo/core/properties/property.h>                    // for Property
+#include <modules/animation/datastructures/animationtime.h>     // for Seconds
+#include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObserver
+
+#include <memory>  // for unique_ptr
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
+#include <QWidget>  // for QWidget
+
+namespace inviwo {
+namespace animation {
+class Keyframe;
+}  // namespace animation
+}  // namespace inviwo
+
 #include <warn/pop>
 
-class QHBoxLayout;
 class QComboBox;
 class QDoubleSpinBox;
+class QHBoxLayout;
 
 namespace inviwo {
 
-class Property;
 class PropertyWidgetQt;
 
 namespace animation {

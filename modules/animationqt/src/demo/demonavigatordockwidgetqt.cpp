@@ -27,27 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <modules/animationqt/demo/demonavigatordockwidgetqt.h>
+#include <inviwo/core/common/factoryutil.h>                      // for getPropertyWidgetFactory
+#include <inviwo/core/properties/propertywidgetfactory.h>        // for PropertyWidgetFactory
+#include <modules/animation/demo/democontroller.h>               // for DemoController, DemoCont...
+#include <modules/animation/demo/democontrollerobserver.h>       // for DemoControllerObservable
+#include <modules/animationqt/demo/demonavigatordockwidgetqt.h>  // for DemoNavigatorDockWidgetQt
+#include <modules/qtwidgets/inviwodockwidget.h>                  // for InviwoDockWidget
+#include <modules/qtwidgets/inviwoqtutils.h>                     // for emToPx, toQString
+#include <modules/qtwidgets/properties/propertywidgetqt.h>       // for PropertyWidgetQt
 
-#include <modules/animation/demo/democontroller.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/propertywidgetfactory.h>
-#include <inviwo/core/common/factoryutil.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
+#include <memory>  // for unique_ptr
+#include <string>  // for string
+#include <vector>  // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QToolButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QSplitter>
-#include <QSettings>
-#include <QToolBar>
-#include <QLabel>
-#include <QMainWindow>
+#include <QAction>      // for QAction
+#include <QIcon>        // for QIcon
+#include <QMainWindow>  // for QMainWindow
+#include <QSizeF>       // for QSizeF
+#include <QSizePolicy>  // for QSizePolicy, QSizePolicy...
+#include <QString>      // for QString
+#include <QToolBar>     // for QToolBar
+#include <QVBoxLayout>  // for QVBoxLayout
+#include <QWidget>      // for QWidget
+#include <Qt>           // for WidgetWithChildrenShortcut
+
+class QVBoxLayout;
+namespace inviwo {
+class InviwoApplication;
+class Property;
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

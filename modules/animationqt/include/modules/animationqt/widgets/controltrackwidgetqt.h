@@ -28,14 +28,19 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animationqt/widgets/trackwidgetqt.h>
-#include <modules/animationqt/widgets/editorconstants.h>
+#include <modules/animationqt/widgets/editorconstants.h>  // for ItemTypes, ItemTypes::ControlTrack
+#include <modules/animationqt/widgets/trackwidgetqt.h>    // for TrackWidgetQt
+
+#include <string>  // for string
+
+#include <QGraphicsItem>  // for QGraphicsItem::UserType
 
 namespace inviwo {
 
 namespace animation {
+class Track;
 
 class IVW_MODULE_ANIMATIONQT_API ControlTrackWidgetQt : public TrackWidgetQt {
 public:

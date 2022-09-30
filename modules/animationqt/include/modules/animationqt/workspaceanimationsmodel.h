@@ -28,14 +28,26 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animation/workspaceanimations.h>
+#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
+#include <modules/animation/workspaceanimations.h>               // for WorkspaceAnimations, Wor...
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QAbstractListModel>
-#include <QVariant>
+#include <QAbstractListModel>  // for QAbstractListModel
+#include <QModelIndex>         // for QModelIndex
+#include <QVariant>            // for QVariant
+#include <Qt>                  // for DisplayRole, EditRole
+
+class QModelIndex;
+class QObject;
+namespace inviwo {
+namespace animation {
+class Animation;
+}  // namespace animation
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

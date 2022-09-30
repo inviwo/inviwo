@@ -28,30 +28,52 @@
  *********************************************************************************/
 
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
-#include <modules/animationqt/sequenceeditor/keyframeeditorwidget.h>
 
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/common/factoryutil.h>                            // for getPropertyWidgetF...
+#include <inviwo/core/properties/cameraproperty.h>                     // for CameraProperty
+#include <inviwo/core/properties/property.h>                           // for Property
+#include <inviwo/core/properties/propertywidgetfactory.h>              // for PropertyWidgetFactory
+#include <inviwo/core/util/stringconversion.h>                         // for toString
+#include <modules/animation/animationmanager.h>                        // for AnimationManager
+#include <modules/animation/datastructures/animationtime.h>            // for Seconds
+#include <modules/animation/datastructures/easing.h>                   // for operator++, operat...
+#include <modules/animation/datastructures/keyframe.h>                 // for Keyframe
+#include <modules/animation/datastructures/keyframeobserver.h>         // for KeyframeObserver
+#include <modules/animation/datastructures/keyframesequence.h>         // for KeyframeSequence
+#include <modules/animation/datastructures/propertytrack.h>            // for BasePropertyTrack
+#include <modules/animation/datastructures/track.h>                    // for Track
+#include <modules/animation/datastructures/valuekeyframesequence.h>    // for ValueKeyframeSequence
+#include <modules/animation/factories/interpolationfactory.h>          // for InterpolationFactory
+#include <modules/animation/factories/interpolationfactoryobject.h>    // for InterpolationFacto...
+#include <modules/animation/interpolation/interpolation.h>             // for Interpolation
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>   // for SequenceEditorWidget
+#include <modules/qtwidgets/editablelabelqt.h>                         // for EditableLabelQt
+#include <modules/qtwidgets/inviwoqtutils.h>                           // for toQString, refSpacePx
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
+#include <modules/qtwidgets/properties/propertywidgetqt.h>             // for PropertyWidgetQt
 
-#include <modules/animation/datastructures/valuekeyframe.h>
-#include <modules/animation/datastructures/valuekeyframesequence.h>
-#include <modules/animation/datastructures/propertytrack.h>
-#include <modules/animation/animationmanager.h>
-
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <algorithm>         // for none_of
+#include <cstddef>           // for size_t
+#include <functional>        // for __base
+#include <initializer_list>  // for begin, end
+#include <memory>            // for unique_ptr, unique...
+#include <vector>            // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QDoubleSpinBox>
-#include <QComboBox>
+#include <QComboBox>       // for QComboBox
+#include <QDoubleSpinBox>  // for QDoubleSpinBox
+#include <QFont>           // for QFont
+#include <QGridLayout>     // for QGridLayout
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QLabel>          // for QLabel
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QVBoxLayout>     // for QVBoxLayout
+#include <QVariant>        // for QVariant
+#include <QWidget>         // for QWidget
+
+class QDoubleSpinBox;
+
 #include <warn/pop>
 
 namespace inviwo {

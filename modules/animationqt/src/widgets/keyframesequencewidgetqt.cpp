@@ -29,16 +29,39 @@
 
 #include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
 
-#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframesequence.h>  // for KeyframeSequence
+#include <modules/animationqt/widgets/editorconstants.h>        // for timeToScenePos, trackHeig...
+#include <modules/animationqt/widgets/keyframewidgetqt.h>       // for KeyframeWidgetQt
+
+#include <algorithm>  // for max
+#include <cstddef>    // for size_t
+#include <utility>    // for pair
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsLineItem>
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include <QPainter>
-#include <QLinearGradient>
-#include <QApplication>
+#include <QApplication>     // for QApplication
+#include <QBrush>           // for QBrush
+#include <QColor>           // for QColor
+#include <QFlags>           // for operator==, QFlags
+#include <QGraphicsScene>   // for QGraphicsScene
+#include <QGraphicsView>    // for QGraphicsView
+#include <QLinearGradient>  // for QLinearGradient
+#include <QList>            // for QList
+#include <QPainter>         // for QPainter, QPainter::Antia...
+#include <QPen>             // for QPen
+#include <QPointF>          // for QPointF
+#include <QTransform>       // for QTransform
+#include <Qt>               // for LeftButton, MouseButtons
+#include <qglobal.h>        // for qreal
+
+class QStyleOptionGraphicsItem;
+class QWidget;
+namespace inviwo {
+namespace animation {
+class Keyframe;
+}  // namespace animation
+}  // namespace inviwo
+
 #include <warn/pop>
 
 namespace inviwo {

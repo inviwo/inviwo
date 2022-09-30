@@ -28,14 +28,16 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animationqt/widgets/trackwidgetqt.h>
-#include <modules/animation/datastructures/track.h>
+#include <memory>  // for unique_ptr, make_unique
+#include <string>  // for string
 
 namespace inviwo {
 
 namespace animation {
+class Track;
+class TrackWidgetQt;
 
 class IVW_MODULE_ANIMATIONQT_API TrackWidgetQtFactoryObject {
 public:

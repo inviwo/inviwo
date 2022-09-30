@@ -29,13 +29,18 @@
 
 #include <modules/animationqt/widgets/editorconstants.h>
 
-#include <array>
-#include <limits>
-#include <cmath>
+#include <stdlib.h>   // for abs, size_t
+#include <algorithm>  // for max, min
+#include <array>      // for array
+#include <cmath>      // for round, remainder, pow, abs, floor, log10
+#include <limits>     // for numeric_limits
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QApplication>
+#include <QApplication>  // for QApplication
+#include <QFlags>        // for QFlags
+#include <Qt>            // for AltModifier
+
 #include <warn/pop>
 
 namespace inviwo {

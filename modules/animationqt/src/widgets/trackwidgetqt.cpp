@@ -28,13 +28,20 @@
  *********************************************************************************/
 
 #include <modules/animationqt/widgets/trackwidgetqt.h>
-#include <modules/animation/datastructures/keyframesequence.h>
 
-#include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
+#include <modules/animation/datastructures/track.h>                // for Track
+#include <modules/animationqt/widgets/keyframesequencewidgetqt.h>  // for KeyframeSequenceWidgetQt
+
+#include <cstddef>  // for size_t
+
+class QPainter;
+class QStyleOptionGraphicsItem;
+class QWidget;
 
 namespace inviwo {
 
 namespace animation {
+class KeyframeSequence;
 
 TrackWidgetQt::TrackWidgetQt(Track& track) : QGraphicsItem(), track_(track) {
     for (size_t i = 0; i < track_.size(); ++i) {

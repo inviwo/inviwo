@@ -28,19 +28,28 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animation/animationcontroller.h>
-#include <modules/animation/animationcontrollerobserver.h>
-#include <modules/animation/datastructures/animationobserver.h>
-#include <modules/animation/datastructures/trackobserver.h>
+#include <modules/animation/animationcontrollerobserver.h>       // for AnimationControllerObserver
+#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
+#include <modules/animation/datastructures/trackobserver.h>      // for TrackObserver
 
-#include <modules/qtwidgets/inviwodockwidget.h>
+#include <unordered_map>  // for unordered_map
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
-#include <QScrollArea>
+#include <QScrollArea>  // for QScrollArea
+
+class QLayout;
+class QWidget;
+namespace inviwo {
+namespace animation {
+class AnimationController;
+class KeyframeSequence;
+class Track;
+}  // namespace animation
+}  // namespace inviwo
+
 #include <warn/pop>
 
 class QVBoxLayout;
@@ -49,11 +58,10 @@ namespace inviwo {
 
 namespace animation {
 
-class AnimationManager;
 class Animation;
-class SequenceEditorWidget;
+class AnimationManager;
 class SequenceEditorFactory;
-class EditorWidgetFactory;
+class SequenceEditorWidget;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QScrollArea,
                                                        public AnimationControllerObserver,

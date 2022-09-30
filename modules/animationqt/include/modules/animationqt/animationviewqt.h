@@ -28,14 +28,24 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/animationcontrollerobserver.h>    // for AnimationControllerObserver
+#include <modules/animation/datastructures/animationstate.h>  // for AnimationState
+#include <modules/animation/datastructures/animationtime.h>   // for Seconds
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsView>
+#include <QGraphicsView>  // for QGraphicsView
+#include <QRectF>         // for QRectF
+
+class QKeyEvent;
+class QMouseEvent;
+class QPainter;
+class QRectF;
+class QWheelEvent;
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {
