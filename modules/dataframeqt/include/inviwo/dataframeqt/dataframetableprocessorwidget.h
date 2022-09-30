@@ -28,17 +28,21 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
-#include <modules/qtwidgets/processors/processorwidgetqt.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/datastructures/bitset.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>  // for IVW_MODULE_DATAFRAMEQT_API
+
+#include <inviwo/core/processors/processor.h>                // for Processor, Processor::NameDi...
+#include <modules/qtwidgets/processors/processorwidgetqt.h>  // for ProcessorWidgetQt
+
+#include <functional>  // for function
+#include <memory>      // for shared_ptr, unique_ptr
+
+#include <QObject>  // for Q_OBJECT
 
 namespace inviwo {
 
+class BrushingAndLinkingManager;
 class DataFrame;
 class DataFrameTableView;
-class BrushingAndLinkingManager;
 
 /**
  * \brief A processor widget showing a DataFrame in a table view.

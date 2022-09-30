@@ -29,21 +29,30 @@
 
 #pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/metadata/processorwidgetmetadata.h>
-#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>  // for IVW_MODULE_DATAFRA...
 
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/processors/exporter.h>
+#include <inviwo/core/io/datawriter.h>                                 // for Overwrite
+#include <inviwo/core/metadata/processorwidgetmetadata.h>              // for ProcessorWidgetMet...
+#include <inviwo/core/processors/exporter.h>                           // for Exporter
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>                    // for IntSize2Property
+#include <inviwo/core/util/glmvec.h>                                   // for size2_t
+#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
 
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <memory>       // for unique_ptr
+#include <optional>     // for optional
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
 
 class DataFrameTableProcessorWidget;
+class FileExtension;
+class ProcessorWidget;
 
 /** \docpage{org.inviwo.DataFrameTable, DataFrame Table}
  * ![](org.inviwo.DataFrameTable.png?classIdentifier=org.inviwo.DataFrameTable)

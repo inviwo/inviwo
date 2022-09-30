@@ -28,10 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>  // for IVW_MODULE_DATAFRAMEQT_API
+
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameQtModule : public InviwoModule {
 public:
