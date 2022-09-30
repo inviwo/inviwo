@@ -40,8 +40,6 @@
 
 #include <cstddef>  // for size_t
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QComboBox>       // for QComboBox
 #include <QDoubleSpinBox>  // for QDoubleSpinBox
 #include <QFont>           // for QFont
@@ -51,8 +49,6 @@
 #include <QWidget>         // for QWidget
 
 class QDoubleSpinBox;
-
-#include <warn/pop>
 
 namespace inviwo {
 

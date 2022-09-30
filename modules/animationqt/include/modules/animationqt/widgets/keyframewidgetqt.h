@@ -34,8 +34,6 @@
 #include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObserver
 #include <modules/animationqt/widgets/editorconstants.h>        // for ItemTypes, ItemTypes::Key...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsItem>  // for QGraphicsItem, QGraphicsI...
 #include <QRectF>         // for QRectF
 #include <QVariant>       // for QVariant
@@ -44,17 +42,12 @@ class QPainter;
 class QRectF;
 class QStyleOptionGraphicsItem;
 class QWidget;
+
 namespace inviwo {
+
 namespace animation {
+
 class Keyframe;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
-
-namespace animation {
 
 /**
  * \class KeyframeWidgetQt

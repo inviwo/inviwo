@@ -32,26 +32,18 @@
 
 #include <modules/animation/datastructures/trackobserver.h>  // for TrackObserver
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QWidget>  // for QWidget
 
 class QStandardItem;
-namespace inviwo {
-namespace animation {
-class AnimationController;
-class Track;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
-
 class QHBoxLayout;
 class QToolButton;
 
 namespace inviwo {
 
 namespace animation {
+
+class AnimationController;
+class Track;
 
 class IVW_MODULE_ANIMATIONQT_API TrackControlsWidgetQt : public QWidget, public TrackObserver {
 

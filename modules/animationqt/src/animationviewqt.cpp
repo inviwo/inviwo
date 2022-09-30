@@ -36,11 +36,9 @@
 #include <modules/animationqt/animationeditorqt.h>            // for AnimationEditorQt
 #include <modules/animationqt/widgets/editorconstants.h>      // for FindDivisionsResult, widthP...
 
-#include <stdlib.h>  // for abs, size_t
+#include <cstdlib>  // for abs, size_t
 #include <cmath>     // for floor, abs
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>        // for QColor
 #include <QFlags>        // for QFlags, operator==
 #include <QFontMetrics>  // for QFontMetrics
@@ -68,8 +66,6 @@ class QLineF;
 class QMouseEvent;
 class QPaintEvent;
 class QWheelEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

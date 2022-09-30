@@ -36,28 +36,19 @@
 
 #include <unordered_map>  // for unordered_map
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QScrollArea>  // for QScrollArea
 
 class QLayout;
 class QWidget;
-namespace inviwo {
-namespace animation {
-class AnimationController;
-class KeyframeSequence;
-class Track;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
-
 class QVBoxLayout;
 
 namespace inviwo {
 
 namespace animation {
 
+class AnimationController;
+class KeyframeSequence;
+class Track;
 class Animation;
 class AnimationManager;
 class SequenceEditorFactory;

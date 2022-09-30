@@ -59,8 +59,6 @@
 #include <memory>            // for unique_ptr, unique...
 #include <vector>            // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QComboBox>       // for QComboBox
 #include <QDoubleSpinBox>  // for QDoubleSpinBox
 #include <QFont>           // for QFont
@@ -73,8 +71,6 @@
 #include <QWidget>         // for QWidget
 
 class QDoubleSpinBox;
-
-#include <warn/pop>
 
 namespace inviwo {
 

@@ -33,8 +33,6 @@
 #include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
 #include <modules/animation/workspaceanimations.h>               // for WorkspaceAnimations, Wor...
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAbstractListModel>  // for QAbstractListModel
 #include <QModelIndex>         // for QModelIndex
 #include <QVariant>            // for QVariant
@@ -42,17 +40,12 @@
 
 class QModelIndex;
 class QObject;
+
 namespace inviwo {
+
 namespace animation {
+
 class Animation;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
-
-namespace animation {
 
 class IVW_MODULE_ANIMATIONQT_API AnimationsModel : public QAbstractListModel,
                                                    public AnimationObserver {

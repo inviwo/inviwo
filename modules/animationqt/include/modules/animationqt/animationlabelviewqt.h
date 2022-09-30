@@ -33,18 +33,7 @@
 #include <modules/animation/animationcontrollerobserver.h>       // for AnimationControllerObserver
 #include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QListView>  // for QListView
-
-namespace inviwo {
-namespace animation {
-class AnimationController;
-class Track;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
 
 class QStandardItemModel;
 
@@ -52,6 +41,8 @@ namespace inviwo {
 
 namespace animation {
 
+class AnimationController;
+class Track;
 class Animation;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QListView,

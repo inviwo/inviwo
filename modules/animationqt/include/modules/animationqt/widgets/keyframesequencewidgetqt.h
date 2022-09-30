@@ -36,8 +36,6 @@
 #include <memory>         // for unique_ptr
 #include <unordered_map>  // for unordered_map
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsItem>  // for QGraphicsItem
 #include <QRectF>         // for QRectF
 #include <QVariant>       // for QVariant
@@ -46,19 +44,14 @@ class QPainter;
 class QRectF;
 class QStyleOptionGraphicsItem;
 class QWidget;
+
 namespace inviwo {
+
 namespace animation {
+
 class Keyframe;
 class KeyframeSequence;
 class KeyframeWidgetQt;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
-
-namespace animation {
 
 class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceWidgetQt : public QGraphicsItem,
                                                             public KeyframeSequenceObserver {

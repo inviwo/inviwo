@@ -40,8 +40,6 @@
 #include <iterator>   // for prev
 #include <vector>     // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>       // for QAction
 #include <QApplication>  // for QApplication
 #include <QFlags>        // for QFlags
@@ -53,8 +51,6 @@
 #include <Qt>            // for operator|, AlignVCenter, Ali...
 
 class QStandardItem;
-
-#include <warn/pop>
 
 namespace inviwo {
 

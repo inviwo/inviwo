@@ -34,20 +34,7 @@
 
 #include <unordered_map>  // for unordered_map
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QWidget>  // for QWidget
-
-namespace inviwo {
-namespace animation {
-class AnimationManager;
-class Keyframe;
-class KeyframeSequence;
-class Track;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
 
 class QPaintEvent;
 class QVBoxLayout;
@@ -55,6 +42,11 @@ class QVBoxLayout;
 namespace inviwo {
 
 namespace animation {
+
+class AnimationManager;
+class Keyframe;
+class KeyframeSequence;
+class Track;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorWidget : public QWidget,
                                                         public KeyframeSequenceObserver {

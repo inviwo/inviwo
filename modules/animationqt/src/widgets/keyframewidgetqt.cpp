@@ -35,8 +35,6 @@
 
 #include <algorithm>  // for max
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QApplication>     // for QApplication
 #include <QBrush>           // for QBrush
 #include <QColor>           // for QColor
@@ -56,8 +54,6 @@
 
 class QStyleOptionGraphicsItem;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

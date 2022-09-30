@@ -44,8 +44,6 @@
 #include <modules/animationqt/trackcontrolswidgetqt.h>       // for TrackControlsWidgetQt
 #include <modules/animationqt/widgets/editorconstants.h>     // for timelineHeight
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAbstractItemView>    // for QAbstractItemView, QAbstract...
 #include <QAction>              // for QAction
 #include <QFlags>               // for QFlags
@@ -68,12 +66,8 @@ class QObject;
 class QWidget;
 
 namespace inviwo {
+
 class Processor;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 namespace animation {
 

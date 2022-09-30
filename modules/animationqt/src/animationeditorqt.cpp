@@ -54,8 +54,6 @@
 #include <string>   // for basic_string, string
 #include <utility>  // for move, pair
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QColor>                       // for QColor
 #include <QFlags>                       // for QFlags
 #include <QGraphicsItem>                // for qgraphicsitem_cast
@@ -73,8 +71,6 @@
 #include <fmt/core.h>                   // for format
 
 class QGraphicsSceneDragDropEvent;
-
-#include <warn/pop>
 
 namespace inviwo {
 

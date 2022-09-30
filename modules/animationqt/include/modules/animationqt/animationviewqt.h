@@ -34,8 +34,6 @@
 #include <modules/animation/datastructures/animationstate.h>  // for AnimationState
 #include <modules/animation/datastructures/animationtime.h>   // for Seconds
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsView>  // for QGraphicsView
 #include <QRectF>         // for QRectF
 
@@ -45,8 +43,6 @@ class QPainter;
 class QRectF;
 class QWheelEvent;
 class QWidget;
-
-#include <warn/pop>
 
 namespace inviwo {
 

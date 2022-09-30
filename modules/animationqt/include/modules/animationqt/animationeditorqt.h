@@ -33,24 +33,13 @@
 #include <modules/animation/animationcontrollerobserver.h>       // for AnimationControllerObserver
 #include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsScene>  // for QGraphicsScene
-
-class QGraphicsLineItem;
-class QGraphicsSceneDragDropEvent;
-namespace inviwo {
-namespace animation {
-class Animation;
-class Track;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
 
 #include <memory>         // for unique_ptr
 #include <unordered_map>  // for unordered_map
 
+class QGraphicsLineItem;
+class QGraphicsSceneDragDropEvent;
 class QKeyEvent;
 
 namespace inviwo {
@@ -59,6 +48,8 @@ class TextLabelOverlay;
 
 namespace animation {
 
+class Animation;
+class Track;
 class AnimationController;
 class TrackWidgetQt;
 class TrackWidgetQtFactory;

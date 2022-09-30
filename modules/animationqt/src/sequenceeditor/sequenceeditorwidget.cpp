@@ -36,22 +36,15 @@
 #include <utility>    // for pair
 #include <vector>     // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QVBoxLayout>  // for QVBoxLayout
 
 namespace inviwo {
+
 namespace animation {
+
 class AnimationManager;
 class Track;
-}  // namespace animation
-}  // namespace inviwo
 
-#include <warn/pop>
-
-namespace inviwo {
-
-namespace animation {
 SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& track,
                                            AnimationManager&)
     : QWidget(), sequence_(sequence), track_{track} {

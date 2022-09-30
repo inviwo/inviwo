@@ -43,13 +43,9 @@
 
 #include <functional>  // for __base
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QComboBox>       // for QComboBox
 #include <QDoubleSpinBox>  // for QDoubleSpinBox
 #include <QHBoxLayout>     // for QHBoxLayout
-
-#include <warn/pop>
 
 namespace inviwo {
 

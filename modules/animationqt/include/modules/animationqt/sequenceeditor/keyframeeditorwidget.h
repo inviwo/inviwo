@@ -36,17 +36,7 @@
 
 #include <memory>  // for unique_ptr
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QWidget>  // for QWidget
-
-namespace inviwo {
-namespace animation {
-class Keyframe;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
 
 class QComboBox;
 class QDoubleSpinBox;
@@ -58,6 +48,7 @@ class PropertyWidgetQt;
 
 namespace animation {
 
+class Keyframe;
 class SequenceEditorWidget;
 
 class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget, public KeyframeObserver {

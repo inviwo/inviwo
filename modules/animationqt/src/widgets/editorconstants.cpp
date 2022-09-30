@@ -35,13 +35,9 @@
 #include <cmath>      // for round, remainder, pow, abs, floor, log10
 #include <limits>     // for numeric_limits
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QApplication>  // for QApplication
 #include <QFlags>        // for QFlags
 #include <Qt>            // for AltModifier
-
-#include <warn/pop>
 
 namespace inviwo {
 

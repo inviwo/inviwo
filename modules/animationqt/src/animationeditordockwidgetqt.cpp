@@ -91,12 +91,8 @@
 class QWidget;
 
 namespace inviwo {
+
 class Property;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 namespace animation {
 

@@ -37,8 +37,6 @@
 #include <cstddef>    // for size_t
 #include <utility>    // for pair
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QApplication>     // for QApplication
 #include <QBrush>           // for QBrush
 #include <QColor>           // for QColor
@@ -56,17 +54,12 @@
 
 class QStyleOptionGraphicsItem;
 class QWidget;
+
 namespace inviwo {
+
 namespace animation {
+
 class Keyframe;
-}  // namespace animation
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
-
-namespace animation {
 
 KeyframeSequenceWidgetQt::KeyframeSequenceWidgetQt(KeyframeSequence& keyframeSequence,
                                                    QGraphicsItem* parent)

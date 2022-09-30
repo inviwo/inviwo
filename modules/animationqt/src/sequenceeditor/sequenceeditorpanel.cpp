@@ -42,8 +42,6 @@
 #include <string>   // for basic_string, string
 #include <utility>  // for pair
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QFrame>       // for QFrame, QFrame::NoF...
 #include <QScrollArea>  // for QScrollArea
 #include <QVBoxLayout>  // for QVBoxLayout
@@ -51,17 +49,13 @@
 #include <Qt>           // for ScrollBarAsNeeded
 
 class QLayout;
+
 namespace inviwo {
+
 namespace animation {
+
 class KeyframeSequence;
-}  // namespace animation
-}  // namespace inviwo
 
-#include <warn/pop>
-
-namespace inviwo {
-
-namespace animation {
 SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, AnimationManager& manager,
                                          SequenceEditorFactory& editorFactory, QWidget* parent)
     : QScrollArea(parent), manager_(manager), factory_{editorFactory} {

@@ -34,11 +34,7 @@
 
 #include <cstddef>  // for size_t
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QtGlobal>  // for qreal
-
-#include <warn/pop>
 
 namespace inviwo {
 

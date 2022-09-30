@@ -40,8 +40,6 @@
 #include <string>  // for string
 #include <vector>  // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>      // for QAction
 #include <QIcon>        // for QIcon
 #include <QMainWindow>  // for QMainWindow
@@ -54,14 +52,11 @@
 #include <Qt>           // for WidgetWithChildrenShortcut
 
 class QVBoxLayout;
+
 namespace inviwo {
+
 class InviwoApplication;
 class Property;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 namespace animation {
 
