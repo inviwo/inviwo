@@ -208,7 +208,14 @@ target_link_libraries(inviwo-module-qtwidgets PRIVATE
 target_compile_definitions(inviwo-module-qtwidgets PUBLIC 
     "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
 )
-ivw_compile_optimize_on_target(inviwo-module-qtwidgets)
+
+# Qt headers used in PCH file as identified by CompileScore extension in Visual Studio.
+# These will be combined with the PCH headers of inviwo-core
+set(PCH_HEADERS_QT
+    <QWidget>
+    <QString>
+)
+ivw_compile_optimize_on_target(inviwo-module-qtwidgets HEADERS ${PCH_HEADERS_QT})
 
 ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
 ivw_default_install_targets(inviwo-module-qtwidgets)
