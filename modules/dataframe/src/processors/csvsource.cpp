@@ -28,22 +28,45 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/processors/csvsource.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/exception.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/ports/dataoutport.h>                           // for DataOutport
+#include <inviwo/core/ports/outportiterable.h>                       // for OutportIterableImpl<...
+#include <inviwo/core/processors/processor.h>                        // for Processor
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                   // for CodeState, CodeState...
+#include <inviwo/core/processors/processortags.h>                    // for Tags
+#include <inviwo/core/properties/boolcompositeproperty.h>            // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                     // for BoolProperty
+#include <inviwo/core/properties/fileproperty.h>                     // for FileProperty
+#include <inviwo/core/properties/minmaxproperty.h>                   // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                   // for OptionProperty, Opti...
+#include <inviwo/core/properties/ordinalproperty.h>                  // for IntProperty, DoubleP...
+#include <inviwo/core/properties/property.h>                         // for Property, OverwriteS...
+#include <inviwo/core/properties/propertyowner.h>                    // for PropertyOwner
+#include <inviwo/core/properties/stringproperty.h>                   // for StringProperty
+#include <inviwo/core/util/exception.h>                              // for Exception
+#include <inviwo/core/util/filesystem.h>                             // for fileExists
+#include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogProce...
+#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/statecoordinator.h>                       // for StateCoordinator
+#include <inviwo/core/util/staticstring.h>                           // for operator+
+#include <inviwo/core/util/stdextensions.h>                          // for ref, any_of
+#include <inviwo/dataframe/datastructures/dataframe.h>               // for DataFrame
+#include <inviwo/dataframe/io/csvreader.h>                           // for CSVReader::EmptyField
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>  // for ColumnMetaDataListPr...
+#include <inviwo/dataframe/properties/filterlistproperty.h>          // for FilterListProperty
+#include <inviwo/dataframe/util/filters.h>                           // for RowFilter, Filters
 
-#include <type_traits>
+#include <array>        // for array
+#include <type_traits>  // for enable_if<>::type
+#include <utility>      // for declval
+
+#include <flags/flags.h>  // for operator|, flags
+#include <fmt/core.h>     // for format
+#include <glm/vec2.hpp>   // for vec, vec<>::(anonymous)
 
 namespace inviwo {
+class Deserializer;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo CSVSource::processorInfo_{

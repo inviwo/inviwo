@@ -29,9 +29,24 @@
 
 #include <modules/userinterfacegl/glui/widgets/floatminmaxpropertywidget.h>
 
+#include <inviwo/core/properties/minmaxproperty.h>             // for FloatMinMaxProperty, MinMa...
+#include <inviwo/core/properties/propertywidget.h>             // for PropertyWidget
+#include <inviwo/core/util/glmvec.h>                           // for ivec2, vec2, dvec2
+#include <modules/userinterfacegl/glui/element.h>              // for UIOrientation
+#include <modules/userinterfacegl/glui/widgets/rangeslider.h>  // for RangeSlider
+
+#include <algorithm>   // for min
+#include <cmath>       // for round
+#include <functional>  // for __base, function
+
+#include <glm/vec2.hpp>  // for vec<>::(anonymous), operat...
+
 namespace inviwo {
+class Processor;
+class Property;
 
 namespace glui {
+class Renderer;
 
 const std::string FloatMinMaxPropertyWidget::classIdentifier =
     "org.inviwo.glui.FloatMinMaxPropertyWidget";

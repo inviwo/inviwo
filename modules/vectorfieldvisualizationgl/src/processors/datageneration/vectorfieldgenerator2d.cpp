@@ -28,12 +28,28 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <inviwo/core/datastructures/image/imageram.h>
+
+#include <inviwo/core/datastructures/image/image.h>       // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageChannel, ImageChannel::Green
+#include <inviwo/core/datastructures/image/layer.h>       // for Layer
+#include <inviwo/core/ports/imageport.h>                  // for ImageOutport
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
+#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
+#include <inviwo/core/properties/minmaxproperty.h>        // for FloatMinMaxProperty
+#include <inviwo/core/properties/stringproperty.h>        // for StringProperty
+#include <inviwo/core/util/formats.h>                     // for DataVec2Float32, DataFormat
+#include <inviwo/core/util/glmvec.h>                      // for size2_t
+#include <modules/opengl/shader/shader.h>                 // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>           // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>            // for setUniforms
+#include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, deactiv...
+
+#include <memory>       // for make_shared, shared_ptr
+#include <string>       // for basic_string, string
+#include <string_view>  // for string_view
 
 namespace inviwo {
 

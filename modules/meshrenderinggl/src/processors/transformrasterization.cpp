@@ -28,7 +28,17 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/processors/transformrasterization.h>
-#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
+
+#include <inviwo/core/processors/processor.h>                                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>                             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                            // for CodeState
+#include <inviwo/core/processors/processortags.h>                             // for Tags, Tags::GL
+#include <modules/base/properties/transformlistproperty.h>                    // for TransformLi...
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>  // for Transformed...
+#include <modules/meshrenderinggl/ports/rasterizationport.h>                  // for Rasterizati...
+
+#include <string>       // for string
+#include <string_view>  // for string_view
 
 namespace inviwo {
 

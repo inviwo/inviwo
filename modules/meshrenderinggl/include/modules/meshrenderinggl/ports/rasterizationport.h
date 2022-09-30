@@ -29,12 +29,11 @@
 
 #pragma once
 
-#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/datainport.h>   // for DataInport
+#include <inviwo/core/ports/dataoutport.h>  // for DataOutport
 
 namespace inviwo {
+class Rasterization;
 
 using RasterizationOutport = DataOutport<Rasterization>;
 

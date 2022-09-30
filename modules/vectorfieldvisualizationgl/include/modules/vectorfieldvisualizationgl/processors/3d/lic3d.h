@@ -30,17 +30,19 @@
 #pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
+
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
-namespace inviwo {
+#include <memory>
 
-class Volume;
+namespace inviwo {
+class TextureUnitContainer;
 
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC3D : public VolumeGLProcessor {
 public:

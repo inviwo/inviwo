@@ -29,25 +29,32 @@
 
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
 
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
+#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>         // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>        // for FloatProperty, FloatVec4Property
+#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
+#include <inviwo/core/util/glmvec.h>                       // for dvec2, vec4
+#include <inviwo/core/util/staticstring.h>                 // for operator+
+#include <modules/plotting/datastructures/axissettings.h>  // for AxisSettings::Orientation, Axi...
+#include <modules/plotting/properties/plottextproperty.h>  // for PlotTextProperty
+#include <modules/plotting/properties/tickproperty.h>      // for MajorTickProperty, MinorTickPr...
 
-#include <modules/plotting/properties/tickproperty.h>
-#include <modules/plotting/properties/plottextproperty.h>
-
-#include <modules/plotting/datastructures/axissettings.h>
-
-#include <string_view>
+#include <functional>   // for __base
+#include <string>       // for operator==, string, operator+
+#include <string_view>  // for operator==, string_view
+#include <vector>       // for operator!=, vector, operator==
 
 namespace inviwo {
 
 namespace plot {
+class MajorTickSettings;
+class MinorTickSettings;
+class PlotTextSettings;
 
 class IVW_MODULE_PLOTTING_API AxisProperty : public AxisSettings, public BoolCompositeProperty {
 public:

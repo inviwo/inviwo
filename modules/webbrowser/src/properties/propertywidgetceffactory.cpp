@@ -29,6 +29,9 @@
 
 #include <modules/webbrowser/properties/propertywidgetceffactory.h>
 
+#include <modules/webbrowser/properties/propertywidgetcef.h>               // for PropertyWidgetCEF
+#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>  // for PropertyWidget...
+
 namespace inviwo {
 
 PropertyWidgetCEFFactory::PropertyWidgetCEFFactory() = default;

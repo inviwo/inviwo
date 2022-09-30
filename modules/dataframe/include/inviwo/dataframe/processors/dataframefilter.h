@@ -29,16 +29,22 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRA...
 
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/filterlistproperty.h>
-#include <inviwo/dataframe/util/filters.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
+#include <inviwo/core/properties/optionproperty.h>                     // for OptionProperty
+#include <inviwo/core/util/staticstring.h>                             // for operator+
+#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
+#include <inviwo/dataframe/properties/filterlistproperty.h>            // for FilterListProperty
+#include <inviwo/dataframe/util/filters.h>                             // for Filters
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+
+#include <functional>   // for __base
+#include <string>       // for operator==, operator+
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector
 
 namespace inviwo {
 

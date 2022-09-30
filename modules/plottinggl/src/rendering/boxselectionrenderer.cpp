@@ -28,7 +28,21 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/rendering/boxselectionrenderer.h>
-#include <inviwo/core/datastructures/camera/orthographiccamera.h>
+
+#include <inviwo/core/datastructures/camera/orthographiccamera.h>      // for OrthographicCamera
+#include <inviwo/core/datastructures/geometry/geometrytype.h>          // for ConnectivityType
+#include <inviwo/core/datastructures/geometry/typedmesh.h>             // for ColoredMesh, Typed...
+#include <inviwo/core/util/glmmat.h>                                   // for mat4
+#include <inviwo/core/util/glmvec.h>                                   // for vec3, vec2, vec4
+#include <modules/basegl/datastructures/linesettings.h>                // for LineSettings
+#include <modules/basegl/datastructures/stipplingsettings.h>           // for StipplingSettings
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>  // for StipplingSettingsI...
+#include <modules/basegl/rendering/linerenderer.h>                     // for LineRenderer
+#include <modules/plotting/datastructures/boxselectionsettings.h>      // for BoxSelectionSettin...
+#include <modules/plotting/properties/boxselectionproperty.h>          // for BoxSelectionProperty
+
+#include <glm/vec2.hpp>  // for vec<>::(anonymous)
+#include <glm/vec4.hpp>  // for operator!=, vec
 
 namespace inviwo {
 

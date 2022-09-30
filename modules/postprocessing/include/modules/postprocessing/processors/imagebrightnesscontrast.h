@@ -29,11 +29,14 @@
 
 #pragma once
 
-#include <modules/postprocessing/postprocessingmoduledefine.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/postprocessing/postprocessingmoduledefine.h>  // for IVW_MODULE_POSTP...
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/properties/ordinalproperty.h>                      // for FloatProperty
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.ImageBrightnessContrast, Image Brightness Contrast}
  * ![](org.inviwo.ImageBrightnessContrast.png?classIdentifier=org.inviwo.ImageBrightnessContrast)

@@ -29,15 +29,22 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/texture/texture2d.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
 
-#include <map>
+#include <inviwo/core/util/glmvec.h>           // for size2_t
+#include <modules/opengl/inviwoopengl.h>       // for GL_BGRA, GL_NEAREST, GL_RGBA, GL_...
+#include <modules/opengl/texture/texture2d.h>  // for Texture2D
+
+#include <functional>  // for function
+#include <map>         // for map
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_render_handler.h>
+#include <include/cef_base.h>            // for CefRefPtr, CefRect, IMPLEMENT_REF...
+#include <include/cef_render_handler.h>  // for CefRenderHandler, CefRenderHandle...
+
+class CefBrowser;
+
 #include <warn/pop>
 
 namespace inviwo {

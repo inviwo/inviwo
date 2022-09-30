@@ -29,9 +29,27 @@
 
 #include <modules/plottinggl/processors/axisrenderprocessor.h>
 
-#include <modules/plotting/utils/axisutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/rendering/texturequadrenderer.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>    // for ImageType, ImageType::ColorDepth
+#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>          // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>           // for Tags
+#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
+#include <inviwo/core/util/glmvec.h>                        // for size2_t
+#include <modules/opengl/texture/textureutils.h>            // for activateTargetAndClearOrCopyS...
+#include <modules/plotting/datastructures/axissettings.h>   // for AxisSettings::Orientation
+#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
+#include <modules/plotting/properties/marginproperty.h>     // for MarginProperty
+#include <modules/plotting/properties/plottextproperty.h>   // for PlotTextProperty
+#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
+
+#include <string>       // for string
+#include <string_view>  // for string_view
+
+#include <glm/vec2.hpp>  // for vec<>::(anonymous), operator+
 
 namespace inviwo {
 

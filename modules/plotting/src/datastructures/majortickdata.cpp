@@ -28,7 +28,9 @@
  *********************************************************************************/
 
 #include <modules/plotting/datastructures/majortickdata.h>
-#include <inviwo/core/util/glmvec.h>
+
+#include <inviwo/core/util/glmvec.h>                            // for vec4
+#include <modules/plotting/datastructures/majorticksettings.h>  // for MajorTickSettings, TickStyle
 
 namespace inviwo {
 

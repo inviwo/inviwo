@@ -29,13 +29,16 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_app.h>
-#include <include/wrapper/cef_helpers.h>
-#include <include/wrapper/cef_message_router.h>
+#include <include/cef_app.h>                      // for CefApp
+#include <include/cef_base.h>                     // for CefRefPtr, CefString, IMPLEMENT_R...
+#include <include/cef_browser_process_handler.h>  // for CefBrowserProcessHandler
+
+class CefCommandLine;
+
 #include <warn/pop>
 
 namespace inviwo {

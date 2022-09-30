@@ -27,12 +27,13 @@
  *
  *********************************************************************************/
 
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <modules/plotting/utils/statsutils.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
-
-#include <modules/plotting/utils/statsutils.h>
 
 namespace inviwo {
 

@@ -34,6 +34,7 @@
 
 #include <inviwo/core/io/tempfilehandle.h>
 #include <inviwo/dataframe/io/jsonreader.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/util/unindent.h>
 
 #include <sstream>

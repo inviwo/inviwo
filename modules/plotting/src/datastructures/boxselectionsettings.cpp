@@ -29,6 +29,10 @@
 
 #include <modules/plotting/datastructures/boxselectionsettings.h>
 
+#include <inviwo/core/util/glmvec.h>  // for vec4
+
+#include <glm/vec4.hpp>  // for operator==
+
 namespace inviwo {
 
 namespace plot {

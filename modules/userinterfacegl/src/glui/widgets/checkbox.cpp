@@ -28,18 +28,28 @@
  *********************************************************************************/
 
 #include <modules/userinterfacegl/glui/widgets/checkbox.h>
-#include <modules/userinterfacegl/glui/renderer.h>
 
-#include <inviwo/core/util/moduleutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/texture2darray.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
+#include <inviwo/core/common/inviwomodule.h>        // for ModulePath, ModulePath::Images
+#include <inviwo/core/interaction/pickingmapper.h>  // for PickingMapper
+#include <inviwo/core/util/glmvec.h>                // for ivec2, vec2, size2_t
+#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogInfo
+#include <inviwo/core/util/moduleutils.h>           // for getModulePath
+#include <modules/opengl/rendering/meshdrawergl.h>  // for MeshDrawerGL
+#include <modules/opengl/shader/shader.h>           // for Shader
+#include <modules/opengl/texture/texture2darray.h>  // for Texture2DArray
+#include <modules/opengl/texture/textureunit.h>     // for TextureUnit
+#include <modules/userinterfacegl/glui/element.h>   // for Element::UIState, Element::UIState::C...
+#include <modules/userinterfacegl/glui/renderer.h>  // for Renderer
 
-#include <vector>
+#include <functional>  // for __base, function
+#include <ostream>     // for operator<<, basic_ostream
+#include <vector>      // for vector
+
+#include <glm/vec2.hpp>               // for operator+, vec<>::(anonymous), vec
+#include <glm/vector_relational.hpp>  // for all, greaterThan
 
 namespace inviwo {
+class Processor;
 
 namespace glui {
 

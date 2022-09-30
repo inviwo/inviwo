@@ -29,32 +29,50 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/datastructures/bitset.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/interaction/pickingmapper.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTI...
 
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/datastructures/bitset.h>                          // for BitSet
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, BufferBas...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferTarget, Buf...
+#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/util/dispatcher.h>                                // for Dispatcher
+#include <inviwo/core/util/glmvec.h>                                    // for size2_t, vec2, ivec2
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/texture/textureutils.h>                        // for ImageInport
+#include <modules/plotting/properties/axisproperty.h>                   // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>              // for AxisStyleProperty
+#include <modules/plotting/properties/marginproperty.h>                 // for MarginProperty
+#include <modules/plottinggl/utils/axisrenderer.h>                      // for AxisRenderer
 
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plotting/properties/marginproperty.h>
-#include <modules/plotting/properties/axisproperty.h>
-#include <modules/plotting/properties/axisstyleproperty.h>
-#include <modules/plottinggl/utils/axisrenderer.h>
-
-#include <set>
+#include <array>          // for array
+#include <cstddef>        // for size_t
+#include <cstdint>        // for uint32_t
+#include <functional>     // for function
+#include <memory>         // for shared_ptr, uniqu...
+#include <set>            // for set
+#include <string>         // for string
+#include <tuple>          // for tie
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <vector>         // for vector
 
 namespace inviwo {
 
+class Column;
+class ImageOutport;
 class Processor;
+template <typename T>
+class TemplateColumn;
+
 using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
 class PickingEvent;
 

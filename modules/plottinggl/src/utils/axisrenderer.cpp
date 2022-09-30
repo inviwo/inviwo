@@ -29,25 +29,49 @@
 
 #include <modules/plottinggl/utils/axisrenderer.h>
 
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>      // for BufferType, BufferType...
+#include <inviwo/core/datastructures/geometry/mesh.h>              // for Mesh
+#include <inviwo/core/util/glmmat.h>                               // for mat4
+#include <inviwo/core/util/glmvec.h>                               // for vec3, vec2, vec4, dvec2
+#include <inviwo/core/util/zip.h>                                  // for zip, zipIterator, zipper
+#include <modules/basegl/datastructures/meshshadercache.h>         // for MeshShaderCache::Requi...
+#include <modules/fontrendering/datastructures/fontsettings.h>     // for FontSettings
+#include <modules/fontrendering/datastructures/texatlasentry.h>    // for TexAtlasRenderInfo
+#include <modules/fontrendering/datastructures/textboundingbox.h>  // for TextBoundingBox
+#include <modules/fontrendering/textrenderer.h>                    // for TextTextureObject
+#include <modules/fontrendering/util/textureatlas.h>               // for TextureAtlas
+#include <modules/opengl/geometry/meshgl.h>                        // for MeshGL
+#include <modules/opengl/inviwoopengl.h>                           // for GL_ONE, GL_ONE_MINUS_S...
+#include <modules/opengl/openglutils.h>                            // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>                 // for MeshDrawerGL::DrawObject
+#include <modules/opengl/rendering/texturequadrenderer.h>          // for TextureQuadRenderer
+#include <modules/opengl/shader/shader.h>                          // for Shader
+#include <modules/opengl/shader/shaderobject.h>                    // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                      // for ShaderType, ShaderType...
+#include <modules/opengl/shader/shaderutils.h>                     // for setShaderUniforms
+#include <modules/plotting/datastructures/axissettings.h>          // for AxisSettings
+#include <modules/plotting/datastructures/majortickdata.h>         // for MajorTickData
+#include <modules/plotting/datastructures/majorticksettings.h>     // for MajorTickSettings
+#include <modules/plotting/datastructures/minortickdata.h>         // for MinorTickData
+#include <modules/plotting/datastructures/minorticksettings.h>     // for MinorTickSettings, ope...
+#include <modules/plotting/datastructures/plottextsettings.h>      // for PlotTextSettings
+#include <modules/plotting/utils/axisutils.h>                      // for generateTicksMesh, get...
 
-#include <modules/plotting/properties/categoricalaxisproperty.h>
-#include <modules/plotting/utils/axisutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/shader/shadertype.h>
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
+#include <algorithm>    // for transform
+#include <cmath>        // for round, abs
+#include <cstdlib>      // for abs
+#include <functional>   // for reference_wrapper, __base
+#include <iterator>     // for back_insert_iterator
+#include <type_traits>  // for is_nothrow_move_assign...
 
-#include <array>
-#include <algorithm>
-#include <numeric>
-#include <functional>
-#include <type_traits>
+#include <glm/common.hpp>                // for round, max, min
+#include <glm/ext/matrix_transform.hpp>  // for rotate, translate
+#include <glm/fwd.hpp>                   // for ivec2
+#include <glm/geometric.hpp>             // for normalize
+#include <glm/gtc/constants.hpp>         // for half_pi
+#include <glm/gtx/transform.hpp>         // for rotate, translate
+#include <glm/mat4x4.hpp>                // for operator*, mat
+#include <glm/trigonometric.hpp>         // for radians
 
 namespace inviwo {
 

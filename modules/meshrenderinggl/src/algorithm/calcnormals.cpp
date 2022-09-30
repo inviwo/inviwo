@@ -29,12 +29,32 @@
 
 #include <modules/meshrenderinggl/algorithm/calcnormals.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Index...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/util/formatdispatching.h>                         // for Floats
+#include <inviwo/core/util/glmconvert.h>                                // for glm_convert
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, dvec3
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <modules/base/algorithm/meshutils.h>                           // for forEachTriangle
 
-#include <modules/base/algorithm/meshutils.h>
+#include <algorithm>      // for transform
+#include <cmath>          // for acos
+#include <limits>         // for numeric_limits
+#include <string>         // for string
+#include <string_view>    // for string_view
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for tuple_element<>::...
+#include <vector>         // for vector
+
+#include <glm/geometric.hpp>  // for normalize, cross
+#include <glm/vec3.hpp>       // for operator-, operator/
 
 namespace inviwo {
 

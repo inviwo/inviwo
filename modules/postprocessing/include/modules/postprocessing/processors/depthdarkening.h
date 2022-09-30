@@ -29,14 +29,17 @@
 
 #pragma once
 
-#include <modules/postprocessing/postprocessingmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/cameraproperty.h>
+#include <modules/postprocessing/postprocessingmoduledefine.h>  // for IVW_MODULE_POSTPROCESSING...
 
-#include <modules/basegl/algorithm/imageconvolution.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/ports/imageport.h>                // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>           // for Processor
+#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
+#include <inviwo/core/properties/cameraproperty.h>      // for CameraProperty
+#include <inviwo/core/properties/ordinalproperty.h>     // for FloatProperty
+#include <modules/basegl/algorithm/imageconvolution.h>  // for ImageConvolution
+#include <modules/opengl/shader/shader.h>               // for Shader
+
+#include <memory>  // for shared_ptr
 
 namespace inviwo {
 

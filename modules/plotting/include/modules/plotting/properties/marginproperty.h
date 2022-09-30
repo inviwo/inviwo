@@ -29,9 +29,17 @@
 
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
+#include <inviwo/core/util/glmvec.h>                   // for vec2, vec4
+
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <utility>      // for pair
 
 namespace inviwo {
 

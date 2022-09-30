@@ -31,7 +31,10 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_app.h>
+#include <include/base/cef_macros.h>  // for DISALLOW_COPY_AND_ASSIGN
+#include <include/cef_app.h>          // for CefApp
+#include <include/cef_base.h>         // for IMPLEMENT_REFCOUNTING
+
 #include <warn/pop>
 
 namespace inviwo {

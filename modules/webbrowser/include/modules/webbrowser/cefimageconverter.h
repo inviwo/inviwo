@@ -29,15 +29,16 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/renderhandlergl.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
 
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/ports/imageport.h>   // for ImageInport
+#include <inviwo/core/util/glmvec.h>       // for vec3
+#include <modules/opengl/shader/shader.h>  // for Shader, Shader::Build
 
-#include <inviwo/core/ports/imageport.h>
+#include <string_view>  // for string_view
 
 namespace inviwo {
+class Texture2D;
 
 /* \class CefImageConverter
  * Flips vertical component of Cef output image and write to picking layer on non-transparent areas.

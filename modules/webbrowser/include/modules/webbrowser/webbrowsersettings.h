@@ -29,8 +29,9 @@
 #pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <inviwo/core/util/settings/settings.h>
+
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/settings/settings.h>
 
 namespace inviwo {
 

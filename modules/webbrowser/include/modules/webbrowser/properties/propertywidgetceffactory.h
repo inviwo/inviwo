@@ -29,11 +29,19 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>
-#include <inviwo/core/util/factory.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEB...
+
+#include <inviwo/core/util/factory.h>                                      // for StandardFactory
+#include <modules/webbrowser/properties/propertywidgetcef.h>               // for PropertyWidgetCEF
+#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>  // for PropertyWidget...
+
+#include <memory>  // for unique_ptr
+#include <string>  // for string
+#include <vector>  // for vector
 
 namespace inviwo {
+class Property;
+
 /**
  * Factory for creating PropertyWidgetCEF for a property.
  * The PropertyWidgetCEF requires a PropertyJSONConverter its corresponding

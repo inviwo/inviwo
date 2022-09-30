@@ -29,9 +29,19 @@
 
 #include <modules/plotting/datastructures/axisdata.h>
 
+#include <inviwo/core/util/glmvec.h>                        // for dvec2, vec4
+#include <modules/plotting/datastructures/axissettings.h>   // for AxisSettings, AxisSettings::O...
+#include <modules/plotting/datastructures/majortickdata.h>  // for MajorTickData
+#include <modules/plotting/datastructures/minortickdata.h>  // for MinorTickData
+#include <modules/plotting/datastructures/plottextdata.h>   // for PlotTextData
+
 namespace inviwo {
 
 namespace plot {
+class MajorTickSettings;
+class MinorTickSettings;
+class PlotTextSettings;
+
 AxisData::AxisData(const AxisSettings& s)
     : range{s.getRange()}
     , useDataRange{s.getUseDataRange()}

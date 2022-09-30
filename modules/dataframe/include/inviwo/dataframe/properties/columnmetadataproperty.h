@@ -28,18 +28,23 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/valuewrapper.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
 
-#include <string_view>
+#include <inviwo/core/datastructures/unitsystem.h>         // for Unit
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
+#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
+#include <inviwo/core/properties/property.h>               // for OverwriteState
+#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
+#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
+#include <inviwo/core/util/glmvec.h>                       // for dvec2
+
+#include <string>       // for string
+#include <string_view>  // for string_view
 
 namespace inviwo {
+class Column;
 
 /**
  * \ingroup properties

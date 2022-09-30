@@ -29,21 +29,30 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/interaction/cameratrackball.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTINGGL_API
 
-#include <modules/plotting/properties/axisproperty.h>
-#include <modules/plotting/properties/axisstyleproperty.h>
+#include <inviwo/core/interaction/cameratrackball.h>        // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
+#include <inviwo/core/ports/volumeport.h>                   // for VolumeInport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>   // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>          // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
+#include <inviwo/core/properties/minmaxproperty.h>          // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>          // for OptionProperty, OptionPropert...
+#include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
+#include <inviwo/core/util/staticstring.h>                  // for operator+
+#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
+#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer3D
 
-#include <modules/plottinggl/utils/axisrenderer.h>
+#include <array>        // for array
+#include <functional>   // for __base
+#include <string>       // for operator==, operator+, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, operator==
 
 namespace inviwo {
 

@@ -29,18 +29,28 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/util/colorbrewer.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
 
-#include <iosfwd>
+#include "inviwo/core/util/colorbrewer-generated.h"       // for Family, getMinNumberOfColorsFor...
+#include <inviwo/core/datastructures/transferfunction.h>  // for TransferFunction
+#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>     // for CompositeProperty, CompositePro...
+#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
+#include <inviwo/core/properties/optionproperty.h>        // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>       // for DoubleProperty, IntSizeTProperty
+#include <inviwo/core/properties/propertysemantics.h>     // for PropertySemantics, PropertySema...
+#include <inviwo/core/util/staticstring.h>                // for operator+
+
+#include <cstddef>      // for size_t
+#include <functional>   // for __base
+#include <iosfwd>       // for ostream
+#include <string>       // for operator==, string, operator+
+#include <string_view>  // for operator==, string_view
+#include <vector>       // for operator!=, vector, operator==
 
 namespace inviwo {
+class Column;
+
 /**
  * Continuous is suitable for ordered/sequential data.
  * Categorical is suitable for data where there should be no magnitude difference between classes,

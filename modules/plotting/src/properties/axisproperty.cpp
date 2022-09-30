@@ -29,17 +29,40 @@
 
 #include <modules/plotting/properties/axisproperty.h>
 
-#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/networklock.h>                          // for NetworkLock
+#include <inviwo/core/properties/boolcompositeproperty.h>             // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                      // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
+#include <inviwo/core/properties/minmaxproperty.h>                    // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                    // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                   // for FloatProperty, Floa...
+#include <inviwo/core/properties/property.h>                          // for Property
+#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
+#include <inviwo/core/util/glmvec.h>                                  // for vec2, dvec2, vec4
+#include <inviwo/core/util/staticstring.h>                            // for operator+
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
+#include <modules/fontrendering/properties/fontproperty.h>            // for FontProperty
+#include <modules/fontrendering/util/fontutils.h>                     // for getFont, FontType
+#include <modules/plotting/datastructures/axissettings.h>             // for AxisSettings::Orien...
+#include <modules/plotting/properties/plottextproperty.h>             // for PlotTextProperty
+#include <modules/plotting/properties/tickproperty.h>                 // for MajorTickProperty
+#include <modules/plotting/utils/axisutils.h>                         // for getMajorTickPositions
 
-#include <modules/plotting/utils/axisutils.h>
-#include <modules/fontrendering/util/fontutils.h>
+#include <algorithm>  // for transform
+#include <cstddef>    // for size_t
+#include <iterator>   // for back_insert_iterator
 
-#include <fmt/format.h>
-#include <fmt/printf.h>
+#include <fmt/core.h>    // for basic_string_view
+#include <fmt/printf.h>  // for sprintf
+#include <glm/vec2.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
 
 namespace plot {
+class MajorTickSettings;
+class MinorTickSettings;
+class PlotTextSettings;
 
 const std::string AxisProperty::classIdentifier = "org.inviwo.AxisProperty";
 std::string AxisProperty::getClassIdentifier() const { return classIdentifier; }

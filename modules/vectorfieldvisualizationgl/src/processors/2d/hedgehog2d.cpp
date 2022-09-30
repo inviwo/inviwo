@@ -28,8 +28,37 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <inviwo/core/util/imagesampler.h>
+
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for IndexBufferRAM
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
+#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for BasicMesh, TypedMesh
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/imageport.h>                                // for ImageInport
+#include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/util/glmmat.h>                                    // for dmat2, mat2
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec2, ivec2
+#include <inviwo/core/util/imagesampler.h>                              // for ImageSampler
+#include <inviwo/core/util/staticstring.h>                              // for operator+
+
+#include <cmath>          // for atan2, cos, sin
+#include <memory>         // for unique_ptr, share...
+#include <type_traits>    // for remove_extent_t
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+
+#include <glm/geometric.hpp>  // for length
+#include <glm/mat2x2.hpp>     // for operator*, mat<>:...
+#include <glm/vec2.hpp>       // for operator+, vec<>:...
 
 namespace inviwo {
 const ProcessorInfo HedgeHog2D::processorInfo_{

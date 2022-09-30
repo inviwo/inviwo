@@ -28,12 +28,49 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator4d.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/texture/textureutils.h>
+
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/metadata/metadata.h>                              // for DoubleMetaData
+#include <inviwo/core/ports/dataoutport.h>                              // for DataOutport<>::type
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeSequenceOut...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/minmaxproperty.h>                      // for FloatMinMaxProperty
+#include <inviwo/core/properties/ordinalproperty.h>                     // for OrdinalProperty
+#include <inviwo/core/properties/stringproperty.h>                      // for StringProperty
+#include <inviwo/core/util/formats.h>                                   // for DataVec3Float32
+#include <inviwo/core/util/glmmat.h>                                    // for mat3
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, size4_t
+#include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
+#include <modules/opengl/inviwoopengl.h>                                // for glViewport, GLsizei
+#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
+#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                          // for setUniforms
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                        // for multiDrawImagePla...
+#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
+#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+
+#include <cstddef>        // for size_t
+#include <functional>     // for __base
+#include <memory>         // for shared_ptr, make_...
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for move
+
+#include <glm/detail/qualifier.hpp>  // for tvec2
+#include <glm/mat3x3.hpp>            // for mat<>::col_type
+#include <glm/vec2.hpp>              // for vec<>::(anonymous)
+#include <glm/vec3.hpp>              // for operator-, vec
+#include <glm/vec4.hpp>              // for vec, vec<>::(anon...
 
 namespace inviwo {
 

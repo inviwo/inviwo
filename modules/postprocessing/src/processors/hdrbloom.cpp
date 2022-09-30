@@ -28,17 +28,43 @@
  *********************************************************************************/
 
 #include <modules/postprocessing/processors/hdrbloom.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/geometry/meshgl.h>
 
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/datastructures/image/image.h>       // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorOnly
+#include <inviwo/core/datastructures/image/layer.h>       // for Layer
+#include <inviwo/core/ports/imageport.h>                  // for ImageOutport, ImageInport
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>       // for FloatProperty
+#include <inviwo/core/util/formats.h>                     // for DataFormatId, DataFormatId::Vec...
+#include <inviwo/core/util/glmvec.h>                      // for vec2, size2_t, ivec4
+#include <inviwo/core/util/stdextensions.h>               // for make_array
+#include <modules/opengl/buffer/framebufferobject.h>      // for FrameBufferObject
+#include <modules/opengl/geometry/meshgl.h>               // for MeshGL
+#include <modules/opengl/glformats.h>                     // for GLFormats
+#include <modules/opengl/image/imagegl.h>                 // for ImageGL
+#include <modules/opengl/image/layergl.h>                 // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                  // for glDrawArrays, glBindTexture
+#include <modules/opengl/openglutils.h>                   // for BlendModeEquationState, Enable
+#include <modules/opengl/shader/shader.h>                 // for Shader
+#include <modules/opengl/sharedopenglresources.h>         // for SharedOpenGLResources
+#include <modules/opengl/texture/texture2d.h>             // for Texture2D
+#include <modules/opengl/texture/textureutils.h>          // for activateTarget, activateTargetA...
 
-#include <random>
+#include <cmath>        // for pow
+#include <cstddef>      // for size_t
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr, shared_ptr<>::eleme...
+#include <string>       // for operator+, string, to_string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+
+#include <glm/ext/vector_float2.hpp>          // for vec2
+#include <glm/gtx/scalar_multiplication.hpp>  // for operator/
+#include <glm/vec2.hpp>                       // for operator*, operator!=, operator/
 
 namespace inviwo {
 

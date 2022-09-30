@@ -28,12 +28,30 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/io/csvwriter.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datawriterexception.h>
-#include <inviwo/core/util/ostreamjoiner.h>
-#include <inviwo/core/util/glm.h>
 
-#include <fmt/format.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/formatdispatching.h>                         // for Vecs, PrecisionVa...
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmutils.h>                                  // for flat_extent
+#include <inviwo/core/util/ostreamjoiner.h>                             // for make_ostream_joiner
+#include <inviwo/dataframe/datastructures/column.h>                     // for CategoricalColumn
+#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+
+#include <array>          // for array
+#include <cstddef>        // for size_t
+#include <fstream>        // for operator<<, ostream
+#include <functional>     // for __base, function
+#include <type_traits>    // for decay_t, remove_e...
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for move
+
+#include <fmt/core.h>      // for basic_string_view
+#include <glm/gtx/io.hpp>  // for operator<<
+#include <half/half.hpp>   // for operator<<
 
 namespace inviwo {
 

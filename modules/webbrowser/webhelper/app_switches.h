@@ -29,9 +29,12 @@
 
 #pragma once
 
+#include <include/cef_base.h>  // for CefRefPtr
+
+class CefCommandLine;
+
 #include <warn/push>
 #include <warn/ignore/all>
-#include "include/cef_command_line.h"
 #include <warn/pop>
 
 // Process types that may have different CefApp instances.

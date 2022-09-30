@@ -28,16 +28,34 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/processors/processorcefsynchronizer.h>
-#include <modules/webbrowser/webbrowsermodule.h>
 
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/processornetwork.h>                  // for ProcessorNetwork
+#include <inviwo/core/processors/processor.h>                      // for Processor
+#include <inviwo/core/processors/progressbar.h>                    // for ProgressBar, ProgressB...
+#include <inviwo/core/processors/progressbarowner.h>               // for ProgressBarOwner
+#include <inviwo/core/util/dispatcher.h>                           // for Dispatcher
+#include <inviwo/core/util/exception.h>                            // for Exception
+#include <inviwo/core/util/logcentral.h>                           // for log, LogCentral, LogError
+#include <modules/json/io/json/propertyjsonconverter.h>            // for json
+#include <modules/webbrowser/processors/progressbarobservercef.h>  // for ProgressBarObserverCEF
+
+#include <exception>         // for exception
+#include <initializer_list>  // for initializer_list
+#include <stdexcept>         // for out_of_range
+#include <string_view>       // for operator==, string_view
+#include <utility>           // for pair
+#include <vector>            // for vector
+
+#include <include/base/cef_basictypes.h>     // for int64
+#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
+#include <include/cef_base.h>                // for CefRefPtr, CefString
+#include <include/cef_frame.h>               // for CefFrame
+#include <nlohmann/json.hpp>                 // for basic_json, basic_json...
+
+class CefBrowser;
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "include/cef_parser.h"
 #include <warn/pop>
 
 namespace inviwo {

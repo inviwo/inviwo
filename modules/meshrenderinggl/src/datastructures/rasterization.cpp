@@ -29,6 +29,8 @@
 
 #include <modules/meshrenderinggl/datastructures/rasterization.h>
 
+#include <inviwo/core/util/document.h>  // for Document
+
 namespace inviwo {
 
 Document Rasterization::getInfo() const {

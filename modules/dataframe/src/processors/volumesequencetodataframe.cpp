@@ -29,15 +29,54 @@
 
 #include <inviwo/dataframe/processors/volumesequencetodataframe.h>
 
-#include <inviwo/core/util/volumeramutils.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/util/imageramutils.h>
-#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/ports/datainport.h>                               // for DataInport
+#include <inviwo/core/ports/dataoutport.h>                              // for DataOutport
+#include <inviwo/core/ports/outport.h>                                  // for Outport
+#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterable
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
+#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                    // for vec2, size3_t, uvec3
+#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper3D
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxelParallel
+#include <inviwo/dataframe/datastructures/column.h>                     // for TemplateColumn
+#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
 
-#include <algorithm>
-#include <random>
+#include <algorithm>      // for max, min
+#include <cstddef>        // for size_t
+#include <cstdint>        // for uint32_t
+#include <functional>     // for __base
+#include <limits>         // for numeric_limits
+#include <map>            // for operator==
+#include <memory>         // for shared_ptr, uniqu...
+#include <optional>       // for optional
+#include <random>         // for mt19937, random_d...
+#include <sstream>        // for basic_stringbuf<>...
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for pair
+
+#include <fmt/core.h>                  // for format, format_to
+#include <glm/gtc/type_precision.hpp>  // for f32
+#include <glm/gtc/type_ptr.hpp>        // for value_ptr
+#include <glm/vec2.hpp>                // for vec, vec<>::(anon...
+#include <glm/vec3.hpp>                // for vec, vec<>::(anon...
+#include <glm/vec4.hpp>                // for vec
 
 namespace inviwo {
 

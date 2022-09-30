@@ -28,9 +28,29 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/properties/dataframecolormapproperty.h>
-#include <inviwo/core/util/utilities.h>
+
+#include <inviwo/core/datastructures/transferfunction.h>       // for TransferFunction
+#include <inviwo/core/ports/datainport.h>                      // for DataInport
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty
+#include <inviwo/core/properties/property.h>                   // for Property
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics
+#include <inviwo/core/properties/templateproperty.h>           // for TemplateProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>   // for TransferFunctionProperty
+#include <inviwo/core/properties/valuewrapper.h>               // for PropertySerializationMode
+#include <inviwo/core/util/stdextensions.h>                    // for find
+#include <inviwo/core/util/utilities.h>                        // for stripIdentifier
+#include <inviwo/dataframe/properties/colormapproperty.h>      // for ColormapProperty
+#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty, Colu...
+
+#include <cstddef>      // for size_t
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
 
 namespace inviwo {
+class DataFrame;
 
 const std::string DataFrameColormapProperty::classIdentifier =
     "org.inviwo.DataFrameColormapProperty";
