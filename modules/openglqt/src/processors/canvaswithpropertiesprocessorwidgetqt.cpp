@@ -29,33 +29,43 @@
 
 #include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/interaction/events/resizeevent.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/common/inviwoapplication.h>          // for InviwoApplication
+#include <inviwo/core/interaction/events/resizeevent.h>    // for ResizeEvent
+#include <inviwo/core/metadata/processormetadata.h>        // for ProcessorMetaData, ProcessorMe...
+#include <inviwo/core/network/networklock.h>               // for NetworkLock
+#include <inviwo/core/network/processornetwork.h>          // for ProcessorNetwork
+#include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
+#include <inviwo/core/util/logcentral.h>                   // for LogCentral, LogWarn
+#include <inviwo/core/util/rendercontext.h>                // for RenderContext
+#include <inviwo/core/util/stringconversion.h>             // for forEachStringPart, splitByFirst
+#include <modules/openglqt/canvasqopenglwidget.h>          // for CanvasQOpenGLWidget
+#include <modules/qtwidgets/inviwoqtutils.h>               // for setFullScreenAndOnTop, toGLM
+#include <modules/qtwidgets/propertylistwidget.h>          // for PropertyListFrame
 
-#include <modules/qtwidgets/propertylistwidget.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <cstddef>  // for size_t
+#include <ostream>  // for operator<<, basic_ostream
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QResizeEvent>
-#include <QMoveEvent>
-#include <QLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QFrame>
-#include <QScrollArea>
-#include <QSplitter>
-#include <QAction>
-#include <QMenu>
-#include <warn/pop>
+#include <QAction>                            // for QAction
+#include <QEvent>                             // for QEvent, QEvent::WindowStateChange
+#include <QFrame>                             // for QFrame, QFrame::NoFrame
+#include <QIcon>                              // for QIcon
+#include <QMenu>                              // for QMenu
+#include <QMoveEvent>                         // for QMoveEvent
+#include <QPoint>                             // for QPoint
+#include <QScrollArea>                        // for QScrollArea
+#include <QSizePolicy>                        // for QSizePolicy, QSizePolicy::Mini...
+#include <QSplitter>                          // for QSplitter
+#include <QWidget>                            // for QWidget
+#include <Qt>                                 // for ScrollBarAsNeeded, Tool, WA_Ma...
+#include <glm/fwd.hpp>                        // for vec2
+#include <glm/gtx/scalar_multiplication.hpp>  // for operator*
+#include <glm/vec2.hpp>                       // for vec<>::(anonymous)
 
 namespace inviwo {
+
+class Canvas;
 
 CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Processor* p)
     : CanvasProcessorWidget{p}

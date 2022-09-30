@@ -28,11 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
+#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
 
-#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>  // for StringPropertyWidgetQt
 
 namespace inviwo {
+class StringProperty;
 
 /**
  * @brief Widget for a StringProperty with ShaderEditor semantics

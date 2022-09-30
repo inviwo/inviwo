@@ -29,22 +29,24 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
-#include <modules/opengl/shader/shaderobject.h>
+#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
 
-#include <algorithm>
+#include <modules/opengl/shader/shaderobject.h>  // for ShaderObject, ShaderObject::Callback
+#include <modules/qtwidgets/inviwodockwidget.h>  // for InviwoDockWidget
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QEvent>
-#include <warn/pop>
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <vector>      // for vector
+
+class QAction;
+class QCloseEvent;
+class QEvent;
+class QObject;
+class QWidget;
 
 namespace inviwo {
 
+class ShaderResource;
 class CodeEdit;
 
 class IVW_MODULE_OPENGLQT_API ShaderWidget : public InviwoDockWidget {

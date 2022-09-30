@@ -27,37 +27,46 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/common/inviwoapplication.h>                               // for InviwoApp...
+#include <inviwo/core/common/inviwomodule.h>                                    // for InviwoModule
+#include <inviwo/core/common/modulemanager.h>                                   // for ModuleMan...
+#include <inviwo/core/network/processornetworkevaluationobserver.h>             // for Processor...
+#include <inviwo/core/network/processornetworkevaluator.h>                      // for Processor...
+#include <inviwo/core/properties/fileproperty.h>                                // for FileProperty
+#include <inviwo/core/properties/propertysemantics.h>                           // for PropertyS...
+#include <inviwo/core/properties/stringproperty.h>                              // for StringPro...
+#include <inviwo/core/util/capabilities.h>                                      // for Capabilities
+#include <inviwo/core/util/exception.h>                                         // for ModuleIni...
+#include <inviwo/core/util/logcentral.h>                                        // for LogCentral
+#include <inviwo/core/util/rendercontext.h>                                     // for RenderCon...
+#include <inviwo/core/util/settings/settings.h>                                 // for Settings
+#include <inviwo/core/util/sourcecontext.h>                                     // for IVW_CONTEXT
+#include <inviwo/core/util/stdextensions.h>                                     // for make_unique
+#include <modules/opengl/canvasgl.h>                                            // for CanvasGL
+#include <modules/opengl/canvasprocessorgl.h>                                   // for CanvasPro...
+#include <modules/opengl/inviwoopengl.h>                                        // for GL_SYNC_F...
+#include <modules/opengl/openglexception.h>                                     // for OpenGLIni...
+#include <modules/opengl/sharedopenglresources.h>                               // for SharedOpe...
+#include <modules/openglqt/glslsyntaxhighlight.h>                               // for GLSLSynta...
+#include <modules/openglqt/hiddencanvasqt.h>                                    // for HiddenCan...
+#include <modules/openglqt/openglqtcapabilities.h>                              // for OpenGLQtC...
+#include <modules/openglqt/openglqtmenu.h>                                      // for OpenGLQtMenu
+#include <modules/openglqt/openglqtmodule.h>                                    // for OpenGLQtM...
+#include <modules/openglqt/processors/canvasprocessorwidgetqt.h>                // for CanvasPro...
+#include <modules/openglqt/processors/canvaswithpropertiesprocessor.h>          // for CanvasWit...
+#include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>  // for CanvasWit...
+#include <modules/openglqt/properties/glslfilepropertywidgetqt.h>               // for GLSLFileP...
+#include <modules/openglqt/properties/glslpropertywidgetqt.h>                   // for GLSLPrope...
+#include <modules/qtwidgets/inviwoqtutils.h>                                    // for getApplic...
 
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
+#include <memory>       // for unique_ptr
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
-#include <modules/qtwidgets/inviwoqtutils.h>
-
-#include <modules/opengl/canvasprocessorgl.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/openglexception.h>
-
-#include <modules/openglqt/openglqtmodule.h>
-#include <modules/openglqt/openglqtcapabilities.h>
-
-#include <modules/openglqt/openglqtmenu.h>
-#include <modules/openglqt/glslsyntaxhighlight.h>
-#include <modules/openglqt/properties/glslpropertywidgetqt.h>
-#include <modules/openglqt/properties/glslfilepropertywidgetqt.h>
-
-#include <modules/openglqt/processors/canvaswithpropertiesprocessor.h>
-#include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>
-#include <modules/openglqt/processors/canvasprocessorwidgetqt.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QApplication>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <warn/pop>
+#include <QApplication>  // for QApplication
+#include <QMainWindow>   // for QMainWindow
+#include <QMenu>         // for QMenu
+#include <QMenuBar>      // for QMenuBar
 
 namespace inviwo {
 

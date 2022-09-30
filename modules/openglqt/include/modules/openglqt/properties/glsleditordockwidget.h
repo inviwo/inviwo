@@ -28,15 +28,16 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
+#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
 
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
 
-#include <functional>
-#include <memory>
-#include <vector>
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <vector>      // for vector
 
 namespace inviwo {
+class Property;
 
 /**
  * @brief A text editor with GLSL syntax highlighting

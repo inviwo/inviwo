@@ -28,8 +28,11 @@
  *********************************************************************************/
 
 #include <modules/openglqt/openglqtcapabilities.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/util/stringconversion.h>
+
+#include <inviwo/core/util/stringconversion.h>  // for stringTo, splitStringView
+#include <modules/opengl/inviwoopengl.h>        // for glGetString, GL_VERSION, GLubyte
+
+#include <string>  // for string
 
 namespace inviwo {
 
