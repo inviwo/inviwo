@@ -97,7 +97,7 @@ void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string
 
 void exposeDataReaders(pybind11::module& m) {
     namespace py = pybind11;
-    
+
     py::class_<DataReader>(m, "DataReader")
         .def("clone", &DataReader::clone)
         .def_property_readonly("extensions", &DataReader::getExtensions,
@@ -105,7 +105,7 @@ void exposeDataReaders(pybind11::module& m) {
         .def("addExtension", &DataReader::addExtension)
         .def("setOption", &DataReader::setOption)
         .def("getOption", &DataReader::getOption);
-        
+
     // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#binding-classes-with-template-parameters
     py::class_<DataReaderType<Image>, DataReaderTypeTrampoline<Image>>(m, "ImageDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Image>::readData))
