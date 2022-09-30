@@ -27,47 +27,59 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
-#include <modules/python3qt/pythoneditorwidget.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/clock.h>
-#include <inviwo/core/util/chronoutils.h>
+#include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
+#include <inviwo/core/util/chronoutils.h>                     // for durationToString
+#include <inviwo/core/util/clock.h>                           // for Clock
+#include <inviwo/core/util/filedialogstate.h>                 // for FileMode, FileMode::AnyFile
+#include <inviwo/core/util/filesystem.h>                      // for ifstream, ofstream
+#include <inviwo/core/util/pathtype.h>                        // for PathType, PathType::Scripts
+#include <inviwo/core/util/raiiutils.h>                       // for OnScopeExit, OnScopeExit::E...
+#include <inviwo/core/util/stringconversion.h>                // for replaceInString
+#include <modules/python3/python3module.h>                    // for Python3Module
+#include <modules/python3/pythonexecutionoutputobservable.h>  // for PythonOutputType, PythonOut...
+#include <modules/python3/pythoninterpreter.h>                // for PythonInterpreter
+#include <modules/python3/pythonscript.h>                     // for PythonScript
+#include <modules/python3qt/python3qtmodule.h>                // for Python3QtModule
+#include <modules/python3qt/pythoneditorwidget.h>             // for PythonEditorWidget
+#include <modules/python3qt/pythonsyntaxhighlight.h>          // for setPythonOutputSyntaxHighlight
+#include <modules/qtwidgets/codeedit.h>                       // for CodeEdit
+#include <modules/qtwidgets/editorfileobserver.h>             // for EditorFileObserver
+#include <modules/qtwidgets/inviwodockwidget.h>               // for InviwoDockWidget
+#include <modules/qtwidgets/inviwofiledialog.h>               // for InviwoFileDialog
+#include <modules/qtwidgets/inviwoqtutils.h>                  // for fromQString, toQString, emToPx
 
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
+#include <fstream>     // for operator<<, basic_ostream
+#include <functional>  // for __base
+#include <iterator>    // for istreambuf_iterator
+#include <memory>      // for shared_ptr
+#include <string>      // for char_traits, string, operator+
+#include <vector>      // for vector
 
-#include <modules/python3/python3module.h>
-#include <modules/python3qt/python3qtmodule.h>
-#include <modules/python3/pythoninterpreter.h>
-#include <modules/python3qt/pythonsyntaxhighlight.h>
+#include <QAction>          // for QAction
+#include <QFileDialog>      // for QFileDialog, QFileDialog::D...
+#include <QFlags>           // for QFlags
+#include <QIcon>            // for QIcon, QIcon::Normal, QIcon...
+#include <QKeySequence>     // for QKeySequence, QKeySequence:...
+#include <QList>            // for QList
+#include <QMainWindow>      // for QMainWindow
+#include <QMessageBox>      // for QMessageBox, operator|, QMe...
+#include <QObject>          // for QObject
+#include <QPlainTextEdit>   // for QPlainTextEdit
+#include <QSettings>        // for QSettings
+#include <QSize>            // for QSize
+#include <QSizeF>           // for QSizeF
+#include <QSplitter>        // for QSplitter
+#include <QSplitterHandle>  // for QSplitterHandle
+#include <QStatusBar>       // for QStatusBar
+#include <QString>          // for QString
+#include <QStringList>      // for QStringList
+#include <QTextDocument>    // for QTextDocument
+#include <QToolBar>         // for QToolBar
+#include <QVariant>         // for QVariant
+#include <Qt>               // for operator|, WidgetWithChildr...
 
-#include <modules/qtwidgets/codeedit.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QCommandLinkButton>
-#include <QSplitter>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QButtonGroup>
-#include <QToolBar>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <QSpacerItem>
-#include <QHBoxLayout>
-#include <QFrame>
-#include <QPalette>
-#include <QStatusBar>
-#include <warn/pop>
-
-#include <sstream>
+class QCloseEvent;
+class QWidget;
 
 namespace inviwo {
 

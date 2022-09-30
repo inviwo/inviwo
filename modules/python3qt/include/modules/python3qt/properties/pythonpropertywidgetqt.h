@@ -28,11 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>
+#include <modules/python3qt/python3qtmoduledefine.h>  // for IVW_MODULE_PYTHON3QT_API
 
-#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>  // for StringPropertyWidgetQt
 
 namespace inviwo {
+class StringProperty;
 
 /**
  * @brief Widget for a StringProperty with PythonEditor semantics

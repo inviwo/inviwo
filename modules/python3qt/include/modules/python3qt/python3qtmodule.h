@@ -29,13 +29,17 @@
 
 #pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/exception.h>
+#include <modules/python3qt/python3qtmoduledefine.h>  // for IVW_MODULE_PYTHON3QT_API
 
-#include <atomic>
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/util/exception.h>       // for ExceptionContext, Exception
+
+#include <atomic>  // for atomic
+#include <memory>  // for unique_ptr
+#include <string>  // for string
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_PYTHON3QT_API PythonAbortException : public Exception {
 public:
@@ -44,7 +48,6 @@ public:
     virtual ~PythonAbortException() noexcept = default;
 };
 
-class PyModule;
 class PythonMenu;
 
 class IVW_MODULE_PYTHON3QT_API Python3QtModule : public InviwoModule {

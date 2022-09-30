@@ -38,14 +38,11 @@
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <modules/qtwidgets/editorfileobserver.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QTextEdit>
 #include <QColor>
 #include <QToolButton>
 #include <QSettings>
 #include <QPlainTextEdit>
-#include <warn/pop>
 
 class QPlainTextEdit;
 class QFocusEvent;
