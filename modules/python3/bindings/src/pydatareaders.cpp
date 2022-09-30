@@ -99,18 +99,15 @@ void exposeDataReaders(pybind11::module& m) {
     namespace py = pybind11;
 
     // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#binding-classes-with-template-parameters
-    py::class_<DataReaderType<Image>, DataReaderTypeTrampoline<Image>>(
-        m, "ImageDataReader")
+    py::class_<DataReaderType<Image>, DataReaderTypeTrampoline<Image>>(m, "ImageDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Image>::readData))
         .def("readData",
              py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Image>::readData));
-    py::class_<DataReaderType<Mesh>, DataReaderTypeTrampoline<Mesh>>(m,
-                                                                                 "MeshDataReader")
+    py::class_<DataReaderType<Mesh>, DataReaderTypeTrampoline<Mesh>>(m, "MeshDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Mesh>::readData))
         .def("readData",
              py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Mesh>::readData));
-    py::class_<DataReaderType<Volume>, DataReaderTypeTrampoline<Volume>>(
-        m, "VolumeDataReader")
+    py::class_<DataReaderType<Volume>, DataReaderTypeTrampoline<Volume>>(m, "VolumeDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Volume>::readData))
         .def("readData", py::overload_cast<std::string_view, MetaDataOwner*>(
                              &DataReaderType<Volume>::readData));
