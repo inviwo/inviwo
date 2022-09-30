@@ -52,25 +52,25 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <glm/common.hpp>                                               // for max, min
-#include <glm/fwd.hpp>                                                  // for mat4, mat4x4, vec3
-#include <glm/gtx/component_wise.hpp>                                   // for compMul
-#include <glm/mat4x4.hpp>                                               // for mat<>::col_type
-#include <glm/vec2.hpp>                                                 // for vec<>::(anonymous)
-#include <glm/vec3.hpp>                                                 // for operator*, operat...
-#include <glm/vec4.hpp>                                                 // for operator*, operator+
-#include <glm/vector_relational.hpp>                                    // for any, equal
-#include <nifti1.h>                                                     // for DT_BINARY, DT_COM...
-#include <nifti1_io.h>                                                  // for nifti_image, nift...
+#include <glm/common.hpp>              // for max, min
+#include <glm/fwd.hpp>                 // for mat4, mat4x4, vec3
+#include <glm/gtx/component_wise.hpp>  // for compMul
+#include <glm/mat4x4.hpp>              // for mat<>::col_type
+#include <glm/vec2.hpp>                // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                // for operator*, operat...
+#include <glm/vec4.hpp>                // for operator*, operator+
+#include <glm/vector_relational.hpp>   // for any, equal
+#include <nifti1.h>                    // for DT_BINARY, DT_COM...
+#include <nifti1_io.h>                 // for nifti_image, nift...
 
 #include <warn/pop>
 
-#include <array>                                                        // for array
-#include <cstring>                                                      // for size_t, memcpy
-#include <string>                                                       // for string
-#include <type_traits>                                                  // for remove_extent_t
-#include <unordered_set>                                                // for unordered_set
-#include <utility>                                                      // for pair, move
+#include <array>          // for array
+#include <cstring>        // for size_t, memcpy
+#include <string>         // for string
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for pair, move
 
 namespace inviwo {
 

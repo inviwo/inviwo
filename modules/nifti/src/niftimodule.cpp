@@ -33,7 +33,7 @@
 #include <inviwo/core/io/datareader.h>        // for DataReader
 #include <modules/nifti/niftireader.h>        // for NiftiReader
 
-#include <memory>                             // for make_unique
+#include <memory>  // for make_unique
 
 namespace inviwo {
 class InviwoApplication;

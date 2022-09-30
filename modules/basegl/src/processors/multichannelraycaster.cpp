@@ -37,7 +37,6 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
 
-
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/util/zip.h>

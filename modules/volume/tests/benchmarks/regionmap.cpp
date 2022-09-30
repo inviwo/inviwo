@@ -38,7 +38,6 @@
 #include <vector>
 #include <inviwo/volume/algorithm/volumemap.h>
 
-
 using namespace inviwo;
 
 namespace {
