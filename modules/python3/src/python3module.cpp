@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/python3module.h>                           // for Python3Module
+#include <modules/python3/python3module.h>  // for Python3Module
 
-#include <pybind11/pybind11.h>   // for module
+#include <pybind11/pybind11.h>  // for module
 
 #include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
 #include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule

@@ -39,7 +39,7 @@
 #include <inviwo/core/util/sourcecontext.h>         // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>      // for StrBuffer
 
-#include <fmt/core.h>                // for format
+#include <fmt/core.h>  // for format
 
 #include <memory>    // for shared_ptr
 #include <string>    // for string, operator+
