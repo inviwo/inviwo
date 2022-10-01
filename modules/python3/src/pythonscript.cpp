@@ -29,6 +29,11 @@
 
 #include <modules/python3/pythonscript.h>
 
+#include <pybind11/cast.h>           // for cast, handle::cast, object:...
+#include <pybind11/detail/common.h>  // for pybind11
+#include <pybind11/pybind11.h>       // for globals
+#include <pybind11/pytypes.h>        // for object, dict, str, handle
+
 #include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
 #include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
 #include <inviwo/core/util/assertion.h>                       // for ivwAssert
@@ -43,29 +48,19 @@
 #include <iterator>  // for istreambuf_iterator
 #include <utility>   // for pair
 
-#include <frameobject.h>             // for _frame
-#include <pybind11/cast.h>           // for cast, handle::cast, object:...
-#include <pybind11/detail/common.h>  // for pybind11
-#include <pybind11/pybind11.h>       // for globals
-#include <pybind11/pytypes.h>        // for object, dict, str, handle
-#include <pyframe.h>                 // for PyFrameObject, PyFrame_GetL...
-#include <pythonrun.h>               // for Py_CompileString
-
-#define BYTE_CODE static_cast<PyObject*>(byteCode_)
-
 namespace inviwo {
 
 PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_(false) {}
 
-PythonScript::~PythonScript() { Py_XDECREF(BYTE_CODE); }
+PythonScript::~PythonScript() { Py_XDECREF(static_cast<PyObject*>(byteCode_)); }
 
 bool PythonScript::compile() {
-    Py_XDECREF(BYTE_CODE);
+    Py_XDECREF(static_cast<PyObject*>(byteCode_));
     byteCode_ = Py_CompileString(source_.c_str(), filename_.c_str(), Py_file_input);
     isCompileNeeded_ = !checkCompileError();
 
     if (isCompileNeeded_) {
-        Py_XDECREF(BYTE_CODE);
+        Py_XDECREF(static_cast<PyObject*>(byteCode_));
         byteCode_ = nullptr;
     }
 
@@ -99,10 +94,9 @@ bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)
         return false;
     }
 
-    ivwAssert(byteCode_ != nullptr, "No byte code");
+    IVW_ASSERT(byteCode_ != nullptr, "No byte code");
 
-    auto ret = PyEval_EvalCode(BYTE_CODE, locals.ptr(), locals.ptr());
-    if (ret) {
+    if (auto ret = PyEval_EvalCode(static_cast<PyObject*>(byteCode_), locals.ptr(), locals.ptr())) {
         if (callback) {
             callback(locals);
         }
@@ -122,7 +116,7 @@ std::string PythonScript::getSource() const { return source_; }
 void PythonScript::setSource(const std::string& source) {
     source_ = source;
     isCompileNeeded_ = true;
-    Py_XDECREF(BYTE_CODE);
+    Py_XDECREF(static_cast<PyObject*>(byteCode_));
     byteCode_ = nullptr;
 }
 

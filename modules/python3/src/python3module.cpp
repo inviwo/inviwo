@@ -27,13 +27,10 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>   // for module
-#include <tclap/ArgException.h>  // for ArgParseException
-#include <tclap/ValueArg.h>      // for ValueArg
+#include <modules/python3/python3module.h>                           // for Python3Module
 
-#include <warn/pop>
+#include <pybind11/pybind11.h>   // for module
+
 #include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
 #include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule
 #include <inviwo/core/datastructures/datarepresentation.h>           // for DataRepresentation<>...
@@ -50,11 +47,13 @@
 #include <modules/python3/processors/numpymeshcreatetest.h>          // for NumPyMeshCreateTest
 #include <modules/python3/processors/numpyvolume.h>                  // for NumPyVolume
 #include <modules/python3/processors/pythonscriptprocessor.h>        // for PythonScriptProcessor
-#include <modules/python3/python3module.h>                           // for Python3Module
 #include <modules/python3/pythoninterpreter.h>                       // for PythonInterpreter
 #include <modules/python3/pythonlogger.h>                            // for PythonLogger
 #include <modules/python3/pythonscript.h>                            // for PythonScriptDisk
 #include <modules/python3/volumepy.h>                                // for VolumePy, VolumePy2R...
+
+#include <tclap/ArgException.h>  // for ArgParseException
+#include <tclap/ValueArg.h>      // for ValueArg
 
 #include <exception>    // for exception
 #include <functional>   // for __base, function

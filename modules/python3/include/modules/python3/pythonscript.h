@@ -31,18 +31,14 @@
 
 #include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
 
+#include <pybind11/pytypes.h>  // for dict, object
+
 #include <inviwo/core/util/callback.h>      // for BaseCallBack, CallBackList
 #include <inviwo/core/util/fileobserver.h>  // for FileObserver
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <warn/pop>
 
 #include <functional>     // for function
 #include <string>         // for string
 #include <unordered_map>  // for unordered_map
-
-#include <pybind11/pytypes.h>  // for dict, object
 
 namespace inviwo {
 

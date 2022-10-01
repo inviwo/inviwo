@@ -29,6 +29,9 @@
 
 #include <modules/python3/processors/numpymandelbrot.h>
 
+#include <pybind11/cast.h>     // for cast
+#include <pybind11/pytypes.h>  // for object
+
 #include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
 #include <inviwo/core/common/modulepath.h>             // for ModulePath, ModulePath::Scripts
 #include <inviwo/core/datastructures/image/image.h>    // for Image
@@ -49,9 +52,6 @@
 #include <string>       // for string, hash, operator+, operator==
 #include <string_view>  // for string_view
 #include <type_traits>  // for remove_extent_t
-
-#include <pybind11/cast.h>     // for cast
-#include <pybind11/pytypes.h>  // for object
 
 namespace inviwo {
 

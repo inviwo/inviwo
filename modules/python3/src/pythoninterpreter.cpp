@@ -27,27 +27,25 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/shadow>
+#include <modules/python3/pythoninterpreter.h>  // for PythonInterpreter
+
 #include <pybind11/cast.h>           // for object_api::operator()
 #include <pybind11/detail/common.h>  // for pybind11
 #include <pybind11/embed.h>          // for finalize_interpreter, initialize_interpreter
 #include <pybind11/eval.h>           // for exec
 #include <pybind11/pybind11.h>       // for globals, module_, module
 #include <pybind11/pytypes.h>        // for error_already_set, dict, item_accessor
-#include <pythonrun.h>               // for PyRun_SimpleString
+
 #ifdef WIN32
 // For conda workaround
-#include <stdlib.h>
+#include <cstdlib>
 #endif
-#include <warn/pop>
 
 #include <inviwo/core/util/exception.h>         // for ModuleInitException
 #include <inviwo/core/util/filesystem.h>        // for getExecutablePath, getFileDirectory
 #include <inviwo/core/util/logcentral.h>        // for LogCentral, LogInfo
 #include <inviwo/core/util/sourcecontext.h>     // for IVW_CONTEXT
 #include <inviwo/core/util/stringconversion.h>  // for toString
-#include <modules/python3/pythoninterpreter.h>  // for PythonInterpreter
 #include <modules/python3/pyutils.h>            // for addModulePath
 
 #include <array>        // for array
@@ -63,6 +61,7 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
     if (isInit_) {
         throw ModuleInitException("Python already initialized", IVW_CONTEXT);
     }
+
 #ifdef WIN32
     // Set environment variable before initializing python to ensure that we do not crash if using
     // conda. See https://github.com/inviwo/inviwo/issues/1178
@@ -107,7 +106,7 @@ def formatError(e):
     paths = sys.path
     pathlist = '\n'.join(paths)
     config = '\n'.join(f"{k:15}{v}" for k,v in distutils.sysconfig.get_config_vars().items())
-    return f"{e} \nname: {e.name}\npaths:\n{pathlist}\nconfig: {config}"    
+    return f"{e} \nname: {e.name}\npaths:\n{pathlist}\nconfig: {config}"
 
 try:
     import inviwopy

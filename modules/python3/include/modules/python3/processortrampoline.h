@@ -30,23 +30,17 @@
 
 #include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
 
+#include <pybind11/trampoline_self_life_support.h>  // for trampoline_self_life_support
+
 #include <inviwo/core/processors/processor.h>          // for Processor
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
 #include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
 
-#include <pybind11/trampoline_self_life_support.h>  // for trampoline_self_life_support
-
 namespace inviwo {
+
 class Event;
 class Outport;
 class Property;
-}  // namespace inviwo
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <warn/pop>
-
-namespace inviwo {
 
 class IVW_MODULE_PYTHON3_API ProcessorTrampoline : public Processor,
                                                    public pybind11::trampoline_self_life_support {

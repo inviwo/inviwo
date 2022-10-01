@@ -29,6 +29,10 @@
 
 #include <modules/python3/processors/pythonscriptprocessor.h>
 
+#include <pybind11/cast.h>           // for cast, object_api::operator()
+#include <pybind11/detail/common.h>  // for pybind11
+#include <pybind11/pybind11.h>       // for globals
+
 #include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
 #include <inviwo/core/common/modulepath.h>             // for ModulePath, ModulePath::Data
 #include <inviwo/core/processors/processor.h>          // for Processor
@@ -48,10 +52,6 @@
 #include <functional>   // for __base
 #include <string>       // for operator+, string, basic_string
 #include <string_view>  // for string_view
-
-#include <pybind11/cast.h>           // for cast, object_api::operator()
-#include <pybind11/detail/common.h>  // for pybind11
-#include <pybind11/pybind11.h>       // for globals
 
 namespace inviwo {
 

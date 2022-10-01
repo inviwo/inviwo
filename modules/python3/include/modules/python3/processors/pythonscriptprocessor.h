@@ -31,12 +31,12 @@
 
 #include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
 
+#include <pybind11/pytypes.h>  // for function
+
 #include <inviwo/core/processors/processor.h>      // for Processor
 #include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
 #include <inviwo/core/properties/fileproperty.h>   // for FileProperty
 #include <modules/python3/pythonscript.h>          // for PythonScriptDisk
-
-#include <pybind11/pytypes.h>  // for function
 
 namespace inviwo {
 class InviwoApplication;
