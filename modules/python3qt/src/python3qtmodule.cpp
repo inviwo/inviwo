@@ -28,6 +28,8 @@
  *
  *********************************************************************************/
 
+#include <modules/python3qt/python3qtmodule.h>  // for Python3QtModule
+
 // Note: Need to put any python includes first since qt defines some "slots" macro
 // which python also uses from some structs
 #include <pybind11/cast.h>           // for arg
@@ -36,7 +38,6 @@
 #include <pybind11/pybind11.h>       // for class_, module_, init
 #include <pybind11/pytypes.h>        // for str, none, reinterp...
 
-#include <modules/python3qt/python3qtmodule.h>  // for Python3QtModule
 
 #include <inviwo/core/common/inviwoapplication.h>                     // IWYU pragma: keep
 #include <inviwo/core/common/inviwomodule.h>                          // for InviwoModule
