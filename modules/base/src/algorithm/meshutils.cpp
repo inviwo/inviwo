@@ -791,11 +791,9 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
 }
 //! [Using Colored Mesh]
 
-IVW_MODULE_BASE_API std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1,
-                                                         glm::vec3 p2, glm::vec3 p3,
-                                                         glm::vec4 color, glm::vec4 c1,
-                                                         glm::vec4 c2, glm::vec4 c3,
-                                                         IncludeNormals includeNormals) {
+std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3,
+                                     glm::vec4 color, glm::vec4 c1, glm::vec4 c2, glm::vec4 c3,
+                                     IncludeNormals includeNormals) {
 
     // create a mesh with positions (vec3), normals (vec3), textures(vec3),
     auto mesh = std::make_shared<Mesh>();

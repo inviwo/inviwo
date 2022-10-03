@@ -73,8 +73,8 @@ endif()
 source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc ${QRC_FILE})
 
 # Create module
-ivw_create_module(NO_PCH QT ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
-target_link_libraries(inviwo-module-animationqt PRIVATE 
+ivw_create_module(QT ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
+target_link_libraries(inviwo-module-animationqt PUBLIC 
     Qt${QT_VERSION_MAJOR}::Core 
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
@@ -82,8 +82,6 @@ target_link_libraries(inviwo-module-animationqt PRIVATE
 target_compile_definitions(inviwo-module-animationqt PUBLIC 
     "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
 )
-
-#ivw_compile_optimize_on_target(inviwo-module-animationqt)
 
 ivw_make_package(InviwoAnimationQtModule inviwo-module-animationqt)
 

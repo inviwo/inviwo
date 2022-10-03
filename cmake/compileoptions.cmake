@@ -61,7 +61,7 @@ function(ivw_define_standard_properties)
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             if(${IVW_CFG_TREAT_WARNINGS_AS_ERRORS})
-                list(APPEND comp_opts "-Werror") # Threat warnings as errors
+                list(APPEND comp_opts "-Werror") # Treat warnings as errors
             endif()
             list(APPEND comp_opts "-Wall")
             list(APPEND comp_opts "-Wextra")
@@ -86,12 +86,17 @@ function(ivw_define_standard_properties)
                 list(APPEND comp_opts "/permissive-")
             endif()
             list(APPEND comp_opts "/utf-8")
+            # make __cplusplus macro report version matching C++ standard  https://docs.microsoft.com/en-us/cpp/build/reference/zc-cplusplus?view=msvc-170
+            # This option is added in modules depending on Qt. If not set consistently, using precompiled headers will cause fatal compile errors.
+            list(APPEND comp_opts "/Zc:__cplusplus")
             if(ARG_QT)
                 # Qt adds uint ushort to the global namespace which creatas many of these warnings.
                 list(APPEND comp_opts "/wd4459") # declaration of 'identifier' hides global declaration
             endif()
-
-
+            target_link_options(${target} PRIVATE 
+                $<$<CONFIG:Debug>:/debug:fastlink>
+                $<$<CONFIG:RelWithDebInfo>:/debug:fastlink>
+            )
         endif()
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")

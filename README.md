@@ -32,7 +32,7 @@ Below follow some general information about the framework:
  - A minimal application is available, utilizing GLFW 3 for multiple window and context management.
 
 #### Build system
- - The project and module configuration/generation is performed through CMake (>= 3.15.0).
+ - The project and module configuration/generation is performed through CMake (>= 3.16.0).
  - Inviwo has been compiled in Visual Studio 2019, Clang 8, GCC 9, XCode 11
  - C++17 Required
 
