@@ -29,10 +29,20 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/base/processors/vectorelementselectorprocessor.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/geometry/mesh.h>                // for Mesh
+#include <inviwo/core/ports/meshport.h>                              // for MeshOutport
+#include <inviwo/core/ports/outportiterable.h>                       // for OutportIterable
+#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
+#include <inviwo/core/util/glmvec.h>                                 // for uvec3
+#include <modules/base/processors/vectorelementselectorprocessor.h>  // for VectorElementSelecto...
+
+#include <string>  // for string
+#include <vector>  // for vector
+
+#include <fmt/core.h>    // for format, format_to
+#include <glm/vec3.hpp>  // for operator+
 
 namespace inviwo {
 

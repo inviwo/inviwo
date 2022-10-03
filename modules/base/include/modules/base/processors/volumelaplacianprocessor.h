@@ -29,16 +29,21 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <modules/base/algorithm/volume/volumelaplacian.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-#include <inviwo/core/processors/activityindicator.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <future>
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/poolprocessor.h>               // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>             // for DoubleProperty
+#include <inviwo/core/util/staticstring.h>                      // for operator+
+#include <modules/base/algorithm/volume/volumelaplacian.h>      // for VolumeLaplacianPostProces...
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+
+#include <functional>   // for __base
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, opera...
 
 namespace inviwo {
 

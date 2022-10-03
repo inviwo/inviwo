@@ -29,22 +29,32 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <modules/base/properties/basisproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/util/fileextension.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/volume/volume.h>           // for VolumeSequence
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeSequenceOutport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
+#include <inviwo/core/properties/directoryproperty.h>           // for DirectoryProperty
+#include <inviwo/core/properties/fileproperty.h>                // for FileProperty
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
+#include <inviwo/core/properties/stringproperty.h>              // for StringProperty
+#include <inviwo/core/util/fileextension.h>                     // for FileExtension, operator==
+#include <inviwo/core/util/staticstring.h>                      // for operator+
+#include <modules/base/properties/basisproperty.h>              // for BasisProperty
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, opera...
 
 namespace inviwo {
-class InviwoApplication;
 class DataReaderFactory;
+class Deserializer;
+class InviwoApplication;
 
 /** \docpage{org.inviwo.VolumeSequenceSource, Volume Vector Source}
  * ![](org.inviwo.VolumeSequenceSource.png?classIdentifier=org.inviwo.VolumeSequenceSource)

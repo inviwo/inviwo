@@ -28,7 +28,24 @@
  *********************************************************************************/
 
 #include <modules/base/processors/meshconverterprocessor.h>
-#include <modules/base/algorithm/mesh/meshconverter.h>
+
+#include <inviwo/core/datastructures/geometry/mesh.h>   // for Mesh
+#include <inviwo/core/ports/dataoutport.h>              // for DataOutport
+#include <inviwo/core/ports/inportiterable.h>           // for InportIterable<>::const_iterator
+#include <inviwo/core/ports/meshport.h>                 // for MeshFlatMultiInport
+#include <inviwo/core/ports/outportiterable.h>          // for OutportIterableImpl<>::const_iter...
+#include <inviwo/core/processors/processor.h>           // for Processor
+#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>      // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>       // for Tags, Tags::CPU
+#include <inviwo/core/properties/optionproperty.h>      // for OptionPropertyOption, OptionProperty
+#include <inviwo/core/util/staticstring.h>              // for operator+
+#include <modules/base/algorithm/mesh/meshconverter.h>  // for toLineMesh, toPointMesh
+
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for move
+
+#include <fmt/core.h>  // for format
 
 namespace inviwo {
 

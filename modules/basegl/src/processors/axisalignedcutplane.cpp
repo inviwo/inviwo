@@ -33,6 +33,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/algorithm/boundingbox.h>
 

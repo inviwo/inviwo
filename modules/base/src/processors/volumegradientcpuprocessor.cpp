@@ -28,7 +28,16 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumegradientcpuprocessor.h>
-#include <modules/base/algorithm/volume/volumegradient.h>
+
+#include <inviwo/core/ports/volumeport.h>                  // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>         // for CodeState, CodeState::Experime...
+#include <inviwo/core/processors/processortags.h>          // for Tags, Tags::CPU
+#include <modules/base/algorithm/volume/volumegradient.h>  // for gradientVolume
+
+#include <string>       // for string
+#include <string_view>  // for string_view
 
 namespace inviwo {
 

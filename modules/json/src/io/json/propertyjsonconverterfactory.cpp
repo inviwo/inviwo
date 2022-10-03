@@ -29,6 +29,9 @@
 
 #include <modules/json/io/json/propertyjsonconverterfactory.h>
 
+#include <modules/json/io/json/propertyjsonconverter.h>               // for PropertyJSONConverter
+#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
+
 namespace inviwo {
 
 PropertyJSONConverterFactory::PropertyJSONConverterFactory() = default;

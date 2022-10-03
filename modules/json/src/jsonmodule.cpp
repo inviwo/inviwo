@@ -28,19 +28,54 @@
  *********************************************************************************/
 
 #include <modules/json/jsonmodule.h>
-#include <modules/json/io/json/boolpropertyjsonconverter.h>
-#include <modules/json/io/json/buttonpropertyjsonconverter.h>
-#include <modules/json/io/json/directorypropertyjsonconverter.h>
-#include <modules/json/io/json/filepropertyjsonconverter.h>
-#include <modules/json/io/json/minmaxpropertyjsonconverter.h>
-#include <modules/json/io/json/optionpropertyjsonconverter.h>
-#include <modules/json/io/json/ordinalpropertyjsonconverter.h>
-#include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>
-#include <modules/json/io/json/templatepropertyjsonconverter.h>
 
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/common/inviwomodule.h>                          // for InviwoModule
+#include <inviwo/core/properties/boolproperty.h>                      // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                    // for ButtonProperty
+#include <inviwo/core/properties/directoryproperty.h>                 // for DirectoryProperty
+#include <inviwo/core/properties/fileproperty.h>                      // for FileProperty
+#include <inviwo/core/properties/minmaxproperty.h>                    // for MinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                    // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                   // for OrdinalProperty
+#include <inviwo/core/properties/ordinalrefproperty.h>                // for OrdinalRefProperty
+#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
+#include <inviwo/core/util/foreacharg.h>                              // for for_each_type
+#include <inviwo/core/util/glmmat.h>                                  // for dmat2, dmat3, dmat4
+#include <inviwo/core/util/glmvec.h>                                  // for dvec2, dvec3, dvec4
+#include <inviwo/core/util/staticstring.h>                            // for operator+
+#include <modules/json/io/json/boolpropertyjsonconverter.h>           // for to_json
+#include <modules/json/io/json/buttonpropertyjsonconverter.h>         // for to_json
+#include <modules/json/io/json/directorypropertyjsonconverter.h>      // for to_json
+#include <modules/json/io/json/filepropertyjsonconverter.h>           // for to_json
+#include <modules/json/io/json/minmaxpropertyjsonconverter.h>         // for to_json
+#include <modules/json/io/json/optionpropertyjsonconverter.h>         // for to_json
+#include <modules/json/io/json/ordinalpropertyjsonconverter.h>        // for to_json
+#include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>     // for to_json
+#include <modules/json/io/json/propertyjsonconverterfactory.h>        // for PropertyJSONConvert...
+#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
+#include <modules/json/io/json/templatepropertyjsonconverter.h>       // for to_json
+
+#include <cstddef>      // for size_t
+#include <string>       // for string, operator==
+#include <tuple>        // for tuple
+#include <type_traits>  // for make_unsigned_t
+#include <utility>      // for move
+
+#include <glm/detail/type_quat.hpp>       // for qua::operator[]
+#include <glm/ext/quaternion_double.hpp>  // for dquat
+#include <glm/fwd.hpp>                    // for fquat
+#include <glm/gtc/type_precision.hpp>     // for i64
+#include <glm/mat2x2.hpp>                 // for operator+
+#include <glm/mat3x3.hpp>                 // for operator+
+#include <glm/mat4x4.hpp>                 // for operator+
+#include <glm/vec2.hpp>                   // for operator+, operator!=
+#include <glm/vec3.hpp>                   // for operator+
+#include <glm/vec4.hpp>                   // for operator+
+#include <nlohmann/json.hpp>              // for basic_json<>::object_t
 
 namespace inviwo {
+class InviwoApplication;
+
 struct OrdinalReghelper {
     template <typename T>
     auto operator()(JSONModule& m) {

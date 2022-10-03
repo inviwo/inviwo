@@ -29,11 +29,19 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/util/spatialsampler.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/dataoutport.h>         // for DataOutport
+#include <inviwo/core/ports/imageport.h>           // for ImageInport
+#include <inviwo/core/processors/processor.h>      // for Processor
+#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <inviwo/core/util/spatialsampler.h>       // for SpatialSampler
+
+#include <string>  // for operator+, string
+
+#include <fmt/core.h>      // for format
+#include <glm/mat3x3.hpp>  // for operator*
+#include <glm/vec2.hpp>    // for operator/
 
 namespace inviwo {
 

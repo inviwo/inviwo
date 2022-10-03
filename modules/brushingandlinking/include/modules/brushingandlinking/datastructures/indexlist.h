@@ -29,14 +29,21 @@
 
 #pragma once
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <inviwo/core/datastructures/bitset.h>
-#include <inviwo/core/io/serialization/serializable.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>  // for IVW_MODULE_BRUSHI...
 
-#include <unordered_map>
+#include <inviwo/core/datastructures/bitset.h>          // for BitSet
+#include <inviwo/core/io/serialization/serializable.h>  // for Serializable
+
+#include <cstddef>        // for size_t
+#include <cstdint>        // for uint32_t
+#include <string>         // for string, hash, ope...
+#include <string_view>    // for string_view
+#include <unordered_map>  // for unordered_map
+#include <vector>         // for vector
 
 namespace inviwo {
+class Deserializer;
+class Serializer;
 
 class IVW_MODULE_BRUSHINGANDLINKING_API IndexList : public Serializable {
 public:

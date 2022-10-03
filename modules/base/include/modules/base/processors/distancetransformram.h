@@ -29,23 +29,22 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/util/assertion.h>
-#include <inviwo/core/util/clock.h>
+#include <inviwo/core/ports/volumeport.h>            // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/poolprocessor.h>    // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>     // for BoolProperty
+#include <inviwo/core/properties/minmaxproperty.h>   // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>   // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for DoubleProperty, IntProperty, IntSize...
+#include <inviwo/core/util/staticstring.h>           // for operator+
 
-#include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-
-#include <iosfwd>
+#include <functional>   // for __base
+#include <iosfwd>       // for ostream
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, operator==
 
 namespace inviwo {
 

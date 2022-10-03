@@ -29,6 +29,19 @@
 
 #include <modules/vectorfieldvisualization/processors/seed3dto4d.h>
 
+#include <inviwo/core/processors/processor.h>                       // for Processor
+#include <inviwo/core/processors/processorinfo.h>                   // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                  // for CodeState, CodeState:...
+#include <inviwo/core/processors/processortags.h>                   // for Tags, Tags::CPU
+#include <inviwo/core/properties/ordinalproperty.h>                 // for FloatProperty
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>  // for SeedPoint4DVector
+
+#include <memory>       // for shared_ptr, make_shared
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <vector>       // for vector
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

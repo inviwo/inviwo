@@ -29,8 +29,14 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/util/glmvec.h>                   // for vec3
+
+#include <memory>   // for shared_ptr
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 namespace inviwo {
 

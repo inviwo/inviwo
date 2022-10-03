@@ -28,12 +28,32 @@
  *********************************************************************************/
 
 #include <modules/base/properties/imageinformationproperty.h>
-#include <modules/base/properties/layerinformationproperty.h>
 
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/algorithm/markdown.h>                    // for operator""_help
+#include <inviwo/core/datastructures/image/image.h>            // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>       // for ImageType, operator<<, Ima...
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/constraintbehavior.h>         // for ConstraintBehavior, Constr...
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
+#include <inviwo/core/properties/ordinalproperty.h>            // for OrdinalProperty, DoublePro...
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Propert...
+#include <inviwo/core/properties/stringproperty.h>             // for StringProperty
+#include <inviwo/core/properties/templateproperty.h>           // for TemplateProperty
+#include <inviwo/core/properties/valuewrapper.h>               // for PropertySerializationMode
+#include <inviwo/core/util/foreacharg.h>                       // for for_each_in_tuple
+#include <inviwo/core/util/glmvec.h>                           // for size2_t
+#include <inviwo/core/util/stringconversion.h>                 // for toString
+#include <modules/base/properties/layerinformationproperty.h>  // for LayerInformationProperty
+
+#include <cstddef>  // for size_t
+#include <limits>   // for numeric_limits<>::type
+#include <memory>   // for make_unique, unique_ptr
+#include <vector>   // for vector
+
+#include <glm/vec2.hpp>  // for vec, vec<>::(anonymous)
 
 namespace inviwo {
+class Layer;
 
 const std::string ImageInformationProperty::classIdentifier = "org.inviwo.ImageInformationProperty";
 std::string ImageInformationProperty::getClassIdentifier() const { return classIdentifier; }

@@ -73,6 +73,7 @@
 #include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
 #include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
 #include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+#include <modules/opengl/texture/texture3d.h>                           // IWYU pragma: keep
 
 #include <algorithm>      // for max, min, copy, fill
 #include <cmath>          // for cos, sin, pow, round

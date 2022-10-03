@@ -28,17 +28,25 @@
  *********************************************************************************/
 
 #include <modules/glfw/glfwwindoweventmanager.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/wheelevent.h>
-#include <inviwo/core/util/glm.h>
 
-#include <modules/glfw/glfwuserdata.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>  // for KeyboardEvent
+#include <inviwo/core/interaction/events/keyboardkeys.h>   // for KeyModifiers, KeyModifier, Key...
+#include <inviwo/core/interaction/events/mousebuttons.h>   // for MouseState, MouseButton, Mouse...
+#include <inviwo/core/interaction/events/mouseevent.h>     // for MouseEvent
+#include <inviwo/core/interaction/events/wheelevent.h>     // for WheelEvent
+#include <inviwo/core/util/glm.h>                          // for invertY
+#include <inviwo/core/util/glmvec.h>                       // for dvec2, ivec2, uvec2
+#include <modules/glfw/glfwuserdata.h>                     // for GLFWUserData, GLFWUserDataId
 
-#include <codecvt>
+#include <cctype>   // for toupper
+#include <codecvt>  // for codecvt_utf8
+#include <locale>   // for wstring_convert
+#include <utility>  // for move
 
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>   // for glfwGetWindowSize, GLFWwindow
+#include <flags/flags.h>  // for none
+#include <glm/vec2.hpp>   // for vec<>::(anonymous), operator/
 
 namespace inviwo {
 

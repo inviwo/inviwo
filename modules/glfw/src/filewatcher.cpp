@@ -29,24 +29,25 @@
 
 #include <modules/glfw/filewatcher.h>
 
+#include <inviwo/core/util/assertion.h>      // for IVW_ASSERT
+#include <inviwo/core/util/logcentral.h>     // for LogCentral, LogWarn
+#include <inviwo/core/util/stdextensions.h>  // for erase_remove
+
+#include <algorithm>  // for find
+
+#ifdef WIN32
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/fileobserver.h>
-#include <inviwo/core/util/assertion.h>
-#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/threadutil.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/fileobserver.h>
 
+#include <Windows.h>
 #include <array>
 #include <mutex>
 #include <atomic>
 #include <chrono>
-#include <algorithm>
-
-#ifdef WIN32
-#include <Windows.h>
 #endif
 
 namespace inviwo {

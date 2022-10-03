@@ -29,6 +29,22 @@
 
 #include <modules/base/processors/meshinformation.h>
 
+#include <inviwo/core/algorithm/markdown.h>                   // for operator""_help, operator""...
+#include <inviwo/core/ports/meshport.h>                       // for MeshInport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>            // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>             // for Tags
+#include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
+#include <inviwo/core/properties/valuewrapper.h>              // for PropertySerializationMode
+#include <inviwo/core/util/metadatatoproperty.h>              // for MetaDataToProperty
+#include <modules/base/properties/meshinformationproperty.h>  // for MeshInformationProperty
+
+#include <memory>       // for shared_ptr, shared_ptr<>::e...
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

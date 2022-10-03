@@ -27,8 +27,36 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/volumesampler.h>
-#include <modules/base/processors/singlevoxel.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>  // for CoordinateSpace, Coordinat...
+#include <inviwo/core/ports/volumeport.h>                      // for VolumeInport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>              // for Tags, Tags::CPU
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
+#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>            // for DoubleVec3Property, Double...
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Propert...
+#include <inviwo/core/util/formats.h>                          // for DataFormatBase
+#include <inviwo/core/util/glmutils.h>                         // for Vector
+#include <inviwo/core/util/glmvec.h>                           // for dvec3, dvec2, dvec4
+#include <inviwo/core/util/staticstring.h>                     // for operator+
+#include <inviwo/core/util/volumesampler.h>                    // for VolumeDoubleSampler
+#include <modules/base/processors/singlevoxel.h>               // for SingleVoxel
+
+#include <functional>   // for __base
+#include <limits>       // for numeric_limits
+#include <memory>       // for shared_ptr
+#include <string>       // for operator==, string
+#include <string_view>  // for string_view, operator==
+#include <type_traits>  // for remove_extent_t
+#include <vector>       // for operator!=, vector, operat...
+
+#include <glm/common.hpp>  // for mix
+#include <glm/mat4x4.hpp>  // for operator*
+#include <glm/vec2.hpp>    // for operator*, operator+
+#include <glm/vec3.hpp>    // for operator/, operator*, oper...
+#include <glm/vec4.hpp>    // for operator*, operator+
 
 namespace inviwo {
 

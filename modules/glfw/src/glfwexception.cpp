@@ -29,6 +29,8 @@
 
 #include <modules/glfw/glfwexception.h>
 
+#include <inviwo/core/util/exception.h>  // for ExceptionContext, Exception, ModuleInitException
+
 namespace inviwo {
 
 GLFWException::GLFWException(const std::string& message, ExceptionContext context)

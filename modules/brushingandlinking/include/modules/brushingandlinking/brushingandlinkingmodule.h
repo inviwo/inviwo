@@ -29,10 +29,12 @@
 
 #pragma once
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>  // for IVW_MODULE_BRUSHI...
+
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingModule : public InviwoModule {
 public:

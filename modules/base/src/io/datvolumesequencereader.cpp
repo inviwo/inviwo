@@ -28,22 +28,49 @@
  *********************************************************************************/
 
 #include <modules/base/io/datvolumesequencereader.h>
-#include <modules/base/algorithm/dataminmax.h>
 
-#include <inviwo/core/datastructures/volume/volumedisk.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/unitsystem.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/formatconversion.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/io/rawvolumeramloader.h>
+#include <inviwo/core/datastructures/camera/camera.h>      // for mat4
+#include <inviwo/core/datastructures/datamapper.h>         // for DataMapper
+#include <inviwo/core/datastructures/image/imagetypes.h>   // for operator>>, InterpolationType
+#include <inviwo/core/datastructures/unitsystem.h>         // for Axis, Unit, defaultAxes
+#include <inviwo/core/datastructures/volume/volume.h>      // for Volume, DataReaderType
+#include <inviwo/core/datastructures/volume/volumedisk.h>  // for VolumeDisk
+#include <inviwo/core/io/datareader.h>                     // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>            // for DataReaderException
+#include <inviwo/core/io/rawvolumeramloader.h>             // for RawVolumeRAMLoader
+#include <inviwo/core/metadata/metadata.h>                 // for StringMetaData
+#include <inviwo/core/util/fileextension.h>                // for FileExtension
+#include <inviwo/core/util/filesystem.h>                   // for getFileDirectory, isAbsolutePath
+#include <inviwo/core/util/formatconversion.h>             // for formatBytesToString
+#include <inviwo/core/util/formats.h>                      // for DataFormatBase, DataFormat
+#include <inviwo/core/util/glmmat.h>                       // for mat3
+#include <inviwo/core/util/glmvec.h>                       // for dvec2, vec3, size3_t
+#include <inviwo/core/util/logcentral.h>                   // for LogCentral, LogInfo, LogWarn
+#include <inviwo/core/util/sourcecontext.h>                // for IVW_CONTEXT
+#include <inviwo/core/util/stringconversion.h>             // for toLower, trim, splitByFirst
+#include <modules/base/algorithm/algorithmoptions.h>       // for IgnoreSpecialValues, IgnoreSpe...
+#include <modules/base/algorithm/dataminmax.h>             // for volumeMinMax
 
-#include <iterator>
-#include <optional>
-#include <unordered_map>
+#include <algorithm>      // for copy
+#include <array>          // for array
+#include <cstddef>        // for size_t
+#include <fstream>        // for stringstream, basic_istream
+#include <iterator>       // for back_insert_iterator, back_ins...
+#include <optional>       // for optional, nullopt
+#include <sstream>        // for basic_stringstream<>::string_type
+#include <string>         // for string, char_traits, basic_string
+#include <type_traits>    // for remove_reference<>::type, remo...
+#include <unordered_map>  // for unordered_map, operator!=, __h...
+#include <utility>        // for move, pair
 
-#include <fmt/format.h>
+#include <glm/common.hpp>              // for max, min
+#include <glm/gtx/component_wise.hpp>  // for compMul
+#include <glm/mat3x3.hpp>              // for mat<>::col_type
+#include <glm/mat4x4.hpp>              // for mat<>::col_type
+#include <glm/vec2.hpp>                // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                // for vec<>::(anonymous), vec, opera...
+#include <glm/vec4.hpp>                // for vec
+#include <units/units.hpp>             // for unit_from_string
 
 namespace inviwo {
 

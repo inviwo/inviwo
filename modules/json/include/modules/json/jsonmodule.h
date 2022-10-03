@@ -29,11 +29,17 @@
 
 #pragma once
 
-#include <modules/json/jsonmoduledefine.h>
-#include <modules/json/io/json/propertyjsonconverterfactory.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
+
+#include <inviwo/core/common/inviwomodule.h>                          // for InviwoModule
+#include <modules/json/io/json/propertyjsonconverterfactory.h>        // for PropertyJSONConvert...
+#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
+
+#include <memory>  // for unique_ptr, make_un...
+#include <vector>  // for vector
 
 namespace inviwo {
+class InviwoApplication;
 
 class IVW_MODULE_JSON_API JSONModule : public InviwoModule {
 public:

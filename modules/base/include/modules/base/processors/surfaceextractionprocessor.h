@@ -29,17 +29,32 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <future>
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/ports/datainport.h>              // for DataInport
+#include <inviwo/core/ports/dataoutport.h>             // for DataOutport
+#include <inviwo/core/ports/outportiterable.h>         // for OutportIterable
+#include <inviwo/core/processors/poolprocessor.h>      // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty
+#include <inviwo/core/util/glmvec.h>                   // for uvec3, vec4
+#include <inviwo/core/util/staticstring.h>             // for operator+
+
+#include <cstddef>      // for size_t
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr
+#include <string>       // for operator==, operator+, string
+#include <string_view>  // for operator==
+#include <vector>       // for vector, operator!=, operator==
+
+#include <fmt/core.h>    // for format, format_to, basic_string_view
+#include <glm/fwd.hpp>   // for uvec3
+#include <glm/vec3.hpp>  // for operator+
 
 namespace inviwo {
 /** \docpage{org.inviwo.SurfaceExtraction, Surface Extraction}

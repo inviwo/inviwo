@@ -29,8 +29,6 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-
 namespace inviwo {
 
 enum class IgnoreSpecialValues { No, Yes };

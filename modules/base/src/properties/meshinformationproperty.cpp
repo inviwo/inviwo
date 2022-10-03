@@ -29,11 +29,37 @@
 
 #include <modules/base/properties/meshinformationproperty.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <modules/base/properties/bufferinformationproperty.h>
-#include <modules/base/algorithm/dataminmax.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/algorithm/markdown.h>                     // for operator""_help
+#include <inviwo/core/datastructures/camera/camera.h>           // for mat4
+#include <inviwo/core/datastructures/geometry/geometrytype.h>   // for operator<<, BufferType
+#include <inviwo/core/datastructures/geometry/mesh.h>           // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>       // for BoolCompositeProperty
+#include <inviwo/core/properties/compositeproperty.h>           // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>           // for InvalidationLevel, Invali...
+#include <inviwo/core/properties/ordinalproperty.h>             // for OrdinalProperty, FloatVec...
+#include <inviwo/core/properties/propertysemantics.h>           // for PropertySemantics, Proper...
+#include <inviwo/core/properties/stringproperty.h>              // for StringProperty
+#include <inviwo/core/properties/templateproperty.h>            // for TemplateProperty
+#include <inviwo/core/properties/valuewrapper.h>                // for PropertySerializationMode
+#include <inviwo/core/util/foreacharg.h>                        // for for_each_in_tuple
+#include <inviwo/core/util/glm.h>                               // for filled
+#include <inviwo/core/util/glmmat.h>                            // for mat3
+#include <inviwo/core/util/glmvec.h>                            // for vec3
+#include <inviwo/core/util/stringconversion.h>                  // for toString
+#include <modules/base/algorithm/dataminmax.h>                  // for bufferMinMax
+#include <modules/base/properties/bufferinformationproperty.h>  // for IndexBufferInformationPro...
+
+#include <algorithm>  // for min
+#include <cstddef>    // for size_t
+#include <limits>     // for numeric_limits<>::type
+#include <memory>     // for make_unique
+#include <utility>    // for pair
+#include <vector>     // for vector
+
+#include <glm/mat3x3.hpp>  // for operator+
+#include <glm/mat4x4.hpp>  // for mat
+#include <glm/vec3.hpp>    // for operator+
+#include <glm/vec4.hpp>    // for operator-, vec
 
 namespace inviwo {
 

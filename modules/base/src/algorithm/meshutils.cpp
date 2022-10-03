@@ -28,22 +28,46 @@
  *********************************************************************************/
 
 #include <modules/base/algorithm/meshutils.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/geometry/typedmesh.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-
-#include <inviwo/core/util/zip.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, IndexBuffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/camera/camera.h>                   // for mat4, Camera
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for TypedMesh<>::Vertex
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/glmmat.h>                                    // for mat3
+#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4, ivec2
 
 #ifdef WIN32
 #define _USE_MATH_DEFINES
 #endif
-#include <cmath>
-#include <memory>
+#include <array>          // for array, array<>::v...
+#include <cmath>          // for atan, sqrt, sin, cos
+#include <cstdint>        // for uint32_t
+#include <cstdlib>        // for abs
+#include <limits>         // for numeric_limits
+#include <memory>         // for shared_ptr, make_...
+#include <type_traits>    // for remove_extent_t
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for move
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtc/constants.hpp>
+#include <glm/ext/matrix_transform.hpp>  // for rotate
+#include <glm/fwd.hpp>                   // for vec4, vec3, uint32_t
+#include <glm/geometric.hpp>             // for normalize, cross
+#include <glm/gtc/constants.hpp>         // for half_pi, quarter_pi
+#include <glm/gtx/rotate_vector.hpp>     // for rotate
+#include <glm/gtx/transform.hpp>         // for rotate
+#include <glm/mat3x3.hpp>                // for operator*, mat
+#include <glm/mat4x4.hpp>                // for operator*
+#include <glm/matrix.hpp>                // for inverse
+#include <glm/trigonometric.hpp>         // for cos, sin
+#include <glm/vec2.hpp>                  // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                  // for operator*, operator+
+#include <glm/vec4.hpp>                  // for operator*, operator+
 
 namespace inviwo {
 

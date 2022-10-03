@@ -29,24 +29,31 @@
 
 #pragma once
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <modules/fontrendering/util/fontutils.h>
-#include <modules/fontrendering/datastructures/texatlasentry.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
+#include <modules/fontrendering/fontrenderingmoduledefine.h>  // for IVW_MODULE_FONTRENDERI...
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/buffer/framebufferobject.h>
-#include <modules/fontrendering/datastructures/textboundingbox.h>
+#include <inviwo/core/util/glmvec.h>                               // for vec4, ivec2, size2_t
+#include <modules/fontrendering/datastructures/textboundingbox.h>  // for TextBoundingBox
+#include <modules/fontrendering/util/fontutils.h>                  // for getFont, FontType, Fon...
+#include <modules/opengl/buffer/framebufferobject.h>               // for FrameBufferObject
+#include <modules/opengl/openglutils.h>                            // for BlendModeState (ptr only)
 
-#include <unordered_map>
-#include <tuple>
-#include <string>
+#include <map>            // for map, map<>::value_compare
+#include <memory>         // for shared_ptr
+#include <string>         // for string
+#include <tuple>          // for tuple
+#include <unordered_map>  // for unordered_map
+#include <utility>        // for pair
+#include <vector>         // for vector
 
-#include <ft2build.h>
+#include <freetype/config/ftheader.h>  // for FT_FREETYPE_H
+#include <glm/vec2.hpp>                // for vec
+
+namespace inviwo {
+class FontSettings;
+class Shader;
+struct TexAtlasEntry;
+}  // namespace inviwo
+
 #include FT_FREETYPE_H
 
 namespace inviwo {

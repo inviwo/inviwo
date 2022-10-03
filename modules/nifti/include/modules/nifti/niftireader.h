@@ -29,9 +29,14 @@
 
 #pragma once
 
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/io/datareader.h>
-#include <modules/nifti/niftimoduledefine.h>
+#include <modules/nifti/niftimoduledefine.h>  // for IVW_MODULE_NIFTI_API
+
+#include <inviwo/core/datastructures/volume/volume.h>  // for DataReaderType
+#include <inviwo/core/io/datareader.h>                 // for DataReaderType
+
+#include <memory>       // for shared_ptr
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
 

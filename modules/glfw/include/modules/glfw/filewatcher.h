@@ -31,11 +31,12 @@
 #include <modules/glfw/glfwmoduledefine.h>
 
 #include <inviwo/core/util/filesystemobserver.h>
+
 #include <memory>
-#include <vector>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 namespace inviwo {
 

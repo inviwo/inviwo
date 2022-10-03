@@ -28,7 +28,34 @@
  *********************************************************************************/
 
 #include <modules/base/processors/spotlightsourceprocessor.h>
-#include <inviwo/core/datastructures/light/spotlight.h>
+
+#include <inviwo/core/datastructures/camera/camera.h>          // for mat4
+#include <inviwo/core/datastructures/light/baselightsource.h>  // for LightSource, getLightTrans...
+#include <inviwo/core/datastructures/light/spotlight.h>        // for SpotLight
+#include <inviwo/core/ports/dataoutport.h>                     // for DataOutport
+#include <inviwo/core/ports/outportiterable.h>                 // for OutportIterableImpl<>::con...
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Expe...
+#include <inviwo/core/processors/processortags.h>              // for Tags, Tags::CPU
+#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
+#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>            // for FloatProperty, FloatVec3Pr...
+#include <inviwo/core/properties/positionproperty.h>           // for PositionProperty, Position...
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Propert...
+#include <inviwo/core/util/glmvec.h>                           // for vec3, vec2
+
+#include <functional>   // for __base
+#include <string_view>  // for string_view
+
+#include <fmt/core.h>                    // for format
+#include <glm/ext/matrix_transform.hpp>  // for translate
+#include <glm/geometric.hpp>             // for normalize
+#include <glm/gtx/transform.hpp>         // for translate
+#include <glm/vec3.hpp>                  // for operator*, operator-, vec
+#include <glm/vec4.hpp>                  // for operator*, operator+
 
 namespace inviwo {
 

@@ -29,6 +29,8 @@
 
 #include <inviwo/python3gl/volumepytoglconverter.h>
 
+#include <modules/opengl/texture/texture3d.h>
+
 namespace inviwo {
 
 std::shared_ptr<VolumeGL> VolumePy2GLConverter::createFrom(

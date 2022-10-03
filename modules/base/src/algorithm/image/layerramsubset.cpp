@@ -29,6 +29,13 @@
 
 #include <modules/base/algorithm/image/layerramsubset.h>
 
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
+#include <inviwo/core/util/glmvec.h>                                    // for ivec2, size2_t
+
 namespace inviwo {
 
 namespace util {

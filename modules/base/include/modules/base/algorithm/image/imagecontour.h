@@ -29,11 +29,16 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/util/glmvec.h>  // for vec4
+
+#include <cstddef>  // for size_t
+#include <memory>   // for shared_ptr
 
 namespace inviwo {
+class LayerRepresentation;
+class Mesh;
 
 class IVW_MODULE_BASE_API ImageContour {
 public:

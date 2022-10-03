@@ -28,14 +28,40 @@
  *********************************************************************************/
 
 #include <modules/base/processors/imagesourceseries.h>
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/datastructures/image/layerdisk.h>
-#include <inviwo/core/datastructures/image/imageram.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datareaderexception.h>
+
+#include <inviwo/core/common/factoryutil.h>              // for getDataReaderFactory
+#include <inviwo/core/datastructures/image/image.h>      // for Image
+#include <inviwo/core/io/datareader.h>                   // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>          // for DataReaderException
+#include <inviwo/core/io/datareaderfactory.h>            // for DataReaderFactory
+#include <inviwo/core/ports/imageport.h>                 // for ImageOutport
+#include <inviwo/core/processors/processor.h>            // for Processor
+#include <inviwo/core/processors/processorinfo.h>        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>       // for CodeState, CodeState::Experimental
+#include <inviwo/core/processors/processortags.h>        // for Tags, Tags::CPU
+#include <inviwo/core/properties/buttonproperty.h>       // for ButtonProperty
+#include <inviwo/core/properties/filepatternproperty.h>  // for FilePatternProperty
+#include <inviwo/core/properties/ordinalproperty.h>      // for IntProperty
+#include <inviwo/core/properties/stringproperty.h>       // for StringProperty
+#include <inviwo/core/util/assertion.h>                  // for ivwAssert
+#include <inviwo/core/util/fileextension.h>              // for FileExtension
+#include <inviwo/core/util/filesystem.h>                 // for getPath
+#include <inviwo/core/util/formats.h>                    // for DataFormat, DataVec4UInt8
+#include <inviwo/core/util/logcentral.h>                 // for LogCentral, LogError
+#include <inviwo/core/util/pathtype.h>                   // for PathType, PathType::Images
+#include <inviwo/core/util/statecoordinator.h>           // for StateCoordinator
+#include <inviwo/core/util/stdextensions.h>              // for contains_if, erase_remove_if
+
+#include <algorithm>    // for max
+#include <cstddef>      // for size_t
+#include <functional>   // for __base
+#include <map>          // for map, operator!=
+#include <memory>       // for make_shared, operator!=, unique_ptr
+#include <ostream>      // for operator<<, basic_ostream
+#include <string_view>  // for string_view
 
 namespace inviwo {
+class Layer;
 
 const ProcessorInfo ImageSourceSeries::processorInfo_{
     "org.inviwo.ImageSourceSeries",  // Class identifier

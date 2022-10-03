@@ -29,12 +29,18 @@
 
 #pragma once
 
-#include <modules/eigenutils/eigenutilsmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/eigenutils/eigenports.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <modules/eigenutils/eigenutilsmoduledefine.h>  // for IVW_MODULE_EIGENUTILS_API
+
+#include <inviwo/core/processors/processor.h>       // for Processor
+#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
+#include <inviwo/core/util/staticstring.h>          // for operator+
+#include <modules/eigenutils/eigenports.h>          // for EigenMatrixInport, EigenMatrixOut...
+
+#include <functional>   // for __base
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, operator==
 
 namespace inviwo {
 

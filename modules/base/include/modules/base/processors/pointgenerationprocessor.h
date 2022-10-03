@@ -29,15 +29,23 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/util/glmvec.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <vector>
+#include <inviwo/core/ports/dataoutport.h>                 // for DataOutport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>        // for FloatVec3Property, IntSizeTPro...
+#include <inviwo/core/util/glmvec.h>                       // for vec3
+#include <inviwo/core/util/staticstring.h>                 // for operator+
+
+#include <string>  // for operator+, string
+#include <vector>  // for vector
+
+#include <fmt/core.h>      // for format, basic_string_view
+#include <fmt/format.h>    // for formatbuf<>::int_type, formatb...
+#include <glm/gtx/io.hpp>  // for operator<<
 
 namespace inviwo {
 

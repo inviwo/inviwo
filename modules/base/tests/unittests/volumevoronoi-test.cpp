@@ -32,6 +32,7 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 #include <modules/base/algorithm/volume/volumevoronoi.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/indexmapper.h>

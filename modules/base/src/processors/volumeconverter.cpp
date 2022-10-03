@@ -29,12 +29,41 @@
 
 #include <modules/base/processors/volumeconverter.h>
 
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport, Vol...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/minmaxproperty.h>                      // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>                      // for StringProperty
+#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
+#include <inviwo/core/util/foreacharg.h>                                // for for_each_type
+#include <inviwo/core/util/formatdispatching.h>                         // for dispatch, Precisi...
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmutils.h>                                  // for same_extent
+#include <inviwo/core/util/glmvec.h>                                    // for dvec2
+#include <inviwo/core/util/staticstring.h>                              // for operator+
+#include <modules/base/properties/datarangeproperty.h>                  // for DataRangeProperty
 
-#include <inviwo/core/util/formats.h>
-#include <inviwo/core/util/foreacharg.h>
+#include <algorithm>      // for transform
+#include <limits>         // for numeric_limits
+#include <memory>         // for shared_ptr, share...
+#include <tuple>          // for tuple
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for pair
+
+#include <glm/gtx/component_wise.hpp>  // for compMul
+#include <glm/vec2.hpp>                // for vec<>::(anonymous)
 
 namespace inviwo {
 

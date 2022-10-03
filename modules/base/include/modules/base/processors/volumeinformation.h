@@ -29,18 +29,17 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/util/metadatatoproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-#include <modules/base/properties/imageinformationproperty.h>
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeInport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>       // for BoolCompositeProperty
+#include <inviwo/core/properties/compositeproperty.h>           // for CompositeProperty
+#include <inviwo/core/properties/minmaxproperty.h>              // for DoubleMinMaxProperty
+#include <inviwo/core/properties/ordinalproperty.h>             // for DoubleProperty, DoubleVec...
+#include <inviwo/core/util/metadatatoproperty.h>                // for MetaDataToProperty
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
 
 namespace inviwo {
 

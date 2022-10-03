@@ -29,16 +29,27 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/datastructures/camera.h>
-#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>          // for IndexBuffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>       // for BufferRAMPrecision
+#include <inviwo/core/datastructures/camera/camera.h>          // for mat4, Camera (ptr only)
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, Connecti...
+#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh::MeshInfo, Mesh
+#include <inviwo/core/datastructures/geometry/typedmesh.h>     // for BasicMesh, ColoredMesh
+#include <inviwo/core/util/exception.h>                        // for Exception
+#include <inviwo/core/util/glmvec.h>                           // for vec4, vec3, ivec2, vec2
+#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT_CUSTOM
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <cstddef>      // for size_t
+#include <cstdint>      // for uint32_t
+#include <functional>   // for invoke
+#include <memory>       // for shared_ptr, make_shared
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
-#include <functional>
-#include <memory>
+#include <glm/fwd.hpp>  // for vec3, vec4
 
 namespace inviwo {
 

@@ -51,6 +51,7 @@
 #include <modules/opengl/shader/shadertype.h>          // for ShaderType, ShaderType::Fragment
 #include <modules/opengl/sharedopenglresources.h>      // for SharedOpenGLResources
 #include <modules/opengl/texture/textureutils.h>       // for activateTargetAndCopySource
+#include <modules/opengl/texture/texture2d.h>          // IWYU pragma: keep
 
 #include <array>        // for operator!=, array
 #include <functional>   // for __base

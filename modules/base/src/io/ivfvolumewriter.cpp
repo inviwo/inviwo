@@ -28,14 +28,30 @@
  *********************************************************************************/
 
 #include <modules/base/io/ivfvolumewriter.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/io/datawriterexception.h>
 
-#include <fmt/format.h>
-#include <units/units.hpp>
+#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/unitsystem.h>                      // for Axis
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataWrite...
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
+#include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
+#include <inviwo/core/io/serialization/serializer.h>                    // for Serializer
+#include <inviwo/core/metadata/metadatamap.h>                           // for MetaDataMap
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/filesystem.h>                                // for getFileNameWithou...
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
 
-#include <glm/gtx/component_wise.hpp>
+#include <array>          // for array
+#include <fstream>        // for basic_ofstream, ios
+#include <memory>         // for unique_ptr
+#include <string>         // for basic_string, string
+#include <unordered_set>  // for unordered_set
+
+#include <glm/gtx/component_wise.hpp>  // for compMul
+#include <units/units.hpp>             // for to_string
 
 namespace inviwo {
 

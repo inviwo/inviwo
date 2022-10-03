@@ -29,16 +29,24 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/base/properties/gaussianproperty.h>
-#include <random>
+#include <inviwo/core/ports/imageport.h>               // for Image...
+#include <inviwo/core/processors/processor.h>          // for Proce...
+#include <inviwo/core/processors/processorinfo.h>      // for Proce...
+#include <inviwo/core/properties/boolproperty.h>       // for BoolP...
+#include <inviwo/core/properties/compositeproperty.h>  // for Compo...
+#include <inviwo/core/properties/ordinalproperty.h>    // for IntPr...
+#include <inviwo/core/util/glmvec.h>                   // for dvec2
+#include <modules/base/properties/gaussianproperty.h>  // for Gauss...
+
+#include <random>   // for unifo...
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 namespace inviwo {
+class Deserializer;
+class Serializer;
 
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API RBFVectorFieldGenerator2D : public Processor {
 public:

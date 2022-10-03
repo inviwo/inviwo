@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/plane.h>
 #include <modules/base/algorithm/meshutils.h>
 
 #include <glm/gtx/perpendicular.hpp>
