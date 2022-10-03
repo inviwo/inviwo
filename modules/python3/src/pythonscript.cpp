@@ -29,7 +29,7 @@
 
 #include <modules/python3/pythonscript.h>
 
-#include <pybind11/cast.h>           // for cast, handle::cast, object:...
+#include <pybind11/cast.h>  // for cast, handle::cast, object:...
 
 #include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
 #include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
