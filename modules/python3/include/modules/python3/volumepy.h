@@ -30,7 +30,8 @@
 
 #include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
 
-#include <pybind11/numpy.h>  // for array
+#include <pybind11/pybind11.h>  // IWYU pragma: keep
+#include <pybind11/numpy.h>     // for array
 
 #include <inviwo/core/datastructures/image/imagetypes.h>             // for InterpolationType
 #include <inviwo/core/datastructures/representationconverter.h>      // for RepresentationConver...

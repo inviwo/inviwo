@@ -31,10 +31,8 @@
 
 #include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
 
-#include <pybind11/cast.h>           // for cast, object::cast
-#include <pybind11/detail/common.h>  // for value_error, pybind11
-#include <pybind11/numpy.h>          // for array, dtype
-#include <pybind11/pytypes.h>        // for handle, reinterpret_borrow, reinterpret...
+#include <pybind11/pybind11.h>  /// IWYU pragma: keep
+#include <pybind11/numpy.h>     // for array, dtype
 
 #include <inviwo/core/util/formats.h>           // for DataFormat, DataFormatBase
 #include <inviwo/core/util/glmcomp.h>           // for glmcomp

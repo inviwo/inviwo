@@ -28,8 +28,9 @@
  *********************************************************************************/
 #pragma once
 
-#include <pybind11/detail/common.h>  // for pybind11, stop_iteration
-#include <pybind11/pybind11.h>       // for class_, init, module
+#include <pybind11/pybind11.h>  // IWYU pragma: keep
+#include <pybind11/stl.h>       // IWYU pragma: keep
+#include <pybind11/stl_bind.h>  // IWYU pragma: keep
 
 #include <inviwo/core/datastructures/datatraits.h>  // for DataTraits
 #include <inviwo/core/ports/datainport.h>           // for DataInport
@@ -44,10 +45,6 @@
 #include <memory>    // for shared_ptr
 #include <string>    // for string, operator+
 #include <typeinfo>  // for type_info
-
-namespace pybind11 {
-class handle;
-}  // namespace pybind11
 
 namespace inviwo {
 
