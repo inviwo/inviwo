@@ -31,7 +31,7 @@
 
 #include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
 
-#include <pybind11/pytypes.h>  // for dict, object
+#include <pybind11/pybind11.h>  // IWYU pragma: keep
 
 #include <inviwo/core/util/callback.h>      // for BaseCallBack, CallBackList
 #include <inviwo/core/util/fileobserver.h>  // for FileObserver

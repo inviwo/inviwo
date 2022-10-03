@@ -29,8 +29,8 @@
 
 #include <modules/python3/processors/numpyvolume.h>
 
-#include <pybind11/cast.h>     // for cast
-#include <pybind11/pytypes.h>  // for object
+#include <pybind11/pybind11.h>  // IWYU pragma: keep
+#include <pybind11/cast.h>      // for cast
 
 #include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
 #include <inviwo/core/common/modulepath.h>             // for ModulePath, ModulePath::Scripts

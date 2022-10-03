@@ -29,8 +29,8 @@
 
 #include <modules/python3/processors/numpymeshcreatetest.h>
 
-#include <pybind11/cast.h>     // for object::cast
-#include <pybind11/pytypes.h>  // for object, accessor, dict, objec...
+#include <pybind11/pybind11.h>  // IWYU pragma: keep
+#include <pybind11/cast.h>      // for object::cast
 
 #include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication
 #include <inviwo/core/common/modulepath.h>                  // for ModulePath, ModulePath::Scripts

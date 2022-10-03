@@ -30,9 +30,6 @@
 #include <modules/python3/pythonscript.h>
 
 #include <pybind11/cast.h>           // for cast, handle::cast, object:...
-#include <pybind11/detail/common.h>  // for pybind11
-#include <pybind11/pybind11.h>       // for globals
-#include <pybind11/pytypes.h>        // for object, dict, str, handle
 
 #include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
 #include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
