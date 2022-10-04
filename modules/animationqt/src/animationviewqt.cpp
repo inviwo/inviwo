@@ -37,7 +37,7 @@
 #include <modules/animationqt/widgets/editorconstants.h>      // for FindDivisionsResult, widthP...
 
 #include <cstdlib>  // for abs, size_t
-#include <cmath>     // for floor, abs
+#include <cmath>    // for floor, abs
 
 #include <QColor>        // for QColor
 #include <QFlags>        // for QFlags, operator==

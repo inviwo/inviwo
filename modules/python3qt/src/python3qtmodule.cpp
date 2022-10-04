@@ -38,7 +38,6 @@
 #include <pybind11/pybind11.h>       // for class_, module_, init
 #include <pybind11/pytypes.h>        // for str, none, reinterp...
 
-
 #include <inviwo/core/common/inviwoapplication.h>                     // IWYU pragma: keep
 #include <inviwo/core/common/inviwomodule.h>                          // for InviwoModule
 #include <inviwo/core/properties/fileproperty.h>                      // for FileProperty
