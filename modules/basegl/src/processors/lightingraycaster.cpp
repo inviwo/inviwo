@@ -28,17 +28,41 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/lightingraycaster.h>
-#include <inviwo/core/io/serialization/serialization.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>                // for boundingBox
+#include <inviwo/core/datastructures/image/imagetypes.h>      // for ImageType, ImageType::Color...
+#include <inviwo/core/io/serialization/deserializer.h>        // for Deserializer
+#include <inviwo/core/io/serialization/ticpp.h>               // for TxElement
+#include <inviwo/core/io/serialization/versionconverter.h>    // for getElement, NodeVersionConv...
+#include <inviwo/core/ports/imageport.h>                      // for ImageInport, ImageOutport
+#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>            // for CodeState, CodeState::Exper...
+#include <inviwo/core/processors/processortags.h>             // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>            // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyOption, Optio...
+#include <inviwo/core/properties/simplelightingproperty.h>    // for SimpleLightingProperty
+#include <inviwo/core/properties/simpleraycastingproperty.h>  // for SimpleRaycastingProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <inviwo/core/util/formats.h>                         // for DataFormatBase
+#include <inviwo/core/util/stringconversion.h>                // for toString
+#include <modules/opengl/shader/shader.h>                     // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                // for addDefines, addShaderDefine...
+#include <modules/opengl/texture/textureunit.h>               // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>              // for bindAndSetUniforms, activat...
+#include <modules/opengl/volume/volumeutils.h>                // for bindAndSetUniforms
+
+#include <cstddef>      // for size_t
+#include <functional>   // for __base, function
+#include <memory>       // for shared_ptr
+#include <string>       // for operator+, string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <vector>       // for vector
 
 namespace inviwo {
 

@@ -28,7 +28,8 @@
  *********************************************************************************/
 #pragma once
 
-#include <chrono>
+#include <chrono>  // for duration
+#include <ratio>   // for ratio
 
 namespace inviwo {
 

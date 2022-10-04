@@ -28,13 +28,19 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/properties/minmaxproperty.h>            // for FloatMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyString
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
+class Property;
+class Shader;
+class TextureUnitContainer;
 
 /**
  * Transforms the samplePosition from cartesian coordinates (texture coords 0 to 1) to spherical

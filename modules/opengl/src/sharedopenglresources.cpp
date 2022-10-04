@@ -29,10 +29,16 @@
 
 #include <modules/opengl/sharedopenglresources.h>
 
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <modules/opengl/geometry/meshgl.h>            // for MeshGL
+#include <modules/opengl/shader/shader.h>              // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>        // for ShaderObject
+#include <modules/opengl/texture/textureutils.h>       // for planeRect
 
-#include <modules/opengl/shader/shader.h>
+#include <cstddef>  // for size_t
+#include <sstream>  // for operator<<, basic_ostream, strings...
+#include <string>   // for char_traits, basic_string
+#include <utility>  // for move
 
 namespace inviwo {
 

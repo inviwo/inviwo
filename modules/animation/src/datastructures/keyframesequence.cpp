@@ -29,6 +29,11 @@
 
 #include <modules/animation/datastructures/keyframesequence.h>
 
+#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <modules/animation/datastructures/keyframe.h>       // for Keyframe
+
+#include <chrono>  // for operator<, operator<=, opera...
+
 namespace inviwo {
 
 namespace animation {

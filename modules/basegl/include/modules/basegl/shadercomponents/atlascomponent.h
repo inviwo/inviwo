@@ -28,28 +28,34 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/buttongroupproperty.h>
-#include <inviwo/core/interaction/pickingmapper.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/util/colorbrewer.h>
+#include "inviwo/core/util/colorbrewer-generated.h"                    // for Family, operator<<
+#include <inviwo/core/datastructures/image/layer.h>                    // for Layer
+#include <inviwo/core/interaction/pickingmapper.h>                     // for PickingMapper
+#include <inviwo/core/ports/volumeport.h>                              // for VolumeInport
+#include <inviwo/core/properties/buttongroupproperty.h>                // for ButtonGroupProperty
+#include <inviwo/core/properties/optionproperty.h>                     // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                    // for FloatProperty, Flo...
+#include <inviwo/core/properties/transferfunctionproperty.h>           // for TransferFunctionPr...
+#include <inviwo/core/util/staticstring.h>                             // for operator+
+#include <modules/basegl/shadercomponents/shadercomponent.h>           // for ShaderComponent
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
 
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-
-#include <string>
-#include <vector>
+#include <functional>   // for __base
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==, string...
+#include <tuple>        // for tuple
+#include <vector>       // for operator!=, vector
 
 namespace inviwo {
 
+class Inport;
 class PickingEvent;
 class Processor;
+class Property;
+class Shader;
+class TextureUnitContainer;
 class TimeComponent;
 
 /**

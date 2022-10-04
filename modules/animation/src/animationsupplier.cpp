@@ -28,11 +28,19 @@
  *********************************************************************************/
 
 #include <modules/animation/animationsupplier.h>
-#include <modules/animation/animationmodule.h>
-#include <modules/animation/factories/interpolationfactory.h>
-#include <modules/animation/factories/trackfactory.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
+#include <inviwo/core/util/exception.h>                              // for Exception
+#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT_CUSTOM
+#include <modules/animation/animationmanager.h>                      // for AnimationManager
+#include <modules/animation/animationmodule.h>                       // for AnimationModule
+#include <modules/animation/factories/interpolationfactory.h>        // for InterpolationFactory
+#include <modules/animation/factories/interpolationfactoryobject.h>  // for InterpolationFactory...
+#include <modules/animation/factories/trackfactory.h>                // for TrackFactory
+#include <modules/animation/factories/trackfactoryobject.h>          // for TrackFactoryObject
+
+#include <string_view>  // for string_view
+#include <utility>      // for move
 
 namespace inviwo {
 

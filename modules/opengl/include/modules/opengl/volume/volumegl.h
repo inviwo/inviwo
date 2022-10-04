@@ -29,15 +29,23 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/datastructures/volume/volumerepresentation.h>
-#include <modules/opengl/texture/texture3d.h>
-#include <inviwo/core/datastructures/representationtraits.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+
+#include <inviwo/core/datastructures/image/imagetypes.h>             // for InterpolationType
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
+#include <inviwo/core/util/formats.h>                                // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                 // for size3_t
+#include <modules/opengl/inviwoopengl.h>                             // for GLenum
+
+#include <memory>     // for shared_ptr
+#include <typeindex>  // for type_index
 
 namespace inviwo {
 
-class Shader;
+class Texture3D;
 class Volume;
+template <typename DataType, typename Kind>
+struct representation_traits;
 
 namespace kind {
 struct GL {};

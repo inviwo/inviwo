@@ -29,20 +29,24 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <modules/basegl/properties/splitterproperty.h>
-#include <modules/basegl/rendering/splitterrenderer.h>
+#include <inviwo/core/ports/imageport.h>                     // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                // for Processor
+#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>           // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>          // for FloatProperty
+#include <inviwo/core/util/staticstring.h>                   // for operator+
+#include <modules/basegl/datastructures/splittersettings.h>  // for Direction
+#include <modules/basegl/properties/splitterproperty.h>      // for SplitterProperty
+#include <modules/basegl/rendering/splitterrenderer.h>       // for SplitterRenderer
+
+#include <functional>   // for __base
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, operator==
 
 namespace inviwo {
-
-class Mesh;
-class PickingEvent;
 
 /** \docpage{org.inviwo.SplitImage, Split Image}
  * ![](org.inviwo.SplitImage.png?classIdentifier=org.inviwo.SplitImage)

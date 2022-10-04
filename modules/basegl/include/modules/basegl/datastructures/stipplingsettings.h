@@ -29,6 +29,7 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
+
 #include <modules/basegl/datastructures/stipplingsettingsinterface.h>
 
 namespace inviwo {

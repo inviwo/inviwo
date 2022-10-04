@@ -29,11 +29,14 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEG...
+
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/properties/ordinalproperty.h>                      // for FloatProperty
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
 
 namespace inviwo {
+class TextureUnitContainer;
 
 /** \docpage{org.inviwo.ImageGamma, Image Gamma}
  * Apply gamma correction to an input image. The alpha channel is not touched.

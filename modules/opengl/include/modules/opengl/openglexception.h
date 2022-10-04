@@ -29,8 +29,11 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/util/exception.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+
+#include <inviwo/core/util/exception.h>  // for Exception, ExceptionContext, ModuleInitEx...
+
+#include <string>  // for string
 
 namespace inviwo {
 

@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
+
 #include <modules/basegl/processors/shadercomponentprocessorbase.h>
 
 #include <string_view>

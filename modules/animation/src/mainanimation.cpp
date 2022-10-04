@@ -28,13 +28,21 @@
  *********************************************************************************/
 
 #include <modules/animation/mainanimation.h>
-#include <modules/animation/animationmodule.h>
-#include <modules/animation/workspaceanimations.h>
-#include <inviwo/core/common/modulecallback.h>
-#include <inviwo/core/common/moduleaction.h>
-#include <inviwo/core/common/inviwoapplication.h>
+
+#include <inviwo/core/common/inviwoapplication.h>        // for InviwoApplication
+#include <inviwo/core/common/moduleaction.h>             // for ModuleCallbackAction, ModuleCall...
+#include <inviwo/core/common/modulecallback.h>           // for ModuleCallback
+#include <inviwo/core/io/serialization/deserializer.h>   // for Deserializer
+#include <inviwo/core/io/serialization/serializer.h>     // for Serializer
+#include <inviwo/core/network/workspacemanager.h>        // for WorkspaceManager, WorkspaceManag...
+#include <modules/animation/animationcontroller.h>       // for AnimationController
+#include <modules/animation/animationmodule.h>           // for AnimationModule
+#include <modules/animation/datastructures/animation.h>  // for Animation
+
+#include <functional>  // for __base
 
 namespace inviwo {
+class Property;
 
 namespace animation {
 

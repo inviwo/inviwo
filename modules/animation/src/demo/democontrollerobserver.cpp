@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <modules/animation/demo/democontrollerobserver.h>
-#include <modules/animation/demo/democontroller.h>
 
 namespace inviwo {
 

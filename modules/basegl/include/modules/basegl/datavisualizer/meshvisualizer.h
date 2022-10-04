@@ -29,10 +29,21 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/rendering/datavisualizer.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/rendering/datavisualizer.h>  // for DataVisualizer
+#include <inviwo/core/util/document.h>             // for Document
+
+#include <string>   // for string
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 namespace inviwo {
+class FileExtension;
+class InviwoApplication;
+class Outport;
+class Processor;
+class ProcessorNetwork;
 
 class IVW_MODULE_BASEGL_API MeshVisualizer : public DataVisualizer {
 public:

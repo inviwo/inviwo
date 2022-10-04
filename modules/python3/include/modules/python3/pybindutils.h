@@ -29,20 +29,20 @@
 
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
+#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
 
-// push/pop warning state to prevent disabling some warnings by pybind headers
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <warn/pop>
+#include <pybind11/pybind11.h>  /// IWYU pragma: keep
+#include <pybind11/numpy.h>     // for array, dtype
 
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/util/formats.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/formats.h>           // for DataFormat, DataFormatBase
+#include <inviwo/core/util/glmcomp.h>           // for glmcomp
+#include <inviwo/core/util/glmutils.h>          // for Vector
+#include <inviwo/core/util/stringconversion.h>  // for toString
+
+#include <cstddef>  // for size_t
+#include <memory>   // for allocator, unique_ptr
+#include <string>   // for string, operator+, char_traits
+#include <vector>   // for vector
 
 namespace inviwo {
 

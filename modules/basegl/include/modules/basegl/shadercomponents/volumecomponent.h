@@ -29,13 +29,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <string_view>
+#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <tuple>        // for tuple
+#include <vector>       // for vector
 
 namespace inviwo {
+class Inport;
+class Shader;
+class TextureUnitContainer;
 
 /**
  * Adds a Volume inport, binds that volume and assigns it the a sampler with `<name>` and

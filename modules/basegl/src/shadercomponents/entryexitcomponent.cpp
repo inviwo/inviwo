@@ -28,12 +28,29 @@
  *********************************************************************************/
 
 #include <modules/basegl/shadercomponents/entryexitcomponent.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/texture2d.h>
+
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/imageport.h>                                // for ImageInport
+#include <inviwo/core/util/stringconversion.h>                          // for trim
+#include <modules/basegl/shadercomponents/shadercomponent.h>            // for ShaderComponent::...
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/texture/texture2d.h>                           // for Texture2D
+#include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
+
+#include <memory>         // for shared_ptr, uniqu...
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+
+#include <fmt/core.h>    // for format
+#include <fmt/format.h>  // for literals
 
 namespace inviwo {
+class Inport;
+class TextureUnitContainer;
 
 EntryExitComponent::EntryExitComponent()
     : ShaderComponent(), entryPort_("entry"), exitPort_("exit") {}

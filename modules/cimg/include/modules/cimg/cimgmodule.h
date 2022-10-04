@@ -29,12 +29,16 @@
 
 #pragma once
 
-#include <modules/cimg/cimgmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/cimg/cimgmoduledefine.h>  // for IVW_MODULE_CIMG_API
+
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+
+#include <memory>  // for unique_ptr
 
 namespace inviwo {
 
 class CIMGLayerRamResizer;
+class InviwoApplication;
 
 class IVW_MODULE_CIMG_API CImgModule : public InviwoModule {
 public:

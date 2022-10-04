@@ -29,20 +29,21 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/datastructures/image/image.h>  // for Image
+#include <inviwo/core/util/dispatcher.h>             // for Dispatcher
+#include <inviwo/core/util/glmmat.h>                 // for mat4
 
-#include <functional>
-#include <memory>
+#include <functional>  // for function
+#include <memory>      // for shared_ptr, unique_ptr
 
 namespace inviwo {
 
 class Camera;
-class Image;
 class ImageGL;
 class Mesh;
+class Shader;
 class Volume;
 
 namespace algorithm {

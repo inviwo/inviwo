@@ -29,19 +29,20 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/interaction/cameratrackball.h>        // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
+#include <inviwo/core/ports/meshport.h>                     // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>          // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
+#include <inviwo/core/properties/optionproperty.h>          // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>         // for FloatVec4Property
+#include <inviwo/core/properties/simplelightingproperty.h>  // for SimpleLightingProperty
+#include <modules/opengl/shader/shader.h>                   // for Shader
 
 namespace inviwo {
 

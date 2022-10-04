@@ -29,6 +29,10 @@
 
 #include <modules/opengl/openglexception.h>
 
+#include <inviwo/core/util/exception.h>  // for ExceptionContext, ModuleInitException
+
+#include <utility>  // for move
+
 namespace inviwo {
 
 OpenGLInitException::OpenGLInitException(const std::string& message, ExceptionContext context)

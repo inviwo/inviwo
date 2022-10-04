@@ -28,8 +28,36 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/firstivwprocessor.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <modules/opengl/texture/textureutils.h>
+
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, makeBuffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/ports/imageport.h>                                // for ImageOutport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatVec3Property
+#include <inviwo/core/util/glmvec.h>                                    // for vec2, vec3, vec4
+#include <modules/opengl/buffer/buffergl.h>                             // for BufferGL
+#include <modules/opengl/inviwoopengl.h>                                // for glDrawArrays, GL_...
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/texture/textureutils.h>                        // for activateAndClearT...
+
+#include <functional>     // for __base
+#include <sstream>        // for basic_stringbuf<>...
+#include <string>         // for operator==, string
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for move
+
+#include <glm/vec2.hpp>  // for vec
+#include <glm/vec3.hpp>  // for vec, vec<>::(anon...
 
 namespace inviwo {
 

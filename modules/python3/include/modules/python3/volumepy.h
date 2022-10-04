@@ -28,19 +28,23 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
+#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
 
-#include <inviwo/core/datastructures/volume/volumerepresentation.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/representationconverter.h>
+#include <pybind11/pybind11.h>  // IWYU pragma: keep
+#include <pybind11/numpy.h>     // for array
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <warn/pop>
+#include <inviwo/core/datastructures/image/imagetypes.h>             // for InterpolationType
+#include <inviwo/core/datastructures/representationconverter.h>      // for RepresentationConver...
+#include <inviwo/core/datastructures/volume/volumeram.h>             // for VolumeRAM
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
+#include <inviwo/core/util/glmvec.h>                                 // for size3_t
+
+#include <memory>     // for shared_ptr
+#include <typeindex>  // for type_index
 
 namespace inviwo {
+
+class DataFormatBase;
 
 class IVW_MODULE_PYTHON3_API VolumePy : public VolumeRepresentation {
 public:

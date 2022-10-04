@@ -29,12 +29,20 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/texture/texture.h>
-#include <inviwo/core/util/observer.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for rgba, SwizzleMask
+#include <inviwo/core/util/glmvec.h>                      // for size2_t
+#include <modules/opengl/inviwoopengl.h>                  // for GLenum, GL_CLAMP_TO_EDGE, GLint
+#include <modules/opengl/texture/texture.h>               // for Texture
+
+#include <array>    // for array
+#include <cstddef>  // for size_t
+
+#include <glm/vec2.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
+struct GLFormat;
 
 class IVW_MODULE_OPENGL_API Texture2D : public Texture {
 public:

@@ -29,7 +29,23 @@
 
 #include <modules/basegl/processors/imageprocessing/imagechannelselect.h>
 
+#include <inviwo/core/datastructures/image/imagetypes.h>                 // for SwizzleMask, lum...
+#include <inviwo/core/ports/imageport.h>                                 // for ImageInport
+#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
+#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
+#include <inviwo/core/properties/optionproperty.h>                       // for OptionPropertyOp...
+#include <inviwo/core/util/formats.h>                                    // for DataFormatBase
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <modules/opengl/shader/shader.h>                                // for Shader
+
+#include <memory>       // for shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+
 namespace inviwo {
+class TextureUnitContainer;
 
 const ProcessorInfo ImageChannelSelect::processorInfo_{
     "org.inviwo.ImageChannelSelect",  // Class identifier

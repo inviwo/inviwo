@@ -38,6 +38,7 @@
 #include <warn/ignore/all>
 #include <QResizeEvent>
 #include <QVBoxLayout>
+#include <QMainWindow>
 #include <warn/pop>
 
 namespace inviwo {

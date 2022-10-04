@@ -28,17 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/opengl/shader/shadersegment.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <vector>
-#include <string_view>
-#include <tuple>
+#include <modules/opengl/shader/shadersegment.h>  // for ShaderSegment, ShaderSegment::Placeholder
+
+#include <cstddef>      // for size_t
+#include <string>       // for string, basic_string
+#include <string_view>  // for string_view
+#include <tuple>        // for tuple
+#include <vector>       // for vector
 
 namespace inviwo {
 
-class Property;
 class Inport;
+class Property;
 class Shader;
 class TextureUnitContainer;
 

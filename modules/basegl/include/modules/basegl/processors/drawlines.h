@@ -29,17 +29,21 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/ports/imageport.h>               // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/buttonproperty.h>     // for ButtonProperty
+#include <inviwo/core/properties/eventproperty.h>      // for EventProperty
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty, FloatVec4Property
+#include <inviwo/core/util/glmvec.h>                   // for vec2
+#include <modules/opengl/rendering/meshdrawergl.h>     // for MeshDrawerGL
+#include <modules/opengl/shader/shader.h>              // for Shader
 
 namespace inviwo {
+class Event;
 
 /** \docpage{org.inviwo.DrawLines, Draw Lines}
  * ![](org.inviwo.DrawLines.png?classIdentifier=org.inviwo.DrawLines)

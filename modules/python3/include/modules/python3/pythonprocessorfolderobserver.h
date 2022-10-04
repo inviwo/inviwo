@@ -28,13 +28,16 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
 
-#include <inviwo/core/util/fileobserver.h>
-#include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/util/fileobserver.h>  // for FileObserver
+
+#include <string>  // for string
+#include <vector>  // for vector
 
 namespace inviwo {
+class InviwoApplication;
+class InviwoModule;
 
 class IVW_MODULE_PYTHON3_API PythonProcessorFolderObserver : public FileObserver {
 public:

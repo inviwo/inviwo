@@ -28,14 +28,25 @@
  *********************************************************************************/
 
 #include <modules/basegl/shadercomponents/backgroundcomponent.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/processors/processor.h>
 
-#include <string_view>
-#include <fmt/format.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>      // for ImageType, ImageType::Color...
+#include <inviwo/core/ports/imageport.h>                      // for ImageInport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
+#include <inviwo/core/util/stringconversion.h>                // for trim
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
+#include <modules/opengl/texture/textureutils.h>              // for bindAndSetUniforms
+
+#include <functional>   // for __base
+#include <string_view>  // for string_view
+
+#include <fmt/core.h>    // for format
+#include <fmt/format.h>  // for operator""_a, udl_arg, lite...
 
 namespace inviwo {
+class Inport;
+class Shader;
+class TextureUnitContainer;
 
 BackgroundComponent::BackgroundComponent(Processor& processor)
     : ShaderComponent(), background_("bg") {

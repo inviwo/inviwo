@@ -28,8 +28,19 @@
  *********************************************************************************/
 
 #include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/openglutils.h>
+
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for SwizzleMask
+#include <inviwo/core/util/glmvec.h>                      // for size2_t
+#include <modules/opengl/glformats.h>                     // for GLFormat
+#include <modules/opengl/inviwoopengl.h>                  // for GLenum, GLsizei, glPixelStorei
+#include <modules/opengl/openglcapabilities.h>            // for OpenGLCapabilities
+#include <modules/opengl/texture/texture.h>               // for Texture
+#include <modules/opengl/texture/textureobserver.h>       // for TextureObserver
+
+#include <mutex>   // for scoped_lock
+#include <vector>  // for vector
+
+#include <tcb/span.hpp>  // for span
 
 namespace inviwo {
 

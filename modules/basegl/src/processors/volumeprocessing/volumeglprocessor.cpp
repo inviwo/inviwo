@@ -28,14 +28,37 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumeutils.h>
+
+#include <inviwo/core/algorithm/markdown.h>                             // for operator""_help
+#include <inviwo/core/datastructures/data.h>                            // for noData
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport, Vol...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/util/glmvec.h>                                    // for size3_t
+#include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
+#include <modules/opengl/inviwoopengl.h>                                // for glViewport, GLsizei
+#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
+#include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
+#include <modules/opengl/shader/shaderutils.h>                          // for findShaderResource
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                        // for multiDrawImagePla...
+#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
+#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+
+#include <functional>     // for __base
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for pair
+
+#include <glm/vec3.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
+class ShaderResource;
 
 VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
                                      bool buildShader)

@@ -29,20 +29,23 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/datastructures/geometry/typedmesh.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>       // for Buffer
+#include <inviwo/core/datastructures/geometry/typedmesh.h>  // for PositionsBuffer2D, TexCoordBu...
+#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/properties/minmaxproperty.h>          // for IntSizeTMinMaxProperty
+#include <inviwo/core/util/glmvec.h>                        // for ivec2, size2_t, dvec2, vec2
+#include <modules/opengl/shader/shader.h>                   // for Shader
+
+#include <memory>  // for shared_ptr
 
 namespace inviwo {
+class Event;
+class MouseEvent;
+class TouchEvent;
 
 /** \docpage{org.inviwo.ImageSubsetGL, Image Subset}
  * ![](org.inviwo.ImageSubsetGL.png?classIdentifier=org.inviwo.ImageSubsetGL)

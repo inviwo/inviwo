@@ -29,16 +29,29 @@
 
 #include <inviwo/png/pngreader.h>
 
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for SwizzleMask, lumi...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer, DataReader...
+#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
+#include <inviwo/core/util/fileextension.h>                             // for FileExtension
+#include <inviwo/core/util/filesystem.h>                                // for fileExists, fopen
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                    // for size2_t
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWa...
+#include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
+#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT, IVW_...
 
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <functional>     // for __base
+#include <type_traits>    // for remove_extent_t
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <vector>         // for vector
 
-#include <png.h>
-
-#include <sstream>
+#include <png.h>      // for png_structp, png_...
+#include <pngconf.h>  // for png_bytep, png_co...
 
 namespace inviwo {
 

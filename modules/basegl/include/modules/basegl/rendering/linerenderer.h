@@ -29,16 +29,18 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/rendering/meshdrawer.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <modules/basegl/datastructures/meshshadercache.h>
-#include <modules/basegl/datastructures/linesettings.h>
+#include <inviwo/core/util/glmvec.h>                        // for size2_t
+#include <modules/basegl/datastructures/linesettings.h>     // for LineSettings
+#include <modules/basegl/datastructures/meshshadercache.h>  // for MeshShaderCache
 
 namespace inviwo {
 
 class Camera;
+class LineSettingsInterface;
 class Mesh;
+class Shader;
 
 namespace algorithm {
 

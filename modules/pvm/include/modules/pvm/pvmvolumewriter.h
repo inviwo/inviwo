@@ -29,9 +29,12 @@
 
 #pragma once
 
-#include <modules/pvm/pvmmoduledefine.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/pvm/pvmmoduledefine.h>  // for IVW_MODULE_PVM_API
+
+#include <inviwo/core/datastructures/volume/volume.h>  // for DataWriterType
+#include <inviwo/core/io/datawriter.h>                 // for DataWriterType
+
+#include <string_view>  // for string_view
 
 namespace inviwo {
 

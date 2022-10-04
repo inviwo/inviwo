@@ -28,16 +28,31 @@
  *********************************************************************************/
 
 #include <modules/basegl/shadercomponents/raycastingcomponent.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/properties/isotfproperty.h>
 
-#include <iterator>
-#include <string_view>
-#include <fmt/format.h>
+#include <inviwo/core/datastructures/histogram.h>             // for HistogramSelection
+#include <inviwo/core/properties/isotfproperty.h>             // for IsoTFProperty
+#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyIntOption
+#include <inviwo/core/properties/ordinalproperty.h>           // for FloatProperty
+#include <inviwo/core/properties/raycastingproperty.h>        // for RaycastingProperty, Raycast...
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <inviwo/core/util/stringconversion.h>                // for trim
+#include <inviwo/core/util/zip.h>                             // for enumerate, zipIterator, zipper
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
+#include <modules/opengl/shader/shader.h>                     // for Shader
+#include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                // for setShaderDefines
+
+#include <bitset>       // for bitset<>::reference
+#include <iterator>     // for move_iterator, make_move_it...
+#include <string_view>  // for string_view
+
+#include <fmt/core.h>    // for format
+#include <fmt/format.h>  // for operator""_a, udl_arg, lite...
 
 namespace inviwo {
+class Property;
+class TextureUnitContainer;
 
 namespace {
 

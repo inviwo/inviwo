@@ -29,27 +29,34 @@
 
 #include <modules/python3/pythonprocessorfactoryobject.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/eval.h>
-#include <warn/pop>
+#include <pybind11/cast.h>           // for object::cast, object_api::ope...
+#include <pybind11/detail/common.h>  // for pybind11
+#include <pybind11/eval.h>           // for eval, exec, eval_expr
+#include <pybind11/pybind11.h>       // for globals, module_, module
+#include <pybind11/pytypes.h>        // for object, error_already_set
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/utilities.h>
-#include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication
+#include <inviwo/core/network/networkutils.h>               // for replaceProcessor
+#include <inviwo/core/network/processornetwork.h>           // for ProcessorNetwork
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorfactoryobject.h>  // for ProcessorFactoryObject
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo, operator!=
+#include <inviwo/core/util/exception.h>                     // for Exception
+#include <inviwo/core/util/fileobserver.h>                  // for FileObserver
+#include <inviwo/core/util/filesystem.h>                    // for getFileNameWithoutExtension
+#include <inviwo/core/util/logcentral.h>                    // for LogCentral, LogError, LogInfo
+#include <inviwo/core/util/sourcecontext.h>                 // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stringconversion.h>              // for trim
+#include <inviwo/core/util/utilities.h>                     // for stripIdentifier
 
-// We need to include this here for the proc.cast<std::unique_ptr<Processor>>
-// Below to work. Pybind11 needs to know that ProcessorPrampoline inherits from
-// pybind11::trampoline_self_life_support
-#include <modules/python3/processortrampoline.h>
-
-#include <iostream>
-#include <sstream>
-
-#include <fmt/format.h>
+#include <array>        // for array
+#include <exception>    // for exception
+#include <fstream>      // for operator<<, basic_ostream
+#include <sstream>      // for basic_stringstream<>::string_...
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_reference<>::type
+#include <utility>      // for move
+#include <vector>       // for vector
 
 namespace inviwo {
 

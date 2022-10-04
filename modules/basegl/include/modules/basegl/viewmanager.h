@@ -29,19 +29,26 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/interaction/events/event.h>
-#include <inviwo/core/util/glmvec.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <unordered_map>
-#include <functional>
+#include <inviwo/core/util/glmvec.h>  // for ivec2, ivec4
+
+#include <cstddef>        // for size_t
+#include <functional>     // for function
+#include <unordered_map>  // for unordered_map
+#include <utility>        // for pair
+#include <vector>         // for vector
+
+#include <glm/vec2.hpp>  // for vec
+#include <glm/vec4.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
 
-class MouseEvent;
+class Event;
 class GestureEvent;
-class TouchEvent;
+class MouseEvent;
 class PickingEvent;
+class TouchEvent;
 class WheelEvent;
 
 /**

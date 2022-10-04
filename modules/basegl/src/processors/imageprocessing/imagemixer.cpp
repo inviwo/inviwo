@@ -28,9 +28,31 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagemixer.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
+
+#include <inviwo/core/datastructures/image/image.h>       // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorDept...
+#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>             // for Processor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
+#include <inviwo/core/properties/optionproperty.h>        // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>       // for FloatProperty
+#include <inviwo/core/util/formats.h>                     // for DataFormatBase, NumericType
+#include <modules/opengl/shader/shader.h>                 // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>           // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>            // for setUniforms
+#include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>          // for bindAndSetUniforms, activateAnd...
+
+#include <algorithm>    // for max
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr, make_shared, shared...
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
 
 namespace inviwo {
 

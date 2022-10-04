@@ -28,27 +28,37 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/util/timer.h>
-#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
-#include <modules/animation/datastructures/animation.h>
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/animationstate.h>
-#include <modules/animation/animationcontrollerobserver.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
+#include <inviwo/core/properties/buttonproperty.h>            // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
+#include <inviwo/core/properties/directoryproperty.h>         // for DirectoryProperty
+#include <inviwo/core/properties/minmaxproperty.h>            // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyInt, OptionPr...
+#include <inviwo/core/properties/ordinalproperty.h>           // for IntProperty, IntVec2Property
+#include <inviwo/core/properties/ordinalrefproperty.h>        // for DoubleRefProperty
+#include <inviwo/core/properties/propertyowner.h>             // for PropertyOwner
+#include <inviwo/core/properties/stringproperty.h>            // for StringProperty
+#include <inviwo/core/util/glmvec.h>                          // for ivec2
+#include <inviwo/core/util/staticstring.h>                    // for operator+
+#include <inviwo/core/util/timer.h>                           // for Timer
+#include <modules/animation/animationcontrollerobserver.h>    // for AnimationControllerObservable
+#include <modules/animation/datastructures/animationstate.h>  // for PlaybackMode, AnimationState
+#include <modules/animation/datastructures/animationtime.h>   // for Seconds
 
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/ordinalrefproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <functional>   // for __base
+#include <string>       // for operator==, string
+#include <string_view>  // for operator==
+#include <vector>       // for operator!=, vector, operator==
 
 namespace inviwo {
+class Deserializer;
+class InviwoApplication;
+class Serializer;
 
 namespace animation {
+class Animation;
 
 /** The AnimationController is responsible for steering the animation.
  *

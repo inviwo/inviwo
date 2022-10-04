@@ -28,18 +28,23 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-#include <modules/animation/animationsupplier.h>
-#include <modules/animation/animationmanager.h>
-#include <modules/animation/mainanimation.h>
-#include <modules/animation/workspaceanimations.h>
-#include <modules/animation/demo/democontroller.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+
+#include <inviwo/core/common/inviwomodule.h>                // for InviwoModule
+#include <inviwo/core/io/serialization/ticpp.h>             // for TxElement
+#include <inviwo/core/io/serialization/versionconverter.h>  // for VersionConverter
+#include <modules/animation/animationmanager.h>             // for AnimationManager
+#include <modules/animation/animationsupplier.h>            // for AnimationSupplier
+#include <modules/animation/demo/democontroller.h>          // for DemoController
+#include <modules/animation/workspaceanimations.h>          // for WorkspaceAnimations
+
+#include <memory>  // for unique_ptr
 
 namespace inviwo {
-
-class Property;
+class InviwoApplication;
+namespace animation {
+class MainAnimation;
+}  // namespace animation
 
 class IVW_MODULE_ANIMATION_API AnimationModule : public InviwoModule,
                                                  public animation::AnimationSupplier {

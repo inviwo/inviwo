@@ -29,12 +29,17 @@
 
 #include <modules/python3/processortrampoline.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
+#include <pybind11/pybind11.h>  // for get_override, PYBIND11_OVERLOAD
+
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
 
 namespace inviwo {
+
+class Event;
+class Outport;
+class Property;
 
 /* Trampoline (need one for each virtual function) */
 void ProcessorTrampoline::initializeResources() {

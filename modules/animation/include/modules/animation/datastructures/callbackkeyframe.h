@@ -28,11 +28,13 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/basekeyframe.h>
-#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
-#include <functional>
+#include <modules/animation/datastructures/animationstate.h>  // for AnimationState, AnimationTi...
+#include <modules/animation/datastructures/animationtime.h>   // for Seconds
+#include <modules/animation/datastructures/basekeyframe.h>    // for BaseKeyframe
+
+#include <functional>  // for function
 
 namespace inviwo {
 

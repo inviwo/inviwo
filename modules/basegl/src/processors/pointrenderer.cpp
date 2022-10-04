@@ -28,10 +28,34 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/pointrenderer.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>         // for boundingBox
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/ports/imageport.h>               // for BaseImageInport, ImageInport, Imag...
+#include <inviwo/core/ports/meshport.h>                // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::GL
+#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
+#include <inviwo/core/util/glmvec.h>                   // for vec4
+#include <modules/opengl/geometry/meshgl.h>            // for MeshGL
+#include <modules/opengl/inviwoopengl.h>               // for GL_ONE_MINUS_SRC_ALPHA, GL_POINT
+#include <modules/opengl/openglutils.h>                // for BlendModeState, GlBoolState, Polyg...
+#include <modules/opengl/rendering/meshdrawergl.h>     // for MeshDrawerGL, MeshDrawerGL::DrawOb...
+#include <modules/opengl/shader/shader.h>              // for Shader
+#include <modules/opengl/shader/shaderutils.h>         // for setShaderUniforms, setUniforms
+#include <modules/opengl/texture/textureutils.h>       // for activateTargetAndClearOrCopySource
+
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr, shared_ptr<>::element_...
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <vector>       // for vector
 
 namespace inviwo {
 

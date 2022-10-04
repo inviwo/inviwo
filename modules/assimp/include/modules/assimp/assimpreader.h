@@ -29,10 +29,14 @@
 
 #pragma once
 
-#include <modules/assimp/assimpmoduledefine.h>
-#include <inviwo/core/io/datareader.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/util/logcentral.h>
+#include <modules/assimp/assimpmoduledefine.h>  // for IVW_MODULE_ASSIMP_API
+
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for DataReaderType
+#include <inviwo/core/io/datareader.h>                 // for DataReaderType
+
+#include <any>          // for any
+#include <memory>       // for shared_ptr
+#include <string_view>  // for string_view
 
 namespace inviwo {
 

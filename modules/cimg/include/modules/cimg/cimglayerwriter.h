@@ -29,10 +29,14 @@
 
 #pragma once
 
-#include <modules/cimg/cimgmoduledefine.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
+#include <modules/cimg/cimgmoduledefine.h>  // for IVW_MODULE_CIMG_API
+
+#include <inviwo/core/datastructures/image/layer.h>  // for DataWriterType
+#include <inviwo/core/io/datawriter.h>               // for DataWriterType
+
+#include <memory>       // for unique_ptr
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
 

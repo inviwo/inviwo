@@ -28,26 +28,30 @@
  *********************************************************************************/
 #pragma once
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
-#include <warn/pop>
+#include <pybind11/pybind11.h>  // IWYU pragma: keep
+#include <pybind11/stl.h>       // IWYU pragma: keep
+#include <pybind11/stl_bind.h>  // IWYU pragma: keep
 
-#include <inviwo/core/ports/port.h>
-#include <inviwo/core/ports/inport.h>
-#include <inviwo/core/ports/outport.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/datastructures/datatraits.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/demangle.h>
+#include <inviwo/core/datastructures/datatraits.h>  // for DataTraits
+#include <inviwo/core/ports/datainport.h>           // for DataInport
+#include <inviwo/core/util/demangle.h>              // for parseTypeIdName
+#include <inviwo/core/util/exception.h>             // for Exception
+#include <inviwo/core/util/iterrange.h>             // for iter_range
+#include <inviwo/core/util/sourcecontext.h>         // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stringconversion.h>      // for StrBuffer
 
-#include <fmt/format.h>
+#include <fmt/core.h>  // for format
+
+#include <memory>    // for shared_ptr
+#include <string>    // for string, operator+
+#include <typeinfo>  // for type_info
 
 namespace inviwo {
+
+class Inport;
+class Outport;
+template <typename T>
+class DataOutport;
 
 namespace util {
 

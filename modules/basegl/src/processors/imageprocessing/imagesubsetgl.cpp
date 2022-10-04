@@ -28,15 +28,50 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagesubsetgl.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/interaction/events/wheelevent.h>
-#include <inviwo/core/network/networklock.h>
 
-#include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
+#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for TypedMesh<>::Vertex
+#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/interaction/events/event.h>                       // for Event
+#include <inviwo/core/interaction/events/gestureevent.h>                // for GestureEvent
+#include <inviwo/core/interaction/events/mousebuttons.h>                // for MouseButton, Mous...
+#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
+#include <inviwo/core/interaction/events/touchevent.h>                  // for TouchEvent, Touch...
+#include <inviwo/core/interaction/events/touchstate.h>                  // for TouchState, Touch...
+#include <inviwo/core/interaction/events/wheelevent.h>                  // for WheelEvent
+#include <inviwo/core/network/networklock.h>                            // for NetworkLock
+#include <inviwo/core/ports/imageport.h>                                // for ImageInport, Imag...
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
+#include <inviwo/core/properties/minmaxproperty.h>                      // for IntSizeTMinMaxPro...
+#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
+#include <inviwo/core/util/glmvec.h>                                    // for size2_t, ivec2, vec2
+#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
+#include <modules/opengl/inviwoopengl.h>                                // for glDrawArrays, GL_...
+#include <modules/opengl/openglutils.h>                                 // for DepthFuncState
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
+#include <modules/opengl/texture/textureutils.h>                        // for activateAndClearT...
+
+#include <stdlib.h>       // for abs, size_t
+#include <functional>     // for __base
+#include <string>         // for string
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <vector>         // for vector
+
+#include <flags/flags.h>             // for operator==
+#include <glm/common.hpp>            // for clamp
+#include <glm/detail/qualifier.hpp>  // for tvec2
+#include <glm/vec2.hpp>              // for vec<>::(anonymous)
 
 namespace inviwo {
 

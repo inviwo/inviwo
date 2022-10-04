@@ -29,18 +29,25 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/basegl/viewmanager.h>
-#include <modules/basegl/properties/splitterproperty.h>
-#include <modules/basegl/rendering/splitterrenderer.h>
+#include <inviwo/core/ports/imageport.h>                     // for ImageMultiInport, ImageOutport
+#include <inviwo/core/processors/processor.h>                // for Processor
+#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
+#include <inviwo/core/properties/compositeproperty.h>        // for CompositeProperty
+#include <inviwo/core/properties/ordinalproperty.h>          // for IntProperty
+#include <inviwo/core/util/glmvec.h>                         // for ivec2
+#include <modules/basegl/datastructures/splittersettings.h>  // for Direction
+#include <modules/basegl/properties/splitterproperty.h>      // for SplitterProperty
+#include <modules/basegl/rendering/splitterrenderer.h>       // for SplitterRenderer
+#include <modules/basegl/viewmanager.h>                      // for ViewManager
+#include <modules/opengl/shader/shader.h>                    // for Shader
 
 namespace inviwo {
+class Deserializer;
+class Event;
+class Inport;
+class Outport;
 
 class IVW_MODULE_BASEGL_API Layout : public Processor {
 public:

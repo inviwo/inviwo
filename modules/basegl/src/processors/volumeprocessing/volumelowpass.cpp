@@ -29,14 +29,42 @@
 
 #include <modules/basegl/processors/volumeprocessing/volumelowpass.h>
 
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/algorithm/markdown.h>                                // for operator""_help
+#include <inviwo/core/datastructures/datamapper.h>                         // for DataMapper
+#include <inviwo/core/ports/volumeport.h>                                  // for VolumeInport
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
+#include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::GL
+#include <inviwo/core/properties/boolcompositeproperty.h>                  // for BoolCompositeP...
+#include <inviwo/core/properties/boolproperty.h>                           // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>                      // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                        // for FloatProperty
+#include <inviwo/core/util/document.h>                                     // for Document
+#include <inviwo/core/util/formats.h>                                      // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                       // for dvec2
+#include <inviwo/core/util/logcentral.h>                                   // for LogCentral
+#include <modules/base/algorithm/algorithmoptions.h>                       // for IgnoreSpecialV...
+#include <modules/base/algorithm/dataminmax.h>                             // for volumeMinMax
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <modules/opengl/shader/shader.h>                                  // for Shader
+#include <modules/opengl/shader/shaderobject.h>                            // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                             // for setUniforms
+
+#include <algorithm>    // for max, min
+#include <cmath>        // for M_PI
+#include <cstddef>      // for size_t
+#include <functional>   // for __base
+#include <memory>       // for shared_ptr
+#include <ostream>      // for operator<<
+#include <string>       // for string, char_t...
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for pair
+
+#include <glm/vec4.hpp>  // for vec, vec<>::(a...
 
 namespace inviwo {
+class TextureUnitContainer;
 
 const ProcessorInfo VolumeLowPass::processorInfo_{
     "org.inviwo.VolumeLowPass",  // Class identifier

@@ -28,11 +28,34 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-#include <inviwo/core/algorithm/boundingbox.h>
-#include <modules/opengl/image/imagegl.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>                 // for boundingBox
+#include <inviwo/core/algorithm/markdown.h>                    // for operator""_help, operator"...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferType, BufferType::No...
+#include <inviwo/core/datastructures/image/image.h>            // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>       // for LayerType, LayerType::Color
+#include <inviwo/core/datastructures/image/layer.h>            // for Layer
+#include <inviwo/core/io/serialization/versionconverter.h>     // for renamePort
+#include <inviwo/core/ports/imageport.h>                       // for ImageOutport
+#include <inviwo/core/ports/meshport.h>                        // for MeshInport
+#include <inviwo/core/processors/processor.h>                  // for Processor
+#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>              // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
+#include <inviwo/core/util/formats.h>                          // for DataVec4UInt16, DataFormat
+#include <modules/basegl/algorithm/entryexitpoints.h>          // for CapNearClip, EntryExitPoin...
+#include <modules/opengl/image/imagegl.h>                      // for ImageGL
+
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for pair
 
 namespace inviwo {
+class Deserializer;
 
 const ProcessorInfo EntryExitPoints::processorInfo_{
     "org.inviwo.EntryExitPoints",  // Class identifier

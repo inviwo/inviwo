@@ -28,11 +28,16 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
-#include <inviwo/core/util/factory.h>
-#include <modules/animation/interpolation/interpolation.h>
-#include <modules/animation/factories/interpolationfactoryobject.h>
+#include <inviwo/core/util/factory.h>                                // for StandardFactory
+#include <modules/animation/interpolation/interpolation.h>           // IWYU pragma: keep
+#include <modules/animation/factories/interpolationfactoryobject.h>  // IWYU pragma: keep
+
+#include <map>      // for __map_const_iterator, map, operator!=
+#include <memory>   // for unique_ptr
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 namespace inviwo {
 namespace animation {

@@ -29,11 +29,26 @@
 
 #include <modules/basegl/algorithm/imageconvolution.h>
 
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/texture2d.h>
+#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for LayerType, LayerT...
+#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/glmvec.h>                                    // for vec2, ivec2
+#include <modules/opengl/image/layergl.h>                               // for LayerGL
+#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
+#include <modules/opengl/texture/texture2d.h>                           // for Texture2D
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                        // for activateTarget
+
+#include <cmath>          // for exp
+#include <string>         // for to_string, string
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+
+#include <glm/ext/scalar_constants.hpp>  // for pi
+#include <glm/vec2.hpp>                  // for vec<>::(anonymous)
 
 namespace inviwo {
 

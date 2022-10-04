@@ -28,11 +28,19 @@
  *********************************************************************************/
 
 #include <modules/opengl/canvasprocessorgl.h>
-#include <modules/opengl/canvasgl.h>
-#include <modules/opengl/image/imagegl.h>
-#include <inviwo/core/processors/processor.h>
 
-#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/algorithm/markdown.h>          // for operator""_unindentHelp
+#include <inviwo/core/ports/imageport.h>             // for ImageInport
+#include <inviwo/core/processors/canvasprocessor.h>  // for CanvasProcessor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::GL
+#include <inviwo/core/util/rendercontext.h>          // for RenderContext
+#include <modules/opengl/image/imagegl.h>            // for ImageGL
+
+#include <memory>       // for shared_ptr, shared_ptr<>::element_type
+#include <string>       // for string
+#include <type_traits>  // for remove_extent_t
 
 namespace inviwo {
 

@@ -28,12 +28,19 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <modules/basegl/shadercomponents/shadercomponent.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>    // for SimpleLightingProperty
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
+class CameraProperty;
+class Property;
+class Shader;
+class TextureUnitContainer;
 
 /**
  * Adds a SimpleLightingProperty and binds it to the `lighting` LightParameters uniform.

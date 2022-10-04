@@ -29,15 +29,22 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/framebufferobject.h>
-#include <modules/opengl/shader/shaderresource.h>
+#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+
+#include <inviwo/core/ports/volumeport.h>             // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/processor.h>         // for Processor
+#include <inviwo/core/processors/processorinfo.h>     // for ProcessorInfo
+#include <inviwo/core/properties/ordinalproperty.h>   // for IntProperty
+#include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
+#include <modules/opengl/shader/shader.h>             // for Shader
+
+#include <array>   // for array
+#include <memory>  // for shared_ptr
+#include <string>  // for string
 
 namespace inviwo {
+class StringShaderResource;
+class Volume;
 
 /** \docpage{org.inviwo.VolumeRegionShrink, Volume Region Shrink}
  * ![](org.inviwo.VolumeRegionShrink.png?classIdentifier=org.inviwo.VolumeRegionShrink)

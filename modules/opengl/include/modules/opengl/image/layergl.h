@@ -29,15 +29,21 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+
+#include <inviwo/core/datastructures/image/imagetypes.h>           // for LayerType, Interpolati...
+#include <inviwo/core/datastructures/image/layerrepresentation.h>  // for LayerRepresentation
+#include <inviwo/core/util/formats.h>                              // for DataFormat, DataVec4UInt8
+#include <inviwo/core/util/glmvec.h>                               // for size2_t
+#include <modules/opengl/inviwoopengl.h>                           // for GLenum
+
+#include <memory>     // for shared_ptr
+#include <typeindex>  // for type_index
 
 namespace inviwo {
 
-class Shader;
 class Texture2D;
+class TextureUnit;
 
 /**
  * \ingroup datastructures

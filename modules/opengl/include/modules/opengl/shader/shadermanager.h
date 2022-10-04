@@ -29,25 +29,26 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderobject.h>
-#include <inviwo/core/util/singleton.h>
-#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/dispatcher.h>   // for Dispatcher
+#include <inviwo/core/util/singleton.h>    // for Singleton
+#include <modules/opengl/inviwoopengl.h>   // for GLuint
+#include <modules/opengl/shader/shader.h>  // for Shader, Shader::OnError, Shader::UniformW...
 
-#include <map>
-#include <string>
-#include <string_view>
-#include <vector>
+#include <functional>   // for less, function
+#include <map>          // for map
+#include <memory>       // for shared_ptr, weak_ptr, unique_ptr
+#include <string>       // for string, operator<
+#include <string_view>  // for string_view
+#include <utility>      // for forward
+#include <vector>       // for vector
 
 namespace inviwo {
 
+class OpenGLCapabilities;
 class OpenGLSettings;
 class ShaderResource;
-class OpenGLCapabilities;
-
 template <typename T>
 class OptionProperty;
 

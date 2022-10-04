@@ -29,10 +29,7 @@
 
 #pragma once
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
-#include <warn/pop>
 
 namespace inviwo {
 

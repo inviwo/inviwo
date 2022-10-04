@@ -28,10 +28,35 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <modules/base/algorithm/dataminmax.h>
+
+#include <inviwo/core/datastructures/datamapper.h>                         // for DataMapper
+#include <inviwo/core/datastructures/representationconverter.h>            // for Representation...
+#include <inviwo/core/datastructures/representationconverterfactory.h>     // for Representation...
+#include <inviwo/core/datastructures/volume/volumeram.h>                   // for VolumeRAM
+#include <inviwo/core/ports/volumeport.h>                                  // for VolumeInport
+#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
+#include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::GL
+#include <inviwo/core/util/formats.h>                                      // for DataFloat32
+#include <inviwo/core/util/glmvec.h>                                       // for dvec2
+#include <modules/base/algorithm/algorithmoptions.h>                       // for IgnoreSpecialV...
+#include <modules/base/algorithm/dataminmax.h>                             // for volumeMinMax
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <modules/opengl/shader/shader.h>                                  // for Shader
+
+#include <algorithm>      // for max, min
+#include <cstdlib>        // for abs
+#include <memory>         // for shared_ptr
+#include <string>         // for string
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for pair
+
+#include <glm/vec4.hpp>  // for vec, vec<>::(a...
 
 namespace inviwo {
+class TextureUnitContainer;
+
 const ProcessorInfo VectorMagnitudeProcessor::processorInfo_{
     "org.inviwo.VectorMagnitude",  // Class identifier
     "Vector Magnitude",            // Display name

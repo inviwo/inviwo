@@ -29,9 +29,6 @@
 
 #include <modules/animation/datastructures/animationstate.h>
 
-#include <algorithm>
-#include <cmath>
-
 namespace inviwo {
 
 namespace animation {}  // namespace animation

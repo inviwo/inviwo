@@ -28,29 +28,97 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeslicegl.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/openglutils.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/geometry/plane.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/interaction/events/wheelevent.h>
-#include <inviwo/core/interaction/events/eventmatcher.h>
-#include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-#include <inviwo/core/network/networklock.h>
-#include <limits>
+
+#include <inviwo/core/datastructures/buffer/buffer.h>                   // for makeIndexBuffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
+#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for CartesianCoordina...
+#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/datastructures/geometry/plane.h>                  // for Plane
+#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for TypedMesh<>::Vertex
+#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageType, ImageT...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/tfprimitive.h>                     // for TFPrimitive
+#include <inviwo/core/datastructures/tfprimitiveset.h>                  // for TFPrimitiveSet
+#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFunction
+#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/interaction/events/event.h>                       // for Event
+#include <inviwo/core/interaction/events/eventmatcher.h>                // for GestureEventMatcher
+#include <inviwo/core/interaction/events/gestureevent.h>                // for GestureEvent
+#include <inviwo/core/interaction/events/gesturestate.h>                // for GestureStates
+#include <inviwo/core/interaction/events/interactionevent.h>            // for InteractionEvent
+#include <inviwo/core/interaction/events/keyboardkeys.h>                // for IvwKey, KeyState
+#include <inviwo/core/interaction/events/mousebuttons.h>                // for MouseState, Mouse...
+#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
+#include <inviwo/core/interaction/events/resizeevent.h>                 // for ResizeEvent
+#include <inviwo/core/interaction/events/wheelevent.h>                  // for WheelEvent
+#include <inviwo/core/io/serialization/versionconverter.h>              // for renamePort
+#include <inviwo/core/network/networklock.h>                            // for NetworkLock
+#include <inviwo/core/ports/imageport.h>                                // for ImageOutport
+#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
+#include <inviwo/core/processors/processor.h>                           // for Processor
+#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
+#include <inviwo/core/properties/boolcompositeproperty.h>               // for BoolCompositeProp...
+#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
+#include <inviwo/core/properties/eventproperty.h>                       // for EventProperty
+#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/properties/ordinalproperty.h>                     // for IntProperty, Floa...
+#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
+#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
+#include <inviwo/core/util/formats.h>                                   // for DataFormat
+#include <inviwo/core/util/glmmat.h>                                    // for mat4, mat3
+#include <inviwo/core/util/glmvec.h>                                    // for vec2, vec3, vec4
+#include <inviwo/core/util/raiiutils.h>                                 // for KeepTrueWhileInScope
+#include <inviwo/core/util/stdextensions.h>                             // for table
+#include <modules/opengl/inviwoopengl.h>                                // for GL_TEXTURE_3D
+#include <modules/opengl/openglutils.h>                                 // for TexParameter, Ble...
+#include <modules/opengl/rendering/meshdrawergl.h>                      // for MeshDrawerGL
+#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
+#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                          // for setUniforms
+#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                        // for activateAndClearT...
+#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+
+#include <algorithm>    // for max, min
+#include <cmath>        // for sqrt
+#include <cstdint>      // for uint32_t
+#include <functional>   // for __base
+#include <limits>       // for numeric_limits
+#include <optional>     // for optional
+#include <string>       // for string, operator==
+#include <string_view>  // for string_view
+#include <type_traits>  // for remove_extent_t
+#include <utility>      // for pair
+#include <vector>       // for vector
+
+#include <flags/flags.h>                 // for operator|, any
+#include <glm/common.hpp>                // for clamp, abs, max, min
+#include <glm/detail/type_quat.hpp>      // for qua::qua<T, Q>
+#include <glm/exponential.hpp>           // for sqrt
+#include <glm/ext/matrix_transform.hpp>  // for translate, scale
+#include <glm/fwd.hpp>                   // for u8vec4
+#include <glm/geometric.hpp>             // for normalize, cross
+#include <glm/gtc/matrix_inverse.hpp>    // for inverseTranspose
+#include <glm/gtx/norm.hpp>              // for length2
+#include <glm/gtx/quaternion.hpp>        // for rotation, toMat4
+#include <glm/gtx/transform.hpp>         // for translate, scale
+#include <glm/mat4x4.hpp>                // for operator*, mat
+#include <glm/matrix.hpp>                // for inverse
+#include <glm/trigonometric.hpp>         // for radians
+#include <glm/vec2.hpp>                  // for vec<>::(anonymous)
+#include <glm/vec3.hpp>                  // for operator*, vec<>:...
+#include <glm/vec4.hpp>                  // for operator*, operator+
+#include <glm/vector_relational.hpp>     // for any, greaterThanE...
 
 namespace inviwo {
+class Deserializer;
 
 const ProcessorInfo VolumeSliceGL::processorInfo_{
     "org.inviwo.VolumeSliceGL",  // Class identifier

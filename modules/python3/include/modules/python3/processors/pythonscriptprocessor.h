@@ -29,15 +29,17 @@
 
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/python3/pythonscript.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <pybind11/pybind11.h>
+#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
+
+#include <pybind11/pytypes.h>  // for function
+
+#include <inviwo/core/processors/processor.h>      // for Processor
+#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <inviwo/core/properties/fileproperty.h>   // for FileProperty
+#include <modules/python3/pythonscript.h>          // for PythonScriptDisk
 
 namespace inviwo {
+class InviwoApplication;
 
 /** \docpage{org.inviwo.PythonScriptProcessor, Python Mesh Script Source}
  * ![](org.inviwo.PythonScriptProcessor.png?classIdentifier=org.inviwo.PythonScriptProcessor)
