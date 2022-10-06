@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,26 +29,27 @@
 #pragma once
 
 #include <inviwo/sgct/sgctmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/commandlineparser.h>
 
-#include <memory>
+#include <inviwo/core/util/logcentral.h>
 
-namespace inviwo {
+#include <sgct/sgct.h>
 
-class SgctWrapper;
+namespace inviwo::util {
 
-class IVW_MODULE_SGCT_API SGCTModule : public InviwoModule {
-public:
-    SGCTModule(InviwoApplication* app);
-    virtual ~SGCTModule();
-    
-    std::unique_ptr<SgctWrapper> sgctWrapper_;
 
-    static bool startServer;
-
-    TCLAP::ValueArg<std::string> configFileArg_;
-    CommandLineArgHolder argHolder_;
-};
+inline auto sgctToInviwo(sgct::Log::Level level) -> inviwo::LogLevel {
+    switch (level) {
+        case sgct::Log::Level::Error:
+            return inviwo::LogLevel::Error;
+        case sgct::Log::Level::Warning:
+            return inviwo::LogLevel::Warn;
+        case sgct::Log::Level::Info:
+            return inviwo::LogLevel::Info;
+        case sgct::Log::Level::Debug:
+            return inviwo::LogLevel::Info;
+        default:
+            return inviwo::LogLevel::Info;
+    }
+}
 
 }  // namespace inviwo
