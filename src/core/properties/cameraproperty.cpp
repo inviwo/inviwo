@@ -429,10 +429,14 @@ void CameraProperty::serialize(Serializer& s) const {
 
 void CameraProperty::deserialize(Deserializer& d) {
     if (serializationMode_ != PropertySerializationMode::None) {
+        auto aspect = getAspectRatio();
         camera_->configureProperties(*this, false);
         d.deserialize("Camera", camera_);
         hideConfiguredProperties();
         camera_->configureProperties(*this, true);
+        if (aspectSupplier_) {
+            setAspectRatio(aspect);
+        }
     }
     CompositeProperty::deserialize(d);
 }
