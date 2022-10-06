@@ -30,6 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/util/glm.h>
 
 #include <sgct/callbackdata.h>
@@ -50,28 +51,12 @@ class CanvasProcessor;
 class CameraProperty;
 class Shader;
 
-struct SgctManager {
+struct SgctManager : public ProcessorNetworkObserver {
     SgctManager(InviwoApplication& app);
-    virtual ~SgctManager();
-    std::vector<CanvasProcessor*> canvases;
-    std::vector<CameraProperty*> cameras;
-
-    std::vector<Property*> modifiedProperties;
-
-    InviwoApplication& app;
-
-    std::function<void(Event*)> eventPropagator = [](Event*) {};
-    std::function<double(dvec2)> depth = [](dvec2) { return -1.0; };
-    std::vector<std::unique_ptr<GLFWUserData>> userdata;
-    std::vector<std::unique_ptr<GLFWWindowEventManager>> interactionManagers;
-    std::unique_ptr<Shader> copyShader;
+    ~SgctManager();
 
     CanvasProcessor* getCanvas() { return canvases.empty() ? nullptr : canvases.front(); }
     CameraProperty* getCamera() { return cameras.empty() ? nullptr : cameras.front(); }
-
-    void clear();
-
-    void loadWorkspace(const std::string& filename);
 
     void setupUpInteraction(GLFWwindow* win);
     void teardownInteraction();
@@ -81,12 +66,20 @@ struct SgctManager {
     void createShader();
     void copy();
 
-    void getUpdates(std::ostream& os);
+    virtual void onProcessorNetworkDidAddProcessor(Processor*) override;
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
 
-    void applyUpdate(std::istream& is);
+    std::vector<CanvasProcessor*> canvases;
+    std::vector<CameraProperty*> cameras;
+    InviwoApplication& app;
 
-    std::optional<bool> showStats;
-    std::string workspace;
+    CanvasProcessor* eventTarget = nullptr;
+    std::vector<std::unique_ptr<GLFWUserData>> userdata;
+    std::vector<std::unique_ptr<GLFWWindowEventManager>> interactionManagers;
+    std::unique_ptr<Shader> copyShader;
+    std::function<void(bool)> onStatChange;
+
+
 };
 
 }  // namespace inviwo

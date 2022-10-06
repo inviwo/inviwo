@@ -33,18 +33,25 @@
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/util/stringconversion.h>
-
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
-
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/lambdanetworkvisitor.h>
 
 #include <modules/opengl/openglutils.h>
+
+#include <inviwo/sgct/sgctutil.h>
+#include <inviwo/sgct/io/communication.h>
+#include <inviwo/sgct/networksyncmanager.h>
+#include <inviwo/sgct/sgctmodule.h>
+#include <inviwo/sgct/datastructures/sgctcamera.h>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -65,6 +72,7 @@
 #include <inviwo/tracy/tracy.h>
 #include <inviwo/tracy/tracyopengl.h>
 
+/*
 void* operator new(size_t count) {
     void* ptr = malloc(count);
     // TracyAllocS(ptr, count, 10);
@@ -77,51 +85,229 @@ void operator delete(void* ptr) noexcept {
     TRACY_FREE(ptr);
     free(ptr);
 }
+*/
 
-enum class Command : int { Invalid = -1, Nop = 0, Load = 1, Update, ShowStats, HideStats };
-auto serializeCommand(std::vector<std::byte>& data, Command cmd) -> void {
-    sgct::serializeObject(data, static_cast<int>(cmd));
-}
-auto deserializeCommand(const std::vector<std::byte>& data, unsigned int& pos) -> Command {
-    int command = -1;
-    sgct::deserializeObject(data, pos, command);
-    return static_cast<Command>(command);
-}
-auto inviwoLevel(sgct::Log::Level level) -> inviwo::LogLevel {
-    switch (level) {
-        case sgct::Log::Level::Error:
-            return inviwo::LogLevel::Error;
-        case sgct::Log::Level::Warning:
-            return inviwo::LogLevel::Warn;
-        case sgct::Log::Level::Info:
-            return inviwo::LogLevel::Info;
-        case sgct::Log::Level::Debug:
-            return inviwo::LogLevel::Info;
-        default:
-            return inviwo::LogLevel::Info;
+class Conf {
+public:
+    Conf(inviwo::SgctManager& state, inviwo::InviwoApplication& app)
+        : app{app}, state{state}, drawBuffers{} {
+
+        {
+            syncServer.emplace(*app.getProcessorNetwork());
+            state.onStatChange = [this](bool show) {
+                syncServer->showStats(show);
+                sgct::Engine::instance().setStatsGraphVisibility(show);
+            };
+        }
+        {
+            syncClient.emplace(*app.getProcessorNetwork());
+            syncClient->onStats = [](bool show) {
+                sgct::Engine::instance().setStatsGraphVisibility(show);
+            };
+        }
     }
-}
+
+    inviwo::InviwoApplication& app;
+    inviwo::SgctManager& state;
+    std::vector<GLenum> drawBuffers;
+
+    std::optional<inviwo::NetworkSyncServer> syncServer;
+    std::optional<inviwo::NetworkSyncClient> syncClient;
+
+    std::mutex commandsMutex;
+    std::vector<inviwo::SgctCommand> commands;
+
+    void setCamerasToSgct(inviwo::ProcessorNetwork& net) {
+        inviwo::LambdaNetworkVisitor visitor{[](inviwo::Property& p) {
+            if (auto camera = dynamic_cast<inviwo::CameraProperty*>(&p)) {
+                camera->setCamera("SGCTCamera");
+            }
+        }};
+        net.accept(visitor);
+    }
+
+    void initOpenGL(GLFWwindow* shared) {
+        // Tell GLFW that we already have a shared context;
+        inviwo::CanvasGLFW::provideExternalContext(shared);
+        inviwo::SGCTModule::startServer = false;
+
+        // Initialize all modules
+        app.registerModules(inviwo::getModuleList());
+
+        // app.getModuleByType<inviwo::GLFWModule>()->setWaitForOpenGL(false);
+
+        state.createShader();
+
+        if (sgct::Engine::instance().isMaster()) {
+            for (auto& win : sgct::Engine::instance().windows()) {
+                state.setupUpInteraction(win->windowHandle());
+            }
+        }
+        GLint maxDrawBuffers = 8;
+        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
+        drawBuffers.resize(static_cast<size_t>(maxDrawBuffers), GL_NONE);
+
+        if (sgct::Engine::instance().isMaster()) {
+            app.getWorkspaceManager()->load(
+                app.getPath(inviwo::PathType::Workspaces, "/boron.inv"));
+            setCamerasToSgct(*app.getProcessorNetwork());
+        }
+    };
+
+    void preSync() {
+        TRACY_ZONE_SCOPED_NC("Process Front", 0xAA0000);
+
+        // We check the front queue before every frame. No need for setPostEnqueueFront
+        app.processFront();
+    };
+
+    auto encode() -> std::vector<std::byte> { return syncServer->getEncodedCommandsAndClear(); }
+
+    void decode(const std::vector<std::byte>& bytes, unsigned int pos) {
+        auto tmp = inviwo::util::decode(bytes, pos);
+        std::scoped_lock lock{commandsMutex};
+        commands.insert(commands.end(), tmp.begin(), tmp.end());
+    }
+
+    void postSyncPreDraw() {
+        std::scoped_lock lock{commandsMutex};
+        syncClient->applyCommands(commands);
+        commands.clear();
+    };
+
+    void draw(const sgct::RenderData& renderData) {
+        TRACY_ZONE_SCOPED_NC("Draw", 0xAAAA00);
+        TRACY_GPU_ZONE_C("Draw", 0xAAAA00);
+
+        // Save State
+        inviwo::utilgl::Viewport view;
+        GLint sgctFBO;
+        {
+            TRACY_ZONE_SCOPED_NC("Save State", 0xAA66000);
+            TRACY_GPU_ZONE_C("Save State", 0xAA66000);
+            view.get();
+
+            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &sgctFBO);
+
+            std::fill(drawBuffers.begin(), drawBuffers.end(), GL_NONE);
+            for (int i = 0; i < drawBuffers.size(); ++i) {
+                GLint value;
+                glGetIntegerv(GL_DRAW_BUFFER0 + i, &value);
+                drawBuffers[i] = static_cast<GLenum>(value);
+            }
+        }
+        // Do inviwo stuff
+        {
+            TRACY_ZONE_SCOPED_NC("Eval", 0xAA66000);
+            TRACY_GPU_ZONE_C("Eval", 0xAA66000);
+            state.evaluate(renderData);
+        }
+        // Restore state
+        {
+            TRACY_ZONE_SCOPED_NC("Restore State", 0xAA66000);
+            TRACY_GPU_ZONE_C("Restore State", 0xAA66000);
+            renderData.window.makeSharedContextCurrent();
+            view.set();
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, sgctFBO);
+            glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
+        }
+
+        // Copy inviwo output
+        state.copy();
+    };
+
+    void postDraw() {
+        TRACY_ZONE_SCOPED_NC("Post Draw", 0xAA0000);
+        TRACY_GPU_ZONE_C("Post Draw", 0xAA0000);
+
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearDepth(1.0f);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+    };
+
+    void drop(int nfiles, const char** files) {
+        if (sgct::Engine::instance().isMaster() && nfiles > 0) {
+            auto path = inviwo::filesystem::cleanupPath(std::string_view(files[0]));
+            app.getWorkspaceManager()->clear();
+            app.getWorkspaceManager()->load(path);
+            setCamerasToSgct(*app.getProcessorNetwork());
+        }
+    };
+
+    template <typename Fun>
+    static auto tryWrapper(Fun&& fun) {
+        return [fun = std::forward<Fun>(fun)](auto&&... args) {
+            try {
+                fun(std::forward<decltype(args)>(args)...);
+            } catch (const inviwo::Exception& e) {
+                inviwo::util::log(e.getContext(), e.getMessage(), inviwo::LogLevel::Error);
+            } catch (const std::exception& e) {
+                LogErrorCustom("main", e.what());
+            } catch (...) {
+                LogErrorCustom("main", "some other error");
+            }
+        };
+    }
+    template <typename Fun>
+    static auto tryWrapperRet(Fun&& fun) {
+        return [fun = std::forward<Fun>(fun)](auto&&... args) {
+            try {
+                return fun(std::forward<decltype(args)>(args)...);
+            } catch (const inviwo::Exception& e) {
+                inviwo::util::log(e.getContext(), e.getMessage(), inviwo::LogLevel::Error);
+                return decltype(fun(std::forward<decltype(args)>(args)...)){};
+            } catch (const std::exception& e) {
+                LogErrorCustom("main", e.what());
+                return decltype(fun(std::forward<decltype(args)>(args)...)){};
+            } catch (...) {
+                LogErrorCustom("main", "some other error");
+                return decltype(fun(std::forward<decltype(args)>(args)...)){};
+            }
+        };
+    }
+
+    void configureSGCTCallbacks(sgct::Engine::Callbacks& callbacks) {
+        callbacks.initOpenGL = tryWrapper([this](GLFWwindow* shared) { initOpenGL(shared); });
+        callbacks.preSync = tryWrapper([this]() { preSync(); });
+        callbacks.encode = tryWrapperRet([this]() -> std::vector<std::byte> { return encode(); });
+        callbacks.decode = tryWrapper(
+            [this](const std::vector<std::byte>& data, unsigned int pos) { decode(data, pos); });
+        callbacks.postSyncPreDraw = tryWrapper([this]() { postSyncPreDraw(); });
+        callbacks.draw =
+            tryWrapper([this](const sgct::RenderData& renderData) { draw(renderData); });
+        callbacks.postDraw = tryWrapper([this]() { postDraw(); });
+        callbacks.drop = tryWrapper([&](int nfiles, const char** files) { drop(nfiles, files); });
+    }
+};
 
 int main(int argc, char** argv) {
 #ifdef WIN32
     SetUnhandledExceptionFilter(inviwo::generateMiniDump);
 #endif  // WIN32
 
+    inviwo::LogCentral logger;
+    inviwo::LogCentral::init(&logger);
+    auto consoleLogger = std::make_shared<inviwo::ConsoleLogger>();
+    logger.registerLogger(consoleLogger);
+
+    sgct::Log::instance().setLogToConsole(false);
+    sgct::Log::instance().setLogCallback(
+        [&logger](sgct::Log::Level level, std::string_view message) {
+            logger.log("SGCT", inviwo::util::sgctToInviwo(level), inviwo::LogAudience::Developer,
+                       "", "", 0, message);
+        });
+
     try {
-        inviwo::LogCentral logger;
-        inviwo::LogCentral::init(&logger);
-        auto consoleLogger = std::make_shared<inviwo::ConsoleLogger>();
-        logger.registerLogger(consoleLogger);
-
-        sgct::Log::instance().setLogToConsole(false);
-        sgct::Log::instance().setLogCallback(
-            [&logger](sgct::Log::Level level, std::string_view message) {
-                logger.log("SGCT", inviwoLevel(level), inviwo::LogAudience::Developer, "", "", 0,
-                           message);
-            });
-
-        inviwo::util::OnScopeExit closeEngine{[]() { sgct::Engine::destroy(); }};
-
+        inviwo::util::OnScopeExit closeEngine{[]() {
+            LogInfoCustom("Dome", "Stop Engine");
+            // Stop the engine after we clear the inviwo app.
+            // The app will need the glfw to be active to joining
+            // any background thread with a context.
+            sgct::Engine::destroy();
+        }};
         inviwo::InviwoApplication app("Inviwo");
         app.printApplicationInfo();
         app.setProgressCallback([&logger](std::string m) {
@@ -138,212 +324,29 @@ int main(int argc, char** argv) {
         }
 
         inviwo::SgctManager state(app);
+        Conf conf(state, app);
 
-        sgct::Engine::Callbacks callbacks;
-        std::string pathToLoad;
-        std::string serializedProps;
-        std::optional<bool> showStats;
-        inviwo::WorkspaceWatcher wo(&app, pathToLoad);
+        inviwo::util::OnScopeExit clearNetwork{[&app]() { app.getWorkspaceManager()->clear(); }};
 
         // Keep the network looked all the time, only unlock in the draw call
         app.getProcessorNetwork()->lock();
 
-        std::vector<GLenum> drawBuffers;
-
-        callbacks.initOpenGL = [&](GLFWwindow* shared) {
-            // Tell GLFW that we already have a shared context;
-            inviwo::CanvasGLFW::provideExternalContext(shared);
-
-            // Initialize all modules
-            app.registerModules(inviwo::getModuleList());
-
-            // app.getModuleByType<inviwo::GLFWModule>()->setWaitForOpenGL(false);
-
-            state.createShader();
-
-            if (sgct::Engine::instance().isMaster()) {
-                for (auto& win : sgct::Engine::instance().windows()) {
-                    state.setupUpInteraction(win->windowHandle());
-                }
-                pathToLoad = app.getPath(inviwo::PathType::Workspaces, "/boron.inv");
-            }
-
-            GLint maxDrawBuffers = 8;
-            glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
-            drawBuffers.resize(static_cast<size_t>(maxDrawBuffers), GL_NONE);
-        };
-
-        callbacks.preSync = [&]() {
-            TRACY_ZONE_SCOPED_NC("Process Front", 0xAA0000);
-
-            // We check the front queue before every frame. No need for setPostEnqueueFront
-            app.processFront();
-        };
-
-        callbacks.encode = [&]() -> std::vector<std::byte> {
-            TRACY_ZONE_SCOPED_NC("Encode", 0xAA0000);
-
-            std::vector<std::byte> data;
-
-            if (!pathToLoad.empty()) {
-                serializeCommand(data, Command::Load);
-
-                const auto relpath = inviwo::filesystem::getRelativePath(
-                    inviwo::filesystem::findBasePath(), pathToLoad);
-                sgct::serializeObject(data, relpath);
-            }
-
-            if (!state.modifiedProperties.empty()) {
-                serializeCommand(data, Command::Update);
-                std::stringstream os;
-                state.getUpdates(os);
-                sgct::serializeObject(data, std::move(os).str());
-
-                state.modifiedProperties.clear();
-            }
-
-            if (state.showStats) {
-                serializeCommand(data, *state.showStats ? Command::ShowStats : Command::HideStats);
-            }
-
-            serializeCommand(data, Command::Nop);
-            return data;
-        };
-
-        callbacks.decode = [&](const std::vector<std::byte>& data, unsigned int pos) {
-            TRACY_ZONE_SCOPED_NC("Decode", 0xAA0000);
-
-            while (true) {
-                switch (deserializeCommand(data, pos)) {
-                    case Command::Load: {
-                        std::string relpath;
-                        sgct::deserializeObject(data, pos, relpath);
-                        pathToLoad = inviwo::filesystem::findBasePath() + "/" + relpath;
-                        break;
-                    }
-                    case Command::Update: {
-                        sgct::deserializeObject(data, pos, serializedProps);
-                        break;
-                    }
-                    case Command::ShowStats: {
-                        state.showStats = true;
-                        break;
-                    }
-                    case Command::HideStats: {
-                        state.showStats = false;
-                        break;
-                    }
-                    case Command::Invalid: {
-                        LogErrorCustom("", "Decode error");
-                        return;
-                    }
-                    case Command::Nop:
-                        return;
-                    default:
-                        return;
-                }
-            }
-        };
-
-        callbacks.postSyncPreDraw = [&]() {
-            TRACY_ZONE_SCOPED_NC("Post Sync Pre Draw", 0xAA0000);
-
-            if (!pathToLoad.empty()) {
-                wo.stopAllObservation();
-                state.loadWorkspace(pathToLoad);
-                wo.startFileObservation(pathToLoad);
-                pathToLoad.clear();
-            }
-
-            if (!serializedProps.empty()) {
-                TRACY_ZONE_SCOPED_NC("Apply Updates", 0xAA0000);
-                TRACY_ZONE_VALUE(static_cast<int64_t>(serializedProps.size()));
-                TRACY_PLOT("Serialized Data Size", static_cast<int64_t>(serializedProps.size()));
-                std::stringstream ss(serializedProps);
-                state.applyUpdate(ss);
-                serializedProps.clear();
-            }
-
-            if (state.showStats) {
-                sgct::Engine::instance().setStatsGraphVisibility(*state.showStats);
-                state.showStats = std::nullopt;
-            }
-        };
-
-        callbacks.draw = [&](const sgct::RenderData& renderData) {
-            TRACY_ZONE_SCOPED_NC("Draw", 0xAAAA00);
-            TRACY_GPU_ZONE_C("Draw", 0xAAAA00);
-
-            // Save State
-            inviwo::utilgl::Viewport view;
-            GLint sgctFBO;
-            {
-                TRACY_ZONE_SCOPED_NC("Save State", 0xAA66000);
-                TRACY_GPU_ZONE_C("Save State", 0xAA66000);
-                view.get();
-
-                glGetIntegerv(GL_FRAMEBUFFER_BINDING, &sgctFBO);
-
-                std::fill(drawBuffers.begin(), drawBuffers.end(), GL_NONE);
-                for (int i = 0; i < drawBuffers.size(); ++i) {
-                    GLint value;
-                    glGetIntegerv(GL_DRAW_BUFFER0 + i, &value);
-                    drawBuffers[i] = static_cast<GLenum>(value);
-                }
-            }
-            // Do inviwo stuff
-            {
-                TRACY_ZONE_SCOPED_NC("Eval", 0xAA66000);
-                TRACY_GPU_ZONE_C("Eval", 0xAA66000);
-                state.evaluate(renderData);
-            }
-            // Restore state
-            {
-                TRACY_ZONE_SCOPED_NC("Restore State", 0xAA66000);
-                TRACY_GPU_ZONE_C("Restore State", 0xAA66000);
-                renderData.window.makeSharedContextCurrent();
-                view.set();
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, 0);
-                glBindFramebuffer(GL_FRAMEBUFFER, sgctFBO);
-                glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
-            }
-
-            // Copy inviwo output
-            state.copy();
-        };
-
-        callbacks.postDraw = [&]() {
-            TRACY_ZONE_SCOPED_NC("Post Draw", 0xAA0000);
-            TRACY_GPU_ZONE_C("Post Draw", 0xAA0000);
-
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            glClearDepth(1.0f);
-            glEnable(GL_DEPTH_TEST);
-            glDepthFunc(GL_LEQUAL);
-        };
-
-        callbacks.drop = [&](int nfiles, const char** files) {
-            if (sgct::Engine::instance().isMaster() && nfiles > 0) {
-                pathToLoad = inviwo::filesystem::cleanupPath(std::string(files[0]));
-            }
-        };
+        sgct::Engine::Callbacks callbacks;
+        conf.configureSGCTCallbacks(callbacks);
 
         LogInfoCustom("Dome", "Start Engine");
 
-        try {
-            sgct::Engine::create(cluster, callbacks, config);
-        } catch (const std::runtime_error& e) {
-            sgct::Log::Error(e.what());
-            sgct::Engine::destroy();
-            return EXIT_FAILURE;
-        }
-
+        sgct::Engine::create(cluster, callbacks, config);
         sgct::Engine::instance().render();
 
+    } catch (const inviwo::Exception& e) {
+        inviwo::util::log(e.getContext(), e.getMessage(), inviwo::LogLevel::Error);
+        return EXIT_FAILURE;
     } catch (const std::exception& e) {
-        std::cout << e.what();
+        LogErrorCustom("main", e.what());
+        return EXIT_FAILURE;
     } catch (...) {
-        std::cout << "some other error";
+        LogErrorCustom("main", "some other error");
+        return EXIT_FAILURE;
     }
 }

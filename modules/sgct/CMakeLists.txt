@@ -2,14 +2,20 @@ ivw_module(SGCT)
 
 set(HEADER_FILES
     include/inviwo/sgct/datastructures/sgctcamera.h
+    include/inviwo/sgct/io/communication.h
+    include/inviwo/sgct/networksyncmanager.h
     include/inviwo/sgct/sgctmodule.h
     include/inviwo/sgct/sgctmoduledefine.h
+    include/inviwo/sgct/sgctutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/datastructures/sgctcamera.cpp
+    src/io/communication.cpp
+    src/networksyncmanager.cpp
     src/sgctmodule.cpp
+    src/sgctutil.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

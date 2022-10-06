@@ -29,10 +29,11 @@
 #pragma once
 
 #include <inviwo/sgct/sgctmoduledefine.h>
-
 #include <inviwo/core/datastructures/camera.h>
 
-#include <sgct/sgct.h>
+namespace sgct {
+struct RenderData;
+}
 
 namespace inviwo {
 
@@ -68,7 +69,7 @@ protected:
 
     float fovy_;
 
-    mat4 extProj_{1.0f};
+    std::optional<mat4> extProj_{};
     mat4 extView_{1.0f};
     mat4 extModel_{1.0f};
 };
