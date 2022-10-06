@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,29 +26,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/sgct/sgctmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/commandlineparser.h>
-
-#include <memory>
+#include <inviwo/sgct/io/communication.h>
 
 namespace inviwo {
 
-class SgctWrapper;
-
-class IVW_MODULE_SGCT_API SGCTModule : public InviwoModule {
-public:
-    SGCTModule(InviwoApplication* app);
-    virtual ~SGCTModule();
-    
-    std::unique_ptr<SgctWrapper> sgctWrapper_;
-
-    static bool startServer;
-
-    TCLAP::ValueArg<std::string> configFileArg_;
-    CommandLineArgHolder argHolder_;
-};
 
 }  // namespace inviwo

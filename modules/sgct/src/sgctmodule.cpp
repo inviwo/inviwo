@@ -29,14 +29,91 @@
 
 #include <inviwo/sgct/sgctmodule.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/sgct/datastructures/sgctcamera.h>
-   
+#include <inviwo/sgct/sgctutil.h>
+#include <inviwo/sgct/io/communication.h>
+#include <inviwo/sgct/networksyncmanager.h>
+
+#include <thread>
+#include <atomic>
+
+#include <sgct/sgct.h>
+
 namespace inviwo {
 
-SGCTModule::SGCTModule(InviwoApplication* app) : InviwoModule(app, "sgct") {
+bool SGCTModule::startServer = true;
+
+class SgctWrapper {
+public:
+    SgctWrapper(ProcessorNetwork& net, std::string configFile)
+        : syncServer_{net}, terminate_{false}, runner_{&SgctWrapper::run, this, configFile} {}
+
+    ~SgctWrapper() {
+        terminate_ = true;
+        runner_.join();
+    }
+
+private:
+    void run(std::string configFile) {
+        sgct::Log::instance().setLogToConsole(false);
+        sgct::Log::instance().setLogCallback([](sgct::Log::Level level, std::string_view message) {
+            LogCentral::getPtr()->log("SGCT", util::sgctToInviwo(level),
+                                      inviwo::LogAudience::Developer, "", "", 0, message);
+        });
+
+        std::vector<std::string> arg{"--config", configFile};
+
+        const auto config = sgct::parseArguments(arg);
+        const auto cluster = sgct::loadCluster(config.configFilename);
+
+        sgct::Engine::Callbacks callbacks;
+
+        callbacks.preSync = [this]() mutable {
+            if (terminate_) sgct::Engine::instance().terminate();
+        };
+
+        callbacks.encode = [this]() -> std::vector<std::byte> {
+            return syncServer_.getEncodedCommandsAndClear();
+        };
+
+        try {
+            LogInfoCustom("Dome", "Start Engine");
+            inviwo::util::OnScopeExit closeEngine{[]() { sgct::Engine::destroy(); }};
+            sgct::Engine::create(cluster, callbacks, config);
+
+            for (auto& win : sgct::Engine::instance().windows()) {
+                win->setRenderWhileHidden(true);
+                win->setVisible(false);
+            }
+
+            sgct::Engine::instance().render();
+        } catch (const std::runtime_error& e) {
+            sgct::Log::Error(e.what());
+        }
+    }
+
+    NetworkSyncServer syncServer_;
+    std::atomic<bool> terminate_;
+    std::thread runner_;
+};
+
+// "C:/Users/petst55.AD/Documents/Inviwo/inviwo-dome/apps/inviwodome/scripts/2_nodes.xml"
+
+SGCTModule::SGCTModule(InviwoApplication* app)
+    : InviwoModule(app, "sgct")
+    , configFileArg_{"",   "config", "The sgct configuration file to use",
+                     false, "path",   "sgct json config file"}
+    , argHolder_{app, configFileArg_,
+                 [this, app]() {
+                     sgctWrapper_ = std::make_unique<SgctWrapper>(*app->getProcessorNetwork(),
+                                                                  configFileArg_.getValue());
+                 },
+                 10} {
+
     registerCamera<SGCTCamera>(SGCTCamera::classIdentifier);
 }
 
-SGCTModule::~SGCTModule() = default;
+SGCTModule::~SGCTModule() {}
 
 }  // namespace inviwo

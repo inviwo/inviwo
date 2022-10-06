@@ -62,11 +62,24 @@ void SGCTCamera::updateFrom(const Camera& source) {
     if (auto sc = dynamic_cast<const SGCTCamera*>(&source)) {
         setFovy(sc->getFovy());
 
-        extProj_ = sc->extProj_;
-        extView_ = sc->extView_;
-        extModel_ = sc->extModel_;
-        invalidateProjectionMatrix();
-        invalidateViewMatrix();
+        bool modified = false;
+
+        if (extProj_ != sc->extProj_) {
+            extProj_ = sc->extProj_;
+            invalidateProjectionMatrix();
+            modified = true;
+        }
+
+        if (extView_ != sc->extView_ || extModel_ != sc->extModel_) {
+            extView_ = sc->extView_;
+            extModel_ = sc->extModel_;
+            invalidateViewMatrix();
+            modified = true;
+        }
+
+        if (modified && camprop_) {
+            camprop_->propertyModified();
+        }
 
     } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         setFovy(pc->getFovy());
@@ -124,9 +137,9 @@ void SGCTCamera::setExternal(const sgct::RenderData& renderData) {
     mat4 view = glm::make_mat4(renderData.viewMatrix.values);
     mat4 model = glm::make_mat4(renderData.modelMatrix.values);
 
-    bool modified = true; // true here to force eval every frame, for testing
+    bool modified = true;  // true here to force eval every frame, for testing
 
-    if (extProj_ != proj) {
+    if (!extProj_ || *extProj_ != proj) {
         extProj_ = proj;
         invalidateProjectionMatrix();
         modified = true;
@@ -159,8 +172,11 @@ mat4 SGCTCamera::calculateViewMatrix() const {
 }
 
 mat4 SGCTCamera::calculateProjectionMatrix() const {
-    auto old = glm::perspective(glm::radians(fovy_), aspectRatio_, nearPlaneDist_, farPlaneDist_);
-    return extProj_;
+    if (extProj_) {
+        return *extProj_;
+    } else {
+        return glm::perspective(glm::radians(fovy_), aspectRatio_, nearPlaneDist_, farPlaneDist_);
+    }
 }
 
 }  // namespace inviwo
