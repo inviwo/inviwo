@@ -147,14 +147,21 @@ struct VolumeDispatcher {
         using VecPos = typename glm::vec<3, double>;
 
         size3_t volumeSize = numVertices;
-        for (size_t i = 0; i < 3; ++i)
-            volumeSize[i] = std::max(volumeSize[i], size_t(32));
+        for (size_t i = 0; i < 3; ++i) volumeSize[i] = std::max(volumeSize[i], size_t(32));
 
         auto ramVolume = std::make_shared<VolumeRAMPrecision<VecTN>>(volumeSize);
         VecTN* ramData = ramVolume->getDataTyped();
 
         DataSetSpatialSampler<3, N, T> spatialSampler(sampler, InterpolationType::Linear, channel,
                                                       invalidValue);
+
+        // In case we do not fill the minimum volume size,
+        // the untouched part should be set to the invalid value selected by the user.
+        if (volumeSize[0] < size_t(32) || volumeSize[1] < size_t(32) ||
+            volumeSize[2] < size_t(32)) {
+            std::fill(ramData, ramData + (volumeSize[0] * volumeSize[1] * volumeSize[2]),
+                      VecTN(invalidValue));
+        }
 
         for (size_t z = 0; z < numVertices.z; ++z) {
             for (size_t y = 0; y < numVertices.y; ++y)

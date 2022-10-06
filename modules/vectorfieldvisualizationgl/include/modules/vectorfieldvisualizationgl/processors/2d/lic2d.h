@@ -63,8 +63,6 @@ protected:
     FloatVec2Property fieldDimensions_;
 
     Shader shader_;
-
-private:
 };
 
 }  // namespace inviwo

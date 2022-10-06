@@ -198,6 +198,7 @@ public:
     const IndexVector& getIndexBuffers() const;
 
     const BufferBase* getBuffer(size_t idx) const;
+    const BufferBase* getBuffer(BufferType type) const;
 
     BufferInfo getBufferInfo(size_t idx) const;
     BufferInfo getBufferInfo(BufferBase* buffer) const;

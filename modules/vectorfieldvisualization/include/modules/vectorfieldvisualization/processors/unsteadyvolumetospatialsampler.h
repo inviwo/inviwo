@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/util/spatialsampler.h>
@@ -62,6 +63,8 @@ public:
 private:
     VolumeInport volume_;
     DataOutport<SpatialSampler<3, 3, double>> sampler_;
+    BoolProperty periodicTime_;
+    FloatProperty maxTime_;
 };
 
 }  // namespace inviwo

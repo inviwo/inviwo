@@ -45,7 +45,7 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
+    virtual void process() override;
     virtual void initializeResources() override;
 
 private:
@@ -53,6 +53,8 @@ private:
 
     std::shared_ptr<StringShaderResource> fragmentShader_;
     StringProperty fragmentSrc_;
+    BoolProperty differentOutputFormat_;
+    TemplateOptionProperty<DataFormatId> outputFormat_;
 };
 
 }  // namespace inviwo

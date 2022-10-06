@@ -63,6 +63,8 @@ private:
     TransferFunctionProperty colormap_;
     StringProperty channelName_;
     BoolProperty automaticName_;
+    BoolProperty symmetricRange_;
+    DoubleVec2Property scalarRange_;
 };
 
 namespace detail {

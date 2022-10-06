@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,27 +30,39 @@
 #pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
 
 namespace inviwo {
 
-/**
- * \class UnsteadVolumeDoubleSampler
- * \brief Same as VolumeDoubleSampler, but adding a 1.0 to each sample.
+/** \docpage{org.inviwo.LinesToArrows, Lines To Arrows}
+ * ![](org.inviwo.LinesToArrows.png?classIdentifier=org.inviwo.LinesToArrows)
+ * Given a line mesh, create a new mesh with an arrow representing each line segment.
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API UnsteadVolumeDoubleSampler
-    : public VolumeDoubleSampler<3> {
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API LinesToArrows : public Processor {
 public:
-    UnsteadVolumeDoubleSampler(std::shared_ptr<const Volume> vol,
-                               CoordinateSpace space = CoordinateSpace::Data,
-                               bool periodicTime = false, float maxTime = 0);
-    UnsteadVolumeDoubleSampler(const Volume& vol, CoordinateSpace space = CoordinateSpace::Data,
-                               bool periodicTime = false, float maxTime = 0);
-    virtual ~UnsteadVolumeDoubleSampler() = default;
+    LinesToArrows();
+    virtual ~LinesToArrows() = default;
 
-    virtual Vector<3, double> sampleDataSpace(const dvec3& pos) const override;
-    virtual bool withinBoundsDataSpace(const dvec3& pos) const override;
-    bool periodicTime_;
-    float maxTime_;
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    MeshInport linesIn_;
+    MeshOutport arrowsOut_;
+    DoubleProperty arrowScale_, colorScale_;
+    TransferFunctionProperty transferFunction_;
+    BoolProperty normalizeLength_;
+
+    enum class ColorSource : char { Input, Length, Angle };
+    TemplateOptionProperty<ColorSource> colorSource_;
 };
+
 }  // namespace inviwo

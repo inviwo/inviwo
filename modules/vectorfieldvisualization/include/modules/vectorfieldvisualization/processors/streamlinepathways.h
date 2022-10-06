@@ -49,7 +49,7 @@ namespace inviwo {
  *
  * ### Outports
  *   * __startMesh__ Cuboid mesh marking the start volume.
- *   * __endMesh__ Cuboid mesh marking the start volume.
+ *   * __endMesh__ Cuboid mesh marking the end volume.
  *
  * ### Properties
  *   * __startRegion__ The cuboid that integrations are started from.
@@ -78,7 +78,8 @@ private:
     struct VolumeRegion : public CompositeProperty {
 
         VolumeRegion(const std::string& identifier, const std::string& displayName,
-                     const vec4& defaultColor);
+                     const vec4& defaultColor,
+                     ConstraintBehavior limitBehavior = ConstraintBehavior::Mutable);
         void updateSamplerRegion(const dvec3& min, const dvec3& max);
         std::shared_ptr<Mesh> toMesh(const mat4& worldToModelMat) const;
         mat4 getAsMatrix(const dmat4& worldToModelMat) const;

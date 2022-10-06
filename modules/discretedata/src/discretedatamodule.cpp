@@ -31,6 +31,7 @@
 #include <modules/discretedata/processors/adddatasetsampler.h>
 #include <modules/discretedata/processors/channeloperations.h>
 #include <modules/discretedata/processors/changeinvalidvalue.h>
+#include <modules/discretedata/processors/channelaverage.h>
 #include <modules/discretedata/processors/colormapchannel.h>
 #include <modules/discretedata/processors/combinechannels.h>
 #include <modules/discretedata/processors/combinedatasets.h>
@@ -65,6 +66,7 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     // Processors
     registerProcessor<ChannelOperations>();
     registerProcessor<ChangeInvalidValue>();
+    registerProcessor<ChannelAverage>();
     registerProcessor<DataSetROI>();
     registerProcessor<CombineDataSets>();
     registerProcessor<DataSetInformation>();

@@ -158,6 +158,7 @@ void LineSourceASCII::process() {
         intmax_t timeInt = std::mktime(&timeStruct);
         if (!startTime) {
             startTime = timeInt / (60 * 60 * 6);  // Only measure in 6h steps.
+            std::cout << fmt::format("Start Date: {}", dataLine) << std::endl;
         }
         timeInt = timeInt / (60 * 60 * 6) - startTime;
 
@@ -176,61 +177,67 @@ void LineSourceASCII::process() {
 
         if (filterStartTime_.get()) timeInt -= startTime_.get();
 
-        // Delete line if there is a time jump at any point.
-        if (filterTimeJumps_.get() && posVec->size() &&
-            (double(timeInt) - posVec->back().z) > 1.1) {
-            skipCurrentLine = true;
-            posVec->clear();
-            continue;
+        static bool first = true;
+        if (first) {
+            std::cout << "filtered time: " << dataLine << std::endl;
+            first = false;
         }
 
-        // Get position, temperature, velocity and speed from
-        // "  -23.406  -41.907   23.551  -3.342    8.669    9.291  ".
-        // Read as 6 scalar values and assign accordingly.
+        //     // Delete line if there is a time jump at any point.
+        //     if (filterTimeJumps_.get() && posVec->size() &&
+        //         (double(timeInt) - posVec->back().z) > 1.1) {
+        //         skipCurrentLine = true;
+        //         posVec->clear();
+        //         continue;
+        //     }
 
-        wordStart += 20;
-        for (size_t var = 0; var < 2; ++var) {
-            wordStart = dataLine.find_first_not_of(delim, wordStart);
-            wordEnd = dataLine.find(delim, wordStart);
-            dataLine[wordEnd] = '\0';
-            position[var] = std::atof(dataLine.c_str() + wordStart);
-            wordStart = wordEnd + 1;
-        }
+        //     // Get position, temperature, velocity and speed from
+        //     // "  -23.406  -41.907   23.551  -3.342    8.669    9.291  ".
+        //     // Read as 6 scalar values and assign accordingly.
 
-        // Potentially filter by starting position.
-        if (newLine && filterSeed_) {
-            dvec2 seed{position[1], position[0]};
-            skipCurrentLine = !filterSeed_.isInside(seed);
-            if (skipCurrentLine) continue;
-        }
+        //     wordStart += 20;
+        //     for (size_t var = 0; var < 2; ++var) {
+        //         wordStart = dataLine.find_first_not_of(delim, wordStart);
+        //         wordEnd = dataLine.find(delim, wordStart);
+        //         dataLine[wordEnd] = '\0';
+        //         position[var] = std::atof(dataLine.c_str() + wordStart);
+        //         wordStart = wordEnd + 1;
+        //     }
 
-        // Potentially offset points that would wrap around -180/180 lon to overflow instead.
-        position[1] += lonOffset;
-        if (overflowWrapping_.get() && posVec->size()) {
-            double lonDist = position[1] - posVec->back()[0];
-            if (lonDist < -300) {
-                lonOffset += 360;
-                position[1] += 360;
-            }
-            if (lonDist > 300) {
-                lonOffset -= 360;
-                position[1] -= 360;
-            }
-        }
+        //     // Potentially filter by starting position.
+        //     if (newLine && filterSeed_) {
+        //         dvec2 seed{position[1], position[0]};
+        //         skipCurrentLine = !filterSeed_.isInside(seed);
+        //         if (skipCurrentLine) continue;
+        //     }
 
-        posVec->emplace_back(position[1], position[0], timeInt);
+        //     // Potentially offset points that would wrap around -180/180 lon to overflow instead.
+        //     position[1] += lonOffset;
+        //     if (overflowWrapping_.get() && posVec->size()) {
+        //         double lonDist = position[1] - posVec->back()[0];
+        //         if (lonDist < -300) {
+        //             lonOffset += 360;
+        //             position[1] += 360;
+        //         }
+        //         if (lonDist > 300) {
+        //             lonOffset -= 360;
+        //             position[1] -= 360;
+        //         }
+        //     }
+
+        //     posVec->emplace_back(position[1], position[0], timeInt);
     }
-    if (!skipCurrentLine && line.getPositions().size() > 0)
-        lines->push_back(std::move(line), lineID);
+    // if (!skipCurrentLine && line.getPositions().size() > 0)
+    //     lines->push_back(std::move(line), lineID);
 
-    // Compute velocity manually, and potentially two types of acceleration.
-    util::addVelocity(*lines);
-    if (addAcceleration_.get()) {
-        util::addAcceleration(*lines, true, "accelerationVelo");
-        util::addAcceleration(*lines, false, "accelerationPos");
-    }
+    // // Compute velocity manually, and potentially two types of acceleration.
+    // util::addVelocity(*lines);
+    // if (addAcceleration_.get()) {
+    //     util::addAcceleration(*lines, true, "accelerationVelo");
+    //     util::addAcceleration(*lines, false, "accelerationPos");
+    // }
 
-    linesOut_.setData(lines);
+    // linesOut_.setData(lines);
 }
 
 LineSourceASCII::SeedFilter::SeedFilter(const std::string& identifier,

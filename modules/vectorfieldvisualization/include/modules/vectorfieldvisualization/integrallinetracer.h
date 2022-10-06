@@ -221,11 +221,23 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& old
 
     auto k1 = transform(sampler_->sample(oldPos));
 
-    // std::cout << "=  Stepped " << k1 << std::endl;
-
     switch (integrationScheme_) {
         case inviwo::IntegralLineProperties::IntegrationScheme::Euler:
             return {move(oldPos, k1, stepSize), k1};
+        // case inviwo::IntegralLineProperties::IntegrationScheme::RK4: {
+        //     double delta = std::numeric_limits<double>::max();
+        //     double tolerance = ? ;
+        //     double stepSizeMax = stepSize;
+        //     double initalStepSize = dterminedAutpmatically;
+        //     double sampingFactor = 0.8;
+        //     double absoluteTolerance = 1e-6;
+        //     double relativeTolerance = 1e-3;
+
+        //     const auto k2 = transform(sampler_->sample(move(oldPos, k1, stepSize / 2)));
+        //     const auto k3 = transform(sampler_->sample(move(oldPos, k2, stepSize / 2)));
+        //     const auto k4 = transform(sampler_->sample(move(oldPos, k3, stepSize)));
+        //     (k1 + k2 + k2 + k3 + k3 + k4) * (1.0 / 6.0);
+        // }
         default:
             [[fallthrough]];
         case inviwo::IntegralLineProperties::IntegrationScheme::RK4: {
@@ -234,7 +246,7 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& old
             const auto k4 = transform(sampler_->sample(move(oldPos, k3, stepSize)));
             const auto&& K = [n = normalizeSamples_, normalize, &k1, &k2, &k3, &k4]() {
                 if (n) {
-                    return normalize(k1 + k2 + k2 + k3 + k3 + k4);
+                    return (k1 + k2 + k2 + k3 + k3 + k4);
                 } else {
                     return (k1 + k2 + k2 + k3 + k3 + k4) * (1.0 / 6.0);
                 }

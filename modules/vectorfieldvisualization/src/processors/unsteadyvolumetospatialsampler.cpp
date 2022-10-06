@@ -46,13 +46,23 @@ const ProcessorInfo UnsteadyVolumeToSpatialSampler::getProcessorInfo() const {
 }
 
 UnsteadyVolumeToSpatialSampler::UnsteadyVolumeToSpatialSampler()
-    : Processor(), volume_("volume"), sampler_("sampler") {
-    addPort(volume_);
-    addPort(sampler_);
+    : Processor()
+    , volume_("volume")
+    , sampler_("sampler")
+    , periodicTime_("periodicTime", "Periodic Time", false)
+    , maxTime_("maxTime", "Max Time", 1, {0, ConstraintBehavior::Immutable},
+               {100, ConstraintBehavior::Ignore}, 1, InvalidationLevel::InvalidOutput,
+               PropertySemantics::Text) {
+    addPorts(volume_, sampler_);
+    addProperties(periodicTime_, maxTime_);
+
+    maxTime_.visibilityDependsOn(periodicTime_,
+                                 [](const BoolProperty& prop) { return prop.get(); });
 }
 
 void UnsteadyVolumeToSpatialSampler::process() {
-    auto sampler = std::make_shared<UnsteadVolumeDoubleSampler>(volume_.getData());
+    auto sampler = std::make_shared<UnsteadVolumeDoubleSampler>(
+        volume_.getData(), CoordinateSpace::Data, periodicTime_.get(), maxTime_.get());
     sampler_.setData(sampler);
 }
 

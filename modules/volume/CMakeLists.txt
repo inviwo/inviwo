@@ -1,6 +1,8 @@
 ivw_module(Volume)
 
 set(HEADER_FILES
+    include/inviwo/volume/processors/concatvolumes.h
+    include/inviwo/volume/processors/correlateslices.h
     include/inviwo/volume/processors/volumevoronoisegmentation.h
     include/inviwo/volume/volumemodule.h
     include/inviwo/volume/volumemoduledefine.h
@@ -8,6 +10,8 @@ set(HEADER_FILES
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
+    src/processors/concatvolumes.cpp
+    src/processors/correlateslices.cpp
     src/processors/volumevoronoisegmentation.cpp
     src/volumemodule.cpp
 )

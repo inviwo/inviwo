@@ -98,7 +98,7 @@ struct BackgroundJobs : QLabel, ProcessorNetworkObserver {
         update(0);
     }
 
-    void update(int jobs) { setText(QString("Backgrund Jobs: %1").arg(jobs)); }
+    void update(int jobs) { setText(QString("Background Jobs: %1").arg(jobs)); }
 
     virtual void onProcessorBackgroundJobsChanged(Processor*, int, int total) override {
         update(total);

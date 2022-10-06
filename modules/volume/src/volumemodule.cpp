@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#include <inviwo/volume/processors/concatvolumes.h>
+#include <inviwo/volume/processors/correlateslices.h>
 #include <inviwo/volume/processors/volumevoronoisegmentation.h>
 #include <inviwo/volume/volumemodule.h>
 
@@ -39,11 +41,13 @@ VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume")
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
+    registerProcessor<ConcatVolumes>();
+    registerProcessor<CorrelateSlices>();
     // registerProcessor<VolumeProcessor>();
     registerProcessor<VolumeVoronoiSegmentation>();
 
     // Properties
-    // registerProperty<VolumeProperty>();
+    registerProperty<ConcatVolumes::VolumeSlabProperty>();
 
     // Readers and writes
     // registerDataReader(std::make_unique<VolumeReader>());

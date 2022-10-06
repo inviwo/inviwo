@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,32 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/volume/volumemoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-/**
- * \class UnsteadVolumeDoubleSampler
- * \brief Same as VolumeDoubleSampler, but adding a 1.0 to each sample.
+/** \docpage{org.inviwo.CorrelateSlices, Correlate Slices}
+ * ![](org.inviwo.CorrelateSlices.png?classIdentifier=org.inviwo.CorrelateSlices)
+ * Correlate between the Z slices of a volume. For example to correlate the time slices in a time
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API UnsteadVolumeDoubleSampler
-    : public VolumeDoubleSampler<3> {
+class IVW_MODULE_VOLUME_API CorrelateSlices : public Processor {
 public:
-    UnsteadVolumeDoubleSampler(std::shared_ptr<const Volume> vol,
-                               CoordinateSpace space = CoordinateSpace::Data,
-                               bool periodicTime = false, float maxTime = 0);
-    UnsteadVolumeDoubleSampler(const Volume& vol, CoordinateSpace space = CoordinateSpace::Data,
-                               bool periodicTime = false, float maxTime = 0);
-    virtual ~UnsteadVolumeDoubleSampler() = default;
+    CorrelateSlices();
+    virtual ~CorrelateSlices() = default;
 
-    virtual Vector<3, double> sampleDataSpace(const dvec3& pos) const override;
-    virtual bool withinBoundsDataSpace(const dvec3& pos) const override;
-    bool periodicTime_;
-    float maxTime_;
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    ImageOutport imageOut_;
+    VolumeInport volumeIn_;
+    FloatVec2Property range_;
 };
+
 }  // namespace inviwo

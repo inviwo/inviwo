@@ -210,6 +210,16 @@ const BufferBase* Mesh::getBuffer(size_t idx) const {
     return buffers_[idx].second.get();
 }
 
+const BufferBase* Mesh::getBuffer(BufferType type) const {
+    auto it = std::find_if(buffers_.begin(), buffers_.end(),
+                           [&](const auto& item) { return item.first.type == type; });
+    if (it != buffers_.end()) {
+        return it->second.get();
+    } else {
+        return nullptr;
+    }
+}
+
 std::pair<const BufferBase*, int> Mesh::findBuffer(BufferType type) const {
     auto it = std::find_if(buffers_.begin(), buffers_.end(),
                            [&](const auto& item) { return item.first.type == type; });

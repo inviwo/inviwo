@@ -140,8 +140,6 @@ void ArrowGlyphs<SpatialDims>::process() {
     using NormalMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::NormalBuffer,
                                  buffertraits::ColorsBuffer>;
     auto arrowMesh = std::make_shared<NormalMesh>(DrawType::Triangles, ConnectivityType::None);
-    // arrowMesh->setModelMatrix(sampler->getModelMatrix());
-    // arrowMesh->setWorldMatrix(sampler->getWorldMatrix());
     std::vector<NormalMesh::Vertex> vertices;
     vertices.reserve(numSeeds * basicArrowIndices.size());
 
@@ -168,7 +166,7 @@ void ArrowGlyphs<SpatialDims>::process() {
                 // origin = {originND.x, originND.y, 0};
                 // if constexpr (SpatialDims >= 3) origin.z = originND.z;
                 origin = vec3(sampleToWorldMat * vec4(origin, 1.0));
-    
+
                 double velocityLength = glm::length(velocity);
                 vec4 color = transferFunction_.get().sample(velocityLength / colorScale_.get());
                 if (normalizeLength_.get()) velocityLength = 1.0;

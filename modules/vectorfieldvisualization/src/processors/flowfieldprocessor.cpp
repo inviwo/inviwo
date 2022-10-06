@@ -36,9 +36,7 @@ namespace inviwo {
 
 FlowField2DProcessor::FlowField2DProcessor()
     : sampler_("sampler")
-    , imageOut_("field", false)  //  DataVec3Float32::get(),
-    // , hallerField_("Hallers", false)
-    // , dispersionOut_("relativeDispersion", DataFloat32::get(), false)
+    , imageOut_("field", false)
     , linesOut_("pathLines")
     , measureType_("measureType", "Measure",
                    {{"uv", "UV", MeasureType::UV},

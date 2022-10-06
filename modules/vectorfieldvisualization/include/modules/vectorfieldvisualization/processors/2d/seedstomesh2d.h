@@ -38,14 +38,15 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SeedsToMesh2D, Seeds To Mesh2D}
- * ![](org.inviwo.SeedsToMesh2D.png?classIdentifier=org.inviwo.SeedsToMesh2D)
+/** \docpage{org.inviwo.SeedsToMesh, Seeds To Mesh}
+ * ![](org.inviwo.SeedsToMesh.png?classIdentifier=org.inviwo.SeedsToMesh)
  * Create a point mesh from a set of seed points.
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedsToMesh2D : public Processor {
+template <unsigned N>
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedsToMesh : public Processor {
 public:
-    SeedsToMesh2D();
-    virtual ~SeedsToMesh2D() = default;
+    SeedsToMesh();
+    virtual ~SeedsToMesh() = default;
 
     virtual void process() override;
 
@@ -53,9 +54,55 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    SeedPoints2DInport seedPointsIn_;
+    DataInport<SeedPointVector<N>> seedPointsIn_;
     MeshOutport meshOut_;
-    // TemplateOptionProperty<CoordinateSpace> seedPointsSpace_;
 };
+
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+template <unsigned N>
+const ProcessorInfo SeedsToMesh<N>::processorInfo_{
+    fmt::format("org.inviwo.SeedsToMesh{}D", N),  // Class identifier
+    fmt::format("Seeds To Mesh {}D", N),          // Display name
+    "Seed Points",                                // Category
+    CodeState::Stable,                            // Code state
+    Tags::None,                                   // Tags
+};
+template <unsigned N>
+const ProcessorInfo SeedsToMesh<N>::getProcessorInfo() const {
+    return processorInfo_;
+}
+template <unsigned N>
+SeedsToMesh<N>::SeedsToMesh() : Processor(), seedPointsIn_("seedsIn"), meshOut_("pointMeshOut") {
+    addPort(seedPointsIn_);
+    addPort(meshOut_);
+}
+
+template <unsigned N>
+void SeedsToMesh<N>::process() {
+    if (!seedPointsIn_.hasData()) {
+        meshOut_.detachData();
+        return;
+    }
+
+    auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
+    std::vector<vec3> positions;
+    positions.reserve(seedPointsIn_.getData()->size());
+
+    for (const auto& seeds : seedPointsIn_) {
+        for (const auto& seed : *seeds) {
+            vec3 seed3D{0, 0, 0};
+            for (unsigned n = 0; n < std::min(N, 3u); ++n) seed3D[n] = seed[n];
+            positions.push_back(seed3D);
+        }
+    }
+    auto posBuffer = util::makeBuffer(std::move(positions));
+    mesh->addBuffer(BufferType::PositionAttrib, posBuffer);
+
+    meshOut_.setData(mesh);
+}
+
+using SeedsToMesh2D = SeedsToMesh<2>;
+using SeedsToMesh3D = SeedsToMesh<3>;
+using SeedsToMesh4D = SeedsToMesh<4>;
 
 }  // namespace inviwo

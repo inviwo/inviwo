@@ -40,6 +40,7 @@ set(HEADER_FILES
     include/modules/discretedata/ports/datasetport.h
     include/modules/discretedata/processors/adddatasetsampler.h
     include/modules/discretedata/processors/changeinvalidvalue.h
+    include/modules/discretedata/processors/channelaverage.h
     include/modules/discretedata/processors/channeloperations.h
     include/modules/discretedata/processors/colormapchannel.h
     include/modules/discretedata/processors/combinechannels.h
@@ -105,6 +106,7 @@ set(SOURCE_FILES
     src/discretedatatypes.cpp
     src/processors/adddatasetsampler.cpp
     src/processors/changeinvalidvalue.cpp
+    src/processors/channelaverage.cpp
     src/processors/channeloperations.cpp
     src/processors/colormapchannel.cpp
     src/processors/combinechannels.cpp

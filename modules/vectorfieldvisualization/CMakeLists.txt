@@ -30,6 +30,7 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/processors/integrallinevectortomesh.h
     include/modules/vectorfieldvisualization/processors/linesfromdataframe.h
     include/modules/vectorfieldvisualization/processors/linesourceascii.h
+    include/modules/vectorfieldvisualization/processors/linestoarrows.h
     include/modules/vectorfieldvisualization/processors/perpendicularsimilarity.h
     include/modules/vectorfieldvisualization/processors/scalarconvolutionprocessor.h
     include/modules/vectorfieldvisualization/processors/seed3dto4d.h
@@ -73,6 +74,7 @@ set(SOURCE_FILES
     src/processors/integrallinevectortomesh.cpp
     src/processors/linesfromdataframe.cpp
     src/processors/linesourceascii.cpp
+    src/processors/linestoarrows.cpp
     src/processors/perpendicularsimilarity.cpp
     src/processors/scalarconvolutionprocessor.cpp
     src/processors/seed3dto4d.cpp

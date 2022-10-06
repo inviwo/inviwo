@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,50 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/volume/volumemoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
-/**
- * \class UnsteadVolumeDoubleSampler
- * \brief Same as VolumeDoubleSampler, but adding a 1.0 to each sample.
+/** \docpage{org.inviwo.ConcatVolumes, Concat Volumes}
+ * ![](org.inviwo.ConcatVolumes.png?classIdentifier=org.inviwo.ConcatVolumes)
+ * Concatenate several slices of volumes along the z axis.
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API UnsteadVolumeDoubleSampler
-    : public VolumeDoubleSampler<3> {
+class IVW_MODULE_VOLUME_API ConcatVolumes : public Processor {
 public:
-    UnsteadVolumeDoubleSampler(std::shared_ptr<const Volume> vol,
-                               CoordinateSpace space = CoordinateSpace::Data,
-                               bool periodicTime = false, float maxTime = 0);
-    UnsteadVolumeDoubleSampler(const Volume& vol, CoordinateSpace space = CoordinateSpace::Data,
-                               bool periodicTime = false, float maxTime = 0);
-    virtual ~UnsteadVolumeDoubleSampler() = default;
+    ConcatVolumes();
+    virtual ~ConcatVolumes() = default;
 
-    virtual Vector<3, double> sampleDataSpace(const dvec3& pos) const override;
-    virtual bool withinBoundsDataSpace(const dvec3& pos) const override;
-    bool periodicTime_;
-    float maxTime_;
+    virtual void process() override;
+    void deserialize(Deserializer& d);
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+public:
+    struct VolumeSlabProperty : public BoolCompositeProperty {
+        IntSizeTProperty zRange_;
+        VolumeInport volume_;
+        ConcatVolumes* parent_ = nullptr;
+        static size_t ID;
+        static const std::string classIdentifier_;
+
+        VolumeSlabProperty(const std::string& identifier, const std::string& displayName);
+        ~VolumeSlabProperty();
+        void addParent(ConcatVolumes& parent);
+        virtual BoolCompositeProperty* clone() const override;
+
+        virtual std::string getClassIdentifier() const override;
+    };
+
+    VolumeOutport outVolume_;
+    IntSize2Property xyDimensions_;
+    VolumeSlabProperty baseVolume_;
+    ListProperty appendVolumes_;
 };
+
 }  // namespace inviwo

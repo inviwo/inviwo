@@ -29,6 +29,7 @@
 
 #include <modules/discretedata/processors/createindexchannel.h>
 #include <modules/discretedata/channels/analyticchannel.h>
+#include <type_traits>
 
 namespace inviwo {
 namespace discretedata {

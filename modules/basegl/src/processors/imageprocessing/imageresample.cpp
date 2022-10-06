@@ -50,6 +50,7 @@ ImageResample::ImageResample()
 
     interpolationType_.addOption("bilinear", "Bilinear", 0);
     interpolationType_.addOption("bicubic", "Bicubic", 1);
+    interpolationType_.addOption("nearest", "Nearest", 2);
     interpolationType_.set(0);
     interpolationType_.onChange([this]() { interpolationTypeChanged(); });
     interpolationType_.setCurrentStateAsDefault();
@@ -79,9 +80,16 @@ void ImageResample::interpolationTypeChanged() {
     switch (interpolationType_.get()) {
         case 1:
             shader_.getFragmentShaderObject()->addShaderDefine("BICUBIC_INTERPOLATION", "1");
+            shader_.getFragmentShaderObject()->removeShaderDefine("NEAREST_INTERPOLATION");
+            break;
+        case 2:
+            shader_.getFragmentShaderObject()->addShaderDefine("NEAREST_INTERPOLATION", "1");
+            shader_.getFragmentShaderObject()->removeShaderDefine("BICUBIC_INTERPOLATION");
+            
             break;
         default:
             shader_.getFragmentShaderObject()->removeShaderDefine("BICUBIC_INTERPOLATION");
+            shader_.getFragmentShaderObject()->removeShaderDefine("NEAREST_INTERPOLATION");
     }
     shader_.build();
 }

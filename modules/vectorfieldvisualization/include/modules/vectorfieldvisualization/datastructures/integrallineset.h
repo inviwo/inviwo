@@ -93,9 +93,16 @@ struct DataTraits<IntegralLineSet> {
     static std::string dataName() { return "IntegralLineSet"; }
     static uvec3 colorCode() { return uvec3(255, 150, 0); }
     static Document info(const IntegralLineSet& data) {
-        std::ostringstream oss;
-        oss << "Integral Line Set with " << data.size() << " lines";
         Document doc;
+        doc.append("p", fmt::format("Integral Line Set with {} lines", data.size()));
+
+        std::ostringstream oss;
+        if (data.size() > 0) {
+            oss << "Meta data: ";
+            for (const auto& metaKey : data.getVector()[0].getMetaDataKeys()) {
+                oss << metaKey << ' ';
+            }
+        }
         doc.append("p", oss.str());
         return doc;
     }

@@ -47,6 +47,7 @@
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
+#include <modules/vectorfieldvisualization/processors/linestoarrows.h>
 #include <modules/vectorfieldvisualization/processors/scalarconvolutionprocessor.h>
 #include <modules/vectorfieldvisualization/processors/streamlinepathways.h>
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
@@ -115,9 +116,12 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<SeedPointGenerator2D>();
     registerProcessor<LineSetSelector>();
     registerProcessor<LinesFromDataFrame>();
+    registerProcessor<LinesToArrows>();
     registerProcessor<ScalarConvolutionProcessor>();
     registerProcessor<SeedsFromMesh>();
     registerProcessor<SeedsToMesh2D>();
+    registerProcessor<SeedsToMesh3D>();
+    registerProcessor<SeedsToMesh4D>();
     registerProcessor<StreamlinePathways>();
 
     registerProperty<StreamLineProperties>();

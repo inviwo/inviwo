@@ -51,7 +51,14 @@ void main() {
 }
 
 )";
-}
+
+struct Helper {
+    template <typename Format>
+    void operator()(std::vector<OptionPropertyOption<DataFormatId>>& formats) {
+        formats.emplace_back(Format::str(), Format::str(), Format::id());
+    }
+};
+}  // namespace
 
 const ProcessorInfo VolumeShader::processorInfo_{
     "org.inviwo.VolumeShader",  // Class identifier
@@ -75,10 +82,33 @@ VolumeShader::VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader)
     : VolumeGLProcessor(fragmentShader, false)
     , fragmentShader_(fragmentShader)
     , fragmentSrc_("shader", "Shader", std::string(defaultFrag),
-                   InvalidationLevel::InvalidResources, PropertySemantics::ShaderEditor) {
-    addProperty(fragmentSrc_);
+                   InvalidationLevel::InvalidResources, PropertySemantics::ShaderEditor)
+    , differentOutputFormat_("differentOutputFormat", "Different Output Format", false)
+    , outputFormat_(
+          "outputFormat", "Output Format",
+          [&]() {
+              std::vector<OptionPropertyOption<DataFormatId>> formats;
+              util::for_each_type<DefaultDataFormats>{}(Helper(), formats);
+              return formats;
+          }(),
+          1) {
+    outputFormat_.onChange([&]() { internalInvalid_ = true; });
+    differentOutputFormat_.onChange([&]() {
+        outputFormat_.setReadOnly(!differentOutputFormat_.get());
+        internalInvalid_ = true;
+    });
+    addProperties(fragmentSrc_, differentOutputFormat_, outputFormat_);
 
     fragmentSrc_.onChange([&]() { fragmentShader_->setSource(fragmentSrc_.get()); });
+}
+
+void VolumeShader::process() {
+    if (differentOutputFormat_.get()) {
+        dataFormat_ = DataFormatBase::get(outputFormat_.get());
+    } else {
+        dataFormat_ = nullptr;
+    }
+    VolumeGLProcessor::process();
 }
 
 VolumeShader::~VolumeShader() = default;

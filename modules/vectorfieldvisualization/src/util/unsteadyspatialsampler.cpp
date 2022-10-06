@@ -32,35 +32,35 @@
 namespace inviwo {
 
 UnsteadVolumeDoubleSampler::UnsteadVolumeDoubleSampler(std::shared_ptr<const Volume> vol,
-                                                       CoordinateSpace space)
-    : VolumeDoubleSampler(*vol, space) {
+                                                       CoordinateSpace space, bool periodicTime,
+                                                       float maxTime)
+    : VolumeDoubleSampler(*vol, space), periodicTime_(periodicTime), maxTime_(maxTime) {
     volume_ = vol;
 }
 
-UnsteadVolumeDoubleSampler::UnsteadVolumeDoubleSampler(const Volume &vol, CoordinateSpace space)
-    : VolumeDoubleSampler<3>(vol, space) {}
+UnsteadVolumeDoubleSampler::UnsteadVolumeDoubleSampler(const Volume& vol, CoordinateSpace space,
+                                                       bool periodicTime, float maxTime)
+    : VolumeDoubleSampler<3>(vol, space), periodicTime_(periodicTime), maxTime_(maxTime) {}
 
-Vector<3, double> UnsteadVolumeDoubleSampler::sampleDataSpace(const dvec3 &pos) const {
-    if (!withinBoundsDataSpace(pos)) {
+Vector<3, double> UnsteadVolumeDoubleSampler::sampleDataSpace(const dvec3& posIn) const {
+    if (!withinBoundsDataSpace(posIn)) {
         return Vector<3, double>(0.0);
     }
+    dvec3 pos = posIn;
+    if (periodicTime_) pos.z -= int(pos.z);
     auto steadyVec = this->VolumeDoubleSampler<3>::sampleDataSpace(pos);
     steadyVec[2] = 1.0;
     return steadyVec;
 }
 
-bool UnsteadVolumeDoubleSampler::withinBoundsDataSpace(const dvec3 &pos) const {
+bool UnsteadVolumeDoubleSampler::withinBoundsDataSpace(const dvec3& posIn) const {
+    dvec3 pos = posIn;
+    if (periodicTime_ && maxTime_ != 0 && posIn.z > maxTime_) return false;
+    if (periodicTime_) pos.z -= int(pos.z);
+
     bool inBBox = this->VolumeDoubleSampler<3>::withinBoundsDataSpace(pos);
     if (!inBBox) return false;
-    // auto steadyVec = this->VolumeDoubleSampler<3>::sampleDataSpace(pos);
-    // static bool dbgTmp = true;
-    // if (dbgTmp && steadyVec.x == 0.0 && steadyVec.y == 0.0 &&
-    //     this->VolumeDoubleSampler<3>::withinBoundsDataSpace(pos)) {
-    //     LogWarn("Terminate me!");
-    //     dbgTmp = false;
-    // }
 
-    // return (steadyVec.x != 0.0 || steadyVec.y != 0.0);
     const dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
     const size3_t indexPos = size3_t(samplePos);
     for (int x = 0; x < 2; ++x) {

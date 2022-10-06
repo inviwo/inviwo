@@ -46,12 +46,11 @@ const ProcessorInfo StreamlinePathways::getProcessorInfo() const { return proces
 
 StreamlinePathways::VolumeRegion::VolumeRegion(const std::string& identifier,
                                                const std::string& displayName,
-                                               const vec4& defaultColor)
+                                               const vec4& defaultColor,
+                                               ConstraintBehavior limitBehavior)
     : CompositeProperty(identifier, displayName)
-    , min_("Min", "Min", dvec3(0, 0, 0), {{0, 0, 0}, ConstraintBehavior::Mutable},
-           {{1, 1, 1}, ConstraintBehavior::Mutable})
-    , max_("Max", "Max", dvec3(1, 1, 1), {{0, 0, 0}, ConstraintBehavior::Mutable},
-           {{1, 1, 1}, ConstraintBehavior::Mutable})
+    , min_("Min", "Min", dvec3(0, 0, 0), {{0, 0, 0}, limitBehavior}, {{1, 1, 1}, limitBehavior})
+    , max_("Max", "Max", dvec3(1, 1, 1), {{0, 0, 0}, limitBehavior}, {{1, 1, 1}, limitBehavior})
     , color_("Color", "Start color", defaultColor, {{0, 0, 0, 0}, ConstraintBehavior::Immutable},
              {{1, 1, 1, 1}, ConstraintBehavior::Immutable}, {0.1, 0.1, 0.1, 0.1},
              InvalidationLevel::InvalidOutput, PropertySemantics::Color) {
@@ -82,7 +81,7 @@ StreamlinePathways::StreamlinePathways()
     , integralLines_("streamlines")
 
     , startRegion_("startRegion", "Start region", {1, 0, 0, 1})
-    , endRegion_("endRegion", "End region", {0, 0, 1, 1})
+    , endRegion_("endRegion", "End region", {0, 0, 1, 1}, ConstraintBehavior::Editable)
     , integrationProperties_("integrationProperties", "Integration properties")
 
     , integrationRequired_(false) {
@@ -159,10 +158,11 @@ void StreamlinePathways::process() {
                 for (size_t p = 0; p < size; ++p) {
                     auto& pos = line.getPositions()[p];
                     depth[p] = pos.z;
-                    if (!reachedEnd && pos.x > endMin.x && pos.x < endMax.x && pos.y > endMin.y &&
+                    if (pos.x > endMin.x && pos.x < endMax.x && pos.y > endMin.y &&
                         pos.y < endMax.y && pos.z > endMin.z && pos.z < endMax.z) {
                         reachedEnd = true;
                         std::cout << "Line " << i << " reached the end!" << std::endl;
+                        break;
                     }
                 }
 
@@ -179,7 +179,7 @@ void StreamlinePathways::process() {
     integralLines_.setData(lines_);
     // lineSelection_.sendSelectionEvent(selectedLines);
     lineSelection_.sendFilterEvent(filteredLines);
-    std::cout << "Done with Streamline Pathways" << std::endl;
+    // std::cout << "Done with Streamline Pathways" << std::endl;
 }
 
 }  // namespace inviwo
