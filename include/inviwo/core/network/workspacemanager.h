@@ -93,7 +93,7 @@ public:
     /**
      * Save the current workspace to a stream
      * \param stream the stream to write to.
-     * \param refPath a reference that that can be use by the serializer to store relative paths.
+     * \param refPath a reference that can be use by the serializer to store relative paths.
      *      The same refPath should be given when loading. Most often this should be the path to the
      *      saved file.
      * \param exceptionHandler A callback for handling errors.
@@ -116,7 +116,7 @@ public:
     /**
      * Load a workspace from a stream
      * \param stream the stream to read from.
-     * \param refPath a reference that that can be use by the deserializer to calculate relative
+     * \param refPath a reference that can be use by the deserializer to calculate relative
      *      paths. The same refPath should be given when loading. Most often this should be the
      *      path to the saved file.
      * \param exceptionHandler A callback for handling errors.

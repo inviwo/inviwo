@@ -101,6 +101,12 @@ void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFact
                                        : "");
             LogError("Failed to register module: " << obj->name << ". Reason:\n"
                                                    << e.getMessage() << err);
+        } catch (const Exception& e) {
+            LogError("Failed to register module: " << obj->name << ". Reason:\n"
+                                                   << e.getMessage());
+        } catch (const std::exception& e) {
+            LogError("Failed to register module: " << obj->name << ". Reason:\n"
+                                                   << e.what());
         }
     }
 

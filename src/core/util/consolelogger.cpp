@@ -117,13 +117,14 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
     constexpr size_t reserved = 45;  // Length of time + logLevel + logSource.
     const auto maxWidth = width - reserved - 1;
 
+    std::vector<std::string_view> sublines;
     util::forEachStringPart(logMsg, "\n", [&](std::string_view line) {
         if (line.size() < maxWidth) {
-            sublines_.push_back(line);
+            sublines.push_back(line);
         } else {
             size_t pos = 0;
             while (pos < line.size()) {
-                sublines_.push_back(util::trim(line.substr(pos, maxWidth)));
+                sublines.push_back(util::trim(line.substr(pos, maxWidth)));
                 pos += maxWidth;
             }
         }
@@ -134,8 +135,7 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
     static constexpr std::string_view delimiter{delim.data(), delim.size()};
     const auto time = std::chrono::system_clock::now();
     fmt::print(os, "{:%H:%M:06.3%S} {:5} {:25} {}\n", time, logLevel, logSource,
-               fmt::join(sublines_, delimiter));
-    sublines_.clear();
+               fmt::join(sublines, delimiter));
 
 #ifdef WIN32
     SetConsoleTextAttribute(hConsole, oldState.wAttributes);
