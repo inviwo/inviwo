@@ -91,7 +91,7 @@ void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string
                                                                        std::string_view) const) &
                  DataReaderFactory::getReaderForTypeAndExtension<T>)
         .def(fmt::format("has{}Reader", type).c_str(),
-             (bool (DataReaderFactory::*)(std::string_view) const) &
+             (bool(DataReaderFactory::*)(std::string_view) const) &
                  DataReaderFactory::hasReaderForTypeAndExtension<T>);
 }
 
@@ -107,15 +107,18 @@ void exposeDataReaders(pybind11::module& m) {
         .def("getOption", &DataReader::getOption);
 
     // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#binding-classes-with-template-parameters
-    py::class_<DataReaderType<Image>, DataReaderTypeTrampoline<Image>>(m, "ImageDataReader")
+    py::class_<DataReaderType<Image>, DataReader, DataReaderTypeTrampoline<Image>>(
+        m, "ImageDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Image>::readData))
         .def("readData",
              py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Image>::readData));
-    py::class_<DataReaderType<Mesh>, DataReaderTypeTrampoline<Mesh>>(m, "MeshDataReader")
+    py::class_<DataReaderType<Mesh>, DataReader, DataReaderTypeTrampoline<Mesh>>(m,
+                                                                                 "MeshDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Mesh>::readData))
         .def("readData",
              py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Mesh>::readData));
-    py::class_<DataReaderType<Volume>, DataReaderTypeTrampoline<Volume>>(m, "VolumeDataReader")
+    py::class_<DataReaderType<Volume>, DataReader, DataReaderTypeTrampoline<Volume>>(
+        m, "VolumeDataReader")
         .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Volume>::readData))
         .def("readData", py::overload_cast<std::string_view, MetaDataOwner*>(
                              &DataReaderType<Volume>::readData));
@@ -130,8 +133,8 @@ void exposeDataReaders(pybind11::module& m) {
                  (std::unique_ptr<DataReader>(DataReaderFactory::*)(std::string_view) const) &
                      DataReaderFactory::create)
             .def("hasKey",
-                 (bool (DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
-            .def("hasKey", (bool (DataReaderFactory::*)(const FileExtension&) const) &
+                 (bool(DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
+            .def("hasKey", (bool(DataReaderFactory::*)(const FileExtension&) const) &
                                DataReaderFactory::hasKey);
     // No good way of dealing with template return types so we manually define one for each known
     // type.
