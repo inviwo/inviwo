@@ -413,7 +413,7 @@ void BrushingAndLinkingManager::serialize(Serializer& s) const {
             s.serialize(toString(action), map, "selection", {},
                         [](BrushingTarget t) { return t.getString(); }, {});
         } else if (std::holds_alternative<IndexListTargets>(targetmap)) {
-            auto& map = std::get<BitSetTargets>(targetmap);
+            auto& map = std::get<IndexListTargets>(targetmap);
             if (map.empty()) continue;
 
             s.serialize(toString(action), map, "selection", {},
