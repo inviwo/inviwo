@@ -95,7 +95,7 @@ void MeshGL::update(bool editable) {
 
     bufferArray_.bind();
     Mesh* owner = this->getOwner();
-    // update all buffers except index buffers, i.e. position, color, normals, etc.)
+    // update regular buffers except index buffers
     for (auto buf : owner->getBuffers()) {
         const BufferGL* bufGL = editable ? buf.second->getEditableRepresentation<BufferGL>()
                                          : buf.second->getRepresentation<BufferGL>();

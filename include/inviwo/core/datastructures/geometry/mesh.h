@@ -125,16 +125,17 @@ public:
      * @param idx   Index of buffer to replace, if the index is not found the new one is appended.
      * @param info  information about the buffer contents (e.g. buffer type and shader location)
      * @param att   new buffer data used during rendering
+     * @return the removed buffer
      */
     std::pair<BufferInfo, std::shared_ptr<BufferBase>> replaceBuffer(
         size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att);
 
     /**
-     * Replaces buffer at index with new buffer
-     * Does nothing if index out of range.
-     * @param old   Old buffer to replace, if the old buffer is not found the new one is appended.
+     * Replaces the old buffer \p old with the new buffer \p att
+     * @param old   Old buffer to replace. If \p old is not found the \p att is appended.
      * @param info  information about the buffer contents (e.g. buffer type and shader location)
      * @param att   new buffer data used during rendering
+     * @return the removed buffer
      */
     std::pair<BufferInfo, std::shared_ptr<BufferBase>> replaceBuffer(
         BufferBase* old, BufferInfo info, std::shared_ptr<BufferBase> att);
@@ -148,7 +149,10 @@ public:
      *
      * \see replaceBuffer
      */
+    // clang-format off
+    [[deprecated("Mesh::setBuffer() is deprecated, use Mesh::replaceBuffer()")]]
     void setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att);
+    // clang-format on
 
     /**
      * Add index buffer. The indices will be used as look up
