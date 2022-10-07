@@ -47,23 +47,23 @@ CefImageConverter::CefImageConverter(vec3 pickingColor) {
     shader_.deactivate();
 }
 
-void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport& toInviwOutput,
+void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport& toInviwoOutput,
                                 const ImageInport* background) {
     if (background && background->isConnected()) {
-        utilgl::activateTargetAndCopySource(toInviwOutput, *background);
+        utilgl::activateTargetAndCopySource(toInviwoOutput, *background);
     } else {
-        utilgl::activateAndClearTarget(toInviwOutput, ImageType::ColorPicking);
+        utilgl::activateAndClearTarget(toInviwoOutput, ImageType::ColorPicking);
     }
     utilgl::BlendModeState blendModeStateGL(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     shader_.activate();
 
-    utilgl::setShaderUniforms(shader_, toInviwOutput, "outportParameters_");
+    utilgl::setShaderUniforms(shader_, toInviwoOutput, "outportParameters");
 
     // bind input image
     TextureUnit texUnit;
     utilgl::bindTexture(fromCefOutput, texUnit);
-    shader_.setUniform("inport_", texUnit);
+    shader_.setUniform("inport", texUnit);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();

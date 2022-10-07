@@ -31,7 +31,6 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
 
-#include <inviwo/core/ports/imageport.h>   // for ImageInport
 #include <inviwo/core/util/glmvec.h>       // for vec3
 #include <modules/opengl/shader/shader.h>  // for Shader, Shader::Build
 
@@ -39,6 +38,12 @@
 
 namespace inviwo {
 class Texture2D;
+
+template <size_t>
+class BaseImageInport;
+
+using ImageInport = BaseImageInport<1>;
+class ImageOutport;
 
 /* \class CefImageConverter
  * Flips vertical component of Cef output image and write to picking layer on non-transparent areas.
@@ -48,7 +53,7 @@ class IVW_MODULE_WEBBROWSER_API CefImageConverter {
 public:
     CefImageConverter(vec3 pickingColor);
 
-    void convert(const Texture2D& fromCefOutput, ImageOutport& toInviwOutput,
+    void convert(const Texture2D& fromCefOutput, ImageOutport& toInviwoOutput,
                  const ImageInport* optionalBackground = nullptr);
 
 protected:
