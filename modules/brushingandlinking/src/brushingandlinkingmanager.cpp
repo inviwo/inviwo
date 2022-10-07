@@ -427,8 +427,14 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
 
             auto des = util::MapDeserializer<BrushingTarget, BitSet>(toString(action), "selection")
                            .setMakeNew([]() { return BitSet(); })
-                           .onNew([&](const BrushingTarget& key, BitSet& b) { map[key] = b; })
-                           .onRemove([&](const BrushingTarget& key) { map.erase(key); });
+                           .onNew([&, a = action](const BrushingTarget& key, BitSet& b) {
+                               map[key] = b;
+                               propagate(a, key);
+                           })
+                           .onRemove([&, a = action](const BrushingTarget& key) {
+                               map.erase(key);
+                               propagate(a, key);
+                           });
             des(d, map);
         } else if (std::holds_alternative<IndexListTargets>(targetmap)) {
             auto& map = std::get<IndexListTargets>(targetmap);
@@ -436,8 +442,14 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
             auto des =
                 util::MapDeserializer<BrushingTarget, IndexList>(toString(action), "selection")
                     .setMakeNew([]() { return IndexList(); })
-                    .onNew([&](const BrushingTarget& key, IndexList& l) { map[key] = l; })
-                    .onRemove([&](const BrushingTarget& key) { map.erase(key); });
+                    .onNew([&, a = action](const BrushingTarget& key, IndexList& l) {
+                        map[key] = l;
+                        propagate(a, key);
+                    })
+                    .onRemove([&, a = action](const BrushingTarget& key) {
+                        map.erase(key);
+                        propagate(a, key);
+                    });
             des(d, map);
         }
     }
