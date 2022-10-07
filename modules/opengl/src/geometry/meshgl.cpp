@@ -100,8 +100,8 @@ void MeshGL::update(bool editable) {
         const BufferGL* bufGL = editable ? buf.second->getEditableRepresentation<BufferGL>()
                                          : buf.second->getRepresentation<BufferGL>();
         bufferGLs_.push_back(bufGL);
-        bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
-                                        static_cast<GLuint>(buf.first.location));
+        bufferArray_.attachBufferObjectEnforce(bufGL->getBufferObject().get(),
+                                               static_cast<GLuint>(buf.first.location));
     }
     bufferArray_.unbind();
     // update index buffers
