@@ -33,17 +33,15 @@
 
 #include <inviwo/core/datastructures/histogram.h>  // for HistogramMode, HistogramSelection
 #include <inviwo/core/ports/volumeport.h>          // for VolumeInport
-#include <inviwo/core/util/glmvec.h>               // for dvec2
+#include <inviwo/core/properties/transferfunctionproperty.h>  // IWYU pragma: keep
+#include <inviwo/core/util/glmvec.h>                          // for dvec2
 
 #include <utility>  // for declval
 
 namespace inviwo {
 
 class IsoValueProperty;
-class Property;
 class TFPrimitiveSet;
-class TFPropertyObserver;
-class TransferFunctionProperty;
 
 namespace util {
 
