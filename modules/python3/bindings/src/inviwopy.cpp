@@ -39,6 +39,7 @@
 #include <modules/python3/pythoninterpreter.h>
 
 #include <inviwopy/pydataformat.h>
+#include <inviwopy/pydatareaders.h>
 #include <inviwopy/pyinviwoapplication.h>
 #include <inviwopy/pyinviwomodule.h>
 #include <inviwopy/pydocument.h>
@@ -119,6 +120,7 @@ PYBIND11_MODULE(inviwopy, m) {
 
     exposePort(m);
 
+    exposeDataReaders(m);
     exposeProcessors(m);
     exposeNetwork(m);
     exposeEvents(m);

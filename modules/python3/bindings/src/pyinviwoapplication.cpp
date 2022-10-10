@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/properties/propertyfactory.h>
@@ -95,6 +96,9 @@ void exposeInviwoApplication(pybind11::module& m) {
 
         .def_property_readonly("network", &InviwoApplication::getProcessorNetwork,
                                "Get the processor network", py::return_value_policy::reference)
+
+        .def_property_readonly("dataReaderFactory", &InviwoApplication::getDataReaderFactory,
+                               py::return_value_policy::reference)
 
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
                                py::return_value_policy::reference)
