@@ -42,9 +42,9 @@
 #include <QHBoxLayout>     // for QHBoxLayout
 #include <QSignalBlocker>  // for QSignalBlocker
 #include <Qt>              // for AlignCenter
+#include <QMenu>           // IWYU pragma: keep
 
 class QHBoxLayout;
-class QMenu;
 
 namespace inviwo {
 

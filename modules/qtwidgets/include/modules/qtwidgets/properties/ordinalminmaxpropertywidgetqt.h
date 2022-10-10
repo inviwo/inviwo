@@ -52,11 +52,13 @@
 #include <QSplitterHandle>             // for QSplitterHandle
 #include <QWidget>                     // for QWidget
 #include <Qt>                          // for Horizontal
+#include <QMenu>                       // IWYU pragma: keep
+
 #include <glm/detail/qualifier.hpp>    // for defaultp, tvec2
 #include <glm/gtc/type_precision.hpp>  // for i64
 
+
 class QHBoxLayout;
-class QMenu;
 
 namespace inviwo {
 
