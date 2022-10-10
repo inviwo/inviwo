@@ -49,6 +49,7 @@
 #include <modules/animation/datastructures/buttontrack.h>               // for ButtonTrack
 #include <modules/animation/datastructures/callbacktrack.h>             // for CallbackTrack
 #include <modules/animation/datastructures/camerakeyframe.h>            // for CameraKeyframe
+#include <modules/animation/datastructures/cameratrack.h>               // IWYU pragma: keep
 #include <modules/animation/datastructures/controltrack.h>              // for ControlTrack
 #include <modules/animation/datastructures/propertytrack.h>             // for PropertyTrack
 #include <modules/animation/datastructures/valuekeyframe.h>             // for ValueKeyframe

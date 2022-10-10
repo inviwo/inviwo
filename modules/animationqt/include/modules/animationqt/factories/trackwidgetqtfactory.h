@@ -32,6 +32,7 @@
 
 #include <inviwo/core/util/factory.h>                                  // for StandardFactory
 #include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>  // IWYU pragma: keep
+#include <modules/animationqt/widgets/trackwidgetqt.h>                 // IWYU pragma: keep
 
 #include <functional>   // for less
 #include <map>          // for map

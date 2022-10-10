@@ -32,6 +32,7 @@
 
 #include <inviwo/core/util/factory.h>                                   // for StandardFactory
 #include <modules/animationqt/factories/sequenceeditorfactoryobject.h>  // IWYU pragma: keep
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>    // IWYU pragma: keep
 
 #include <functional>   // for less
 #include <map>          // for map
@@ -46,7 +47,6 @@ namespace animation {
 
 class AnimationManager;
 class KeyframeSequence;
-class SequenceEditorWidget;
 class Track;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorFactory
