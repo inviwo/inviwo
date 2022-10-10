@@ -44,19 +44,18 @@
 #include <memory>       // for unique_ptr
 #include <type_traits>  // for is_integral, enable_if
 
-#include <QAction>                     // for QAction
-#include <QDoubleSpinBox>              // for QDoubleSpinBox
-#include <QHBoxLayout>                 // for QHBoxLayout
-#include <QSignalBlocker>              // for QSignalBlocker
-#include <QSizePolicy>                 // for QSizePolicy
-#include <QSplitterHandle>             // for QSplitterHandle
-#include <QWidget>                     // for QWidget
-#include <Qt>                          // for Horizontal
-#include <QMenu>                       // IWYU pragma: keep
+#include <QAction>          // for QAction
+#include <QDoubleSpinBox>   // for QDoubleSpinBox
+#include <QHBoxLayout>      // for QHBoxLayout
+#include <QSignalBlocker>   // for QSignalBlocker
+#include <QSizePolicy>      // for QSizePolicy
+#include <QSplitterHandle>  // for QSplitterHandle
+#include <QWidget>          // for QWidget
+#include <Qt>               // for Horizontal
+#include <QMenu>            // IWYU pragma: keep
 
 #include <glm/detail/qualifier.hpp>    // for defaultp, tvec2
 #include <glm/gtc/type_precision.hpp>  // for i64
-
 
 class QHBoxLayout;
 

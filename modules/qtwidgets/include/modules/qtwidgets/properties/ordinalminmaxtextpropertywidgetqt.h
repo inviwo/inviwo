@@ -42,13 +42,13 @@
 #include <cstddef>  // for size_t
 #include <memory>   // for unique_ptr
 
-#include <QAction>                     // for QAction
-#include <QHBoxLayout>                 // for QHBoxLayout
-#include <QLabel>                      // for QLabel
-#include <QSignalBlocker>              // for QSignalBlocker
-#include <QSizePolicy>                 // for QSizePolicy, QSizePol...
-#include <QWidget>                     // for QWidget
-#include <QMenu>                       // IWYU pragma: keep
+#include <QAction>         // for QAction
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QLabel>          // for QLabel
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy, QSizePol...
+#include <QWidget>         // for QWidget
+#include <QMenu>           // IWYU pragma: keep
 
 #include <glm/detail/qualifier.hpp>    // for defaultp, tvec2
 #include <glm/gtc/type_precision.hpp>  // for i64
