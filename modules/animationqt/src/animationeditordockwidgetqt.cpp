@@ -65,8 +65,6 @@
 #include <utility>    // for move
 #include <vector>     // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>         // for QAction
 #include <QComboBox>       // for QComboBox, QComboBox...
 #include <QFrame>          // for QFrame, QFrame::NoFrame
