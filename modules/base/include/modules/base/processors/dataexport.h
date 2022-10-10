@@ -74,10 +74,10 @@ protected:
 template <typename DataType, typename PortType>
 DataExport<DataType, PortType>::DataExport()
     : Processor()
-    , port_("data")
-    , file_("file", "File name", "", "mesh")
-    , export_("export", "Export")
-    , overwrite_("overwrite", "Overwrite", false) {
+    , port_("data", "The data to export"_help)
+    , file_("file", "File name", "The file to save data to"_help, "", "mesh")
+    , export_("export", "Export", "Save data to disk"_help)
+    , overwrite_("overwrite", "Overwrite", "Overwrite any existing data in file"_help, false) {
 
     for (auto& ext : util::getDataWriterFactory()->getExtensionsForType<DataType>()) {
         file_.addNameFilter(ext.toString());

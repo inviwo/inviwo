@@ -69,7 +69,7 @@ const ProcessorInfo ImageExport::processorInfo_{
     "Data Output",             // Category
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
-};
+    R"(A processor to save images to disk)"_unindentHelp};
 
 ImageExport::ImageExport()
     : DataExport<Layer, ImageInport>{}

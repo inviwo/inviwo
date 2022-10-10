@@ -66,8 +66,8 @@ protected:
 template <typename T, typename OutportType>
 VectorElementSelectorProcessor<T, OutportType>::VectorElementSelectorProcessor()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
+    , inport_("inport", "Sequence of data to select from"_help)
+    , outport_("outport", "The select item"_help)
     , timeStep_("timeStep", "Step")
     , name_("name", "Name")
     , timestamp_("timestamp", "Timestamp", 0, std::numeric_limits<double>::lowest(),
