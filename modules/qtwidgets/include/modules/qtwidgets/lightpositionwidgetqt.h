@@ -29,30 +29,21 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLabel>
-#include <warn/pop>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/util/glmvec.h>
-#include <memory>
+#include <inviwo/core/util/glmvec.h>  // for dvec3, dvec2
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QRadialGradient>
-#include <QPixmap>
-#include <warn/pop>
+#include <QLabel>           // for QLabel
+#include <QObject>          // for Q_OBJECT, signals
+#include <QPixmap>          // for QPixmap
+#include <QRadialGradient>  // for QRadialGradient
 
 class QMouseEvent;
 
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API LightPositionWidgetQt : public QLabel {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     LightPositionWidgetQt();
     void setPosition(const dvec3& positionVector);

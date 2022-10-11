@@ -28,25 +28,24 @@
  *********************************************************************************/
 
 #include <modules/animationqt/sequenceeditor/keyframeeditorwidget.h>
-#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
-#include <modules/animation/datastructures/propertytrack.h>
-#include <modules/animation/datastructures/controltrack.h>
 
-#include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
+#include <inviwo/core/common/factoryutil.h>                           // for getPropertyWidgetFa...
+#include <inviwo/core/properties/property.h>                          // for Property
+#include <inviwo/core/properties/propertywidgetfactory.h>             // for PropertyWidgetFactory
+#include <modules/animation/datastructures/animationtime.h>           // for Seconds
+#include <modules/animation/datastructures/controlkeyframe.h>         // for ControlKeyframe
+#include <modules/animation/datastructures/keyframe.h>                // for Keyframe
+#include <modules/animation/datastructures/propertytrack.h>           // for BasePropertyTrack
+#include <modules/animation/datastructures/track.h>                   // for Track
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
+#include <modules/qtwidgets/editablelabelqt.h>                        // for EditableLabelQt
+#include <modules/qtwidgets/properties/propertywidgetqt.h>            // for PropertyWidgetQt
 
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/propertywidgetfactory.h>
-#include <inviwo/core/common/factoryutil.h>
+#include <functional>  // for __base
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QDoubleSpinBox>
-#include <QComboBox>
-#include <QtGlobal>
-#include <warn/pop>
+#include <QComboBox>       // for QComboBox
+#include <QDoubleSpinBox>  // for QDoubleSpinBox
+#include <QHBoxLayout>     // for QHBoxLayout
 
 namespace inviwo {
 

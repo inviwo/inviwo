@@ -29,10 +29,22 @@
 
 #pragma once
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorwidget.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <inviwo/core/processors/processor.h>        // for Processor, Processor::NameDispatche...
+#include <inviwo/core/processors/processorwidget.h>  // for ProcessorWidget
+#include <inviwo/core/util/glmvec.h>                 // for ivec2
+#include <modules/qtwidgets/inviwodockwidget.h>      // for InviwoDockWidget
+
+#include <QObject>                  // for Q_OBJECT
+#include <QString>                  // for QString
+#include <glm/ext/vector_int2.hpp>  // for ivec2
+
+class QHideEvent;
+class QMoveEvent;
+class QResizeEvent;
+class QShowEvent;
+class QWidget;
 
 namespace inviwo {
 
@@ -48,11 +60,7 @@ namespace inviwo {
  */
 class IVW_MODULE_QTWIDGETS_API ProcessorDockWidgetQt : public InviwoDockWidget,
                                                        public ProcessorWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
-
 public:
     ProcessorDockWidgetQt(Processor* p, const QString& title = QString("ProcessorDockWidgetQt"),
                           QWidget* parent = nullptr);

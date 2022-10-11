@@ -28,43 +28,72 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/io/imagewriterutil.h>
-#include <inviwo/core/interaction/events/viewevent.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/processors/canvasprocessor.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/safecstr.h>
-#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
-#include <inviwo/core/util/logcentral.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLocale>
-#include <QApplication>
-#include <QClipboard>
-#include <QPixmap>
-#include <QMenu>
-#include <QAction>
-#include <QMenuBar>
-#include <QPainter>
-#include <QLinearGradient>
-#include <QBuffer>
-#include <QByteArray>
-#include <QStyle>
-#include <QScreen>
-#include <QFontDatabase>
-#include <warn/pop>
+#include <inviwo/core/algorithm/camerautils.h>                // for Side, Side::XNegative, Side...
+#include <inviwo/core/datastructures/image/image.h>           // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>      // for LayerType, LayerType::Color
+#include <inviwo/core/datastructures/image/layer.h>           // for Layer
+#include <inviwo/core/datastructures/isovaluecollection.h>    // for IsoValueCollection
+#include <inviwo/core/datastructures/tfprimitive.h>           // for TFPrimitive
+#include <inviwo/core/datastructures/tfprimitiveset.h>        // for TFPrimitiveSet
+#include <inviwo/core/datastructures/transferfunction.h>      // for TransferFunction
+#include <inviwo/core/interaction/events/eventpropagator.h>   // for EventPropagator
+#include <inviwo/core/interaction/events/viewevent.h>         // for ViewEvent, ViewEvent::FitData
+#include <inviwo/core/io/imagewriterutil.h>                   // for saveLayer
+#include <inviwo/core/network/processornetwork.h>             // for ProcessorNetwork
+#include <inviwo/core/processors/canvasprocessor.h>           // for CanvasProcessor
+#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <inviwo/core/util/exception.h>                       // for Exception
+#include <inviwo/core/util/glmvec.h>                          // for ivec2, vec4, dvec2
+#include <inviwo/core/util/logcentral.h>                      // for LogCentral, LogWarnCustom
+#include <inviwo/core/util/safecstr.h>                        // for SafeCStr
+#include <inviwo/core/util/sourcecontext.h>                   // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stringconversion.h>                // for replaceInString, toString
+#include <inviwo/core/util/transformiterator.h>               // for TransformIterator
+#include <inviwo/core/util/zip.h>                             // for enumerate, zipIterator, zipper
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>           // for TFPropertyConcept
 
-#include <ios>
-#include <exception>
-#include <fmt/format.h>
+#include <algorithm>      // for clamp, find_if, find
+#include <cmath>          // for pow, round
+#include <exception>      // for exception
+#include <ios>            // for ostringstream, ios_base
+#include <memory>         // for unique_ptr
+#include <unordered_map>  // for unordered_map
+
+#include <QAction>          // for QAction
+#include <QApplication>     // for QApplication
+#include <QBrush>           // for QBrush
+#include <QBuffer>          // for QBuffer
+#include <QByteArray>       // for QByteArray
+#include <QClipboard>       // for QClipboard
+#include <QEvent>           // for QEvent, QEvent::Close
+#include <QEventLoop>       // for QEventLoop, QEventLoop::Exc...
+#include <QFlags>           // for QFlags
+#include <QFont>            // for QFont
+#include <QFontDatabase>    // for QFontDatabase, QFontDatabas...
+#include <QFontMetrics>     // for QFontMetrics
+#include <QGuiApplication>  // for QGuiApplication
+#include <QIODevice>        // for QIODevice
+#include <QIODeviceBase>    // for QIODeviceBase::WriteOnly
+#include <QLatin1String>    // for QLatin1String
+#include <QLinearGradient>  // for QLinearGradient
+#include <QList>            // for QList, QList<>::iterator
+#include <QLocale>          // for QLocale
+#include <QMainWindow>      // for QMainWindow
+#include <QMenu>            // for QMenu
+#include <QMenuBar>         // for QMenuBar
+#include <QPainter>         // for QPainter, QPainter::Antiali...
+#include <QPen>             // for QPen
+#include <QPixmap>          // for QPixmap
+#include <QPolygonF>        // for QPolygonF
+#include <QRect>            // for QRect
+#include <QScreen>          // for QScreen
+#include <QStringList>      // for QStringList
+#include <QStyle>           // for QStyle, QStyle::SH_TitleBar...
+#include <QWidget>          // for QWidget
+#include <Qt>               // for Tool, WindowFlags, WindowFu...
+#include <fmt/core.h>       // for format
 
 namespace inviwo {
 

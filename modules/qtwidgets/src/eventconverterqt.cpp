@@ -28,16 +28,19 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/eventconverterqt.h>
-#include <modules/qtwidgets/keyboardutils.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QInputEvent>
-#include <QKeyEvent>
-#include <QGesture>
-#include <warn/pop>
+#include <inviwo/core/interaction/events/gesturestate.h>  // for GestureState, GestureState::NoG...
+#include <inviwo/core/interaction/events/keyboardkeys.h>  // for KeyModifiers, KeyModifier, IvwKey
+#include <inviwo/core/interaction/events/mousebuttons.h>  // for MouseButton, MouseButtons, Mous...
+#include <modules/qtwidgets/keyboardutils.h>              // for mapKeyFromQt
+
+#include <QFlags>         // for QFlags
+#include <QGesture>       // for QGesture
+#include <QInputEvent>    // for QInputEvent
+#include <QMouseEvent>    // for QMouseEvent
+#include <QWheelEvent>    // for QWheelEvent
+#include <Qt>             // for LeftButton, MiddleButton, Right...
+#include <flags/flags.h>  // for none
 
 namespace inviwo {
 

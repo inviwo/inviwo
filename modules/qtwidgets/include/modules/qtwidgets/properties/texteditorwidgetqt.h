@@ -29,19 +29,22 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/properties/property.h>
+#include <modules/qtwidgets/editorfileobserver.h>                 // for EditorFileObserver
+#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>  // for PropertyEditorWidgetQt
 
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
-#include <modules/qtwidgets/editorfileobserver.h>
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <string>      // for string
+
+class QCloseEvent;
 
 namespace inviwo {
 
 class CodeEdit;
-class Property;
 class FileProperty;
+class Property;
 class StringProperty;
 class SyntaxHighlighter;
 

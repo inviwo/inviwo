@@ -28,14 +28,13 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/animationtime.h>  // for Seconds
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QtGlobal>
-#include <warn/pop>
+#include <cstddef>  // for size_t
+
+#include <QtGlobal>  // for qreal
 
 namespace inviwo {
 

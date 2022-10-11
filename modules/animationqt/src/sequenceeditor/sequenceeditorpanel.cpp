@@ -28,24 +28,34 @@
  *********************************************************************************/
 
 #include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
-#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
-#include <modules/animation/animationmanager.h>
-#include <modules/animation/datastructures/animation.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/keyframesequence.h>
+#include <inviwo/core/util/indirectiterator.h>                        // for IndirectIterator
+#include <modules/animation/animationcontroller.h>                    // for AnimationController
+#include <modules/animation/animationcontrollerobserver.h>            // for AnimationController...
+#include <modules/animation/datastructures/animation.h>               // for Animation
+#include <modules/animation/datastructures/track.h>                   // for Track
+#include <modules/animationqt/factories/sequenceeditorfactory.h>      // for SequenceEditorFactory
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
 
-#include <modules/animationqt/factories/sequenceeditorfactory.h>
+#include <cstddef>  // for size_t
+#include <memory>   // for unique_ptr
+#include <string>   // for basic_string, string
+#include <utility>  // for pair
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QVBoxLayout>
-#include <QScrollArea>
-#include <warn/pop>
+#include <QFrame>       // for QFrame, QFrame::NoF...
+#include <QScrollArea>  // for QScrollArea
+#include <QVBoxLayout>  // for QVBoxLayout
+#include <QWidget>      // for QWidget
+#include <Qt>           // for ScrollBarAsNeeded
+
+class QLayout;
 
 namespace inviwo {
 
 namespace animation {
+
+class KeyframeSequence;
+
 SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, AnimationManager& manager,
                                          SequenceEditorFactory& editorFactory, QWidget* parent)
     : QScrollArea(parent), manager_(manager), factory_{editorFactory} {

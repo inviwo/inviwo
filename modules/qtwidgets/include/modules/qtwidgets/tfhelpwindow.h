@@ -30,14 +30,12 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+
 #include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QObject>
-#include <warn/pop>
-
 #include <memory>
+
+#include <QObject>
 
 class QAction;
 class QWidget;
@@ -51,10 +49,7 @@ public:
 };
 
 class IVW_MODULE_QTWIDGETS_API TFMenuHelper : public QObject {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     TFMenuHelper();
     virtual ~TFMenuHelper();

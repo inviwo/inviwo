@@ -29,16 +29,18 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <warn/pop>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-class QPaintEvent;
+#include <QObject>  // for Q_OBJECT, Q_PROPERTY, signals, slots
+#include <QWidget>  // for QWidget
+#include <Qt>       // for DockWidgetAreas
+
+class QEvent;
+class QShowEvent;
 class QDockWidget;
-class QToolButton;
 class QLabel;
+class QPaintEvent;
+class QToolButton;
 
 namespace inviwo {
 
@@ -55,11 +57,8 @@ Note: adding a custom title bar to a QDockWidget removes the window decoration!
 */
 class IVW_MODULE_QTWIDGETS_API InviwoDockWidgetTitleBar : public QWidget {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
     Q_PROPERTY(double iconSize READ getIconSize WRITE setIconSize DESIGNABLE true SCRIPTABLE true)
-#include <warn/pop>
 #endif
 public:
     InviwoDockWidgetTitleBar(QWidget* parent = nullptr);

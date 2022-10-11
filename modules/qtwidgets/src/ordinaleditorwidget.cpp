@@ -29,11 +29,17 @@
 
 #include <modules/qtwidgets/ordinaleditorwidget.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QHBoxLayout>
-#include <QSignalBlocker>
-#include <warn/pop>
+#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
+#include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
+
+#include <limits>  // for numeric_limits
+
+#include <QDoubleSpinBox>  // for QDoubleSpinBox
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy, QSizePolicy::Minimum
+
+class QHBoxLayout;
 
 namespace inviwo {
 

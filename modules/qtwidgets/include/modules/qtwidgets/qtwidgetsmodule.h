@@ -29,13 +29,16 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/tfhelpwindow.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <memory>
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+
+#include <memory>  // for unique_ptr
 
 namespace inviwo {
+class InviwoApplication;
+class TFHelpWindow;
+class TFMenuHelper;
 
 class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
 public:

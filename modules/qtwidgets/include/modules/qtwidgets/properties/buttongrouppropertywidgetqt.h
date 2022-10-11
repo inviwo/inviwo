@@ -28,11 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/buttongroupproperty.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
 namespace inviwo {
+class ButtonGroupProperty;
 
 class IVW_MODULE_QTWIDGETS_API ButtonGroupPropertyWidgetQt : public PropertyWidgetQt {
 public:

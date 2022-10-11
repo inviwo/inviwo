@@ -29,6 +29,8 @@
 
 #include <modules/animationqt/factories/trackwidgetqtfactory.h>
 
+#include <utility>  // for pair
+
 namespace inviwo {
 
 namespace animation {

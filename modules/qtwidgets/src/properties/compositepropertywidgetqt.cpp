@@ -28,11 +28,15 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/compositeproperty.h>
+
+#include <inviwo/core/properties/compositeproperty.h>                  // for CompositeProperty
+#include <inviwo/core/properties/compositepropertyobserver.h>          // for CompositePropertyO...
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
+
+#include <vector>  // for vector
 
 namespace inviwo {
+class Property;
 
 CompositePropertyWidgetQt::CompositePropertyWidgetQt(CompositeProperty* property)
     : CollapsibleGroupBoxWidgetQt(property), compProperty_(property) {

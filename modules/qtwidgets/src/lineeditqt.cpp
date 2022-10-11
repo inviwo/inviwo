@@ -29,10 +29,13 @@
 
 #include <modules/qtwidgets/lineeditqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QKeyEvent>
-#include <warn/pop>
+#include <QColor>     // for QColor
+#include <QKeyEvent>  // for QKeyEvent
+#include <QPalette>   // for QPalette, QPalette::PlaceholderText
+#include <Qt>         // for Key_Escape
+
+class QPaintEvent;
+class QWidget;
 
 namespace inviwo {
 

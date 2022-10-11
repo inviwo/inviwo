@@ -29,27 +29,25 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/util/glm.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QSplitter>
-#include <QFrame>
-#include <warn/pop>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <functional>
+#include <inviwo/core/util/glmvec.h>  // for ivec2
 
+#include <functional>  // for function
+#include <string>      // for string
+
+#include <QObject>    // for Q_OBJECT, signals
+#include <QSplitter>  // for QSplitter
+#include <Qt>         // for Horizontal, Orientation
+
+class QEvent;
+class QWidget;
 class QResizeEvent;
 
 namespace inviwo {
 
-class RangeSliderMiddle;
-
 class IVW_MODULE_QTWIDGETS_API RangeSliderQt : public QSplitter {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     RangeSliderQt(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = nullptr,
                   bool showTooltip = false);

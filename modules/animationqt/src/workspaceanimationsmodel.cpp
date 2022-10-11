@@ -29,9 +29,21 @@
 
 #include <modules/animationqt/workspaceanimationsmodel.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/util/dispatcher.h>                 // for Dispatcher<>::Handle
+#include <modules/animation/datastructures/animation.h>  // for Animation
+#include <modules/animation/workspaceanimations.h>       // for WorkspaceAnimations, WorkspaceAn...
+#include <modules/qtwidgets/inviwoqtutils.h>             // for fromQString, toQString
 
-#include <inviwo/core/util/zip.h>
+#include <cstddef>     // for size_t
+#include <functional>  // for __base
+#include <iterator>    // for distance
+#include <string>      // for operator==, string, basic_string
+
+#include <QFlags>      // for QFlags
+#include <QObject>     // for emit
+#include <fmt/core.h>  // for format
+
+class QModelIndex;
 
 namespace inviwo {
 

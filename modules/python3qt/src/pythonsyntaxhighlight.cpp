@@ -29,10 +29,20 @@
 
 #include <modules/python3qt/pythonsyntaxhighlight.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/properties/optionproperty.h>   // for OptionPropertyString
+#include <inviwo/core/properties/ordinalproperty.h>  // for FloatVec4Property, ordinalColor, Int...
+#include <inviwo/core/properties/property.h>         // for Property
+#include <inviwo/core/util/settings/settings.h>      // for Settings
+#include <modules/qtwidgets/inviwoqtutils.h>         // for toQColor, getDefaultMonoSpaceFontIndex
+#include <modules/qtwidgets/syntaxhighlighter.h>     // for SyntaxHighlighter, background, comment
 
-#include <array>
-#include <string_view>
+#include <array>        // for array
+#include <chrono>       // for literals
+#include <string>       // for string
+#include <string_view>  // for operator""sv, string_view, basic_str...
+
+#include <QColor>           // for QColor
+#include <QTextCharFormat>  // for QTextCharFormat
 
 using namespace std::literals;
 

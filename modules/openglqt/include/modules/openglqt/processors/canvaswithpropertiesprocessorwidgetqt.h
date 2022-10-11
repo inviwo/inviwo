@@ -28,29 +28,31 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/processors/canvasprocessorwidget.h>
-#include <inviwo/core/processors/processor.h>
+#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
 
-#include <modules/openglqt/canvasqopenglwidget.h>
+#include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
+#include <inviwo/core/processors/processor.h>              // for Processor, Processor::NameDisp...
+#include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
 
-#include <functional>
-#include <vector>
-#include <string>
+#include <functional>   // for function
+#include <memory>       // for unique_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QMainWindow>
-#include <warn/pop>
+#include <QMainWindow>  // for QMainWindow
 
-class QResizeEvent;
-class QShowEvent;
+class QEvent;
+class QMenu;
 class QHideEvent;
 class QMoveEvent;
+class QResizeEvent;
+class QShowEvent;
 
 namespace inviwo {
 
-class Processor;
+class Canvas;
+class CanvasQOpenGLWidget;
 class PropertyListFrame;
 
 class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessorWidgetQt : public CanvasProcessorWidget,

@@ -29,17 +29,16 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/ordinalbasewidget.h>
-#include <inviwo/core/properties/constraintbehavior.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <QLocale>
-#include <warn/pop>
+#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior
+#include <modules/qtwidgets/inviwoqtutils.h>            // for decimals
+#include <modules/qtwidgets/ordinalbasewidget.h>        // for OrdinalBaseWidget
 
+#include <QObject>  // for Q_OBJECT, signals
+#include <QWidget>  // for QWidget
+
+class QEvent;
 class QSlider;
 
 namespace inviwo {
@@ -47,10 +46,7 @@ namespace inviwo {
 class NumberLineEdit;
 
 class IVW_MODULE_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     BaseSliderWidgetQt(bool intMode = false);
     virtual ~BaseSliderWidgetQt() = default;

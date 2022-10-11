@@ -37,27 +37,25 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <QImage>
-#include <QPixmap>
-#include <QColor>
-#include <QPainter>
-#include <warn/pop>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
+#include <QColor>   // for QColor
+#include <QImage>   // for QImage
+#include <QObject>  // for slots, Q_OBJECT, signals
+#include <QPoint>   // for QPoint
+#include <QRegion>  // for QRegion
+#include <QSize>    // for QSize
+#include <QWidget>  // for QWidget
+
+class QPainter;
 class QMouseEvent;
-class QResizeEvent;
 class QPaintEvent;
+class QResizeEvent;
 
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API ColorWheel : public QWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     explicit ColorWheel(const QSize& initialSize = QSize(200, 200), QWidget* parent = 0);
 

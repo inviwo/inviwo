@@ -28,28 +28,41 @@
  *********************************************************************************/
 
 #include <modules/python3qt/pythonmenu.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/filesystem.h>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>       // for InviwoModule
+#include <inviwo/core/util/filedialogstate.h>      // for AcceptMode, AcceptMode::Save, FileMode
+#include <inviwo/core/util/filesystem.h>           // for createDirectoryRecursively, getFileNam...
+#include <inviwo/core/util/pathtype.h>             // for PathType, PathType::Settings
+#include <modules/python3/python3module.h>         // for Python3Module
+#include <modules/python3/pythonscript.h>          // for PythonScriptDisk
+#include <modules/python3qt/pythoneditorwidget.h>  // for PythonEditorWidget
+#include <modules/qtwidgets/inviwofiledialog.h>    // for InviwoFileDialog
+#include <modules/qtwidgets/inviwoqtutils.h>       // for addMenu, fromQString, getApplicationMa...
 
-#include <modules/python3qt/pythoneditorwidget.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
+#include <algorithm>    // for find_if
+#include <fstream>      // for stringstream, basic_filebuf, basic_ifs...
+#include <string>       // for basic_string, operator+
+#include <type_traits>  // for remove_reference<>::type
+#include <utility>      // for move
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QMenu>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <QAction>
-#include <QLayout>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QToolBar>
-#include <warn/pop>
+#include <QAction>           // for QAction
+#include <QDesktopServices>  // for QDesktopServices
+#include <QFileDialog>       // for QFileDialog, QFileDialog::DontConfirmO...
+#include <QIcon>             // for QIcon
+#include <QList>             // for QList
+#include <QMainWindow>       // for QMainWindow
+#include <QMenu>             // for QMenu
+#include <QPoint>            // for QPoint, operator+
+#include <QString>           // for operator+, QString
+#include <QStringList>       // for QStringList
+#include <QToolBar>          // for QToolBar
+#include <QUrl>              // for QUrl, QUrl::TolerantMode
+#include <Qt>                // for WA_DeleteOnClose
+#include <fmt/core.h>        // for basic_string_view, arg
+#include <fmt/ostream.h>     // for print
+
+class QObject;
 
 namespace inviwo {
 

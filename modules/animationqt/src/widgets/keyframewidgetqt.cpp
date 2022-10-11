@@ -29,16 +29,31 @@
 
 #include <modules/animationqt/widgets/keyframewidgetqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsLineItem>
-#include <QGraphicsItem>
-#include <QPainter>
-#include <QRadialGradient>
-#include <QApplication>
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include <warn/pop>
+#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <modules/animation/datastructures/keyframe.h>       // for Keyframe
+#include <modules/animationqt/widgets/editorconstants.h>     // for timeToScenePos, trackHeight
+
+#include <algorithm>  // for max
+
+#include <QApplication>     // for QApplication
+#include <QBrush>           // for QBrush
+#include <QColor>           // for QColor
+#include <QFlags>           // for QFlags
+#include <QGraphicsItem>    // for operator|, QGraphicsItem
+#include <QGraphicsScene>   // for QGraphicsScene
+#include <QGraphicsView>    // for QGraphicsView
+#include <QList>            // for QList
+#include <QPainter>         // for QPainter, QPainter::Antialia...
+#include <QPen>             // for QPen
+#include <QPoint>           // for operator!=, QPoint
+#include <QPointF>          // for QPointF
+#include <QRadialGradient>  // for QRadialGradient
+#include <QTransform>       // for QTransform
+#include <Qt>               // for LeftButton, MouseButtons
+#include <qglobal.h>        // for operator==, qreal
+
+class QStyleOptionGraphicsItem;
+class QWidget;
 
 namespace inviwo {
 

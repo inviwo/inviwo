@@ -28,15 +28,22 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/tf/tfeditorisovalue.h>
-#include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
-#include <modules/qtwidgets/tf/tfeditor.h>
-#include <modules/qtwidgets/tf/tfeditorview.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsScene>
-#include <QPainter>
-#include <warn/pop>
+#include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive, operator==
+#include <inviwo/core/util/glmvec.h>                 // for dvec2
+#include <modules/qtwidgets/tf/tfeditor.h>           // for TFEditor
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive
+
+#include <QColor>          // for QColor
+#include <QGraphicsScene>  // for QGraphicsScene
+#include <QLineF>          // for QLineF
+#include <QObject>         // for qobject_cast
+#include <QPainter>        // for QPainter
+#include <QPen>            // for QPen
+#include <QPointF>         // for QPointF
+#include <QSizeF>          // for QSizeF
+#include <Qt>              // for DashLine, NoBrush, RoundCap
+#include <glm/vec2.hpp>    // for vec<>::(anonymous)
 
 namespace inviwo {
 

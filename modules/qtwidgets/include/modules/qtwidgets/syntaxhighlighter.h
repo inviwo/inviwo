@@ -29,24 +29,24 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-// QT includes
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QSyntaxHighlighter>
-#include <QRegularExpression>
-#include <warn/pop>
+#include <inviwo/core/util/glmvec.h>  // for vec4
 
-#include <fmt/format.h>
-#include <tcb/span.hpp>
+#include <QObject>             // for Q_OBJECT, signals
+#include <QRegularExpression>  // for QRegularExpression
+#include <QString>             // for QString
+#include <QSyntaxHighlighter>  // for QSyntaxHighlighter
+#include <QTextCharFormat>     // for QTextCharFormat
+#include <glm/vec4.hpp>        // for operator/
 
-#include <functional>
-#include <memory>
-#include <vector>
-#include <string_view>
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
+#include <tcb/span.hpp>  // for span
+
+class QTextCharFormat;
 class QTextDocument;
 
 namespace inviwo {
@@ -95,10 +95,7 @@ constexpr vec4 main = sea_green;
 }  // namespace syntax
 
 class IVW_MODULE_QTWIDGETS_API SyntaxHighlighter : public QSyntaxHighlighter {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 
 public:
     SyntaxHighlighter(QTextDocument* parent);

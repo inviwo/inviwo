@@ -29,32 +29,48 @@
 
 #include <modules/animationqt/animationeditorqt.h>
 
-#include <inviwo/core/util/zip.h>
+#include <inviwo/core/properties/property.h>                       // for Property
+#include <inviwo/core/properties/propertyowner.h>                  // for PropertyOwner
+#include <inviwo/core/properties/propertywidget.h>                 // for PropertyWidget
+#include <inviwo/core/util/exception.h>                            // for Exception
+#include <inviwo/core/util/indirectiterator.h>                     // for IndirectIterator
+#include <inviwo/core/util/sourcecontext.h>                        // for IVW_CONTEXT
+#include <inviwo/core/util/zip.h>                                  // for enumerate, zipIterator
+#include <modules/animation/animationcontroller.h>                 // for AnimationController
+#include <modules/animation/animationcontrollerobserver.h>         // for AnimationControllerObs...
+#include <modules/animation/datastructures/animation.h>            // for Animation
+#include <modules/animation/datastructures/animationstate.h>       // for AnimationState, Animat...
+#include <modules/animation/datastructures/animationtime.h>        // for Seconds
+#include <modules/animation/datastructures/keyframe.h>             // IWYU pragma: keep
+#include <modules/animation/datastructures/track.h>                // for Track
+#include <modules/animationqt/factories/trackwidgetqtfactory.h>    // for TrackWidgetQtFactory
+#include <modules/animationqt/widgets/editorconstants.h>           // for getSnapTime, trackHeight
+#include <modules/animationqt/widgets/keyframesequencewidgetqt.h>  // for KeyframeSequenceWidgetQt
+#include <modules/animationqt/widgets/keyframewidgetqt.h>          // for KeyframeWidgetQt
+#include <modules/animationqt/widgets/trackwidgetqt.h>             // for TrackWidgetQt
+#include <modules/qtwidgets/textlabeloverlay.h>                    // for TextLabelOverlay
 
-#include <modules/qtwidgets/textlabeloverlay.h>
+#include <chrono>   // for milliseconds
+#include <string>   // for basic_string, string
+#include <utility>  // for move, pair
 
-#include <modules/animation/animationmodule.h>
-#include <modules/animation/datastructures/animation.h>
-#include <modules/animation/animationcontroller.h>
+#include <QColor>                       // for QColor
+#include <QFlags>                       // for QFlags
+#include <QGraphicsItem>                // for qgraphicsitem_cast
+#include <QGraphicsLineItem>            // for QGraphicsLineItem
+#include <QGraphicsSceneDragDropEvent>  // for QGraphicsSceneDragDrop...
+#include <QGraphicsView>                // for QGraphicsView
+#include <QKeyEvent>                    // for QKeyEvent
+#include <QList>                        // for QList, QList<>::iterator
+#include <QPen>                         // for QPen
+#include <QPointF>                      // for QPointF
+#include <QTransform>                   // for QTransform
+#include <QWidget>                      // for QWidget
+#include <Qt>                           // for ControlModifier, DashLine
+#include <QtGlobal>                     // for qreal
+#include <fmt/core.h>                   // for format
 
-#include <modules/animationqt/widgets/trackwidgetqt.h>
-#include <modules/animationqt/widgets/keyframewidgetqt.h>
-#include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
-
-#include <modules/animationqt/factories/trackwidgetqtfactory.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QPainter>
-#include <QGraphicsItem>
-#include <QGraphicsView>
-#include <QKeyEvent>
-#include <QGraphicsSceneDragDropEvent>
-#include <QMimeData>
-#include <QDropEvent>
-#include <QWidget>
-#include <QPen>
-#include <warn/pop>
+class QGraphicsSceneDragDropEvent;
 
 namespace inviwo {
 

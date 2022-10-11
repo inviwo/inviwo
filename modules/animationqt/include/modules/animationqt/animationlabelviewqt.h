@@ -28,16 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animation/datastructures/animationobserver.h>
-#include <modules/animation/animationcontroller.h>
+#include <modules/animation/animationcontrollerobserver.h>       // for AnimationControllerObserver
+#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QListView>
-#include <QStringList>
-#include <warn/pop>
+#include <QListView>  // for QListView
 
 class QStandardItemModel;
 
@@ -45,6 +41,8 @@ namespace inviwo {
 
 namespace animation {
 
+class AnimationController;
+class Track;
 class Animation;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QListView,

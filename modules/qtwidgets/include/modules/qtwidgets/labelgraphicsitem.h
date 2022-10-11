@@ -29,12 +29,19 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/util/observer.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsTextItem>
-#include <warn/pop>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+
+#include <inviwo/core/util/observer.h>  // for Observable, Observer
+
+#include <vector>  // for vector
+
+#include <QGraphicsTextItem>  // for QGraphicsTextItem
+#include <QString>            // for QString
+#include <Qt>                 // for operator|, Alignment, AlignLeft
+
+class QFocusEvent;
+class QGraphicsItem;
+class QKeyEvent;
 
 namespace inviwo {
 class LabelGraphicsItem;

@@ -28,22 +28,29 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
-
-#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>  // for IVW_MODULE_DATAFRAMEQT_API
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QAbstractTableModel>
+#include <QAbstractTableModel>  // for QAbstractTableModel
+#include <QModelIndex>          // for QModelIndex
+#include <QModelIndexList>      // for QModelIndexList
+#include <QObject>              // for Q_OBJECT
+#include <QVariant>             // for QVariant
+#include <Qt>                   // for DisplayRole, Orientation, UserRole
+
+class QModelIndex;
+
 #include <warn/pop>
 
-#include <vector>
-#include <functional>
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <vector>      // for vector
 
 namespace inviwo {
 
-class DataFrame;
 class BrushingAndLinkingManager;
+class DataFrame;
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameModel : public QAbstractTableModel {
 #include <warn/push>

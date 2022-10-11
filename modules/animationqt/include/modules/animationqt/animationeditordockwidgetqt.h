@@ -28,29 +28,32 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/animation/animationcontrollerobserver.h>    // for AnimationControllerObserver
+#include <modules/animation/datastructures/animationstate.h>  // for AnimationState
+#include <modules/qtwidgets/inviwodockwidget.h>               // for InviwoDockWidget
 
-#include <modules/animation/animationcontrollerobserver.h>
+#include <memory>  // for unique_ptr
+#include <string>  // for string
 
-#include <memory>
-
-class QToolButton;
-class QMainWindow;
+class QAction;
 class QComboBox;
+class QMainWindow;
+class QWidget;
 
 namespace inviwo {
 
 namespace animation {
 
-class AnimationManager;
+class Animation;
 class AnimationController;
 class AnimationEditorQt;
+class AnimationManager;
 class AnimationViewQt;
+class SequenceEditorFactory;
 class SequenceEditorPanel;
 class TrackWidgetQtFactory;
-class SequenceEditorFactory;
 class WorkspaceAnimations;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,

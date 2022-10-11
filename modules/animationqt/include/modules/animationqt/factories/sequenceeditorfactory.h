@@ -28,21 +28,26 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
-#include <inviwo/core/util/factory.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
-#include <modules/animationqt/factories/sequenceeditorfactoryobject.h>
+#include <inviwo/core/util/factory.h>                                   // for StandardFactory
+#include <modules/animationqt/factories/sequenceeditorfactoryobject.h>  // IWYU pragma: keep
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>    // IWYU pragma: keep
 
-#include <map>
+#include <functional>   // for less
+#include <map>          // for map
+#include <memory>       // for unique_ptr
+#include <string>       // for string, operator<
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 namespace inviwo {
 
 namespace animation {
 
-class Track;
-class KeyframeSequence;
 class AnimationManager;
+class KeyframeSequence;
+class Track;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorFactory
     : public StandardFactory<SequenceEditorWidget, SequenceEditorFactoryObject, std::string_view,

@@ -28,11 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
+#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
 
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>  // for FilePropertyWidgetQt
 
 namespace inviwo {
+class FileProperty;
 
 /**
  * @brief Widget for a FileProperty with ShaderEditor semantics

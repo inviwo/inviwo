@@ -28,20 +28,26 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/keyframeobserver.h>
-#include <modules/animationqt/widgets/editorconstants.h>
+#include <modules/animation/datastructures/animationtime.h>     // for Seconds
+#include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObserver
+#include <modules/animationqt/widgets/editorconstants.h>        // for ItemTypes, ItemTypes::Key...
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsItem>
-#include <warn/pop>
+#include <QGraphicsItem>  // for QGraphicsItem, QGraphicsI...
+#include <QRectF>         // for QRectF
+#include <QVariant>       // for QVariant
+
+class QPainter;
+class QRectF;
+class QStyleOptionGraphicsItem;
+class QWidget;
 
 namespace inviwo {
 
 namespace animation {
+
+class Keyframe;
 
 /**
  * \class KeyframeWidgetQt

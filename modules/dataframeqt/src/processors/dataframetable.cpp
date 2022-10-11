@@ -29,12 +29,35 @@
 
 #include <inviwo/dataframeqt/processors/dataframetable.h>
 
-#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
-#include <inviwo/core/processors/processorwidget.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/io/datawriterutil.h>
+#include <inviwo/core/io/datawriterutil.h>                             // for saveData
+#include <inviwo/core/metadata/processorwidgetmetadata.h>              // for ProcessorWidgetMet...
+#include <inviwo/core/network/networklock.h>                           // for NetworkLock
+#include <inviwo/core/processors/processor.h>                          // for Processor
+#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
+#include <inviwo/core/processors/processortags.h>                      // for Tags, Tag, Tags::CPU
+#include <inviwo/core/processors/processorwidget.h>                    // for ProcessorWidget
+#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
+#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                    // for IntSize2Property
+#include <inviwo/core/properties/property.h>                           // for Property, Property...
+#include <inviwo/core/properties/propertysemantics.h>                  // for PropertySemantics
+#include <inviwo/core/properties/valuewrapper.h>                       // for PropertySerializat...
+#include <inviwo/core/util/exception.h>                                // for Exception
+#include <inviwo/core/util/sourcecontext.h>                            // for IVW_CONTEXT
+#include <inviwo/core/util/statecoordinator.h>                         // for StateCoordinator
+#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
+#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>          // for DataFrameTableProc...
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+
+#include <functional>  // for __base
+#include <limits>      // for numeric_limits
+#include <map>         // for map
+#include <utility>     // for move
+
+#include <glm/vec2.hpp>  // for operator!=
 
 namespace inviwo {
+class FileExtension;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameTable::processorInfo_{

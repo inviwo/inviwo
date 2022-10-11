@@ -28,12 +28,16 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animationqt/factories/sequenceeditorfactory.h>
-#include <modules/animationqt/factories/trackwidgetqtfactory.h>
-#include <modules/animationqt/factories/sequenceeditorfactoryobject.h>
-#include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>
+#include <modules/animationqt/factories/sequenceeditorfactory.h>        // for SequenceEditorFactory
+#include <modules/animationqt/factories/sequenceeditorfactoryobject.h>  // IWYU pragma: keep
+#include <modules/animationqt/factories/trackwidgetqtfactory.h>         // for TrackWidgetQtFactory
+#include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>   // IWYU pragma: keep
+
+#include <memory>  // for unique_ptr, make_unique
+#include <string>  // for string
+#include <vector>  // for vector
 
 namespace inviwo {
 

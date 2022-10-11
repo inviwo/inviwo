@@ -28,17 +28,29 @@
  *********************************************************************************/
 
 #include <modules/animationqt/trackcontrolswidgetqt.h>
-#include <modules/animation/datastructures/propertytrack.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QHBoxLayout>
-#include <QToolButton>
-#include <QAction>
-#include <QLabel>
-#include <QApplication>
-#include <warn/pop>
+#include <inviwo/core/util/logcentral.h>                     // for LogCentral, LogWarn
+#include <modules/animation/animationcontroller.h>           // for AnimationController
+#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <modules/animation/datastructures/track.h>          // for Track
+#include <modules/qtwidgets/inviwoqtutils.h>                 // for toQString
+
+#include <algorithm>  // for lower_bound, upper_bound
+#include <chrono>     // for duration
+#include <iterator>   // for prev
+#include <vector>     // for vector
+
+#include <QAction>       // for QAction
+#include <QApplication>  // for QApplication
+#include <QFlags>        // for QFlags
+#include <QHBoxLayout>   // for QHBoxLayout
+#include <QIcon>         // for QIcon, QIcon::Normal, QIcon::On
+#include <QLabel>        // for QLabel
+#include <QSize>         // for QSize
+#include <QToolButton>   // for QToolButton
+#include <Qt>            // for operator|, AlignVCenter, Ali...
+
+class QStandardItem;
 
 namespace inviwo {
 

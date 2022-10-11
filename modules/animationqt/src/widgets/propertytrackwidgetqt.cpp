@@ -29,9 +29,12 @@
 
 #include <modules/animationqt/widgets/propertytrackwidgetqt.h>
 
+#include <modules/animationqt/widgets/trackwidgetqt.h>  // for TrackWidgetQt
+
 namespace inviwo {
 
 namespace animation {
+class Track;
 
 PropertyTrackWidgetQt::PropertyTrackWidgetQt(Track& track) : TrackWidgetQt(track) {}
 

@@ -28,28 +28,43 @@
  *********************************************************************************/
 
 #include <modules/openglqt/processors/canvasprocessorwidgetqt.h>
-#include <inviwo/core/processors/canvasprocessor.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/interaction/events/resizeevent.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/metadata/processormetadata.h>
 
-#include <glm/gtx/scalar_multiplication.hpp>
+#include <inviwo/core/interaction/events/resizeevent.h>    // for ResizeEvent
+#include <inviwo/core/metadata/processormetadata.h>        // for ProcessorMetaData, ProcessorMe...
+#include <inviwo/core/network/networklock.h>               // for NetworkLock
+#include <inviwo/core/processors/canvasprocessor.h>        // for CanvasProcessor
+#include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorwidget.h>        // for ProcessorWidget
+#include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
+#include <inviwo/core/util/raiiutils.h>                    // for KeepTrueWhileInScope
+#include <inviwo/core/util/rendercontext.h>                // for RenderContext
+#include <modules/openglqt/canvasqopenglwidget.h>          // for CanvasQOpenGLWidget
+#include <modules/qtwidgets/inviwoqtutils.h>               // for setFullScreenAndOnTop, toGLM
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QResizeEvent>
-#include <QMoveEvent>
-#include <QGridLayout>
-#include <QAction>
-#include <QMenu>
-#include <QMainWindow>
-#include <warn/pop>
+#include <string>       // for string
+#include <string_view>  // for string_view
+
+#include <QAction>                            // for QAction
+#include <QGridLayout>                        // for QGridLayout
+#include <QIcon>                              // for QIcon
+#include <QMainWindow>                        // for QMainWindow
+#include <QMenu>                              // for QMenu
+#include <QMoveEvent>                         // for QMoveEvent
+#include <QPoint>                             // for QPoint
+#include <Qt>                                 // for NoFocus, Tool, WA_MacAlwaysSho...
+#include <glm/fwd.hpp>                        // for vec2
+#include <glm/gtx/scalar_multiplication.hpp>  // for operator/, operator*
+#include <glm/vec2.hpp>                       // for operator!=, vec<>::(anonymous)
+
+class QHideEvent;
+class QMoveEvent;
+class QResizeEvent;
+class QShowEvent;
 
 namespace inviwo {
+
+class Canvas;
 
 CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     : CanvasProcessorWidget(p)

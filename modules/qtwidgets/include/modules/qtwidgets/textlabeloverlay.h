@@ -28,20 +28,17 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLabel>
-#include <warn/pop>
+#include <QLabel>  // for QLabel
+#include <QSize>   // for QSize
 
-#include <chrono>
-#include <memory>
+#include <chrono>  // for milliseconds
+#include <memory>  // for unique_ptr
+#include <string>  // for string
 
-class QObject;
-class QEvent;
-class QMouseEvent;
 class QTimer;
+class QWidget;
 
 namespace inviwo {
 

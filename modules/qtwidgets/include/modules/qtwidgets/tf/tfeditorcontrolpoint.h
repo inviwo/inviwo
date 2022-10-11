@@ -29,10 +29,21 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive, TFPrimitiveObserver
+#include <inviwo/core/util/glmvec.h>                 // for dvec2
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
+
+#include <QGraphicsItem>  // for QGraphicsItem::UserType
+#include <QPainterPath>   // for QPainterPath
+#include <QPointF>        // for QPointF
+#include <QRectF>         // for QRectF
+
+class QGraphicsScene;
+class QPainter;
+class QPointF;
+class QRectF;
 
 namespace inviwo {
 

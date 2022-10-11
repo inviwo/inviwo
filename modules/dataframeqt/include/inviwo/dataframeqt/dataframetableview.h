@@ -28,20 +28,26 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
-#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>  // for IVW_MODULE_DATAFRAMEQT_API
+
+#include <memory>  // for shared_ptr
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QTableView>
+#include <QObject>     // for Q_OBJECT
+#include <QTableView>  // for QTableView
+
+class QEvent;
+class QWidget;
+
 #include <warn/pop>
 
 namespace inviwo {
 
+class BrushingAndLinkingManager;
 class DataFrame;
 class DataFrameModel;
 class DataFrameSortFilterProxy;
-class BrushingAndLinkingManager;
 
 /**
  * \brief Widget for showing a DataFrame in a QTableView

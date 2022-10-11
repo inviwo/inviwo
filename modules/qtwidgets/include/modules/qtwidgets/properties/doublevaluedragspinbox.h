@@ -29,25 +29,20 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <warn/pop>
+#include <QObject>  // for Q_OBJECT, signals, slots
+#include <QString>  // for QString
+#include <QWidget>  // for QWidget
 
 namespace inviwo {
 
 class NumberLineEdit;
-
 template <typename T>
 class ValueDragger;
 
 class IVW_MODULE_QTWIDGETS_API DoubleValueDragSpinBox : public QWidget {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     explicit DoubleValueDragSpinBox(QWidget* parent = nullptr);
     virtual ~DoubleValueDragSpinBox() override = default;

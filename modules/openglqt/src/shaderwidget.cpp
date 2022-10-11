@@ -29,33 +29,55 @@
 
 #include <modules/openglqt/shaderwidget.h>
 
-#include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
+#include <inviwo/core/util/colorconversion.h>      // for hsv2rgb, rgb2hsv
+#include <inviwo/core/util/glmvec.h>               // for vec4, vec3
+#include <inviwo/core/util/logcentral.h>           // for LogCentral, LogWarn
+#include <inviwo/core/util/raiiutils.h>            // for KeepTrueWhileInScope
+#include <modules/opengl/shader/shadermanager.h>   // for ShaderManager
+#include <modules/opengl/shader/shaderobject.h>    // for ShaderObject
+#include <modules/opengl/shader/shaderresource.h>  // for StringShaderResource
+#include <modules/openglqt/glslsyntaxhighlight.h>  // for setGLSLSyntaxHighlight, GLSLSyntaxHigh...
+#include <modules/qtwidgets/codeedit.h>            // for CodeEdit
+#include <modules/qtwidgets/inviwodockwidget.h>    // for InviwoDockWidget
+#include <modules/qtwidgets/inviwoqtutils.h>       // for toQString, fromQString, emToPx
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/colorconversion.h>
+#include <algorithm>    // for max, any_of, count
+#include <cstddef>      // for size_t
+#include <limits>       // for numeric_limits
+#include <string>       // for string, to_string, basic_string, basic...
+#include <string_view>  // for string_view, basic_string_view, hash
+#include <tuple>        // for tuple_element<>::type
+#include <type_traits>  // for add_const<>::type, remove_extent_t
+#include <utility>      // for pair
 
-#include <modules/opengl/shader/shaderresource.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <QAction>         // for QAction
+#include <QDockWidget>     // for QDockWidget
+#include <QEvent>          // for QEvent, QEvent::FocusIn
+#include <QFlags>          // for QFlags
+#include <QIcon>           // for QIcon, QIcon::Normal, QIcon::Off, QIco...
+#include <QKeySequence>    // for QKeySequence, QKeySequence::Redo, QKey...
+#include <QList>           // for QList
+#include <QObject>         // for QObject
+#include <QPixmap>         // for QPixmap
+#include <QPlainTextEdit>  // for QPlainTextEdit
+#include <QSizeF>          // for QSizeF
+#include <QString>         // for operator+, QString
+#include <QTextDocument>   // for QTextDocument
+#include <QWidget>         // for QWidget
+#include <Qt>              // for operator|, WidgetWithChildrenShortcut
+#include <fmt/core.h>      // for format
+#include <fmt/format.h>    // for compile_string_to_view, FMT_STRING
+#include <glm/vec3.hpp>    // for vec, vec<>::(anonymous)
+#include <glm/vec4.hpp>    // for vec<>::(anonymous)
 
-#include <modules/qtwidgets/syntaxhighlighter.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/codeedit.h>
+#include <QMainWindow>     // for QMainWindow
+#include <QMessageBox>     // for QMessageBox, operator|, QMessageBox::Save
+#include <QScrollBar>      // for QScrollBar
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QToolBar>        // for QToolBar
 
-#include <modules/openglqt/glslsyntaxhighlight.h>
-
-#include <fmt/format.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QToolBar>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <QCloseEvent>
-#include <QMessageBox>
-#include <QSignalBlocker>
-#include <QScrollBar>
-#include <warn/pop>
+class QCloseEvent;
 
 namespace inviwo {
 

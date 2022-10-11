@@ -29,21 +29,24 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/util/canvas.h>
+#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QSurfaceFormat>
-#include <warn/pop>
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
+#include <inviwo/core/util/canvas.h>                      // for Canvas
 
-#include <string_view>
+#include <QSurfaceFormat>  // for QSurfaceFormat
+
+#include <cstddef>      // for size_t
+#include <memory>       // for unique_ptr, shared_ptr
+#include <string_view>  // for string_view
 
 class QOffscreenSurface;
 class QOpenGLContext;  // Include causes: warning qopenglfunctions.h is not compatible with GLEW,
                        // GLEW defines will be undefined
 
 namespace inviwo {
+
+class Image;
 
 /*
  * Convenience class for creating an QOffscreenSurface with an QOpenGLContext.

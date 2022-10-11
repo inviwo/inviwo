@@ -29,28 +29,43 @@
 
 #include <modules/openglqt/canvasqopenglwidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/core/util/glm.h>
+#include <inviwo/core/common/inviwoapplication.h>            // for InviwoApplication
+#include <inviwo/core/datastructures/image/imagetypes.h>     // for LayerType
+#include <inviwo/core/interaction/events/event.h>            // for Event
+#include <inviwo/core/interaction/events/eventpropagator.h>  // for EventPropagator
+#include <inviwo/core/interaction/pickingcontroller.h>       // for PickingController
+#include <inviwo/core/network/networklock.h>                 // for NetworkLock
+#include <inviwo/core/properties/boolproperty.h>             // for BoolProperty
+#include <inviwo/core/util/canvas.h>                         // for Canvas::ContextID, Canvas
+#include <inviwo/core/util/glmvec.h>                         // for size2_t, dvec2
+#include <inviwo/core/util/raiiutils.h>                      // for OnScopeExit, OnScopeExit::Ex...
+#include <inviwo/core/util/rendercontext.h>                  // for CanvasContextHolder, RenderC...
+#include <inviwo/core/util/settings/systemsettings.h>        // for SystemSettings
+#include <modules/opengl/canvasgl.h>                         // for CanvasGL
+#include <modules/opengl/openglcapabilities.h>               // for OpenGLCapabilities
+#include <modules/openglqt/hiddencanvasqt.h>                 // for HiddenCanvasQt
+#include <modules/openglqt/interactioneventmapperqt.h>       // for InteractionEventMapperQt
+#include <modules/qtwidgets/inviwoqtutils.h>                 // for toGLM, addImageActions, Widg...
 
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/openglqt/hiddencanvasqt.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/openglqt/interactioneventmapperqt.h>
+#include <utility>  // for move
 
-#include <warn/push>
-#include <warn/ignore/all>
+#include <QApplication>                       // for QApplication
+#include <QCoreApplication>                   // for QCoreApplication
+#include <QMenu>                              // for QMenu
+#include <QMouseEvent>                        // for QMouseEvent
+#include <QOpenGLContext>                     // for QOpenGLContext
+#include <QResizeEvent>                       // for QResizeEvent
+#include <QWidget>                            // for QWidget
+#include <Qt>                                 // for PanGesture, PinchGesture
+#include <glm/fwd.hpp>                        // for vec2
+#include <glm/gtx/scalar_multiplication.hpp>  // for operator*
 
-#include <QApplication>
-#include <QOpenGLContext>
-#include <QMenu>
-#include <QResizeEvent>
-#include <QMouseEvent>
-#include <warn/pop>
+class QMouseEvent;
 
 namespace inviwo {
+
+class Image;
+class Outport;
 
 CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
     : QOpenGLWidget{parent}, CanvasGL{}, name_{name} {

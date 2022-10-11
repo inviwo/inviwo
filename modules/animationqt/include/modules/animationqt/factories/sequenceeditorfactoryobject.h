@@ -28,14 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
 
-#include <modules/animation/animationmanager.h>
-#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
+#include <memory>  // for unique_ptr, make_unique
+#include <string>  // for string
 
 namespace inviwo {
 
 namespace animation {
+class AnimationManager;
+class KeyframeSequence;
+class SequenceEditorWidget;
+class Track;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorFactoryObject {
 public:

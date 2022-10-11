@@ -30,8 +30,9 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+
 #include <inviwo/core/properties/compositepropertyobserver.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 
 namespace inviwo {
 

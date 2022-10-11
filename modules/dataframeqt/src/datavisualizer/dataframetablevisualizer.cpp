@@ -29,16 +29,22 @@
 
 #include <inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h>
 
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/processors/processorutils.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/common/inviwoapplication.h>          // for InviwoApplication
+#include <inviwo/core/io/datareaderfactory.h>              // for DataReaderFactory
+#include <inviwo/core/network/processornetwork.h>          // for ProcessorNetwork
+#include <inviwo/core/ports/outport.h>                     // for Outport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorutils.h>         // for makeProcessor, GridPos
+#include <inviwo/core/rendering/datavisualizer.h>          // for DataVisualizer
+#include <inviwo/core/util/fileextension.h>                // for FileExtension
+#include <inviwo/dataframe/datastructures/dataframe.h>     // for DataFrameOutport
+#include <inviwo/dataframe/processors/csvsource.h>         // for CSVSource
+#include <inviwo/dataframeqt/processors/dataframetable.h>  // for DataFrameTable
 
-#include <inviwo/dataframe/processors/csvsource.h>
-#include <inviwo/dataframeqt/processors/dataframetable.h>
+#include <map>  // for map
 
 namespace inviwo {
+class Inport;
 
 using GP = util::GridPos;
 

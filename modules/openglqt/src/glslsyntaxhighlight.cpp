@@ -28,10 +28,21 @@
  *********************************************************************************/
 
 #include <modules/openglqt/glslsyntaxhighlight.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <array>
-#include <string_view>
+#include <inviwo/core/properties/optionproperty.h>   // for OptionPropertyString
+#include <inviwo/core/properties/ordinalproperty.h>  // for ordinalColor, FloatVec4Property, Int...
+#include <inviwo/core/properties/property.h>         // for Property
+#include <inviwo/core/util/settings/settings.h>      // for Settings
+#include <modules/qtwidgets/inviwoqtutils.h>         // for toQColor, getDefaultMonoSpaceFontIndex
+#include <modules/qtwidgets/syntaxhighlighter.h>     // for SyntaxHighlighter, background, built...
+
+#include <array>        // for array
+#include <chrono>       // for literals
+#include <string>       // for string
+#include <string_view>  // for operator""sv, string_view
+
+#include <QColor>           // for QColor
+#include <QTextCharFormat>  // for QTextCharFormat
 
 using namespace std::literals;
 

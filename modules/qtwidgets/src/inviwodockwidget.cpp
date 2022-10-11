@@ -28,13 +28,23 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/inviwodockwidget.h>
-#include <modules/qtwidgets/inviwodockwidgettitlebar.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QKeyEvent>
-#include <QSettings>
-#include <warn/pop>
+
+#include <modules/qtwidgets/inviwodockwidgettitlebar.h>  // for InviwoDockWidgetTitleBar
+#include <modules/qtwidgets/inviwoqtutils.h>             // for getApplicationMainWindow, movePo...
+
+#include <QDebug>       // for operator<<
+#include <QFlags>       // for QFlags, operator==
+#include <QKeyEvent>    // for QKeyEvent
+#include <QMainWindow>  // for QMainWindow
+#include <QPoint>       // for QPoint
+#include <QSettings>    // for QSettings
+#include <QSize>        // for QSize
+#include <QVariant>     // for QVariant
+#include <QWidget>      // for QWidget
+#include <Qt>           // for qt_getEnumName, RightDockWidgetArea
+
+class QCloseEvent;
+class QShowEvent;
 
 namespace inviwo {
 

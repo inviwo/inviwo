@@ -29,10 +29,19 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/lineeditqt.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
+#include <modules/qtwidgets/lineeditqt.h>  // for LineEditQt
+
+#include <string>  // for string
+
+#include <QObject>  // for Q_OBJECT
+
+class QFocusEvent;
 class QLabel;
+class QMouseEvent;
+class QResizeEvent;
+class QWidget;
 
 namespace inviwo {
 
@@ -43,10 +52,7 @@ namespace inviwo {
  * shown to indicate non-existing files and paths.
  */
 class IVW_MODULE_QTWIDGETS_API FilePathLineEditQt : public LineEditQt {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     FilePathLineEditQt(QWidget* parent = nullptr);
     virtual ~FilePathLineEditQt() = default;

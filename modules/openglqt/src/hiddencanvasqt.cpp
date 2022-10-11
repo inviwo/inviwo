@@ -28,20 +28,24 @@
  *********************************************************************************/
 
 #include <modules/openglqt/hiddencanvasqt.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <modules/opengl/openglcapabilities.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QApplication>
-#include <QOffscreenSurface>
-#include <QOpenGLContext>
-#include <QThread>
-#include <warn/pop>
+#include <inviwo/core/common/inviwoapplication.h>  // for dispatchFront
+#include <inviwo/core/util/canvas.h>               // for Canvas, Canvas::ContextID
+#include <inviwo/core/util/rendercontext.h>        // for CanvasContextHolder, RenderContext
+#include <inviwo/core/util/stringconversion.h>     // for toString
+#include <modules/opengl/openglcapabilities.h>     // for OpenGLCapabilities
 
-#include <atomic>
+#include <QApplication>       // for QApplication
+#include <QCoreApplication>   // for QCoreApplication
+#include <QOffscreenSurface>  // for QOffscreenSurface
+#include <QOpenGLContext>     // for QOpenGLContext
+#include <QThread>            // for QThread
+
+#include <atomic>      // for atomic, __atomic_base
+#include <functional>  // for __base
+#include <future>      // for future
+#include <string>      // for char_traits, operator+, basic_string
+#include <thread>      // for get_id
 
 namespace inviwo {
 

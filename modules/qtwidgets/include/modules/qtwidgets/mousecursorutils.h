@@ -29,12 +29,10 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+
 #include <inviwo/core/interaction/events/mousecursors.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QtCore/qnamespace.h>
-#include <warn/pop>
+#include <Qt>
 
 namespace inviwo {
 

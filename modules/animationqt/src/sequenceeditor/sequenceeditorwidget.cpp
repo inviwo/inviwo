@@ -29,24 +29,22 @@
 
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
-#include <modules/animation/datastructures/keyframesequence.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/keyframe.h>          // IWYU pragma: keep
+#include <modules/animation/datastructures/keyframesequence.h>  // for KeyframeSequence
 
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <algorithm>  // for stable_sort
+#include <utility>    // for pair
+#include <vector>     // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QComboBox>
-#include <warn/pop>
+#include <QVBoxLayout>  // for QVBoxLayout
 
 namespace inviwo {
 
 namespace animation {
+
+class AnimationManager;
+class Track;
+
 SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& track,
                                            AnimationManager&)
     : QWidget(), sequence_(sequence), track_{track} {

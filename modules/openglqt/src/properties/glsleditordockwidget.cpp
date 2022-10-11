@@ -29,11 +29,13 @@
 
 #include <modules/openglqt/properties/glsleditordockwidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-
-#include <modules/openglqt/glslsyntaxhighlight.h>
+#include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
+#include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
+#include <modules/openglqt/glslsyntaxhighlight.h>             // for setGLSLSyntaxHighlight, GLS...
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
 
 namespace inviwo {
+class Property;
 
 GLSLEditorDockWidget::GLSLEditorDockWidget(Property* property) : TextEditorDockWidget(property) {
     auto app = util::getInviwoApplication(property);

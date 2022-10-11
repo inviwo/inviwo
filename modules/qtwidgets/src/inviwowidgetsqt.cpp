@@ -29,10 +29,9 @@
 
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QSizePolicy>
-#include <warn/pop>
+#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::Minimum
+
+class QWidget;
 
 namespace inviwo {
 

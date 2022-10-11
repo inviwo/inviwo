@@ -29,14 +29,39 @@
 
 #include <inviwo/dataframeqt/dataframemodel.h>
 
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/datastructures/column.h>
-#include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/util/zip.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <inviwo/core/datastructures/bitset.h>                          // for BitSet
+#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM, Buffer...
+#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
+#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/util/formatdispatching.h>                         // for Scalars, Vecs
+#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
+#include <inviwo/core/util/glmvec.h>                                    // for dvec2
+#include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
+#include <inviwo/core/util/stringconversion.h>                          // for toString
+#include <inviwo/core/util/zip.h>                                       // for enumerate, zipIte...
+#include <inviwo/dataframe/datastructures/column.h>                     // for Column, ColumnType
+#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>       // for BrushingAndLinkin...
+#include <modules/brushingandlinking/datastructures/brushingaction.h>   // for BrushingTarget
+#include <modules/qtwidgets/inviwoqtutils.h>                            // for toQString
 
-#include <QBrush>
+#include <optional>       // for optional
+#include <string>         // for string
+#include <type_traits>    // for remove_extent_t
+#include <unordered_set>  // for unordered_set
+
+#include <QBrush>          // for QBrush
+#include <QColor>          // for QColor
+#include <QList>           // for QList<>::const_it...
+#include <QMetaType>       // for QMetaType, QMetaT...
+#include <QString>         // for QString
+#include <QtGlobal>        // for qulonglong, qlong...
+#include <fmt/core.h>      // for basic_string_view
+#include <glm/gtx/io.hpp>  // for operator<<
+#include <glm/vec2.hpp>    // for vec<>::(anonymous)
+#include <half/half.hpp>   // for operator<<
+
+class QModelIndex;
 
 namespace inviwo {
 

@@ -28,24 +28,30 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/eventpropertywidgetqt.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/eventconverterqt.h>
-#include <modules/qtwidgets/inviwowidgetsqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <inviwo/core/interaction/events/interactionevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/eventmatcher.h>    // for EventMatcher, KeyboardEventMa...
+#include <inviwo/core/interaction/events/keyboardkeys.h>    // for operator<<, KeyModifiers, IvwKey
+#include <inviwo/core/interaction/events/mousebuttons.h>    // for MouseButton, MouseButton::None
+#include <inviwo/core/properties/eventproperty.h>           // for EventProperty
+#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
+#include <modules/qtwidgets/eventconverterqt.h>             // for getModifiers, getKeyButton
+#include <modules/qtwidgets/inviwoqtutils.h>                // for toQString
+#include <modules/qtwidgets/inviwowidgetsqt.h>              // for IvwPushButton
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QFocusEvent>
-#include <warn/pop>
+#include <ostream>  // for stringstream, operator<<, ost...
+
+#include <QGridLayout>    // for QGridLayout
+#include <QHBoxLayout>    // for QHBoxLayout
+#include <QKeyEvent>      // for QKeyEvent
+#include <QMouseEvent>    // for QMouseEvent
+#include <QSizePolicy>    // for QSizePolicy
+#include <QString>        // for QString
+#include <QWidget>        // for QWidget
+#include <Qt>             // for Key_Enter, Key_Escape, Key_Re...
+#include <flags/flags.h>  // for operator!=, none
+
+class QHBoxLayout;
 
 namespace inviwo {
 

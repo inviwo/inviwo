@@ -28,17 +28,30 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/tf/tfutils.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QHBoxLayout>
-#include <QWidget>
-#include <warn/pop>
+#include <inviwo/core/datastructures/transferfunction.h>      // for TransferFunction
+#include <inviwo/core/network/networklock.h>                  // for NetworkLock
+#include <inviwo/core/properties/isotfproperty.h>             // for IsoTFProperty
+#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
+#include <inviwo/core/properties/property.h>                  // for Property
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <modules/qtwidgets/editablelabelqt.h>                // for EditableLabelQt
+#include <modules/qtwidgets/inviwoqtutils.h>                  // for toQPixmap
+#include <modules/qtwidgets/inviwowidgetsqt.h>                // for IvwPushButton
+#include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>           // for TFPropertyModel
+#include <modules/qtwidgets/tf/tfpropertydialog.h>            // for TFPropertyDialog
+#include <modules/qtwidgets/tf/tfutils.h>                     // for addTFPresetsMenu, exportToFile
+
+#include <QAction>      // for QAction
+#include <QGridLayout>  // for QGridLayout
+#include <QHBoxLayout>  // for QHBoxLayout
+#include <QMenu>        // for QMenu
+#include <QSize>        // for QSize, operator-
+#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::F...
+#include <QWidget>      // for QWidget
+
+class QHBoxLayout;
 
 namespace inviwo {
 

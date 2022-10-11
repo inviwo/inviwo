@@ -28,11 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>
+#include <modules/python3qt/python3qtmoduledefine.h>  // for IVW_MODULE_PYTHON3QT_API
 
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>  // for FilePropertyWidgetQt
 
 namespace inviwo {
+class FileProperty;
 
 /**
  * @brief Widget for a FileProperty with PythonEditor semantics

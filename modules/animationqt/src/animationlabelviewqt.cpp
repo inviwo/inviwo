@@ -29,33 +29,45 @@
 
 #include <modules/animationqt/animationlabelviewqt.h>
 
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/network/networkutils.h>
-#include <inviwo/core/processors/processorutils.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplication.h>            // for InviwoApplication
+#include <inviwo/core/network/networkutils.h>                // for setSelected
+#include <inviwo/core/network/processornetwork.h>            // for ProcessorNetwork
+#include <inviwo/core/processors/processorutils.h>           // for setSelected
+#include <inviwo/core/properties/property.h>                 // for Property
+#include <inviwo/core/properties/propertyowner.h>            // for PropertyOwner
+#include <inviwo/core/util/indirectiterator.h>               // for IndirectIterator
+#include <modules/animation/animationcontroller.h>           // for AnimationController
+#include <modules/animation/animationcontrollerobserver.h>   // for AnimationControllerObservable
+#include <modules/animation/datastructures/animation.h>      // for Animation
+#include <modules/animation/datastructures/propertytrack.h>  // for BasePropertyTrack
+#include <modules/animation/datastructures/track.h>          // for Track
+#include <modules/animationqt/trackcontrolswidgetqt.h>       // for TrackControlsWidgetQt
+#include <modules/animationqt/widgets/editorconstants.h>     // for timelineHeight
 
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <QAbstractItemView>    // for QAbstractItemView, QAbstract...
+#include <QAction>              // for QAction
+#include <QFlags>               // for QFlags
+#include <QIcon>                // for QIcon
+#include <QItemSelection>       // for QItemSelection
+#include <QItemSelectionModel>  // for QItemSelectionModel
+#include <QKeySequence>         // for QKeySequence, QKeySequence::...
+#include <QList>                // for QList, QList<>::iterator
+#include <QModelIndex>          // for QModelIndex
+#include <QModelIndexList>      // for QModelIndexList
+#include <QSize>                // for QSize
+#include <QStandardItem>        // for QStandardItem
+#include <QStandardItemModel>   // for QStandardItemModel
+#include <QString>              // for QString
+#include <QVariant>             // for QVariant
+#include <Qt>                   // for operator|, DisplayRole, Item...
 
-#include <modules/animation/datastructures/animation.h>
-#include <modules/animation/datastructures/propertytrack.h>
-
-#include <modules/animationqt/trackcontrolswidgetqt.h>
-#include <modules/animationqt/widgets/editorconstants.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWheelEvent>
-#include <QPainter>
-#include <QStandardItemModel>
-#include <QStandardItem>
-#include <QStyledItemDelegate>
-#include <QPushButton>
-#include <QGridLayout>
-#include <QAction>
-#include <QIcon>
-#include <warn/pop>
+class QModelIndex;
+class QObject;
+class QWidget;
 
 namespace inviwo {
+
+class Processor;
 
 namespace animation {
 

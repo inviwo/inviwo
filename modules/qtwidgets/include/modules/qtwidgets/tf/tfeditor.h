@@ -29,29 +29,31 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>
-#include <inviwo/core/datastructures/datamapper.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsScene>
-#include <QPointF>
-#include <warn/pop>
+#include <inviwo/core/datastructures/datamapper.h>   // for DataMapper
+#include <inviwo/core/util/glmvec.h>                 // for dvec2, vec4
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
 
-#include <vector>
+#include <functional>  // for function
+#include <memory>      // for shared_ptr
+#include <vector>      // for vector
 
-class QGraphicsView;
+#include <QGraphicsScene>  // for QGraphicsScene
+#include <QObject>         // for Q_OBJECT, signals
+#include <QPointF>         // for QPointF
+
+class QGraphicsSceneMouseEvent;
+class QKeyEvent;
+class QPointF;
+class QWidget;
 class QGraphicsSceneContextMenuEvent;
 
 namespace inviwo {
 
-class TransferFunction;
-class TransferFunctionProperty;
-
-class TFEditorIsovalue;
-class TFEditorControlPoint;
 class TFControlPointConnection;
+class TFEditorControlPoint;
+class TFEditorIsovalue;
 class TFPrimitive;
 class TFPrimitiveSet;
 

@@ -29,17 +29,15 @@
 
 #include <modules/qtwidgets/keyboardutils.h>
 
+#include <inviwo/core/interaction/events/keyboardkeys.h>  // for IvwKey, IvwKey::GraveAccent
+
 #ifdef _WIN32
 // needed for virtual key codes on Windows
 #include <windows.h>
 #include <winuser.h>
 #endif
 
-// for Qt key codes
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QKeyEvent>
-#include <warn/pop>
+#include <QKeyEvent>  // for QKeyEvent
 
 namespace inviwo {
 

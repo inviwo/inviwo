@@ -29,12 +29,13 @@
 
 #include <modules/qtwidgets/customdoublespinboxqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <limits>
-#include <QTimerEvent>
-#include <QSignalBlocker>
-#include <warn/pop>
+#include <limits>  // for numeric_limits, numeric_limits<>::max_exponent
+
+#include <QLocale>         // for QLocale
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QTimerEvent>     // for QTimerEvent
+
+class QWidget;
 
 namespace inviwo {
 

@@ -29,18 +29,26 @@
 
 #include <modules/openglqt/openglqtmenu.h>
 
-#include <modules/opengl/shader/shaderresource.h>
+#include <inviwo/core/util/iterrange.h>           // for iter_range
+#include <inviwo/core/util/stdextensions.h>       // for find_if
+#include <modules/opengl/inviwoopengl.h>          // for GLuint
+#include <modules/opengl/shader/shader.h>         // for Shader
+#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
+#include <modules/opengl/shader/shaderobject.h>   // for ShaderObject
+#include <modules/openglqt/shaderwidget.h>        // for ShaderWidget
+#include <modules/qtwidgets/inviwoqtutils.h>      // for getApplicationMainWindow
 
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <modules/openglqt/shaderwidget.h>
+#include <functional>  // for __base
+#include <utility>     // for pair, move
+#include <vector>      // for vector
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <warn/pop>
+#include <QAction>      // for QAction
+#include <QIcon>        // for QIcon
+#include <QMainWindow>  // IWYU pragma: keep
+#include <QString>      // for QString, operator+
+#include <Qt>           // for WA_DeleteOnClose
+
+class QWidget;
 
 namespace inviwo {
 
@@ -88,6 +96,8 @@ OpenGLQtMenu::OpenGLQtMenu(QWidget* parent) : QMenu(tr("&Shaders"), parent) {
         }
     });
 }
+
+OpenGLQtMenu::~OpenGLQtMenu() = default;
 
 void OpenGLQtMenu::addShaderObjects(Shader* shader, QMenu* menuItem) {
     for (auto& obj : shader->getShaderObjects()) {

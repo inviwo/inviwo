@@ -28,22 +28,28 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/lineeditqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLineEdit>
-#include <QHBoxLayout>
-#include <QSignalBlocker>
-#include <QToolButton>
-#include <warn/pop>
+#include <inviwo/core/properties/propertysemantics.h>         // for PropertySemantics, operator==
+#include <inviwo/core/properties/stringproperty.h>            // for StringProperty
+#include <modules/qtwidgets/editablelabelqt.h>                // for EditableLabelQt
+#include <modules/qtwidgets/inviwoqtutils.h>                  // for fromQString, toQString
+#include <modules/qtwidgets/lineeditqt.h>                     // for LineEditQt
+#include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
+
+#include <string>  // for operator==, string
+
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QIcon>           // for QIcon
+#include <QLineEdit>       // for QLineEdit, QLineEdit::Passw...
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy
+#include <QToolButton>     // for QToolButton
+#include <QWidget>         // for QWidget
 
 namespace inviwo {
+
+class PropertyEditorWidget;
 
 StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
     : PropertyWidgetQt(property), property_(property), lineEdit_{new LineEditQt()} {

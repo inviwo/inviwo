@@ -28,17 +28,17 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/syntaxhighlighter.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/filesystem.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QTextDocument>
-#include <QTextBlock>
-#include <warn/pop>
+#include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, toQColor, getDefaultMonoSpaceFon...
 
-#include <array>
-#include <string_view>
+#include <chrono>       // for literals
+#include <string_view>  // for string_view
+
+#include <QRegularExpressionMatchIterator>  // for QRegularExpressionMatchIterator
+#include <fmt/core.h>                       // for format
+#include <tcb/span.hpp>                     // for span
+
+class QTextCharFormat;
 
 using namespace std::literals;
 

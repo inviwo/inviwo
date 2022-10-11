@@ -28,16 +28,33 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/codeedit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <modules/qtwidgets/syntaxhighlighter.h>
+#include <inviwo/core/util/glmvec.h>              // for vec4
+#include <modules/qtwidgets/inviwoqtutils.h>      // for toQString, toQColor, toivec3, tovec4
+#include <modules/qtwidgets/syntaxhighlighter.h>  // for SyntaxHighlighter, text
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QtWidgets>
-#include <warn/pop>
+#include <utility>  // for move
 
-#include <fmt/format.h>
+#include <QFont>            // for QFont
+#include <QFontMetrics>     // for QFontMetrics
+#include <QKeyEvent>        // for QKeyEvent
+#include <QList>            // for QList
+#include <QPaintEvent>      // for QPaintEvent
+#include <QPainter>         // for QPainter, QPainter::TextAntialiasing
+#include <QRect>            // for QRect
+#include <QRectF>           // for QRectF
+#include <QTextBlock>       // for QTextBlock
+#include <QTextCharFormat>  // for QTextCharFormat
+#include <QTextCursor>      // for QTextCursor
+#include <QTextDocument>    // for QTextDocument
+#include <QTextEdit>        // for QTextEdit::ExtraSelection, QTextEdit
+#include <QTextFormat>      // for QTextFormat, QTextFormat::FullWidthSele...
+#include <QTextOption>      // for QTextOption, QTextOption::NoWrap
+#include <QtGlobal>         // for QT_VERSION, QT_VERSION_CHECK, qMax, qreal
+#include <QBrush>           // for QBrush
+#include <Qt>               // for AlignRight, Key_Tab
+#include <fmt/core.h>       // for format
+#include <glm/vec3.hpp>     // for vec, vec<>::(anonymous)
 
 namespace inviwo {
 

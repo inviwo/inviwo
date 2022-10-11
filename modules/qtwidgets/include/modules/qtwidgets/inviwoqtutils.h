@@ -29,44 +29,54 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <locale>
-#include <ios>
-#include <sstream>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QString>
-#include <QPointF>
-#include <QPoint>
-#include <QSizeF>
-#include <QSize>
-#include <QColor>
-#include <QMainWindow>
-#include <QImage>
-#include <QPixmap>
-#include <QLocale>
-#include <warn/pop>
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
+#include <inviwo/core/util/glmvec.h>                      // for dvec2, ivec2, ivec4, ivec3, uvec4
 
-#include <string_view>
+#include <cstddef>      // for size_t
+#include <ios>          // for ostringstream, istringstream
+#include <locale>       // for locale
+#include <sstream>      // for basic_ostream
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <utility>      // for pair
+#include <vector>       // for vector
 
+#include <QByteArray>    // for QByteArray
+#include <QColor>        // for QColor
+#include <QIcon>         // for QIcon
+#include <QImage>        // for QImage
+#include <QLocale>       // for QLocale
+#include <QObject>       // for QObject
+#include <QPixmap>       // for QPixmap
+#include <QPoint>        // for QPoint
+#include <QPointF>       // for QPointF
+#include <QRectF>        // for QRectF
+#include <QSize>         // for QSize
+#include <QSizeF>        // for QSizeF
+#include <QString>       // for QString
+#include <QtGlobal>      // for QT_VERSION, QT_VERSION_CHECK
+#include <glm/vec2.hpp>  // for vec<>::(anonymous)
+#include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*
+#include <glm/vec4.hpp>  // for vec<>::(anonymous), operator*
+
+class QEvent;
+class QMainWindow;
+class QMenu;
+class QRectF;
+class QWidget;
 class QFontMetrics;
 
 namespace inviwo {
 
-class Property;
-class ProcessorNetwork;
 class EventPropagator;
-
+class Image;
+class IsoValueProperty;
+class Layer;
+class ProcessorNetwork;
 class TransferFunction;
 class TransferFunctionProperty;
-class IsoTFProperty;
-class IsoValueProperty;
-
-class Layer;
-class Image;
 
 namespace util {
 struct TFPropertyConcept;

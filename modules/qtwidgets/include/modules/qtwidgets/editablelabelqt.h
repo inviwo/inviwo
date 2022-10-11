@@ -29,20 +29,22 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/propertyobserver.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <warn/pop>
+#include <inviwo/core/properties/propertyobserver.h>  // for PropertyObserver
 
-class QLineEdit;
+#include <string>  // for string
+
+#include <QObject>  // for Q_OBJECT, signals
+#include <QSize>    // for QSize
+#include <QString>  // for QString
+#include <QWidget>  // for QWidget
+
+class QEvent;
 class QLabel;
-class QMenu;
+class QLineEdit;
 class QMouseEvent;
 class QResizeEvent;
-class QAction;
 
 namespace inviwo {
 
@@ -50,10 +52,7 @@ class Property;
 class PropertyWidgetQt;
 
 class IVW_MODULE_QTWIDGETS_API EditableLabelQt : public QWidget, public PropertyObserver {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText = true);
     EditableLabelQt(PropertyWidgetQt* parent, const std::string& text, bool shortenText = true);

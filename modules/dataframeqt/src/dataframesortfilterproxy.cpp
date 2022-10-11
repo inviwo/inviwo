@@ -28,7 +28,11 @@
  *********************************************************************************/
 
 #include <inviwo/dataframeqt/dataframesortfilterproxy.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>      // for BrushingAndLinking...
+#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingTarget
+
+class QModelIndex;
 
 namespace inviwo {
 

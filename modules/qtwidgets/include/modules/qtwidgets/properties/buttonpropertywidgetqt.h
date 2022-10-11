@@ -29,14 +29,20 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+
+#include <memory>  // for unique_ptr
+#include <string>  // for string
+
+class QMenu;
 class QPushButton;
 
 namespace inviwo {
 
 class ButtonProperty;
+class Property;
 
 class IVW_MODULE_QTWIDGETS_API ButtonPropertyWidgetQt : public PropertyWidgetQt {
 public:

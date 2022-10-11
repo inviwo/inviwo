@@ -28,41 +28,42 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/properties/property.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/properties/fileproperty.h>                  // for FileProperty
+#include <inviwo/core/properties/property.h>                      // for Property
+#include <inviwo/core/properties/stringproperty.h>                // for StringProperty
+#include <inviwo/core/util/filedialogstate.h>                     // for AcceptMode, AcceptMode:...
+#include <inviwo/core/util/filesystem.h>                          // for ifstream, ofstream
+#include <modules/qtwidgets/codeedit.h>                           // for CodeEdit
+#include <modules/qtwidgets/editorfileobserver.h>                 // for EditorFileObserver
+#include <modules/qtwidgets/inviwofiledialog.h>                   // for InviwoFileDialog
+#include <modules/qtwidgets/inviwoqtutils.h>                      // for fromQString, toQString
+#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>  // for PropertyEditorWidgetQt
 
-#include <modules/qtwidgets/syntaxhighlighter.h>
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
+#include <fstream>  // for basic_ifstream, basic_o...
+#include <vector>   // for vector
 
-#include <modules/qtwidgets/codeedit.h>
+#include <QAction>         // for QAction
+#include <QFileDialog>     // for QFileDialog, QFileDialo...
+#include <QIcon>           // for QIcon
+#include <QKeySequence>    // for QKeySequence, QKeySeque...
+#include <QList>           // for QList
+#include <QMainWindow>     // for QMainWindow
+#include <QMessageBox>     // for QMessageBox, operator|
+#include <QObject>         // for QObject
+#include <QPlainTextEdit>  // for QPlainTextEdit
+#include <QSizeF>          // for QSizeF
+#include <QString>         // for operator+, QString
+#include <QStringList>     // for QStringList
+#include <QTextDocument>   // for QTextDocument
+#include <QToolBar>        // for QToolBar
+#include <Qt>              // for WidgetWithChildrenShortcut
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QTextDocument>
-#include <QTextBlock>
-#include <QFileInfo>
-#include <QVBoxLayout>
-#include <QToolButton>
-#include <QToolBar>
-#include <QTextEdit>
-#include <QDesktopServices>
-#include <QTextStream>
-#include <QMessageBox>
-#include <QFont>
-#include <warn/pop>
+class QCloseEvent;
 
 namespace inviwo {
+
+class FileExtension;
 
 TextEditorDockWidget::TextEditorDockWidget(Property* property)
     : PropertyEditorWidgetQt(property, "Edit", "TextEditorDockWidget")

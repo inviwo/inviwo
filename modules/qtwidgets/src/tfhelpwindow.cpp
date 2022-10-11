@@ -28,17 +28,23 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/tfhelpwindow.h>
-#include <inviwo/core/util/document.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QAction>
-#include <QMenu>
-#include <QVBoxLayout>
-#include <QTextEdit>
-#include <warn/pop>
+#include <inviwo/core/util/document.h>           // for Document, Document::DocumentHandle
+#include <modules/qtwidgets/inviwodockwidget.h>  // for InviwoDockWidget
+#include <modules/qtwidgets/inviwoqtutils.h>     // for getApplicationMainWindow, getMenu, emToPx
+
+#include <string>  // for string, hash, operator==
+
+#include <QAction>      // for QAction
+#include <QList>        // for QList
+#include <QMenu>        // for QMenu
+#include <QSizeF>       // for QSizeF
+#include <QString>      // for QString
+#include <QTextEdit>    // for QTextEdit
+#include <QVBoxLayout>  // for QVBoxLayout
+#include <QWidget>      // for QWidget
+#include <Qt>           // for operator|, LeftDockWidgetArea, RightDock...
+#include <QMainWindow>  // IWYU pragma: keep
 
 namespace inviwo {
 

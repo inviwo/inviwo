@@ -28,14 +28,14 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/tf/tfcoloredit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <inviwo/core/util/colorconversion.h>
+#include <inviwo/core/util/glmvec.h>                     // for vec3
+#include <modules/qtwidgets/inviwoqtutils.h>             // for toQColor, tovec3
+#include <modules/qtwidgets/properties/colorlineedit.h>  // for ColorLineEdit, ColorLineEdit::Co...
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QSizePolicy>
-#include <warn/pop>
+#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::Minimum
+
+class QWidget;
 
 namespace inviwo {
 

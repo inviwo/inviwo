@@ -28,32 +28,27 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
+#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
 
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/interaction/events/touchevent.h>  // for TouchPoint
+#include <inviwo/core/util/glmvec.h>                    // for size2_t, dvec2, vec2
 
-#include <inviwo/core/interaction/events/touchevent.h>
+#include <functional>  // for function
+#include <string>      // for string
+#include <vector>      // for vector
 
-#include <functional>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QObject>
-#include <warn/pop>
+#include <QObject>  // for QObject
+#include <Qt>       // for CursorShape, GestureType
 
 class QEvent;
-class QTouchEvent;
-class QMouseEvent;
 class QGestureEvent;
-class QPanGesture;
+class QHelpEvent;
+class QKeyEvent;
+class QMouseEvent;
 class QPanGesture;
 class QPinchGesture;
+class QTouchEvent;
 class QWheelEvent;
-class QKeyEvent;
-class QHelpEvent;
-
-class QPointingDevice;
-class QTouchDevice;
 
 namespace inviwo {
 

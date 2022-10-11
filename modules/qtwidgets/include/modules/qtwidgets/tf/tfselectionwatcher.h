@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/datastructures/tfprimitive.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QObject>
-#include <QColor>
-#include <warn/pop>
+#include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive, TFPrimitiveObserver
+
+#include <vector>  // for vector
+
+#include <QColor>   // for QColor
+#include <QObject>  // for QObject, Q_OBJECT, signals, slots
 
 namespace inviwo {
 
-class TFPrimitiveSet;
 class Property;
+class TFPrimitiveSet;
 
 /**
  * \class TFSelectionWatcher
@@ -49,10 +49,7 @@ class Property;
  * position, alpha, and color changes
  */
 class IVW_MODULE_QTWIDGETS_API TFSelectionWatcher : public QObject, public TFPrimitiveObserver {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     TFSelectionWatcher(Property* property, const std::vector<TFPrimitiveSet*>& primitiveSets);
     virtual ~TFSelectionWatcher() = default;

@@ -29,30 +29,35 @@
 
 #include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/properties/propertyowner.h>
-#include <inviwo/core/properties/multifileproperty.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/filedialogstate.h>
-#include <inviwo/core/util/assertion.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/filepathlineeditqt.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
+#include <inviwo/core/properties/multifileproperty.h>       // for MultiFileProperty
+#include <inviwo/core/util/filedialogstate.h>               // for FileMode, AcceptMode, AcceptM...
+#include <inviwo/core/util/fileextension.h>                 // for FileExtension
+#include <inviwo/core/util/filesystem.h>                    // for directoryExists, getFileDirec...
+#include <inviwo/core/util/assertion.h>                     // IWYU pragma: keep
+#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
+#include <modules/qtwidgets/filepathlineeditqt.h>           // for FilePathLineEditQt
+#include <modules/qtwidgets/inviwofiledialog.h>             // for InviwoFileDialog
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QStandardPaths>
-#include <QDesktopServices>
-#include <QDir>
-#include <QFileDialog>
-#include <QList>
-#include <QSettings>
-#include <QUrl>
-#include <QDropEvent>
-#include <QMimeData>
-#include <QHBoxLayout>
-#include <QToolButton>
-#include <warn/pop>
+#include <string>  // for string, basic_string, operator+
+#include <vector>  // for vector, __vector_base<>::valu...
+
+#include <QDesktopServices>  // for QDesktopServices
+#include <QDragEnterEvent>   // for QDragEnterEvent
+#include <QDragMoveEvent>    // for QDragMoveEvent
+#include <QDropEvent>        // for QDropEvent
+#include <QHBoxLayout>       // for QHBoxLayout
+#include <QIcon>             // for QIcon
+#include <QList>             // for QList, QList<>::iterator
+#include <QMimeData>         // for QMimeData
+#include <QSizePolicy>       // for QSizePolicy
+#include <QString>           // for QString
+#include <QStringList>       // for QStringList
+#include <QToolButton>       // for QToolButton
+#include <QUrl>              // for QUrl, QUrl::TolerantMode
+#include <QWidget>           // for QWidget
+
+class QHBoxLayout;
 
 namespace inviwo {
 

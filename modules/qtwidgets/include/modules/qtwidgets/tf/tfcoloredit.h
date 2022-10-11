@@ -29,14 +29,15 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/colorlineedit.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLineEdit>
-#include <QColor>
-#include <warn/pop>
+#include <modules/qtwidgets/properties/colorlineedit.h>  // for ColorLineEdit
+
+#include <QColor>   // for QColor
+#include <QObject>  // for Q_OBJECT, signals
+#include <QSize>    // for QSize
+
+class QWidget;
 
 namespace inviwo {
 
@@ -45,10 +46,7 @@ namespace inviwo {
  * \brief widget in TF dialog for entering six digit HTML hex color codes
  */
 class IVW_MODULE_QTWIDGETS_API TFColorEdit : public ColorLineEdit {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     TFColorEdit(QWidget* parent = nullptr);
     virtual ~TFColorEdit() = default;

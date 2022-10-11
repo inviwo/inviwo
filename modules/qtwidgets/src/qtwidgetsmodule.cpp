@@ -29,60 +29,86 @@
 
 #include <modules/qtwidgets/qtwidgetsmodule.h>
 
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/imageeditorproperty.h>
-#include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/properties/isotfproperty.h>
-#include <inviwo/core/properties/listproperty.h>
-#include <inviwo/core/properties/multifileproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/ordinalrefproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/common/inviwomodule.h>                                 // for InviwoModule
+#include <inviwo/core/datastructures/camera/camera.h>                        // for mat4
+#include <inviwo/core/properties/boolcompositeproperty.h>                    // for BoolComposit...
+#include <inviwo/core/properties/boolproperty.h>                             // for BoolProperty
+#include <inviwo/core/properties/buttongroupproperty.h>                      // for ButtonGroupP...
+#include <inviwo/core/properties/buttonproperty.h>                           // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>                        // for CompositePro...
+#include <inviwo/core/properties/eventproperty.h>                            // for EventProperty
+#include <inviwo/core/properties/fileproperty.h>                             // for FileProperty
+#include <inviwo/core/properties/isotfproperty.h>                            // for IsoTFProperty
+#include <inviwo/core/properties/isovalueproperty.h>                         // for IsoValueProp...
+#include <inviwo/core/properties/listproperty.h>                             // for ListProperty
+#include <inviwo/core/properties/minmaxproperty.h>                           // for MinMaxProperty
+#include <inviwo/core/properties/multifileproperty.h>                        // for MultiFilePro...
+#include <inviwo/core/properties/optionproperty.h>                           // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                          // for OrdinalProperty
+#include <inviwo/core/properties/ordinalrefproperty.h>                       // for OrdinalRefPr...
+#include <inviwo/core/properties/propertysemantics.h>                        // for PropertySema...
+#include <inviwo/core/properties/stringproperty.h>                           // for StringProperty
+#include <inviwo/core/properties/stringsproperty.h>                          // for StringsProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>                 // for TransferFunc...
+#include <inviwo/core/util/exception.h>                                      // for ModuleInitEx...
+#include <inviwo/core/util/foreacharg.h>                                     // for for_each_type
+#include <inviwo/core/util/glmmat.h>                                         // for dmat2, dmat3
+#include <inviwo/core/util/glmvec.h>                                         // for dvec3, vec3
+#include <inviwo/core/util/sourcecontext.h>                                  // for IVW_CONTEXT
+#include <inviwo/core/util/staticstring.h>                                   // for operator+
+#include <inviwo/core/util/zip.h>                                            // for zipper
+#include <modules/qtwidgets/inviwofiledialog.h>                              // for InviwoFileDi...
+#include <modules/qtwidgets/properties/anglepropertywidgetqt.h>              // for DoubleAngleP...
+#include <modules/qtwidgets/properties/boolcompositepropertywidgetqt.h>      // for BoolComposit...
+#include <modules/qtwidgets/properties/boolpropertywidgetqt.h>               // for BoolProperty...
+#include <modules/qtwidgets/properties/buttongrouppropertywidgetqt.h>        // for ButtonGroupP...
+#include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>             // for ButtonProper...
+#include <modules/qtwidgets/properties/colorpropertywidgetqt.h>              // for ColorPropert...
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>          // for CompositePro...
+#include <modules/qtwidgets/properties/eventpropertywidgetqt.h>              // for EventPropert...
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>               // for FileProperty...
+#include <modules/qtwidgets/properties/fontsizepropertywidgetqt.h>           // for FontSizeProp...
+#include <modules/qtwidgets/properties/isotfpropertywidgetqt.h>              // for IsoTFPropert...
+#include <modules/qtwidgets/properties/isovaluepropertywidgetqt.h>           // for IsoValueProp...
+#include <modules/qtwidgets/properties/lightpropertywidgetqt.h>              // for LightPropert...
+#include <modules/qtwidgets/properties/listpropertywidgetqt.h>               // for ListProperty...
+#include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>          // for MultiFilePro...
+#include <modules/qtwidgets/properties/optionpropertywidgetqt.h>             // IWYU pragma: keep
+#include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>      // for OrdinalMinMa...
+#include <modules/qtwidgets/properties/ordinalminmaxtextpropertywidgetqt.h>  // for OrdinalMinMa...
+#include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>            // for OrdinalPrope...
+#include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>    // for StringMultil...
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>             // for StringProper...
+#include <modules/qtwidgets/properties/stringspropertywidgetqt.h>            // for StringsPrope...
+#include <modules/qtwidgets/properties/tfprimitivesetwidgetqt.h>             // for TFPrimitiveS...
+#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>                 // for TFPropertyWi...
+#include <modules/qtwidgets/rawdatareaderdialogqt.h>                         // for RawDataReade...
+#include <modules/qtwidgets/tfhelpwindow.h>                                  // for TFMenuHelper
 
-#include <modules/qtwidgets/properties/anglepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/boolcompositepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/buttongrouppropertywidgetqt.h>
-#include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <modules/qtwidgets/properties/colorpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/eventpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/fontsizepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/isotfpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/isovaluepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/listpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/ordinalminmaxtextpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/stringspropertywidgetqt.h>
-#include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
-#include <modules/qtwidgets/properties/tfprimitivesetwidgetqt.h>
-#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
+#include <array>        // for array
+#include <cstddef>      // for size_t
+#include <functional>   // for __base
+#include <string>       // for string
+#include <string_view>  // for string_view
+#include <tuple>        // for tuple
+#include <type_traits>  // for conditional_t
+#include <vector>       // for vector
 
-#include <inviwo/core/io/rawvolumereader.h>
-#include <modules/qtwidgets/rawdatareaderdialogqt.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QApplication>
-#include <warn/pop>
+#include <QApplication>                   // for QApplication
+#include <fmt/core.h>                     // for format, basi...
+#include <glm/common.hpp>                 // for max, min, clamp
+#include <glm/detail/type_quat.hpp>       // for qua::operator[]
+#include <glm/ext/quaternion_double.hpp>  // for dquat
+#include <glm/ext/scalar_relational.hpp>  // for equal
+#include <glm/fwd.hpp>                    // for fquat
+#include <glm/geometric.hpp>              // for length
+#include <glm/gtc/type_precision.hpp>     // for i64
+#include <glm/mat2x2.hpp>                 // for operator+
+#include <glm/mat3x3.hpp>                 // for operator+
+#include <glm/mat4x4.hpp>                 // for operator+
+#include <glm/vec2.hpp>                   // for operator!=
+#include <glm/vec3.hpp>                   // for operator+, vec
+#include <glm/vec4.hpp>                   // for operator+
 
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtResources {
@@ -94,6 +120,9 @@ struct InitQtResources {
 #endif
 
 namespace inviwo {
+
+class FileExtension;
+class InviwoApplication;
 
 namespace {
 

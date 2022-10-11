@@ -28,14 +28,35 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QFontMetrics>
-#include <QHBoxLayout>
-#include <warn/pop>
+#include <inviwo/core/properties/stringproperty.h>          // for StringProperty
+#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
+#include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+
+#include <string>  // for string
+
+#include <QAbstractScrollArea>  // for QAbstractScrollArea, QAbstrac...
+#include <QFlags>               // for QFlags
+#include <QFontMetrics>         // for QFontMetrics
+#include <QHBoxLayout>          // for QHBoxLayout
+#include <QKeyEvent>            // for QKeyEvent
+#include <QMargins>             // for QMargins
+#include <QSizeF>               // for QSizeF
+#include <QSizePolicy>          // for QSizePolicy, QSizePolicy::Pre...
+#include <QString>              // for QString, operator!=
+#include <QTextCursor>          // for QTextCursor, QTextCursor::Start
+#include <QTextDocument>        // for QTextDocument
+#include <Qt>                   // for ControlModifier, Key_Enter
+#include <QtGlobal>             // for QT_VERSION, QT_VERSION_CHECK
+#include <glm/common.hpp>       // for clamp
+
+class QContextMenuEvent;
+class QFocusEvent;
+class QHBoxLayout;
+class QKeyEvent;
+class QResizeEvent;
+class QWidget;
 
 namespace inviwo {
 

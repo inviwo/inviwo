@@ -28,41 +28,69 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/editablelabelqt.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/core/properties/propertywidgetfactory.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/properties/propertypresetmanager.h>
+#include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication
+#include <inviwo/core/common/inviwoapplicationutil.h>       // for getInviwoApplication
+#include <inviwo/core/io/serialization/deserializer.h>      // for Deserializer
+#include <inviwo/core/io/serialization/serializer.h>        // for Serializer
+#include <inviwo/core/network/networklock.h>                // for NetworkLock
+#include <inviwo/core/network/workspacemanager.h>           // for WorkspaceManager
+#include <inviwo/core/processors/processor.h>               // for Processor, Processor::NameDis...
+#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty, CompositeP...
+#include <inviwo/core/properties/property.h>                // for Property
+#include <inviwo/core/properties/propertyobserver.h>        // for PropertyObserver
+#include <inviwo/core/properties/propertyowner.h>           // for PropertyOwner
+#include <inviwo/core/properties/propertyownerobserver.h>   // for PropertyOwnerObserver
+#include <inviwo/core/properties/propertypresetmanager.h>   // for PropertyPresetManager
+#include <inviwo/core/properties/propertywidgetfactory.h>   // for PropertyWidgetFactory
+#include <inviwo/core/util/exception.h>                     // for Exception
+#include <inviwo/core/util/logcentral.h>                    // for LogCentral, LogWarn, LogError
+#include <inviwo/core/util/raiiutils.h>                     // for OnScopeExit, OnScopeExit::Exi...
+#include <inviwo/core/util/rendercontext.h>                 // for RenderContext
+#include <inviwo/core/util/settings/settings.h>             // for Settings
+#include <inviwo/core/util/stdextensions.h>                 // for all_of
+#include <inviwo/core/util/zip.h>                           // for zip, zipIterator, zipper, proxy
+#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
+#include <modules/qtwidgets/inviwoqtutils.h>                // for emToPx, toQString
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt, PropertyWid...
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLineEdit>
-#include <QToolButton>
-#include <QGroupBox>
-#include <QPushButton>
-#include <QGridLayout>
-#include <QLabel>
-#include <QCheckBox>
-#include <QMenu>
-#include <QAction>
-#include <QClipboard>
-#include <QMimeData>
-#include <QApplication>
-#include <warn/pop>
+#include <algorithm>   // for max, find, find_if, min
+#include <functional>  // for __base
+#include <ostream>     // for operator<<, stringstream, bas...
+
+#include <QAction>       // for QAction
+#include <QApplication>  // for QApplication
+#include <QByteArray>    // for QByteArray
+#include <QCheckBox>     // for QCheckBox
+#include <QClipboard>    // for QClipboard
+#include <QFontMetrics>  // for QFontMetrics
+#include <QGridLayout>   // for QGridLayout
+#include <QHBoxLayout>   // for QHBoxLayout
+#include <QIcon>         // for QIcon
+#include <QLabel>        // for QLabel
+#include <QLayout>       // for QLayout
+#include <QLayoutItem>   // for QLayoutItem
+#include <QList>         // for QList
+#include <QMenu>         // for QMenu
+#include <QMimeData>     // for QMimeData
+#include <QObject>       // for QObject
+#include <QRect>         // for QRect
+#include <QSizeF>        // for QSizeF
+#include <QSizePolicy>   // for QSizePolicy, QSizePolicy::Fixed
+#include <QSpacerItem>   // for QSpacerItem
+#include <QString>       // for QString
+#include <QStringList>   // for QStringList
+#include <QToolButton>   // for QToolButton
+#include <QVBoxLayout>   // for QVBoxLayout
+#include <QWidget>       // for QWidget
+#include <Qt>            // for NoFocus, RightToLeft, AlignTop
+
+class QHBoxLayout;
+class QVBoxLayout;
 
 namespace inviwo {
+
+class PropertySemantics;
 
 CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(CompositeProperty* property,
                                                          bool isCheckable)

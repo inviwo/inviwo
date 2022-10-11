@@ -29,19 +29,21 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <modules/qtwidgets/syntaxhighlighter.h>
+#include <inviwo/core/util/glmvec.h>  // for vec4
 
-#include <QPlainTextEdit>
-#include <QObject>
+#include <functional>  // for function
+#include <string>      // for string
 
+#include <QPlainTextEdit>  // for QPlainTextEdit
+#include <QSize>           // for QSize
+#include <QWidget>         // for QWidget
+
+class QKeyEvent;
 class QPaintEvent;
+class QRect;
 class QResizeEvent;
-class QSize;
-class QWidget;
-
-class LineNumberArea;
 
 namespace inviwo {
 

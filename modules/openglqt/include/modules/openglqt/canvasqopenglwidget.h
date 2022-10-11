@@ -29,25 +29,34 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <modules/opengl/canvasgl.h>
-#include <inviwo/core/interaction/events/eventpropagator.h>
+#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+
+#include <inviwo/core/datastructures/image/imagetypes.h>     // for LayerType, LayerType::Color
+#include <inviwo/core/interaction/events/eventpropagator.h>  // for EventPropagator
+#include <inviwo/core/util/canvas.h>                         // for Canvas::ContextID, Canvas (p...
+#include <inviwo/core/util/glmvec.h>                         // for size2_t
+#include <modules/opengl/canvasgl.h>                         // for CanvasGL
+
+#include <cstddef>      // for size_t
+#include <functional>   // for function
+#include <memory>       // for unique_ptr, shared_ptr
+#include <string>       // for string
+#include <string_view>  // for string_view
 
 #define QT_NO_OPENGL_ES_2
 #define GLEXT_64_TYPES_DEFINED
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QOpenGLWidget>
-#include <warn/pop>
+#include <QOpenGLWidget>  // for QOpenGLWidget
 
-class QResizeEvent;
-class QHelpEvent;
-class QPointingDevice;
-class QTouchDevice;
+class QWidget;
 class QMenu;
+class QResizeEvent;
 
 namespace inviwo {
+
+class Event;
+class Image;
+class Outport;
 
 class IVW_MODULE_OPENGLQT_API CanvasQOpenGLWidget : public QOpenGLWidget,
                                                     public CanvasGL,

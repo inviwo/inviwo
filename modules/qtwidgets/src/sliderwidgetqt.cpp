@@ -28,20 +28,29 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/sliderwidgetqt.h>
-#include <modules/qtwidgets/numberlineedit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <limits>
-#include <cmath>
+#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
+#include <modules/qtwidgets/inviwoqtutils.h>            // for refSpacePx
+#include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QStyle>
-#include <QSlider>
-#include <QHBoxLayout>
-#include <QSignalBlocker>
-#include <QMouseEvent>
-#include <warn/pop>
+#include <cmath>   // for fabs
+#include <limits>  // for numeric_limits
+
+#include <QDoubleSpinBox>  // for QDoubleSpinBox
+#include <QEvent>          // for QEvent, QEvent::MouseButtonRelease
+#include <QHBoxLayout>     // for QHBoxLayout
+#include <QMouseEvent>     // for QMouseEvent
+#include <QPoint>          // for QPoint
+#include <QSignalBlocker>  // for QSignalBlocker
+#include <QSizePolicy>     // for QSizePolicy, QSizePolicy::Fixed
+#include <QSlider>         // for QSlider
+#include <QStyle>          // for QStyle
+#include <QVariant>        // for QVariant
+#include <Qt>              // for ClickFocus, Horizontal, LeftButton
+
+class QHBoxLayout;
+class QMouseEvent;
+class QWheelEvent;
 
 namespace inviwo {
 

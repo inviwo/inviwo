@@ -28,20 +28,27 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/properties/property.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QFontMetrics>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMenu>
-#include <QMouseEvent>
-#include <QHBoxLayout>
-#include <QAction>
-#include <warn/pop>
+#include <inviwo/core/properties/property.h>                // for Property
+#include <modules/qtwidgets/inviwoqtutils.h>                // for emToPx
+#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+
+#include <memory>  // for unique_ptr
+
+#include <QAction>       // for QAction
+#include <QEvent>        // for QEvent, QEvent::MouseButtonRe...
+#include <QFontMetrics>  // for QFontMetrics
+#include <QHBoxLayout>   // for QHBoxLayout
+#include <QLabel>        // for QLabel
+#include <QLayout>       // for QLayout
+#include <QLineEdit>     // for QLineEdit
+#include <QMenu>         // for QMenu
+#include <QMouseEvent>   // for QMouseEvent
+#include <QSizeF>        // for QSizeF
+#include <QSizePolicy>   // for QSizePolicy, QSizePolicy::Fixed
+#include <Qt>            // for AlignLeft, ElideRight, Preven...
+
+class QHBoxLayout;
 
 namespace inviwo {
 

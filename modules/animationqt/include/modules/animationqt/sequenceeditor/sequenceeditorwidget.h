@@ -28,27 +28,25 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMAT...
 
-#include <modules/animation/animationmanager.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/keyframesequence.h>
-#include <modules/animation/datastructures/keyframesequenceobserver.h>
+#include <modules/animation/datastructures/keyframesequenceobserver.h>  // for KeyframeSequenceO...
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <warn/pop>
+#include <unordered_map>  // for unordered_map
 
-class QVBoxLayout;
+#include <QWidget>  // for QWidget
+
 class QPaintEvent;
+class QVBoxLayout;
 
 namespace inviwo {
 
 namespace animation {
 
-class SequenceEditorPanel;
-class KeyframeEditorWidget;
+class AnimationManager;
+class Keyframe;
+class KeyframeSequence;
+class Track;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorWidget : public QWidget,
                                                         public KeyframeSequenceObserver {
