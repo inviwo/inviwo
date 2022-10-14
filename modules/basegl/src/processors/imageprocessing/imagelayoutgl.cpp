@@ -76,14 +76,36 @@ const ProcessorInfo ImageLayoutGL::processorInfo_{
     "Image Operation",           // Category
     CodeState::Experimental,     // Code state
     Tags::GL,                    // Tags
-};
+    R"(Provides layouting for multiple input images. The order of the input images will determine
+    the result. A mouse click activates the respective area for handling mouse/key interactions.
+    Available layouts include:
+
+    * __Single__ The first input image fills the entire output.
+    * __Horizontal Split__ Two images are put on top of each other.
+    * __Vertical Split__ Two images are put next to each other side by side.
+    * __Cross Split__ Two-by-two layout of up to four images filled from left to right and top
+      to bottom.
+    * __Three Left One Right__ The first 3 images are vertically arranged on the left, the fourth
+      is shown on the right.
+    * __Three Right One Left__ The first 3 images are vertically arranged on the right, the fourth
+      is shown on the left.
+    * __Horizontal Split Multiple__ Two or more images are put on top of each other.
+    * __Vertical Split Multiple__ Two or more images are put next to each other side by side.
+
+
+    Minimum left/right/top/bottom sizes will be respected until the output size is smaller than
+    the minimum. Maximum left/right/top/bottom sizes will be respected until there is a conflict,
+    for example max left and right set to 500 but output size is larger than 500+500, at which
+    point left/bottom will have precedence.
+    )"_unindentHelp};
+
 const ProcessorInfo ImageLayoutGL::getProcessorInfo() const { return processorInfo_; }
 
 ImageLayoutGL::ImageLayoutGL()
     : Processor()
-    , multiinport_("multiinport")
-    , outport_("outport")
-    , layout_("layout", "Layout",
+    , multiinport_("multiinport", "Multi-inport for multiple images."_help)
+    , outport_("outport", "Resulting layout of input images"_help)
+    , layout_("layout", "Layout", "Applied layout"_help,
               {{"single", "Single", Layout::Single},
                {"horizontalSplit", "Horizontal Split", Layout::HorizontalSplit},
                {"verticalSplit", "Vertical Split", Layout::VerticalSplit},
@@ -101,7 +123,8 @@ ImageLayoutGL::ImageLayoutGL()
                                    0.f, 1.f)
     , vertical3Right1LeftSplitter_("vertical3Right1LeftSplitter", "Split Position", 2.0f / 3.0f,
                                    0.f, 1.f)
-    , bounds_("bounds", "Min/Max dimensions (px)")
+    , bounds_("bounds", "Min/Max dimensions (px)",
+              "Minimum and maximum size in pixels of the corresponding side."_help)
     , leftMinMax_("leftMinMax", "Left", 0, std::numeric_limits<int>::max(), 0,
                   std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
                   PropertySemantics::Text)  // note, min 1 to avoid zero size
@@ -181,8 +204,7 @@ ImageLayoutGL::ImageLayoutGL()
 ImageLayoutGL::~ImageLayoutGL() = default;
 
 void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
-    if (event->hasVisitedProcessor(this)) return;
-    event->markAsVisited(this);
+    if (!event->markAsVisited(this)) return;
 
     invokeEvent(event);
     if (event->hasBeenUsed()) return;

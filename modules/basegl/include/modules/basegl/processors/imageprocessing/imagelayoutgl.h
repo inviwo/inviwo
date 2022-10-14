@@ -53,42 +53,6 @@ class Event;
 class Inport;
 class Outport;
 
-//
-// clang-format off
-/** \docpage{org.inviwo.ImageLayoutGL, Image Layout}
- * ![](org.inviwo.ImageLayoutGL.png?classIdentifier=org.inviwo.ImageLayoutGL)
- *
- * Provides layouting for multiple input images. The order of the input images will determine the result.
- * A mouse click activates the respective area for handling mouse/key interactions.
- * Available layouts include
- * <table>
- *   <tr><td><tt>Single</tt></td><td>The first input image fills the entire output.</td></tr>
- *   <tr><td><tt>Horizontal Split</tt></td><td>Two images are put on top of each other.</td></tr>
- *   <tr><td><tt>Vertical Split</tt></td><td>Two images are put next to each other side by side.</td></tr>
- *   <tr><td><tt>Cross Split</tt></td><td>Two-by-two layout of up to four images filled from left to right and top to bottom.</td></tr>
- *   <tr><td><tt>Three Left, One Right</tt></td><td>The first 3 images are vertically arranged on the left, the fourth is shown on the right.</td></tr>
- *   <tr><td><tt>Three Right, One Left</tt></td><td>The first 3 images are vertically arranged on the right, the fourth is shown on the left.</td></tr>
- *   <tr><td><tt>Horizontal Split Multiple</tt></td><td>Two or more images are put on top of each other.</td></tr>
- *   <tr><td><tt>Vertical Split Multiple</tt></td><td>Two or more images are put next to each other side by side.</td></tr>
- * </table>
- *
- * Minimum left/right/top/bottom sizes will be respected until the output size is smaller than the minimum.
- * Maximum left/right/top/bottom sizes will be respected until there is a conflict, for example max left and right set to 500 
- * but output size is larger than 500+500, at which point left/bottom will have precedence.
- *
- * ### Inports
- *   * __Image Inport__ Multi-inport for multiple images.
- * 
- * ### Outports
- *   * __outport__      Resulting layout of input images
- * 
- * ### Properties
- *   * __Layout__         Applied layout <tt>Single</tt>, <tt>Horizontal Split</tt>, <tt>Cross Split</tt>, <tt>Three Left, One Right</tt>, <tt>Three Right, One Left</tt>, <tt>Horizontal Split Multiple</tt> or <tt>Vertical Split Multiple</tt>
- *   * __Split Position__ Position of the layout splitter.
-  *   * __Left/Right/Top/Bottom min/max__ Minimum and maximum size in pixels of the corresponding side.
- *
- */
-// clang-format on
 class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
