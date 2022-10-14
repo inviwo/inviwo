@@ -45,6 +45,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/imageprocessing/imagehighpass.h
     include/modules/basegl/processors/imageprocessing/imageinvert.h
     include/modules/basegl/processors/imageprocessing/imagelayer.h
+    include/modules/basegl/processors/imageprocessing/imagelayout3d.h
     include/modules/basegl/processors/imageprocessing/imagelayoutgl.h
     include/modules/basegl/processors/imageprocessing/imagelowpass.h
     include/modules/basegl/processors/imageprocessing/imagemixer.h
@@ -176,6 +177,7 @@ set(SOURCE_FILES
     src/processors/imageprocessing/imagehighpass.cpp
     src/processors/imageprocessing/imageinvert.cpp
     src/processors/imageprocessing/imagelayer.cpp
+    src/processors/imageprocessing/imagelayout3d.cpp
     src/processors/imageprocessing/imagelayoutgl.cpp
     src/processors/imageprocessing/imagelowpass.cpp
     src/processors/imageprocessing/imagemixer.cpp
