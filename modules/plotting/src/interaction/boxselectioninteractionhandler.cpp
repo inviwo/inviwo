@@ -83,14 +83,18 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
                 // Click in empty space
                 switch (dragRectSettings_.getMode()) {
                     case BoxSelectionSettingsInterface::Mode::Selection: {
-                        // selection changed
-                        std::vector<bool> selected(xAxis_->getSize(), false);
-                        selectionChangedCallback_.invoke(selected, append);
+                        if (xAxis_) {
+                            // selection changed
+                            std::vector<bool> selected(xAxis_->getSize(), false);
+                            selectionChangedCallback_.invoke(selected, append);
+                        }
                         break;
                     }
                     case BoxSelectionSettingsInterface::Mode::Filtering: {
-                        std::vector<bool> filtered(xAxis_->getSize(), false);
-                        filteringChangedCallback_.invoke(filtered, append);
+                        if (xAxis_) {
+                            std::vector<bool> filtered(xAxis_->getSize(), false);
+                            filteringChangedCallback_.invoke(filtered, append);
+                        }
                         break;
                     }
                     case BoxSelectionSettingsInterface::Mode::None:

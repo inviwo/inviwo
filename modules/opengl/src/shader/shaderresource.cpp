@@ -43,7 +43,7 @@ FileShaderResource::FileShaderResource(std::string_view key, std::string_view fi
     startFileObservation(fileName_);
 }
 
-std::unique_ptr<ShaderResource> FileShaderResource::clone() {
+std::unique_ptr<ShaderResource> FileShaderResource::clone() const {
     return std::make_unique<FileShaderResource>(key_, fileName_);
 }
 
@@ -74,7 +74,7 @@ void FileShaderResource::fileChanged(const std::string& /*fileName*/) {
 StringShaderResource::StringShaderResource(std::string_view key, std::string_view source)
     : key_(key), source_(source) {}
 
-std::unique_ptr<ShaderResource> StringShaderResource::clone() {
+std::unique_ptr<ShaderResource> StringShaderResource::clone() const {
     return std::make_unique<StringShaderResource>(key_, source_);
 }
 

@@ -51,7 +51,7 @@ public:
     using Callback = std::function<void(const ShaderResource*)>;
 
     virtual ~ShaderResource() = default;
-    virtual std::unique_ptr<ShaderResource> clone() = 0;
+    virtual std::unique_ptr<ShaderResource> clone() const = 0;
 
     virtual const std::string& key() const = 0;
     virtual const std::string& source() const = 0;
@@ -75,7 +75,7 @@ public:
     FileShaderResource(std::string_view key, std::string_view fileName);
     virtual ~FileShaderResource() = default;
 
-    virtual std::unique_ptr<ShaderResource> clone() override;
+    virtual std::unique_ptr<ShaderResource> clone() const override;
 
     virtual const std::string& key() const override;
     virtual const std::string& source() const override;
@@ -98,7 +98,7 @@ public:
     StringShaderResource(std::string_view key, std::string_view source);
     virtual ~StringShaderResource() = default;
 
-    virtual std::unique_ptr<ShaderResource> clone() override;
+    virtual std::unique_ptr<ShaderResource> clone() const override;
 
     virtual const std::string& key() const override;
     virtual const std::string& source() const override;

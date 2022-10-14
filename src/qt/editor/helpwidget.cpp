@@ -193,7 +193,7 @@ constexpr std::string_view css = R"(
     }
     span.id {
         font-style: italic;
-        font-weight: 100;
+        font-weight: 300;
     }
     div.help {
         margin: 5px 0px 5px 0px;
