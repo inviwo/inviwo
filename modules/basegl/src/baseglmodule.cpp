@@ -72,6 +72,7 @@
 #include <modules/basegl/processors/imageprocessing/imagescaling.h>
 #include <modules/basegl/processors/imageprocessing/imagesubsetgl.h>
 #include <modules/basegl/processors/imageprocessing/jacobian2d.h>
+#include <modules/basegl/processors/imageprocessing/imagelayout3d.h>
 #include <modules/basegl/processors/imageprocessing/layershader.h>
 #include <modules/basegl/processors/instancerenderer.h>
 #include <modules/basegl/processors/isoraycaster.h>
@@ -186,6 +187,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageHighPass>();
     registerProcessor<ImageInvert>();
     registerProcessor<ImageLayer>();
+    registerProcessor<ImageLayout3D>();
     registerProcessor<ImageLayoutGL>();
     registerProcessor<ImageLowPass>();
     registerProcessor<ImageMixer>();
