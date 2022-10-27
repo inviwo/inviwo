@@ -719,9 +719,9 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
 
         util::OnScopeExit freeOldLayout([&]() {
             // get rid of previous property widget and layout
-            auto parentLayout = [&layoutWidget]() -> QLayout* {
-                if (layoutWidget->parentWidget()) {
-                    return layoutWidget->parentWidget()->layout();
+            auto parentLayout = [&]() -> QLayout* {
+                if (propertyWidgetGroup_->parentWidget()) {
+                    return propertyWidgetGroup_->parentWidget()->layout();
                 } else {
                     return nullptr;
                 }
