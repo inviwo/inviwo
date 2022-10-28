@@ -140,13 +140,13 @@ ColorScaleLegend::ColorScaleLegend()
     , backgroundStyle_("backgroundStyle", "Background",
                        "Background style when dealing with transparent transfer functions"_help,
                        {{"noBackground", "No background", BackgroundStyle::NoBackground},
-                        {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard},
+                        {"checkerBoard", "Checkerboard", BackgroundStyle::CheckerBoard},
                         {"solid", "Solid", BackgroundStyle::SolidColor},
-                        {"ceckerboardOpaque", "Split checker board/Opaque",
+                        {"ceckerboardOpaque", "Split checkerboard/Opaque",
                          BackgroundStyle::CheckerboardAndOpaque},
                         {"opaque", "Opaque TF (ignore alpha)", BackgroundStyle::Opaque}},
                        0)
-    , checkerBoardSize_("checkerBoardSize", "Checker Board Size",
+    , checkerBoardSize_("checkerBoardSize", "Checkerboard Size",
                         "Size of the checkerboard cells in pixel"_help, 5.0f,
                         {1.0f, ConstraintBehavior::Editable}, {20.0f, ConstraintBehavior::Editable})
     , bgColor_("backgroundColor", "Background Color",
