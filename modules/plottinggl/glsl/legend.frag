@@ -64,7 +64,7 @@ void main() {
     vec2 texCoord = gl_FragCoord.xy - viewport.xy;
     vec2 outputDim = viewport.zw - vec2(2 * borderWidth);
     vec2 centeredPos = (texCoord - viewport.zw * 0.5);
-    vec2 normPos = texCoord / outputDim;
+    vec2 normPos = (texCoord - vec2(borderWidth)) / outputDim;
 
     float tfSamplePos = mix(normPos.x, normPos.y, mod(legendRotation, 2));
     vec4 colorTF = texture(transferFunction, vec2(tfSamplePos, 0.0));
