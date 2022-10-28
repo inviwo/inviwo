@@ -90,18 +90,18 @@ public:
      * Add a buffer with rendering data, such as positions/colors/normals.
      *
      * @param info  information about the buffer contents (e.g. buffer type and attrib location)
-     * @param att   buffer data used during rendering
+     * @param buffer   buffer data used during rendering
      */
-    void addBuffer(BufferInfo info, std::shared_ptr<BufferBase> att);
+    void addBuffer(BufferInfo info, std::shared_ptr<BufferBase> buffer);
 
     /**
      * Add a buffer with rendering data, such as positions/colors/normals, and associate it with its
      * default attrib location.
      *
      * @param type  buffer type (Position, Color, Normal, etc.)
-     * @param att   buffer data used during rendering
+     * @param buffer   buffer data used during rendering
      */
-    void addBuffer(BufferType type, std::shared_ptr<BufferBase> att);
+    void addBuffer(BufferType type, std::shared_ptr<BufferBase> buffer);
 
     /**
      * Removes buffer at given position, all subsequent buffers will be moved.
@@ -124,34 +124,34 @@ public:
      * Does nothing if index out of range.
      * @param idx   Index of buffer to replace, if the index is not found the new one is appended.
      * @param info  information about the buffer contents (e.g. buffer type and shader location)
-     * @param att   new buffer data used during rendering
+     * @param buffer   new buffer data used during rendering
      * @return the removed buffer
      */
     std::pair<BufferInfo, std::shared_ptr<BufferBase>> replaceBuffer(
-        size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att);
+        size_t idx, BufferInfo info, std::shared_ptr<BufferBase> buffer);
 
     /**
-     * Replaces the old buffer \p old with the new buffer \p att
-     * @param old   Old buffer to replace. If \p old is not found the \p att is appended.
+     * Replaces the old buffer \p old with the new buffer \p buffer
+     * @param old   Old buffer to replace. If \p old is not found the \p buffer is appended.
      * @param info  information about the buffer contents (e.g. buffer type and shader location)
-     * @param att   new buffer data used during rendering
+     * @param buffer   new buffer data used during rendering
      * @return the removed buffer
      */
     std::pair<BufferInfo, std::shared_ptr<BufferBase>> replaceBuffer(
-        BufferBase* old, BufferInfo info, std::shared_ptr<BufferBase> att);
+        BufferBase* old, BufferInfo info, std::shared_ptr<BufferBase> buffer);
 
     /**
      * Deprecated: Mesh::setBuffer() has been renamed to Mesh::replaceBuffer()
      *
      * @param idx   Index of buffer to replace
      * @param info  information about the buffer contents (e.g. buffer type and shader location)
-     * @param att   new buffer data used during rendering
+     * @param buffer   new buffer data used during rendering
      *
      * \see replaceBuffer
      */
     // clang-format off
     [[deprecated("Mesh::setBuffer() is deprecated, use Mesh::replaceBuffer()")]]
-    void setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att);
+    void setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> buffer);
     // clang-format on
 
     /**

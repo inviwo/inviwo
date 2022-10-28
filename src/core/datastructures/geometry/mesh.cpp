@@ -71,8 +71,8 @@ Mesh& Mesh::operator=(const Mesh& that) {
         BufferVector buffers;
         IndexVector indices;
 
-        for (const auto& attr : that.buffers_) {
-            buffers.emplace_back(attr.first, std::shared_ptr<BufferBase>(attr.second->clone()));
+        for (const auto& buffer : that.buffers_) {
+            buffers.emplace_back(buffer.first, std::shared_ptr<BufferBase>(buffer.second->clone()));
         }
         for (const auto& elem : that.indices_) {
             indices.emplace_back(elem.first, std::shared_ptr<IndexBuffer>(elem.second->clone()));
@@ -91,19 +91,19 @@ const Mesh::BufferVector& Mesh::getBuffers() const { return buffers_; }
 
 const Mesh::IndexVector& Mesh::getIndexBuffers() const { return indices_; }
 
-void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> att) {
+void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> buffer) {
     auto it = std::find_if(buffers_.begin(), buffers_.end(),
                            [&](const auto& item) { return item.first.location == info.location; });
 
     if (it == buffers_.end()) {
-        buffers_.emplace_back(info, att);
+        buffers_.emplace_back(info, buffer);
     } else {
         throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
     }
 }
 
-void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> att) {
-    addBuffer(BufferInfo(type), att);
+void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> buffer) {
+    addBuffer(BufferInfo(type), buffer);
 }
 
 auto Mesh::removeBuffer(size_t idx) -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
@@ -171,9 +171,9 @@ auto Mesh::replaceBuffer(BufferBase* oldbuffer, BufferInfo info, std::shared_ptr
     }
 }
 
-void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att) {
+void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> buffer) {
     LogWarn("Deprecated: Mesh::setBuffer() has been renamed to Mesh::replaceBuffer()");
-    replaceBuffer(idx, info, att);
+    replaceBuffer(idx, info, buffer);
 }
 
 void Mesh::addIndices(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
