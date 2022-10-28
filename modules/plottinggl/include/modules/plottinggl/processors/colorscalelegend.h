@@ -59,44 +59,6 @@ namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.ColorScaleLegend, Color Scale Legend}
- * ![](org.inviwo.ColorScaleLegend.png?classIdentifier=org.inviwo.ColorScaleLegend)
- * Displays a color legend axis based on a transfer function. If a volume is connected, its data
- * ranges are considered. The corresponding values of the colors can be displayed next to the
- * colors.
- *
- * ### Inports
- *   * __<ImageInport>__ Inport image.
- *   * __<VolumeInport>__ Inport volume, for datarange extraction.
- *
- * ### Outports
- *   * __<ImageOutport>__ Outport image.
- *
- * ### Properties
- *  *  __Enable__   Shows the color legend. Hides it if not enabled and the input image is passed
- *                  through.
- *   * __TF & Isovalues__ The transfer function to render onto the legend.
- *   * __Positioning & Size__
- *		+ __Legend Placement__ Defines to which side of the canvas the legend should be
- *          aligned or if the position and rotation should be customly set by the user
- *		+ __Legend Rotation__ (Only available if "Custom" is chosen as placement) Sets the
- *          legend rotation
- *		+ __Position__ (Only available if "Custom" is chosen as placement) Sets the legend
- *          position in screen coordinates (0 to 1)
- *		+ __Margin__ (Only available if "Custom" is chosen as placement) Sets the legend
- *          margin to canvas borders in pixels
- *		+ __Legend Size__ Sets the legend width and height in pixels
- *   * __Style__
- *		+ __Background__ Sets the legend background, either to none or to checkerboard
- *          pattern
- *		+ __Checker Board Size__ Sets the pattern size of the checkerboard
- *      + __Border Width__ Sets the border width in pixels
- */
-
-/**
- * \class ColorScaleLegend
- * Adds a legend displaying the transfer function of this processor to the image output.
- */
 class IVW_MODULE_PLOTTINGGL_API ColorScaleLegend : public Processor {
 public:
     ColorScaleLegend();
@@ -108,13 +70,19 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    enum class BackgroundStyle { CheckerBoard, SolidColor, NoBackground };
+    enum class BackgroundStyle {
+        NoBackground,
+        SolidColor,
+        CheckerBoard,
+        CheckerboardAndOpaque,
+        Opaque
+    };
     enum class LabelType { String, Data, Custom };
     std::tuple<ivec2, ivec2, ivec2, ivec2> getPositions(ivec2 dim) const;
 
     ImageInport inport_;
-    ImageOutport outport_;
     VolumeInport volumeInport_;
+    ImageOutport outport_;
 
     BoolProperty enabled_;
     IsoTFProperty isotfComposite_;

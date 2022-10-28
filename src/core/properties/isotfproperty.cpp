@@ -35,6 +35,20 @@ const std::string IsoTFProperty::classIdentifier = "org.inviwo.IsoTFProperty";
 std::string IsoTFProperty::getClassIdentifier() const { return classIdentifier; }
 
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
+                             Document help, const IsoValueCollection& isovalues,
+                             const TransferFunction& tf, VolumeInport* volumeInport,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
+    , isovalues_("isovalues", "Iso Values", isovalues, volumeInport)
+    , tf_("transferFunction", "Transfer Function", tf, volumeInport) {
+
+    addProperties(isovalues_, tf_);
+
+    tf_.TFPropertyObservable::addObserver(this);
+    isovalues_.TFPropertyObservable::addObserver(this);
+}
+
+IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
                              const IsoValueCollection& isovalues, const TransferFunction& tf,
                              VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
@@ -47,6 +61,13 @@ IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displ
     tf_.TFPropertyObservable::addObserver(this);
     isovalues_.TFPropertyObservable::addObserver(this);
 }
+
+IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
+                             Document help, VolumeInport* volumeInport,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : IsoTFProperty(identifier, displayName, help, {},
+                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), volumeInport,
+                    invalidationLevel, semantics) {}
 
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
                              VolumeInport* volumeInport, InvalidationLevel invalidationLevel,

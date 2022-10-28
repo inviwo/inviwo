@@ -36,6 +36,12 @@ uniform sampler2D transferFunction;
 // 3 -> 270 degree rotation ccw
 uniform int legendRotation;
 
+// background style
+//  0 no background
+//  1 solid color
+//  2 checkerboard
+//  3 checkerboard and opaque TF
+//  4 opaque TF
 uniform int backgroundStyle;
 uniform float checkerBoardSize;
 uniform vec4 checkerColor1 = vec4(0.5, 0.5, 0.5, 1.0);
@@ -60,6 +66,25 @@ vec4 over(vec4 colorB, vec4 colorA) {
     return vec4(col, alpha);
 }
 
+vec4 solidBackground(vec4 src) {
+    // pre-multiply source color and background color
+    src.rgb *= src.a;
+    vec4 bgColor = backgroundColor;
+    bgColor.rgb *= bgColor.a;
+
+    return src + (1.0 - src.a) * bgColor;
+}
+
+vec4 checkerboardBackground(vec4 src, vec2 pos) {
+    return over(checkerBoard(pos), src);
+}
+
+vec4 noBackground(vec4 src) {
+    // use regular OpenGL alpha blending
+    src.rgb *= src.a;
+    return src;    
+}
+
 void main() {
     vec2 texCoord = gl_FragCoord.xy - viewport.xy;
     vec2 outputDim = viewport.zw - vec2(2 * borderWidth);
@@ -73,19 +98,21 @@ void main() {
     colorTF.a = 1.0 - pow(1.0 - colorTF.a, 4.0);
 
     vec4 finalColor;
-    if (backgroundStyle == 0) {
-        finalColor = over(checkerBoard(centeredPos), colorTF);
-    } else if (backgroundStyle == 1) {
-        // solid background
-        colorTF.rgb *= colorTF.a;
-        // pre-multiply background color
-        vec4 bgColor = backgroundColor;
-        bgColor.rgb *= bgColor.a;
-        finalColor = colorTF + (1.0 - colorTF.a) * bgColor;
+    if (backgroundStyle == 1) {
+        finalColor = solidBackground(colorTF);
+    } else if (backgroundStyle == 2) {
+        finalColor = checkerboardBackground(colorTF, centeredPos);
+    } else if (backgroundStyle == 3) {
+        float verticalPos = mix(1.0 - normPos.y, normPos.x, mod(legendRotation, 2));
+        if (verticalPos > 0.5) {
+            finalColor = checkerboardBackground(colorTF, centeredPos);
+        } else {
+            finalColor = vec4(colorTF.rgb, 1.0);
+        }
+    } else if (backgroundStyle == 4) {
+        finalColor = vec4(colorTF.rgb, 1.0);
     } else {
-        // use regular OpenGL blending with alpha
-        colorTF.rgb *= colorTF.a;
-        finalColor = colorTF;
+        finalColor = noBackground(colorTF);
     }
 
     // set border flag if the fragment coord is within the border

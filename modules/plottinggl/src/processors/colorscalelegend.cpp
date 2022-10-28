@@ -29,6 +29,7 @@
 
 #include <modules/plottinggl/processors/colorscalelegend.h>
 
+#include <inviwo/core/algorithm/markdown.h>                           // for operator""_help
 #include <inviwo/core/datastructures/datamapper.h>                    // for DataMapper
 #include <inviwo/core/datastructures/unitsystem.h>                    // for Axis
 #include <inviwo/core/ports/datainport.h>                             // for DataInport
@@ -81,34 +82,53 @@ const ProcessorInfo ColorScaleLegend::processorInfo_{
     "Color Scale Legend",           // Display name
     "Plotting",                     // Category
     CodeState::Stable,              // Code state
-    "GL, Plotting, TF"              // Tags
-};
+    "GL, Plotting, TF",             // Tags
+    "Displays a color legend axis based on a transfer function. If a volume is connected, its data "
+    "ranges are considered. The corresponding values of the colors can be displayed next to the "
+    "colors."_help};
 const ProcessorInfo ColorScaleLegend::getProcessorInfo() const { return processorInfo_; }
 
 ColorScaleLegend::ColorScaleLegend()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , volumeInport_("volumeInport")
-    , enabled_("enabled", "Enabled", true)
-    , isotfComposite_("isotfComposite", "TF & Isovalues")
+    , inport_("inport", "Input image"_help)
+    , volumeInport_("volumeInport", "Volume used for data range"_help)
+    , outport_("outport", "Output image"_help)
+    , enabled_(
+          "enabled", "Enabled",
+          "The color legend will be rendered if enabled. Otherwise the input image is passed through."_help,
+          true)
+    , isotfComposite_("isotfComposite", "TF & Isovalues",
+                      "The transfer function used in the legend."_help)
     , positioning_("positioning", "Positioning & Size")
-    , legendPlacement_("legendPlacement", "Legend Placement",
-                       {{"top", "Top", 0},
-                        {"right", "Right", 1},
-                        {"bottom", "Bottom", 2},
-                        {"left", "Left", 3},
-                        {"custom", "Custom", 4}},
-                       1)
+    , legendPlacement_(
+          "legendPlacement", "Legend Placement",
+          "Defines to which side of the canvas the legend should be aligned or if the position and "
+          "rotation should be customly set by the user"_help,
+          {{"top", "Top", 0},
+           {"right", "Right", 1},
+           {"bottom", "Bottom", 2},
+           {"left", "Left", 3},
+           {"custom", "Custom", 4}},
+          1)
     , rotation_("legendRotation", "Legend Rotation",
+                "Sets the legend rotation (only available for custom placement)"_help,
                 {{"degree0", "0 degrees", 0},
                  {"degree90", "90 degrees", 1},
                  {"degree180", "180 degrees", 2},
                  {"degree270", "270 degrees", 3}},
                 1)
-    , position_("position", "Position", vec2(0.5f), vec2(0.0f), vec2(1.0f))
-    , margin_("margin", "Margin (in pixels)", 25, 0, 100)
-    , legendSize_("legendSize", "Legend Size", vec2(200, 25), vec2(10, 10), vec2(2000, 500))
+    , position_(
+          "position", "Position",
+          "Sets the legend position in screen coordinates [0,1] (only available for custom placement)"_help,
+          vec2(0.5f), {vec2(0.0f), ConstraintBehavior::Editable},
+          {vec2(1.0f), ConstraintBehavior::Editable})
+    , margin_(
+          "margin", "Margin (in pixels)",
+          util::ordinalCount(25, 100).set(
+              "Sets the legend margin to canvas borders in pixels (only available for custom placement)"_help))
+    , legendSize_("legendSize", "Legend Size", "Sets the legend width and height in pixel"_help,
+                  vec2(200, 25), {vec2(10, 10), ConstraintBehavior::Editable},
+                  {vec2(2000, 500), ConstraintBehavior::Editable})
     , axisStyle_("style", "Style")
     , labelType_{"titleType",
                  "Title Type",
@@ -118,24 +138,31 @@ ColorScaleLegend::ColorScaleLegend()
                  0}
     , title_("title", "Legend Title", "Legend")
     , backgroundStyle_("backgroundStyle", "Background",
+                       "Background style when dealing with transparent transfer functions"_help,
                        {{"noBackground", "No background", BackgroundStyle::NoBackground},
                         {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard},
-                        {"solid", "Solid", BackgroundStyle::SolidColor}},
+                        {"solid", "Solid", BackgroundStyle::SolidColor},
+                        {"ceckerboardOpaque", "Split checker board/Opaque",
+                         BackgroundStyle::CheckerboardAndOpaque},
+                        {"opaque", "Opaque TF (ignore alpha)", BackgroundStyle::Opaque}},
                        0)
-    , checkerBoardSize_("checkerBoardSize", "Checker Board Size", 5, 1, 20)
-    , bgColor_("backgroundColor", "Background Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f),
-               vec4(1.0f), Defaultvalues<vec4>::getInc(), InvalidationLevel::InvalidOutput,
-               PropertySemantics::Color)
-    , borderWidth_("borderWidth", "Border Width", 2, 0, 10)
+    , checkerBoardSize_("checkerBoardSize", "Checker Board Size",
+                        "Size of the checkerboard cells in pixel"_help, 5.0f,
+                        {1.0f, ConstraintBehavior::Editable}, {20.0f, ConstraintBehavior::Editable})
+    , bgColor_("backgroundColor", "Background Color",
+               util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f))
+                   .set("Color of the solid background"_help))
+    , borderWidth_("borderWidth", "Border Width",
+                   util::ordinalCount(2, 10).set("Border width of the legend in pixel"_help))
     , shader_("img_texturequad.vert", "legend.frag")
     , axis_("axis", "Scale Axis")
     , axisRenderer_(axis_) {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    addPort(inport_).setOptional(true);
-    addPort(outport_);
-    addPort(volumeInport_).setOptional(true);
+    inport_.setOptional(true);
+    volumeInport_.setOptional(true);
+    addPorts(inport_, volumeInport_, outport_);
 
     // legend position
     positioning_.addProperties(legendPlacement_, rotation_, position_, margin_, legendSize_);
@@ -149,6 +176,14 @@ ColorScaleLegend::ColorScaleLegend()
     axisStyle_.addProperties(backgroundStyle_, checkerBoardSize_, bgColor_, borderWidth_);
     checkerBoardSize_.setVisible(false);
     bgColor_.setVisible(false);
+
+    checkerBoardSize_.visibilityDependsOn(backgroundStyle_, [&](auto p) {
+        const auto style = p.get();
+        return (style == BackgroundStyle::CheckerBoard) ||
+               (style == BackgroundStyle::CheckerboardAndOpaque);
+    });
+    bgColor_.visibilityDependsOn(backgroundStyle_,
+                                 [&](auto p) { return p.get() == BackgroundStyle::SolidColor; });
 
     axisStyle_.registerProperty(axis_);
 
@@ -241,12 +276,7 @@ ColorScaleLegend::ColorScaleLegend()
 
     rotation_.onChange(updatePlacement);
     updatePlacement();
-
-    checkerBoardSize_.visibilityDependsOn(
-        backgroundStyle_, [&](auto p) { return p.get() == BackgroundStyle::CheckerBoard; });
-    bgColor_.visibilityDependsOn(backgroundStyle_,
-                                 [&](auto p) { return p.get() == BackgroundStyle::SolidColor; });
-}  // namespace plot
+}
 
 // this function handles the legend rotation and updates the axis thereafter
 std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dimensions) const {
