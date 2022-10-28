@@ -406,17 +406,15 @@ void BrushingAndLinkingManager::clearModifications() { modifications_.clear(); }
 
 void BrushingAndLinkingManager::serialize(Serializer& s) const {
     for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
-        if (std::holds_alternative<BitSetTargets>(targetmap)) {
-            auto& map = std::get<BitSetTargets>(targetmap);
-            if (map.empty()) continue;
+        if (auto bitset = std::get_if<BitSetTargets>(&targetmap)) {
+            if (bitset->empty()) continue;
 
-            s.serialize(toString(action), map, "selection", {},
+            s.serialize(toString(action), *bitset, "selection", {},
                         [](BrushingTarget t) { return t.getString(); }, {});
-        } else if (std::holds_alternative<IndexListTargets>(targetmap)) {
-            auto& map = std::get<IndexListTargets>(targetmap);
-            if (map.empty()) continue;
+        } else if (auto indexlist = std::get_if<IndexListTargets>(&targetmap)) {
+            if (indexlist->empty()) continue;
 
-            s.serialize(toString(action), map, "selection", {},
+            s.serialize(toString(action), *indexlist, "selection", {},
                         [](BrushingTarget t) { return t.getString(); }, {});
         }
     }
