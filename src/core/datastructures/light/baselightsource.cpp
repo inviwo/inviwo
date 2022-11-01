@@ -29,6 +29,8 @@
 
 #include <inviwo/core/datastructures/light/baselightsource.h>
 
+#include <inviwo/core/util/document.h>
+
 #include <glm/trigonometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -82,7 +84,7 @@ Document LightSource::getInfo() const {
     return doc;
 }
 
-const uvec3 LightSource::colorCode = uvec3(128, 64, 196);
+uvec3 LightSource::colorCode = uvec3(128, 64, 196);
 const std::string LightSource::classIdentifier = "org.inviwo.LightSource";
 const std::string LightSource::dataName = "LightSource";
 
