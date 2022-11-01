@@ -628,7 +628,7 @@ void InviwoMainWindow::addActions() {
         fileMenuItem->addSeparator();
         auto recentWorkspaceMenu = fileMenuItem->addMenu(tr("&Recent Workspaces"));
         // create placeholders for recent workspaces
-        workspaceActionRecent_.resize(maxNumRecentFiles_);
+        workspaceActionRecent_.resize(app_->getSystemSettings().maxNumRecentFiles_);
         for (auto& action : workspaceActionRecent_) {
             action = new QAction(this);
             action->setVisible(false);
@@ -1098,7 +1098,7 @@ void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
     recentFiles.removeAll(workspaceFileName);
     recentFiles.prepend(workspaceFileName);
 
-    if (recentFiles.size() > static_cast<int>(maxNumRecentFiles_)) recentFiles.removeLast();
+    if (recentFiles.size() > app_->getSystemSettings().maxNumRecentFiles_) recentFiles.removeLast();
     saveRecentWorkspaceList(recentFiles);
 }
 

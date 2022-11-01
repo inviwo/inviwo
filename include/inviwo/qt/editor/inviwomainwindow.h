@@ -73,8 +73,6 @@ class Processor;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
-    static const unsigned int maxNumRecentFiles_ = 10;
-
     InviwoMainWindow(InviwoApplicationQt* app);
     virtual ~InviwoMainWindow();
 
