@@ -132,7 +132,8 @@ TranslateProperty::TranslateProperty(std::string_view identifier, std::string_vi
                                      const vec3& increment, InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, semantics)
-    , translate("translate_", "Translate", value, minValue, maxValue, increment) {
+    , translate("translate_", "Translate", value, {minValue, ConstraintBehavior::Ignore},
+                {maxValue, ConstraintBehavior::Ignore}, increment) {
     translate.setSemantics(PropertySemantics::SpinBox);
     addProperty(translate);
 }
@@ -158,7 +159,8 @@ RotateProperty::RotateProperty(std::string_view identifier, std::string_view dis
     , mode("mode", "Angle Measure",
            {{"rad", "Radians", AngleMeasure::Radians}, {"deg", "Degrees", AngleMeasure::Degrees}})
     , axis("axis", "Axis", glm::normalize(axisValue), vec3{-1.0f}, vec3{1.0f})
-    , angle("angle", "Angle", angleValue, minAngle, maxAngle, increment) {
+    , angle("angle", "Angle", angleValue, {minAngle, ConstraintBehavior::Ignore},
+            {maxAngle, ConstraintBehavior::Ignore}, increment) {
     mode.setSelectedValue(angleMeasure);
     axis.setSemantics(PropertySemantics::SpinBox);
     addProperties(mode, axis, angle);
@@ -204,7 +206,8 @@ ScaleProperty::ScaleProperty(std::string_view identifier, std::string_view displ
                              const vec3& increment, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, semantics)
-    , scale("scale", "Scale", value, minValue, maxValue, increment) {
+    , scale("scale", "Scale", value, {minValue, ConstraintBehavior::Ignore},
+            {maxValue, ConstraintBehavior::Ignore}, increment) {
     scale.setSemantics(PropertySemantics::SpinBox);
     addProperty(scale);
 }
@@ -228,7 +231,8 @@ CustomTransformProperty::CustomTransformProperty(std::string_view identifier,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, semantics)
-    , matrix("matrix", "Matrix", value, minValue, maxValue, increment) {
+    , matrix("matrix", "Matrix", value, {minValue, ConstraintBehavior::Ignore},
+             {maxValue, ConstraintBehavior::Ignore}, increment) {
     matrix.setSemantics(PropertySemantics::SpinBox);
     addProperty(matrix);
 }
