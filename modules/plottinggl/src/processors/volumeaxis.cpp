@@ -317,13 +317,17 @@ void VolumeAxis::process() {
     const auto volume = inport_.getData();
     const dmat4 m = volume->getCoordinateTransformer().getDataToModelMatrix();
     const dmat3 nm = glm::transpose(glm::inverse(m));
-    const double offset = axisOffset_.get() / 100;
+    // the mean length of the three basis vectors is used for a relative axis offset (%)
+    const double offset =
+        axisOffset_.get() / 100 *
+        (glm::length(dvec3(m[0])) + glm::length(dvec3(m[1])) + glm::length2(dvec3(m[2]))) / 3.0;
 
     const auto render = [&](const util::AxisParams& axis, size_t axisIdx) {
         const dvec3 center{0.5, 0.5, 0.5};
-        const auto offsetDir = glm::normalize(axis.start - center + axis.stop - center);
-        const vec3 start{m * dvec4(axis.start + offset * offsetDir, 1)};
-        const vec3 stop{m * dvec4(axis.stop + offset * offsetDir, 1)};
+        const auto offsetDir =
+            glm::normalize(dmat3(m) * glm::normalize(axis.start - center + axis.stop - center));
+        const vec3 start{dvec3{m * dvec4(axis.start, 1)} + offset * offsetDir};
+        const vec3 stop{dvec3{m * dvec4(axis.stop, 1)} + offset * offsetDir};
         const vec3 tickDir{nm * axis.tickDir};
         axisRenderers_[axisIdx].render(&camera_.get(), dims, start, stop, tickDir);
     };
