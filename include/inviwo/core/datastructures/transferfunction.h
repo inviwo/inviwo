@@ -117,6 +117,12 @@ protected:
     virtual std::string_view serializationKey() const override;
     virtual std::string_view serializationItemKey() const override;
 
+    void saveAsLayer(std::string_view filename, const FileExtension& ext) const;
+    void loadFromLayer(std::string_view filename, const FileExtension& ext);
+
+    void saveAsXML(std::string_view filename) const;
+    void loadFromXML(std::string_view filename);
+
 private:
     double maskMin_;
     double maskMax_;
