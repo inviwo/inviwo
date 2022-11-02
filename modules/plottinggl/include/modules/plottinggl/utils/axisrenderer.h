@@ -267,8 +267,8 @@ public:
     size_t getAxisPickingId() const { return axisPickingId_; }
 
 protected:
-    void renderAxis(Camera* camera, const vec3& start, const vec3& end, const vec3& tickdir,
-                    const size2_t& outputDims, bool antialiasing);
+    void renderAxis(Camera* camera, const mat4& modelToWorld, const vec3& start, const vec3& end,
+                    const vec3& tickdir, const size2_t& outputDims, bool antialiasing);
 
     std::reference_wrapper<const AxisSettings> settings_;
 
@@ -323,12 +323,13 @@ public:
     AxisRenderer3D& operator=(AxisRenderer3D&& rhs) noexcept = default;
     virtual ~AxisRenderer3D() = default;
 
-    void render(Camera* camera, const size2_t& outputDims, const vec3& startPos, const vec3& endPos,
-                const vec3& tickDirection, bool antialiasing = true);
+    void render(Camera* camera, const mat4& modelToWorld, const size2_t& outputDims,
+                const vec3& startPos, const vec3& endPos, const vec3& tickDirection,
+                bool antialiasing = true);
 
 private:
-    void renderText(Camera* camera, const size2_t& outputDims, const vec3& startPos,
-                    const vec3& endPos, const vec3& tickDirection);
+    void renderText(Camera* camera, const mat4& modelToWorld, const size2_t& outputDims,
+                    const vec3& startPos, const vec3& endPos, const vec3& tickDirection);
 
     Labels labels_;
 };

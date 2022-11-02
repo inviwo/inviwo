@@ -34,6 +34,7 @@
 #include <inviwo/core/util/glmmat.h>                               // for mat4
 #include <inviwo/core/util/glmvec.h>                               // for vec3, vec2, vec4, dvec2
 #include <inviwo/core/util/zip.h>                                  // for zip, zipIterator, zipper
+#include <inviwo/core/util/stdextensions.h>                        // for util::transform
 #include <modules/basegl/datastructures/meshshadercache.h>         // for MeshShaderCache::Requi...
 #include <modules/fontrendering/datastructures/fontsettings.h>     // for FontSettings
 #include <modules/fontrendering/datastructures/texatlasentry.h>    // for TexAtlasRenderInfo
@@ -164,8 +165,8 @@ std::shared_ptr<MeshShaderCache> AxisRendererBase::getShaders() {
         return cache;
     }
 }
-void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3& end,
-                                  const vec3& tickdir, const size2_t& outputDims,
+void AxisRendererBase::renderAxis(Camera* camera, const mat4& modelToWorld, const vec3& start,
+                                  const vec3& end, const vec3& tickdir, const size2_t& outputDims,
                                   bool antialiasing) {
     auto axisMesh = meshes_.getAxis(settings_, start, end, axisPickingId_);
     if (!axisMesh) return;
@@ -201,8 +202,9 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
     // compute matrix to transform meshes from screen coords to clip space
     const auto m = !camera ? mat4(vec4(2.0f / outputDims.x, 0.0f, 0.0f, 0.0f),
                                   vec4(0.0f, 2.0f / outputDims.y, 0.0f, 0.0f),
-                                  vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(-1.0f, -1.0f, 0.0f, 1.0f))
-                           : mat4{1};
+                                  vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(-1.0f, -1.0f, 0.0f, 1.0f)) *
+                                 modelToWorld
+                           : modelToWorld;
 
     auto drawMesh = [&](Mesh* mesh, float lineWidth, bool caps) {
         if (!mesh) return;
@@ -245,7 +247,8 @@ void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, cons
 
     const auto axisDir = glm::normalize(vec2{endPos} - vec2{startPos});
     const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
-    renderAxis(nullptr, vec3{startPos, 0}, vec3{endPos, 0}, tickDir, outputDims, antialiasing);
+    renderAxis(nullptr, mat4(1.0f), vec3{startPos, 0}, vec3{endPos, 0}, tickDir, outputDims,
+               antialiasing);
     renderText(outputDims, startPos, endPos);
 }
 
@@ -388,17 +391,19 @@ AxisRenderer3D::AxisRenderer3D(const AxisSettings& settings)
                        [](auto& tick) { return tick.second; });
     }} {}
 
-void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec3& startPos,
-                            const vec3& endPos, const vec3& tickDirection, bool antialiasing) {
+void AxisRenderer3D::render(Camera* camera, const mat4& modelToWorld, const size2_t& outputDims,
+                            const vec3& startPos, const vec3& endPos, const vec3& tickDirection,
+                            bool antialiasing) {
     if (!settings_.get().getAxisVisible()) return;
 
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    renderAxis(camera, startPos, endPos, tickDirection, outputDims, antialiasing);
-    renderText(camera, outputDims, startPos, endPos, tickDirection);
+    renderAxis(camera, modelToWorld, startPos, endPos, tickDirection, outputDims, antialiasing);
+    renderText(camera, modelToWorld, outputDims, startPos, endPos, tickDirection);
 }
 
-void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const vec3& startPos,
-                                const vec3& endPos, const vec3& tickDirection) {
+void AxisRenderer3D::renderText(Camera* camera, const mat4& modelToWorld, const size2_t& outputDims,
+                                const vec3& startPos, const vec3& endPos,
+                                const vec3& tickDirection) {
     // axis caption
     if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
         auto captex =
@@ -408,7 +413,9 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
         const vec2 texDims(captex.texture->getDimensions());
         const auto anchor(captionSettings.getFont().getAnchorPos());
 
-        const vec3 pos(plot::getAxisCaptionPosition3D(settings_, startPos, endPos, tickDirection));
+        const vec3 pos(
+            modelToWorld *
+            vec4(plot::getAxisCaptionPosition3D(settings_, startPos, endPos, tickDirection), 1.0f));
 
         const auto angle = glm::radians(captionSettings.getRotation());
         const auto transform = glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f));
@@ -420,8 +427,9 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
 
     // axis labels
     if (const auto& labels = settings_.get().getLabelSettings()) {
-        const auto& pos =
-            labels_.getLabelPos(settings_, startPos, endPos, textRenderer_, tickDirection);
+        const auto& pos = util::transform(
+            labels_.getLabelPos(settings_, startPos, endPos, textRenderer_, tickDirection),
+            [m = modelToWorld](const vec3& p) { return vec3(m * vec4(p, 1.0f)); });
 
         auto atlas = labels_.getAtlas(settings_, startPos, endPos, textRenderer_);
 
