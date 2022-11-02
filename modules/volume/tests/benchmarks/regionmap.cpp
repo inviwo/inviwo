@@ -202,4 +202,3 @@ BENCHMARK(b5)->RangeMultiplier(2)->Range(8, 10000);
 BENCHMARK(b6)->RangeMultiplier(2)->Range(8, 10000);
 
 BENCHMARK_MAIN();
-

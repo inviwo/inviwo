@@ -154,4 +154,3 @@ BENCHMARK(SafeCStr1_256)->DenseRange(min, max, step);
 BENCHMARK(SafeCStr2_56)->DenseRange(min, max, step);
 
 BENCHMARK_MAIN();
-
