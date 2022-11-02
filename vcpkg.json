@@ -3,6 +3,8 @@
     "version-string" : "0.9.11.1",
     "homepage" : "https://github.com/inviwo/inviwo",
     "license": "BSD-2-Clause",
+    "$baseline-reason" : "This sets all minimal versions to those at this vcpkg commit, from 2022-11-01",
+    "builtin-baseline": "fcfda3c78c474aec7187299b684258855259a7a6",
     "dependencies" : [
         "assimp",
         "benchmark",
@@ -32,6 +34,12 @@
         "tinyxml2",
         "utfcpp",
         "zlib"
+    ],
+    "overrides" : [
+        {
+            "$reason" : "We get very off link errors with 1.7.0. 1.7.0 changed how the export header is created, maybe something broke upstream",
+            "name": "benchmark",
+            "version": "1.6.1"
+        }
     ]
-}   
-
+}

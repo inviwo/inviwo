@@ -150,12 +150,6 @@ BENCHMARK(RippleNew)->RangeMultiplier(2)->Range(8, 8 << 5);
 
 // BENCHMARK(SphereNew)->Arg(5);
 
-int main(int argc, char** argv) {
-
-    benchmark::Initialize(&argc, argv);
-    benchmark::RunSpecifiedBenchmarks();
-
-    return 0;
-}
+BENCHMARK_MAIN();
 
 #include <warn/pop>

@@ -34,7 +34,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <roaring.hh>
+#include <roaring/roaring.hh>
 #include <warn/pop>
 
 namespace inviwo {

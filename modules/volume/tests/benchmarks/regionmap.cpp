@@ -201,8 +201,5 @@ BENCHMARK(b4)->RangeMultiplier(2)->Range(8, 10000);
 BENCHMARK(b5)->RangeMultiplier(2)->Range(8, 10000);
 BENCHMARK(b6)->RangeMultiplier(2)->Range(8, 10000);
 
-int main(int argc, char** argv) {
-    benchmark::Initialize(&argc, argv);
-    benchmark::RunSpecifiedBenchmarks();
-    return 0;
-}
+BENCHMARK_MAIN();
+

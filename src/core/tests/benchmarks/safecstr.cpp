@@ -153,8 +153,5 @@ BENCHMARK(ArrayConvZero)->DenseRange(min, max, step);
 BENCHMARK(SafeCStr1_256)->DenseRange(min, max, step);
 BENCHMARK(SafeCStr2_56)->DenseRange(min, max, step);
 
-int main(int argc, char** argv) {
-    benchmark::Initialize(&argc, argv);
-    benchmark::RunSpecifiedBenchmarks();
-    return 0;
-}
+BENCHMARK_MAIN();
+
