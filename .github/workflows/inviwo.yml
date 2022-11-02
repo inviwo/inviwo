@@ -76,6 +76,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: 'microsoft/vcpkg'
+        fetch-depth: 0
         path: 'vcpkg' # The cmake vcpkg present expects vcpkg to be next to the inviwo source folder
     
     # Cache built dependencies for faster subsequent builds
