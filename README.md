@@ -25,15 +25,15 @@ Below follow some general information about the framework:
 #### Modules
  - Modern graphics programming through OpenGL (>= 3.3 Core) related modules.
  - Parallel computing on multiple platforms (GPU/CPU) through OpenCL (>= 1.0) related modules.
- - Python (> 3.2) scripting and computation is supported through provided modules.
+ - Python (>= 3.9) scripting and computation is supported through provided modules.
 
 #### GUI
- - The primary GUI is based on Qt (Supported >= 5.15, Qt 6+ recommended).
+ - The primary GUI is based on Qt (>= 6).
  - A minimal application is available, utilizing GLFW 3 for multiple window and context management.
 
 #### Build system
  - The project and module configuration/generation is performed through CMake (>= 3.16.0).
- - Inviwo has been compiled in Visual Studio 2019, Clang 8, GCC 9, XCode 11
+ - Inviwo has been compiled in Visual Studio 2022, Clang 14, GCC 11, XCode 14
  - C++17 Required
 
 #### Documentation
