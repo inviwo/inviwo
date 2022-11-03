@@ -190,15 +190,17 @@ bool PythonScript::checkRuntimeError() {
         PyFrameObject* frame = tb->tb_frame;
         while (frame) {
             int line = PyFrame_GetLineNumber(frame);
-            auto file = py::handle(frame->f_code->co_filename).cast<std::string>();
-            auto name = py::handle(frame->f_code->co_name).cast<std::string>();
+            PyCodeObject* code = PyFrame_GetCode(frame);
+
+            auto file = py::handle(code->co_filename).cast<std::string>();
+            auto name = py::handle(code->co_name).cast<std::string>();
 
             if (file.empty()) {
                 file = "<script>";
             }
 
             errstr << file << ":" << line << " in " << name << "\n";
-            frame = frame->f_back;
+            frame = PyFrame_GetBack(frame);
         }
     } else {
         errstr << "No stacktrace available";
