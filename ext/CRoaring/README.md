@@ -5,5 +5,6 @@ As the original git repository [1] of CRoaring contains >250 MiB of benchmark da
 Minor modifications to `CMakeLists.txt` were necessary:
 1. set minimum CMake version `cmake_minimum_required(VERSION 2.9...3.18)`
 2. enclose setting `TEST_DATA_DIR`, `BENCHMARK_DATA_DIR`, and `configure_file` for the tests with an if statement `if(ENABLE_ROARING_TESTS)`
+3. copy cpp/* into include/ as is done in the installer, to make "#include <roaring/roaring.hh>" work
 
 [1] https://github.com/RoaringBitmap/CRoaring
