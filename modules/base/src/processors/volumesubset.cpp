@@ -122,10 +122,8 @@ void VolumeSubset::process() {
         if (dim == dims_)
             outport_.setData(inport_.getData());
         else {
-            auto volume = std::make_shared<Volume>(VolumeRAMSubSet::apply(vol, dim, offset));
-            // pass meta data on
-            volume->copyMetaDataFrom(*inport_.getData());
-            volume->dataMap_ = inport_.getData()->dataMap_;
+            auto volume = std::make_shared<Volume>(*inport_.getData(), NoData{});
+            volume->addRepresentation(VolumeRAMSubSet::apply(vol, dim, offset));
 
             if (adjustBasisAndOffset_.get()) {
                 vec3 volOffset = inport_.getData()->getOffset();
@@ -142,10 +140,6 @@ void VolumeSubset::process() {
 
                 volume->setBasis(newBasis);
                 volume->setOffset(newOffset);
-
-            } else {
-                // copy basis and offset
-                volume->setModelMatrix(inport_.getData()->getModelMatrix());
             }
             outport_.setData(volume);
         }
