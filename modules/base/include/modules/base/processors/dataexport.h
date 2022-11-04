@@ -31,6 +31,7 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -51,7 +52,11 @@ namespace inviwo {
 template <typename DataType, typename PortType = DataInport<DataType>>
 class DataExport : public Processor {
 public:
-    DataExport();
+    DataExport(DataWriterFactory* wf = util::getDataWriterFactory(), std::string_view = "",
+               std::string_view contentType = FileProperty::defaultContentType);
+    DataExport(InviwoApplication* app, std::string_view = "",
+               std::string_view contentType = FileProperty::defaultContentType);
+
     virtual ~DataExport() = default;
 
     virtual void process() override;
@@ -63,6 +68,7 @@ protected:
 
     virtual const DataType* getData() = 0;
 
+    DataWriterFactory* wf_;
     PortType port_;
     FileProperty file_;
     ButtonProperty export_;
@@ -72,14 +78,21 @@ protected:
 };
 
 template <typename DataType, typename PortType>
-DataExport<DataType, PortType>::DataExport()
-    : Processor()
-    , port_("data", "The data to export"_help)
-    , file_("file", "File name", "The file to save data to"_help, "", "mesh")
-    , export_("export", "Export", "Save data to disk"_help)
-    , overwrite_("overwrite", "Overwrite", "Overwrite any existing data in file"_help, false) {
+DataExport<DataType, PortType>::DataExport(InviwoApplication* app, std::string_view file,
+                                           std::string_view contentType)
+    : DataExport{util::getDataWriterFactory(app), file, contentType} {}
 
-    for (auto& ext : util::getDataWriterFactory()->getExtensionsForType<DataType>()) {
+template <typename DataType, typename PortType>
+DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, std::string_view file,
+                                           std::string_view contentType)
+    : Processor()
+    , wf_{wf}
+    , port_{"data", "The data to export"_help}
+    , file_{"file", "File name", "The file path to save data to"_help, file, contentType}
+    , export_{"export", "Export", "Save data to disk"_help}
+    , overwrite_{"overwrite", "Overwrite", "Overwrite any existing data in file"_help, false} {
+
+    for (auto& ext : wf_->getExtensionsForType<DataType>()) {
         file_.addNameFilter(ext.toString());
     }
 
@@ -105,14 +118,13 @@ void DataExport<DataType, PortType>::exportData() {
     auto data = getData();
 
     if (data && !file_.get().empty()) {
-        auto factory = util::getDataWriterFactory();
 
-        auto writer = factory->template getWriterForTypeAndExtension<DataType>(
+        auto writer = wf_->template getWriterForTypeAndExtension<DataType>(
             file_.getSelectedExtension(), file_.get());
 
         if (!writer) {
             LogProcessorError(
-                "Error: Cound not find a writer for the specified extension and data type");
+                "Error: Could not find a writer for the specified extension and data type");
             return;
         }
 

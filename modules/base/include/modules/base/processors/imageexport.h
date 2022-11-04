@@ -51,7 +51,7 @@ class ProcessorNetwork;
 class IVW_MODULE_BASE_API ImageExport : public DataExport<Layer, ImageInport>,
                                         public ProcessorNetworkObserver {
 public:
-    ImageExport();
+    ImageExport(InviwoApplication* app);
     virtual ~ImageExport() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;

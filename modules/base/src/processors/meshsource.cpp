@@ -29,6 +29,7 @@
 
 #include <modules/base/processors/meshsource.h>
 
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/io/datareader.h>              // for DataReaderType
 #include <inviwo/core/io/datareaderexception.h>     // for DataReaderException
 #include <inviwo/core/ports/meshport.h>             // for MeshOutport
@@ -55,8 +56,8 @@ const ProcessorInfo MeshSource::processorInfo_{
 };
 const ProcessorInfo MeshSource::getProcessorInfo() const { return processorInfo_; }
 
-MeshSource::MeshSource(InviwoApplication* app, const std::string& file)
-    : DataSource<Mesh, MeshOutport>(app, file, "geometry") {
+MeshSource::MeshSource(InviwoApplication* app, std::string_view file)
+    : DataSource<Mesh, MeshOutport>(util::getDataReaderFactory(app), file, "geometry") {
     DataSource<Mesh, MeshOutport>::file_.setDisplayName("Geometry file");
 }
 

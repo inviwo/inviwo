@@ -29,6 +29,7 @@
 
 #include <modules/base/processors/meshexport.h>
 
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
 #include <inviwo/core/ports/datainport.h>              // for DataInport
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
@@ -48,6 +49,9 @@ const ProcessorInfo MeshExport::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::CPU,                // Tags
 };
+MeshExport::MeshExport(InviwoApplication* app)
+    : DataExport<Mesh, MeshInport>{util::getDataWriterFactory(app), "", "geometry"} {}
+
 const ProcessorInfo MeshExport::getProcessorInfo() const { return processorInfo_; }
 
 const Mesh* MeshExport::getData() { return port_.getData().get(); }

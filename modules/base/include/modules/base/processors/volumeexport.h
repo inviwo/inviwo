@@ -60,7 +60,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API VolumeExport : public DataExport<Volume, VolumeInport> {
 public:
-    VolumeExport() = default;
+    VolumeExport(InviwoApplication* app);
     virtual ~VolumeExport() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;

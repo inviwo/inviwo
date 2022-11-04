@@ -29,6 +29,7 @@
 
 #include <modules/base/processors/imageexport.h>
 
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/datastructures/image/layer.h>      // for Layer
 #include <inviwo/core/interaction/events/resizeevent.h>  // for ResizeEvent
 #include <inviwo/core/io/datawriter.h>                   // for DataWriterType
@@ -71,8 +72,8 @@ const ProcessorInfo ImageExport::processorInfo_{
     Tags::CPU,                 // Tags
     R"(A processor to save images to disk)"_unindentHelp};
 
-ImageExport::ImageExport()
-    : DataExport<Layer, ImageInport>{}
+ImageExport::ImageExport(InviwoApplication* app)
+    : DataExport<Layer, ImageInport>{util::getDataWriterFactory(app), "", "image"}
     , outportDeterminesSize_{"outportDeterminesSize", "Let Outport Determine Size", false}
     , imageSize_{"imageSize",   "Image Size",        size2_t(1024, 1024),
                  size2_t(1, 1), size2_t(4096, 4096), size2_t(1, 1)}

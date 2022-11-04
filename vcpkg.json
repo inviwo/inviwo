@@ -37,7 +37,7 @@
     ],
     "overrides" : [
         {
-            "$reason" : "We get very off link errors with 1.7.0. 1.7.0 changed how the export header is created, maybe something broke upstream",
+            "$reason" : "We get linker errors with 1.7.0. 1.7.0 changed how the export header is created, maybe something broke upstream",
             "name": "benchmark",
             "version": "1.6.1"
         }

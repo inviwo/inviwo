@@ -67,7 +67,7 @@ template <typename T, typename OutportType>
 VectorElementSelectorProcessor<T, OutportType>::VectorElementSelectorProcessor()
     : Processor()
     , inport_("inport", "Sequence of data to select from"_help)
-    , outport_("outport", "The select item"_help)
+    , outport_("outport", "The selected item"_help)
     , timeStep_("timeStep", "Step")
     , name_("name", "Name")
     , timestamp_("timestamp", "Timestamp", 0, std::numeric_limits<double>::lowest(),
@@ -95,21 +95,21 @@ VectorElementSelectorProcessor<T, OutportType>::VectorElementSelectorProcessor()
             size_t index =
                 std::min(data->size() - 1, static_cast<size_t>(timeStep_.index_.get() - 1));
             auto selectedData = data->at(index).get();
-            if (auto metadataowner = dynamic_cast<const MetaDataOwner*>(selectedData)) {
-                if (metadataowner->hasMetaData<StringMetaData>("name")) {
-                    name_.set(metadataowner->getMetaData<StringMetaData>("name")->get());
+            if (auto metaDataOwner = dynamic_cast<const MetaDataOwner*>(selectedData)) {
+                if (metaDataOwner->hasMetaData<StringMetaData>("name")) {
+                    name_.set(metaDataOwner->getMetaData<StringMetaData>("name")->get());
                     name_.setVisible(true);
                 } else {
                     name_.setVisible(false);
                 }
 
-                if (metadataowner->hasMetaData<DoubleMetaData>("timestamp") ||
-                    metadataowner->hasMetaData<FloatMetaData>("timestamp")) {
-                    if (auto metadata1 = metadataowner->getMetaData<DoubleMetaData>("timestamp")) {
+                if (metaDataOwner->hasMetaData<DoubleMetaData>("timestamp") ||
+                    metaDataOwner->hasMetaData<FloatMetaData>("timestamp")) {
+                    if (auto metadata1 = metaDataOwner->getMetaData<DoubleMetaData>("timestamp")) {
                         timestamp_.set(metadata1->get());
                         timestamp_.setVisible(true);
                     } else if (auto metadata2 =
-                                   metadataowner->getMetaData<FloatMetaData>("timestamp")) {
+                                   metaDataOwner->getMetaData<FloatMetaData>("timestamp")) {
                         timestamp_.set(static_cast<double>(metadata2->get()));
                         timestamp_.setVisible(true);
                     }
