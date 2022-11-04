@@ -52,11 +52,10 @@ constexpr int maxValue = 32;
 constexpr int lenLeft = 32;
 constexpr int lenRight = 4096 << 1;
 
-std::random_device rd;
-std::mt19937 gen(rd());
-std::uniform_int_distribution<> distrib(1, maxValue);
-
-std::vector<int> left_ = [&]() {
+const std::vector<int> left_ = []() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(1, maxValue);
     std::vector<int> left;
     for (int i = 0; i < lenLeft; ++i) {
         left.push_back(i % maxValue);
@@ -65,7 +64,10 @@ std::vector<int> left_ = [&]() {
     return left;
 }();
 
-std::vector<int> right_ = [&]() {
+const std::vector<int> right_ = []() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(1, maxValue);
     std::vector<int> right;
     right.resize(lenRight);
     std::generate(right.begin(), right.end(), [&]() { return distrib(gen); });
@@ -221,10 +223,10 @@ std::vector<std::uint32_t> selectRows(const Cont& cont, dataframefilters::Filter
     }
 }
 
-std::shared_ptr<DataFrame> createDataFrame(int size, int maxValue) {
+std::shared_ptr<DataFrame> createDataFrame(int size, int max) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(1, maxValue);
+    std::uniform_int_distribution<> distrib(1, max);
 
     auto columnData = [&]() {
         std::vector<int> data(size);

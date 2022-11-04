@@ -39,6 +39,7 @@ ivw_append_install_list(DIRECTORY)
 option(IVW_USE_EXTERNAL_GTEST "GTest is provided externaly" OFF)
  # don't install, used in build only
 if(NOT IVW_USE_EXTERNAL_GTEST AND (IVW_TEST_UNIT_TESTS OR IVW_TEST_INTEGRATION_TESTS))
+    message(STATUS "add subdirectory: gtest")
     add_subdirectory(gtest)
     ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core EXT
         URL "https://github.com/google/googletest"
@@ -52,9 +53,13 @@ endif()
 # Img formats
 option(IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
 if (NOT IVW_USE_EXTERNAL_IMG)
+    message(STATUS "add subdirectory: zlib")
     add_subdirectory(zlib-1.2.11) # Defines target ZLIB::ZLIB
+    message(STATUS "add subdirectory: libpng")
     add_subdirectory(libpng)      # Defines target png
+    message(STATUS "add subdirectory: libjpeg")
     add_subdirectory(libjpeg)     # Defines target JPEG::JPEG
+    message(STATUS "add subdirectory: tiff")
     add_subdirectory(tiff)        # Defines target TIFF::TIFF
 
     ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core EXT
@@ -85,6 +90,7 @@ else()
 endif()
 
 # Flags
+message(STATUS "add subdirectory: flags")
 add_subdirectory(flags) # We have local modifications
 ivw_register_license_file(NAME "Flags" MODULE Core EXT
     URL "http://grisumbras.github.io/enum-flags/"
@@ -95,6 +101,7 @@ ivw_register_license_file(NAME "Flags" MODULE Core EXT
 # GLM
 option(IVW_USE_EXTERNAL_GLM "GLM is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_GLM)
+    message(STATUS "add subdirectory: glm")
     add_subdirectory(glm)
     ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" 
         VERSION 0.9.9.3 MODULE Core EXT URL "https://glm.g-truc.net"
@@ -105,6 +112,7 @@ else()
     ivw_vcpkg_install(glm MODULE Core EXT)
 endif()
 
+message(STATUS "add subdirectory: ticpp")
 add_subdirectory(ticpp)
 ivw_register_license_file(NAME "TiCPP" TARGET ticpp MODULE Core EXT
     URL https://github.com/wxFormBuilder/ticpp
@@ -118,12 +126,14 @@ if(IVW_TEST_BENCHMARKS)
     option(IVW_USE_EXTERNAL_BENCHMARK "Goggle Benchmark is provided externaly" OFF)
      # don't install, used in build only
     if(NOT IVW_USE_EXTERNAL_BENCHMARK)
+        message(STATUS "add subdirectory: benchmark")
         add_subdirectory(benchmark)
     else()
         find_package(benchmark CONFIG REQUIRED)
     endif()
 endif()
 
+message(STATUS "add subdirectory: warn")
 add_subdirectory(warn)     # No package available
 ivw_register_license_file(NAME "warn" MODULE Core EXT
     URL "https://github.com/petersteneteg/warn"
@@ -132,6 +142,7 @@ ivw_register_license_file(NAME "warn" MODULE Core EXT
 )
 
 # tclap
+message(STATUS "add subdirectory: tclap")
 add_subdirectory(tclap)    
 ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core EXT
     URL http://tclap.sourceforge.net/
@@ -142,6 +153,7 @@ ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core EXT
 # tinydir
 option(IVW_USE_EXTERNAL_TINYDIR "Tinydir is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_TINYDIR)
+    message(STATUS "add subdirectory: tinydir")
     add_subdirectory(tinydir)
     ivw_register_license_file(NAME "TinyDir" MODULE Core EXT
         URL https://github.com/cxong/tinydir
@@ -158,6 +170,7 @@ else()
 endif()
 
 # Half
+message(STATUS "add subdirectory: help")
 add_subdirectory(half)
 ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
     URL "http://half.sourceforge.net"
@@ -170,6 +183,7 @@ ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
 # Use the internal submodule until vcpkg is updated. 
 # option(IVW_USE_EXTERNAL_UTFCPP "UTFCPP is provided externaly" OFF)
 # if(NOT IVW_USE_EXTERNAL_UTFCPP)
+    message(STATUS "add subdirectory: utf")
     add_subdirectory(utf)
     ivw_register_license_file(NAME "UTF8-CPP" VERSION ${utf8cpp_VERSION} MODULE Core EXT
         URL "https://github.com/nemtrif/utfcpp"
@@ -184,6 +198,7 @@ ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
 # nlohmann json
 option(IVW_USE_EXTERNAL_JSON "JSON is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_JSON)
+    message(STATUS "add subdirectory: json")
     add_subdirectory(json)
     ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE Core EXT
         URL "https://github.com/nlohmann/json"
@@ -198,6 +213,7 @@ endif()
 # Fmt
 option(IVW_USE_EXTERNAL_FMT "Fmt is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_FMT)
+    message(STATUS "add subdirectory: fmt")
     add_subdirectory(fmt)
     ivw_register_license_file(NAME "{fmt}" TARGET fmt::fmt MODULE Core EXT
         URL "https://github.com/fmtlib/fmt"
@@ -211,6 +227,7 @@ else()
 endif()
 
 # span
+message(STATUS "add subdirectory: span")
 add_subdirectory(span)
 ivw_register_license_file(NAME "tcbrindle/span" target inviwo::span MODULE Core EXT
     URL "https://github.com/tcbrindle/span"
@@ -219,6 +236,7 @@ ivw_register_license_file(NAME "tcbrindle/span" target inviwo::span MODULE Core 
 )
 
 # sml
+message(STATUS "add subdirectory: sml")
 add_subdirectory(sml)
 ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MODULE Core EXT
     URL "https://github.com/boost-experimental/sml"
@@ -234,6 +252,7 @@ else()
     option(IVW_USE_SIGAR "Use sigar to detect system capabilities" ON)
 endif()
 if(IVW_USE_SIGAR)
+    message(STATUS "add subdirectory: sigar")
     add_subdirectory(sigar)
     ivw_register_license_file(NAME "Sigar" TARGET inviwo::sigar MODULE Core EXT
         URL "http://sigar.hyperic.com"
@@ -245,6 +264,7 @@ endif()
 # CRoaring
 option(IVW_USE_EXTERNAL_ROARING "CRoaring is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_ROARING)
+    message(STATUS "add subdirectory: CRoaring")
     add_subdirectory(CRoaring)
     ivw_register_license_file(NAME "CRoaring" VERSION 0.3.4 TARGET roaring MODULE Core EXT
         URL "https://github.com/RoaringBitmap/CRoaring"
@@ -260,6 +280,7 @@ endif()
 # Units
 option(IVW_USE_EXTERNAL_UNITS "Units is provided externaly (https://github.com/LLNL/units)" OFF)
 if(NOT IVW_USE_EXTERNAL_UNITS)
+    message(STATUS "add subdirectory: units")
     add_subdirectory(units)
     ivw_register_license_file(NAME "Units" VERSION 0.5.0 TARGET units::units MODULE Core EXT
         URL "https://github.com/LLNL/units"
@@ -272,6 +293,7 @@ else()
 endif()
 
 # Markdown
+message(STATUS "add subdirectory: md4c")
 add_subdirectory(md4c)
 ivw_register_license_file(NAME "MD4C" VERSION 0.4.8 TARGET inviwo::md4c MODULE Core EXT
     URL "http://github.com/mity/md4c"
@@ -280,6 +302,7 @@ ivw_register_license_file(NAME "MD4C" VERSION 0.4.8 TARGET inviwo::md4c MODULE C
 )
 
 if(WIN32) # Stackwalker for windows for stack traces in the log
+    message(STATUS "add subdirectory: stackwalker")
     add_subdirectory(stackwalker) 
     ivw_register_license_file(NAME "stackwalker" TARGET inviwo::stackwalker MODULE Core EXT
         URL http://stackwalker.codeplex.com/
@@ -291,6 +314,7 @@ endif()
 if(WIN32 AND MSVC)
     option(IVW_CFG_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
     if(IVW_CFG_MSVC_MEMLEAK_TEST)
+        message(STATUS "add subdirectory: vld")
         add_subdirectory(vld)
         ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core EXT
             URL "https://kinddragon.github.io/vld/"
@@ -303,6 +327,7 @@ endif()
 if(Python3_Development_FOUND)
     option(IVW_USE_EXTERNAL_PYBIND11 "Pybind11 is provided externaly" OFF)
     if(NOT IVW_USE_EXTERNAL_PYBIND11)
+        message(STATUS "add subdirectory: pybind11")
         add_subdirectory(pybind11)
         ivw_register_license_file(NAME "PyBind11" VERSION 2.6.1 MODULE Core EXT
             URL "https://github.com/pybind/pybind11"
