@@ -60,9 +60,9 @@ namespace {
 // QApplication always needs some argc and argv
 int dummyArgc = 1;
 char** dummyArgs() {
-    static char* dummyArgv = new char[7];
-    sprintf(dummyArgv, "inviwo");
-    return &dummyArgv;
+    static std::string arg{"inviwo"};
+    static std::array<char*, 1> array = {arg.data()};
+    return array.data();
 }
 
 class FileSystemObserverQt : public QObject, public FileSystemObserver {

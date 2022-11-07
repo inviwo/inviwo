@@ -36,7 +36,7 @@
 namespace inviwo {
 
 IVW_CORE_API void assertion(std::string_view fileName, std::string_view functionName,
-                            long lineNumber, std::string_view message);
+                            int lineNumber, std::string_view message);
 
 namespace util {
 

@@ -184,7 +184,7 @@ void CompositeProcessor::removeSuperProperty(Property* orgProp) {
     handlers_.erase(orgProp);
 
     orgProp->unsetMetaData<IntMetaData>(meta::index);
-    for (auto&& [index, superProp] : util::enumerate(*this)) {
+    for (auto&& [index, superProp] : util::enumerate<int>(*this)) {
         superProp->setMetaData<IntMetaData>(meta::index, index);
         getSubProperty(superProp)->setMetaData<IntMetaData>(meta::index, index);
     }
@@ -293,7 +293,7 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
         if (auto meta = subProperty->getMetaData<IntMetaData>(meta::index)) {
             return meta->get();
         } else {
-            subProperty->setMetaData<IntMetaData>(meta::index, comp.size());
+            subProperty->setMetaData<IntMetaData>(meta::index, static_cast<int>(comp.size()));
             return static_cast<int>(comp.size());
         }
     }();
