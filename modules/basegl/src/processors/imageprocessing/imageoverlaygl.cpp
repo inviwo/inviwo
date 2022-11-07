@@ -46,6 +46,7 @@
 #include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
 #include <inviwo/core/util/glmvec.h>                       // for vec2, ivec2, ivec4, vec4, uvec2
 #include <inviwo/core/util/staticstring.h>                 // for operator+
+#include <inviwo/core/util/rendercontext.h>                // for RenderContext
 #include <modules/basegl/viewmanager.h>                    // for ViewManager, ViewManager::View
 #include <modules/opengl/openglutils.h>                    // for BlendModeState, DepthFuncState
 #include <modules/opengl/shader/shader.h>                  // for Shader, Shader::Build
@@ -279,6 +280,8 @@ void ImageOverlayGL::onStatusChange() {
     if (overlayPort_.isConnected()) {
         // update viewport stored in view manager
         viewManager_.replace(0, overlayProperty_.getViewport());
+
+        RenderContext::getPtr()->activateDefaultRenderContext();
 
         ResizeEvent e(uvec2(viewManager_[0].size));
         overlayPort_.propagateEvent(&e, overlayPort_.getConnectedOutport());
