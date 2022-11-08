@@ -42,7 +42,7 @@ const ProcessorInfo {{ file/name }}::processorInfo_{
 
 const ProcessorInfo {{ file/name }}::getProcessorInfo() const { return processorInfo_; }
 
-{{ file/name }}::{{file / name}}()
+{{ file/name }}::{{ file/name }}()
     : Processor{}
     , inport_{"inport", "<description of the inport data and any requirements on the data>"_help}
     , outport_{"outport", "<description of the generated outport data>"_help}

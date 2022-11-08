@@ -103,7 +103,7 @@ if (OS_MAC)
             # Remove XCode warning (must match plist)
             XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.inviwo.helper${_plist_suffix}"
             # See also https://www.magpcss.org/ceforum/viewtopic.php?f=6&t=16481&start=10
-            XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_CURRENT_BINARY_DIR}/helper${_target_suffix}-entitlements.plist"
+            XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/resources/mac/helper${_target_suffix}-entitlements.plist"
             OUTPUT_NAME ${_helper_output_name}
         )
         # Output paths for the app bundles: bin/configuration, for example bin/Debug.

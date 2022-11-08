@@ -30,7 +30,7 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
@@ -94,11 +94,12 @@ public:
      * Construct a DataSource
      * @param app An InviwoApplication.
      * @param file A filename passed into the FileProperty
-     * @param content A content type passed into the FileProperty, usually 'volume', 'image' etc.
+     * @param contentType A content type passed into the FileProperty, usually 'volume', 'image',
+     * 'geometry', etc.
      * @see FileProperty
      */
-    DataSource(InviwoApplication* app = util::getInviwoApplication(), const std::string& file = "",
-               const std::string& content = "");
+    DataSource(DataReaderFactory* rf = util::getDataReaderFactory(), std::string_view file = "",
+               std::string_view contentType = FileProperty::defaultContentType);
     virtual ~DataSource() = default;
 
     virtual void process() override;
@@ -125,17 +126,17 @@ private:
 };
 
 template <typename DataType, typename PortType>
-DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::string& file,
-                                           const std::string& content)
+DataSource<DataType, PortType>::DataSource(DataReaderFactory* rf, std::string_view file,
+                                           std::string_view content)
     : Processor()
-    , rf_(util::getDataReaderFactory(app))
-    , port_("data")
-    , file_("filename", "File", file, content)
-    , reader_("reader", "Data Reader")
-    , reload_("reload", "Reload data", [this]() {
-        loadingFailed_ = false;
-        isReady_.update();
-    }) {
+    , rf_{rf}
+    , port_{"data"}
+    , file_{"filename", "File", file, content}
+    , reader_{"reader", "Data Reader"}
+    , reload_{"reload", "Reload data", [this]() {
+                  loadingFailed_ = false;
+                  isReady_.update();
+              }} {
 
     addPort(port_);
     addProperties(file_, reader_, reload_);

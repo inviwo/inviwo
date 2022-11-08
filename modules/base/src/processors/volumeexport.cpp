@@ -29,6 +29,7 @@
 
 #include <modules/base/processors/volumeexport.h>
 
+#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/datastructures/volume/volume.h>  // for Volume
 #include <inviwo/core/ports/datainport.h>              // for DataInport
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
@@ -47,6 +48,10 @@ const ProcessorInfo VolumeExport::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::CPU,                  // Tags
 };
+
+VolumeExport::VolumeExport(InviwoApplication* app)
+    : DataExport<Volume, VolumeInport>{util::getDataWriterFactory(app), "", "volume"} {}
+
 const ProcessorInfo VolumeExport::getProcessorInfo() const { return processorInfo_; }
 
 const Volume* VolumeExport::getData() { return port_.getData().get(); }

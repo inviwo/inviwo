@@ -48,25 +48,10 @@ namespace inviwo {
 class PortConnection;
 class ProcessorNetwork;
 
-/** \docpage{org.inviwo.ImageExport, Image Export}
- * ![](org.inviwo.ImageExport.png?classIdentifier=org.inviwo.ImageExport)
- *
- * A procesor to save images to disk
- *
- * ### Inports
- *   * __image__ The image to save.
- *
- *
- * ### Properties
- *   * __Export Image__ Save the image to disk.
- *   * __Image file name__ Filename to use.
- *   * __Overwrite__ Force overwrite.
- *
- */
 class IVW_MODULE_BASE_API ImageExport : public DataExport<Layer, ImageInport>,
                                         public ProcessorNetworkObserver {
 public:
-    ImageExport();
+    ImageExport(InviwoApplication* app);
     virtual ~ImageExport() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;

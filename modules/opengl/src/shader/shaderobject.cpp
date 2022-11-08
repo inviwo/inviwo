@@ -743,8 +743,8 @@ std::string ShaderObject::print(bool showSource, bool showPreprocess) {
                                                     : util::splitByLast(res.first, '/').second;
                 const auto lineNumber = res.second;
 
-                out << std::left << std::setw(width + 1u) << file << std::right << std::setw(4)
-                    << lineNumber << ": " << std::left << line << "\n";
+                out << std::left << std::setw(static_cast<int>(width + 1u)) << file << std::right
+                    << std::setw(4) << lineNumber << ": " << std::left << line << "\n";
                 ++i;
             });
             return std::move(out).str();
@@ -758,8 +758,9 @@ std::string ShaderObject::print(bool showSource, bool showPreprocess) {
             util::forEachStringPart(resource_->source(), "\n", [&](std::string_view line) {
                 const auto& file = resource_->key();
 
-                out << std::left << std::setw(file.length() + 1u) << file << std::right
-                    << std::setw(4) << lineNumber << ": " << std::left << line << "\n";
+                out << std::left << std::setw(static_cast<int>(file.length() + 1u)) << file
+                    << std::right << std::setw(4) << lineNumber << ": " << std::left << line
+                    << "\n";
                 ++lineNumber;
             });
 

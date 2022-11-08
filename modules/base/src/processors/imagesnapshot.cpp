@@ -53,31 +53,27 @@ const ProcessorInfo ImageSnapshot::processorInfo_{
     "Image Operation",           // Category
     CodeState::Experimental,     // Code state
     Tags::None,                  // Tags
-};
+    R"(Save snapshot of images that can be viewed later. Useful for comparisons.)"_unindentHelp};
 const ProcessorInfo ImageSnapshot::getProcessorInfo() const { return processorInfo_; }
 
 ImageSnapshot::ImageSnapshot()
     : Processor()
-    , inport_("inport_")
-    , outport1_("outport1")
-    , outport2_("outport2")
-    , outport1ImageIndex_("outport1ImageIndex", "Image 1 index", -1, -1, -1)
-    , outport2ImageIndex_("outport2ImageIndex", "Image 2 index", -1, -1, -1)
+    , inport_("inport_", "Input image"_help)
+    , outport1_("outport1", "Outputs the input image or a saved image"_help)
+    , outport2_("outport2", "Outputs the input image or a saved image"_help)
+    , outport1ImageIndex_("outport1ImageIndex", "Image 1 index",
+                          "The image to output on outport1, -1 means input pass through"_help, -1,
+                          {-1, ConstraintBehavior::Immutable}, {-1, ConstraintBehavior::Mutable})
+    , outport2ImageIndex_("outport2ImageIndex", "Image 2 index",
+                          "The image to output on outport2, -1 means input pass through."_help, -1,
+                          {-1, ConstraintBehavior::Immutable}, {-1, ConstraintBehavior::Mutable})
     , snapshot_("snapshot", "Snapshot")
     , clear_("clear", "Clear") {
-    addPort(inport_);
-    addPort(outport1_);
-    addPort(outport2_);
-    addProperty(outport1ImageIndex_);
-    addProperty(outport2ImageIndex_);
-    addProperty(snapshot_);
-    addProperty(clear_);
+    addPorts(inport_, outport1_, outport2_);
+    addProperties(outport1ImageIndex_, outport2ImageIndex_, snapshot_, clear_);
 
     outport1_.setHandleResizeEvents(false);
     outport2_.setHandleResizeEvents(false);
-
-    // outport1ImageIndex_.setSerializationMode(PropertySerializationMode::None);
-    // outport2ImageIndex_.setSerializationMode(PropertySerializationMode::None);
 
     snapshot_.onChange([&]() {
         outport1ImageIndex_.setMaxValue(static_cast<int>(snapshots_.size()));

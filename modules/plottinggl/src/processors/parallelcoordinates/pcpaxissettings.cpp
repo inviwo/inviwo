@@ -164,6 +164,7 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
     col_->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
         [&](auto ram) -> void {
             auto& dataVector = ram->getDataContainer();
+            at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
 
             dvec2 minmax = col_->getRange();
             if (std::abs(minmax.y - minmax.x) < glm::epsilon<double>()) {
@@ -185,7 +186,6 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
                 range.set(
                     {minV + prevMinRatio * (maxV - minV), minV + prevMaxRatio * (maxV - minV)});
             }
-            at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
         });
 
     range.propertyModified();

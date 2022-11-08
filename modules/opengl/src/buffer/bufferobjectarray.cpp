@@ -183,7 +183,7 @@ void BufferObjectArray::detachBufferObject(GLuint location) {
     }
     if (attachedBuffers_[location].second) {
         attachedBuffers_[location].second = nullptr;
-        glDisableVertexArrayAttrib(id_, location);
+        glDisableVertexAttribArray(location);
     }
 }
 

@@ -44,21 +44,6 @@ namespace inviwo {
 class Deserializer;
 class Image;
 
-/** \docpage{org.inviwo.ImageSnapshot, Image Snapshot}
- * ![](org.inviwo.ImageSnapshot.png?classIdentifier=org.inviwo.ImageSnapshot)
- * Save snapshot of images that can be viewed later. Useful for comparisons.
- *
- * ### Inports
- *   * __inport__ Input image
- *
- * ### Outports
- *   * __outport1__ Outputs the input image or a saved image
- *   * __outport2__ Outputs the input image or a saved image
- *
- * ### Properties
- *   * __Image 1 index__ The image to output on outport1, -1 means input pass through.
- *   * __Image 2 index__ The image to output on outport2, -1 means input pass through.
- */
 class IVW_MODULE_BASE_API ImageSnapshot : public Processor {
 public:
     ImageSnapshot();

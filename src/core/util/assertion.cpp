@@ -55,7 +55,7 @@ namespace inviwo {
 
 #if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
 
-void assertion(std::string_view fileName, std::string_view functionName, long lineNumber,
+void assertion(std::string_view fileName, std::string_view functionName, int lineNumber,
                std::string_view error) {
 
     const auto message = fmt::format("Assertion failed in ({}:{}, {}): {}", fileName, lineNumber,

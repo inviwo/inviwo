@@ -91,7 +91,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
         }
     }
 
-    const int suffixlen = suffix.size();
+    const int suffixlen = static_cast<int>(suffix.size());
 
     std::vector<char> fileTemplate;
     fileTemplate.insert(fileTemplate.end(), tempPath.begin(), tempPath.end());

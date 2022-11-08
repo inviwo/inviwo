@@ -103,33 +103,39 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     });
     highlightChangedCallBack_ =
         scatterPlot_.addHighlightChangedCallback([this](const BitSet& highlighted) {
-            BitSet indices;
-            auto iCol = dataFramePort_.getData()->getIndexColumn();
-            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-            for (auto idx : highlighted) {
-                indices.add(indexCol[idx]);
+            if (auto data = dataFramePort_.getData()) {
+                BitSet indices;
+                auto iCol = data->getIndexColumn();
+                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                for (auto idx : highlighted) {
+                    indices.add(indexCol[idx]);
+                }
+                brushingPort_.highlight(indices);
             }
-            brushingPort_.highlight(indices);
         });
     selectionChangedCallBack_ =
         scatterPlot_.addSelectionChangedCallback([this](const BitSet& selected) {
-            BitSet indices;
-            auto iCol = dataFramePort_.getData()->getIndexColumn();
-            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-            for (auto idx : selected) {
-                indices.add(indexCol[idx]);
+            if (auto data = dataFramePort_.getData()) {
+                BitSet indices;
+                auto iCol = data->getIndexColumn();
+                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                for (auto idx : selected) {
+                    indices.add(indexCol[idx]);
+                }
+                brushingPort_.select(indices);
             }
-            brushingPort_.select(indices);
         });
     filteringChangedCallBack_ =
         scatterPlot_.addFilteringChangedCallback([this](const BitSet& filtered) {
-            BitSet indices;
-            auto iCol = dataFramePort_.getData()->getIndexColumn();
-            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-            for (auto idx : filtered) {
-                indices.add(indexCol[idx]);
+            if (auto data = dataFramePort_.getData()) {
+                BitSet indices;
+                auto iCol = data->getIndexColumn();
+                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                for (auto idx : filtered) {
+                    indices.add(indexCol[idx]);
+                }
+                brushingPort_.filter("scatterplot", indices);
             }
-            brushingPort_.filter("scatterplot", indices);
         });
     addInteractionHandler(&scatterPlot_);
     scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});

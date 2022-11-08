@@ -346,11 +346,15 @@ std::optional<T> toNumberLocale(std::string_view str) {
         char* end = nullptr;
         typename std::remove_reference<decltype(errno)>::type errno_save = errno;
         errno = 0;
-        int val = strtol(cstr.c_str(), &end, 10);
+        long val = strtol(cstr.c_str(), &end, 10);
         std::swap(errno, errno_save);
 
         if (errno_save == 0 && static_cast<size_t>(end - cstr.c_str()) == str.size()) {
-            return val;
+            if (val >= std::numeric_limits<int>::min() && val <= std::numeric_limits<int>::max()) {
+                return static_cast<int>(val);
+            } else {
+                return std::nullopt;
+            }
         } else {
             return std::nullopt;
         }

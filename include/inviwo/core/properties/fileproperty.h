@@ -58,6 +58,7 @@ class IVW_CORE_API FileProperty : public TemplateProperty<std::string> {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
+    static constexpr std::string_view defaultContentType = "default";
 
     /**
      * \brief Constructor for the FileProperty
@@ -74,7 +75,7 @@ public:
      * @param semantics Can be set to Editor
      */
     FileProperty(std::string_view identifier, std::string_view displayName, Document help,
-                 std::string_view value = "", std::string_view contentType = "default",
+                 std::string_view value = "", std::string_view contentType = defaultContentType,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
@@ -92,7 +93,7 @@ public:
      * @param semantics Can be set to Editor
      */
     FileProperty(std::string_view identifier, std::string_view displayName,
-                 std::string_view value = "", std::string_view contentType = "default",
+                 std::string_view value = "", std::string_view contentType = defaultContentType,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 

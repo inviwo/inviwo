@@ -45,7 +45,8 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
     # Causes build to fail if Webbrowser module is enabled due to the added CEF framework
     # This fix is also performed in the CEF example projects:
     # https://bitbucket.org/chromiumembedded/cef/src/2de07250dc6c25ccb5484f25002450afb164782b/cmake/cef_variables.cmake.in#lines-339
-    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+    # set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+    # This fix does not work any more in XCode 14.1 emtpy identities are invalid.
 endif()
 
 function(ivw_define_standard_properties)

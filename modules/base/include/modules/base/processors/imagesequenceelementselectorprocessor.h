@@ -46,20 +46,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageTimeStepSelector, Image Sequence Element Selector}
- * ![](org.inviwo.ImageTimeStepSelector.png?classIdentifier=org.inviwo.ImageTimeStepSelector)
- *
- * Select a specific volume out of a sequence of images
- *
- * ### Inport
- *   * __inport__ Sequence of images
- * ### Outport
- *   * __outport__ Selected image
- *
- * ### Properties
- *   * __Step__ The image sequence index to extract
- */
-
 class IVW_MODULE_BASE_API ImageSequenceElementSelectorProcessor
     : public VectorElementSelectorProcessor<Image, ImageOutport> {
 public:

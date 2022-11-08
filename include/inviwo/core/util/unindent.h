@@ -85,6 +85,7 @@ constexpr void withoutIndent(It begin, It end, Func&& action) {
         if (*p++ == '\n') {
             for (size_t i = 0; i < indent; ++i) {
                 if (p == end) return;
+                if (*p == '\n') break;
                 if (*p != ' ') {
                     if constexpr (ThrowOnError) {
                         throw std::runtime_error("invalid indentation");
