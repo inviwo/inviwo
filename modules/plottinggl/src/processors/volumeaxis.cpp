@@ -336,7 +336,7 @@ void VolumeAxis::process() {
     // the mean length of the three basis vectors is used for a relative axis offset (%)
     const double offset =
         axisOffset_.get() / 100 *
-        (glm::length(dvec3(m[0])) + glm::length(dvec3(m[1])) + glm::length2(dvec3(m[2]))) / 3.0;
+        (glm::length(dvec3(m[0])) + glm::length(dvec3(m[1])) + glm::length(dvec3(m[2]))) / 3.0;
 
     const auto render = [&](const util::AxisParams& axis, size_t axisIdx) {
         const dvec3 center{0.5, 0.5, 0.5};
@@ -349,8 +349,12 @@ void VolumeAxis::process() {
     };
 
     if (visibility_.isChecked()) {  // automatic selection
+        // transform camera to data space since findAxisPositions uses a uniform cube centered at
+        // the origin to determine the visible faces
+        const mat4 trafo{volume->getCoordinateTransformer().getWorldToDataMatrix()};
         const auto axes =
-            util::findAxisPositions(glm::normalize(camera_.getLookFrom() - camera_.getLookTo()));
+            util::findAxisPositions(glm::normalize(vec3(trafo * vec4(camera_.getLookFrom(), 1.0f)) -
+                                                   vec3(trafo * vec4(camera_.getLookTo(), 1.0f))));
         for (auto&& [i, axis] : util::enumerate(axes)) {
             render(axis, i);
         }

@@ -60,19 +60,6 @@ class Outport;
 
 namespace plot {
 
-/** \docpage{org.inviwo.ImagePlotProcessor, Image Plot Processor}
- * ![](org.inviwo.ImagePlotProcessor.png?classIdentifier=org.inviwo.ImagePlotProcessor)
- * Renders a given image as a 2D plot with x and y axis.
- *
- * ### Inports
- *   * __image__   this image is rendered into the plotting area
- *   * __bg__      optional background image
- *
- * ### Outports
- *   * __outport__ output image of the plot
- *
- */
-
 /**
  * \brief plot an image with an x and y axis
  * Event handling based on ViewManager
