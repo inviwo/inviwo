@@ -58,6 +58,7 @@
 #include <inviwo/core/util/glmvec.h>                                    // for size2_t, dvec2
 #include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
 #include <inviwo/core/util/staticstring.h>                              // for operator+
+#include <inviwo/core/util/document.h>                                  // for Document
 #include <modules/base/datastructures/imagereusecache.h>                // for ImageReuseCache
 
 #include <algorithm>      // for copy
@@ -74,27 +75,55 @@
 namespace inviwo {
 class Event;
 
-const ProcessorInfo VolumeSlice::processorInfo_{
-    "org.inviwo.VolumeSlice",  // Class identifier
-    "Volume Slice Extracter",  // Display name
-    "Volume Operation",        // Category
-    CodeState::Stable,         // Code state
-    Tags::CPU,                 // Tags
-};
+const ProcessorInfo VolumeSlice::processorInfo_{"org.inviwo.VolumeSlice",  // Class identifier
+                                                "Volume Slice Extractor",  // Display name
+                                                "Volume Operation",        // Category
+                                                CodeState::Stable,         // Code state
+                                                Tags::CPU,                 // Tags
+                                                R"(
+Extracts an axis aligned 2D slice from an input volume. The input data will be renormalized to either 
+[0,1] for floating point values or [0, max] of the data format using the data mapper of the volume.
+)"_unindentHelp};
 const ProcessorInfo VolumeSlice::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSlice::VolumeSlice()
     : Processor()
-    , inport_("inputVolume")
-    , outport_("outputImage", DataVec4UInt8::get(), false)
+    , inport_("inputVolume", "The input volume"_help)
+    , outport_("outputImage", "The extracted volume slice"_help, DataVec4UInt8::get(),
+               HandleResizeEvents::No)
+    , trafoGroup_("trafoGroup", "Transformations")
+    , tfGroup_("tfGroup", "Transfer Function Mapping", false)
     , sliceAlongAxis_("sliceAxis", "Slice along axis",
+                      "Defines the volume axis for the output slice"_help,
                       {{"x", "X axis", CartesianCoordinateAxis::X},
                        {"y", "Y axis", CartesianCoordinateAxis::Y},
                        {"z", "Z axis", CartesianCoordinateAxis::Z}},
                       0)
-    , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
-                               InvalidationLevel::Valid)
+    , sliceNumber_("sliceNumber", "Slice", "Position of the slice"_help, 128,
+                   {1, ConstraintBehavior::Immutable}, {256, ConstraintBehavior::Mutable}, 1)
+    , format_("format", "Output Format", "Sets the data format of the resulting image"_help,
+              {{"asInput", "As Input", OutputFormat::AsInput},
+               {"uint8", "UInt8", OutputFormat::UInt8},
+               {"float", "Float32", OutputFormat::Float32}},
+              0)
+    , flipHorizontal_("flipHorizontal", "Horizontal Flip",
+                      "Flips the output image left and right"_help, false)
+    , flipVertical_("flipVertical", "Vertical Flip", "Flips the output image up and down"_help,
+                    false)
+    , transferFunction_(
+          "transferFunction", "Transfer Function",
+          "Defines the transfer function for mapping voxel values to color and opacity"_help,
+          TransferFunction(
+              {{0.0, vec4(0.0f, 0.0f, 0.0f, 1.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+          &inport_)
+    , tfAlphaOffset_("alphaOffset", "Alpha Offset", "Offset alpha values in transfer function"_help,
+                     0.0f, {0.0f, ConstraintBehavior::Editable},
+                     {1.0f, ConstraintBehavior::Editable}, 0.01f)
+
+    , handleInteractionEvents_(
+          "handleEvents", "Handle interaction events",
+          "Toggles whether this processor will handle interaction events like mouse buttons or key presses"_help,
+          true, InvalidationLevel::Valid)
     , mouseShiftSlice_(
           "mouseShiftSlice", "Mouse Slice Shift", [this](Event* e) { eventShiftSlice(e); },
           std::make_unique<WheelEventMatcher>())
@@ -114,20 +143,18 @@ VolumeSlice::VolumeSlice()
 
     addPort(inport_);
     addPort(outport_);
-    addProperty(sliceAlongAxis_);
-    addProperty(sliceNumber_);
-    addProperty(handleInteractionEvents_);
 
-    addProperty(stepSliceUp_);
-    addProperty(stepSliceDown_);
+    trafoGroup_.addProperties(flipHorizontal_, flipVertical_);
+    tfGroup_.addProperties(transferFunction_, tfAlphaOffset_);
+
+    addProperties(sliceAlongAxis_, sliceNumber_, format_, trafoGroup_, tfGroup_,
+                  handleInteractionEvents_, stepSliceUp_, stepSliceDown_, mouseShiftSlice_,
+                  gestureShiftSlice_);
 
     mouseShiftSlice_.setVisible(false);
     mouseShiftSlice_.setCurrentStateAsDefault();
-    addProperty(mouseShiftSlice_);
-
     gestureShiftSlice_.setVisible(false);
     gestureShiftSlice_.setCurrentStateAsDefault();
-    addProperty(gestureShiftSlice_);
 }
 
 VolumeSlice::~VolumeSlice() = default;
@@ -143,6 +170,138 @@ void VolumeSlice::shiftSlice(int shift) {
         sliceNumber_.set(newSlice);
     }
 }
+
+namespace detail {
+
+size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) {
+    switch (axis) {
+        default:
+            return size2_t(volumeDims.z, volumeDims.y);
+        case CartesianCoordinateAxis::X:
+            return size2_t(volumeDims.z, volumeDims.y);
+        case CartesianCoordinateAxis::Y:
+            return size2_t(volumeDims.x, volumeDims.z);
+        case CartesianCoordinateAxis::Z:
+            return size2_t(volumeDims.x, volumeDims.y);
+    }
+}
+
+SwizzleMask getSwizzleMask(int channels) {
+    switch (channels) {
+        case 0:  // util::extent<T, 0>::value returns zero for non-glm types
+        case 1:
+            return swizzlemasks::luminance;
+        case 2:
+            return {
+                {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One}};
+        case 3:
+            return swizzlemasks::rgb;
+        default:
+        case 4:
+            return swizzlemasks::rgba;
+    }
+}
+
+struct SliceState {
+    CartesianCoordinateAxis axis;
+    size_t slice;
+    ImageReuseCache* cache;
+    bool flipHorizontal;
+    bool flipVertical;
+    TransferFunction* tf = nullptr;
+    float alphaOffset = 0.0f;
+};
+
+template <typename T, typename D, typename Func>
+std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrprecision,
+                                            const SliceState& state, Func f) {
+    const T* voldata = vrprecision->getDataTyped();
+    const auto& voldim = vrprecision->getDimensions();
+
+    const auto imgdim = detail::sliceDimensions(voldim, state.axis);
+
+    auto res = state.cache->getTypedUnused<D>(imgdim);
+    auto sliceImage = res.first;
+    auto layerrep = res.second;
+    auto layerdata = layerrep->getDataTyped();
+    layerrep->setSwizzleMask(detail::getSwizzleMask(util::extent<D, 0>::value));
+
+    switch (state.axis) {
+        case CartesianCoordinateAxis::X: {
+            util::IndexMapper3D vm(voldim);
+            util::IndexMapper2D im(imgdim);
+            auto x = glm::clamp(state.slice, size_t{0}, voldim.x - 1);
+            for (size_t z = 0; z < voldim.z; z++) {
+                for (size_t y = 0; y < voldim.y; y++) {
+                    auto offsetVolume = vm(x, y, z);
+                    auto offsetImage = im(z, y);
+                    layerdata[offsetImage] = f(voldata[offsetVolume]);
+                }
+            }
+            break;
+        }
+        case CartesianCoordinateAxis::Y: {
+            auto y = glm::clamp(state.slice, size_t{0}, voldim.y - 1);
+            const size_t dataSize = voldim.x;
+            const size_t initialStartPos = y * voldim.x;
+            for (size_t j = 0; j < voldim.z; j++) {
+                auto offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
+                auto offsetImage = j * voldim.x;
+                std::transform(voldata + offsetVolume, voldata + offsetVolume + dataSize,
+                               layerdata + offsetImage, f);
+            }
+            break;
+        }
+        case CartesianCoordinateAxis::Z: {
+            auto z = glm::clamp(state.slice, size_t{0}, voldim.z - 1);
+            const size_t dataSize = voldim.x * voldim.y;
+            const size_t initialStartPos = z * voldim.x * voldim.y;
+            std::transform(voldata + initialStartPos, voldata + initialStartPos + dataSize,
+                           layerdata, f);
+            break;
+        }
+    }
+    if (state.flipHorizontal) {
+        for (size_t y = 0; y < imgdim.y; ++y) {
+            std::reverse(layerdata + y * imgdim.x, layerdata + (y + 1) * imgdim.x);
+        }
+    }
+    if (state.flipVertical) {
+        for (size_t y = 0; y < imgdim.y / 2; ++y) {
+            std::swap_ranges(layerdata + y * imgdim.x, layerdata + (y + 1) * imgdim.x,
+                             layerdata + (imgdim.y - 1 - y) * imgdim.x);
+        }
+    }
+    state.cache->add(sliceImage);
+    return sliceImage;
+}
+
+template <typename T, typename V = util::value_type_t<T>>
+std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
+                                    const SliceState& state, bool useTF) {
+
+    if (useTF) {
+        using D = glm::vec<4, V>;
+        auto mapData = [&dm = vrprecision->getOwner()->dataMap_, tf = state.tf,
+                        offset = state.alphaOffset](T value) {
+            auto sample = tf->sample(
+                glm::clamp(dm.mapFromDataToNormalized(util::glmcomp(value, 0)), 0.0, 1.0));
+            sample.a = glm::clamp(sample.a + offset, 0.0f, 1.0f);
+            return util::glm_convert_normalized<D>(sample);
+        };
+        return extractSliceInternal<T, D>(vrprecision, state, mapData);
+    } else {
+        using D = util::same_extent_t<T, V>;
+        auto mapData = [&dm = vrprecision->getOwner()->dataMap_](T value) {
+            return util::glm_convert_normalized<D>(glm::clamp(dm.mapFromDataToNormalized(value),
+                                                              util::same_extent_t<T, double>(0.0),
+                                                              util::same_extent_t<T, double>(1.0)));
+        };
+        return extractSliceInternal<T, D>(vrprecision, state, mapData);
+    }
+}
+
+}  // namespace detail
 
 void VolumeSlice::process() {
     auto vol = inport_.getData();
@@ -170,96 +329,42 @@ void VolumeSlice::process() {
             break;
     }
 
-    auto image =
-        vol->getRepresentation<VolumeRAM>()
-            ->dispatch<std::shared_ptr<Image>, dispatching::filter::All>(
-                [axis = static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
-                 slice = static_cast<size_t>(sliceNumber_.get() - 1),
-                 &cache = imageCache_](const auto vrprecision) {
-                    using T = util::PrecisionValueType<decltype(vrprecision)>;
+    detail::SliceState state{sliceAlongAxis_,     static_cast<size_t>(sliceNumber_.get() - 1),
+                             &imageCache_,        flipHorizontal_,
+                             flipVertical_,       &transferFunction_.get(),
+                             tfAlphaOffset_.get()};
 
-                    const T* voldata = vrprecision->getDataTyped();
-                    const auto voldim = vrprecision->getDimensions();
+    std::shared_ptr<Image> image;
 
-                    const auto imgdim = [&]() {
-                        switch (axis) {
-                            default:
-                                return size2_t(voldim.z, voldim.y);
-                            case CartesianCoordinateAxis::X:
-                                return size2_t(voldim.z, voldim.y);
-                            case CartesianCoordinateAxis::Y:
-                                return size2_t(voldim.x, voldim.z);
-                            case CartesianCoordinateAxis::Z:
-                                return size2_t(voldim.x, voldim.y);
-                        }
-                    }();
-
-                    auto res = cache.getTypedUnused<T>(imgdim);
-                    auto sliceImage = res.first;
-                    auto layerrep = res.second;
-                    auto layerdata = layerrep->getDataTyped();
-
-                    switch (util::extent<T, 0>::value) {
-                        case 0:  // util::extent<T, 0>::value returns zero for non-glm types
-                        case 1:
-                            layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Red,
-                                                       ImageChannel::Red, ImageChannel::One}});
-                            break;
-                        case 2:
-                            layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
-                                                       ImageChannel::Zero, ImageChannel::One}});
-                            break;
-                        case 3:
-                            layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
-                                                       ImageChannel::Blue, ImageChannel::One}});
-                            break;
-                        default:
-                        case 4:
-                            layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
-                                                       ImageChannel::Blue, ImageChannel::Alpha}});
-                    }
-
-                    size_t offsetVolume;
-                    size_t offsetImage;
-                    switch (axis) {
-                        case CartesianCoordinateAxis::X: {
-                            util::IndexMapper3D vm(voldim);
-                            util::IndexMapper2D im(imgdim);
-                            auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
-                            for (size_t z = 0; z < voldim.z; z++) {
-                                for (size_t y = 0; y < voldim.y; y++) {
-                                    offsetVolume = vm(x, y, z);
-                                    offsetImage = im(z, y);
-                                    layerdata[offsetImage] = voldata[offsetVolume];
-                                }
-                            }
-                            break;
-                        }
-                        case CartesianCoordinateAxis::Y: {
-                            auto y = glm::clamp(slice, size_t{0}, voldim.y - 1);
-                            const size_t dataSize = voldim.x;
-                            const size_t initialStartPos = y * voldim.x;
-                            for (size_t j = 0; j < voldim.z; j++) {
-                                offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
-                                offsetImage = j * voldim.x;
-                                std::copy(voldata + offsetVolume, voldata + offsetVolume + dataSize,
-                                          layerdata + offsetImage);
-                            }
-                            break;
-                        }
-                        case CartesianCoordinateAxis::Z: {
-                            auto z = glm::clamp(slice, size_t{0}, voldim.z - 1);
-                            const size_t dataSize = voldim.x * voldim.y;
-                            const size_t initialStartPos = z * voldim.x * voldim.y;
-
-                            std::copy(voldata + initialStartPos,
-                                      voldata + initialStartPos + dataSize, layerdata);
-                            break;
-                        }
-                    }
-                    cache.add(sliceImage);
-                    return sliceImage;
-                });
+    switch (format_.get()) {
+        case OutputFormat::UInt8:
+            image = vol->getRepresentation<VolumeRAM>()
+                        ->dispatch<std::shared_ptr<Image>, dispatching::filter::All>(
+                            [&](const auto* vrprecision) {
+                                using T = util::PrecisionValueType<decltype(vrprecision)>;
+                                return detail::extractSlice<T, std::uint8_t>(vrprecision, state,
+                                                                             tfGroup_.isChecked());
+                            });
+            break;
+        case OutputFormat::Float32:
+            image = vol->getRepresentation<VolumeRAM>()
+                        ->dispatch<std::shared_ptr<Image>, dispatching::filter::All>(
+                            [&](const auto* vrprecision) {
+                                using T = util::PrecisionValueType<decltype(vrprecision)>;
+                                return detail::extractSlice<T, float>(vrprecision, state,
+                                                                      tfGroup_.isChecked());
+                            });
+            break;
+        case OutputFormat::AsInput:
+        default:
+            image =
+                vol->getRepresentation<VolumeRAM>()
+                    ->dispatch<std::shared_ptr<Image>, dispatching::filter::All>(
+                        [&](const auto* vrprecision) {
+                            return detail::extractSlice(vrprecision, state, tfGroup_.isChecked());
+                        });
+            break;
+    }
 
     outport_.setData(image);
 }
