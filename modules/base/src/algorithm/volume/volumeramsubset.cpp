@@ -105,8 +105,18 @@ std::shared_ptr<VolumeRAM> VolumeRAMSubSetDispatcher::operator()(const VolumeRep
     size_t dataSize =
         copyDimsWithoutBorder.x * static_cast<size_t>(volume->getDataFormat()->getSize());
     // allocate space
-    auto newVolume =
-        std::make_shared<VolumeRAMPrecision<T>>(dim + correctBorder.llf + correctBorder.urb);
+    auto newVolume = std::make_shared<VolumeRAMPrecision<T>>(
+        dim + correctBorder.llf + correctBorder.urb, in->getSwizzleMask(), in->getInterpolation());
+
+    Wrapping3D wrapping{in->getWrapping()};
+    for (int i = 0; i < 3; ++i) {
+        // if output dimensions are different from input or a border is present, disable wrapping
+        if ((in->getDimensions()[i] != dim[i]) || (correctBorder.llf[i] != 0) ||
+            (correctBorder.urb[i] != 0)) {
+            wrapping[i] = Wrapping::Clamp;
+        }
+    }
+    newVolume->setWrapping(wrapping);
 
     const T* src = static_cast<const T*>(volume->getData());
     T* dst = static_cast<T*>(newVolume->getData());
