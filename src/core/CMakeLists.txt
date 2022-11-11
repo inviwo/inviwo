@@ -140,6 +140,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/isovaluecollectioniivreader.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/isovaluecollectioniivwriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
@@ -154,6 +156,12 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/tempfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionitfreader.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionitfwriter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionlayerreader.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionlayerwriter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionxmlreader.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionxmlwriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/volumedatareaderdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/propertylink.h
@@ -517,6 +525,8 @@ set(SOURCE_FILES
     io/datawriterfactory.cpp
     io/datawriterutil.cpp
     io/imagewriterutil.cpp
+    io/isovaluecollectioniivreader.cpp
+    io/isovaluecollectioniivwriter.cpp
     io/rawvolumeramloader.cpp
     io/rawvolumereader.cpp
     io/serialization/deserializer.cpp
@@ -528,6 +538,12 @@ set(SOURCE_FILES
     io/serialization/versionconverter.cpp
     io/tempfilehandle.cpp
     io/textfilereader.cpp
+    io/transferfunctionitfreader.cpp
+    io/transferfunctionitfwriter.cpp
+    io/transferfunctionlayerreader.cpp
+    io/transferfunctionlayerwriter.cpp
+    io/transferfunctionxmlreader.cpp
+    io/transferfunctionxmlwriter.cpp
     io/volumedatareaderdialog.cpp
     links/linkevaluator.cpp
     links/propertylink.cpp

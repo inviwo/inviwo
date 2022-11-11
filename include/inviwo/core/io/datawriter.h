@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <ios>
+#include <any>
 
 namespace inviwo {
 
@@ -71,6 +72,25 @@ public:
      * @throws DataWriterException if the condition is broken.
      */
     void checkOverwrite(std::string_view path) const;
+    
+    /**
+     * @brief Set writer specific options
+     * See the documentation of the specific writer about which options that are available
+     * @param key the option to set
+     * @param value the new value for the option
+     * @return true of the option was recognized and set, otherwise false
+     */
+    virtual bool setOption([[maybe_unused]] std::string_view key, [[maybe_unused]] std::any value) {
+        return false;
+    }
+
+    /**
+     * @brief Query the value of an writer specific option
+     * @param key the option to query
+     * @return an std::any with the requested option of an empty std::any of the option was not
+     * found
+     */
+    virtual std::any getOption([[maybe_unused]] std::string_view key) const { return std::any{}; }
 
 protected:
     /**

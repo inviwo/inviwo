@@ -30,10 +30,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
-#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
@@ -59,6 +57,7 @@ public:
     virtual ~TransferFunction();
 
     const Layer* getData() const;
+    const LayerRAMPrecision<vec4>* getRamRepresentation() const;
     size_t getTextureSize() const;
 
     void setMaskMin(double maskMin);
@@ -93,16 +92,6 @@ public:
      */
     vec4 sample(float v) const;
 
-    friend bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
-
-    virtual std::vector<FileExtension> getSupportedExtensions() const override;
-    virtual void save(const std::string& filename,
-                      const FileExtension& ext = FileExtension()) const override;
-    virtual void load(const std::string& filename,
-                      const FileExtension& ext = FileExtension()) override;
-
-    virtual std::string_view getTitle() const override;
-
     /**
      * Simplify a vector of TF points by removing points that can be replaced by interpolating
      * between the previous and the next point, as long as the resulting error is less then delta.
@@ -110,18 +99,18 @@ public:
      */
     static std::vector<TFPrimitiveData> simplify(const std::vector<TFPrimitiveData>& points,
                                                  double delta = 0.01);
+                                                 
+    static TransferFunction load(std::string_view path);
+    static void save(const TransferFunction& tf, std::string_view path);
 
+    friend IVW_CORE_API bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
+    friend IVW_CORE_API bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
+    
 protected:
     void calcTransferValues() const;
 
     virtual std::string_view serializationKey() const override;
     virtual std::string_view serializationItemKey() const override;
-
-    void saveAsLayer(std::string_view filename, const FileExtension& ext) const;
-    void loadFromLayer(std::string_view filename, const FileExtension& ext);
-
-    void saveAsXML(std::string_view filename) const;
-    void loadFromXML(std::string_view filename);
 
 private:
     double maskMin_;
@@ -132,8 +121,6 @@ private:
     std::unique_ptr<Layer> data_;
 };
 
-bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
-bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
 
 template <>
 struct DataTraits<TransferFunction> {

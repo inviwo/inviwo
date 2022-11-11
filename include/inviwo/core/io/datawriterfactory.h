@@ -45,13 +45,14 @@ template <typename T>
 class DataWriterType;
 
 class IVW_CORE_API DataWriterFactory : public Factory<DataWriter, const FileExtension&>,
-                                       public Factory<DataWriter, std::string_view> {
+                                       public Factory<DataWriter, std::string_view>,
+                                       public FactoryObservable<DataWriter> {
 public:
     DataWriterFactory() = default;
     virtual ~DataWriterFactory() = default;
 
-    bool registerObject(DataWriter* reader);
-    bool unRegisterObject(DataWriter* reader);
+    bool registerObject(DataWriter* writer);
+    bool unRegisterObject(DataWriter* writer);
 
     virtual std::unique_ptr<DataWriter> create(std::string_view key) const override;
     virtual std::unique_ptr<DataWriter> create(const FileExtension& key) const override;
@@ -87,21 +88,25 @@ public:
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(
         const FileExtension& ext, std::string_view fallbackFilePathOrExtension) const;
 
-protected:
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-    // Sort extensions by length to first compare long extensions. Avoids selecting extension xyz in
-    // case xyzw exist, see getReaderForTypeAndExtension
-    static bool compare(const FileExtension& a, const FileExtension& b) {
-        if (a.extension_.size() != b.extension_.size()) {
-            return a.extension_.size() > b.extension_.size();
+    template <typename T>
+    bool hasWriterForTypeAndExtension(std::string_view filePathOrExtension) const;
+    template <typename T>
+    bool hasWriterForTypeAndExtension(const FileExtension& ext) const;
+
+    template <typename T>
+    bool writeDataForTypeAndExtension(const T* data, std::string_view filePath,
+                                      std::optional<FileExtension> ext = std::nullopt) const {
+        if (auto writer = ext ? getWriterForTypeAndExtension<T>(*ext, filePath)
+                              : getWriterForTypeAndExtension<T>(filePath)) {
+            writer->writeData(data, filePath);
+            return true;
         } else {
-            // Order does not matter
-            return a < b;
+            return false;
         }
     }
-    std::map<FileExtension, DataWriter*, bool (*)(const FileExtension& a, const FileExtension& b)>
-        map_{compare};
-#endif
+
+protected:
+    std::map<FileExtension, DataWriter*> map_;
 };
 
 template <typename T>
@@ -119,14 +124,22 @@ std::vector<FileExtension> DataWriterFactory::getExtensionsForType() const {
 template <typename T>
 std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
     std::string_view path) const {
-    for (auto& elem : map_) {
-        if (util::iCaseEndsWith(path, elem.first.extension_)) {
-            if (auto r = dynamic_cast<DataWriterType<T>*>(elem.second)) {
-                return std::unique_ptr<DataWriterType<T>>(r->clone());
+    std::vector<std::pair<size_t, DataWriterType<T>*>> candidates;
+    for (auto& [ext, writer] : map_) {
+        if (util::iCaseEndsWith(path, ext.extension_)) {
+            if (auto r = dynamic_cast<DataWriterType<T>*>(writer)) {
+                candidates.emplace_back(ext.extension_.size(), r);
             }
         }
     }
-    return std::unique_ptr<DataWriterType<T>>();
+
+    if (auto it = std::max_element(candidates.begin(), candidates.end(),
+                                   [](const auto& a, const auto& b) { return a.first < b.first; });
+        it != candidates.end()) {
+        return std::unique_ptr<DataWriterType<T>>{it->second->clone()};
+    } else {
+        return {};
+    }
 }
 
 template <typename T>
@@ -148,6 +161,16 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
         return writer;
     }
     return this->getWriterForTypeAndExtension<T>(fallbackFilePathOrExtension);
+}
+
+template <typename T>
+bool DataWriterFactory::hasWriterForTypeAndExtension(std::string_view path) const {
+    return getWriterForTypeAndExtension<T>(path) != nullptr;
+}
+
+template <typename T>
+bool DataWriterFactory::hasWriterForTypeAndExtension(const FileExtension& ext) const {
+    return getWriterForTypeAndExtension<T>(ext) != nullptr;
 }
 
 }  // namespace inviwo

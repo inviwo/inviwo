@@ -37,6 +37,8 @@
 #include <string_view>
 #include <iosfwd>
 
+#include <fmt/core.h>
+
 namespace inviwo {
 
 class Serializer;
@@ -118,5 +120,21 @@ struct std::hash<inviwo::FileExtension> {
         inviwo::util::hash_combine(h, f.extension_);
         inviwo::util::hash_combine(h, f.description_);
         return h;
+    }
+};
+
+template <>
+struct fmt::formatter<inviwo::FileExtension> : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(const inviwo::FileExtension& ext, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+
+        if (ext.extension_ == "*") {
+            fmt::format_to(std::back_inserter(buff), "{} (*)", ext.description_);
+        } else if (!ext.extension_.empty()) {
+            fmt::format_to(std::back_inserter(buff), "{} (*.{})", ext.description_, ext.extension_);
+        }
+
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
     }
 };

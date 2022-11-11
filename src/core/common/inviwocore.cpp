@@ -55,6 +55,14 @@
 
 // Io
 #include <inviwo/core/io/rawvolumereader.h>
+#include <inviwo/core/io/transferfunctionitfreader.h>
+#include <inviwo/core/io/transferfunctionitfwriter.h>
+#include <inviwo/core/io/transferfunctionxmlreader.h>
+#include <inviwo/core/io/transferfunctionxmlwriter.h>
+#include <inviwo/core/io/transferfunctionlayerreader.h>
+#include <inviwo/core/io/transferfunctionlayerwriter.h>
+#include <inviwo/core/io/isovaluecollectioniivreader.h>
+#include <inviwo/core/io/isovaluecollectioniivwriter.h>
 
 // Others
 #include <inviwo/core/processors/canvasprocessor.h>
@@ -225,7 +233,10 @@ InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
 void InviwoCore::Observer::fileChanged(const std::string& dir) { core_.scanDirForComposites(dir); }
 
 InviwoCore::InviwoCore(InviwoApplication* app)
-    : InviwoModule(app, "Core"), compositeDirObserver_{*this, app} {
+    : InviwoModule(app, "Core")
+    , compositeDirObserver_{*this, app}
+    , tfLayerWriters_{app->getDataWriterFactory()}
+    , tfLayerReaders_{app->getDataReaderFactory()} {
 
     util::registerCoreRepresentations(*this);
 
@@ -288,7 +299,14 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     // Register Data readers
     registerDataReader(std::make_unique<RawVolumeReader>());
+    registerDataReader(std::make_unique<TransferFunctionITFReader>());
+    registerDataReader(std::make_unique<TransferFunctionXMLReader>());
+    registerDataReader(std::make_unique<IsoValueCollectionIIVReader>());
+
     // Register Data writers
+    registerDataWriter(std::make_unique<TransferFunctionITFWriter>());
+    registerDataWriter(std::make_unique<TransferFunctionXMLWriter>());
+    registerDataWriter(std::make_unique<IsoValueCollectionIIVWriter>());
 
     // Register Ports
     registerPort<ImageInport>();

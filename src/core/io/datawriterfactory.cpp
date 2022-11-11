@@ -36,15 +36,27 @@
 namespace inviwo {
 
 bool DataWriterFactory::registerObject(DataWriter* writer) {
-    for (auto& ext : writer->getExtensions()) {
-        util::insert_unique(map_, ext, writer);
+    size_t added = 0;
+    for (const auto& ext : writer->getExtensions()) {
+        if (util::insert_unique(map_, ext, writer)) {
+            ++added;
+        } else {
+            LogWarn("Failed to register DataWriter for \"" << ext << "\", already registered");
+        }
     }
-    return true;
+    if (added > 0) {
+        this->notifyObserversOnRegister(writer);
+    }
+    return added > 0;
 }
 
 bool DataWriterFactory::unRegisterObject(DataWriter* writer) {
     size_t removed =
         util::map_erase_remove_if(map_, [writer](auto& elem) { return elem.second == writer; });
+
+    if (removed > 0) {
+        this->notifyObserversOnUnRegister(writer);
+    }
 
     return removed > 0;
 }

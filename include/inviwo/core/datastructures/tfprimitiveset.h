@@ -93,8 +93,6 @@ public:
     void setType(TFPrimitiveSetType type);
     TFPrimitiveSetType getType() const;
 
-    virtual std::string_view getTitle() const;
-
     /**
      * returns the range of the TF.  For a relative TF this will return [0,1]. In case of an
      * absolute TF the range between first and last TF primitive is returned. If there are no
@@ -244,13 +242,6 @@ public:
      */
     virtual void invalidate() {}
 
-    virtual std::vector<FileExtension> getSupportedExtensions() const;
-    virtual void save(const std::string& filename,
-                      const FileExtension& ext = FileExtension()) const;
-    virtual void load(const std::string& filename, const FileExtension& ext = FileExtension());
-
-    friend bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
-
     /**
      * Interpolate the color between all neighboring pairs of TFPrimitives and write the result to
      * dataArray. The range of all TFPrimitives is [0,1] when TF type is relative
@@ -259,6 +250,9 @@ public:
      * @param size   size of dataArray
      */
     void interpolateAndStoreColors(vec4* dataArray, const size_t size) const;
+
+    friend IVW_CORE_API bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
+    friend IVW_CORE_API bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 
 protected:
     void add(std::unique_ptr<TFPrimitive> primitive);
@@ -286,9 +280,6 @@ private:
 };
 
 inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }
-
-bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
-bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 
 namespace util {
 

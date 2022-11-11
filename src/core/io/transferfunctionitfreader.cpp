@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,26 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/isovaluecollection.h>
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/io/transferfunctionitfreader.h>
 
 namespace inviwo {
 
-IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
-                                       TFPrimitiveSetType type)
-    : TFPrimitiveSet(values, type) {}
-
-std::string_view IsoValueCollection::serializationKey() const { return "IsoValues"; }
-
-std::string_view IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
-
-IsoValueCollection IsoValueCollection::load(std::string_view path) {
-    auto factory = util::getDataReaderFactory();
-
-    if (auto tf = factory->readDataForTypeAndExtension<IsoValueCollection>(path)) {
-        return *tf;
-    } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to load IsoValueCollection from {}", path);
-    }
+TransferFunctionITFReader::TransferFunctionITFReader() {
+    addExtension({"itf", "Inviwo Transfer Function"});
 }
-void IsoValueCollection::save(const IsoValueCollection& tf, std::string_view path) {
-    auto factory = util::getDataWriterFactory();
 
-    if (!factory->writeDataForTypeAndExtension(&tf, path)) {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to save IsoValueCollection to {}", path);
-    }
+TransferFunctionITFReader* TransferFunctionITFReader::clone() const {
+    return new TransferFunctionITFReader{*this};
 }
+
+std::shared_ptr<TransferFunction> TransferFunctionITFReader::readData(std::string_view filePath) {
+    checkExists(filePath);
+
+    auto data = std::make_shared<TransferFunction>();
+    Deserializer deserializer(filePath);
+    data->deserialize(deserializer);
+
+    return data;
+};
 
 }  // namespace inviwo

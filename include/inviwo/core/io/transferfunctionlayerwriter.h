@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,39 +26,44 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/datastructures/isovaluecollection.h>
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/datastructures/transferfunction.h>  // For TransferFunction
+#include <inviwo/core/io/datawriter.h>                    // For DataWriter
 #include <inviwo/core/io/datawriterfactory.h>
 
 namespace inviwo {
 
-IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
-                                       TFPrimitiveSetType type)
-    : TFPrimitiveSet(values, type) {}
+class IVW_CORE_API TransferFunctionLayerWriter : public DataWriterType<TransferFunction> {
+public:
+    TransferFunctionLayerWriter(std::unique_ptr<DataWriterType<Layer>> layerWriter);
+    TransferFunctionLayerWriter(const TransferFunctionLayerWriter& rhs);
+    TransferFunctionLayerWriter(TransferFunctionLayerWriter&&) = default;
+    TransferFunctionLayerWriter& operator=(const TransferFunctionLayerWriter& that);
+    TransferFunctionLayerWriter& operator=(TransferFunctionLayerWriter&&) = default;
+    virtual TransferFunctionLayerWriter* clone() const override;
 
-std::string_view IsoValueCollection::serializationKey() const { return "IsoValues"; }
+    virtual void writeData(const TransferFunction* data, std::string_view filePath) const override;
 
-std::string_view IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
+    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
+        const TransferFunction* data, std::string_view fileExtension) const override;
+        
+private:
+    std::unique_ptr<DataWriterType<Layer>> layerWriter_;
+};
 
-IsoValueCollection IsoValueCollection::load(std::string_view path) {
-    auto factory = util::getDataReaderFactory();
+class IVW_CORE_API TransferFunctionLayerWriterWrapper : public FactoryObserver<DataWriter> {
+public:
+    TransferFunctionLayerWriterWrapper(DataWriterFactory* factory);
 
-    if (auto tf = factory->readDataForTypeAndExtension<IsoValueCollection>(path)) {
-        return *tf;
-    } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to load IsoValueCollection from {}", path);
-    }
-}
-void IsoValueCollection::save(const IsoValueCollection& tf, std::string_view path) {
-    auto factory = util::getDataWriterFactory();
+    virtual void onRegister(DataWriter* Writer) override;
+    virtual void onUnRegister(DataWriter* Writer) override;
 
-    if (!factory->writeDataForTypeAndExtension(&tf, path)) {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to save IsoValueCollection to {}", path);
-    }
-}
+private:
+    DataWriterFactory* factory_;
+    std::unordered_map<DataWriterType<Layer>*, std::unique_ptr<TransferFunctionLayerWriter>>
+        layerToTFMap_;
+};
 
 }  // namespace inviwo

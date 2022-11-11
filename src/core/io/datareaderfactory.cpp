@@ -33,15 +33,27 @@
 namespace inviwo {
 
 bool DataReaderFactory::registerObject(DataReader* reader) {
+    size_t added = 0;
     for (const auto& ext : reader->getExtensions()) {
-        util::insert_unique(map_, ext, reader);
+        if (util::insert_unique(map_, ext, reader)) {
+            ++added;
+        } else {
+            LogWarn("Failed to register DataReader for \"" << ext << "\", already registered");
+        }
     }
-    return true;
+    if (added > 0) {
+        notifyObserversOnRegister(reader);
+    }
+    return added > 0;
 }
 
 bool DataReaderFactory::unRegisterObject(DataReader* reader) {
     size_t removed =
         util::map_erase_remove_if(map_, [reader](auto& elem) { return elem.second == reader; });
+
+    if (removed > 0) {
+        notifyObserversOnUnRegister(reader);
+    }
 
     return removed > 0;
 }

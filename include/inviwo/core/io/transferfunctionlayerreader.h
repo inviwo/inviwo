@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,39 +26,44 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/datastructures/isovaluecollection.h>
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/datastructures/transferfunction.h>  // For TransferFunction
+#include <inviwo/core/io/datareader.h>                    // for DataReaderType
+
+#include <memory>
 
 namespace inviwo {
 
-IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
-                                       TFPrimitiveSetType type)
-    : TFPrimitiveSet(values, type) {}
+class DataReaderFactory;
 
-std::string_view IsoValueCollection::serializationKey() const { return "IsoValues"; }
+class IVW_CORE_API TransferFunctionLayerReader : public DataReaderType<TransferFunction> {
+public:
+    TransferFunctionLayerReader(std::unique_ptr<DataReaderType<Layer>> layerReader);    
+    TransferFunctionLayerReader(const TransferFunctionLayerReader& rhs);
+    TransferFunctionLayerReader(TransferFunctionLayerReader&&) = default;
+    TransferFunctionLayerReader& operator=(const TransferFunctionLayerReader& that);
+    TransferFunctionLayerReader& operator=(TransferFunctionLayerReader&&) = default;
+    
+    virtual TransferFunctionLayerReader* clone() const override;
 
-std::string_view IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
+    virtual std::shared_ptr<TransferFunction> readData(std::string_view filePath) override;
 
-IsoValueCollection IsoValueCollection::load(std::string_view path) {
-    auto factory = util::getDataReaderFactory();
+private:
+    std::unique_ptr<DataReaderType<Layer>> layerReader_;
+};
 
-    if (auto tf = factory->readDataForTypeAndExtension<IsoValueCollection>(path)) {
-        return *tf;
-    } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to load IsoValueCollection from {}", path);
-    }
-}
-void IsoValueCollection::save(const IsoValueCollection& tf, std::string_view path) {
-    auto factory = util::getDataWriterFactory();
+class IVW_CORE_API TransferFunctionLayerReaderWrapper : public FactoryObserver<DataReader> {
+public:
+    TransferFunctionLayerReaderWrapper(DataReaderFactory* factory);
+    virtual void onRegister(DataReader* reader) override;
+    virtual void onUnRegister(DataReader* reader) override;
 
-    if (!factory->writeDataForTypeAndExtension(&tf, path)) {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to save IsoValueCollection to {}", path);
-    }
-}
+private:
+    DataReaderFactory* factory_;
+    std::unordered_map<DataReaderType<Layer>*, std::unique_ptr<TransferFunctionLayerReader>>
+        layerToTFMap_;
+};
 
 }  // namespace inviwo

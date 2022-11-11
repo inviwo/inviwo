@@ -40,6 +40,7 @@
 
 #include <inviwopy/pydataformat.h>
 #include <inviwopy/pydatareaders.h>
+#include <inviwopy/pydatawriters.h>
 #include <inviwopy/pyinviwoapplication.h>
 #include <inviwopy/pyinviwomodule.h>
 #include <inviwopy/pydocument.h>
@@ -119,8 +120,6 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeCompositeProperties(propertiesModule);
 
     exposePort(m);
-
-    exposeDataReaders(m);
     exposeProcessors(m);
     exposeNetwork(m);
     exposeEvents(m);
@@ -135,6 +134,9 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeCamera(dataModule);
     exposeInviwoModule(m);
     exposeCameraProperty(m, propertiesModule);
+    exposeDataReaders(m);
+    exposeDataWriters(m);
+
 
     py::class_<Settings, PropertyOwner>(m, "Settings");
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,39 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/isovaluecollection.h>
-#include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/io/isovaluecollectioniivwriter.h>
 
 namespace inviwo {
 
-IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
-                                       TFPrimitiveSetType type)
-    : TFPrimitiveSet(values, type) {}
 
-std::string_view IsoValueCollection::serializationKey() const { return "IsoValues"; }
-
-std::string_view IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
-
-IsoValueCollection IsoValueCollection::load(std::string_view path) {
-    auto factory = util::getDataReaderFactory();
-
-    if (auto tf = factory->readDataForTypeAndExtension<IsoValueCollection>(path)) {
-        return *tf;
-    } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to load IsoValueCollection from {}", path);
-    }
+IsoValueCollectionIIVWriter::IsoValueCollectionIIVWriter() {
+    addExtension({"iiv", "Inviwo Isovalues"});
 }
-void IsoValueCollection::save(const IsoValueCollection& tf, std::string_view path) {
-    auto factory = util::getDataWriterFactory();
 
-    if (!factory->writeDataForTypeAndExtension(&tf, path)) {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to save IsoValueCollection to {}", path);
-    }
-}
+IsoValueCollectionIIVWriter* IsoValueCollectionIIVWriter::clone() const {
+    return new IsoValueCollectionIIVWriter(*this);
+};
+
+void IsoValueCollectionIIVWriter::writeData(const IsoValueCollection* data,
+                                          std::string_view filePath) const {
+    Serializer serializer(filePath);
+    data->serialize(serializer);
+    serializer.writeFile();
+};
+
+std::unique_ptr<std::vector<unsigned char>> IsoValueCollectionIIVWriter::writeDataToBuffer(
+    const IsoValueCollection* data, std::string_view fileExtension) const {
+
+    Serializer serializer{""};
+    data->serialize(serializer);
+
+    std::stringstream ss;
+    serializer.writeFile(ss);
+    auto xml = ss.str();
+
+    auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
+    std::copy(xml.begin(), xml.end(), buffer->begin());
+    return buffer;
+};
 
 }  // namespace inviwo

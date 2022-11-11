@@ -33,6 +33,9 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/fileobserver.h>
 
+#include <inviwo/core/io/transferfunctionlayerreader.h>
+#include <inviwo/core/io/transferfunctionlayerwriter.h>
+
 namespace inviwo {
 
 class InviwoApplication;
@@ -60,6 +63,10 @@ private:
 
     Observer compositeDirObserver_;
     std::unordered_set<std::string> addedCompositeFiles_;
+    
+    TransferFunctionLayerWriterWrapper tfLayerWriters_;
+    TransferFunctionLayerReaderWrapper tfLayerReaders_;
+    
 };
 
 }  // namespace inviwo

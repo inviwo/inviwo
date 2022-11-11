@@ -100,6 +100,9 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def_property_readonly("dataReaderFactory", &InviwoApplication::getDataReaderFactory,
                                py::return_value_policy::reference)
 
+        .def_property_readonly("dataWriterFactory", &InviwoApplication::getDataReaderFactory,
+                               py::return_value_policy::reference)
+
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
                                py::return_value_policy::reference)
         .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory,

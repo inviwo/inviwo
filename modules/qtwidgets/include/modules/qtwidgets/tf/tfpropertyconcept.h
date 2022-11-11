@@ -34,14 +34,14 @@
 #include <inviwo/core/datastructures/histogram.h>  // for HistogramMode, HistogramSelection
 #include <inviwo/core/ports/volumeport.h>          // for VolumeInport
 #include <inviwo/core/properties/transferfunctionproperty.h>  // IWYU pragma: keep
+#include <inviwo/core/properties/isovalueproperty.h>          // IWYU pragma: keep
 #include <inviwo/core/util/glmvec.h>                          // for dvec2
+#include <inviwo/core/network/networklock.h>                  // for NetworkLock
+#include <modules/qtwidgets/tf/tfutils.h>                     // for exportToFile, importFro...
 
 #include <utility>  // for declval
 
 namespace inviwo {
-
-class IsoValueProperty;
-class TFPrimitiveSet;
 
 namespace util {
 
@@ -59,8 +59,8 @@ struct IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
     virtual TransferFunctionProperty* getTFProperty() const = 0;
     virtual IsoValueProperty* getIsoValueProperty() const = 0;
 
-    virtual TFPrimitiveSet* getTransferFunction() const = 0;
-    virtual TFPrimitiveSet* getIsovalues() const = 0;
+    virtual TransferFunction* getTransferFunction() const = 0;
+    virtual IsoValueCollection* getIsovalues() const = 0;
 
     virtual bool supportsMask() const = 0;
     virtual void setMask(double maskMin, double maskMax) = 0;
@@ -82,6 +82,9 @@ struct IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
     virtual VolumeInport* getVolumeInport() = 0;
     virtual void addObserver(TFPropertyObserver* observer) = 0;
     virtual void removeObserver(TFPropertyObserver* observer) = 0;
+
+    virtual void showExportDialog() const = 0;
+    virtual void showImportDialog() = 0;
 };
 
 template <typename U>
@@ -118,14 +121,14 @@ public:
             return nullptr;
         }
     }
-    virtual TFPrimitiveSet* getTransferFunction() const override {
+    virtual TransferFunction* getTransferFunction() const override {
         if (auto tf = getTFProperty()) {
             return &tf->get();
         } else {
             return nullptr;
         }
     }
-    virtual TFPrimitiveSet* getIsovalues() const override {
+    virtual IsoValueCollection* getIsovalues() const override {
         if (auto iso = getIsoValueProperty()) {
             return &iso->get();
         } else {
@@ -179,6 +182,28 @@ public:
     }
     virtual void removeObserver(TFPropertyObserver* observer) override {
         data_->TFPropertyObservable::removeObserver(observer);
+    }
+
+    virtual void showExportDialog() const override {
+        if (auto* tf = getTransferFunction()) {
+            util::exportTransferFunctionDialog(*tf);
+        } else if (auto* iso = getIsovalues()) {
+            util::exportIsoValueCollectionDialog(*iso);
+        }
+    }
+
+    virtual void showImportDialog() override {
+        if (auto* tf = getTransferFunction()) {
+            if (auto newTf = util::importTransferFunctionDialog()) {
+                NetworkLock lock{data_};
+                *tf = *newTf;
+            }
+        } else if (auto* iso = getIsovalues()) {
+            if (auto newIso = util::importIsoValueCollectionDialog()) {
+                NetworkLock lock{data_};
+                *iso = *newIso;
+            }
+        }
     }
 
 private:

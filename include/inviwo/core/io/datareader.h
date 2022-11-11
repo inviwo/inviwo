@@ -83,6 +83,7 @@ public:
      */
     virtual std::any getOption([[maybe_unused]] std::string_view key) { return std::any{}; }
 
+
 protected:
     /**
      * Verify that @p path exists, and throw DataReaderException if not.

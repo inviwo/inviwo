@@ -119,8 +119,6 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 
     menu->addSeparator();
 
-    util::addTFPresetsMenu(this, menu.get(), static_cast<TransferFunctionProperty*>(property_));
-
     auto clearTF = menu->addAction("&Clear TF");
     clearTF->setEnabled(!property_->getReadOnly());
 
@@ -129,14 +127,26 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
         static_cast<TransferFunctionProperty*>(property_)->get().clear();
     });
 
+    menu->addSeparator();
+
+    util::addTFPresetsMenu(this, menu.get(), static_cast<TransferFunctionProperty*>(property_));
+    util::addTFColorbrewerPresetsMenu(this, menu.get(),
+                                      static_cast<TransferFunctionProperty*>(property_));
+
+    menu->addSeparator();
+
     auto importTF = menu->addAction("&Import TF...");
     auto exportTF = menu->addAction("&Export TF...");
     importTF->setEnabled(!property_->getReadOnly());
     connect(importTF, &QAction::triggered, this, [this]() {
-        util::importFromFile(static_cast<TransferFunctionProperty*>(property_)->get(), this);
+        if (auto tf = util::importTransferFunctionDialog(this)) {
+            NetworkLock lock{property_};
+            static_cast<TransferFunctionProperty*>(property_)->get() = *tf;
+        }
     });
     connect(exportTF, &QAction::triggered, this, [this]() {
-        util::exportToFile(static_cast<TransferFunctionProperty*>(property_)->get(), this);
+        util::exportTransferFunctionDialog(static_cast<TransferFunctionProperty*>(property_)->get(),
+                                           this);
     });
 
     return menu;

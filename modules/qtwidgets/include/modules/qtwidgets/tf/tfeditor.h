@@ -62,10 +62,7 @@ struct TFPropertyConcept;
 }
 
 class IVW_MODULE_QTWIDGETS_API TFEditor : public QGraphicsScene, public TFEditorPrimitiveObserver {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     TFEditor(util::TFPropertyConcept* tfProperty, const std::vector<TFPrimitiveSet*>& primitiveSets,
              QWidget* parent = nullptr);
@@ -110,8 +107,6 @@ public:
 
 signals:
     void showColorDialog();
-    void importTF(TFPrimitiveSet& primitiveSet);
-    void exportTF(const TFPrimitiveSet& primitiveSet);
     void updateBegin();
     void updateEnd();
 

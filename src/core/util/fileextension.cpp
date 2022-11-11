@@ -85,9 +85,7 @@ FileExtension FileExtension::createFileExtensionFromString(std::string_view str)
 }
 
 std::string FileExtension::toString() const {
-    std::stringstream ss;
-    ss << *this;
-    return ss.str();
+    return fmt::to_string(*this);
 }
 
 bool FileExtension::empty() const { return extension_.empty() && description_.empty(); }

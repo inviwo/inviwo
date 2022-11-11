@@ -131,7 +131,9 @@ StreamParticles::StreamParticles(InviwoApplication* app)
             0.1f,
             InvalidationLevel::Valid,
             PropertySemantics::Text}
-    , tf_{"tf", "Velocity mapping"}
+    , tf_{"tf", "Velocity mapping",
+          TransferFunction::load(
+              app->getPath(PathType::TransferFunctions, "/matplotlib/plasma.itf"))}
     , reseedInterval_{[&]() {
                           LGL_ERROR;
                           return "reseedsInterval";
@@ -154,9 +156,6 @@ StreamParticles::StreamParticles(InviwoApplication* app)
 
     addProperties(seedingSpace_, advectionSpeed_, internalSteps_, particleSize_, minV_, maxV_, tf_,
                   reseedInterval_);
-
-    tf_.get().load(app->getPath(PathType::TransferFunctions, "/matplotlib/plasma.itf"));
-    tf_.setCurrentStateAsDefault();
 
     shader_.onReload([this]() {
         invalidate(InvalidationLevel::InvalidOutput);
