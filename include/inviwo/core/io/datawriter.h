@@ -52,6 +52,8 @@ public:
     DataWriter();
     DataWriter(const DataWriter& rhs);
     DataWriter& operator=(const DataWriter& that);
+    DataWriter(DataWriter&& rhs) noexcept = default;
+    DataWriter& operator=(DataWriter&& that) noexcept = default;
     virtual DataWriter* clone() const = 0;
     virtual ~DataWriter() = default;
 
@@ -72,7 +74,7 @@ public:
      * @throws DataWriterException if the condition is broken.
      */
     void checkOverwrite(std::string_view path) const;
-    
+
     /**
      * @brief Set writer specific options
      * See the documentation of the specific writer about which options that are available
@@ -117,6 +119,8 @@ public:
     DataWriterType() = default;
     DataWriterType(const DataWriterType& rhs) = default;
     DataWriterType& operator=(const DataWriterType& that) = default;
+    DataWriterType(DataWriterType&& rhs) noexcept = default;
+    DataWriterType& operator=(DataWriterType&& that) noexcept = default;
     virtual DataWriterType* clone() const = 0;
     virtual ~DataWriterType() = default;
 

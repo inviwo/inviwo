@@ -39,16 +39,16 @@ class IVW_CORE_API TransferFunctionLayerWriter : public DataWriterType<TransferF
 public:
     TransferFunctionLayerWriter(std::unique_ptr<DataWriterType<Layer>> layerWriter);
     TransferFunctionLayerWriter(const TransferFunctionLayerWriter& rhs);
-    TransferFunctionLayerWriter(TransferFunctionLayerWriter&&) = default;
+    TransferFunctionLayerWriter(TransferFunctionLayerWriter&&) noexcept = default;
     TransferFunctionLayerWriter& operator=(const TransferFunctionLayerWriter& that);
-    TransferFunctionLayerWriter& operator=(TransferFunctionLayerWriter&&) = default;
+    TransferFunctionLayerWriter& operator=(TransferFunctionLayerWriter&&) noexcept = default;
     virtual TransferFunctionLayerWriter* clone() const override;
 
     virtual void writeData(const TransferFunction* data, std::string_view filePath) const override;
 
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const TransferFunction* data, std::string_view fileExtension) const override;
-        
+
 private:
     std::unique_ptr<DataWriterType<Layer>> layerWriter_;
 };
@@ -56,7 +56,6 @@ private:
 class IVW_CORE_API TransferFunctionLayerWriterWrapper : public FactoryObserver<DataWriter> {
 public:
     TransferFunctionLayerWriterWrapper(DataWriterFactory* factory);
-
     virtual void onRegister(DataWriter* Writer) override;
     virtual void onUnRegister(DataWriter* Writer) override;
 

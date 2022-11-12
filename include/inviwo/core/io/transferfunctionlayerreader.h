@@ -42,9 +42,9 @@ class IVW_CORE_API TransferFunctionLayerReader : public DataReaderType<TransferF
 public:
     TransferFunctionLayerReader(std::unique_ptr<DataReaderType<Layer>> layerReader);    
     TransferFunctionLayerReader(const TransferFunctionLayerReader& rhs);
-    TransferFunctionLayerReader(TransferFunctionLayerReader&&) = default;
+    TransferFunctionLayerReader(TransferFunctionLayerReader&&) noexcept = default;
     TransferFunctionLayerReader& operator=(const TransferFunctionLayerReader& that);
-    TransferFunctionLayerReader& operator=(TransferFunctionLayerReader&&) = default;
+    TransferFunctionLayerReader& operator=(TransferFunctionLayerReader&&) noexcept = default;
     
     virtual TransferFunctionLayerReader* clone() const override;
 
