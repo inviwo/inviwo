@@ -29,14 +29,19 @@
 
 #include <modules/qtwidgets/tf/tfutils.h>
 
-#include <inviwo/core/util/colorbrewer-generated.h>           // for Category, Family, operator<<
-#include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>                  // for InviwoModule
-#include <inviwo/core/common/modulepath.h>                    // for ModulePath, ModulePath::Tra...
-#include <inviwo/core/datastructures/datamapper.h>            // for DataMapper
-#include <inviwo/core/datastructures/tfprimitiveset.h>        // for TFPrimitiveSet
-#include <inviwo/core/datastructures/transferfunction.h>      // for TransferFunction
-#include <inviwo/core/io/datareaderexception.h>               // for DataReaderException
+#include <inviwo/core/util/colorbrewer-generated.h>  // for Category, Family, operator<<
+#include <inviwo/core/common/inviwoapplication.h>    // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>         // for InviwoModule
+#include <inviwo/core/common/modulepath.h>           // for ModulePath, ModulePath::Tra...
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/datastructures/datamapper.h>        // for DataMapper
+#include <inviwo/core/datastructures/tfprimitiveset.h>    // for TFPrimitiveSet
+#include <inviwo/core/datastructures/transferfunction.h>  // for TransferFunction
+#include <inviwo/core/io/datareaderexception.h>           // for DataReaderException
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/io/datawriterexception.h>               // for DataWriterException
 #include <inviwo/core/network/networklock.h>                  // for NetworkLock
 #include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
@@ -83,44 +88,122 @@ namespace inviwo {
 
 namespace util {
 
-void importFromFile(TFPrimitiveSet& primitiveSet, QWidget* parent) {
-    InviwoFileDialog importFileDialog(parent, fmt::format("Import {}", primitiveSet.getTitle()),
-                                      "transferfunction");
+std::shared_ptr<TransferFunction> importTransferFunctionDialog(QWidget* parent) {
+    InviwoFileDialog importFileDialog(parent, "Import Transfer Function", "transferfunction");
     importFileDialog.setAcceptMode(AcceptMode::Open);
     importFileDialog.setFileMode(FileMode::ExistingFile);
-    for (auto& ext : primitiveSet.getSupportedExtensions()) {
-        importFileDialog.addExtension(ext);
-    }
+
+    auto factory = util::getDataReaderFactory();
+
+    importFileDialog.addExtensions(factory->getExtensionsForType<TransferFunction>());
     importFileDialog.addExtension(FileExtension::all());
 
     if (importFileDialog.exec()) {
         const auto filename = utilqt::fromQString(importFileDialog.selectedFiles().at(0));
         try {
-            NetworkLock lock;
-            primitiveSet.load(filename, importFileDialog.getSelectedFileExtension());
+            if (auto reader = factory->getReaderForTypeAndExtension<TransferFunction>(
+                    importFileDialog.getSelectedFileExtension(), filename)) {
+
+                return reader->readData(filename);
+            } else {
+                throw DataReaderException(IVW_CONTEXT_CUSTOM("importTransferFunctionDialog"),
+                                          "Unable to find a Transfer function reader for {}",
+                                          filename);
+            }
         } catch (DataReaderException& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
         }
     }
+    return nullptr;
 }
 
-void exportToFile(const TFPrimitiveSet& primitiveSet, QWidget* parent) {
-    InviwoFileDialog exportFileDialog(parent, fmt::format("Export {}", primitiveSet.getTitle()),
-                                      "transferfunction");
+std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog(QWidget* parent) {
+    InviwoFileDialog importFileDialog(parent, "Import Iso Value Collection", "isovaluecollection");
+    importFileDialog.setAcceptMode(AcceptMode::Open);
+    importFileDialog.setFileMode(FileMode::ExistingFile);
+
+    auto factory = util::getDataReaderFactory();
+
+    importFileDialog.addExtensions(factory->getExtensionsForType<IsoValueCollection>());
+    importFileDialog.addExtension(FileExtension::all());
+
+    if (importFileDialog.exec()) {
+        const auto filename = utilqt::fromQString(importFileDialog.selectedFiles().at(0));
+        try {
+            if (auto reader = factory->getReaderForTypeAndExtension<IsoValueCollection>(
+                    importFileDialog.getSelectedFileExtension(), filename)) {
+
+                return reader->readData(filename);
+            } else {
+                throw DataReaderException(IVW_CONTEXT_CUSTOM("importIsoValueCollectionDialog"),
+                                          "Unable to find a Iso Value Collection reader for {}",
+                                          filename);
+            }
+        } catch (DataReaderException& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+        }
+    }
+    return nullptr;
+}
+
+void exportTransferFunctionDialog(const TransferFunction& tf, QWidget* parent) {
+    InviwoFileDialog exportFileDialog(parent, "Export Transfer Function", "transferfunction");
     exportFileDialog.setAcceptMode(AcceptMode::Save);
     exportFileDialog.setFileMode(FileMode::AnyFile);
-    for (auto& ext : primitiveSet.getSupportedExtensions()) {
-        exportFileDialog.addExtension(ext);
-    }
+
+    auto factory = util::getDataWriterFactory();
+
+    exportFileDialog.addExtensions(factory->getExtensionsForType<TransferFunction>());
     exportFileDialog.addExtension(FileExtension::all());
 
     if (exportFileDialog.exec()) {
         const auto filename = utilqt::fromQString(exportFileDialog.selectedFiles().at(0));
         const auto fileExt = exportFileDialog.getSelectedFileExtension();
+
         try {
-            primitiveSet.save(filename, fileExt);
-            util::log(IVW_CONTEXT_CUSTOM("util::exportToFile"),
-                      "Data exported to disk: " + filename, LogLevel::Info, LogAudience::User);
+            if (auto writer =
+                    factory->getWriterForTypeAndExtension<TransferFunction>(fileExt, filename)) {
+                writer->writeData(&tf, filename);
+
+                util::log(IVW_CONTEXT_CUSTOM("util::exportToFile"),
+                          "Data exported to disk: " + filename, LogLevel::Info, LogAudience::User);
+            } else {
+                throw DataWriterException(IVW_CONTEXT_CUSTOM("exportTransferFunctionDialog"),
+                                          "Unable to find a Transfer Function writer for {}",
+                                          filename);
+            }
+        } catch (DataWriterException& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+        }
+    }
+}
+
+void exportIsoValueCollectionDialog(const IsoValueCollection& iso, QWidget* parent) {
+    InviwoFileDialog exportFileDialog(parent, "Export Iso Value Collection", "isovaluecollection");
+    exportFileDialog.setAcceptMode(AcceptMode::Save);
+    exportFileDialog.setFileMode(FileMode::AnyFile);
+
+    auto factory = util::getDataWriterFactory();
+
+    exportFileDialog.addExtensions(factory->getExtensionsForType<IsoValueCollection>());
+    exportFileDialog.addExtension(FileExtension::all());
+
+    if (exportFileDialog.exec()) {
+        const auto filename = utilqt::fromQString(exportFileDialog.selectedFiles().at(0));
+        const auto fileExt = exportFileDialog.getSelectedFileExtension();
+
+        try {
+            if (auto writer =
+                    factory->getWriterForTypeAndExtension<IsoValueCollection>(fileExt, filename)) {
+                writer->writeData(&iso, filename);
+
+                util::log(IVW_CONTEXT_CUSTOM("util::exportToFile"),
+                          "Data exported to disk: " + filename, LogLevel::Info, LogAudience::User);
+            } else {
+                throw DataWriterException(IVW_CONTEXT_CUSTOM("exportTransferFunctionDialog"),
+                                          "Unable to find a Iso Value Collection writer for {}",
+                                          filename);
+            }
         } catch (DataWriterException& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
         }
@@ -138,50 +221,48 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
     const int iconWidth = utilqt::emToPx(presets, 11);
     // need to set the stylesheet explicitely since Qt _only_ supports 'px' for icon sizes
     presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
-    if (!property->getReadOnly()) {
-        auto addPresetActions = [presets, parent, property,
-                                 iconWidth](const std::string& basePath) {
-            TransferFunction tf;
-            auto files = filesystem::getDirectoryContentsRecursively(basePath);
-            for (auto file : files) {
-                for (auto& ext : property->get().getSupportedExtensions()) {
-                    if (ext.matches(file)) {
-                        try {
-                            tf.load(file, ext);
-                        } catch (DataReaderException&) {
-                            // No reader found, ignore the TF
-                            continue;
-                        } catch (AbortException&) {
-                            // Failed to load, ignore the TF
-                            continue;
-                        }
-                        // remove basepath and trailing directory separator from filename
-                        auto action = presets->addAction(
-                            utilqt::toQString(file.substr(basePath.length() + 1)));
-                        QObject::connect(action, &QAction::triggered, parent,
-                                         [property, file, ext]() {
-                                             NetworkLock lock(property);
-                                             property->get().load(file, ext);
-                                         });
 
-                        action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
-                        break;
-                    }
+    auto addPresetActions = [presets, parent, property, iconWidth](const std::string& basePath) {
+        auto factory = util::getDataReaderFactory();
+        auto files = filesystem::getDirectoryContentsRecursively(basePath);
+        for (auto file : files) {
+            if (auto reader = factory->getReaderForTypeAndExtension<TransferFunction>(file)) {
+                try {
+                    auto tf = reader->readData(file);
+                    // remove basepath and trailing directory separator from filename
+                    auto action =
+                        presets->addAction(utilqt::toQString(file.substr(basePath.length() + 1)));
+                    action->setIcon(QIcon(utilqt::toQPixmap(*tf, QSize{iconWidth, 20})));
+                    QObject::connect(action, &QAction::triggered, parent,
+                                     [property, tf = std::move(tf)]() {
+                                         NetworkLock lock(property);
+                                         property->get() = *tf;
+                                     });
+                } catch (DataReaderException&) {
+                    // No reader found, ignore the TF
+                } catch (AbortException&) {
+                    // Failed to load, ignore the TF
                 }
             }
-        };
-
-        for (const auto& module : InviwoApplication::getPtr()->getModules()) {
-            auto moduleTFPath = module->getPath(ModulePath::TransferFunctions);
-            if (!filesystem::directoryExists(moduleTFPath)) continue;
-            addPresetActions(moduleTFPath);
         }
+    };
 
-        if (presets->actions().empty()) {
-            auto action = presets->addAction("No Presets Available");
-            action->setEnabled(false);
-        }
-    }
+    QObject::connect(
+        presets, &QMenu::aboutToShow, presets,
+        [presets, addPresetActions]() {
+            for (const auto& im : InviwoApplication::getPtr()->getModules()) {
+                auto moduleTFPath = im->getPath(ModulePath::TransferFunctions);
+                if (!filesystem::directoryExists(moduleTFPath)) continue;
+                addPresetActions(moduleTFPath);
+            }
+
+            if (presets->actions().empty()) {
+                auto action = presets->addAction("No Presets Available");
+                action->setEnabled(false);
+            }
+        },
+        Qt::SingleShotConnection);
+
     return presets;
 }
 
@@ -261,7 +342,8 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
     // need to set the stylesheet explicitely since Qt _only_ supports 'px' for icon sizes
     presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 
-    auto addAction = [&](QMenu* menu, TransferFunction tf, std::string_view name) {
+    auto addAction = [iconWidth, parent, property](QMenu* menu, TransferFunction tf,
+                                                   std::string_view name) {
         auto action = menu->addAction(utilqt::toQString(name));
         action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
 
@@ -271,8 +353,8 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
         });
     };
 
-    auto generateN = [&](colorbrewer::Category category, colorbrewer::Family family,
-                         bool discrete) {
+    auto generateN = [property](colorbrewer::Category category, colorbrewer::Family family,
+                                bool discrete) {
         return [category, family, discrete, property]() {
             GenerateNDialog dialog;
             if (category != colorbrewer::Category::Diverging) {
@@ -305,35 +387,49 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
         };
     };
 
-    for (auto category : {colorbrewer::Category::Diverging, colorbrewer::Category::Qualitative,
-                          colorbrewer::Category::Sequential}) {
-        for (auto discrete : {true, false}) {
+    QObject::connect(
+        presets, &QMenu::aboutToShow, presets,
+        [presets, iconWidth, addAction, generateN]() {
+            for (auto category :
+                 {colorbrewer::Category::Diverging, colorbrewer::Category::Qualitative,
+                  colorbrewer::Category::Sequential}) {
+                for (auto discrete : {true, false}) {
 
-            auto categoryMenu = presets->addMenu(
-                utilqt::toQString(toString(category) + +(discrete ? " Discrete" : " Contiguous")));
-            categoryMenu->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+                    auto categoryMenu = presets->addMenu(utilqt::toQString(
+                        toString(category) + +(discrete ? " Discrete" : " Contiguous")));
+                    categoryMenu->setStyleSheet(
+                        QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 
-            for (auto family : colorbrewer::getFamiliesForCategory(category)) {
-                const auto max = colorbrewer::getMaxNumberOfColorsForFamily(family);
-                const auto min = colorbrewer::getMinNumberOfColorsForFamily(family);
+                    for (auto family : colorbrewer::getFamiliesForCategory(category)) {
+                        const auto max = colorbrewer::getMaxNumberOfColorsForFamily(family);
+                        const auto min = colorbrewer::getMinNumberOfColorsForFamily(family);
 
-                auto familyMenu = categoryMenu->addMenu(utilqt::toQString(toString(family)));
-                familyMenu->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
-                auto maxtf = colorbrewer::getTransferFunction(category, family, max, discrete, 0.5);
-                familyMenu->setIcon(QIcon(utilqt::toQPixmap(maxtf, QSize{iconWidth, 20})));
+                        auto familyMenu =
+                            categoryMenu->addMenu(utilqt::toQString(toString(family)));
+                        familyMenu->setStyleSheet(
+                            QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+                        auto maxtf =
+                            colorbrewer::getTransferFunction(category, family, max, discrete, 0.5);
+                        familyMenu->setIcon(QIcon(utilqt::toQPixmap(maxtf, QSize{iconWidth, 20})));
 
-                for (auto n = min; n < max; ++n) {
-                    addAction(familyMenu,
-                              colorbrewer::getTransferFunction(category, family, n, discrete, 0.5),
-                              toString(static_cast<int>(n)) + " colors");
+                        for (auto n = min; n < max; ++n) {
+                            addAction(familyMenu,
+                                      colorbrewer::getTransferFunction(category, family, n,
+                                                                       discrete, 0.5),
+                                      toString(static_cast<int>(n)) + " colors");
+                        }
+
+                        auto action = familyMenu->addAction("Generate...");
+                        QObject::connect(action, &QAction::triggered, presets,
+                                         generateN(category, family, discrete));
+                    }
+                    if (!categoryMenu->actions().empty()) {
+                        categoryMenu->setIcon(categoryMenu->actions().front()->icon());
+                    }
                 }
-
-                auto action = familyMenu->addAction("Generate...");
-                QObject::connect(action, &QAction::triggered, parent,
-                                 generateN(category, family, discrete));
             }
-        }
-    }
+        },
+        Qt::SingleShotConnection);
 
     return presets;
 }

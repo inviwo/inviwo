@@ -100,8 +100,6 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
 
     menu->addSeparator();
 
-    util::addTFPresetsMenu(this, menu.get(), &static_cast<IsoTFProperty*>(property_)->tf_);
-
     auto clearTF = menu->addAction("&Clear TF && Isovalues");
     clearTF->setEnabled(!property_->getReadOnly());
 
@@ -112,6 +110,14 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
         p->isovalues_.get().clear();
     });
 
+    menu->addSeparator();
+
+    util::addTFPresetsMenu(this, menu.get(), &static_cast<IsoTFProperty*>(property_)->tf_);
+    util::addTFColorbrewerPresetsMenu(this, menu.get(),
+                                      &static_cast<IsoTFProperty*>(property_)->tf_);
+
+    menu->addSeparator();
+
     auto importMenu = menu->addMenu("&Import");
     auto exportMenu = menu->addMenu("&Export");
     importMenu->setEnabled(!property_->getReadOnly());
@@ -119,19 +125,26 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
     auto importTF = importMenu->addAction("&TF...");
     auto importIso = importMenu->addAction("&Isovalues...");
     connect(importTF, &QAction::triggered, this, [this]() {
-        util::importFromFile(static_cast<IsoTFProperty*>(property_)->tf_.get(), this);
+        if (auto tf = util::importTransferFunctionDialog(this)) {
+            NetworkLock lock{property_};
+            static_cast<IsoTFProperty*>(property_)->tf_.get() = *tf;
+        }
     });
     connect(importIso, &QAction::triggered, this, [this]() {
-        util::importFromFile(static_cast<IsoTFProperty*>(property_)->isovalues_.get(), this);
+        if (auto iso = util::importIsoValueCollectionDialog(this)) {
+            NetworkLock lock{property_};
+            static_cast<IsoTFProperty*>(property_)->isovalues_.get() = *iso;
+        }
     });
 
     auto exportTF = exportMenu->addAction("&TF...");
     auto exportIso = exportMenu->addAction("&Isovalues...");
     connect(exportTF, &QAction::triggered, this, [this]() {
-        util::exportToFile(static_cast<IsoTFProperty*>(property_)->tf_.get(), this);
+        util::exportTransferFunctionDialog(static_cast<IsoTFProperty*>(property_)->tf_.get(), this);
     });
     connect(exportIso, &QAction::triggered, this, [this]() {
-        util::exportToFile(static_cast<IsoTFProperty*>(property_)->isovalues_.get(), this);
+        util::exportIsoValueCollectionDialog(
+            static_cast<IsoTFProperty*>(property_)->isovalues_.get(), this);
     });
 
     return menu;

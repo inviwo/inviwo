@@ -37,11 +37,13 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
+#include <algorithm>
 
 namespace inviwo {
 
 class IVW_CORE_API DataReaderFactory : public Factory<DataReader, const FileExtension&>,
-                                       public Factory<DataReader, std::string_view> {
+                                       public Factory<DataReader, std::string_view>,
+                                       public FactoryObservable<DataReader> {
 public:
     DataReaderFactory() = default;
     virtual ~DataReaderFactory() = default;
@@ -86,21 +88,19 @@ public:
     template <typename T>
     bool hasReaderForTypeAndExtension(const FileExtension& ext) const;
 
-protected:
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-    // Sort extensions by length to first compare long extensions. Avoids selecting extension xyz in
-    // case xyzw exist, see getReaderForTypeAndExtension
-    static bool compare(const FileExtension& a, const FileExtension& b) {
-        if (a.extension_.size() != b.extension_.size()) {
-            return a.extension_.size() > b.extension_.size();
+    template <typename T>
+    std::shared_ptr<T> readDataForTypeAndExtension(
+        std::string_view filePath, std::optional<FileExtension> ext = std::nullopt) const {
+        if (auto reader = ext ? getReaderForTypeAndExtension<T>(*ext, filePath)
+                              : getReaderForTypeAndExtension<T>(filePath)) {
+            return reader->readData(filePath);
         } else {
-            // Order does not matter
-            return a < b;
+            return nullptr;
         }
     }
-    std::map<FileExtension, DataReader*, bool (*)(const FileExtension& a, const FileExtension& b)>
-        map_{compare};
-#endif
+
+protected:
+    std::map<FileExtension, DataReader*> map_;
 };
 
 template <typename T>
@@ -118,14 +118,23 @@ std::vector<FileExtension> DataReaderFactory::getExtensionsForType() const {
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
     std::string_view path) const {
-    for (auto& elem : map_) {
-        if (util::iCaseEndsWith(path, elem.first.extension_)) {
-            if (auto r = dynamic_cast<DataReaderType<T>*>(elem.second)) {
-                return std::unique_ptr<DataReaderType<T>>(r->clone());
+    std::vector<std::pair<size_t, DataReaderType<T>*>> candidates;
+    for (auto& [ext, reader] : map_) {
+        if (util::iCaseEndsWith(path, ext.extension_)) {
+            if (auto r = dynamic_cast<DataReaderType<T>*>(reader)) {
+                candidates.emplace_back(ext.extension_.size(), r);
             }
         }
     }
-    return std::unique_ptr<DataReaderType<T>>{};
+
+    // Select the match with the longest extension, for example select tar.gz over gz
+    if (auto it = std::max_element(candidates.begin(), candidates.end(),
+                                   [](const auto& a, const auto& b) { return a.first < b.first; });
+        it != candidates.end()) {
+        return std::unique_ptr<DataReaderType<T>>{it->second->clone()};
+    } else {
+        return {};
+    }
 }
 
 template <typename T>
@@ -156,13 +165,7 @@ bool DataReaderFactory::hasReaderForTypeAndExtension(std::string_view path) cons
 
 template <typename T>
 bool DataReaderFactory::hasReaderForTypeAndExtension(const FileExtension& ext) const {
-    return util::map_find_or_null(map_, ext, [](DataReader* o) {
-        if (auto r = dynamic_cast<DataReaderType<T>*>(o)) {
-            return true;
-        } else {
-            return false;
-        }
-    });
+    return getReaderForTypeAndExtension<T>(ext) != nullptr;
 }
 
 }  // namespace inviwo

@@ -29,6 +29,7 @@
 
 #include <modules/basegl/processors/background.h>
 
+#include <inviwo/core/algorithm/markdown.h>               // for operator""_help
 #include <inviwo/core/datastructures/image/image.h>       // for Image
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::AllLayers
 #include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
@@ -61,49 +62,70 @@
 
 namespace inviwo {
 
-const ProcessorInfo Background::processorInfo_{
-    "org.inviwo.Background",  // Class identifier
-    "Background",             // Display name
-    "Image Operation",        // Category
-    CodeState::Stable,        // Code state
-    Tags::GL,                 // Tags
-};
+const ProcessorInfo Background::processorInfo_{"org.inviwo.Background",  // Class identifier
+                                               "Background",             // Display name
+                                               "Image Operation",        // Category
+                                               CodeState::Stable,        // Code state
+                                               Tags::GL,                 // Tags
+                                               R"(
+    Adds a background to an image by applying one of the following blend modes for compositing 
+    the input image (`in`) with the background (`bg`).
+
+    - _Back to front (pre-multiplied alpha)_ (default)
+        ```
+        out.rgb = in.rgb + bg.rgb * bg.a * (1.0 - in.a)
+        out.a = in.a + bg.a * (1.0 - in.a)
+        ```
+    - _Alpha compositing_ 
+        ```
+        out.rgb = bg.rgb * bg.a * (1.0 - in.a) + in * in.a
+        out.a = bg.a * (1.0 - in.a) + in * in.a
+        ```
+    )"_unindentHelp};
 const ProcessorInfo Background::getProcessorInfo() const { return processorInfo_; }
 
 Background::Background()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , backgroundStyle_("backgroundStyle", "Style",
-                       {{"linearGradientVertical", "Linear gradient (Vertical)",
-                         BackgroundStyle::LinearVertical},
-                        {"linearGradientHorizontal", "Linear gradient (Horizontal)",
-                         BackgroundStyle::LinearHorizontal},
-                        {"linearGradientSpherical", "Linear gradient (Spherical)",
-                         BackgroundStyle::LinearSpherical},
-                        {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
-                        {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard}},
-                       0, InvalidationLevel::InvalidResources)
-    , bgColor1_("bgColor1", "Color 1", util::ordinalColor(0.0f, 0.0f, 0.0f, 1.0f))
-    , bgColor2_("bgColor2", "Color 2", util::ordinalColor(1.0f, 1.0f, 1.0f, 1.0f))
-    , checkerBoardSize_("checkerBoardSize", "Checker Board Size", ivec2(10, 10), ivec2(1, 1),
-                        ivec2(256, 256))
-    , switchColors_("switchColors", "Switch Colors", InvalidationLevel::Valid)
+    , inport_("inport", "Input image"_help)
+    , outport_("outport", "Output image"_help)
+    , backgroundStyle_(
+          "backgroundStyle", "Style",
+          "The are three different styles to choose from Linear gradient, uniform color, and checkerboard."_help,
+          {{"linearGradientVertical", "Linear gradient (Vertical)",
+            BackgroundStyle::LinearVertical},
+           {"linearGradientHorizontal", "Linear gradient (Horizontal)",
+            BackgroundStyle::LinearHorizontal},
+           {"linearGradientSpherical", "Linear gradient (Spherical)",
+            BackgroundStyle::LinearSpherical},
+           {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
+           {"checkerBoard", "Checkerboard", BackgroundStyle::CheckerBoard}},
+          0, InvalidationLevel::InvalidResources)
+    , bgColor1_(
+          "bgColor1", "Color 1",
+          util::ordinalColor(0.0f, 0.0f, 0.0f, 1.0f)
+              .set(
+                  "Used as the uniform color and as color 1 in the gradient and checkerboard."_help))
+    , bgColor2_("bgColor2", "Color 2",
+                util::ordinalColor(1.0f, 1.0f, 1.0f, 1.0f)
+                    .set("Used as color 2 in the gradient and checkerboard."_help))
+    , checkerBoardSize_("checkerBoardSize", "Checkerboard Size",
+                        "Size of the checkerboard cells in pixel."_help, ivec2(10, 10),
+                        {ivec2(1, 1), ConstraintBehavior::Immutable},
+                        {ivec2(256, 256), ConstraintBehavior::Ignore})
+    , switchColors_("switchColors", "Switch Colors", "Toggle colors 1 and 2"_help,
+                    InvalidationLevel::Valid)
     , blendMode_("blendMode", "Blend mode",
+                 "Adjusts how the input image is blended with the background."_help,
                  {{"backtofront", "Back To Front (Pre-multiplied)", BlendMode::BackToFront},
-                  {"alphamixing", "Alpha Mixing", BlendMode::AlphaMixing}},
+                  {"alphamixing", "Alpha Compositing", BlendMode::AlphaMixing}},
                  0, InvalidationLevel::InvalidResources)
     , shader_("background.frag", Shader::Build::No) {
-    addPort(inport_);
-    addPort(outport_);
+
+    addPorts(inport_, outport_);
     inport_.setOptional(true);
 
-    addProperty(backgroundStyle_);
-    addProperty(bgColor1_);
-    addProperty(bgColor2_);
-    addProperty(checkerBoardSize_);
-    addProperty(switchColors_);
-    addProperty(blendMode_);
+    addProperties(backgroundStyle_, bgColor1_, bgColor2_, checkerBoardSize_, switchColors_,
+                  blendMode_);
 
     switchColors_.onChange([&]() {
         vec4 tmp = bgColor1_.get();
@@ -121,23 +143,23 @@ void Background::initializeResources() {
     std::string_view bgStyleValue;
     switch (backgroundStyle_.get()) {
         default:
-        case BackgroundStyle::LinearVertical:  // linear gradient
+        case BackgroundStyle::LinearVertical:
             bgStyleValue = "linearGradientVertical(texCoord)";
             checkerBoardSize_.setVisible(false);
             break;
-        case BackgroundStyle::LinearHorizontal:  // linear gradient
+        case BackgroundStyle::LinearHorizontal:
             bgStyleValue = "linearGradientHorizontal(texCoord)";
             checkerBoardSize_.setVisible(false);
             break;
-        case BackgroundStyle::LinearSpherical:  // linear spherical gradient
+        case BackgroundStyle::LinearSpherical:
             bgStyleValue = "linearGradientSpherical(texCoord)";
             checkerBoardSize_.setVisible(false);
             break;
-        case BackgroundStyle::Uniform:  // uniform color
+        case BackgroundStyle::Uniform:
             bgStyleValue = "bgColor1";
             checkerBoardSize_.setVisible(false);
             break;
-        case BackgroundStyle::CheckerBoard:  // checker board
+        case BackgroundStyle::CheckerBoard:
             bgStyleValue = "checkerBoard(texCoord)";
             checkerBoardSize_.setVisible(true);
             break;

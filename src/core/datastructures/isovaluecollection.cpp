@@ -28,14 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/isovaluecollection.h>
-
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/io/datawriterexception.h>
-#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/io/datawriterfactory.h>
 
 namespace inviwo {
 
@@ -43,37 +38,27 @@ IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& value
                                        TFPrimitiveSetType type)
     : TFPrimitiveSet(values, type) {}
 
-std::vector<FileExtension> IsoValueCollection::getSupportedExtensions() const {
-    return {{"iiv", "Inviwo Isovalues"}};
-}
-
-void IsoValueCollection::save(const std::string& filename, const FileExtension& ext) const {
-    std::string extension = toLower(filesystem::getFileExtension(filename));
-
-    if (ext.extension_ == "iiv" || (ext.empty() && extension == "iiv")) {
-        Serializer serializer(filename);
-        serialize(serializer);
-        serializer.writeFile();
-    } else {
-        throw DataWriterException("Unsupported format for saving isovalues", IVW_CONTEXT);
-    }
-}
-
-void IsoValueCollection::load(const std::string& filename, const FileExtension& ext) {
-    std::string extension = toLower(filesystem::getFileExtension(filename));
-
-    if (ext.extension_ == "iiv" || (ext.empty() && extension == "iiv")) {
-        Deserializer deserializer(filename);
-        deserialize(deserializer);
-    } else {
-        throw DataReaderException("Unsupported format for loading isovalues", IVW_CONTEXT);
-    }
-}
-
-std::string_view IsoValueCollection::getTitle() const { return "Isovalues"; }
-
 std::string_view IsoValueCollection::serializationKey() const { return "IsoValues"; }
 
 std::string_view IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
+
+IsoValueCollection IsoValueCollection::load(std::string_view path) {
+    auto factory = util::getDataReaderFactory();
+
+    if (auto tf = factory->readDataForTypeAndExtension<IsoValueCollection>(path)) {
+        return *tf;
+    } else {
+        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
+                        "Unable to load IsoValueCollection from {}", path);
+    }
+}
+void IsoValueCollection::save(const IsoValueCollection& tf, std::string_view path) {
+    auto factory = util::getDataWriterFactory();
+
+    if (!factory->writeDataForTypeAndExtension(&tf, path)) {
+        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
+                        "Unable to save IsoValueCollection to {}", path);
+    }
+}
 
 }  // namespace inviwo

@@ -32,7 +32,6 @@
 #include <inviwo/core/datastructures/datamapper.h>          // for DataMapper
 #include <inviwo/core/datastructures/tfprimitive.h>         // for TFPrimitive, operator==, TFPr...
 #include <inviwo/core/datastructures/tfprimitiveset.h>      // for TFPrimitiveSet, alignAlphaToB...
-#include <inviwo/core/datastructures/transferfunction.h>    // for TransferFunction
 #include <inviwo/core/network/networklock.h>                // for NetworkLock
 #include <inviwo/core/ports/volumeport.h>                   // for VolumeInport
 #include <inviwo/core/properties/property.h>                // for Property
@@ -775,18 +774,18 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             auto importTF = menu.addAction("&Import TF...");
             auto exportTF = menu.addAction("&Export TF...");
             connect(importTF, &QAction::triggered, this,
-                    [this]() { emit TFEditor::importTF(*tfPropertyPtr_->getTransferFunction()); });
+                    [this]() { tfPropertyPtr_->showImportDialog(); });
             connect(exportTF, &QAction::triggered, this,
-                    [this]() { emit TFEditor::exportTF(*tfPropertyPtr_->getTransferFunction()); });
+                    [this]() { tfPropertyPtr_->showExportDialog(); });
             menu.addSeparator();
         }
         if (tfPropertyPtr_->hasIsovalues()) {
             auto importTF = menu.addAction("&Import Isovalues...");
             auto exportTF = menu.addAction("&Export Isovalues...");
             connect(importTF, &QAction::triggered, this,
-                    [this]() { emit TFEditor::importTF(*tfPropertyPtr_->getIsovalues()); });
+                    [this]() { tfPropertyPtr_->showImportDialog(); });
             connect(exportTF, &QAction::triggered, this,
-                    [this]() { emit TFEditor::exportTF(*tfPropertyPtr_->getIsovalues()); });
+                    [this]() { tfPropertyPtr_->showExportDialog(); });
         }
     }
 

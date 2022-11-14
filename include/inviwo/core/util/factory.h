@@ -243,7 +243,7 @@ bool FactoryRegister<M, Key, K>::unRegisterObject(M* obj) {
     size_t removed =
         util::map_erase_remove_if(map_, [obj](const auto& elem) { return elem.second == obj; });
     if (removed > 0) {
-        this->notifyObserversOnRegister(obj);
+        this->notifyObserversOnUnRegister(obj);
         return true;
     } else {
         return false;

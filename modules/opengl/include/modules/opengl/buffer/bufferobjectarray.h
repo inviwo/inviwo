@@ -98,7 +98,8 @@ public:
      * Enforce the attachment of buffer object @p obj to a specific location @p location. Overrides
      * any existing binding for this location.
      * @pre The BufferObjectArray must be bound
-     * @see attachBufferObject
+     * @throw RangeException  if @p location is invalid. That is @p location >= maxSize().
+     * @see attachBufferObject maxSize
      */
     void attachBufferObjectEnforce(const BufferObject* obj, GLuint location,
                                    BindingType bindingType = BindingType::Native);
@@ -107,6 +108,7 @@ public:
      * Detach the buffer object at location @p location, if attached, and disable that vertex
      * attribute array.
      * @pre The BufferObjectArray must be bound
+     * @throw RangeException  if @p location is invalid. That is @p location >= maxSize().
      */
     void detachBufferObject(GLuint location);
 
@@ -115,6 +117,11 @@ public:
 
     const BufferObject* getBufferObject(size_t location = 0) const;
 
+    /**
+     * Return the maximum number of buffers that can be attached to a VAO as supported by the OpenGL
+     * hardware. The result corresponds to \c GL_MAX_VERTEX_ATTRIBS.
+     * @return maximum number of buffers that can be attached to this BufferObjectArray
+     */
     size_t maxSize() const;
 
 private:

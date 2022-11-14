@@ -455,10 +455,6 @@ void exposeProperties(py::module& m) {
                       &TransferFunctionProperty::setZoomH)
         .def_property("zoomV", &TransferFunctionProperty::getZoomV,
                       &TransferFunctionProperty::setZoomV)
-        .def("save",
-             [](TransferFunctionProperty* tf, std::string filename) { tf->get().save(filename); })
-        .def("load",
-             [](TransferFunctionProperty* tf, std::string filename) { tf->get().load(filename); })
         .def("clear", [](TransferFunctionProperty& tp) { tp.get().clear(); })
         .def_property(
             "value",
@@ -515,8 +511,6 @@ void exposeProperties(py::module& m) {
              py::arg("semantics") = PropertySemantics::Default)
         .def_property("zoomH", &IsoValueProperty::getZoomH, &IsoValueProperty::setZoomH)
         .def_property("zoomV", &IsoValueProperty::getZoomV, &IsoValueProperty::setZoomV)
-        .def("save", [](IsoValueProperty* ivp, std::string filename) { ivp->get().save(filename); })
-        .def("load", [](IsoValueProperty* ivp, std::string filename) { ivp->get().load(filename); })
         .def("clear", [](IsoValueProperty& ivp) { ivp.get().clear(); })
         .def_property(
             "value",

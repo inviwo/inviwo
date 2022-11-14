@@ -363,10 +363,6 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
     invalidate();
 }
 
-std::vector<FileExtension> TFPrimitiveSet::getSupportedExtensions() const { return {}; }
-void TFPrimitiveSet::save(const std::string&, const FileExtension&) const {}
-void TFPrimitiveSet::load(const std::string&, const FileExtension&) {}
-
 void TFPrimitiveSet::sort() { std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{}); }
 
 vec4 TFPrimitiveSet::interpolateColor(double t) const {
@@ -421,8 +417,6 @@ void TFPrimitiveSet::interpolateAndStoreColors(vec4* dataArray, const size_t dat
         }
     }
 }
-
-std::string_view TFPrimitiveSet::getTitle() const { return "TFPrimitiveSet"; }
 
 std::string_view TFPrimitiveSet::serializationKey() const { return "TFPrimitives"; }
 

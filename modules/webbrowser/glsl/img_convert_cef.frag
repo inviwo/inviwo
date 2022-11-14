@@ -30,17 +30,17 @@
 #include "utils/structs.glsl"
 
 uniform vec3 pickingColor;
-uniform ImageParameters outportParameters_;
+uniform ImageParameters outportParameters;
 
-uniform sampler2D inport_;
+uniform sampler2D inport;
 
 void main() {
 	// Flip y-coord
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
 	texCoords.y = 1.0 - texCoords.y;
-    vec4 color = texture(inport_, texCoords);
+    vec4 color = texture(inport, texCoords);
     if (color.w > 0) {
-        FragData0 = texture(inport_, texCoords);
+        FragData0 = texture(inport, texCoords);
         PickingData = vec4(pickingColor, 1.0);
     } else {
         discard;

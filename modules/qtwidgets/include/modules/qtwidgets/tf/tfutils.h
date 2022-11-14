@@ -30,37 +30,53 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
+#include <memory>
+
 class QMenu;
 class QWidget;
 
 namespace inviwo {
 
 class TFPrimitiveSet;
+class TransferFunction;
+class IsoValueCollection;
 class TransferFunctionProperty;
 
 namespace util {
 
 /**
- * \brief Shows an InviwoFileDialog to import a TFPrimitiveSet from a file.
- * Depending on the underlying type of \p primitiveSet, either TF primitives or isovalues are
- * imported.
+ * \brief Shows an InviwoFileDialog to import a TransferFunction from a file.
  *
- * @param primitiveSet   target primitive set which might either be a TF or isovalues
  * @param parent         parent widget of the file dialog
  */
-IVW_MODULE_QTWIDGETS_API void importFromFile(TFPrimitiveSet& primitiveSet,
-                                             QWidget* parent = nullptr);
+IVW_MODULE_QTWIDGETS_API std::shared_ptr<TransferFunction> importTransferFunctionDialog(
+    QWidget* parent = nullptr);
 
 /**
  * \brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
- * Depending on the underlying type of \p primitiveSet, either TF primitives or isovalues are
- * exported.
  *
- * @param primitiveSet   primitive set to be exported (either TF or isovalues)
+ * @param primitiveSet   TransferFunction set to be exported
  * @param parent         parent widget of the file dialog
  */
-IVW_MODULE_QTWIDGETS_API void exportToFile(const TFPrimitiveSet& primitiveSet,
-                                           QWidget* parent = nullptr);
+IVW_MODULE_QTWIDGETS_API void exportTransferFunctionDialog(const TransferFunction& tf,
+                                                           QWidget* parent = nullptr);
+
+/**
+ * \brief Shows an InviwoFileDialog to import a IsoValueCollection from a file.
+ *
+ * @param parent         parent widget of the file dialog
+ */
+IVW_MODULE_QTWIDGETS_API std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog(
+    QWidget* parent = nullptr);
+
+/**
+ * \brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
+ *
+ * @param primitiveSet   IsoValueCollection set to be exported
+ * @param parent         parent widget of the file dialog
+ */
+IVW_MODULE_QTWIDGETS_API void exportIsoValueCollectionDialog(const IsoValueCollection& iso,
+                                                             QWidget* parent = nullptr);
 
 /**
  * \brief create a submenu containing entries for TF presets of all transfer functions found in

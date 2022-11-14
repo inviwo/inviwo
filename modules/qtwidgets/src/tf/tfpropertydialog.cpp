@@ -46,6 +46,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>      // for TransferFunctionProperty
 #include <inviwo/core/util/glmvec.h>                              // for dvec2, ivec2, vec2
 #include <inviwo/core/util/stringconversion.h>                    // for toString
+#include <inviwo/core/network/networklock.h>                      // for NetworkLock
 #include <modules/qtwidgets/colorwheel.h>                         // for ColorWheel
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>           // for InviwoDockWidgetTitleBar
 #include <modules/qtwidgets/inviwoqtutils.h>                      // for emToPx, refSpacePx, toQ...
@@ -58,7 +59,6 @@
 #include <modules/qtwidgets/tf/tflineedit.h>                      // for TFLineEdit
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>               // for TFPropertyModel, TFProp...
 #include <modules/qtwidgets/tf/tfselectionwatcher.h>              // for TFSelectionWatcher
-#include <modules/qtwidgets/tf/tfutils.h>                         // for exportToFile, importFro...
 
 #include <algorithm>    // for all_of
 #include <string_view>  // for string_view
@@ -149,10 +149,6 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
 
     connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
-    connect(tfEditor_.get(), &TFEditor::importTF, this,
-            [&](auto& primitiveSet) { util::importFromFile(primitiveSet, this); });
-    connect(tfEditor_.get(), &TFEditor::exportTF, this,
-            [&](auto& primitiveSet) { util::exportToFile(primitiveSet, this); });
 
     connect(tfEditor_.get(), &TFEditor::updateBegin, this, [&]() { ongoingUpdate_ = true; });
     connect(tfEditor_.get(), &TFEditor::updateEnd, this, [&]() {

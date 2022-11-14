@@ -50,6 +50,7 @@
 #include <inviwo/core/util/raiiutils.h>                     // for KeepTrueWhileInScope
 #include <inviwo/core/util/rendercontext.h>                 // for RenderContext
 #include <inviwo/core/util/staticstring.h>                  // for operator+
+#include <inviwo/core/util/document.h>                      // for Document
 #include <modules/basegl/viewmanager.h>                     // for ViewManager, ViewManager::View
 #include <modules/opengl/inviwoopengl.h>                    // for GL_ALWAYS
 #include <modules/opengl/openglutils.h>                     // for DepthFuncState
@@ -83,14 +84,15 @@ const ProcessorInfo ImagePlotProcessor::processorInfo_{
     "Plotting",                       // Category
     CodeState::Stable,                // Code state
     "GL, Plotting",                   // Tags
-};
+    "Renders a given image as a 2D plot with x and y axis."_help};
 const ProcessorInfo ImagePlotProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ImagePlotProcessor::ImagePlotProcessor()
     : Processor()
-    , imgInport_("image", true)
-    , bgInport_("bg")
-    , outport_("outport")
+    , imgInport_("image", "This image is rendered into the plotting area"_help,
+                 OutportDeterminesSize::Yes)
+    , bgInport_("bg", "Optional background image"_help)
+    , outport_("outport", "Output image of the plot"_help)
     , margins_("margins", "Margins", 5.0f, 5.0f, 30.0f, 50.0f)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 100.0f)
     , rangeMode_("rangeMode", "Axis Range Mode",

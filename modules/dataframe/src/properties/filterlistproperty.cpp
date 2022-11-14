@@ -161,7 +161,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
                 {"greater", "greater (>)", filters::NumberComp::Greater},
                 {"greaterEqual", "Greater Equal (>=)", filters::NumberComp::GreaterEqual}});
         detail::addProperty<Int64Property>(*intItem, "value", "Value", 0,
-                                           std::numeric_limits<int64_t>::min(),
+                                           std::numeric_limits<int64_t>::lowest(),
                                            std::numeric_limits<int64_t>::max(), 1);
 
         addPrefab(std::move(intItem));
@@ -194,7 +194,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
                                          std::numeric_limits<int>::max(), 1);
 
         detail::addProperty<Int64MinMaxProperty>(*intRange, "range", "Integer Range", 0, 100,
-                                                 std::numeric_limits<int64_t>::min(),
+                                                 std::numeric_limits<int64_t>::lowest(),
                                                  std::numeric_limits<int64_t>::max(), 1, 0);
 
         addPrefab(std::move(intRange));

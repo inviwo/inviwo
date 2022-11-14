@@ -95,13 +95,13 @@ void MeshGL::update(bool editable) {
 
     bufferArray_.bind();
     Mesh* owner = this->getOwner();
-    // update all buffers except index buffers, i.e. position, color, normals, etc.)
+    // update all buffers except index buffers
     for (auto buf : owner->getBuffers()) {
         const BufferGL* bufGL = editable ? buf.second->getEditableRepresentation<BufferGL>()
                                          : buf.second->getRepresentation<BufferGL>();
         bufferGLs_.push_back(bufGL);
-        bufferArray_.attachBufferObject(bufGL->getBufferObject().get(),
-                                        static_cast<GLuint>(buf.first.location));
+        bufferArray_.attachBufferObjectEnforce(bufGL->getBufferObject().get(),
+                                               static_cast<GLuint>(buf.first.location));
     }
     bufferArray_.unbind();
     // update index buffers

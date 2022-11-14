@@ -181,7 +181,12 @@ VolumeAxis::VolumeAxis()
     , rangeXaxis_{"rangeX", "X Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
     , rangeYaxis_{"rangeY", "Y Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
     , rangeZaxis_{"rangeZ", "Z Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
-
+    , captionType_("captionType", "Caption Type",
+                   {{"string", "Caption String", CaptionType::String},
+                    {"data", "Caption from Data", CaptionType::Data},
+                    {"custom", "Custom Format (example '{n}{u: [}')", CaptionType::Custom}},
+                   0)
+    , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
     , visibility_{"visibility", "Axis Visibility", true}
     , presets_{"visibilityPresets",
                "Presets",
@@ -213,6 +218,7 @@ VolumeAxis::VolumeAxis()
     , trackball_{&camera_}
     , axisRenderers_{{xAxis_, yAxis_, zAxis_}}
     , propertyUpdate_{false} {
+
     imageInport_.setOptional(true);
 
     addPorts(inport_, imageInport_, outport_);
@@ -254,8 +260,8 @@ VolumeAxis::VolumeAxis()
     }
 
     axisStyle_.registerProperties(xAxis_, yAxis_, zAxis_);
-    addProperties(axisOffset_, rangeMode_, customRanges_, visibility_, axisStyle_, xAxis_, yAxis_,
-                  zAxis_, camera_, trackball_);
+    addProperties(axisOffset_, rangeMode_, customRanges_, captionType_, customCaption_, visibility_,
+                  axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
 
     axisStyle_.setCollapsed(true);
     visibility_.setCollapsed(true);
@@ -296,8 +302,18 @@ VolumeAxis::VolumeAxis()
     rangeYaxis_.onChange(linkAxisRanges(rangeYaxis_, yAxis_.range_));
     rangeZaxis_.onChange(linkAxisRanges(rangeZaxis_, zAxis_.range_));
 
+    captionType_.onChange([this]() { updateCaptions(); });
+    customCaption_.onChange([this]() {
+        if (captionType_.get() == CaptionType::Custom) {
+            updateCaptions();
+        }
+    });
+
     // adjust axis ranges when input volume, i.e. its basis, changes
-    inport_.onChange([this]() { adjustRanges(); });
+    inport_.onChange([&]() {
+        adjustRanges();
+        updateCaptions();
+    });
     // sync ranges when custom range is enabled or disabled
     rangeMode_.onChange([this]() { adjustRanges(); });
 
@@ -317,20 +333,29 @@ void VolumeAxis::process() {
     const auto volume = inport_.getData();
     const dmat4 m = volume->getCoordinateTransformer().getDataToModelMatrix();
     const dmat3 nm = glm::transpose(glm::inverse(m));
-    const double offset = axisOffset_.get() / 100;
+    // the mean length of the three basis vectors is used for a relative axis offset (%)
+    const double offset =
+        axisOffset_.get() / 100 *
+        (glm::length(dvec3(m[0])) + glm::length(dvec3(m[1])) + glm::length(dvec3(m[2]))) / 3.0;
 
     const auto render = [&](const util::AxisParams& axis, size_t axisIdx) {
         const dvec3 center{0.5, 0.5, 0.5};
-        const auto offsetDir = glm::normalize(axis.start - center + axis.stop - center);
-        const vec3 start{m * dvec4(axis.start + offset * offsetDir, 1)};
-        const vec3 stop{m * dvec4(axis.stop + offset * offsetDir, 1)};
+        const auto offsetDir =
+            glm::normalize(dmat3(m) * glm::normalize(axis.start - center + axis.stop - center));
+        const vec3 start{dvec3{m * dvec4(axis.start, 1)} + offset * offsetDir};
+        const vec3 stop{dvec3{m * dvec4(axis.stop, 1)} + offset * offsetDir};
         const vec3 tickDir{nm * axis.tickDir};
-        axisRenderers_[axisIdx].render(&camera_.get(), dims, start, stop, tickDir);
+        axisRenderers_[axisIdx].render(&camera_.get(), volume->getWorldMatrix(), dims, start, stop,
+                                       tickDir);
     };
 
     if (visibility_.isChecked()) {  // automatic selection
+        // transform camera to data space since findAxisPositions uses a uniform cube centered at
+        // the origin to determine the visible faces
+        const mat4 trafo{volume->getCoordinateTransformer().getWorldToDataMatrix()};
         const auto axes =
-            util::findAxisPositions(glm::normalize(camera_.getLookFrom() - camera_.getLookTo()));
+            util::findAxisPositions(glm::normalize(vec3(trafo * vec4(camera_.getLookFrom(), 1.0f)) -
+                                                   vec3(trafo * vec4(camera_.getLookTo(), 1.0f))));
         for (auto&& [i, axis] : util::enumerate(axes)) {
             render(axis, i);
         }
@@ -413,6 +438,37 @@ void VolumeAxis::adjustRanges() {
     util::updateDefaultState(zAxis_.captionSettings_.title_, zCaption, util::OverwriteState::No);
 
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
+}
+
+void VolumeAxis::updateCaptions() {
+    switch (captionType_.get()) {
+        case CaptionType::Data:
+            if (auto volume = inport_.getData()) {
+                xAxis_.captionSettings_.title_.set(
+                    fmt::format("{}{: [}", volume->axes[0].name, volume->axes[0].unit));
+                yAxis_.captionSettings_.title_.set(
+                    fmt::format("{}{: [}", volume->axes[1].name, volume->axes[1].unit));
+                zAxis_.captionSettings_.title_.set(
+                    fmt::format("{}{: [}", volume->axes[2].name, volume->axes[2].unit));
+            }
+            break;
+        case CaptionType::Custom:
+            if (auto volume = inport_.getData()) {
+                xAxis_.captionSettings_.title_.set(
+                    fmt::format(customCaption_.get(), fmt::arg("n", volume->axes[0].name),
+                                fmt::arg("u", volume->axes[0].unit)));
+                yAxis_.captionSettings_.title_.set(
+                    fmt::format(customCaption_.get(), fmt::arg("n", volume->axes[1].name),
+                                fmt::arg("u", volume->axes[1].unit)));
+                zAxis_.captionSettings_.title_.set(
+                    fmt::format(customCaption_.get(), fmt::arg("n", volume->axes[2].name),
+                                fmt::arg("u", volume->axes[2].unit)));
+            }
+            break;
+        case CaptionType::String:
+        default:
+            break;
+    }
 }
 
 }  // namespace plot

@@ -34,6 +34,8 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/datastructures/isovaluecollection.h>
 
 namespace inviwo {
 
@@ -55,6 +57,13 @@ public:
                           DataReaderType<T>, /* Parent class */
                           setOption,         /* Name of function in C++ (must match Python name) */
                           key, value         /* Argument(s) */
+        );
+    }
+    virtual std::any getOption(std::string_view key) override {
+        PYBIND11_OVERRIDE(std::any,          /* Return type */
+                          DataReaderType<T>, /* Parent class */
+                          getOption,         /* Name of function in C++ (must match Python name) */
+                          key                /* Argument(s) */
         );
     }
     virtual std::shared_ptr<T> readData(std::string_view filePath) override {
@@ -92,7 +101,22 @@ void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string
                  DataReaderFactory::getReaderForTypeAndExtension<T>)
         .def(fmt::format("has{}Reader", type).c_str(),
              (bool (DataReaderFactory::*)(std::string_view) const) &
-                 DataReaderFactory::hasReaderForTypeAndExtension<T>);
+                 DataReaderFactory::hasReaderForTypeAndExtension<T>)
+        .def(fmt::format("has{}Reader", type).c_str(),
+             (bool (DataReaderFactory::*)(const FileExtension&) const) &
+                 DataReaderFactory::hasReaderForTypeAndExtension<T>)
+        .def(fmt::format("read{}", type).c_str(),
+             &DataReaderFactory::readDataForTypeAndExtension<T>);
+}
+
+template <typename T>
+void exposeReaderType(pybind11::module& m, std::string_view name) {
+    namespace py = pybind11;
+    py::class_<DataReaderType<T>, DataReader, DataReaderTypeTrampoline<T>>(
+        m, fmt::format("{}DataReader", name).c_str())
+        .def("readData", py::overload_cast<std::string_view>(&DataReaderType<T>::readData))
+        .def("readData",
+             py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<T>::readData));
 }
 
 void exposeDataReaders(pybind11::module& m) {
@@ -106,26 +130,8 @@ void exposeDataReaders(pybind11::module& m) {
         .def("setOption", &DataReader::setOption)
         .def("getOption", &DataReader::getOption);
 
-    // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#binding-classes-with-template-parameters
-    py::class_<DataReaderType<Image>, DataReader, DataReaderTypeTrampoline<Image>>(
-        m, "ImageDataReader")
-        .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Image>::readData))
-        .def("readData",
-             py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Image>::readData));
-    py::class_<DataReaderType<Mesh>, DataReader, DataReaderTypeTrampoline<Mesh>>(m,
-                                                                                 "MeshDataReader")
-        .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Mesh>::readData))
-        .def("readData",
-             py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<Mesh>::readData));
-    py::class_<DataReaderType<Volume>, DataReader, DataReaderTypeTrampoline<Volume>>(
-        m, "VolumeDataReader")
-        .def("readData", py::overload_cast<std::string_view>(&DataReaderType<Volume>::readData))
-        .def("readData", py::overload_cast<std::string_view, MetaDataOwner*>(
-                             &DataReaderType<Volume>::readData));
-
     auto fr =
         py::class_<DataReaderFactory>(m, "DataReaderFactory")
-            .def(py::init<>())
             .def("create",
                  (std::unique_ptr<DataReader>(DataReaderFactory::*)(const FileExtension&) const) &
                      DataReaderFactory::create)
@@ -136,13 +142,25 @@ void exposeDataReaders(pybind11::module& m) {
                  (bool (DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
             .def("hasKey", (bool (DataReaderFactory::*)(const FileExtension&) const) &
                                DataReaderFactory::hasKey);
+
     // No good way of dealing with template return types so we manually define one for each known
-    // type.
-    // https://github.com/pybind/pybind11/issues/1667#issuecomment-454348004
+    // type. https://github.com/pybind/pybind11/issues/1667#issuecomment-454348004
     // If your module exposes a new reader type it will have to bind getXXXReader.
+
+    exposeReaderType<Image>(m, "Image");
     exposeFactoryReaderType<Image>(fr, "Image");
+
+    exposeReaderType<Mesh>(m, "Mesh");
     exposeFactoryReaderType<Mesh>(fr, "Mesh");
+
+    exposeReaderType<Volume>(m, "Volume");
     exposeFactoryReaderType<Volume>(fr, "Volume");
+
+    exposeReaderType<TransferFunction>(m, "TransferFunction");
+    exposeFactoryReaderType<TransferFunction>(fr, "TransferFunction");
+
+    exposeReaderType<IsoValueCollection>(m, "IsoValueCollection");
+    exposeFactoryReaderType<IsoValueCollection>(fr, "IsoValueCollection");
 }
 
 }  // namespace inviwo

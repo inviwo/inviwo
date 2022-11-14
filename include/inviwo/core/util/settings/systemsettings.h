@@ -49,6 +49,7 @@ public:
     SystemSettings(InviwoApplication* app);
     virtual ~SystemSettings();
     StringProperty workspaceAuthor_;
+    IntProperty maxNumRecentFiles_;
     IntSizeTProperty poolSize_;
     BoolProperty enablePortInspectors_;
     IntProperty portInspectorSize_;

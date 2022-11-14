@@ -85,6 +85,7 @@ namespace plot {
 class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
 public:
     enum class AxisRangeMode { VolumeDims, VolumeBasis, VolumeBasisOffset, Custom };
+    enum class CaptionType { String, Data, Custom };
 
     VolumeAxis();
     virtual ~VolumeAxis() = default;
@@ -96,6 +97,7 @@ public:
 
 private:
     void adjustRanges();
+    void updateCaptions();
 
     VolumeInport inport_;
     ImageInport imageInport_;
@@ -109,6 +111,9 @@ private:
     DoubleMinMaxProperty rangeXaxis_;
     DoubleMinMaxProperty rangeYaxis_;
     DoubleMinMaxProperty rangeZaxis_;
+
+    OptionProperty<CaptionType> captionType_;
+    StringProperty customCaption_;
 
     BoolCompositeProperty visibility_;
     OptionPropertyString presets_;

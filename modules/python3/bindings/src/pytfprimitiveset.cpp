@@ -209,8 +209,8 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
             })
         .def("clearMask", &TransferFunction::clearMask)
         .def("sample", [](TransferFunction& tf, double v) -> vec4 { return tf.sample(v); })
-        .def("save", [](TransferFunction& tf, std::string filename) { tf.save(filename); })
-        .def("load", [](TransferFunction& tf, std::string filename) { tf.load(filename); })
+        .def_static("save", &TransferFunction::save)
+        .def_static("load", &TransferFunction::load)
         .def("__repr__", [](const TransferFunction& tf) {
             std::ostringstream oss;
             oss << "<TransferFunction:  " << tf.size() << " points";
@@ -233,8 +233,8 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
                  return tf;
              }),
              py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative)
-        .def("save", [](IsoValueCollection& ivc, std::string filename) { ivc.save(filename); })
-        .def("load", [](IsoValueCollection& ivc, std::string filename) { ivc.load(filename); })
+        .def_static("save", &IsoValueCollection::save)
+        .def_static("load", &IsoValueCollection::load)
         .def("__repr__", [](const IsoValueCollection& ivc) {
             std::ostringstream oss;
             oss << "<IsoValueCollection:  " << ivc.size() << " isovalues";

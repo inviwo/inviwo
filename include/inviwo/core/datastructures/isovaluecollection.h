@@ -53,14 +53,8 @@ public:
     IsoValueCollection& operator=(const IsoValueCollection& rhs) = default;
     virtual ~IsoValueCollection() = default;
 
-    virtual std::vector<FileExtension> getSupportedExtensions() const override;
-
-    virtual void save(const std::string& filename,
-                      const FileExtension& ext = FileExtension()) const override;
-    virtual void load(const std::string& filename,
-                      const FileExtension& ext = FileExtension()) override;
-
-    virtual std::string_view getTitle() const override;
+    static IsoValueCollection load(std::string_view path);
+    static void save(const IsoValueCollection& tf, std::string_view path);
 
 protected:
     virtual std::string_view serializationKey() const override;

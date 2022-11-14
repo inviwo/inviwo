@@ -271,6 +271,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
             for (auto d : data) ss << d;
 
             auto app = propertyOwner_->getInviwoApplication();
+            RenderContext::getPtr()->activateDefaultRenderContext();
             try {
                 auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
                 std::unique_ptr<Processor> propertyOwner;
@@ -719,9 +720,9 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
 
         util::OnScopeExit freeOldLayout([&]() {
             // get rid of previous property widget and layout
-            auto parentLayout = [&layoutWidget]() -> QLayout* {
-                if (layoutWidget->parentWidget()) {
-                    return layoutWidget->parentWidget()->layout();
+            auto parentLayout = [&]() -> QLayout* {
+                if (propertyWidgetGroup_->parentWidget()) {
+                    return propertyWidgetGroup_->parentWidget()->layout();
                 } else {
                     return nullptr;
                 }

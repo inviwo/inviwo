@@ -31,9 +31,10 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/spatialdata.h>
-#include <inviwo/core/util/document.h>
 
 namespace inviwo {
+
+class Document;
 
 enum class LightSourceType { area = 0, cone, point, directional };
 
@@ -96,7 +97,7 @@ public:
 
     virtual Document getInfo() const;
 
-    static const uvec3 colorCode;
+    static uvec3 colorCode;
     static const std::string classIdentifier;
     static const std::string dataName;
 

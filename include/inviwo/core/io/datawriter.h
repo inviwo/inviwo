@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <ios>
+#include <any>
 
 namespace inviwo {
 
@@ -51,6 +52,8 @@ public:
     DataWriter();
     DataWriter(const DataWriter& rhs);
     DataWriter& operator=(const DataWriter& that);
+    DataWriter(DataWriter&& rhs) noexcept = default;
+    DataWriter& operator=(DataWriter&& that) noexcept = default;
     virtual DataWriter* clone() const = 0;
     virtual ~DataWriter() = default;
 
@@ -71,6 +74,25 @@ public:
      * @throws DataWriterException if the condition is broken.
      */
     void checkOverwrite(std::string_view path) const;
+
+    /**
+     * @brief Set writer specific options
+     * See the documentation of the specific writer for the available options
+     * @param key the option to set
+     * @param value the new value for the option
+     * @return true if the option was recognized and set, otherwise false
+     */
+    virtual bool setOption([[maybe_unused]] std::string_view key, [[maybe_unused]] std::any value) {
+        return false;
+    }
+
+    /**
+     * @brief Query the value of a writer specific option
+     * @param key the option to query
+     * @return an std::any with the requested option or an empty std::any if the option was not
+     * found
+     */
+    virtual std::any getOption([[maybe_unused]] std::string_view key) const { return std::any{}; }
 
 protected:
     /**
@@ -97,6 +119,8 @@ public:
     DataWriterType() = default;
     DataWriterType(const DataWriterType& rhs) = default;
     DataWriterType& operator=(const DataWriterType& that) = default;
+    DataWriterType(DataWriterType&& rhs) noexcept = default;
+    DataWriterType& operator=(DataWriterType&& that) noexcept = default;
     virtual DataWriterType* clone() const = 0;
     virtual ~DataWriterType() = default;
 

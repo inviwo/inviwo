@@ -30,21 +30,20 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/io/datawriterexception.h>
-#include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/io/datareader.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/io/datawriterfactory.h>
+
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/interpolation.h>
-#include <inviwo/core/util/filesystem.h>
+
+#include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/zip.h>
 
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/io/datawriterfactory.h>
+
 #include <cmath>
+#include <streambuf>
 
 namespace inviwo {
 
@@ -95,6 +94,11 @@ const Layer* TransferFunction::getData() const {
     return data_.get();
 }
 
+const LayerRAMPrecision<vec4>* TransferFunction::getRamRepresentation() const {
+    if (invalidData_) calcTransferValues();
+    return dataRepr_.get();
+}
+
 size_t TransferFunction::getTextureSize() const { return dataRepr_->getDimensions().x; }
 
 void TransferFunction::setMaskMin(double maskMin) {
@@ -137,87 +141,6 @@ void TransferFunction::deserialize(Deserializer& d) {
 vec4 TransferFunction::sample(double v) const { return interpolateColor(v); }
 
 vec4 TransferFunction::sample(float v) const { return interpolateColor(v); }
-
-std::vector<FileExtension> TransferFunction::getSupportedExtensions() const {
-    return {{"itf", "Inviwo Transfer Function"}, {"png", "Transfer Function Image"}};
-}
-
-void TransferFunction::save(const std::string& filename, const FileExtension& ext) const {
-    std::string extension = toLower(filesystem::getFileExtension(filename));
-
-    if (ext.extension_ == "itf" || (ext.empty() && extension == "itf")) {
-        Serializer serializer(filename);
-        serialize(serializer);
-        serializer.writeFile();
-    } else {
-        if (invalidData_) calcTransferValues();
-
-        // Convert layer to UINT8
-        auto uint8DataRepr =
-            std::make_shared<LayerRAMPrecision<glm::u8vec4>>(dataRepr_->getDimensions());
-        auto unit8Data = std::make_unique<Layer>(uint8DataRepr);
-
-        const auto size = glm::compMul(dataRepr_->getDimensions());
-        const auto sptr = dataRepr_->getDataTyped();
-        const auto dptr = uint8DataRepr->getDataTyped();
-
-        for (size_t i = 0; i < size; ++i) {
-            dptr[i] =
-                static_cast<glm::u8vec4>(glm::clamp(sptr[i] * 255.0f, vec4(0.0f), vec4(255.0f)));
-        }
-
-        auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
-        auto writer = factory->getWriterForTypeAndExtension<Layer>(ext);
-        if (!writer) {
-            writer = factory->getWriterForTypeAndExtension<Layer>(extension);
-        }
-        if (!writer) {
-            throw DataWriterException("Data writer not found for requested format", IVW_CONTEXT);
-        }
-        writer->setOverwrite(Overwrite::Yes);
-        writer->writeData(unit8Data.get(), filename);
-    }
-}
-
-void TransferFunction::load(const std::string& filename, const FileExtension& ext) {
-    if (ext.extension_ == "itf" ||
-        (ext.empty() && iCaseCmp(filesystem::getFileExtension(filename), "itf"))) {
-        Deserializer deserializer(filename);
-        deserialize(deserializer);
-    } else {
-        auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
-        auto reader = factory->getReaderForTypeAndExtension<Layer>(ext, filename);
-        if (!reader) {
-            throw DataReaderException("Data reader not found for requested format", IVW_CONTEXT);
-        }
-        const auto layer = reader->readData(filename);
-
-        clear();
-
-        layer->getRepresentation<LayerRAM>()->dispatch<void>([this](auto lrprecision) {
-            auto data = lrprecision->getDataTyped();
-            const auto size = lrprecision->getDimensions().x;
-
-            const auto points = [&]() {
-                std::vector<TFPrimitiveData> tmp;
-                for (size_t i = 0; i < size; ++i) {
-                    tmp.push_back({static_cast<double>(i) / (size - 1),
-                                   util::glm_convert_normalized<vec4>(data[i])});
-                }
-
-                if (std::all_of(tmp.cbegin(), tmp.cend(),
-                                [](const TFPrimitiveData& p) { return p.color.a == 0.0f; })) {
-                    std::for_each(tmp.begin(), tmp.end(),
-                                  [](TFPrimitiveData& p) { return p.color.a = 1.0f; });
-                }
-                return tmp;
-            }();
-
-            const auto simplified = simplify(points, 0.01);
-            this->add(simplified);
-        });
-    }
-}
 
 std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrimitiveData>& points,
                                                         double delta) {
@@ -270,8 +193,6 @@ void TransferFunction::calcTransferValues() const {
     invalidData_ = false;
 }
 
-std::string_view TransferFunction::getTitle() const { return "Transfer Function"; }
-
 std::string_view TransferFunction::serializationKey() const { return "Points"; }
 
 std::string_view TransferFunction::serializationItemKey() const { return "Point"; }
@@ -285,6 +206,25 @@ bool operator==(const TransferFunction& lhs, const TransferFunction& rhs) {
 
 bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs) {
     return !operator==(lhs, rhs);
+}
+
+TransferFunction TransferFunction::load(std::string_view path) {
+    auto factory = util::getDataReaderFactory();
+
+    if (auto tf = factory->readDataForTypeAndExtension<TransferFunction>(path)) {
+        return *tf;
+    } else {
+        throw Exception(IVW_CONTEXT_CUSTOM("TransferFunction"),
+                        "Unable to load TransferFunction from {}", path);
+    }
+}
+void TransferFunction::save(const TransferFunction& tf, std::string_view path) {
+    auto factory = util::getDataWriterFactory();
+
+    if (!factory->writeDataForTypeAndExtension(&tf, path)) {
+        throw Exception(IVW_CONTEXT_CUSTOM("TransferFunction"),
+                        "Unable to save TransferFunction to {}", path);
+    }
 }
 
 }  // namespace inviwo
