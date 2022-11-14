@@ -63,10 +63,9 @@ private:
 
     Observer compositeDirObserver_;
     std::unordered_set<std::string> addedCompositeFiles_;
-    
+
     TransferFunctionLayerWriterWrapper tfLayerWriters_;
     TransferFunctionLayerReaderWrapper tfLayerReaders_;
-    
 };
 
 }  // namespace inviwo

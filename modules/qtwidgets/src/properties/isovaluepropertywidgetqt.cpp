@@ -101,7 +101,7 @@ std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
         NetworkLock lock(property_);
         static_cast<IsoValueProperty*>(property_)->get().clear();
     });
-    
+
     menu->addSeparator();
 
     auto importIso = menu->addAction("&Import Isovalues...");

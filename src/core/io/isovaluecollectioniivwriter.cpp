@@ -31,7 +31,6 @@
 
 namespace inviwo {
 
-
 IsoValueCollectionIIVWriter::IsoValueCollectionIIVWriter() {
     addExtension({"iiv", "Inviwo Isovalues"});
 }
@@ -41,7 +40,7 @@ IsoValueCollectionIIVWriter* IsoValueCollectionIIVWriter::clone() const {
 };
 
 void IsoValueCollectionIIVWriter::writeData(const IsoValueCollection* data,
-                                          std::string_view filePath) const {
+                                            std::string_view filePath) const {
     Serializer serializer(filePath);
     data->serialize(serializer);
     serializer.writeFile();

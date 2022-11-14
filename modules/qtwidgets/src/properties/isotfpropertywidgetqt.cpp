@@ -109,15 +109,15 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
         p->tf_.get().clear();
         p->isovalues_.get().clear();
     });
-    
+
     menu->addSeparator();
 
     util::addTFPresetsMenu(this, menu.get(), &static_cast<IsoTFProperty*>(property_)->tf_);
     util::addTFColorbrewerPresetsMenu(this, menu.get(),
                                       &static_cast<IsoTFProperty*>(property_)->tf_);
-    
+
     menu->addSeparator();
-    
+
     auto importMenu = menu->addMenu("&Import");
     auto exportMenu = menu->addMenu("&Export");
     importMenu->setEnabled(!property_->getReadOnly());

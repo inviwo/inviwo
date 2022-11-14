@@ -354,7 +354,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
     };
 
     auto generateN = [property](colorbrewer::Category category, colorbrewer::Family family,
-                         bool discrete) {
+                                bool discrete) {
         return [category, family, discrete, property]() {
             GenerateNDialog dialog;
             if (category != colorbrewer::Category::Diverging) {

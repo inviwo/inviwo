@@ -209,7 +209,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
             })
         .def("clearMask", &TransferFunction::clearMask)
         .def("sample", [](TransferFunction& tf, double v) -> vec4 { return tf.sample(v); })
-        .def_static("save",  &TransferFunction::save)
+        .def_static("save", &TransferFunction::save)
         .def_static("load", &TransferFunction::load)
         .def("__repr__", [](const TransferFunction& tf) {
             std::ostringstream oss;
@@ -233,7 +233,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
                  return tf;
              }),
              py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative)
-        .def_static("save",  &IsoValueCollection::save)
+        .def_static("save", &IsoValueCollection::save)
         .def_static("load", &IsoValueCollection::load)
         .def("__repr__", [](const IsoValueCollection& ivc) {
             std::ostringstream oss;

@@ -773,9 +773,8 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         if (tfPropertyPtr_->hasTF()) {
             auto importTF = menu.addAction("&Import TF...");
             auto exportTF = menu.addAction("&Export TF...");
-            connect(importTF, &QAction::triggered, this, [this]() {
-                tfPropertyPtr_->showImportDialog();
-            });
+            connect(importTF, &QAction::triggered, this,
+                    [this]() { tfPropertyPtr_->showImportDialog(); });
             connect(exportTF, &QAction::triggered, this,
                     [this]() { tfPropertyPtr_->showExportDialog(); });
             menu.addSeparator();
@@ -786,7 +785,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             connect(importTF, &QAction::triggered, this,
                     [this]() { tfPropertyPtr_->showImportDialog(); });
             connect(exportTF, &QAction::triggered, this,
-                    [this]() {tfPropertyPtr_->showExportDialog(); });
+                    [this]() { tfPropertyPtr_->showExportDialog(); });
         }
     }
 
