@@ -77,19 +77,19 @@ public:
 
     /**
      * @brief Set writer specific options
-     * See the documentation of the specific writer about which options that are available
+     * See the documentation of the specific writer for the available options
      * @param key the option to set
      * @param value the new value for the option
-     * @return true of the option was recognized and set, otherwise false
+     * @return true if the option was recognized and set, otherwise false
      */
     virtual bool setOption([[maybe_unused]] std::string_view key, [[maybe_unused]] std::any value) {
         return false;
     }
 
     /**
-     * @brief Query the value of an writer specific option
+     * @brief Query the value of a writer specific option
      * @param key the option to query
-     * @return an std::any with the requested option of an empty std::any of the option was not
+     * @return an std::any with the requested option or an empty std::any if the option was not
      * found
      */
     virtual std::any getOption([[maybe_unused]] std::string_view key) const { return std::any{}; }

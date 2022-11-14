@@ -62,7 +62,7 @@ public:
 
 private:
     DataReaderFactory* factory_;
-    std::unordered_map<DataReaderType<Layer>*, std::unique_ptr<TransferFunctionLayerReader>>
+    std::unordered_map<DataReaderType<Layer>*, std::shared_ptr<TransferFunctionLayerReader>>
         layerToTFMap_;
 };
 

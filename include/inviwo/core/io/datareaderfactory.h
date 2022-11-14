@@ -127,6 +127,7 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
         }
     }
 
+    // Select the match with the longest extension, for example select tar.gz over gz
     if (auto it = std::max_element(candidates.begin(), candidates.end(),
                                    [](const auto& a, const auto& b) { return a.first < b.first; });
         it != candidates.end()) {

@@ -61,7 +61,7 @@ public:
 
 private:
     DataWriterFactory* factory_;
-    std::unordered_map<DataWriterType<Layer>*, std::unique_ptr<TransferFunctionLayerWriter>>
+    std::unordered_map<DataWriterType<Layer>*, std::shared_ptr<TransferFunctionLayerWriter>>
         layerToTFMap_;
 };
 
