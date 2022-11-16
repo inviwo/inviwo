@@ -260,10 +260,9 @@ ImagePlotProcessor::ImageBounds ImagePlotProcessor::calcImageBounds(const size2_
     ivec2 upperRight(dims.x - 1 - (margins_.getRight() + padding),
                      dims.y - 1 - (margins_.getTop() + padding));
 
-    // ensure positive extent
+    // ensure positive extent and minimum extent of (1,1)
     upperRight = glm::max(upperRight, lowerLeft);
-
-    return {lowerLeft, size2_t{upperRight - lowerLeft}};
+    return {lowerLeft, glm::max(size2_t{upperRight - lowerLeft}, size2_t{1u})};
 }
 
 void ImagePlotProcessor::adjustRanges() {
