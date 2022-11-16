@@ -331,7 +331,7 @@ void VolumeAxis::process() {
 
     const auto dims = outport_.getDimensions();
     const auto volume = inport_.getData();
-    const dmat4 m = volume->getCoordinateTransformer().getDataToModelMatrix();
+    const dmat4 m = volume->getCoordinateTransformer().getDataToWorldMatrix();
     const dmat3 nm = glm::transpose(glm::inverse(m));
     // the mean length of the three basis vectors is used for a relative axis offset (%)
     const double offset =
