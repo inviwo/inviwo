@@ -333,7 +333,8 @@ std::ostream& operator<<(std::ostream& ss, const Document& doc) {
     doc.visit(
         [&](Element* elem, std::vector<Element*>& stack) {
             if (elem->isNode()) {
-                ss << std::setw(stack.size() * 4) << ' ' << '<' << elem->name();
+                ss << std::setw(static_cast<int>(static_cast<int>(stack.size() * 4))) << ' ' << '<'
+                   << elem->name();
                 for (const auto& item : elem->attributes()) {
                     ss << ' ' << item.first << "='" << item.second << '\'';
                 }
@@ -341,7 +342,8 @@ std::ostream& operator<<(std::ostream& ss, const Document& doc) {
                 if (!elem->noIndent()) ss << '\n';
             } else if (elem->isText() && !elem->content().empty()) {
                 if (!stack.empty() && !stack.back()->noIndent()) {
-                    ss << std::setw(stack.size() * 4) << ' ' << elem->content() << '\n';
+                    ss << std::setw(static_cast<int>(stack.size() * 4)) << ' ' << elem->content()
+                       << '\n';
                 } else if (!stack.empty() && stack.back()->noIndent()) {
                     ss << elem->content();
                 } else {
@@ -352,7 +354,8 @@ std::ostream& operator<<(std::ostream& ss, const Document& doc) {
         [&](Element* elem, std::vector<Element*>& stack) {
             if (elem->isNode() && !elem->emptyTag()) {
                 if (!elem->noIndent()) {
-                    ss << std::setw(stack.size() * 4) << ' ' << "</" << elem->name() << ">\n";
+                    ss << std::setw(static_cast<int>(stack.size() * 4)) << ' ' << "</"
+                       << elem->name() << ">\n";
                 } else {
                     ss << "</" << elem->name() << ">\n";
                 }

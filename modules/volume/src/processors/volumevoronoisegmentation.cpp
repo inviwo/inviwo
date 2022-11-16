@@ -110,8 +110,9 @@ void VolumeVoronoiSegmentation::process() {
         }
 
         const auto voronoiVolume = util::voronoiSegmentation(
-            volume->getDimensions(), volume->getCoordinateTransformer().getIndexToModelMatrix(),
-            seedPointsWithIndices, volume->getWrapping(), radii);
+            volume->getDimensions(), volume->getCoordinateTransformer().getIndexToDataMatrix(),
+            volume->getCoordinateTransformer().getDataToModelMatrix(), seedPointsWithIndices,
+            volume->getWrapping(), radii);
 
         voronoiVolume->setModelMatrix(volume->getModelMatrix());
         voronoiVolume->setWorldMatrix(volume->getWorldMatrix());
