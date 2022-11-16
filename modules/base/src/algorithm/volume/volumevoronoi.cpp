@@ -169,12 +169,11 @@ std::shared_ptr<Volume> voronoiSegmentation(
     voronoiVolume->setInterpolation(InterpolationType::Nearest);
     voronoiVolume->setWrapping(wrapping);
 
-    const auto [itMin, itMax] =
-        std::minmax_element(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
-                            [](const auto& a, const auto& b) { return a.first < b.first; });
+    const auto itMax =
+        std::max_element(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
+                         [](const auto& a, const auto& b) { return a.first < b.first; });
 
-    voronoiVolume->dataMap_.dataRange =
-        dvec2{static_cast<double>(itMin->first), static_cast<double>(itMax->first)};
+    voronoiVolume->dataMap_.dataRange = dvec2{0.0, static_cast<double>(itMax->first)};
     voronoiVolume->dataMap_.valueRange = voronoiVolume->dataMap_.dataRange;
 
     std::vector<std::pair<uint32_t, vec3>> dataSeedPointsWithIndices{seedPointsWithIndices.size()};
