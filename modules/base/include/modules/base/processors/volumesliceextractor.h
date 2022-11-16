@@ -54,30 +54,12 @@
 namespace inviwo {
 class Event;
 
-/** \docpage{org.inviwo.VolumeSlice, Volume Slice}
- * ![](org.inviwo.VolumeSlice.png?classIdentifier=org.inviwo.VolumeSlice)
- * This processor extracts an axis aligned 2D slice from an input volume.
- *
- * ### Inports
- *   * __VolumeInport__ The input volume
- *
- * ### Outports
- *   * __ImageOutport__ The extracted volume slice
- *
- * ### Properties
- *   * __sliceAlongAxis_ Defines the volume axis for the output slice
- *   * __sliceNumber_ Defines the slice number for the output slice
- */
-
-/**
- * \brief Outputs a slice from a volume, CPU-based
- */
-class IVW_MODULE_BASE_API VolumeSlice : public Processor {
+class IVW_MODULE_BASE_API VolumeSliceExtractor : public Processor {
 public:
     enum class OutputFormat { AsInput, UInt8, Float32 };
 
-    VolumeSlice();
-    ~VolumeSlice();
+    VolumeSliceExtractor();
+    ~VolumeSliceExtractor();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumeslice.h>
+#include <modules/base/processors/volumesliceextractor.h>
 
 #include <inviwo/core/datastructures/geometry/geometrytype.h>           // for CartesianCoordina...
 #include <inviwo/core/datastructures/image/image.h>                     // for Image
@@ -75,18 +75,19 @@
 namespace inviwo {
 class Event;
 
-const ProcessorInfo VolumeSlice::processorInfo_{"org.inviwo.VolumeSlice",  // Class identifier
-                                                "Volume Slice Extractor",  // Display name
-                                                "Volume Operation",        // Category
-                                                CodeState::Stable,         // Code state
-                                                Tags::CPU,                 // Tags
-                                                R"(
+const ProcessorInfo VolumeSliceExtractor::processorInfo_{
+    "org.inviwo.VolumeSliceExtractor",  // Class identifier
+    "Volume Slice Extractor",  // Display name
+    "Volume Operation",        // Category
+    CodeState::Stable,         // Code state
+    Tags::CPU,                 // Tags
+    R"(
 Extracts an axis aligned 2D slice from an input volume. The input data will be renormalized to either 
 [0,1] for floating point values or [0, max] of the data format using the data mapper of the volume.
 )"_unindentHelp};
-const ProcessorInfo VolumeSlice::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo VolumeSliceExtractor::getProcessorInfo() const { return processorInfo_; }
 
-VolumeSlice::VolumeSlice()
+VolumeSliceExtractor::VolumeSliceExtractor()
     : Processor()
     , inport_("inputVolume", "The input volume"_help)
     , outport_("outputImage", "The extracted volume slice"_help, DataVec4UInt8::get(),
@@ -157,14 +158,14 @@ VolumeSlice::VolumeSlice()
     gestureShiftSlice_.setCurrentStateAsDefault();
 }
 
-VolumeSlice::~VolumeSlice() = default;
+VolumeSliceExtractor::~VolumeSliceExtractor() = default;
 
-void VolumeSlice::invokeEvent(Event* event) {
+void VolumeSliceExtractor::invokeEvent(Event* event) {
     if (!handleInteractionEvents_) return;
     Processor::invokeEvent(event);
 }
 
-void VolumeSlice::shiftSlice(int shift) {
+void VolumeSliceExtractor::shiftSlice(int shift) {
     auto newSlice = static_cast<size_t>(sliceNumber_.get() + shift);
     if (newSlice >= sliceNumber_.getMinValue() && newSlice <= sliceNumber_.getMaxValue()) {
         sliceNumber_.set(newSlice);
@@ -183,6 +184,34 @@ size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) 
             return size2_t(volumeDims.x, volumeDims.z);
         case CartesianCoordinateAxis::Z:
             return size2_t(volumeDims.x, volumeDims.y);
+    }
+}
+
+mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+    const mat3 basis = v->getOwner()->getBasis();
+    switch (axis) {
+        default:
+            return mat2(vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1]));
+        case CartesianCoordinateAxis::X:
+            return mat2(vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1]));
+        case CartesianCoordinateAxis::Y:
+            return mat2(vec2(basis[0][0], basis[0][2]), vec2(basis[2][0], basis[2][2]));
+        case CartesianCoordinateAxis::Z:
+            return mat2(vec2(basis[0][0], basis[0][1]), vec2(basis[1][0], basis[1][1]));
+    }
+}
+
+vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+    const vec3 offset = v->getOwner()->getOffset();
+    switch (axis) {
+        default:
+            return vec2(offset.z, offset.y);
+        case CartesianCoordinateAxis::X:
+            return vec2(offset.z, offset.y);
+        case CartesianCoordinateAxis::Y:
+            return vec2(offset.x, offset.z);
+        case CartesianCoordinateAxis::Z:
+            return vec2(offset.x, offset.y);
     }
 }
 
@@ -225,6 +254,8 @@ std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrpreci
     auto layerrep = res.second;
     auto layerdata = layerrep->getDataTyped();
     layerrep->setSwizzleMask(detail::getSwizzleMask(util::extent<D, 0>::value));
+    sliceImage->getColorLayer()->setBasis(getBasis(vrprecision, state.axis));
+    sliceImage->getColorLayer()->setOffset(getOffset(vrprecision, state.axis));
 
     switch (state.axis) {
         case CartesianCoordinateAxis::X: {
@@ -303,7 +334,7 @@ std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 
 }  // namespace detail
 
-void VolumeSlice::process() {
+void VolumeSliceExtractor::process() {
     auto vol = inport_.getData();
 
     const auto dims(vol->getDimensions());
@@ -369,17 +400,17 @@ void VolumeSlice::process() {
     outport_.setData(image);
 }
 
-void VolumeSlice::eventShiftSlice(Event* event) {
+void VolumeSliceExtractor::eventShiftSlice(Event* event) {
     auto wheelEvent = static_cast<WheelEvent*>(event);
     int steps = static_cast<int>(wheelEvent->delta().y);
     shiftSlice(steps);
 }
 
-void VolumeSlice::eventStepSliceUp(Event*) { shiftSlice(1); }
+void VolumeSliceExtractor::eventStepSliceUp(Event*) { shiftSlice(1); }
 
-void VolumeSlice::eventStepSliceDown(Event*) { shiftSlice(-1); }
+void VolumeSliceExtractor::eventStepSliceDown(Event*) { shiftSlice(-1); }
 
-void VolumeSlice::eventGestureShiftSlice(Event* event) {
+void VolumeSliceExtractor::eventGestureShiftSlice(Event* event) {
     GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
     if (gestureEvent->deltaPos().y < 0)
         shiftSlice(1);
