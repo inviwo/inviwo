@@ -67,7 +67,7 @@ namespace plot {
  */
 class IVW_MODULE_PLOTTINGGL_API ImagePlotProcessor : public Processor {
 public:
-    enum class AxisRangeMode { ImageDims, Custom };
+    enum class AxisRangeMode { ImageDims, ImageBasis, ImageBasisOffset, Custom };
 
     ImagePlotProcessor();
     virtual ~ImagePlotProcessor() = default;

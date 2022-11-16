@@ -43,6 +43,9 @@
 #include <inviwo/core/util/foreacharg.h>                  // for for_each_in_tuple
 #include <inviwo/core/util/formats.h>                     // for DataFormatBase
 #include <inviwo/core/util/stringconversion.h>            // for toString
+#include <inviwo/core/util/glm.h>                         // for filled
+#include <inviwo/core/util/glmmat.h>                      // for mat2
+#include <inviwo/core/util/glmvec.h>                      // for vec2
 
 #include <cstddef>  // for size_t
 #include <limits>   // for numeric_limits<>::type, numeric...
@@ -74,16 +77,33 @@ LayerInformationProperty::LayerInformationProperty(std::string_view identifier,
           "interpolation", "Interpolation",
           "Type of interpolation which is used when sampling the layer for example in OpenGL shaders"_help)
     , wrapping_("wrapping", "Wrapping",
-                "Defines the wrapping of texture coordinates (Clamp, Repeat, or Mirror)"_help) {
+                "Defines the wrapping of texture coordinates (Clamp, Repeat, or Mirror)"_help)
+    , transformations_("transformations", "Transformations")
+    , basis_("basis", "Basis", mat2(1.0f), util::filled<mat2>(std::numeric_limits<float>::lowest()),
+             util::filled<mat2>(std::numeric_limits<float>::max()), util::filled<mat2>(0.001f),
+             InvalidationLevel::Valid)
+    , offset_("offset", "Offset", vec2(0.0f), vec2(std::numeric_limits<float>::lowest()),
+              vec2(std::numeric_limits<float>::max()), vec2(0.001f), InvalidationLevel::Valid,
+              PropertySemantics::Text) {
 
-    util::for_each_in_tuple(
+    util::for_each_argument(
         [&](auto& e) {
             e.setReadOnly(true);
             e.setSerializationMode(PropertySerializationMode::None);
-            e.setCurrentStateAsDefault();
             addProperty(e);
         },
-        std::tie(layerType_, format_, channels_, swizzleMask_, interpolation_, wrapping_));
+        layerType_, format_, channels_, swizzleMask_, interpolation_, wrapping_);
+    addProperty(transformations_);
+    transformations_.setCollapsed(true);
+
+    util::for_each_argument(
+        [&](auto& e) {
+            e.setReadOnly(true);
+            transformations_.addProperty(e);
+        },
+        basis_, offset_);
+
+    setAllPropertiesCurrentStateAsDefault();
 }
 
 LayerInformationProperty::LayerInformationProperty(const LayerInformationProperty& rhs)
@@ -93,9 +113,14 @@ LayerInformationProperty::LayerInformationProperty(const LayerInformationPropert
     , channels_(rhs.channels_)
     , swizzleMask_(rhs.swizzleMask_)
     , interpolation_(rhs.interpolation_)
-    , wrapping_(rhs.wrapping_) {
+    , wrapping_(rhs.wrapping_)
+    , transformations_(rhs.transformations_)
+    , basis_(rhs.basis_)
+    , offset_(rhs.offset_) {
 
-    addProperties(layerType_, format_, channels_, swizzleMask_, interpolation_, wrapping_);
+    addProperties(layerType_, format_, channels_, swizzleMask_, interpolation_, wrapping_,
+                  transformations_);
+    transformations_.addProperties(basis_, offset_);
 }
 
 LayerInformationProperty* LayerInformationProperty::clone() const {
@@ -109,6 +134,8 @@ void LayerInformationProperty::updateFromLayer(const Layer& layer) {
     swizzleMask_.set(toString(layer.getSwizzleMask()));
     interpolation_.set(toString(layer.getInterpolation()));
     wrapping_.set(toString(layer.getWrapping()));
+    basis_.set(layer.getBasis());
+    offset_.set(layer.getOffset());
 }
 
 }  // namespace inviwo
