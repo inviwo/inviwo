@@ -187,6 +187,20 @@ size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) 
     }
 }
 
+Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+    const auto wrapping = v->getOwner()->getWrapping();
+    switch (axis) {
+        default:
+            return {{wrapping[2], wrapping[1]}};
+        case CartesianCoordinateAxis::X:
+            return {{wrapping[2], wrapping[1]}};
+        case CartesianCoordinateAxis::Y:
+            return {{wrapping[0], wrapping[2]}};
+        case CartesianCoordinateAxis::Z:
+            return {{wrapping[0], wrapping[1]}};
+    }
+}
+
 mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const mat3 basis = v->getOwner()->getBasis();
     switch (axis) {
@@ -215,22 +229,6 @@ vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     }
 }
 
-SwizzleMask getSwizzleMask(int channels) {
-    switch (channels) {
-        case 0:  // util::extent<T, 0>::value returns zero for non-glm types
-        case 1:
-            return swizzlemasks::luminance;
-        case 2:
-            return {
-                {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One}};
-        case 3:
-            return swizzlemasks::rgb;
-        default:
-        case 4:
-            return swizzlemasks::rgba;
-    }
-}
-
 struct SliceState {
     CartesianCoordinateAxis axis;
     size_t slice;
@@ -247,13 +245,14 @@ std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrpreci
     const T* voldata = vrprecision->getDataTyped();
     const auto& voldim = vrprecision->getDimensions();
 
-    const auto imgdim = detail::sliceDimensions(voldim, state.axis);
+    const auto imgdim = sliceDimensions(voldim, state.axis);
 
     auto res = state.cache->getTypedUnused<D>(imgdim);
     auto sliceImage = res.first;
     auto layerrep = res.second;
     auto layerdata = layerrep->getDataTyped();
-    layerrep->setSwizzleMask(detail::getSwizzleMask(util::extent<D, 0>::value));
+    layerrep->setSwizzleMask(state.tf ? swizzlemasks::rgba : vrprecision->getSwizzleMask());
+    layerrep->setWrapping(getWrapping(vrprecision, state.axis));
     sliceImage->getColorLayer()->setBasis(getBasis(vrprecision, state.axis));
     sliceImage->getColorLayer()->setOffset(getOffset(vrprecision, state.axis));
 
