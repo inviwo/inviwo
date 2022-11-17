@@ -109,9 +109,28 @@ TEST(VolumeVoronoi, Voronoi_OneSeedPoint_WholeVolumeHasSameIndex) {
     }
 }
 
+/*
+ *
+ *  2 ▲  ┌─────┬─────┬─────┬─────┐
+ *    │  │  1  │  1  │  2  │  2  │
+ *    │ 3│     │     │     │     │
+ *    │  ├─────┼─────┼─────┼─────┤
+ *    │  │  1  │  1  │  2  │  2  │
+ *    │ 2│     │     │     │     │
+ *  0 │  ├─────X─────┼─────Y─────┤
+ *    │  │  1  │  1  │  2  │  2  │
+ *    │ 1│     │     │     │     │
+ *    │  ├─────┼─────┼─────┼─────┤
+ *    │  │  1  │  1  │  2  │  2  │
+ *    │ 0│     │     │     │     │
+ * -2 ┼  └─────┴─────┴─────┴─────┘
+ *         0      1     2     3
+ *       ┼───────────────────────▶
+ *      -2           0           2
+ */
 TEST(VolumeVoronoi, Voronoi_TwoSeedPoints_PartitionsVolumeInTwo) {
-    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{1, 2, 2}},
-                                                               {2, vec3{2, 2, 2}}};
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{-1, 0, 0}},
+                                                               {2, vec3{1, 0, 0}}};
     Entity entity{size3_t{4, 4, 4}};
 
     auto volumeVoronoi = util::voronoiSegmentation(
@@ -135,20 +154,20 @@ TEST(VolumeVoronoi, Voronoi_TwoSeedPoints_PartitionsVolumeInTwo) {
             // First half of volume
             for (size_t x1 = 0; x1 < dim.x / 2; x1++) {
                 const auto val1 = static_cast<unsigned short>(data[im(x1, y, z)]);
-                EXPECT_EQ(val1, seedPoints[0].first);
+                EXPECT_EQ(val1, seedPoints[0].first)  << "pos " << x1 << ", " << y << ", " << z;
             }
             // Second half of volume
             for (size_t x2 = dim.x / 2; x2 < dim.x; x2++) {
                 const auto val2 = static_cast<unsigned short>(data[im(x2, y, z)]);
-                EXPECT_EQ(val2, seedPoints[1].first);
+                EXPECT_EQ(val2, seedPoints[1].first) << "pos " << x2 << ", " << y << ", " << z;
             }
         }
     }
 }
 
 TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInTwoWeightedParts) {
-    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{1, 2, 2}},
-                                                               {2, vec3{2, 2, 2}}};
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{-1, 0, 0}},
+                                                               {2, vec3{1, 0, 0}}};
     Entity entity{size3_t{4, 4, 4}};
 
     auto volumeVoronoi = util::voronoiSegmentation(
@@ -172,12 +191,12 @@ TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInT
             // First part (smaller due to smaller weight)
             for (size_t x1 = 0; x1 < dim.x / 4; x1++) {
                 const auto val1 = static_cast<unsigned short>(data[im(x1, y, z)]);
-                EXPECT_EQ(val1, seedPoints[0].first);
+                EXPECT_EQ(val1, seedPoints[0].first)  << "pos " << x1 << ", " << y << ", " << z;
             }
             // Second part (larger due to larger weight)
             for (size_t x2 = dim.x / 4; x2 < dim.x; x2++) {
                 const auto val2 = static_cast<unsigned short>(data[im(x2, y, z)]);
-                EXPECT_EQ(val2, seedPoints[1].first);
+                EXPECT_EQ(val2, seedPoints[1].first)  << "pos " << x2 << ", " << y << ", " << z;
             }
         }
     }
@@ -185,7 +204,7 @@ TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInT
 
 TEST(VolumeVoronoi, Voronoi_ThreeSeedPoints_PartitionsVolumeInThree) {
     const std::vector<std::pair<uint32_t, vec3>> seedPoints = {
-        {1, vec3{0, 1, 1}}, {2, vec3{1, 1, 1}}, {3, vec3{2, 1, 1}}};
+        {1, vec3{-1.5, 0, 0}}, {2, vec3{0, 0, 0}}, {3, vec3{1.5, 0, 0}}};
     Entity entity{size3_t{3, 3, 3}};
 
     auto volumeVoronoi = util::voronoiSegmentation(
