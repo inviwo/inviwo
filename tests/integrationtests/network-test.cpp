@@ -30,7 +30,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/cubeproxygeometryprocessor.h>
-#include <modules/base/processors/volumeslice.h>
+#include <modules/base/processors/volumesliceextractor.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
@@ -52,7 +52,7 @@ protected:
         auto p2 = network.emplaceProcessor<CubeProxyGeometry>();
         p2->setIdentifier("cubeProxyGeometry");
 
-        auto p3 = network.emplaceProcessor<VolumeSlice>();
+        auto p3 = network.emplaceProcessor<VolumeSliceExtractor>();
         p3->setIdentifier("volumeSlice");
 
         network.addConnection(p1->getOutport("data"), p2->getInport("volume"));
@@ -88,7 +88,8 @@ TEST_F(NetworkTest, NetworkGetProcessorByIdentifier) {
 }
 
 TEST_F(NetworkTest, NetworkGetProcessorByType) {
-    const std::vector<VolumeSlice*> ps = network.getProcessorsByType<VolumeSlice>();
+    const std::vector<VolumeSliceExtractor*> ps =
+        network.getProcessorsByType<VolumeSliceExtractor>();
     ASSERT_EQ(1, ps.size());
     ASSERT_TRUE(ps[0] != nullptr);
 }
