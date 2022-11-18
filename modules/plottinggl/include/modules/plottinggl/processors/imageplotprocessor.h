@@ -81,7 +81,7 @@ public:
 
 protected:
     void updateViewport();
-    void updateViewports(size2_t dim, bool force = false);
+    void updateViewport(size2_t dim, bool force = false);
     void onStatusChange();
 
 private:
@@ -99,6 +99,8 @@ private:
 
     MarginProperty margins_;
     FloatProperty axisMargin_;
+
+    IntVec2Property plotImageSize_;
 
     OptionProperty<AxisRangeMode> rangeMode_;
 
