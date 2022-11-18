@@ -69,6 +69,7 @@ private:
     ProcessorNetwork* processorNetwork_;
     // the sorted list of processors obtained through topological sorting
     std::vector<Processor*> processorsSorted_;
+    bool needsSorting_;
     bool evaulationQueued_;
     EvaluationErrorHandler exceptionHandler_;
 };
