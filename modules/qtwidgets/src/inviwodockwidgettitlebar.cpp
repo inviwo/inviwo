@@ -57,6 +57,10 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
     , internalStickyFlagUpdate_(false) {
     label_ = new QLabel(parent->windowTitle());
     label_->setObjectName("InviwoDockWidgetTitleBarLabel");
+    label_->setMinimumWidth(50);
+    auto policy = label_->sizePolicy();
+    policy.setHorizontalPolicy(QSizePolicy::Expanding);
+    label_->setSizePolicy(policy);
 
     const auto iconsize = utilqt::emToPx(this, QSizeF(iconSize_, iconSize_));
 
@@ -144,8 +148,12 @@ void InviwoDockWidgetTitleBar::showEvent(QShowEvent*) {
 }
 
 bool InviwoDockWidgetTitleBar::eventFilter(QObject* obj, QEvent* event) {
-    if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange)) {
-        label_->setText(utilqt::windowTitleHelper(parent_->windowTitle(), parent_));
+    if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange) ||
+        (event->type() == QEvent::Resize)) {
+        QString windowTitle = utilqt::windowTitleHelper(parent_->windowTitle(), parent_);
+        // elide window title in case it is too long to fit the label
+        QFontMetrics fontMetrics(label_->font());
+        label_->setText(fontMetrics.elidedText(windowTitle, Qt::ElideMiddle, label_->width() - 4));
     }
     return QObject::eventFilter(obj, event);
 }
