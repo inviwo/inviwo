@@ -509,7 +509,12 @@ void InviwoMainWindow::addActions() {
         welcomeAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_N);
         welcomeAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         addAction(welcomeAction);
-        connect(welcomeAction, &QAction::triggered, this, &InviwoMainWindow::toggleWelcomeScreen);
+        connect(welcomeAction, &QAction::triggered, this, [this]() {
+            toggleWelcomeScreen();
+            // need to manually repaint the central widget after triggering the action from the file
+            // menu. Otherwise the welcome widget is active but not redrawn.
+            centralWidget_->repaint();
+        });
         fileMenuItem->addAction(welcomeAction);
         fileMenuItem->addSeparator();
         workspaceToolBar->addAction(welcomeAction);
