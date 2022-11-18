@@ -77,10 +77,10 @@ class Event;
 
 const ProcessorInfo VolumeSliceExtractor::processorInfo_{
     "org.inviwo.VolumeSliceExtractor",  // Class identifier
-    "Volume Slice Extractor",  // Display name
-    "Volume Operation",        // Category
-    CodeState::Stable,         // Code state
-    Tags::CPU,                 // Tags
+    "Volume Slice Extractor",           // Display name
+    "Volume Operation",                 // Category
+    CodeState::Stable,                  // Code state
+    Tags::CPU,                          // Tags
     R"(
 Extracts an axis aligned 2D slice from an input volume. The input data will be renormalized to either 
 [0,1] for floating point values or [0, max] of the data format using the data mapper of the volume.
