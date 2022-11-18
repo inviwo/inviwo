@@ -31,8 +31,8 @@
 
 #include "utils/shading.glsl"
 
-#if !defined(TEXCOORD_LAYER) || !defined(NORMALS_LAYER) \
-    || !defined(VIEW_NORMALS_LAYER) || !defined(COLOR_LAYER)
+#if !defined(TEXCOORD_LAYER) && !defined(NORMALS_LAYER) \
+    && !defined(VIEW_NORMALS_LAYER) && !defined(COLOR_LAYER)
 #  define COLOR_LAYER
 #endif
 
