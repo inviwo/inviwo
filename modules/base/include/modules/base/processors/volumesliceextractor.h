@@ -36,10 +36,13 @@
 #include <inviwo/core/ports/volumeport.h>                      // for VolumeInport
 #include <inviwo/core/processors/processor.h>                  // for Processor
 #include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/boolcompositeproperty.h>      // for BoolCompositeProperty
 #include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
 #include <inviwo/core/properties/eventproperty.h>              // for EventProperty
 #include <inviwo/core/properties/optionproperty.h>             // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>            // for IntSizeTProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>   // for TransferFunctionProperty
 #include <inviwo/core/util/staticstring.h>                     // for operator+
 #include <modules/base/datastructures/imagereusecache.h>       // for ImageReuseCache
 
@@ -51,28 +54,12 @@
 namespace inviwo {
 class Event;
 
-/** \docpage{org.inviwo.VolumeSlice, Volume Slice}
- * ![](org.inviwo.VolumeSlice.png?classIdentifier=org.inviwo.VolumeSlice)
- * This processor extracts an axis aligned 2D slice from an input volume.
- *
- * ### Inports
- *   * __VolumeInport__ The input volume
- *
- * ### Outports
- *   * __ImageOutport__ The extracted volume slice
- *
- * ### Properties
- *   * __sliceAlongAxis_ Defines the volume axis for the output slice
- *   * __sliceNumber_ Defines the slice number for the output slice
- */
-
-/**
- * \brief Outputs a slice from a volume, CPU-based
- */
-class IVW_MODULE_BASE_API VolumeSlice : public Processor {
+class IVW_MODULE_BASE_API VolumeSliceExtractor : public Processor {
 public:
-    VolumeSlice();
-    ~VolumeSlice();
+    enum class OutputFormat { AsInput, UInt8, Float32 };
+
+    VolumeSliceExtractor();
+    ~VolumeSliceExtractor();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -93,19 +80,27 @@ private:
     VolumeInport inport_;
     ImageOutport outport_;
 
-    ImageReuseCache imageCache_;
+    CompositeProperty trafoGroup_;
+    BoolCompositeProperty tfGroup_;
 
     OptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
     IntSizeTProperty sliceNumber_;
+    OptionProperty<OutputFormat> format_;
+
+    BoolProperty flipHorizontal_;
+    BoolProperty flipVertical_;
+
+    TransferFunctionProperty transferFunction_;
+    FloatProperty tfAlphaOffset_;
 
     BoolProperty handleInteractionEvents_;
 
     EventProperty mouseShiftSlice_;
-
     EventProperty stepSliceUp_;
     EventProperty stepSliceDown_;
-
     EventProperty gestureShiftSlice_;
+
+    ImageReuseCache imageCache_;
 };
 
 }  // namespace inviwo

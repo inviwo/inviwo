@@ -331,7 +331,7 @@ void VolumeAxis::process() {
 
     const auto dims = outport_.getDimensions();
     const auto volume = inport_.getData();
-    const dmat4 m = volume->getCoordinateTransformer().getDataToModelMatrix();
+    const dmat4 m = volume->getCoordinateTransformer().getDataToWorldMatrix();
     const dmat3 nm = glm::transpose(glm::inverse(m));
     // the mean length of the three basis vectors is used for a relative axis offset (%)
     const double offset =
@@ -345,8 +345,7 @@ void VolumeAxis::process() {
         const vec3 start{dvec3{m * dvec4(axis.start, 1)} + offset * offsetDir};
         const vec3 stop{dvec3{m * dvec4(axis.stop, 1)} + offset * offsetDir};
         const vec3 tickDir{nm * axis.tickDir};
-        axisRenderers_[axisIdx].render(&camera_.get(), volume->getWorldMatrix(), dims, start, stop,
-                                       tickDir);
+        axisRenderers_[axisIdx].render(&camera_.get(), dims, start, stop, tickDir);
     };
 
     if (visibility_.isChecked()) {  // automatic selection

@@ -230,7 +230,7 @@ bool Layout::isConnectionActive([[maybe_unused]] Inport* from, Outport* to) cons
     auto id = static_cast<size_t>(std::distance(ports.begin(), portIt));
     if (id < viewManager_.size()) {
         // Note: We cannot use Outport dimensions since it might not exist
-        return !glm::any(glm::equal(viewManager_.getViews()[id].size, ivec2(0)));
+        return glm::compMul(viewManager_.getViews()[id].size) != 0;
     } else {
         // More connections than views
         return false;
@@ -275,7 +275,7 @@ void Layout::updateSplitters(bool connect) {
 
     updateViewports(currentDim_);
 
-    if (inport_.isConnected()) {
+    if (inport_.isConnected() && !connect) {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     }
@@ -341,6 +341,7 @@ void ColumnLayout::updateViewports(ivec2 dim) {
     for (auto i = 0; i < std::max(1, numViews); ++i) {
         viewManager_.push_back(ivec4(positions[i], 0, positions[i + 1] - positions[i], dim.y));
     }
+    notifyObserversActiveConnectionsChange(this);
 }
 
 RowLayout::RowLayout() : Layout(splitter::Direction::Horizontal) {}
@@ -359,6 +360,7 @@ void RowLayout::updateViewports(ivec2 dim) {
     for (auto i = 0; i < std::max(1, numViews); ++i) {
         viewManager_.push_back(ivec4(0, positions[i + 1], dim.x, positions[i] - positions[i + 1]));
     }
+    notifyObserversActiveConnectionsChange(this);
 }
 
 }  // namespace inviwo

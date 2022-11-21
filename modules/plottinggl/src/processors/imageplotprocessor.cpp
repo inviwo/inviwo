@@ -95,8 +95,14 @@ ImagePlotProcessor::ImagePlotProcessor()
     , outport_("outport", "Output image of the plot"_help)
     , margins_("margins", "Margins", 5.0f, 5.0f, 30.0f, 50.0f)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 100.0f)
+    , plotImageSize_("plotImageSize", "Plot Image Size", "Size of the plotted image"_help, ivec2(0),
+                     {ivec2(0), ConstraintBehavior::Ignore},
+                     {ivec2(2048), ConstraintBehavior::Ignore}, ivec2(1), InvalidationLevel::Valid,
+                     PropertySemantics::Text)
     , rangeMode_("rangeMode", "Axis Range Mode",
                  {{"dims", "Image Dimensions (pixel)", AxisRangeMode::ImageDims},
+                  {"basis", "Image Basis", AxisRangeMode::ImageBasis},
+                  {"basisOffset", "Image Basis & Offset", AxisRangeMode::ImageBasisOffset},
                   {"custom", "Custom", AxisRangeMode::Custom}})
     , customRanges_("customRanges", "Custom Ranges")
     , rangeXaxis_("rangeX", "X Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
@@ -127,9 +133,10 @@ ImagePlotProcessor::ImagePlotProcessor()
     axisStyle_.setCollapsed(true);
     axisStyle_.labelFormat_.set("%g");
     axisStyle_.setCurrentStateAsDefault();
+    plotImageSize_.setReadOnly(true);
 
-    addProperties(margins_, axisMargin_, rangeMode_, customRanges_, axisStyle_, xAxis_, yAxis_,
-                  imageInteraction_);
+    addProperties(margins_, axisMargin_, plotImageSize_, rangeMode_, customRanges_, axisStyle_,
+                  xAxis_, yAxis_, imageInteraction_);
 
     auto updateCallback = [&]() { updateViewport(); };
 
@@ -159,6 +166,10 @@ ImagePlotProcessor::ImagePlotProcessor()
     imgInport_.onChange([this]() { adjustRanges(); });
     // sync ranges when custom range is enabled or disabled
     rangeMode_.onChange([this]() { adjustRanges(); });
+
+    customRanges_.readonlyDependsOn(
+        rangeMode_, [](auto p) { return p.getSelectedValue() != AxisRangeMode::Custom; });
+    customRanges_.setReadOnly(rangeMode_.getSelectedValue() != AxisRangeMode::Custom);
 
     viewManager_.push_back(viewport_);
 }
@@ -200,7 +211,7 @@ void ImagePlotProcessor::propagateEvent(Event* event, Outport* source) {
     if (event->hash() == ResizeEvent::chash()) {
         auto resizeEvent = static_cast<ResizeEvent*>(event);
 
-        updateViewports(resizeEvent->size(), true);
+        updateViewport(resizeEvent->size(), true);
 
         bgInport_.propagateEvent(resizeEvent);
 
@@ -227,16 +238,19 @@ void ImagePlotProcessor::propagateEvent(Event* event, Outport* source) {
 }
 
 void ImagePlotProcessor::updateViewport() {
+    updateViewport(imgDims_, true);
     auto bounds = calcImageBounds(imgDims_);
     viewport_ = ivec4(bounds.pos, bounds.extent.x, bounds.extent.y);
+    plotImageSize_.set(bounds.extent);
     onStatusChange();
 }
 
-void ImagePlotProcessor::updateViewports(size2_t dim, bool force) {
+void ImagePlotProcessor::updateViewport(size2_t dim, bool force) {
     if (!force && (imgDims_ == dim)) return;  // no changes
 
     auto bounds = calcImageBounds(dim);
     viewport_ = ivec4(bounds.pos, bounds.extent.x, bounds.extent.y);
+    plotImageSize_.set(bounds.extent);
 
     imgDims_ = dim;
     onStatusChange();
@@ -260,16 +274,24 @@ ImagePlotProcessor::ImageBounds ImagePlotProcessor::calcImageBounds(const size2_
     ivec2 upperRight(dims.x - 1 - (margins_.getRight() + padding),
                      dims.y - 1 - (margins_.getTop() + padding));
 
-    // ensure positive extent
+    // ensure positive extent and minimum extent of (1,1)
     upperRight = glm::max(upperRight, lowerLeft);
-
-    return {lowerLeft, size2_t{upperRight - lowerLeft}};
+    return {lowerLeft, glm::max(size2_t{upperRight - lowerLeft}, size2_t{1u})};
 }
 
 void ImagePlotProcessor::adjustRanges() {
     size2_t dims{100, 100};
-    if (imgInport_.hasData()) {
-        dims = imgInport_.getData()->getDimensions();
+    dvec2 offset(0.0);
+    dvec2 basisLen(1.0);
+
+    if (auto image = imgInport_.getData()) {
+        dims = image->getDimensions();
+        if (auto layer = image->getColorLayer()) {
+            for (size_t i = 0; i < 2; ++i) {
+                basisLen[i] = glm::length(layer->getBasis()[i]);
+            }
+            offset = image->getColorLayer()->getOffset();
+        }
     }
 
     util::KeepTrueWhileInScope b(&propertyUpdate_);
@@ -278,6 +300,14 @@ void ImagePlotProcessor::adjustRanges() {
             xAxis_.range_.set(dvec2(0.0, dims.x));
             yAxis_.range_.set(dvec2(0.0, dims.y));
             break;
+        case AxisRangeMode::ImageBasis:
+            xAxis_.range_.set(dvec2(0.0, basisLen.x));
+            yAxis_.range_.set(dvec2(0.0, basisLen.y));
+            break;
+        case AxisRangeMode::ImageBasisOffset:
+            xAxis_.range_.set(dvec2(offset.x, offset.x + basisLen.x));
+            yAxis_.range_.set(dvec2(offset.y, offset.y + basisLen.y));
+            break;
         case AxisRangeMode::Custom:
             xAxis_.range_.set(rangeXaxis_.get());
             yAxis_.range_.set(rangeYaxis_.get());
@@ -285,8 +315,6 @@ void ImagePlotProcessor::adjustRanges() {
         default:
             break;
     }
-
-    customRanges_.setReadOnly(rangeMode_.getSelectedValue() != AxisRangeMode::Custom);
 }
 
 }  // namespace plot

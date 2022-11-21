@@ -313,7 +313,7 @@ bool ImageLayoutGL::isConnectionActive([[maybe_unused]] Inport* from, Outport* t
     auto id = static_cast<size_t>(std::distance(ports.begin(), portIt));
     if (id < viewManager_.size()) {
         // Note: We cannot use Outport dimensions since it might not exist
-        return !glm::any(glm::equal(viewManager_.getViews()[id].size, ivec2(0)));
+        return glm::compMul(viewManager_.getViews()[id].size) != 0;
     } else {
         // More connections than views
         return false;

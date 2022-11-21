@@ -129,7 +129,7 @@
 #include <modules/base/processors/volumesequencesource.h>                    // for VolumeSequen...
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>        // for VolumeSequen...
 #include <modules/base/processors/volumeshifter.h>                           // for VolumeShifter
-#include <modules/base/processors/volumeslice.h>                             // for VolumeSlice
+#include <modules/base/processors/volumesliceextractor.h>                    // for VolumeSliceE...
 #include <modules/base/processors/volumesource.h>                            // for VolumeSource
 #include <modules/base/processors/volumesubsample.h>                         // for VolumeSubsample
 #include <modules/base/processors/volumesubset.h>                            // for VolumeSubset
@@ -224,7 +224,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeConverter>();
     registerProcessor<WorldTransformMeshDeprecated>();
     registerProcessor<WorldTransformVolumeDeprecated>();
-    registerProcessor<VolumeSlice>();
+    registerProcessor<VolumeSliceExtractor>();
     registerProcessor<VolumeSubsample>();
     registerProcessor<VolumeSubset>();
     registerProcessor<ImageContourProcessor>();
@@ -302,7 +302,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 4; }
+int BaseModule::getVersion() const { return 5; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -455,6 +455,13 @@ bool BaseModule::Converter::convert(TxElement* root) {
                 root, {{xml::Kind::processor("org.inviwo.WorldTransformVolume")}}, "type",
                 "org.inviwo.WorldTransformVolume", "org.inviwo.WorldTransformVolumeDeprecated");
             res |= xml::changeIdentifiers(root, replV3);
+
+            [[fallthrough]];
+        }
+        case 4: {
+            res |=
+                xml::changeAttribute(root, {xml::Kind::processor("org.inviwo.VolumeSlice")}, "type",
+                                     "org.inviwo.VolumeSlice", "org.inviwo.VolumeSliceExtractor");
             return res;
         }
 

@@ -33,6 +33,7 @@
 
 #include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
 #include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
 #include <inviwo/core/properties/ordinalproperty.h>    // for IntSizeTProperty
 #include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
 #include <inviwo/core/properties/stringproperty.h>     // for StringProperty
@@ -69,6 +70,10 @@ public:
     StringProperty swizzleMask_;
     StringProperty interpolation_;
     StringProperty wrapping_;
+
+    CompositeProperty transformations_;
+    FloatMat2Property basis_;
+    FloatVec2Property offset_;
 };
 
 }  // namespace inviwo

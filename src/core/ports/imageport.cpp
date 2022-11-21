@@ -31,8 +31,36 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
+
+std::string_view enumToStr(OutportDeterminesSize ods) {
+    switch (ods) {
+        case OutportDeterminesSize::Yes:
+            return "Yes";
+        case OutportDeterminesSize::No:
+            return "No";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
+                    "Found invalid HandleResizeEvents enum value '{}'", static_cast<int>(ods));
+}
+
+std::string_view enumToStr(HandleResizeEvents hre) {
+    switch (hre) {
+        case HandleResizeEvents::Yes:
+            return "Yes";
+        case HandleResizeEvents::No:
+            return "No";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
+                    "Found invalid HandleResizeEvents enum value '{}'", static_cast<int>(hre));
+}
+
+std::ostream& operator<<(std::ostream& ss, OutportDeterminesSize ods) {
+    return ss << enumToStr(ods);
+}
+std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre) { return ss << enumToStr(hre); }
 
 ImageOutport::ImageOutport(std::string_view identifier, Document help, const DataFormatBase* format,
                            HandleResizeEvents handleResizeEvents)

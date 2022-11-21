@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/util/imagecache.h>
+#include <inviwo/core/util/fmtutils.h>
 
 #include <unordered_map>
 
@@ -51,6 +52,11 @@ public:
 
 enum class OutportDeterminesSize { Yes, No };
 enum class HandleResizeEvents { Yes, No };
+
+IVW_CORE_API std::string_view enumToStr(OutportDeterminesSize ods);
+IVW_CORE_API std::string_view enumToStr(HandleResizeEvents hre);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, OutportDeterminesSize ods);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre);
 
 /**
  * \ingroup ports
@@ -378,9 +384,16 @@ Document BaseImageInport<N>::getInfo() const {
     auto t = doc.get({P{"table"}});
 
     utildoc::TableBuilder tb(t);
-    tb(H("Outport Determining Size"), isOutportDeterminingSize());
+    tb(H("Outport Determining Size"), outportDeterminesSize_);
 
     return doc;
 }
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::OutportDeterminesSize>
+    : inviwo::FlagFormatter<inviwo::OutportDeterminesSize> {};
+template <>
+struct fmt::formatter<inviwo::HandleResizeEvents>
+    : inviwo::FlagFormatter<inviwo::HandleResizeEvents> {};
