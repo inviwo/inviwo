@@ -154,7 +154,7 @@ TEST(VolumeVoronoi, Voronoi_TwoSeedPoints_PartitionsVolumeInTwo) {
             // First half of volume
             for (size_t x1 = 0; x1 < dim.x / 2; x1++) {
                 const auto val1 = static_cast<unsigned short>(data[im(x1, y, z)]);
-                EXPECT_EQ(val1, seedPoints[0].first)  << "pos " << x1 << ", " << y << ", " << z;
+                EXPECT_EQ(val1, seedPoints[0].first) << "pos " << x1 << ", " << y << ", " << z;
             }
             // Second half of volume
             for (size_t x2 = dim.x / 2; x2 < dim.x; x2++) {
@@ -191,12 +191,12 @@ TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInT
             // First part (smaller due to smaller weight)
             for (size_t x1 = 0; x1 < dim.x / 4; x1++) {
                 const auto val1 = static_cast<unsigned short>(data[im(x1, y, z)]);
-                EXPECT_EQ(val1, seedPoints[0].first)  << "pos " << x1 << ", " << y << ", " << z;
+                EXPECT_EQ(val1, seedPoints[0].first) << "pos " << x1 << ", " << y << ", " << z;
             }
             // Second part (larger due to larger weight)
             for (size_t x2 = dim.x / 4; x2 < dim.x; x2++) {
                 const auto val2 = static_cast<unsigned short>(data[im(x2, y, z)]);
-                EXPECT_EQ(val2, seedPoints[1].first)  << "pos " << x2 << ", " << y << ", " << z;
+                EXPECT_EQ(val2, seedPoints[1].first) << "pos " << x2 << ", " << y << ", " << z;
             }
         }
     }
