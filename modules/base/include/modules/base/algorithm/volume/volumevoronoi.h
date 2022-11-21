@@ -52,7 +52,7 @@ namespace util {
  * (according to the power distance with or without weights).
  *
  *     * volumeDimensions is the dimensions for the volume.
- *     * indexToDataMatrix is the matrix to transform the voxel positions from index to date
+ *     * indexToDataMatrix is the matrix to transform the voxel positions from index to data
  *       space.
  *     * dataToModelMatrix is the matrix to transform the voxel positions from data to model
  *       space.
