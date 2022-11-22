@@ -52,18 +52,20 @@ namespace util {
  * (according to the power distance with or without weights).
  *
  *     * volumeDimensions is the dimensions for the volume.
- *     * indexToModelMatrix is the matrix to transform the voxel positions from index to model
+ *     * indexToDataMatrix is the matrix to transform the voxel positions from index to data
+ *       space.
+ *     * dataToModelMatrix is the matrix to transform the voxel positions from data to model
  *       space.
  *     * seedPointsWithIndices is a vector containing the seed points for the algorithm together
  *       with their index number on the form {index, position}. The positions are expected be in
  *       model space.
  *     * wrapping the wrapping mode of the volume, @see Wrapping3D.
- *     * weigths is an optional vector containing the weights for each seed point. If set the
+ *     * weights is an optional vector containing the weights for each seed point. If set the
  *       weighted version of voronoi should be used.
  */
 
 IVW_MODULE_BASE_API std::shared_ptr<Volume> voronoiSegmentation(
-    const size3_t volumeDimensions, const mat4& indexToModelMatrix,
+    const size3_t volumeDimensions, const mat4& indexToDataMatrix, const mat4& dataToModelMatrix,
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices, const Wrapping3D& wrapping,
     const std::optional<std::vector<float>>& weights);
 
