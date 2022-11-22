@@ -333,7 +333,7 @@ std::ostream& operator<<(std::ostream& ss, const Document& doc) {
     doc.visit(
         [&](Element* elem, std::vector<Element*>& stack) {
             if (elem->isNode()) {
-                ss << std::setw(static_cast<int>(static_cast<int>(stack.size() * 4))) << ' ' << '<'
+                ss << std::setw(static_cast<int>(stack.size() * 4)) << ' ' << '<'
                    << elem->name();
                 for (const auto& item : elem->attributes()) {
                     ss << ' ' << item.first << "='" << item.second << '\'';
