@@ -52,6 +52,7 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
     if (!event) return;
     if (!pickingEnabled()) {
         propagator->propagateEvent(event, nullptr);
+        return;
     }
 
     switch (event->hash()) {

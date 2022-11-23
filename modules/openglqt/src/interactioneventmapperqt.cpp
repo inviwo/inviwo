@@ -408,7 +408,9 @@ bool InteractionEventMapperQt::mapPanTriggered(QPanGesture* gesture) {
 bool InteractionEventMapperQt::mapPinchTriggered(QPinchGesture* gesture) {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
-    GestureEvent ge(dvec2(gesture->centerPoint().x(), gesture->centerPoint().y()),
+    const auto center = gesture->centerPoint();
+
+    GestureEvent ge(dvec2(center.x(), center.y()),
                     static_cast<double>(gesture->scaleFactor()) - 1.0, GestureType::Pinch,
                     utilqt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_,
                     imageDimensions_(), depth_(screenPositionNormalized_));

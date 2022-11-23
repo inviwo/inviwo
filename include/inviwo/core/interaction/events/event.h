@@ -76,7 +76,7 @@ public:
      * Returns false if the processor was already visited;
      */
     bool markAsVisited(Processor*);
-    void markAsVisited(Event&);
+    void markAsVisited(const Event&);
     bool hasVisitedProcessor(Processor*) const;
     // Can be used to figure out where an event came from.
     // Processors are added in chronological order.

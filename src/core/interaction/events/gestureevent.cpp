@@ -71,6 +71,10 @@ void GestureEvent::setDepth(double depth) { depth_ = depth; }
 dvec3 GestureEvent::ndc() const {
     return dvec3(2.0 * screenPosNorm_.x - 1.0, 2.0 * screenPosNorm_.y - 1.0, depth_);
 }
+void GestureEvent::setNdc(dvec3 ndc) {
+    screenPosNorm_ = dvec2{(ndc.x + 1.0) * 0.5, (ndc.y + 1.0) * 0.5};
+    depth_ = ndc.z;
+}
 
 void GestureEvent::setScreenPosNormalized(dvec2 posNorm) { screenPosNorm_ = posNorm; }
 
