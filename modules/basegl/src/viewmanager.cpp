@@ -56,6 +56,28 @@ class Processor;
 
 ViewManager::ViewManager() = default;
 
+bool ViewManager::propagateEvent(Event* event, Propagator propagator) {
+    switch (event->hash()) {
+        case PickingEvent::chash(): {
+            return propagatePickingEvent(static_cast<PickingEvent*>(event), propagator);
+        }
+        case MouseEvent::chash(): {
+            return propagateMouseEvent(static_cast<MouseEvent*>(event), propagator, false);
+        }
+        case WheelEvent::chash(): {
+            return propagateWheelEvent(static_cast<WheelEvent*>(event), propagator, false);
+        }
+        case GestureEvent::chash(): {
+            return propagateGestureEvent(static_cast<GestureEvent*>(event), propagator, false);
+        }
+        case TouchEvent::chash(): {
+            return propagateTouchEvent(static_cast<TouchEvent*>(event), propagator, false);
+        }
+        default:
+            return false;
+    }
+}
+
 bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator) {
 
     auto prop = [&](Event* newEvent, size_t ind) {
@@ -222,28 +244,6 @@ bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator, boo
     }
 
     return touchPoints.empty();
-}
-
-bool ViewManager::propagateEvent(Event* event, Propagator propagator) {
-    switch (event->hash()) {
-        case PickingEvent::chash(): {
-            return propagatePickingEvent(static_cast<PickingEvent*>(event), propagator);
-        }
-        case MouseEvent::chash(): {
-            return propagateMouseEvent(static_cast<MouseEvent*>(event), propagator, false);
-        }
-        case WheelEvent::chash(): {
-            return propagateWheelEvent(static_cast<WheelEvent*>(event), propagator, false);
-        }
-        case GestureEvent::chash(): {
-            return propagateGestureEvent(static_cast<GestureEvent*>(event), propagator, false);
-        }
-        case TouchEvent::chash(): {
-            return propagateTouchEvent(static_cast<TouchEvent*>(event), propagator, false);
-        }
-        default:
-            return false;
-    }
 }
 
 std::pair<bool, ViewManager::ViewId> ViewManager::getSelectedView() const { return selectedView_; }
