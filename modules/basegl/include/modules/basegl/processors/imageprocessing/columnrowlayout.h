@@ -42,7 +42,7 @@
 #include <modules/basegl/datastructures/splittersettings.h>
 #include <modules/basegl/properties/splitterproperty.h>
 #include <modules/basegl/rendering/splitterrenderer.h>
-#include <modules/basegl/viewmanager.h>
+#include <inviwo/core/interaction/eventtransformer.h>
 #include <modules/opengl/shader/shader.h>
 
 #include <variant>
@@ -54,6 +54,12 @@ class Event;
 namespace layout {
 enum class InputMode : std::uint8_t { Multi, Sequence };
 
+struct IVW_MODULE_BASEGL_API View {
+    ivec2 pos;
+    ivec2 size;
+    bool empty() const { return glm::any(glm::lessThanEqual(size, ivec2(0))); }
+};
+
 struct IVW_MODULE_BASEGL_API MultiInput {
     explicit MultiInput(const std::function<void(bool)>& update);
 
@@ -61,7 +67,7 @@ struct IVW_MODULE_BASEGL_API MultiInput {
     void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
-    void propagateSizes(ViewManager& vm);
+    void propagateSizes(const std::vector<View>& views);
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     size_t indexOf(Outport* to) const;
@@ -78,7 +84,7 @@ struct IVW_MODULE_BASEGL_API SequenceInput {
     void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
-    void propagateSizes(ViewManager& vm);
+    void propagateSizes(const std::vector<View>& views);
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     static size_t indexOf(Outport*);
@@ -95,7 +101,7 @@ struct IVW_MODULE_BASEGL_API Input {
     void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
-    void propagateSizes(ViewManager& vm);
+    void propagateSizes(const std::vector<View>& views);
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     size_t indexOf(Outport* to) const;
@@ -176,7 +182,8 @@ protected:
     layout::Input input_;
     ImageOutport outport_;
 
-    ViewManager viewManager_;
+    EventTransformer eventTransformer_;
+    std::vector<layout::View> views_;
 
     OptionProperty<layout::InputMode> inputMode_;
     SplitterProperty splitterSettings_;

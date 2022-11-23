@@ -295,13 +295,13 @@ void PickingEvent::showContextMenu(std::span<ContextMenuEntry> entries,
 const PickingAction* PickingEvent::getPickingAction() const { return pickingAction_; }
 
 void PickingEvent::print(fmt::memory_buffer& buff) const {
-    util::printEvent(
-        buff, "PickingEvent", std::make_pair("state", state_),
-        std::make_pair("pressState", pressState_), std::make_pair("pressItem", pressItem_),
-        std::make_pair("hoverState", hoverState_), std::make_pair("pressedState", pressedState_),
-        std::make_tuple("GlobalID"), std::make_tuple("pick", pickedGlobalId_, 4),
-        std::make_tuple("curr", currentGlobalId_, 4), std::make_tuple("pres", pressedGlobalId_, 4),
-        std::make_tuple("prev", previousGlobalId_, 4), std::make_pair("NDC", getNDC()));
+    fmt::format_to(std::back_inserter(buff),
+                   "{:14} {:6} {:8} press: {:8} item: {:8} hover: {:8} "
+                   "pressed: {:8} GlobalID pick: {:4} curr: {:4} pres: {:4} "
+                   "prev: {:4} NDC: {:19:5.3f}",
+                   "PickingEvent", hasBeenUsed() ? "Used" : "Unused", state_, pressState_,
+                   pressItem_, hoverState_, pressedState_, pickedGlobalId_, currentGlobalId_,
+                   pressedGlobalId_, previousGlobalId_, getNDC());
 }
 
 }  // namespace inviwo

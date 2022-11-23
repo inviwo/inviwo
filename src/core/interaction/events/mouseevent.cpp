@@ -53,11 +53,11 @@ void MouseEvent::setState(MouseState state) { state_ = state; }
 uint64_t MouseEvent::hash() const { return chash(); }
 
 void MouseEvent::print(fmt::memory_buffer& buff) const {
-    util::printEvent(buff, "MouseEvent", std::make_pair("state", state_),
-                     std::make_pair("button", button_), std::make_pair("pos", pos()),
-                     std::make_pair("depth", depth()), std::make_pair("size", canvasSize()),
-                     std::make_pair("sState", buttonState()),
-                     std::make_pair("modifiers", modifiers_));
+    fmt::format_to(std::back_inserter(buff),
+                   "{:14} {:6} {:8} button: {:8} pos: {:14:5.1f} depth: {:5.3f} size: "
+                   "{:12:4} sState: {} modifiers: {}",
+                   "MouseEvent", hasBeenUsed() ? "Used" : "Unused", state_, button_, pos(), depth(),
+                   canvasSize(), buttonState(), modifiers_);
 }
 
 }  // namespace inviwo

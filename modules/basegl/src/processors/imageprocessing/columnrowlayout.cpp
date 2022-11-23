@@ -71,6 +71,7 @@
 
 #include <fmt/core.h>
 #include <glm/vec2.hpp>
+#include <glm/gtx/vec_swizzle.hpp>
 #include <glm/vector_relational.hpp>
 
 namespace inviwo {
@@ -106,9 +107,9 @@ const std::vector<std::shared_ptr<const Image>>& MultiInput::getData() {
     return data;
 }
 
-void MultiInput::propagateSizes(ViewManager& vm) {
+void MultiInput::propagateSizes(const std::vector<View>& views) {
     const auto& outports = inport.getConnectedOutports();
-    for (auto&& [view, outport] : std::views::zip(vm.getViews(), outports)) {
+    for (auto&& [view, outport] : std::views::zip(views, outports)) {
         if (!view.empty()) {
             ResizeEvent e{view.size};
             inport.propagateEvent(&e, outport);
@@ -164,9 +165,9 @@ const std::vector<std::shared_ptr<const Image>>& SequenceInput::getData() {
     return data;
 }
 
-void SequenceInput::propagateSizes(ViewManager& vm) {
+void SequenceInput::propagateSizes(const std::vector<View>& views) {
     const auto max = std::ranges::fold_left(
-        vm.getViews() | std::views::transform([](const auto& v) { return v.size; }), ivec2{1, 1},
+        views | std::views::transform([](const auto& v) { return v.size; }), ivec2{1, 1},
         [](const ivec2& a, const ivec2& b) { return glm::max(a, b); });
 
     ResizeEvent e{max};
@@ -205,8 +206,8 @@ const std::vector<std::shared_ptr<const Image>>& Input::getData() {
     return std::visit([&](auto& i) -> decltype(auto) { return i.getData(); }, input_);
 }
 
-void Input::propagateSizes(ViewManager& vm) {
-    std::visit([&](auto& i) { i.propagateSizes(vm); }, input_);
+void Input::propagateSizes(const std::vector<View>& views) {
+    std::visit([&](auto& i) { i.propagateSizes(views); }, input_);
 }
 
 void Input::propagateEvent(Event* event, size_t index) {
@@ -408,7 +409,7 @@ void Layout::process() {
     shader_.setUniform("depth_", depthUnit.getUnitNumber());
     shader_.setUniform("picking_", pickingUnit.getUnitNumber());
 
-    for (auto&& [image, view] : std::views::zip(images, viewManager_.getViews())) {
+    for (auto&& [image, view] : std::views::zip(images, views_)) {
         if (view.empty()) continue;
 
         shader_.setUniform("dataToClip", scale(image->getDimensions(), view.size));
@@ -448,12 +449,10 @@ void Layout::propagateEvent(Event* event, Outport* source) {
     if (const auto* resizeEvent = event->getAs<ResizeEvent>()) {
         currentDim_ = resizeEvent->size();
         calculateViews(currentDim_);
-        input_.propagateSizes(viewManager_);
+        input_.propagateSizes(views_);
 
     } else {
-        auto propagated = viewManager_.propagateEvent(
-            event, [this](Event* e, size_t i) { input_.propagateEvent(e, i); });
-
+        auto propagated = eventTransformer_.propagateEvent(event, source);
         if (!propagated) {
             input_.propagateEvent(event, this, source);
         }
@@ -462,8 +461,8 @@ void Layout::propagateEvent(Event* event, Outport* source) {
 
 bool Layout::isConnectionActive([[maybe_unused]] Inport* from, Outport* to) const {
     const auto id = input_.indexOf(to);
-    if (id < viewManager_.size()) {
-        return !viewManager_[id].empty();
+    if (id < views_.size()) {
+        return !views_[id].empty();
     } else {
         return false;
     }
@@ -496,6 +495,16 @@ void Layout::updateSplitters(bool connect) {
     }
 }
 
+glm::dvec2 remapToSubImage(glm::dvec2 normCoord, glm::dvec2 size, glm::dvec2 subPos,
+                           glm::dvec2 subSize) {
+    // 1. Convert full-image normalized [-1,1] to pixel coordinates
+    const glm::dvec2 pixel = (normCoord + 1.0) * 0.5 * size;
+    // 2. Transform into sub-image local pixel space
+    const glm::dvec2 localPixel = pixel - subPos;
+    // 3. Convert local pixel to normalized [-1,1] in sub-image space
+    return (localPixel / subSize) * 2.0 - 1.0;
+}
+
 void Layout::calculateViews(ivec2 imgSize) {
     std::vector<double> xpos;
     {
@@ -512,14 +521,27 @@ void Layout::calculateViews(ivec2 imgSize) {
         ypos.insert(ypos.end(), hs.begin(), hs.end());
         ypos.emplace_back(0.0);
     }
-    viewManager_.clear();
+
+    views_.clear();
+    eventTransformer_.views.clear();
+    size_t i = 0;
     for (auto&& [xStart, xStop] : std::views::zip(xpos, xpos | std::views::drop(1))) {
         for (auto&& [yStop, yStart] : std::views::zip(ypos, ypos | std::views::drop(1))) {
             const auto fracPos = dvec2{xStart, yStart};
-            const auto pos = ivec2{glm::round(dvec2{imgSize} * fracPos)};
+            const auto pos = dvec2{imgSize} * fracPos;
             const auto fracViewSize = dvec2{xStop - xStart, yStop - yStart};
-            const auto size = ivec2{glm::round(dvec2{imgSize} * fracViewSize)};
-            viewManager_.push_back({pos, size});
+            const auto size = dvec2{imgSize} * fracViewSize;
+            views_.push_back({ivec2{glm::round(pos)}, ivec2{glm::round(size)}});
+
+            eventTransformer_.views.push_back(EventTransformer::View{
+                .globalNdcToLocalNdc =
+                    [imgSize, pos, size](const dvec3& globalNdc) {
+                        return dvec3{remapToSubImage(glm::xy(globalNdc), imgSize, pos, size),
+                                     globalNdc.z};
+                    },
+                .propagateEvent = [this, i](Event* e, Outport*) { input_.propagateEvent(e, i); },
+                .size = [size]() { return size2_t{glm::round(size)}; }});
+            ++i;
         }
     }
     notifyObserversActiveConnectionsChange(this);

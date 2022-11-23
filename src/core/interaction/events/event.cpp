@@ -39,7 +39,7 @@ bool Event::shouldPropagateTo(Inport* /*inport*/, Processor* /*processor*/, Outp
 
 bool Event::markAsVisited(Processor* p) { return util::push_back_unique(visitedProcessors_, p); }
 
-void Event::markAsVisited(Event& e) {
+void Event::markAsVisited(const Event& e) {
     visitedProcessors_.reserve(visitedProcessors_.size() + e.visitedProcessors_.size());
     for (auto p : e.visitedProcessors_) {
         util::push_back_unique(visitedProcessors_, p);
