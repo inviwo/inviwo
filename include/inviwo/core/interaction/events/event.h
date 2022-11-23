@@ -34,6 +34,9 @@
 #include <vector>
 #include <cstdint>
 #include <ostream>
+#include <sstream>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -142,3 +145,18 @@ inline bool Event::setUsed(bool isUsed) {
 }
 
 }  // namespace inviwo
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
+template <>
+struct fmt::formatter<::inviwo::Event> : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(const ::inviwo::Event& event, FormatContext& ctx) const {
+        std::stringstream ss;
+        event.print(ss);
+        auto str = std::move(ss).str();
+        return formatter<fmt::string_view>::format(str, ctx);
+    }
+};
+
+#endif
