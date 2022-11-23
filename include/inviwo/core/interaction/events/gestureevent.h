@@ -74,6 +74,7 @@ public:
      * And the upper right far (1,1,1)
      */
     dvec3 ndc() const;
+    void setNdc(dvec3 ndc);
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.GestureEvent"); }

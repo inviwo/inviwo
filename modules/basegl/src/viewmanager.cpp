@@ -323,7 +323,6 @@ std::unordered_map<int, ViewManager::ViewId> ViewManager::EventState::getView(
     ViewManager& m, const TouchEvent* te) {
 
     std::unordered_map<int, ViewId> newTouchpointIdToViewID;
-    std::vector<std::pair<bool, ViewManager::ViewId>> foundViews;
 
     for (const auto& tp : te->touchPoints()) {
         switch (tp.state()) {

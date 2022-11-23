@@ -61,6 +61,11 @@ dvec3 MouseInteractionEvent::ndc() const {
     return dvec3(2.0 * position_.x - 1.0, 2.0 * position_.y - 1.0, depth_);
 }
 
+void MouseInteractionEvent::setNdc(dvec3 ndc) {
+    position_ = dvec2{(ndc.x + 1.0) * 0.5, (ndc.y + 1.0) * 0.5};
+    depth_ = ndc.z;
+}
+
 double MouseInteractionEvent::x() const { return position_.x * (canvasSize_.x - 1); }
 
 double MouseInteractionEvent::y() const { return position_.y * (canvasSize_.y - 1); }

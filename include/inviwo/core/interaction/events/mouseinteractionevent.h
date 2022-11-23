@@ -96,6 +96,7 @@ public:
      * And the upper right far (1,1,1)
      */
     dvec3 ndc() const;
+    void setNdc(dvec3 ndc);
 
     double x() const;
     double y() const;
