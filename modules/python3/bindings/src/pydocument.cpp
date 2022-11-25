@@ -33,16 +33,97 @@
 
 #include <inviwo/core/algorithm/markdown.h>
 
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
+
+#include <functional>
+
 namespace inviwo {
 
 void exposeDocument(pybind11::module& m) {
+    auto doc = m.def_submodule("doc", "Inviwo document classes");
+
     namespace py = pybind11;
 
-    py::class_<Document>(m, "Document")
+    py::enum_<Document::ElementType>(doc, "ElementType")
+        .value("Node", Document::ElementType::Node)
+        .value("Text", Document::ElementType::Text);
+
+    py::class_<Document::Element>(doc, "Element")
+        .def(py::init<Document::ElementType, std::string_view>(), py::arg("type"),
+             py::arg("content"))
+        .def(py::init<std::string_view, std::string_view,
+                      const std::unordered_map<std::string, std::string>&>(),
+             py::arg("name"), py::arg("content") = std::string_view{""},
+             py::arg("attributes") = std::unordered_map<std::string, std::string>{})
+        .def_property(
+            "name", [](Document::Element& d) { return d.name(); },
+            [](Document::Element& d, std::string_view val) { return d.name() = val; })
+        .def_property(
+            "content", [](Document::Element& d) { return d.content(); },
+            [](Document::Element& d, std::string_view val) { return d.content() = val; })
+        .def_property_readonly("attributes", [](Document::Element& d) { return d.attributes(); })
+        .def_property_readonly("type", &Document::Element::type)
+        .def("isText", &Document::Element::isText)
+        .def("isNode", &Document::Element::isNode)
+        .def("emptyTag", &Document::Element::emptyTag)
+        .def("noIndent", &Document::Element::noIndent);
+
+    py::class_<Document::PathComponent>(doc, "PathComponent")
+        .def(py::init<int>(), py::arg("index"))
+        .def(py::init<std::string_view>(), py::arg("name"))
+        .def(py::init<const std::unordered_map<std::string, std::string>&>(), py::arg("attributes"))
+        .def(py::init<std::string_view, const std::unordered_map<std::string, std::string>&>(),
+             py::arg("name"), py::arg("attributes"))
+        .def_property_readonly_static("first", &Document::PathComponent::first)
+        .def_property_readonly_static("last", &Document::PathComponent::last)
+        .def_property_readonly_static("end", &Document::PathComponent::end);
+
+    py::class_<Document::DocumentHandle>(doc, "DocumentHandle")
+        .def("get", &Document::DocumentHandle::get)
+        .def("insert", static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
+                           Document::PathComponent, std::string_view, std::string_view,
+                           const std::unordered_map<std::string, std::string>&)>(
+                           &Document::DocumentHandle::insert))
+        .def("append", static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
+                           std::string_view, std::string_view,
+                           const std::unordered_map<std::string, std::string>&)>(
+                           &Document::DocumentHandle::append))
+        .def("insert", static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
+                           Document::PathComponent, Document)>(&Document::DocumentHandle::insert))
+        .def("insertText", &Document::DocumentHandle::insertText)
+        .def("appendText", &Document::DocumentHandle::appendText)
+        .def("append",
+             static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(Document)>(
+                 &Document::DocumentHandle::append))
+        .def_property_readonly("element", [](Document::DocumentHandle& d) { return d.element(); });
+
+    py::class_<Document>(doc, "Document")
         .def(py::init<>())
         .def(py::init<std::string_view>())
         .def("str", &Document::str)
-        .def("empty", &Document::empty);
+        .def("empty", &Document::empty)
+
+        .def("handle", &Document::handle)
+        .def("get", &Document::get)
+        .def("insert", static_cast<Document::DocumentHandle (Document::*)(
+                           Document::PathComponent, std::string_view, std::string_view,
+                           const std::unordered_map<std::string, std::string>&)>(&Document::insert))
+        .def("append", static_cast<Document::DocumentHandle (Document::*)(
+                           std::string_view, std::string_view,
+                           const std::unordered_map<std::string, std::string>&)>(&Document::append))
+        .def("insert",
+             static_cast<Document::DocumentHandle (Document::*)(Document::PathComponent, Document)>(
+                 &Document::insert))
+        .def("insertText", &Document::insertText)
+        .def("appendText", &Document::appendText)
+        .def("append",
+             static_cast<Document::DocumentHandle (Document::*)(Document)>(&Document::append))
+        .def("visit",
+             [](Document& d,
+                std::function<void(Document::Element*, std::vector<Document::Element*>&)> before,
+                std::function<void(Document::Element*, std::vector<Document::Element*>&)> after)
+                 -> void { d.visit(before, after); });
 
     m.def("md2doc", &util::md2doc);
 }

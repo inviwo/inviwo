@@ -41,8 +41,10 @@ namespace inviwo {
 void exposePropertyOwner(pybind11::module& m) {
     namespace py = pybind11;
 
-    using PropertyVecWrapper = VectorIdentifierWrapper<std::vector<Property*>>;
-    exposeVectorIdentifierWrapper<std::vector<Property*>>(m, "PropertyVecWrapper");
+    using PropertyVecWrapper =
+        VectorIdentifierWrapper<typename std::vector<Property*>::const_iterator>;
+    exposeVectorIdentifierWrapper<typename std::vector<Property*>::const_iterator>(
+        m, "PropertyVecWrapper");
 
     py::class_<PropertyOwner>(m, "PropertyOwner", py::multiple_inheritance{}, py::dynamic_attr{})
         .def(
@@ -57,8 +59,11 @@ void exposePropertyOwner(pybind11::module& m) {
                 }
             },
             py::return_value_policy::reference)
-        .def_property_readonly(
-            "properties", [](PropertyOwner& po) { return PropertyVecWrapper(po.getProperties()); })
+        .def_property_readonly("properties",
+                               [](PropertyOwner& po) {
+                                   return PropertyVecWrapper(po.getProperties().begin(),
+                                                             po.getProperties().end());
+                               })
         .def("getPropertiesRecursive", &PropertyOwner::getPropertiesRecursive)
         .def(
             "addProperty",

@@ -163,6 +163,8 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
             .def("removeProcessorProperties", &PropertyListWidget::removeProcessorProperties)
             .def_property("visible", &PropertyListWidget::isVisible,
                           &PropertyListWidget::setVisible)
+            .def_property("floating", &PropertyListWidget::isFloating,
+                          &PropertyListWidget::setFloating)
             .def_property(
                 "dimensions", [](const PropertyListWidget& w) { return utilqt::toGLM(w.size()); },
                 [](PropertyListWidget& w, ivec2 dim) { w.resize(dim.x, dim.y); })

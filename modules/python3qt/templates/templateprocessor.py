@@ -1,6 +1,7 @@
-# Name: {name} 
+# Name: {name}
 
 import inviwopy as ivw
+
 
 class {name}(ivw.Processor):
     def __init__(self, id, name):
@@ -16,11 +17,11 @@ class {name}(ivw.Processor):
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
-    		classIdentifier = "org.inviwo.{name}", 
-    		displayName = "{name}",
-    		category = "Python",
-    		codeState = ivw.CodeState.Stable,
-    		tags = ivw.Tags.PY
+            classIdentifier="org.inviwo.{name}",
+            displayName="{name}",
+            category="Python",
+            codeState=ivw.CodeState.Stable,
+            tags=ivw.Tags.PY
         )
 
     def getProcessorInfo(self):

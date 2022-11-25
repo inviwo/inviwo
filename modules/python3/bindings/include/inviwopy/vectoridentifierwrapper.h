@@ -32,6 +32,7 @@
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <warn/pop>
 
 #include <inviwo/core/util/ostreamjoiner.h>
@@ -40,71 +41,92 @@
 #include <sstream>
 #include <cstdint>
 #include <algorithm>
+#include <iterator>
 
 namespace inviwo {
 
-template <typename V>
+template <typename It, bool Deref = true>
 class VectorIdentifierWrapper {
-public:
-    VectorIdentifierWrapper(const V& vector) : vector_{vector} {}
 
-    auto& getFromIdentifier(const std::string& identifier) const {
-        using std::begin;
-        using std::end;
-        auto it = std::find_if(begin(vector_), end(vector_), [&](const auto& elem) {
-            return elem->getIdentifier() == identifier;
-        });
-        if (it != end(vector_)) {
+    using value_type = typename std::iterator_traits<It>::value_type;
+
+    static decltype(auto) id(const value_type& elem) {
+        if constexpr (Deref) {
+            return elem->getIdentifier();
+        } else {
+            return elem.getIdentifier();
+        }
+    }
+
+    static decltype(auto) deref(It it) {
+        if constexpr (Deref) {
             return *(*it);
+        } else {
+            return *it;
+        }
+    }
+
+public:
+    VectorIdentifierWrapper(It begin, It end) : begin_{begin}, end_{end} {}
+
+    decltype(auto) getFromIdentifier(std::string_view identifier) const {
+        auto it =
+            std::find_if(begin_, end_, [&](const auto& elem) { return id(elem) == identifier; });
+        if (it != end_) {
+            return deref(it);
         } else {
             throw pybind11::key_error();
         }
     }
 
-    auto& getFromIndex(ptrdiff_t pos) const {
+    decltype(auto) getFromIndex(ptrdiff_t pos) const {
         if (pos >= 0) {
-            const auto ind = static_cast<size_t>(pos);
-            if (ind < vector_.size()) {
-                return *vector_[ind];
+            if (pos < size()) {
+                return deref(std::next(begin_, pos));
             } else {
                 throw pybind11::index_error();
             }
         } else {
-            const auto ind = static_cast<ptrdiff_t>(vector_.size()) + pos;
+            const auto ind = size() + pos;
             if (ind >= 0) {
-                return *vector_[static_cast<size_t>(ind)];
+                return deref(std::next(begin_, ind));
             } else {
                 throw pybind11::index_error();
             }
         }
     }
 
-    size_t size() { return vector_.size(); }
+    ptrdiff_t size() const { return static_cast<ptrdiff_t>(std::distance(begin_, end_)); }
 
-    bool contains(const std::string& identifier) {
-        return std::find_if(begin(vector_), end(vector_), [&](const auto& elem) {
-                   return elem->getIdentifier() == identifier;
-               }) != end(vector_);
+    bool contains(std::string_view identifier) const {
+        return std::find_if(begin_, end_,
+                            [&](const auto& elem) { return id(elem) == identifier; }) != end_;
+    }
+
+    std::vector<std::string> identifiers() const {
+        std::vector<std::string> res;
+        std::transform(begin_, end_, std::back_inserter(res), id);
+        return res;
     }
 
     std::string repr() const {
         std::stringstream ss;
         ss << "[";
         auto j = util::make_ostream_joiner(ss, ", ");
-        std::transform(vector_.begin(), vector_.end(), j,
-                       [](auto& elem) { return elem->getIdentifier(); });
+        std::transform(begin_, end_, j, id);
         ss << "]";
         return ss.str();
     }
 
 private:
-    const V& vector_;
+    It begin_;
+    It end_;
 };
 
-template <typename V>
+template <typename V, bool Deref = true>
 void exposeVectorIdentifierWrapper(pybind11::module& m, const std::string& name) {
     namespace py = pybind11;
-    using VecWrapper = VectorIdentifierWrapper<V>;
+    using VecWrapper = VectorIdentifierWrapper<V, Deref>;
 
     py::class_<VecWrapper>(m, name.c_str())
         .def("__getattr__", &VecWrapper::getFromIdentifier, py::return_value_policy::reference)
@@ -112,7 +134,8 @@ void exposeVectorIdentifierWrapper(pybind11::module& m, const std::string& name)
         .def("__getitem__", &VecWrapper::getFromIndex, py::return_value_policy::reference)
         .def("__len__", &VecWrapper::size)
         .def("__contains__", &VecWrapper::contains)
-        .def("__repr__", &VecWrapper::repr);
+        .def("__repr__", &VecWrapper::repr)
+        .def("__dir__", &VecWrapper::identifiers);
 }
 
 }  // namespace inviwo

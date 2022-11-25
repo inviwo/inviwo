@@ -31,16 +31,17 @@
 #include <modules/python3/python3moduledefine.h>
 
 #include <string>
+#include <string_view>
 
 namespace inviwo {
 
 namespace pyutil {
 
-IVW_MODULE_PYTHON3_API void addModulePath(const std::string& path);
-IVW_MODULE_PYTHON3_API void removeModulePath(const std::string& path);
+IVW_MODULE_PYTHON3_API void addModulePath(std::string_view path);
+IVW_MODULE_PYTHON3_API void removeModulePath(std::string_view path);
 
 struct IVW_MODULE_PYTHON3_API ModulePath {
-    ModulePath(const std::string& path);
+    ModulePath(std::string_view path);
     ModulePath(const ModulePath&) = delete;
     ModulePath(ModulePath&&) = default;
     ModulePath& operator=(const ModulePath&) = delete;

@@ -24,8 +24,12 @@ def make_cmd_parser():
     return parser.parse_args()
 
 
-def main(workspace=None, properties=None, screenshot=None, run=False, ipython=False,
-         list_processors=False, list_properties=None):
+def setupPaths(inviwoLibDir):
+    sys.path.append(str(inviwoLibDir))
+    os.environ['QT_PLUGIN_PATH'] = str(inviwoLibDir)
+
+def startup(workspace=None, properties=None, screenshot=None, run=False, ipython=False,
+            list_processors=False, list_properties=None):
     """ Constructs an Inviwo application and loads a workspace.
 
     :param workspace: Path to workspace to load, defaults load boron.inv
@@ -60,7 +64,7 @@ def main(workspace=None, properties=None, screenshot=None, run=False, ipython=Fa
 
     def addIpythonGuiHook(inviwoApp: qt.InviwoApplicationQt, name: str = "inviwo") -> bool:
         """ Add a event loop hook in IPyhton to enable simultanious use of the IPython terminal
-        and the inviwo qt gui use the IPython magic function '#gui inviwo' to start the event
+        and the inviwo qt gui use the IPython magic function '%gui inviwo' to start the event
         loop after calling this function.
         See https://ipython.readthedocs.io/en/stable/config/eventloops.html
         """
@@ -76,25 +80,34 @@ def main(workspace=None, properties=None, screenshot=None, run=False, ipython=Fa
 
         return True
 
-    res = []
+    class Result:
+        def __init__(self):
+            self.logCentral = None
+            self.loggers = []
+            self.inviwoApp = None
+            self.widget = None
+
+    res = Result()
+
 
     # Inviwo requires that a logcentral is created.
-    lc = ivw.LogCentral()
-    res.append(lc)
+    res.logCentral = ivw.LogCentral()
 
     # Create and register a console logger
     cl = ivw.ConsoleLogger()
-    lc.registerLogger(cl)
+    res.logCentral.registerLogger(cl)
+    res.loggers.append(cl)
 
     # Create the inviwo application
     try:
         app = qt.InviwoApplicationQt()
+        ivw.app = app
     except ... as e:
         print("failed to create app")
         print(e)
         raise e
 
-    res.append(app)
+    res.inviwoApp = app
     app.registerModules()
 
     # load a workspace
@@ -104,7 +117,7 @@ def main(workspace=None, properties=None, screenshot=None, run=False, ipython=Fa
 
     if properties:
         plw = ivw.qt.PropertyListWidget(app)
-        res.append(plw)
+        res.widget = plw
         for path in properties:
             if len(path.split('.')) == 1:
                 if proc := app.network.getProcessorByIdentifier(path):
@@ -137,28 +150,53 @@ def main(workspace=None, properties=None, screenshot=None, run=False, ipython=Fa
         # Save a snapshot
         app.network.Canvas.snapshot(screenshot)
 
-    if run:
+    if run and not ipython:
         # run the app event loop
         app.run()
 
     if ipython:
         addIpythonGuiHook(app)
-        print("enter '#gui inviwo' in ipython to start the event loop")
+        if run:
+            import IPython
+            IPython.get_ipython().enable_gui('inviwo')
+        else:
+            print("enter '%gui inviwo' in ipython to start the event loop")
 
-    return app
+    return res
+
+
+def init():
+    import inviwo
+    import shiboken6
+    import PySide6 as pyqt
+    import PySide6.QtWidgets
+    import PySide6.QtGui
+    
+        
+    inviwo.setupPaths("C:/Users/petst55.AD/Documents/Inviwo/builds/inviwo-vcpkg/bin/RelWithDebInfo")
+    app = inviwo.startup(ipython=True, run=True, properties=['VolumeRaycaster'])
+    app.inviwoApp.visible = True
+    app.inviwoApp.dockCanvas(app.inviwoApp.network.Canvas.widget)
+
+    qapp = pyqt.QtWidgets.QApplication.instance()
+    mainwindow = shiboken6.wrapInstance(app.inviwoApp.address(), pyqt.QtWidgets.QMainWindow)
+    mainwindow.menuBar().hide()
+    for t in mainwindow.findChildren(PySide6.QtWidgets.QToolBar):
+        t.hide()
+
+    return (app, qapp, mainwindow)
 
 
 if __name__ == '__main__':
     args = make_cmd_parser()
 
     if args.libdir:
-        sys.path.append(str(args.libdir))
-        os.environ['QT_PLUGIN_PATH'] = str(args.libdir)
+        setupPaths(str(args.libdir))
 
-    main(workspace=args.workspace,
-         properties=args.properties,
-         screenshot=args.screenshot,
-         run=args.run,
-         ipython=args.ipython,
-         list_processors=args.list_processors,
-         list_properties=args.list_properties)
+    startup(workspace=args.workspace,
+            properties=args.properties,
+            screenshot=args.screenshot,
+            run=args.run,
+            ipython=args.ipython,
+            list_processors=args.list_processors,
+            list_properties=args.list_properties)

@@ -32,6 +32,8 @@
 #include <inviwopy/pypropertytypehook.h>
 #include <inviwopy/vectoridentifierwrapper.h>
 
+#include <pybind11/stl.h>
+
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -60,9 +62,16 @@ void exposeNetwork(py::module& m) {
         .def_property_readonly("destination", &PropertyLink::getDestination,
                                py::return_value_policy::reference);
 
+    using ProcessorIt = decltype(std::declval<ProcessorNetwork>().processorRange().begin());
+    using ProcessorVecWrapper = VectorIdentifierWrapper<ProcessorIt, false>;
+    exposeVectorIdentifierWrapper<ProcessorIt, false>(m, "ProcessorVecWrapper");
+
     py::class_<ProcessorNetwork>(m, "ProcessorNetwork")
-        .def_property_readonly("processors", &ProcessorNetwork::getProcessors,
-                               py::return_value_policy::reference)
+        .def_property_readonly("processors",
+                               [](ProcessorNetwork& net) {
+                                   auto range = net.processorRange();
+                                   return ProcessorVecWrapper(range.begin(), range.end());
+                               })
         .def("getProcessorByIdentifier", &ProcessorNetwork::getProcessorByIdentifier,
              py::return_value_policy::reference)
         .def(

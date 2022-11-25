@@ -396,7 +396,9 @@ void exposeProperties(py::module& m) {
         .def("readonlyDependsOn",
              [](Property* p, Property* other, std::function<bool(Property&)> func) {
                  p->readonlyDependsOn(*other, func);
-             });
+             })
+        .def("getHelp", static_cast<Document& (Property::*)()>(&Property::getHelp))
+        .def("getDescription", &Property::getDescription);
 
     py::class_<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)

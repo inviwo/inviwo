@@ -63,7 +63,7 @@ PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, const std::st
                        utilqt::toQString(objName))
     , property_{property} {
 
-    setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    setAllowedAreas(Qt::AllDockWidgetAreas);
 
     QObject::connect(
         this, &InviwoDockWidget::dockLocationChanged, this, [this](Qt::DockWidgetArea dockArea) {

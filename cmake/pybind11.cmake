@@ -45,6 +45,7 @@ define_property(
 
 function (ivw_add_py_wrapper target)
     if(IVW_MODULE_PYTHON3)
+        find_package(pybind11 CONFIG REQUIRED)
         pybind11_add_module(${target} ${ARGN})
         set_target_properties(${target} PROPERTIES DEBUG_POSTFIX "")
         set_target_properties(${target} PROPERTIES PREFIX "")

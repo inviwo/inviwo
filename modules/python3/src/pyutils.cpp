@@ -45,20 +45,20 @@ namespace inviwo {
 
 namespace pyutil {
 
-void addModulePath(const std::string& path) {
+void addModulePath(std::string_view path) {
     namespace py = pybind11;
 
     if (!Py_IsInitialized()) {
         throw Exception("addModulePath(): Python is not initialized", IVW_CONTEXT_CUSTOM("pyutil"));
     }
 
-    std::string pathConv = path;
+    std::string pathConv{path};
     replaceInString(pathConv, "\\", "/");
 
     py::module::import("sys").attr("path").cast<py::list>().append(pathConv);
 }
 
-void removeModulePath(const std::string& path) {
+void removeModulePath(std::string_view path) {
     namespace py = pybind11;
 
     if (!Py_IsInitialized()) {
@@ -66,13 +66,13 @@ void removeModulePath(const std::string& path) {
                         IVW_CONTEXT_CUSTOM("pyutil"));
     }
 
-    std::string pathConv = path;
+    std::string pathConv{path};
     replaceInString(pathConv, "\\", "/");
 
     py::module::import("sys").attr("path").attr("remove")(pathConv);
 }
 
-ModulePath::ModulePath(const std::string& path) : path_{path} { addModulePath(path_); }
+ModulePath::ModulePath(std::string_view path) : path_{path} { addModulePath(path_); }
 
 ModulePath::~ModulePath() { removeModulePath(path_); }
 

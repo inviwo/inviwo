@@ -36,6 +36,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/processors/processorfactory.h>
 
@@ -58,9 +59,11 @@ void exposeInviwoApplication(pybind11::module& m) {
         .value("Help", PathType::Help)
         .value("Tests", PathType::Tests);
 
-    using ModuleVecWrapper = VectorIdentifierWrapper<std::vector<std::unique_ptr<InviwoModule>>>;
-    exposeVectorIdentifierWrapper<std::vector<std::unique_ptr<InviwoModule>>>(
-        m, "ModuleVectorWrapper");
+    using ModuleVecWrapper = VectorIdentifierWrapper<
+        typename std::vector<std::unique_ptr<InviwoModule>>::const_iterator>;
+    exposeVectorIdentifierWrapper<
+        typename std::vector<std::unique_ptr<InviwoModule>>::const_iterator>(m,
+                                                                             "ModuleVectorWrapper");
 
     py::class_<InviwoApplication>(m, "InviwoApplication", py::multiple_inheritance{})
         .def(py::init<>())
@@ -71,8 +74,11 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def_property_readonly("basePath", &InviwoApplication::getBasePath)
         .def_property_readonly("displayName", &InviwoApplication::getDisplayName)
 
-        .def_property_readonly(
-            "modules", [](InviwoApplication* app) { return ModuleVecWrapper(app->getModules()); })
+        .def_property_readonly("modules",
+                               [](InviwoApplication* app) {
+                                   return ModuleVecWrapper(app->getModules().begin(),
+                                                           app->getModules().end());
+                               })
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
              py::return_value_policy::reference)
         .def("getModuleSettings", &InviwoApplication::getModuleSettings,

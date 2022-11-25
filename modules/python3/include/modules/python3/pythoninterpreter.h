@@ -40,10 +40,10 @@ public:
     PythonInterpreter();
     virtual ~PythonInterpreter();
 
-    void addModulePath(const std::string& path);
-    void importModule(const std::string& moduleName);
+    void addModulePath(std::string_view path);
+    void importModule(std::string_view moduleName);
 
-    bool runString(std::string code);
+    bool runString(std::string_view code);
 
 private:
     bool embedded_;
