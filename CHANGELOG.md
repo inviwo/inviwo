@@ -1,5 +1,16 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-11-25 The PropertyListWidget defaults to showing one processor
+Previously the `PropertyListWidget` has shown the properties of all selected processors in the network. 
+This can sometimes be very slow to render for large selections, and in most cases one does not care about the properties when selection many processors.
+But one will usually do some operation on the processor network (more/copy/delete/etc). 
+So to make the behavior better we now only show the properties of the first selected processor if multiple ones are selected.
+But if you hold down `shift` we will fall back to the old behavior of showing all properties.
+
+## 2022-11-25 InviwoApplicationQt removed
+The `InviwoApplicationQt` class has been remove in favor of using a standalone `InviwoApplication` and a `QApplication` to reduce coupling and increase flexibility.
+The functionality that could be found in InviwoApplcationQt can now be access as a set of utility function in `qt/applicationbase/qtapptools.h`
+
 ## 2022-09-29 Pre-compiled headers overhaul
 The generation of pre-compiled headers (PCH) was changed from Cotire to CMake. This enables using PCH in combination with Qt6.
 A single PCH file is generated for inviwo core including a number of standard includes. In addition, there is a PCH file for the qtwidgets modules with some Qt headers. These PCH files ar reused by all modules by default when depending on qtwidgets or core respectively, and assuming `IVW_CFG_PRECOMPILED_HEADERS` is checked. Use the `NO_PCH` option when calling `ivw_create_module()` to prevent the default PCH from being used in a module.

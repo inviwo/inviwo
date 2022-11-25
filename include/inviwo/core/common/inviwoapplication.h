@@ -114,8 +114,8 @@ class LayerRamResizer;
 class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
 public:
     InviwoApplication();
-    InviwoApplication(std::string displayName);
-    InviwoApplication(int argc, char** argv, std::string displayName);
+    InviwoApplication(std::string_view displayName);
+    InviwoApplication(int argc, char** argv, std::string_view displayName);
     InviwoApplication(const InviwoApplication& rhs) = delete;
     InviwoApplication& operator=(const InviwoApplication& that) = delete;
 
@@ -213,7 +213,8 @@ public:
     template <class T>
     T* getCapabilitiesByType();
 
-    virtual std::locale getUILocale() const;
+    std::locale getUILocale() const;
+    void setUILocale(const std::locale& locale);
 
     template <class F, class... Args>
     auto dispatchPool(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>>;
@@ -237,11 +238,13 @@ public:
      */
     size_t getPoolSize() const;
 
+    enum class LongWait { Start, Update, End };
     /**
      * Set the number of worker threads in the thread pool. This will block for working threads to
      * finish
      */
-    virtual void resizePool(size_t newSize);
+    void resizePool(size_t newSize);
+    void setPoolResizeWaitCallback(std::function<void(LongWait)> callback);
 
     void waitForPool();
     void setPostEnqueueFront(std::function<void()> func);
@@ -412,9 +415,6 @@ public:
     void setFileSystemObserver(std::unique_ptr<FileSystemObserver> observer);
     FileSystemObserver* getFileSystemObserver() const;
 
-    // Methods to be implemented by deriving classes
-    virtual void closeInviwoApplication();
-
     TimerThread& getTimerThread();
     const std::string& getDisplayName() const;
     virtual void printApplicationInfo();
@@ -453,6 +453,8 @@ protected:
     std::function<void(std::string)> progressCallback_;
     std::unique_ptr<FileSystemObserver> fileSystemObserver_;
 
+    std::locale uiLocale_{};
+    std::function<void(LongWait)> poolResizeCallback_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
 

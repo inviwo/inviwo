@@ -27,8 +27,9 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <inviwo/qt/applicationbase/qtapptools.h>
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>
@@ -45,12 +46,8 @@
 #include <sstream>
 #include <algorithm>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QFile>
 #include <QMessageBox>
-#include <QSurfaceFormat>
-#include <warn/pop>
+#include <QApplication>
 
 int main(int argc, char** argv) {
     inviwo::LogCentral logger;
@@ -66,20 +63,26 @@ int main(int argc, char** argv) {
     qputenv("QT_STYLE_OVERRIDE", "");
 #endif
     // Must be set before constructing QApplication
-    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-    QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-    QSurfaceFormat defaultFormat;
-    defaultFormat.setMajorVersion(10);
-    defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
-    QSurfaceFormat::setDefaultFormat(defaultFormat);
+    inviwo::utilqt::configureInviwoQtApp();
+    
+#ifdef IVW_DEBUG
+    qInstallMessageHandler(&utilqt::logQtMessages);
+#endif
 
-    inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
-    inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
-
+    QApplication qtApp{argc, argv};
+    inviwo::InviwoApplication inviwoApp(argc, argv, "Inviwo");
+    
+    inviwo::utilqt::configureInviwoDefaultNames();
+    inviwo::utilqt::configureFileSystemObserver(inviwoApp);
+    inviwo::utilqt::configurePostEnqueueFront(inviwoApp);
+    inviwo::utilqt::setStyleSheetFile(":/stylesheets/inviwo.qss");
+    inviwoApp.setUILocale(inviwo::utilqt::getCurrentStdLocale());
+    
     auto& clp = inviwoApp.getCommandLineParser();
 
     inviwo::InviwoMainWindow mainWin(&inviwoApp);
     inviwoApp.printApplicationInfo();
+    LogInfoCustom("InviwoInfo", "Qt Version " << QT_VERSION_STR);
 
     // initialize and show splash screen
     inviwo::InviwoSplashScreen splashScreen(clp.getShowSplashScreen());
@@ -92,24 +95,24 @@ int main(int argc, char** argv) {
     splashScreen.showMessage("Initializing modules...");
     inviwoApp.registerModules(inviwo::getModuleList());
 
-    inviwoApp.processEvents();
+    qtApp.processEvents();
 
     // Do this after registerModules if some arguments were added
     clp.parse(inviwo::CommandLineParser::Mode::Normal);
 
-    inviwoApp.processEvents();  // Update GUI
+    qtApp.processEvents();  // Update GUI
     splashScreen.showMessage("Loading workspace...");
-    inviwoApp.processEvents();
+    qtApp.processEvents();
     mainWin.showWindow();
-    inviwoApp.processEvents();  // Make sure the gui is done loading before loading workspace
+    qtApp.processEvents();  // Make sure the gui is done loading before loading workspace
 
     mainWin.openLastWorkspace(clp.getWorkspacePath());  // open last workspace
     inviwoApp.setProgressCallback(std::function<void(std::string)>{});
     splashScreen.finish(&mainWin);
 
-    inviwoApp.processEvents();
+    qtApp.processEvents();
     clp.processCallbacks();  // run any command line callbacks from modules.
-    inviwoApp.processEvents();
+    qtApp.processEvents();
 
     inviwo::util::OnScopeExit clearNetwork([&]() { inviwoApp.getProcessorNetwork()->clear(); });
 
@@ -131,7 +134,7 @@ int main(int argc, char** argv) {
 
     while (true) {
         try {
-            return inviwoApp.exec();
+            return qtApp.exec();
         } catch (const inviwo::Exception& e) {
             {
                 std::stringstream ss;

@@ -44,6 +44,7 @@
         "IVW_USE_EXTERNAL_GTEST":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_HDF5":      { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_IMG":       { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_TIFF":      { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_JSON":      { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_NIFTI":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_OPENEXR":   { "type": "BOOL", "value": "ON"},

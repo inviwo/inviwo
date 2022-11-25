@@ -37,22 +37,26 @@
 #include <pybind11/detail/descr.h>   // for operator+
 #include <pybind11/pybind11.h>       // for class_, module_, init
 #include <pybind11/pytypes.h>        // for str, none, reinterp...
+#include <pybind11/embed.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                     // IWYU pragma: keep
-#include <inviwo/core/common/inviwomodule.h>                          // for InviwoModule
-#include <inviwo/core/properties/fileproperty.h>                      // for FileProperty
-#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
-#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
-#include <inviwo/core/util/exception.h>                               // for Exception, Exceptio...
-#include <inviwo/core/util/glmvec.h>                                  // for ivec2
-#include <inviwo/core/util/settings/settings.h>                       // for Settings
-#include <inviwo/core/util/sourcecontext.h>                           // for IVW_CONTEXT
+#include <inviwo/core/common/inviwoapplication.h>      // IWYU pragma: keep
+#include <inviwo/core/common/inviwomodule.h>           // for InviwoModule
+#include <inviwo/core/properties/fileproperty.h>       // for FileProperty
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics
+#include <inviwo/core/properties/stringproperty.h>     // for StringProperty
+#include <inviwo/core/util/exception.h>                // for Exception, Exceptio...
+#include <inviwo/core/util/glmvec.h>                   // for ivec2
+#include <inviwo/core/util/settings/settings.h>        // for Settings
+#include <inviwo/core/util/sourcecontext.h>            // for IVW_CONTEXT
+#include <inviwo/core/network/processornetwork.h>
 #include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>  // for PythonFilePropertyW...
 #include <modules/python3qt/properties/pythonpropertywidgetqt.h>      // for PythonPropertyWidgetQt
 #include <modules/python3qt/pythonmenu.h>                             // for PythonMenu
 #include <modules/python3qt/pythonsyntaxhighlight.h>                  // for PythonSyntaxHighlight
 #include <modules/qtwidgets/inviwoqtutils.h>                          // for toGLM, getApplicati...
 #include <modules/qtwidgets/propertylistwidget.h>                     // for PropertyListWidget
+
+#include <inviwo/qt/applicationbase/qtapptools.h>
 
 #include <atomic>       // for atomic
 #include <exception>    // for exception
@@ -68,7 +72,8 @@
 #include <QMainWindow>       // for QMainWindow
 #include <QString>           // for QString
 #include <Qt>                // for MSWindowsFixedSizeD...
-#include <glm/vec2.hpp>      // for vec<>::(anonymous)
+#include <QTimer>
+#include <glm/vec2.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
 
@@ -99,15 +104,53 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
         auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
 
         m.def("prompt", &prompt, py::arg("title"), py::arg("message"),
-              py::arg("defaultResponse") = "");
-        m.def("update", [this]() {
-            QCoreApplication::processEvents();
-            QCoreApplication::sendPostedEvents();
-            if (abortPythonEvaluation_) {
-                abortPythonEvaluation_ = false;
-                throw PythonAbortException("Evaluation aborted");
-            }
-        });
+              py::arg("defaultResponse") = "")
+            .def("update",
+                 [this]() {
+                     qApp->processEvents();
+                     qApp->sendPostedEvents();
+                     if (abortPythonEvaluation_) {
+                         abortPythonEvaluation_ = false;
+                         throw PythonAbortException("Evaluation aborted");
+                     }
+                 })
+            .def("configureInviwoQtApp", &utilqt::configureInviwoQtApp)
+            .def("logQtMessages",
+                 [](QtMsgType type, const QMessageLogContext& context, const QString& msg) {
+                     utilqt::logQtMessages(type, context, msg);
+                 })
+            .def("configureFileSystemObserver", &utilqt::configureFileSystemObserver)
+            .def("configurePostEnqueueFront", &utilqt::configurePostEnqueueFront)
+            .def("configurePoolResizeWait", &utilqt::configurePoolResizeWait)
+            .def("setStyleSheetFile", &utilqt::setStyleSheetFile)
+            .def("execWithTimer",
+                 []() {
+                     auto timer = new QTimer(qApp);
+                     QObject::connect(timer, &QTimer::timeout, []() {
+                         try {
+                             py::exec("lambda x: 1");
+                         } catch (...) {
+                             LogInfoCustom("InviwoPyApp", "Aborted Qt event loop");
+                             qApp->quit();
+                         }
+                     });
+                     timer->start(100);
+
+                     qApp->exec();
+                 })
+            .def(
+                "exit", [](int i) { qApp->exit(i); }, py::arg("exitCode") = 0)
+            .def(
+                "waitForNetwork",
+                [](InviwoApplication* app, int maxJobs) {
+                    qApp->processEvents();
+                    app->waitForPool();
+                    do {
+                        qApp->processEvents();
+                        app->processFront();
+                    } while (app->getProcessorNetwork()->runningBackgroundJobs() > maxJobs);
+                },
+                py::arg("inviwoApplication"), py::arg("maxJobs") = 0);
 
         py::class_<PropertyListWidget>(m, "PropertyListWidget")
             .def(py::init([](InviwoApplication* app) {

@@ -34,7 +34,6 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/threadutil.h>
-#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,6 +41,8 @@
 #include <QEvent>
 #include <QApplication>
 #include <QGuiApplication>
+#include <QMouseEvent>
+#include <QTouchEvent>
 #include <warn/pop>
 
 #include <thread>
@@ -128,7 +129,8 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow)
     , refPath_{filesystem::findBasePath()}
     , autoSaver_{std::make_unique<AutoSaver>()} {
 
-    mainWindow_->getInviwoApplicationQt()->setUndoTrigger([this]() { pushStateIfDirty(); });
+    QApplication::instance()->installEventFilter(this);
+    
     mainWindow_->getInviwoApplication()->getProcessorNetwork()->addObserver(this);
 
     undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), mainWindow_);
@@ -251,4 +253,53 @@ void UndoManager::onProcessorNetworkDidAddConnection(const PortConnection&) { di
 void UndoManager::onProcessorNetworkDidRemoveConnection(const PortConnection&) { dirty_ = true; }
 void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink&) { dirty_ = true; }
 void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink&) { dirty_ = true; }
+
+#include <warn/push>
+#include <warn/ignore/switch-enum>
+bool UndoManager::eventFilter(QObject* watched, QEvent* e) {
+    switch (e->type()) {
+        case QEvent::MouseButtonRelease: {
+            pushStateIfDirty();
+            break;
+        }
+        case QEvent::TouchEnd: {
+            auto te = static_cast<QTouchEvent*>(e);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+            if (util::all_of(te->points(), [](const QTouchEvent::TouchPoint& tp) {
+                    return tp.state() == QEventPoint::Released;
+                })) {
+                pushStateIfDirty();
+                break;
+            }
+#else
+            if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint& tp) {
+                    return tp.state() == Qt::TouchPointReleased;
+                })) {
+                pushStateIfDirty();
+                break;
+            }
+#endif
+
+            break;
+        }
+        case QEvent::KeyRelease: {
+            pushStateIfDirty();
+            break;
+        }
+        case QEvent::Drop: {
+            pushStateIfDirty();
+            break;
+        }
+        default:
+            break;
+    }
+    return false;
+}
+#include <warn/pop>
+
+
+
+
+
+
 }  // namespace inviwo

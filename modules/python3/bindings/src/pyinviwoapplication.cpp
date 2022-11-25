@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -39,15 +40,6 @@
 #include <inviwo/core/processors/processorfactory.h>
 
 namespace inviwo {
-
-class InviwoApplicationTrampoline : public InviwoApplication {
-public:
-    using InviwoApplication::InviwoApplication;
-
-    virtual void closeInviwoApplication() override {
-        PYBIND11_OVERLOAD(void, InviwoApplication, closeInviwoApplication, );
-    };
-};
 
 void exposeInviwoApplication(pybind11::module& m) {
     namespace py = pybind11;
@@ -89,10 +81,18 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def("waitForPool", &InviwoApplication::waitForPool)
         .def("resizePool", &InviwoApplication::resizePool)
         .def("getPoolSize", &InviwoApplication::getPoolSize)
-        .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
 
         .def("getOutputPath",
              [](InviwoApplication* app) { return app->getCommandLineParser().getOutputPath(); })
+
+        .def("registerModules",
+             [](InviwoApplication* app) { app->registerModules(inviwo::getModuleList()); })
+        .def("registerRuntimeModules",
+             [](InviwoApplication* app) { app->registerModules(RuntimeModuleLoading{}); })
+        .def("runningBackgroundJobs",
+             [](InviwoApplication* app) {
+                 return app->getProcessorNetwork()->runningBackgroundJobs();
+             })
 
         .def_property_readonly("network", &InviwoApplication::getProcessorNetwork,
                                "Get the processor network", py::return_value_policy::reference)

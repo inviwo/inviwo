@@ -51,7 +51,7 @@ elseif(IVW_TEST_UNIT_TESTS OR IVW_TEST_INTEGRATION_TESTS)
 endif()
 
 # Img formats
-option(IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
+option(IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg) instead of building them." OFF)
 if (NOT IVW_USE_EXTERNAL_IMG)
     message(STATUS "add subdirectory: zlib")
     add_subdirectory(zlib-1.2.11) # Defines target ZLIB::ZLIB
@@ -59,8 +59,6 @@ if (NOT IVW_USE_EXTERNAL_IMG)
     add_subdirectory(libpng)      # Defines target png
     message(STATUS "add subdirectory: libjpeg")
     add_subdirectory(libjpeg)     # Defines target JPEG::JPEG
-    message(STATUS "add subdirectory: tiff")
-    add_subdirectory(tiff)        # Defines target TIFF::TIFF
 
     ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core EXT
         URL "http://zlib.net/" TYPE "The zlib/libpng License"
@@ -70,10 +68,6 @@ if (NOT IVW_USE_EXTERNAL_IMG)
         TYPE "BSD-style, acknowledgement: This software is based in part on the work of the Independent JPEG Group"
         URL www.ijg.org FILES ${IVW_EXTENSIONS_DIR}/libjpeg/README
     )
-    ivw_register_license_file(NAME tiff TARGET TIFF::TIFF MODULE Core EXT
-        TYPE "The MIT License" URL http://www.libtiff.org/
-        FILES ${IVW_EXTENSIONS_DIR}/tiff/COPYRIGHT
-    )
     ivw_register_license_file(NAME libpng TARGET png MODULE Core EXT 
         TYPE "libpng (BSD-style)" URL http://www.libpng.org/pub/png/libpng.html
         FILES ${IVW_EXTENSIONS_DIR}/libpng/LICENSE.txt
@@ -81,12 +75,24 @@ if (NOT IVW_USE_EXTERNAL_IMG)
 else()
     find_package(ZLIB REQUIRED)
     find_package(JPEG REQUIRED)
-    find_package(TIFF REQUIRED)
     find_package(PNG  REQUIRED)
     ivw_vcpkg_install(zlib          MODULE Core EXT)
     ivw_vcpkg_install(libjpeg-turbo MODULE Core EXT)
-    ivw_vcpkg_install(tiff          MODULE Core EXT)
     ivw_vcpkg_install(libpng        MODULE Core EXT)
+endif()
+
+# TIFF
+option(IVW_USE_EXTERNAL_TIFF "Link with external image library tiff instead of building it." OFF)
+if (NOT IVW_USE_EXTERNAL_TIFF)
+    message(STATUS "add subdirectory: tiff")
+    add_subdirectory(tiff)        # Defines target TIFF::TIFF
+    ivw_register_license_file(NAME tiff TARGET TIFF::TIFF MODULE Core EXT
+        TYPE "The MIT License" URL http://www.libtiff.org/
+        FILES ${IVW_EXTENSIONS_DIR}/tiff/COPYRIGHT
+    )
+else()
+    find_package(TIFF REQUIRED)
+    ivw_vcpkg_install(tiff          MODULE Core EXT)
 endif()
 
 # Flags

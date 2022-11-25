@@ -60,7 +60,7 @@ class SettingsWidget;
 class HelpWidget;
 class WelcomeWidget;
 class AnnotationsWidget;
-class InviwoApplicationQt;
+class InviwoApplication;
 class InviwoDockWidget;
 class InviwoEditMenu;
 class InviwoAboutWindow;
@@ -73,7 +73,7 @@ class Processor;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
-    InviwoMainWindow(InviwoApplicationQt* app);
+    InviwoMainWindow(InviwoApplication* app);
     virtual ~InviwoMainWindow();
 
     void showWindow();
@@ -111,8 +111,7 @@ public:
     AnnotationsWidget* getAnnotationsWidget() const;
     HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
-    InviwoApplicationQt* getInviwoApplicationQt() const;
-
+    
     InviwoEditMenu* getInviwoEditMenu() const;
     ToolsMenu* getToolsMenu() const;
 
@@ -232,7 +231,7 @@ private:
 
     void updateWindowTitle();
 
-    InviwoApplicationQt* app_;
+    InviwoApplication* app_;
     MenuKeyboardEventFilter* menuEventFilter_;
     InviwoEditMenu* editMenu_ = nullptr;
     ToolsMenu* toolsMenu_ = nullptr;

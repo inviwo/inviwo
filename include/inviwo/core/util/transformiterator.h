@@ -141,6 +141,9 @@ struct TransformIterator {
     reference operator*() const { return (*transform_)(*iterator_); }
     pointer operator->() const { return &(*transform_)(*iterator_); }
 
+    reference operator*() { return (*transform_)(*iterator_); }
+    pointer operator->() { return &(*transform_)(*iterator_); }
+
     const Iter& base() const { return iterator_; }
     Iter& base() { return iterator_; }
 

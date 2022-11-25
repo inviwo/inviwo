@@ -37,90 +37,16 @@
 
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
-#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <inviwo/qt/applicationbase/qtapptools.h>
 #include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/network/processornetwork.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QTimer>
 #include <QObject>
 #include <QFile>
-#include <QSurfaceFormat>
-#include <warn/pop>
+#include <QApplication>
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(inviwopyapp, m) {
-
-    using namespace inviwo;
-    m.doc() = R"doc(
-        Inviwo Python Application
-        -------------------------
-        
-        )doc";
-
-    auto inviwopy = py::module::import("inviwopy");
-    auto inviwoApplicationClass = static_cast<py::object>(inviwopy.attr("InviwoApplication"));
-    py::class_<InviwoApplicationQt, InviwoApplication>(m, "InviwoApplicationQt",
-                                                       py::multiple_inheritance{})
-        .def(py::init([](std::string appName) {
-                 // Must be set before constructing QApplication
-                 QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-                 QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-                 QSurfaceFormat defaultFormat;
-                 defaultFormat.setMajorVersion(10);
-                 defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
-                 QSurfaceFormat::setDefaultFormat(defaultFormat);
-
-                 auto app = new InviwoApplicationQt(appName);
-                 app->setStyleSheetFile(":/stylesheets/inviwo.qss");
-
-                 auto win = new QMainWindow();
-                 win->setObjectName("InviwoMainWindow");
-                 app->setMainWindow(win);
-                 win->hide();
-
-                 return app;
-             }),
-             py::arg("appName") = "inviwo")
-        .def("run",
-             [](InviwoApplicationQt* app) {
-                 auto timer = new QTimer(app);
-                 QObject::connect(timer, &QTimer::timeout, [app]() {
-                     try {
-                         py::exec("lambda x: 1");
-                     } catch (...) {
-                         LogInfoCustom("InviwoPyApp", "Aborted Qt event loop");
-                         app->quit();
-                     }
-                 });
-                 timer->start(100);
-
-                 app->exec();
-             })
-        .def("exit", [](InviwoApplicationQt* app, int i) { app->exit(i); })
-        .def("update", [](InviwoApplicationQt* app) { app->processEvents(); })
-        .def("registerModules",
-             [](InviwoApplicationQt* app) { app->registerModules(inviwo::getModuleList()); })
-        .def("registerRuntimeModules",
-             [](InviwoApplicationQt* app) { app->registerModules(RuntimeModuleLoading{}); })
-        .def("runningBackgroundJobs",
-             [](InviwoApplicationQt* app) {
-                 return app->getProcessorNetwork()->runningBackgroundJobs();
-             })
-        .def(
-            "waitForNetwork",
-            [](InviwoApplicationQt* app, int maxJobs = 0) {
-                app->processEvents();
-                app->waitForPool();
-                do {
-                    app->processEvents();
-                    app->processFront();
-                } while (app->getProcessorNetwork()->runningBackgroundJobs() > maxJobs);
-            },
-            py::arg("maxJobs") = 0);
-
-    m.add_object("py", inviwopy);
-}
