@@ -191,7 +191,7 @@ size_t WorkspaceAnimations::getMainAnimationIndex() const {
     // Note: cannot use WorkspaceAnimations::find here due to const, simply do the same.
     auto it =
         std::find_if(animations_.begin(), animations_.end(),
-                     [anim = &getMainAnimation().get()](const auto& a) { return anim == &a; });
+                     [anim = &getMainAnimation().get()](auto& a) { return anim == &a; });
     return std::distance(begin(), it);
 }
 

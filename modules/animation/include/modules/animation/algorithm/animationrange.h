@@ -57,15 +57,16 @@ Seconds getTimeHelper(const T& elem, PlaybackDirection direction) {
 }
 
 }  // namespace detail
+
 /*
- * Calls operator(Seconds from, Seconds to,
-                      AnimationState state) -> AnimationTimeState for each element [begin, end) in
- the time range [from, to].
+ * Calls operator(Seconds from, Seconds to, AnimationState state) -> AnimationTimeState
+ * for each element [begin, end) in the time range [from, to].
+ *
  * The elements are processed in the order given by from and to, e.g. reverse order if from > to.
  * The function is currently designed for Dirac delta Keyframe and KeyframeSequence, i.e. no
- interpolation (such as ControlKeyframe, ControlKeyframeSequence).
+ * interpolation (such as ControlKeyframe, ControlKeyframeSequence).
  * @param begin, end iterator range to types std::unique_ptr<Keyframe> or
- std::unique_ptr<KeyframeSequence>.
+ * std::unique_ptr<KeyframeSequence>.
  * @return AnimationTimeState after processing the elements.
  */
 template <typename Iterator>

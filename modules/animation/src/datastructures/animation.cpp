@@ -180,7 +180,8 @@ BasePropertyTrack* Animation::add(Property* property) {
                 try {
                     basePropertyTrack->setProperty(property);
                 } catch (const Exception& e) {
-                    LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
+                    LogWarn(e.getMessage() << " Invalid property class identified?");
+                    return nullptr;
                 }
                 add(std::move(track));
                 return basePropertyTrack;
@@ -308,18 +309,20 @@ void Animation::trackAddedInternal(Track* track) {
 
 void Animation::trackRemovedInternal(Track* track) {
     util::erase_remove(priorityTracks_, track);
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track);
-        auto owner = propertyTrack->getProperty()->getOwner()) {
-        // Only stop observing property owner if no other track needs it
-        auto sameOwnerIt = std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
-            if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
-                return ptrck->getProperty()->getOwner() == owner;
-            } else {
-                return false;
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
+        if (auto owner = propertyTrack->getProperty()->getOwner()) {
+            // Only stop observing property owner if no other track needs it
+            auto sameOwnerIt =
+                std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
+                    if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
+                        return ptrck->getProperty()->getOwner() == owner;
+                    } else {
+                        return false;
+                    }
+                });
+            if (sameOwnerIt == tracks_.end()) {
+                owner->removeObserver(this);
             }
-        });
-        if (sameOwnerIt == tracks_.end()) {
-            owner->removeObserver(this);
         }
     }
     notifyTrackRemoved(track);

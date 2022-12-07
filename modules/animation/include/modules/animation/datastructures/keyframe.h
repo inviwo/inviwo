@@ -34,6 +34,8 @@
 #include <modules/animation/datastructures/animationtime.h>     // for Seconds
 #include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObservable
 
+#include <chrono>  // for operator<, operator<=, opera...
+
 namespace inviwo {
 class Deserializer;
 class Serializer;
@@ -60,22 +62,30 @@ public:
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
+
+    friend bool operator<(const Keyframe& a, const Keyframe& b) {
+        return a.getTime() < b.getTime();
+    }
+    friend bool operator>(const Keyframe& a, const Keyframe& b) {
+        return a.getTime() > b.getTime();
+    }
+    friend bool operator>=(const Keyframe& a, const Keyframe& b) {
+        return a.getTime() >= b.getTime();
+    }
+    friend bool operator<=(const Keyframe& a, const Keyframe& b) {
+        return a.getTime() <= b.getTime();
+    }
+
+    friend bool operator<(const Keyframe& a, const Seconds& b) { return a.getTime() < b; }
+    friend bool operator<=(const Keyframe& a, const Seconds& b) { return a.getTime() <= b; }
+    friend bool operator>(const Keyframe& a, const Seconds& b) { return a.getTime() > b; }
+    friend bool operator>=(const Keyframe& a, const Seconds& b) { return a.getTime() >= b; }
+
+    friend bool operator<(const Seconds& a, const Keyframe& b) { return a < b.getTime(); }
+    friend bool operator<=(const Seconds& a, const Keyframe& b) { return a <= b.getTime(); }
+    friend bool operator>(const Seconds& a, const Keyframe& b) { return a > b.getTime(); }
+    friend bool operator>=(const Seconds& a, const Keyframe& b) { return a >= b.getTime(); }
 };
-
-IVW_MODULE_ANIMATION_API bool operator<(const Keyframe& a, const Keyframe& b);
-IVW_MODULE_ANIMATION_API bool operator<=(const Keyframe& a, const Keyframe& b);
-IVW_MODULE_ANIMATION_API bool operator>(const Keyframe& a, const Keyframe& b);
-IVW_MODULE_ANIMATION_API bool operator>=(const Keyframe& a, const Keyframe& b);
-
-IVW_MODULE_ANIMATION_API bool operator<(const Keyframe& a, const Seconds& b);
-IVW_MODULE_ANIMATION_API bool operator<=(const Keyframe& a, const Seconds& b);
-IVW_MODULE_ANIMATION_API bool operator>(const Keyframe& a, const Seconds& b);
-IVW_MODULE_ANIMATION_API bool operator>=(const Keyframe& a, const Seconds& b);
-
-IVW_MODULE_ANIMATION_API bool operator<(const Seconds& a, const Keyframe& b);
-IVW_MODULE_ANIMATION_API bool operator<=(const Seconds& a, const Keyframe& b);
-IVW_MODULE_ANIMATION_API bool operator>(const Seconds& a, const Keyframe& b);
-IVW_MODULE_ANIMATION_API bool operator>=(const Seconds& a, const Keyframe& b);
 
 }  // namespace animation
 

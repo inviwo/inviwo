@@ -130,10 +130,8 @@ void AnimationEditorQt::onTrackAdded(Track* track) {
         tracks_[track] = std::move(trackWidget);
         updateSceneRect();
     } else {
-        throw Exception(
-            fmt::format("Not able to create widget for track: {} of type: {}" + track->getName(),
-                        track->getClassIdentifier()),
-            IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Not able to create widget for track: {} of type: {}",
+                        track->getName(), track->getClassIdentifier());
     }
 }
 

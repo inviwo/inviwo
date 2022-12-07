@@ -31,6 +31,7 @@ set(HEADER_FILES
     include/modules/animation/datastructures/controlkeyframesequence.h
     include/modules/animation/datastructures/controltrack.h
     include/modules/animation/datastructures/easing.h
+    include/modules/animation/datastructures/invalidationtrack.h
     include/modules/animation/datastructures/keyframe.h
     include/modules/animation/datastructures/keyframeobserver.h
     include/modules/animation/datastructures/keyframesequence.h
@@ -84,6 +85,7 @@ set(SOURCE_FILES
     src/datastructures/controlkeyframesequence.cpp
     src/datastructures/controltrack.cpp
     src/datastructures/easing.cpp
+    src/datastructures/invalidationtrack.cpp
     src/datastructures/keyframe.cpp
     src/datastructures/keyframeobserver.cpp
     src/datastructures/keyframesequence.cpp

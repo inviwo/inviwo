@@ -52,7 +52,7 @@ namespace animation {
 /** \class CallbackTrack
  * A track for executing callbacks when animating forward/backward.
  * Exposes functions for adding a CallbackKeyFrame and CallbackKeyFrameSequence
- * This track is intended to be added programatically, i.e., not through the animation user
+ * This track is intended to be added programmatically, i.e., not through the animation user
  * interface.
  * @see CallbackKeyframe
  * @see CallbackKeyframeSequence

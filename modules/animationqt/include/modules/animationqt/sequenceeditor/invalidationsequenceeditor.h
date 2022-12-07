@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animationqt/animationqtmoduledefine.h>
 
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
+
+#include <string>  // for string
+
+class QLineEdit;
 
 namespace inviwo {
 
 namespace animation {
 
+class AnimationManager;
+class Keyframe;
+class KeyframeSequence;
+class Track;
+
+class IVW_MODULE_ANIMATIONQT_API InvalidationSequenceEditor : public SequenceEditorWidget {
+public:
+    InvalidationSequenceEditor(KeyframeSequence& sequence, Track& track, AnimationManager& manager);
+    virtual ~InvalidationSequenceEditor() = default;
+
+    static std::string classIdentifier();
+
+protected:
+    virtual QWidget* create(Keyframe* key) override;
+
+    QLineEdit* processor_{nullptr};
+};
+
 }  // namespace animation
+
 }  // namespace inviwo

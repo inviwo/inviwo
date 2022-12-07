@@ -51,29 +51,6 @@ std::pair<Seconds, Seconds> KeyframeSequence::getTimeSpan() const {
     return {getFirstTime(), getLastTime()};
 }
 
-bool operator<(const KeyframeSequence& a, const KeyframeSequence& b) {
-    return a.getFirstTime() < b.getFirstTime();
-}
-bool operator<=(const KeyframeSequence& a, const KeyframeSequence& b) {
-    return a.getFirstTime() <= b.getFirstTime();
-}
-bool operator>(const KeyframeSequence& a, const KeyframeSequence& b) {
-    return a.getFirstTime() > b.getFirstTime();
-}
-bool operator>=(const KeyframeSequence& a, const KeyframeSequence& b) {
-    return a.getFirstTime() >= b.getFirstTime();
-}
-
-bool operator<(const KeyframeSequence& a, const Seconds& b) { return a.getFirstTime() < b; }
-bool operator<=(const KeyframeSequence& a, const Seconds& b) { return a.getFirstTime() <= b; }
-bool operator>(const KeyframeSequence& a, const Seconds& b) { return a.getFirstTime() > b; }
-bool operator>=(const KeyframeSequence& a, const Seconds& b) { return a.getFirstTime() >= b; }
-
-bool operator<(const Seconds& a, const KeyframeSequence& b) { return a < b.getFirstTime(); }
-bool operator<=(const Seconds& a, const KeyframeSequence& b) { return a <= b.getFirstTime(); }
-bool operator>(const Seconds& a, const KeyframeSequence& b) { return a > b.getFirstTime(); }
-bool operator>=(const Seconds& a, const KeyframeSequence& b) { return a >= b.getFirstTime(); }
-
 }  // namespace animation
 
 }  // namespace inviwo

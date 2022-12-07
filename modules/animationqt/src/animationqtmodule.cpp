@@ -48,6 +48,7 @@
 #include <modules/animation/animationmodule.h>                          // for AnimationModule
 #include <modules/animation/datastructures/buttontrack.h>               // for ButtonTrack
 #include <modules/animation/datastructures/callbacktrack.h>             // for CallbackTrack
+#include <modules/animation/datastructures/invalidationtrack.h>         // for InvalidationTrack
 #include <modules/animation/datastructures/camerakeyframe.h>            // for CameraKeyframe
 #include <modules/animation/datastructures/cameratrack.h>               // IWYU pragma: keep
 #include <modules/animation/datastructures/controltrack.h>              // for ControlTrack
@@ -60,6 +61,7 @@
 #include <modules/animationqt/demo/demonavigatordockwidgetqt.h>         // for DemoNavigatorDock...
 #include <modules/animationqt/factories/sequenceeditorfactoryobject.h>  // for animation
 #include <modules/animationqt/sequenceeditor/controlsequenceeditor.h>   // for ControlSequenceEd...
+#include <modules/animationqt/sequenceeditor/invalidationsequenceeditor.h>  // for ControlSequenceEd...
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>  // for PropertySequenceE...
 #include <modules/animationqt/widgets/controltrackwidgetqt.h>           // for ControlTrackWidgetQt
 #include <modules/animationqt/widgets/propertytrackwidgetqt.h>          // for PropertyTrackWidg...
@@ -219,6 +221,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
 
     registerSequenceEditor<PropertySequenceEditor>();
     registerSequenceEditor<ControlSequenceEditor>();
+    registerSequenceEditor<InvalidationSequenceEditor>();
 
     // Map Ordinal properties
     using Types = std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4,
@@ -247,8 +250,15 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     registerTrackToWidgetMap(ControlTrack::classIdentifier(),
                              ControlTrackWidgetQt::classIdentifier());
 
+    registerTrackToWidgetMap(InvalidationTrack::classIdentifier(),
+                             ControlTrackWidgetQt::classIdentifier());
+
     registerTrackToSequenceEditorMap(ControlTrack::classIdentifier(),
                                      ControlSequenceEditor::classIdentifier());
+
+    registerTrackToSequenceEditorMap(InvalidationTrack::classIdentifier(),
+                                     InvalidationSequenceEditor::classIdentifier());
+
 }  // namespace inviwo
 
 AnimationQtModule::~AnimationQtModule() {
