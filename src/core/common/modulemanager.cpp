@@ -43,6 +43,10 @@
 #include <string>
 #include <functional>
 
+#if WIN32
+#include <windows.h>
+#endif
+
 namespace inviwo {
 
 ModuleManager::ModuleManager(InviwoApplication* app)
@@ -132,17 +136,15 @@ std::function<bool(std::string_view)> ModuleManager::getEnabledFilter() {
               std::istream_iterator<std::string>(), std::back_inserter(enabledModules));
     std::for_each(std::begin(enabledModules), std::end(enabledModules), toLower);
 
-    return [=](std::string_view file) {
-        const auto name = util::stripModuleFileNameDecoration(file);
-        return util::contains(enabledModules, name);
-    };
+    return [enabledModules](std::string_view name) { return util::contains(enabledModules, name); };
 }
 
 void ModuleManager::reloadModules() {
     if (isRuntimeModuleReloadingEnabled()) libraryObserver_.reloadModules();
 }
 
-void ModuleManager::registerModules(RuntimeModuleLoading) {
+void ModuleManager::registerModules(RuntimeModuleLoading,
+                                    std::function<bool(std::string_view)> isEnabled) {
     // Perform the following steps
     // 1. Recursively get all library files and the folders they are in
     // 2. Filter out files with correct extension, named inviwo-module
@@ -154,85 +156,86 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
     // Find unique files and directories in specified search paths
     auto librarySearchPaths = util::getLibrarySearchPaths();
     std::set<std::string> libraryFiles;
-    LibrarySearchDirs searchDirectories{librarySearchPaths};
     for (auto path : librarySearchPaths) {
-        using namespace inviwo::filesystem;
         // Make sure that we have an absolute path to avoid duplicates
-        path = cleanupPath(path);
+        path = filesystem::cleanupPath(path);
         try {
-            auto files = getDirectoryContentsRecursively(path, ListMode::Files);
-            auto dirs = getDirectoryContentsRecursively(path, ListMode::Directories);
+            auto files =
+                filesystem::getDirectoryContentsRecursively(path, filesystem::ListMode::Files);
             libraryFiles.insert(std::make_move_iterator(files.begin()),
                                 std::make_move_iterator(files.end()));
-            searchDirectories.add(dirs);
         } catch (FileException&) {  // Invalid path, ignore it
         }
     }
     // Determines if a library is already loaded into the application
-    auto isModuleLibraryLoaded = [&](const std::string path) {
-        return util::contains_if(sharedLibraries_, [path](const auto& lib) {
+    auto isModuleLibraryLoaded = [&](std::string_view path) {
+        return util::contains_if(sharedLibraries_, [&](const auto& lib) {
             return lib->getFilePath().compare(path) == 0;
         });
     };
-    // Load enabled modules if file "application_name-enabled-modules.txt" exists,
-    // otherwise load all modules
-    auto isEnabled = getEnabledFilter();
+
     auto libraryTypes = SharedLibrary::libraryFileExtensions();
     // Remove unsupported files and files belonging to already loaded modules.
     util::map_erase_remove_if(libraryFiles, [&](const auto& file) {
         return libraryTypes.count(filesystem::getFileExtension(file)) == 0 ||
                (file.find("inviwo-module") == std::string::npos &&
                 file.find("inviwo-core") == std::string::npos) ||
-               isModuleLibraryLoaded(file) || !isEnabled(file);
+               isModuleLibraryLoaded(file) || !isEnabled(util::stripModuleFileNameDecoration(file));
     });
 
     const auto tmpDir = [&]() -> std::string {
-        if (isRuntimeModuleReloadingEnabled() && util::hasAddLibrarySearchDirsFunction()) {
+        if (isRuntimeModuleReloadingEnabled()) {
             const auto tmp =
                 filesystem::getInviwoUserSettingsPath() + "/temporary-module-libraries";
             if (!filesystem::directoryExists(tmp)) {
                 filesystem::createDirectoryRecursively(tmp);
             }
-            searchDirectories.add({tmp});
             return tmp;
         } else {
             return "";
         }
     }();
 
+    std::vector<std::pair<std::string, std::string>> tmpLibraryFiles;
+    std::transform(libraryFiles.begin(), libraryFiles.end(), std::back_inserter(tmpLibraryFiles),
+                   [&](const std::string& filePath) -> std::pair<std::string, std::string> {
+                       if (isRuntimeModuleReloadingEnabled()) {
+                           auto dstPath =
+                               tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
+                           if (filesystem::fileModificationTime(filePath) !=
+                               filesystem::fileModificationTime(dstPath)) {
+                               // Load a copy of the file to make sure that we can overwrite the
+                               // file.
+                               if (!filesystem::copyFile(filePath, dstPath)) {
+                                   LogWarn("Unable to write temporary file " << dstPath);
+                                   return {filePath, filePath};
+                               }
+                           }
+                           return {filePath, dstPath};
+                       } else {
+                           return {filePath, filePath};
+                       }
+                   });
+
+    filesystem::setWorkingDirectory(filesystem::getInviwoBinDir());
+
     // Load libraries from temporary directory but observe the original file
-    auto isLoaded = [loaded = util::getLoadedLibraries()](const auto& path) {
+    auto isLoaded = [loaded = filesystem::getLoadedLibraries()](const auto& path) {
         return util::contains_if(loaded, [&](const auto& lib) { return iCaseCmp(path, lib); });
     };
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-    for (const auto& filePath : libraryFiles) {
-        const auto tmpPath = [&]() -> std::string {
-            if (isRuntimeModuleReloadingEnabled() && util::hasAddLibrarySearchDirsFunction()) {
-                auto dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
-                if (isLoaded(filePath)) {
-                    // Already loaded modules are loaded from the application dir
-                    dstPath = filePath;
-                    protected_.insert(util::stripModuleFileNameDecoration(filePath));
-                } else if (filesystem::fileModificationTime(filePath) !=
-                           filesystem::fileModificationTime(dstPath)) {
-                    // Load a copy of the file to make sure that we can overwrite the file.
-                    filesystem::copyFile(filePath, dstPath);
-                }
-                return dstPath;
-            } else {
-                return filePath;
-            }
-        }();
-
+    for (const auto& [filePath, tmpPath] : tmpLibraryFiles) {
         try {
+            const bool loaded = isLoaded(filePath);
+
             // Load library. Will throw exception if failed to load
-            auto sharedLib = std::make_unique<SharedLibrary>(tmpPath);
+            auto sharedLib = std::make_unique<SharedLibrary>(loaded ? filePath : tmpPath);
             // Only consider libraries with Inviwo module creation function
             if (auto moduleFunc = sharedLib->findSymbolTyped<f_getModule>("createModule")) {
                 // Add module factory object
                 modules.emplace_back(moduleFunc());
                 auto moduleName = toLower(modules.back()->name);
-                if (modules.back()->protectedModule == ProtectedModule::on) {
+                if (modules.back()->protectedModule == ProtectedModule::on || loaded) {
                     protected_.insert(modules.back()->name);
                 }
                 sharedLibraries_.emplace_back(std::move(sharedLib));
@@ -240,14 +243,16 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
                     libraryObserver_.observe(filePath);
                 }
             } else {
-                LogInfo(
-                    "Could not find 'createModule' function needed for creating the module in "
-                    << tmpPath
-                    << ". Make sure that you have compiled the library and exported the function.");
+                util::logWarn(
+                    IVW_CONTEXT,
+                    "Could not find 'createModule' function needed for creating the module in {}. "
+                    "Make sure that you have compiled the library and exported the function.",
+                    filePath);
             }
         } catch (const Exception& e) {
             // Library dependency is probably missing. We silently skip this library.
-            LogInfo("Could not load library: " << filePath << " " << e.getMessage());
+            util::logWarn(IVW_CONTEXT, "Could not load library: {}", filePath);
+            util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
         }
     }
 

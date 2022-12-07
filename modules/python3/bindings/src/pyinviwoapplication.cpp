@@ -28,11 +28,13 @@
  *********************************************************************************/
 
 #include <inviwopy/pyinviwoapplication.h>
+
+#include <pybind11/functional.h>
+
 #include <inviwopy/vectoridentifierwrapper.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -92,9 +94,16 @@ void exposeInviwoApplication(pybind11::module& m) {
              [](InviwoApplication* app) { return app->getCommandLineParser().getOutputPath(); })
 
         .def("registerModules",
-             [](InviwoApplication* app) { app->registerModules(inviwo::getModuleList()); })
+             [](InviwoApplication* app,
+                std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules) {
+                 app->registerModules(std::move(modules));
+             })
         .def("registerRuntimeModules",
              [](InviwoApplication* app) { app->registerModules(RuntimeModuleLoading{}); })
+        .def("registerRuntimeModules",
+             [](InviwoApplication* app, std::function<bool(std::string_view)> filter) {
+                 app->registerModules(RuntimeModuleLoading{}, filter);
+             })
         .def("runningBackgroundJobs",
              [](InviwoApplication* app) {
                  return app->getProcessorNetwork()->runningBackgroundJobs();
@@ -112,7 +121,8 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
                                py::return_value_policy::reference)
         .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory,
-                               py::return_value_policy::reference);
+                               py::return_value_policy::reference)
+        .def("setProgressCallback", &InviwoApplication::setProgressCallback);
 }
 
 }  // namespace inviwo

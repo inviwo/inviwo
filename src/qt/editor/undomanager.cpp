@@ -256,7 +256,7 @@ void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink&) { dirty_ 
 
 #include <warn/push>
 #include <warn/ignore/switch-enum>
-bool UndoManager::eventFilter(QObject* watched, QEvent* e) {
+bool UndoManager::eventFilter(QObject*, QEvent* e) {
     switch (e->type()) {
         case QEvent::MouseButtonRelease: {
             pushStateIfDirty();

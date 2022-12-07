@@ -125,7 +125,7 @@ public:
      * \brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
-    virtual void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules);
+    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules);
 
     /**
      * \brief Load modules from dynamic library files in the regular search paths.
@@ -137,7 +137,9 @@ public:
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
      * Forwards to ModuleManager.
      */
-    virtual void registerModules(RuntimeModuleLoading);
+    void registerModules(RuntimeModuleLoading);
+
+    void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> isEnabled);
 
     /**
      * Get the base path of the application.

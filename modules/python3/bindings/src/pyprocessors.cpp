@@ -164,14 +164,17 @@ void exposeProcessors(pybind11::module& m) {
         .def("registerObject", &ProcessorFactory::registerObject)
         .def("unRegisterObject", &ProcessorFactory::unRegisterObject);
 
-    py::class_<ProcessorWidget>(m, "ProcessorWidget")
+    py::class_<ProcessorWidget>(m, "ProcessorWidget", py::multiple_inheritance{})
         .def_property("visible", &ProcessorWidget::isVisible, &ProcessorWidget::setVisible)
         .def_property("dimensions", &ProcessorWidget::getDimensions,
                       &ProcessorWidget::setDimensions)
         .def_property("position", &ProcessorWidget::getPosition, &ProcessorWidget::setPosition)
         .def_property("onTop", &ProcessorWidget::isOnTop, &ProcessorWidget::setOnTop)
         .def_property("fullScreen", &ProcessorWidget::isFullScreen,
-                      &ProcessorWidget::setFullScreen);
+                      &ProcessorWidget::setFullScreen)
+        .def("address", [](ProcessorWidget* w) { 
+            return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
+        });
 
     py::class_<ProcessorWidgetFactory>(m, "ProcessorWidgetFactory")
         .def("registerObject", &ProcessorWidgetFactory::registerObject)

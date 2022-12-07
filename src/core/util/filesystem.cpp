@@ -53,6 +53,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <tchar.h>
 #include <direct.h>
 #include <Shlobj.h>
+#include <psapi.h>
 #elif defined(__APPLE__)
 #include <CoreServices/CoreServices.h>
 #include <libproc.h>  // proc_pidpath
@@ -62,10 +63,12 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
+#include <mach-o/dyld.h>
 #else
 #include <unistd.h>
 #include <fcntl.h>  // open
 #include <sys/sendfile.h>
+#include <dlfcn.h>
 #endif
 
 #include <array>
@@ -147,46 +150,68 @@ bool skipByteOrderMark(std::istream& stream) {
 }
 
 std::string getWorkingDirectory() {
-    std::array<char, FILENAME_MAX> workingDir;
 #ifdef WIN32
-    if (!GetCurrentDirectoryA(static_cast<DWORD>(workingDir.size()), workingDir.data()))
+    auto bufferSize = GetCurrentDirectoryW(0, nullptr);
+    std::wstring buff(bufferSize, 0);
+
+    if (!GetCurrentDirectoryW(static_cast<DWORD>(buff.size()), buff.data()))
         throw Exception("Error querying current directory",
                         IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
+    return cleanupPath(util::fromWstring(buff));
 #else
+    std::array<char, FILENAME_MAX> workingDir;
     if (!getcwd(workingDir.data(), workingDir.size()))
         throw Exception("Error querying current directory",
                         IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
-#endif
     return cleanupPath(std::string(workingDir.data()));
+#endif
 }
+
+void setWorkingDirectory(std::string_view path) {
+#ifdef WIN32
+    auto wPath = util::toWstring(path);
+    SetCurrentDirectoryW(wPath.c_str());
+#else
+    SafeCStr cPath{path};
+    chdir(cPath.c_str());
+#endif
+}
+
+#ifdef WIN32
+std::string getModuleFileName(HMODULE handle, std::string_view name) {
+    const DWORD maxBufSize = 1 << 20;  // corresponds to 1MiB
+    std::wstring buffer(FILENAME_MAX, 0);
+
+    auto size = GetModuleFileNameW(handle, buffer.data(), static_cast<DWORD>(buffer.size()));
+    if (size == 0) {
+        throw Exception(IVW_CONTEXT_CUSTOM("filesystem::getModuleFileName"),
+                        "Error retrieving {} path", name);
+    }
+    while (size == buffer.size()) {
+        // buffer is too small, enlarge
+        auto newSize = buffer.size() * 2;
+        if (newSize > maxBufSize) {
+            throw Exception(IVW_CONTEXT_CUSTOM("filesystem::getModuleFileName"),
+                            "Insufficient buffer size");
+        }
+        buffer.resize(newSize, 0);
+        size = GetModuleFileNameW(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
+        if (size == 0) {
+            throw Exception(IVW_CONTEXT_CUSTOM("filesystem::getModuleFileName"),
+                            "Error retrieving {} path", name);
+        }
+    }
+    buffer.resize(size);
+    return util::fromWstring(buffer);
+}
+#endif
 
 std::string getExecutablePath() {
     // http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
-    std::string retVal;
-#ifdef WIN32
-    const DWORD maxBufSize = 1 << 20;  // corresponds to 1MiB
-    std::vector<char> executablePath(FILENAME_MAX);
 
-    auto size = GetModuleFileNameA(nullptr, executablePath.data(),
-                                   static_cast<DWORD>(executablePath.size()));
-    if (size == 0)
-        throw Exception("Error retrieving executable path",
-                        IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
-    while (size == executablePath.size()) {
-        // buffer is too small, enlarge
-        auto newSize = executablePath.size() * 2;
-        if (newSize > maxBufSize) {
-            throw Exception("Insufficient buffer size",
-                            IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
-        }
-        executablePath.resize(newSize);
-        size = GetModuleFileNameA(nullptr, executablePath.data(),
-                                  static_cast<DWORD>(executablePath.size()));
-        if (size == 0)
-            throw Exception("Error retrieving executable path",
-                            IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
-    }
-    retVal = std::string(executablePath.data());
+#ifdef WIN32
+    return getModuleFileName(nullptr, "executable");  // nullptr will lookup the exe module.
+
 #elif __APPLE__
     // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
     std::array<char, PROC_PIDPATHINFO_MAXSIZE> executablePath;
@@ -196,7 +221,8 @@ std::string getExecutablePath() {
         throw Exception("Error retrieving executable path",
                         IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
     }
-    retVal = std::string(executablePath.data());
+    return std::string(executablePath.data());
+
 #else  // Linux
     std::array<char, FILENAME_MAX> executablePath;
     auto size = ::readlink("/proc/self/exe", executablePath.data(), executablePath.size() - 1);
@@ -208,9 +234,39 @@ std::string getExecutablePath() {
         throw Exception("Error retrieving executable path",
                         IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
     }
-    retVal = std::string(executablePath.data());
+    return std::string(executablePath.data());
 #endif
-    return retVal;
+}
+
+std::string getInviwoBinDir() {
+#ifdef WIN32
+    auto handle = GetModuleHandleA("inviwo-core");
+
+    if (!handle) {
+        handle = GetModuleHandleA("inviwo-cored");
+    }
+
+    if (!handle) {
+        throw Exception("Error retrieving inviwo-core path",
+                        IVW_CONTEXT_CUSTOM("filesystem::getInviwoBinDir"));
+    }
+
+    return getFileDirectory(
+        getModuleFileName(handle, "inviwo-core"));  // nullptr will lookup the exe module.
+
+#else
+    auto allLibs = getLoadedLibraries();
+    auto it = std::find_if(allLibs.begin(), allLibs.end(), [&](const auto& lib) {
+        return lib.find("inviwo-core") != std::string::npos;
+    });
+
+    if (it != allLibs.end()) {
+        return getFileDirectory(*it);
+    } else {
+        throw Exception("Error retrieving inviwo-core path",
+                        IVW_CONTEXT_CUSTOM("filesystem::getInviwoBinDir"));
+    }
+#endif
 }
 
 std::string getInviwoUserSettingsPath() {
@@ -507,8 +563,8 @@ bool wildcardStringMatchDigits(const std::string& pattern, const std::string& st
     return false;
 }
 
-std::string getParentFolderWithChildren(const std::string& path,
-                                        const std::vector<std::string>& childFolders) {
+std::optional<std::string> getParentFolderWithChildren(
+    std::string_view path, const std::vector<std::string>& childFolders) {
     std::string currentDir = cleanupPath(path);
     size_t pos = currentDir.length();
 
@@ -521,8 +577,9 @@ std::string getParentFolderWithChildren(const std::string& path,
         }
         if (matchChildFolders) return currentDir;
     } while ((pos = currentDir.rfind('/')) != std::string::npos);
+
     // no matching parent folder found
-    return std::string();
+    return {};
 }
 
 std::string findBasePath() {
@@ -553,34 +610,39 @@ std::string findBasePath() {
     // Modules folder might exist during development, so first try with
     // both data/workspaces and modules folder.
     // If they are not found we might be running through a debugger, so try source directory.
-    // If neither of above works then we probably have an application withouth a data/workspaces
+    // If neither of above works then we probably have an application without a data/workspaces
     // folder, so become less restrictive and only search for the modules folder. If nothing works
     // then use the executable path, but warn that this might have negative effects.
 
     // locate Inviwo base path matching the subfolders data/workspaces and modules
-    std::string basePath = inviwo::filesystem::getParentFolderWithChildren(
-        inviwo::filesystem::getExecutablePath(), {"data/workspaces", "modules"});
 
-    if (basePath.empty()) {
-        // could not locate base path relative to executable, try CMake source path
-        if (directoryExists(fmt::format("{}/{}", build::sourceDirectory, "data/workspaces")) &&
-            directoryExists(fmt::format("{}/{}", build::sourceDirectory, "modules"))) {
-            basePath = build::sourceDirectory;
-        }
+    if (auto path =
+            getParentFolderWithChildren(getExecutablePath(), {"data/workspaces", "modules"})) {
+        return *path;
     }
-    if (basePath.empty()) {
-        // Relax the criterion, only require the modules folder
-        basePath = inviwo::filesystem::getParentFolderWithChildren(
-            inviwo::filesystem::getExecutablePath(), {"modules"});
+    if (auto path =
+            getParentFolderWithChildren(getInviwoBinDir(), {"data/workspaces", "modules"})) {
+        return *path;
     }
-    if (basePath.empty()) {
-        LogErrorCustom(
-            "filesystem::findBasePath",
-            "Could not locate Inviwo base path meaning that application data might not be found.");
-        return inviwo::filesystem::getExecutablePath();
-    } else {
-        return basePath;
+
+    // could not locate base path relative to executable or bin dir, try CMake source path
+    if (directoryExists(fmt::format("{}/{}", build::sourceDirectory, "data/workspaces")) &&
+        directoryExists(fmt::format("{}/{}", build::sourceDirectory, "modules"))) {
+        return std::string{build::sourceDirectory};
     }
+
+    // Relax the criterion, only require the modules folder
+    if (auto path = getParentFolderWithChildren(getExecutablePath(), {"modules"})) {
+        return *path;
+    }
+    if (auto path = getParentFolderWithChildren(getInviwoBinDir(), {"modules"})) {
+        return *path;
+    }
+
+    LogErrorCustom(
+        "filesystem::findBasePath",
+        "Could not locate Inviwo base path meaning that application data might not be found.");
+    return getExecutablePath();
 }
 
 std::string getPath(PathType pathType, const std::string& suffix, const bool createFolder) {
@@ -812,7 +874,6 @@ bool isAbsolutePath(const std::string& path) {
     return ((driveLetter >= 'A') && (driveLetter <= 'Z') && (str[1] == ':'));
 
 #else
-
     if (path.empty()) return false;
 
     return (path[0] == '/');
@@ -873,6 +934,70 @@ std::string cleanupPath(std::string_view path) {
 
     return result;
 }
+
+#if WIN32
+
+std::vector<std::string> getLoadedLibraries() {
+    std::vector<std::string> res;
+
+    DWORD processID = GetCurrentProcessId();
+    HMODULE hMods[1024];
+    HANDLE hProcess;
+    DWORD cbNeeded;
+    unsigned int i;
+
+    // Get a handle to the process.
+    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processID);
+    if (NULL == hProcess) return {};
+
+    // Get a list of all the modules in this process.
+    if (EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded)) {
+        for (i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
+            TCHAR szModName[MAX_PATH];
+            // Get the full path to the module's file.
+            if (GetModuleFileNameExW(hProcess, hMods[i], szModName,
+                                     sizeof(szModName) / sizeof(TCHAR))) {
+
+                std::string name = util::fromWstring(std::wstring(szModName));
+                replaceInString(name, "\\", "/");
+                res.push_back(name);
+            }
+        }
+    }
+
+    // Release the handle to the process.
+    CloseHandle(hProcess);
+
+    return res;
+}
+
+#elif defined(__APPLE__)
+
+std::vector<std::string> getLoadedLibraries() {
+    std::vector<std::string> res;
+    const uint32_t count = _dyld_image_count();
+    for (uint32_t i = 0; i < count; i++) {
+        res.emplace_back(_dyld_get_image_name(i));
+    }
+    return res;
+}
+
+#else
+
+namespace {
+int visitLibraries(struct dl_phdr_info* info, size_t size, void* data) {
+    auto res = reinterpret_cast<std::vector<std::string>*>(data);
+    res->emplace_back(info->dlpi_name);
+    return 0;
+}
+}  // namespace
+std::vector<std::string> getLoadedLibraries() {
+    std::vector<std::string> res;
+    dl_iterate_phdr(visitLibraries, reinterpret_cast<void*>(&res));
+    return res;
+}
+
+#endif
 
 }  // namespace filesystem
 

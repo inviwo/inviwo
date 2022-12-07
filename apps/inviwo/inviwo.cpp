@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     inviwo::utilqt::configureInviwoQtApp();
     
 #ifdef IVW_DEBUG
-    qInstallMessageHandler(&utilqt::logQtMessages);
+    qInstallMessageHandler(&inviwo::utilqt::logQtMessages);
 #endif
 
     QApplication qtApp{argc, argv};

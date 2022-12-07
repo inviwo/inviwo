@@ -59,7 +59,7 @@ IVW_QTAPPLICATIONBASE_API void configureInviwoDefaultNames();
 
 /**
  * A logging function that redirects qt log messages to the inviwo LogCentral.
- * Cam be installed by calling qInstallMessageHandler(&logQtMessages)
+ * Can be installed by calling qInstallMessageHandler(&logQtMessages)
  */
 IVW_QTAPPLICATIONBASE_API void logQtMessages(QtMsgType type, const QMessageLogContext& context,
                                              const QString& msg);
@@ -82,7 +82,7 @@ IVW_QTAPPLICATIONBASE_API void configurePostEnqueueFront(InviwoApplication& app)
 IVW_QTAPPLICATIONBASE_API void configurePoolResizeWait(InviwoApplication& app, QWidget* window);
 
 /**
- * Install a new style sheet file in the QApplication
+ * Sets a new style sheet file in the QApplication
  */
 IVW_QTAPPLICATIONBASE_API void setStyleSheetFile(std::string_view file);
 

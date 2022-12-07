@@ -49,7 +49,7 @@
         "IVW_USE_EXTERNAL_NIFTI":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_OPENEXR":   { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_PYBIND11":  { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_ROARING":   { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_ROARING":   { "type": "BOOL", "value": "OFF"},
         "IVW_USE_EXTERNAL_SGCT":      { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_TINYDIR":   { "type": "BOOL", "value": "ON"},

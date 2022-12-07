@@ -114,7 +114,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
                          throw PythonAbortException("Evaluation aborted");
                      }
                  })
-            .def("configureInviwoQtApp", &utilqt::configureInviwoQtApp)
+            .def("c", &utilqt::configureInviwoQtApp)
             .def("logQtMessages",
                  [](QtMsgType type, const QMessageLogContext& context, const QString& msg) {
                      utilqt::logQtMessages(type, context, msg);
@@ -150,7 +150,32 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
                         app->processFront();
                     } while (app->getProcessorNetwork()->runningBackgroundJobs() > maxJobs);
                 },
-                py::arg("inviwoApplication"), py::arg("maxJobs") = 0);
+                py::arg("inviwoApplication"), py::arg("maxJobs") = 0)
+
+            .def("address",
+                 [](ProcessorWidget* w) {
+                     if (auto qw = dynamic_cast<QWidget*>(w)) {
+                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                     } else {
+                         throw Exception("invalid object");
+                     }
+                 })
+            .def("address",
+                 [](PropertyWidget* w) {
+                     if (auto qw = dynamic_cast<QWidget*>(w)) {
+                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                     } else {
+                         throw Exception("invalid object");
+                     }
+                 })
+            .def("address",
+                 [](PropertyEditorWidget* w) {
+                     if (auto qw = dynamic_cast<QWidget*>(w)) {
+                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                     } else {
+                         throw Exception("invalid object");
+                     }
+                 });
 
         py::class_<PropertyListWidget>(m, "PropertyListWidget")
             .def(py::init([](InviwoApplication* app) {
@@ -182,7 +207,10 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
 
             .def("show", &PropertyListWidget::show)
             .def("hide", &PropertyListWidget::hide)
-            .def("move", [](PropertyListWidget* w, int x, int y) { w->move(x, y); });
+            .def("move", [](PropertyListWidget* w, int x, int y) { w->move(x, y); })
+            .def("address", [](PropertyListWidget* w) {
+                return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
+            });
 
     } catch (const std::exception& e) {
         throw ModuleInitException(e.what(), IVW_CONTEXT);

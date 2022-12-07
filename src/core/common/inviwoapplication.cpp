@@ -245,6 +245,11 @@ void InviwoApplication::registerModules(RuntimeModuleLoading token) {
     moduleManager_.registerModules(token);
 }
 
+void InviwoApplication::registerModules(RuntimeModuleLoading token,
+                                        std::function<bool(std::string_view)> isEnabled) {
+    moduleManager_.registerModules(token, isEnabled);
+}
+
 std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
 
 std::string InviwoApplication::getPath(PathType pathType, const std::string& suffix,
