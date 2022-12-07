@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/raiiutils.h>       // for KeepTrueWhileInScope
 #include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx, windowTitleHelper
+#include <inviwo/core/util/logcentral.h>
 
 #include <QDockWidget>   // for QDockWidget
 #include <QEvent>        // for QEvent, QEvent::ModifiedChange, QEvent::Win...
@@ -57,9 +58,10 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
     , internalStickyFlagUpdate_(false) {
     label_ = new QLabel(parent->windowTitle());
     label_->setObjectName("InviwoDockWidgetTitleBarLabel");
-    label_->setMinimumWidth(50);
+    label_->setMinimumWidth(utilqt::emToPx(fontMetrics(), 10));
     auto policy = label_->sizePolicy();
-    policy.setHorizontalPolicy(QSizePolicy::Expanding);
+    policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
+    policy.setRetainSizeWhenHidden(true);
     label_->setSizePolicy(policy);
 
     const auto iconsize = utilqt::emToPx(this, QSizeF(iconSize_, iconSize_));
@@ -137,6 +139,13 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
     emit stickyFlagChanged(toggle);
 }
 
+void InviwoDockWidgetTitleBar::updateTitle() {
+    QString windowTitle = utilqt::windowTitleHelper(parent_->windowTitle(), parent_);
+    // elide window title in case it is too long to fit the label
+    QFontMetrics fontMetrics(label_->font());
+    label_->setText(fontMetrics.elidedText(windowTitle, Qt::ElideMiddle, label_->width() - 4));
+}
+
 void InviwoDockWidgetTitleBar::showEvent(QShowEvent*) {
     if (isSticky()) {
         // docking allowed, restore docking areas
@@ -148,15 +157,13 @@ void InviwoDockWidgetTitleBar::showEvent(QShowEvent*) {
 }
 
 bool InviwoDockWidgetTitleBar::eventFilter(QObject* obj, QEvent* event) {
-    if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange) ||
-        (event->type() == QEvent::Resize)) {
-        QString windowTitle = utilqt::windowTitleHelper(parent_->windowTitle(), parent_);
-        // elide window title in case it is too long to fit the label
-        QFontMetrics fontMetrics(label_->font());
-        label_->setText(fontMetrics.elidedText(windowTitle, Qt::ElideMiddle, label_->width() - 4));
+    if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange)) {
+        updateTitle();
     }
     return QObject::eventFilter(obj, event);
 }
+
+void InviwoDockWidgetTitleBar::resizeEvent(QResizeEvent*) { updateTitle(); }
 
 void InviwoDockWidgetTitleBar::floating(bool floating) { floatBtn_->setChecked(floating); }
 

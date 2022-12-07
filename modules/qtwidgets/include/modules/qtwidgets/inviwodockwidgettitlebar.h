@@ -82,8 +82,10 @@ protected slots:
 
 protected:
     virtual bool eventFilter(QObject* obj, QEvent* event) override;
+    virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
+    void updateTitle();
     void stickyBtnToggled(bool toggle);
 
     QDockWidget* parent_;
