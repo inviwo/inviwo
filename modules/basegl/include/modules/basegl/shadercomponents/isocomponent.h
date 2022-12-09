@@ -1,9 +1,8 @@
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,43 +28,36 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
 #include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
+#include <inviwo/core/util/stdextensions.h>                   // for make_array
+#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
+#include <modules/opengl/shader/shader.h>                     // for Shader
+#include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
 
+#include <cstddef>      // for size_t
 #include <string>       // for string
 #include <string_view>  // for string_view
-#include <tuple>        // for tuple
 #include <vector>       // for vector
 
 namespace inviwo {
-class Inport;
-class Shader;
-class TextureUnitContainer;
 
 /**
- * Adds a Volume inport, binds that volume and assigns it the a sampler with `<name>` and
- * sets the `<name>Parameters` uniforms
- * It will sample the volume into `<name>Voxel` and keep the previous value in `<name>VoxelPrev`
- * If Gradients::Single is set the gradient for `channel` will be computed into `<name>Gradient`,
- * the previous gradient will be store in `<name>GradientPrev`.
- * If Gradients::All is set the gradients for all channels will be computed into
- * `<name>AllGradients`, the previous gradient will be store in `<name>AllGradientsPrev`
+ * Adds a IsoValueProperty, and binds it to uniforms in the shader.
  */
-class IVW_MODULE_BASEGL_API VolumeComponent : public ShaderComponent {
+class IsoComponent : public ShaderComponent {
 public:
-    enum class Gradients { None, Single, All };
-    VolumeComponent(std::string_view name, Gradients gradients = Gradients::Single,
-                    Document help = {});
-
+    IsoComponent(std::string_view identifier, std::string_view name, Document help, VolumeInport& volume);
     virtual std::string_view getName() const override;
+
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
-    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+    virtual void initializeResources(Shader& shader) override;
+    virtual std::vector<Property*> getProperties() override;
     virtual std::vector<Segment> getSegments() override;
 
-    VolumeInport volumePort;
-    Gradients gradients;
+    IsoValueProperty iso;
 };
 
 }  // namespace inviwo
