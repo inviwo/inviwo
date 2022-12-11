@@ -38,6 +38,7 @@
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pythoninterpreter.h>
 
+#include <inviwopy/pybitset.h>
 #include <inviwopy/pydataformat.h>
 #include <inviwopy/pydatareaders.h>
 #include <inviwopy/pydatawriters.h>
@@ -114,6 +115,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeLogging(m);
     exposeInviwoApplication(m);
     exposeDataFormat(formatsModule);
+    exposeBitset(dataModule);
     exposeTFPrimitiveSet(dataModule);  // defines TFPrimitiveData used in exposeProperties
     exposeProperties(propertiesModule);
     exposePropertyOwner(propertiesModule);

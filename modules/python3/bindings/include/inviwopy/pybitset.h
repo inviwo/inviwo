@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,4 +29,14 @@
 
 #pragma once
 
-#include <modules/python3/pybindflags.h>
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
+
+namespace inviwo {
+
+void exposeBitset(pybind11::module& m);
+
+}  // namespace inviwo
+
