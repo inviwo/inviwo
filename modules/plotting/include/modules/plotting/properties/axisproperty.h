@@ -61,6 +61,11 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
+    AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
+                 Orientation orientation = Orientation::Horizontal,
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                 PropertySemantics semantics = PropertySemantics::Default);
+
     AxisProperty(std::string_view identifier, std::string_view displayName,
                  Orientation orientation = Orientation::Horizontal,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,

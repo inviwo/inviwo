@@ -46,9 +46,9 @@ const std::string PlotTextProperty::classIdentifier = "org.inviwo.PlotTextProper
 std::string PlotTextProperty::getClassIdentifier() const { return classIdentifier; }
 
 PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view displayName,
-                                   bool checked, InvalidationLevel invalidationLevel,
+                                   Document help, bool checked, InvalidationLevel invalidationLevel,
                                    PropertySemantics semantics)
-    : BoolCompositeProperty(identifier, displayName, checked, invalidationLevel, semantics)
+    : BoolCompositeProperty(identifier, displayName, help, checked, invalidationLevel, semantics)
     , title_("title", "Title", "")
     , color_("color", "Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
     , position_("position", "Position", 0.5f, 0.0f, 1.0f)
@@ -65,6 +65,11 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
 
     font_.anchorPos_.set(vec2(0.0f, 0.0f));
 }
+
+PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view displayName,
+                                   bool checked, InvalidationLevel invalidationLevel,
+                                   PropertySemantics semantics)
+    : PlotTextProperty(identifier, displayName, {}, checked, invalidationLevel, semantics) {}
 
 PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
     : BoolCompositeProperty(rhs)

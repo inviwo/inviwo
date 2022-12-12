@@ -57,6 +57,9 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
+    MajorTickProperty(std::string_view identifier, std::string_view displayName, Document help,
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                      PropertySemantics semantics = PropertySemantics::Default);
     MajorTickProperty(std::string_view identifier, std::string_view displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
@@ -86,6 +89,9 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
+    MinorTickProperty(std::string_view identifier, std::string_view displayName, Document help,
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                      PropertySemantics semantics = PropertySemantics::Default);
     MinorTickProperty(std::string_view identifier, std::string_view displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);

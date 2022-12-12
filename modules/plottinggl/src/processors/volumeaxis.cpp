@@ -59,6 +59,7 @@
 #include <inviwo/core/util/raiiutils.h>                         // for KeepTrueWhileInScope
 #include <inviwo/core/util/staticstring.h>                      // for operator+
 #include <inviwo/core/util/zip.h>                               // for enumerate, zipIterator
+#include <inviwo/core/algorithm/markdown.h>                     // for _help
 #include <modules/opengl/texture/textureutils.h>                // for activateAndClearTarget
 #include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, TickStyle::Out...
 #include <modules/plotting/properties/axisproperty.h>           // for AxisProperty
@@ -161,18 +162,22 @@ const ProcessorInfo VolumeAxis::processorInfo_{
     "Plotting",               // Category
     CodeState::Stable,        // Code state
     "GL, Plotting",           // Tags
-};
+    "Renders an x, y, and z axis next to the input volume."_help};
 
 const ProcessorInfo VolumeAxis::getProcessorInfo() const { return processorInfo_; }
 
 VolumeAxis::VolumeAxis()
     : Processor()
-    , inport_{"volume"}
-    , imageInport_{"imageInport"}
-    , outport_{"outport"}
-    , axisOffset_{"axisOffset", "Axis Offset (%)", 0.1f, 0.0f, 10.0f}
+    , inport_{"volume", "Input volume"_help}
+    , imageInport_{"imageInport", "Background image (optional)"_help}
+    , outport_{"outport",
+               "Output image containing the rendered volume axes and the optional input image"_help}
+    , axisOffset_{"axisOffset", "Axis Offset",
+                  util::ordinalLength(0.1f, 10.0f)
+                      .set("Offset between each axis and the volume"_help)}
     , rangeMode_{"rangeMode",
                  "Axis Range Mode",
+                 "Determines axis ranges (volume dimension, volume basis, or customized)"_help,
                  {{"dims", "Volume Dimensions (voxel)", AxisRangeMode::VolumeDims},
                   {"basis", "Volume Basis", AxisRangeMode::VolumeBasis},
                   {"basisOffset", "Volume Basis & Offset", AxisRangeMode::VolumeBasisOffset},
@@ -187,7 +192,9 @@ VolumeAxis::VolumeAxis()
                     {"custom", "Custom Format (example '{n}{u: [}')", CaptionType::Custom}},
                    0)
     , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
-    , visibility_{"visibility", "Axis Visibility", true}
+    , visibility_{"visibility", "Axis Visibility",
+                  "Visibility of all available axes (default: all axis start at the origin)"_help,
+                  true}
     , presets_{"visibilityPresets",
                "Presets",
                {{"default", "Default (origin)", "default"},
@@ -211,9 +218,9 @@ VolumeAxis::VolumeAxis()
           {"negXposY", "Z -X+Y", false},
       }}
     , axisStyle_{"axisStyle", "Global Axis Style"}
-    , xAxis_{"xAxis", "X Axis"}
-    , yAxis_{"yAxis", "Y Axis"}
-    , zAxis_{"zAxis", "Z Axis"}
+    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help}
+    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help}
+    , zAxis_{"zAxis", "Z Axis", "Axis properties for y"_help}
     , camera_{"camera", "Camera", util::boundingBox(inport_)}
     , trackball_{&camera_}
     , axisRenderers_{{xAxis_, yAxis_, zAxis_}}

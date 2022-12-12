@@ -44,15 +44,23 @@ const std::string FontFaceOptionProperty::classIdentifier = "org.inviwo.FontFace
 std::string FontFaceOptionProperty::getClassIdentifier() const { return classIdentifier; }
 
 FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
+                                               std::string_view displayName, Document help,
+                                               font::FontType fontType,
+                                               InvalidationLevel invalidationLevel,
+                                               PropertySemantics semantics)
+    : FontFaceOptionProperty(identifier, displayName, help, font::getFont(fontType),
+                             invalidationLevel, semantics) {}
+
+FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                std::string_view displayName,
                                                font::FontType fontType,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : FontFaceOptionProperty(identifier, displayName, font::getFont(fontType), invalidationLevel,
-                             semantics) {}
+    : FontFaceOptionProperty(identifier, displayName, {}, font::getFont(fontType),
+                             invalidationLevel, semantics) {}
 
 FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
-                                               std::string_view displayName,
+                                               std::string_view displayName, Document help,
                                                std::string_view fontFaceName,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
@@ -68,6 +76,14 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
     setSelectedIdentifier(fontFaceName);
     setCurrentStateAsDefault();
 }
+
+FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
+                                               std::string_view displayName,
+                                               std::string_view fontFaceName,
+                                               InvalidationLevel invalidationLevel,
+                                               PropertySemantics semantics)
+    : FontFaceOptionProperty(identifier, displayName, {}, fontFaceName, invalidationLevel,
+                             semantics) {}
 
 FontFaceOptionProperty::FontFaceOptionProperty(const FontFaceOptionProperty& rhs)
     : OptionPropertyString(rhs) {}

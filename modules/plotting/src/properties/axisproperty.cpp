@@ -67,33 +67,46 @@ class PlotTextSettings;
 const std::string AxisProperty::classIdentifier = "org.inviwo.AxisProperty";
 std::string AxisProperty::getClassIdentifier() const { return classIdentifier; }
 
-AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName,
+AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                            Orientation orientation, InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
-    : BoolCompositeProperty{identifier, displayName, true, invalidationLevel, semantics}
-    , color_{"color",    "Color",     vec4{vec3{0.0f}, 1.0f},           vec4{0.0f},
-             vec4{1.0f}, vec4{0.01f}, InvalidationLevel::InvalidOutput, PropertySemantics::Color}
-    , width_{"width", "Width", 2.5f, 0.0f, 20.0f}
+    : BoolCompositeProperty{identifier, displayName, help, true, invalidationLevel, semantics}
+    , color_{"color", "Color",
+             util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Color of the axis"_help)}
+    , width_{"width", "Width", util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help)}
     , useDataRange_{"useDataRange", "Use Data Range", true}
-    , range_("range", "Axis Range", 0.0, 100.0, -1.0e6, 1.0e6, 0.01, 0.0,
-             InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , flipped_{"flipped", "Swap Label Position", false}
+    , range_{"range",
+             "Axis Range",
+             "Current range of the axis"_help,
+             0.0,
+             100.0,
+             -1.0e6,
+             1.0e6,
+             0.01,
+             0.0,
+             InvalidationLevel::InvalidOutput,
+             PropertySemantics::Text}
+    , flipped_{"flipped", "Swap Label Position",
+               "Show labels on the opposite side of the axis"_help, false}
     , orientation_{"orientation",
                    "Orientation",
+                   "Determines the orientation of the axis (horizontal or vertical)"_help,
                    {{"horizontal", "Horizontal", Orientation::Horizontal},
                     {"vertical", "Vertical", Orientation::Vertical}},
                    orientation == Orientation::Horizontal ? size_t{0} : size_t{1}}
     , placement_{"placement",
                  "Placement",
+                 "Sets the axis placement to either bottom/left or top/right"_help,
                  {{"outside", "Bottom / Left", Placement::Outside},
                   {"inside", "Top / Right", Placement::Inside}},
                  0}
-    , captionSettings_{"caption", "Caption", false}
-    , labelSettings_{"labels", "Axis Labels", true}
-    , majorTicks_{"majorTicks", "Major Ticks"}
-    , minorTicks_{"minorTicks", "Minor Ticks"} {
+    , captionSettings_{"caption", "Caption", "Caption settings"_help, false}
+    , labelSettings_{"labels", "Axis Labels",
+                     "Settings for axis labels shown next to major ticks"_help, true}
+    , majorTicks_{"majorTicks", "Major Ticks", "Settings for major ticks along the axis"_help}
+    , minorTicks_{"minorTicks", "Minor Ticks",
+                  "Settings for minor ticks (shown between major ticks)"_help} {
 
-    color_.setSemantics(PropertySemantics::Color).setCurrentStateAsDefault();
     range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
 
     // change default fonts, make axis labels slightly less pronounced
@@ -129,6 +142,11 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     setCurrentStateAsDefault();
 }
 
+AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName,
+                           Orientation orientation, InvalidationLevel invalidationLevel,
+                           PropertySemantics semantics)
+    : AxisProperty{identifier, displayName, {}, orientation, invalidationLevel, semantics} {}
+
 AxisProperty::AxisProperty(const AxisProperty& rhs)
     : BoolCompositeProperty{rhs}
     , color_{rhs.color_}
@@ -142,7 +160,6 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , labelSettings_{rhs.labelSettings_}
     , majorTicks_{rhs.majorTicks_}
     , minorTicks_{rhs.minorTicks_} {
-
     addProperties(color_, width_, useDataRange_, range_, flipped_, orientation_, placement_);
 
     range_.setReadOnly(useDataRange_.get());

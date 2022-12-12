@@ -86,7 +86,7 @@ AxisTickRange getMajorTickRange(const MajorTickSettings& ticks, dvec2 range, siz
     }
 
     if (!ticks.getRangeBasedTicks()) {
-        // the major ticks should appear at n * tickDelta and not based at axis range min
+        // the major ticks should appear at n * tickDelta and not based on axis range min
         startValue = std::ceil((startValue - glm::epsilon<double>()) / ticks.getTickDelta()) *
                      ticks.getTickDelta();
         endValue = std::floor((endValue + glm::epsilon<double>()) / ticks.getTickDelta()) *
