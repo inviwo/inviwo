@@ -55,14 +55,14 @@ public:
     MinMaxProperty(std::string_view identifier, std::string_view displayName, Document help,
                    T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
                    T rangeMin = Defaultvalues<T>::getMin(), T rangeMax = Defaultvalues<T>::getMax(),
-                   T increment = Defaultvalues<T>::getInc(), T minSeperation = 0,
+                   T increment = Defaultvalues<T>::getInc(), T minSeparation = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
     MinMaxProperty(std::string_view identifier, std::string_view displayName,
                    T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
                    T rangeMin = Defaultvalues<T>::getMin(), T rangeMax = Defaultvalues<T>::getMax(),
-                   T increment = Defaultvalues<T>::getInc(), T minSeperation = 0,
+                   T increment = Defaultvalues<T>::getInc(), T minSeparation = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
@@ -176,7 +176,7 @@ MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view 
     , range_("range", value_type(rangeMin, rangeMax))
     , increment_("increment", increment)
     , minSeparation_("minSeparation", minSeparation) {
-    // invariant: range_.x <= value_.x <= value_.y + minseperation <= range_.y
+    // invariant: range_.x <= value_.x <= value_.y + minseparation <= range_.y
     // Assume minimum range, i.e. range_.x, is correct.
     value_.value.x = std::max(value_.value.x, range_.value.x);
     value_.value.y = std::max(value_.value.y, value_.value.x + minSeparation_.value);

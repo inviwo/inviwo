@@ -47,7 +47,7 @@ namespace inviwo {
  *   * __master__ Master Camera
  *   * __left__ Left Camera
  *   * __right__ Right Camera
- *   * __seperation__ Eye separation
+ *   * __separation__ Eye separation
  */
 
 /**

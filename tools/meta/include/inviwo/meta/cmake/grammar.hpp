@@ -43,7 +43,7 @@ namespace cmake {
 
 namespace p = tao::pegtl;
 
-// Grammer
+// Grammar
 struct INVIWO_META_API space : p::plus<p::blank> {};
 struct INVIWO_META_API newline : p::sor<p::string<'\r', '\n'>, p::one<'\n'>> {};
 struct INVIWO_META_API line_comment : p::seq<p::one<'#'>, p::star<p::seq<p::not_at<newline>, p::any>>> {};
@@ -51,7 +51,7 @@ struct INVIWO_META_API line_ending : p::seq<p::opt<line_comment>, newline> {};
 struct INVIWO_META_API begin_brace : p::one<'('> {};
 struct INVIWO_META_API end_brace : p::one<')'> {};
 struct INVIWO_META_API identifier : p::identifier {};
-struct INVIWO_META_API seperation : p::sor<space, line_ending> {};
+struct INVIWO_META_API separation : p::sor<space, line_ending> {};
 
 struct INVIWO_META_API bracket_id : p::star<p::one<'='>> {};
 struct INVIWO_META_API bracket_open : p::seq<p::one<'['>, bracket_id, p::one<'['>> {};
@@ -96,8 +96,8 @@ struct INVIWO_META_API argument : p::sor<bracket_argument, quoted_argument, unqu
 
 struct arguments;
 struct INVIWO_META_API seperated_arguments
-    : p::sor<p::seq<p::plus<seperation>, p::opt<argument>>,
-             p::seq<p::star<seperation>, begin_brace, arguments, end_brace>> {};
+    : p::sor<p::seq<p::plus<separation>, p::opt<argument>>,
+             p::seq<p::star<separation>, begin_brace, arguments, end_brace>> {};
 
 struct INVIWO_META_API arguments : p::seq<p::opt<argument>, p::star<seperated_arguments>> {};
 

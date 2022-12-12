@@ -198,32 +198,32 @@ struct MinMaxHelper {
         py::class_<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,
                              const T& valueMin, const T& valueMax, const T& rangeMin,
-                             const T& rangeMax, const T& increment, const T& minSeperation,
+                             const T& rangeMax, const T& increment, const T& minSeparation,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, std::move(help), valueMin, valueMax, rangeMin,
-                                  rangeMax, increment, minSeperation, invalidationLevel, semantics);
+                                  rangeMax, increment, minSeparation, invalidationLevel, semantics);
                  }),
                  py::arg("identifier"), py::arg("name"), py::arg("help") = Document{},
                  py::arg("valueMin") = Defaultvalues<T>::getMin(),
                  py::arg("valueMax") = Defaultvalues<T>::getMax(),
                  py::arg("rangeMin") = Defaultvalues<T>::getMin(),
                  py::arg("rangeMax") = Defaultvalues<T>::getMax(),
-                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeperation") = 0,
+                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeparation") = 0,
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
             .def(py::init([](std::string_view identifier, std::string_view name, const T& valueMin,
                              const T& valueMax, const T& rangeMin, const T& rangeMax,
-                             const T& increment, const T& minSeperation,
+                             const T& increment, const T& minSeparation,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
-                                  increment, minSeperation, invalidationLevel, semantics);
+                                  increment, minSeparation, invalidationLevel, semantics);
                  }),
                  py::arg("identifier"), py::arg("name"),
                  py::arg("valueMin") = Defaultvalues<T>::getMin(),
                  py::arg("valueMax") = Defaultvalues<T>::getMax(),
                  py::arg("rangeMin") = Defaultvalues<T>::getMin(),
                  py::arg("rangeMax") = Defaultvalues<T>::getMax(),
-                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeperation") = 0,
+                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeparation") = 0,
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
             .def_property("rangeMin", &P::getRangeMin, &P::setRangeMin)
