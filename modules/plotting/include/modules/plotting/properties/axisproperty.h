@@ -114,6 +114,7 @@ public:
     virtual bool getFlipped() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
+    virtual float getScalingFactor() const override;
     virtual Orientation getOrientation() const override;
     virtual Placement getPlacement() const override;
 
@@ -131,6 +132,7 @@ public:
     FloatProperty width_;
     BoolProperty useDataRange_;
     DoubleMinMaxProperty range_;
+    FloatProperty scalingFactor_;
 
     BoolProperty flipped_;
     OptionProperty<Orientation> orientation_;

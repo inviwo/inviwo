@@ -48,6 +48,7 @@ AxisData::AxisData(const AxisSettings& s)
     , visible{s.getAxisVisible()}
     , color{s.getColor()}
     , width{s.getWidth()}
+    , scalingFactor{s.getScalingFactor()}
     , orientation{s.getOrientation()}
     , placement{s.getPlacement()}
     , caption{s.getCaption()}
@@ -64,6 +65,8 @@ bool AxisData::getFlipped() const { return flipped; }
 vec4 AxisData::getColor() const { return color; }
 
 float AxisData::getWidth() const { return width; }
+
+float AxisData::getScalingFactor() const { return scalingFactor; }
 
 bool AxisData::getUseDataRange() const { return useDataRange; }
 

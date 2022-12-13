@@ -308,6 +308,7 @@ float PCPAxisSettings::getWidth() const {
     }
 }
 
+float PCPAxisSettings::getScalingFactor() const { return 1.0f; }
 AxisSettings::Orientation PCPAxisSettings::getOrientation() const { return Orientation::Vertical; }
 AxisSettings::Placement PCPAxisSettings::getPlacement() const { return Placement::Inside; }
 const std::string& PCPAxisSettings::getCaption() const { return caption_; }

@@ -52,6 +52,7 @@
 #include <algorithm>  // for transform
 #include <cstddef>    // for size_t
 #include <iterator>   // for back_insert_iterator
+#include <limits>
 
 #include <fmt/core.h>    // for basic_string_view
 #include <fmt/printf.h>  // for sprintf
@@ -86,6 +87,11 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
              0.0,
              InvalidationLevel::InvalidOutput,
              PropertySemantics::Text}
+    , scalingFactor_{"scalingFactor", "Scaling Factor",
+                     util::ordinalScale(1.0f, 10.0f)
+                         .set("Scaling factor affecting tick lengths and offsets of axis caption "
+                              "and labels"_help)
+                         .setMin(std::numeric_limits<float>::min())}
     , flipped_{"flipped", "Swap Label Position",
                "Show labels on the opposite side of the axis"_help, false}
     , orientation_{"orientation",
@@ -108,6 +114,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
                   "Settings for minor ticks (shown between major ticks)"_help} {
 
     range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
+    scalingFactor_.setVisible(false);
 
     // change default fonts, make axis labels slightly less pronounced
     captionSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Caption));
@@ -125,8 +132,8 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     majorTicks_.setCollapsed(true);
     minorTicks_.setCollapsed(true);
 
-    addProperties(color_, width_, useDataRange_, range_, flipped_, orientation_, placement_,
-                  captionSettings_, labelSettings_, majorTicks_, minorTicks_);
+    addProperties(color_, width_, useDataRange_, range_, scalingFactor_, flipped_, orientation_,
+                  placement_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
     setCollapsed(true);
 
@@ -153,6 +160,7 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , width_{rhs.width_}
     , useDataRange_{rhs.useDataRange_}
     , range_{rhs.range_}
+    , scalingFactor_{rhs.scalingFactor_}
     , flipped_{rhs.flipped_}
     , orientation_{rhs.orientation_}
     , placement_{rhs.placement_}
@@ -160,7 +168,8 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , labelSettings_{rhs.labelSettings_}
     , majorTicks_{rhs.majorTicks_}
     , minorTicks_{rhs.minorTicks_} {
-    addProperties(color_, width_, useDataRange_, range_, flipped_, orientation_, placement_);
+    addProperties(color_, width_, useDataRange_, range_, scalingFactor_, flipped_, orientation_,
+                  placement_);
 
     range_.setReadOnly(useDataRange_.get());
     useDataRange_.onChange([this]() { range_.setReadOnly(useDataRange_.get()); });
@@ -275,6 +284,8 @@ bool AxisProperty::getFlipped() const { return flipped_.get(); }
 vec4 AxisProperty::getColor() const { return color_.get(); }
 
 float AxisProperty::getWidth() const { return width_.get(); }
+
+float AxisProperty::getScalingFactor() const { return scalingFactor_.get(); }
 
 bool AxisProperty::getUseDataRange() const { return useDataRange_.get(); }
 

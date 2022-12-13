@@ -64,32 +64,34 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     Orientation orientation, InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , visible_{"visible", "Visible", true}
-    , color_{"color",    "Color",     vec4{vec3{0.0f}, 1.0f},           vec4{0.0f},
-             vec4{1.0f}, vec4{0.01f}, InvalidationLevel::InvalidOutput, PropertySemantics::Color}
-    , width_{"width", "Width", 2.5f, 0.0f, 20.0f}
-    , flipped_{"flipped", "Swap Label Position", false}
+    , color_{"color", "Color",
+             util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Color of the axis"_help)}
+    , width_{"width", "Width", util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help)}
+    , scalingFactor_{"scalingFactor", "Scaling Factor",
+                     util::ordinalScale(1.0f, 10.0f)
+                         .set("Scaling factor affecting tick lengths and offsets of axis caption "
+                              "and labels"_help)}
+    , flipped_{"flipped", "Swap Label Position",
+               "Show labels on the opposite side of the axis"_help, false}
     , orientation_{"orientation",
                    "Orientation",
+                   "Determines the orientation of the axis (horizontal or vertical)"_help,
                    {{"horizontal", "Horizontal", Orientation::Horizontal},
                     {"vertical", "Vertical", Orientation::Vertical}},
                    orientation == Orientation::Horizontal ? size_t{0} : size_t{1}}
     , placement_{"placement",
                  "Placement",
+                 "Sets the axis placement to either bottom/left or top/right"_help,
                  {{"outside", "Bottom / Left", Placement::Outside},
                   {"inside", "Top / Right", Placement::Inside}},
                  0}
-    , captionSettings_{"caption", "Caption", false}
-    , labelSettings_{"labels", "Axis Labels", true}
-    , majorTicks_{"majorTicks", "Major Ticks"} {
+    , captionSettings_{"caption", "Caption", "Caption settings"_help, false}
+    , labelSettings_{"labels", "Axis Labels",
+                     "Settings for axis labels shown next to major ticks"_help, true}
+    , majorTicks_{"majorTicks", "Major Ticks", "Settings for major ticks along the axis"_help} {
 
-    color_.setSemantics(PropertySemantics::Color);
-
-    addProperty(visible_);
-    addProperty(color_);
-    addProperty(width_);
-    addProperty(flipped_);
-    addProperty(orientation_);
-    addProperty(placement_);
+    scalingFactor_.setVisible(1.0f);
+    addProperties(visible_, color_, width_, scalingFactor_, flipped_, orientation_, placement_);
 
     // change default fonts, make axis labels slightly less pronounced
     captionSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Caption));
@@ -102,9 +104,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     labelSettings_.position_.setVisible(false);
     labelSettings_.setCurrentStateAsDefault();
 
-    addProperty(captionSettings_);
-    addProperty(labelSettings_);
-    addProperty(majorTicks_);
+    addProperties(captionSettings_, labelSettings_, majorTicks_);
 
     captionSettings_.setCollapsed(true);
     labelSettings_.setCollapsed(true);
@@ -129,6 +129,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(const CategoricalAxisProperty& 
     , visible_{rhs.visible_}
     , color_{rhs.color_}
     , width_{rhs.width_}
+    , scalingFactor_{rhs.scalingFactor_}
     , flipped_{rhs.flipped_}
     , orientation_{rhs.orientation_}
     , placement_{rhs.placement_}
@@ -137,16 +138,8 @@ CategoricalAxisProperty::CategoricalAxisProperty(const CategoricalAxisProperty& 
     , majorTicks_{rhs.majorTicks_}
     , minorTicks_{rhs.minorTicks_} {
 
-    addProperty(visible_);
-    addProperty(color_);
-    addProperty(width_);
-    addProperty(flipped_);
-    addProperty(orientation_);
-    addProperty(placement_);
-
-    addProperty(captionSettings_);
-    addProperty(labelSettings_);
-    addProperty(majorTicks_);
+    addProperties(visible_, color_, width_, scalingFactor_, flipped_, orientation_, placement_,
+                  captionSettings_, labelSettings_, majorTicks_);
 
     orientation_.onChange([this]() { adjustAlignment(); });
     placement_.onChange([this]() { adjustAlignment(); });
@@ -191,6 +184,8 @@ bool CategoricalAxisProperty::getFlipped() const { return flipped_.get(); }
 vec4 CategoricalAxisProperty::getColor() const { return color_.get(); }
 
 float CategoricalAxisProperty::getWidth() const { return width_.get(); }
+
+float CategoricalAxisProperty::getScalingFactor() const { return scalingFactor_.get(); }
 
 bool CategoricalAxisProperty::getUseDataRange() const { return false; }
 

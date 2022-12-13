@@ -450,7 +450,7 @@ vec2 getAxisCaptionPosition(const AxisSettings& settings, const vec2& startPos,
     const vec2 axisPos = glm::mix(startPos, endPos, settings.getCaptionSettings().getPosition());
 
     const auto axisDir = glm::normalize(endPos - startPos);
-    auto normal = vec2(axisDir.y, -axisDir.x);
+    auto normal = vec2(axisDir.y, -axisDir.x) * settings.getScalingFactor();
 
     if (settings.getFlipped()) {
         // reverse normal as labels are supposed to be on the other side of the axis
@@ -470,7 +470,7 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& setti
     }
 
     const auto axisDir = glm::normalize(endPos - startPos);
-    auto normal = vec2(axisDir.y, -axisDir.x);
+    auto normal = vec2(axisDir.y, -axisDir.x) * settings.getScalingFactor();
 
     if (settings.getFlipped()) {
         // reverse normal as labels are supposed to be on the other side of the axis
@@ -510,7 +510,7 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& setti
 vec3 getAxisCaptionPosition3D(const AxisSettings& settings, const vec3& startPos,
                               const vec3& endPos, const vec3& tickDirection) {
     const vec3 axisPos(glm::mix(startPos, endPos, settings.getCaptionSettings().getPosition()));
-    auto normal = -glm::normalize(tickDirection);
+    auto normal = -glm::normalize(tickDirection) * settings.getScalingFactor();
 
     if (settings.getFlipped()) {
         // reverse normal as labels are supposed to be on the other side of the axis
@@ -531,7 +531,7 @@ std::vector<std::pair<double, vec3>> getLabelPositions3D(const AxisSettings& set
     }
 
     const auto axisDir = glm::normalize(endPos - startPos);
-    auto normal = -glm::normalize(tickDirection);
+    auto normal = -glm::normalize(tickDirection) * settings.getScalingFactor();
 
     if (settings.getFlipped()) {
         // reverse normal as labels are supposed to be on the other side of the axis

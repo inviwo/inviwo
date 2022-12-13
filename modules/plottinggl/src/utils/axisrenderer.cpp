@@ -103,11 +103,13 @@ Mesh* AxisMeshes::getMajor(const AxisSettings& settings, const vec3& start, cons
     flip_.check(*this, settings.getFlipped());
     major_.check(*this, settings.getMajorTicks());
     tickDirection_.check(*this, tickDirection);
+    scalingFactor_.check(*this, settings.getScalingFactor());
     if (!majorMesh_) {
         const auto tickPositions = getMajorTickPositions(major_, range_);
-        majorMesh_ = generateTicksMesh(tickPositions, range_, startPos_.get(), endPos_.get(),
-                                       tickDirection_, major_.get().getTickLength(),
-                                       major_.get().getStyle(), major_.get().getColor(), flip_);
+        majorMesh_ =
+            generateTicksMesh(tickPositions, range_, startPos_.get(), endPos_.get(), tickDirection_,
+                              major_.get().getTickLength() * scalingFactor_.get(),
+                              major_.get().getStyle(), major_.get().getColor(), flip_);
     }
     return majorMesh_.get();
 }
@@ -121,11 +123,13 @@ Mesh* AxisMeshes::getMinor(const AxisSettings& settings, const vec3& start, cons
     major_.check(*this, settings.getMajorTicks());
     minor_.check(*this, settings.getMinorTicks());
     tickDirection_.check(*this, tickDirection);
+    scalingFactor_.check(*this, settings.getScalingFactor());
     if (!minorMesh_) {
         const auto tickPositions = getMinorTickPositions(minor_, major_, range_);
-        minorMesh_ = generateTicksMesh(tickPositions, range_, startPos_.get(), endPos_.get(),
-                                       tickDirection, minor_.get().getTickLength(),
-                                       minor_.get().getStyle(), minor_.get().getColor(), flip_);
+        minorMesh_ =
+            generateTicksMesh(tickPositions, range_, startPos_.get(), endPos_.get(), tickDirection,
+                              minor_.get().getTickLength() * scalingFactor_.get(),
+                              minor_.get().getStyle(), minor_.get().getColor(), flip_);
     }
     return minorMesh_.get();
 }

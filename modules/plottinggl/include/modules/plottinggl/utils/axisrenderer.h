@@ -155,6 +155,7 @@ private:
     Guard<MajorTickData, MPMajor, MPMinor> major_;
     Guard<MinorTickData, MPMinor> minor_;
     Guard<vec3, MPMajor, MPMinor> tickDirection_;
+    Guard<float, MPMajor, MPMinor> scalingFactor_;
 };
 
 template <typename P>
@@ -198,6 +199,7 @@ struct AxisLabels {
         major_.check(*this, settings.getMajorTicks());
         tickDirection_.check(*this, tickDirection);
         flipped_.check(*this, settings.getFlipped());
+        scalingFactor_.check(*this, settings.getScalingFactor());
 
         if (positions_.empty()) {
             auto& atlas = getAtlas(settings, start, end, renderer);
@@ -223,6 +225,7 @@ protected:
     Guard<MajorTickData, MPAtlas, MPLabel> major_;
     Guard<vec3, MPLabel> tickDirection_;
     Guard<bool, MPLabel> flipped_;
+    Guard<float, MPLabel> scalingFactor_;
 };
 
 struct IVW_MODULE_PLOTTINGGL_API AxisCaption {
@@ -323,6 +326,20 @@ public:
     AxisRenderer3D& operator=(AxisRenderer3D&& rhs) noexcept = default;
     virtual ~AxisRenderer3D() = default;
 
+    /**
+     * Render an axis from \p startPos to \p endPos in world coordinates of \p camera using the
+     * current axis settings.
+     *
+     * @param camera         The view transformations of this camera are applied to the axis, if \p
+     * is not equal to nullptr
+     * @param outputDims     Dimensions of the currently bound output framebuffer
+     * @param startPos       Start point of the axis in world space
+     * @param endPos         End point of the axis in world space
+     * @param tickDirection  Direction of major and minor ticks, the length is determined through
+     *                       the axis settings
+     * @param antialiasing   If true, lines will be rendered using an exponential alpha fall-off at
+     *                       the edges and alpha blending
+     */
     void render(Camera* camera, const size2_t& outputDims, const vec3& startPos, const vec3& endPos,
                 const vec3& tickDirection, bool antialiasing = true);
 

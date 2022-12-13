@@ -57,6 +57,8 @@ public:
     virtual bool getFlipped() const = 0;
     virtual vec4 getColor() const = 0;
     virtual float getWidth() const = 0;
+    // scaling factor affecting tick lengths and offsets of axis caption and labels
+    virtual float getScalingFactor() const = 0;
 
     virtual Placement getPlacement() const = 0;
     virtual Orientation getOrientation() const = 0;

@@ -187,6 +187,7 @@ public:
     virtual bool getFlipped() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
+    virtual float getScalingFactor() const override;
     virtual Orientation getOrientation() const override;
     virtual Placement getPlacement() const override;
 
