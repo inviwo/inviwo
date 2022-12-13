@@ -66,6 +66,7 @@ class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
 public:
     enum class AxisRangeMode { VolumeDims, VolumeBasis, VolumeBasisOffset, Custom };
     enum class CaptionType { String, Data, Custom };
+    enum class OffsetScaling { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
 
     VolumeAxis();
     virtual ~VolumeAxis() = default;
@@ -76,6 +77,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void adjustScalingFactor();
     void adjustRanges();
     void updateCaptions();
 
@@ -83,6 +85,7 @@ private:
     ImageInport imageInport_;
     ImageOutport outport_;
 
+    OptionProperty<OffsetScaling> offsetScaling_;
     FloatProperty axisOffset_;
 
     OptionProperty<AxisRangeMode> rangeMode_;

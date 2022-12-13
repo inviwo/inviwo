@@ -172,6 +172,13 @@ VolumeAxis::VolumeAxis()
     , imageInport_{"imageInport", "Background image (optional)"_help}
     , outport_{"outport",
                "Output image containing the rendered volume axes and the optional input image"_help}
+    , offsetScaling_{"offsetScaling",
+                     "Offset Scaling",
+                     {{"none", "None (absolute World coordinates)", OffsetScaling::None},
+                      {"min", "Min Volume Extent", OffsetScaling::MinExtent},
+                      {"max", "Max Volume Extent", OffsetScaling::MaxExtent},
+                      {"mean", "Mean Volume Extent", OffsetScaling::MeanExtent},
+                      {"diagonal", "Volume Diagonal", OffsetScaling::Diagonal}}}
     , axisOffset_{"axisOffset", "Axis Offset",
                   util::ordinalLength(0.1f, 10.0f)
                       .set("Offset between each axis and the volume"_help)}
@@ -267,8 +274,9 @@ VolumeAxis::VolumeAxis()
     }
 
     axisStyle_.registerProperties(xAxis_, yAxis_, zAxis_);
-    addProperties(axisOffset_, rangeMode_, customRanges_, captionType_, customCaption_, visibility_,
-                  axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+    addProperties(offsetScaling_, axisOffset_, rangeMode_, customRanges_, captionType_,
+                  customCaption_, visibility_, axisStyle_, xAxis_, yAxis_, zAxis_, camera_,
+                  trackball_);
 
     axisStyle_.setCollapsed(true);
     visibility_.setCollapsed(true);
@@ -316,8 +324,12 @@ VolumeAxis::VolumeAxis()
         }
     });
 
+    // adjust scaling factor for label offsets and tick lengths
+    offsetScaling_.onChange([&]() { adjustScalingFactor(); });
+
     // adjust axis ranges when input volume, i.e. its basis, changes
     inport_.onChange([&]() {
+        adjustScalingFactor();
         adjustRanges();
         updateCaptions();
     });
@@ -341,9 +353,7 @@ void VolumeAxis::process() {
     const dmat4 m = volume->getCoordinateTransformer().getDataToWorldMatrix();
     const dmat3 nm = glm::transpose(glm::inverse(m));
     // the mean length of the three basis vectors is used for a relative axis offset (%)
-    const double offset =
-        axisOffset_.get() / 100 *
-        (glm::length(dvec3(m[0])) + glm::length(dvec3(m[1])) + glm::length(dvec3(m[2]))) / 3.0;
+    const double offset = axisOffset_.get() * xAxis_.getScalingFactor();
 
     const auto render = [&](const util::AxisParams& axis, size_t axisIdx) {
         const dvec3 center{0.5, 0.5, 0.5};
@@ -390,6 +400,36 @@ void VolumeAxis::process() {
     }
 
     utilgl::deactivateCurrentTarget();
+}
+
+void VolumeAxis::adjustScalingFactor() {
+    if (const auto volume = inport_.getData()) {
+        const mat4 m{volume->getCoordinateTransformer().getDataToWorldMatrix()};
+
+        float factor = [l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])},
+                        mode = offsetScaling_.get()]() {
+            switch (mode) {
+                case OffsetScaling::MinExtent:
+                    return glm::compMin(l) / 100.0f;
+                case OffsetScaling::MaxExtent:
+                    return glm::compMax(l) / 100.0f;
+                case OffsetScaling::MeanExtent:
+                    return glm::compAdd(l) / (3.0f * 100.0f);
+                case OffsetScaling::Diagonal:
+                    return glm::compAdd(l) / 100.0f;
+                case OffsetScaling::None:
+                default:
+                    return 1.0f;
+            }
+        }();
+        xAxis_.scalingFactor_.set(factor);
+        yAxis_.scalingFactor_.set(factor);
+        zAxis_.scalingFactor_.set(factor);
+    } else {
+        xAxis_.scalingFactor_.set(1.0f);
+        yAxis_.scalingFactor_.set(1.0f);
+        zAxis_.scalingFactor_.set(1.0f);
+    }
 }
 
 void VolumeAxis::adjustRanges() {
