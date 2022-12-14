@@ -78,7 +78,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     , useDataRange_{"useDataRange", "Use Data Range", true}
     , range_{"range",
              "Axis Range",
-             "Current range of the axis"_help,
+             "Value range of the axis"_help,
              0.0,
              100.0,
              -1.0e6,

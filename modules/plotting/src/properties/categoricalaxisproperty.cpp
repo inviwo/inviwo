@@ -90,7 +90,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(
                      "Settings for axis labels shown next to major ticks"_help, true}
     , majorTicks_{"majorTicks", "Major Ticks", "Settings for major ticks along the axis"_help} {
 
-    scalingFactor_.setVisible(1.0f);
+    scalingFactor_.setVisible(false);
     addProperties(visible_, color_, width_, scalingFactor_, flipped_, orientation_, placement_);
 
     // change default fonts, make axis labels slightly less pronounced

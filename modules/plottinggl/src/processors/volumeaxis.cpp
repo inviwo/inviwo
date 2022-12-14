@@ -162,7 +162,7 @@ const ProcessorInfo VolumeAxis::processorInfo_{
     "Plotting",               // Category
     CodeState::Stable,        // Code state
     "GL, Plotting",           // Tags
-    "Renders an x, y, and z axis next to the input volume."_help};
+    "Renders x, y, and z axes next to the input volume."_help};
 
 const ProcessorInfo VolumeAxis::getProcessorInfo() const { return processorInfo_; }
 
@@ -174,6 +174,15 @@ VolumeAxis::VolumeAxis()
                "Output image containing the rendered volume axes and the optional input image"_help}
     , offsetScaling_{"offsetScaling",
                      "Offset Scaling",
+                     R"(Offset scaling affects tick lengths and offsets of axis captions and labels.
+                        + **None** No scaling, offsets and lengths are given in world coordinates.
+                        + **Min** Relative scaling based on the shortest extent of the volume. Useful 
+                                when visualizing a growing volume.
+                        + **Max** Relative scaling based on the longest extent of the volume. Useful 
+                                when visualizing a shrinking volume.
+                        + **Mean** Relative scaling basd on the mean volume extent.
+                        + **Diagonal** Relative scaling based on the diagonal of the volume.
+                      )"_unindentHelp,
                      {{"none", "None (absolute World coordinates)", OffsetScaling::None},
                       {"min", "Min Volume Extent", OffsetScaling::MinExtent},
                       {"max", "Max Volume Extent", OffsetScaling::MaxExtent},
@@ -181,7 +190,8 @@ VolumeAxis::VolumeAxis()
                       {"diagonal", "Volume Diagonal", OffsetScaling::Diagonal}}}
     , axisOffset_{"axisOffset", "Axis Offset",
                   util::ordinalLength(0.1f, 10.0f)
-                      .set("Offset between each axis and the volume"_help)}
+                      .set(
+                          "Offset between each axis and the volume considering the Offset Scaling mode"_help)}
     , rangeMode_{"rangeMode",
                  "Axis Range Mode",
                  "Determines axis ranges (volume dimension, volume basis, or customized)"_help,
@@ -406,7 +416,7 @@ void VolumeAxis::adjustScalingFactor() {
     if (const auto volume = inport_.getData()) {
         const mat4 m{volume->getCoordinateTransformer().getDataToWorldMatrix()};
 
-        float factor = [l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])},
+        float factor = [l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])}, &m,
                         mode = offsetScaling_.get()]() {
             switch (mode) {
                 case OffsetScaling::MinExtent:
@@ -416,7 +426,7 @@ void VolumeAxis::adjustScalingFactor() {
                 case OffsetScaling::MeanExtent:
                     return glm::compAdd(l) / (3.0f * 100.0f);
                 case OffsetScaling::Diagonal:
-                    return glm::compAdd(l) / 100.0f;
+                    return glm::length(m[0] + m[1] + m[2]) / 100.0f;
                 case OffsetScaling::None:
                 default:
                     return 1.0f;
