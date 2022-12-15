@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -57,6 +57,7 @@
 #include <fmt/core.h>    // for basic_string_view
 #include <fmt/printf.h>  // for sprintf
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
+#include <glm/gtx/vec_swizzle.hpp>
 
 namespace inviwo {
 
@@ -106,7 +107,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
                  {{"outside", "Bottom / Left", Placement::Outside},
                   {"inside", "Top / Right", Placement::Inside}},
                  0}
-    , captionSettings_{"caption", "Caption", "Caption settings"_help, false}
+    , captionSettings_{"caption", "Caption", "Caption settings"_help, true}
     , labelSettings_{"labels", "Axis Labels",
                      "Settings for axis labels shown next to major ticks"_help, true}
     , majorTicks_{"majorTicks", "Major Ticks", "Settings for major ticks along the axis"_help}
@@ -121,7 +122,6 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     labelSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Label));
 
     captionSettings_.title_.set("Axis Title");
-    captionSettings_.offset_.set(35.0f);
 
     labelSettings_.title_.setDisplayName("Format");
     labelSettings_.title_.set("%.1f");
@@ -137,13 +137,14 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
 
     setCollapsed(true);
 
-    orientation_.onChange([this]() { adjustAlignment(); });
-    placement_.onChange([this]() { adjustAlignment(); });
+    orientation_.onChange([this]() { updateOrientation(); });
+    placement_.onChange([this]() { updatePlacement(); });
     majorTicks_.onChange([this]() { updateLabels(); });
     range_.onChange([this]() { updateLabels(); });
     labelSettings_.title_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
-    adjustAlignment();
+    updateOrientation();
+    updatePlacement();
     updateLabels();
 
     setCurrentStateAsDefault();
@@ -176,17 +177,36 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
 
     addProperties(captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
-    orientation_.onChange([this]() { adjustAlignment(); });
-    placement_.onChange([this]() { adjustAlignment(); });
+    orientation_.onChange([this]() { updateOrientation(); });
+    placement_.onChange([this]() { updatePlacement(); });
     majorTicks_.onChange([this]() { updateLabels(); });
     range_.onChange([this]() { updateLabels(); });
     labelSettings_.title_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
-    adjustAlignment();
+    updateOrientation();
+    updatePlacement();
     updateLabels();
 }
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
+
+void AxisProperty::deserialize(Deserializer& d) {
+    prevOrientation_.reset();
+    prevPlacement_.reset();
+    BoolCompositeProperty::deserialize(d);
+}
+
+void AxisProperty::defaultAlignLabels() {
+    const float dir = (placement_ == Placement::Outside) ? 1.0f : -1.0f;
+    if (orientation_ == Orientation::Horizontal) {
+        captionSettings_.font_.anchorPos_.set(vec2(0.0f, dir));
+        labelSettings_.font_.anchorPos_.set(vec2(0.0f, dir));
+    } else {
+        // vertical caption of a 2D axis is rotated 90° ccw and requires a different offset
+        captionSettings_.font_.anchorPos_.set(vec2(0.0f, -dir));
+        labelSettings_.font_.anchorPos_.set(vec2(dir, 0.0f));
+    }
+}
 
 AxisProperty& AxisProperty::setCaption(std::string_view title) {
     captionSettings_.title_.set(title);
@@ -257,24 +277,29 @@ void AxisProperty::updateLabels() {
                    [&](auto tick) { return fmt::sprintf(format, tick); });
 }
 
-void AxisProperty::adjustAlignment() {
-    vec2 labelAnchor = [this]() {
-        if (orientation_.get() == Orientation::Horizontal) {
-            return vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
-        } else {
-            return vec2((placement_.get() == Placement::Outside) ? 1.0 : -1.0, 0.0f);
-        }
-    }();
-    vec2 captionAnchor = [this]() {
-        vec2 anchor = vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
-        if (orientation_.get() == Orientation::Vertical) {
-            anchor.y = -anchor.y;
-        }
-        return anchor;
-    }();
+void AxisProperty::updateOrientation() {
+    if (prevOrientation_ && prevOrientation_ != orientation_.get()) {
+        // flip anchor positions from vertical to horizontal and vice versa
+        labelSettings_.font_.anchorPos_.set(glm::yx(labelSettings_.font_.anchorPos_.get()));
+        captionSettings_.font_.anchorPos_.set(glm::yx(captionSettings_.font_.anchorPos_.get()));
+    }
+    prevOrientation_ = orientation_;
+}
 
-    labelSettings_.font_.anchorPos_.set(labelAnchor);
-    captionSettings_.font_.anchorPos_.set(captionAnchor);
+void AxisProperty::updatePlacement() {
+    if (prevPlacement_ && prevPlacement_ != placement_.get()) {
+        // invert positioning orthogonal to current orientation
+        auto flip = [o = orientation_.get()](auto& prop) {
+            if (o == Orientation::Horizontal) {
+                prop.set(prop.get() * vec2(1.0f, -1.0f));
+            } else {
+                prop.set(prop.get() * vec2(-1.0f, 1.0f));
+            }
+        };
+        flip(labelSettings_.font_.anchorPos_);
+        flip(captionSettings_.font_.anchorPos_);
+    }
+    prevPlacement_ = placement_;
 }
 
 bool AxisProperty::getAxisVisible() const { return isChecked(); }

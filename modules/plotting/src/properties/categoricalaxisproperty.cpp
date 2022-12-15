@@ -98,7 +98,6 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     labelSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Label));
 
     captionSettings_.title_.set("Axis Title");
-    captionSettings_.offset_.set(35.0f);
 
     labelSettings_.title_.setVisible(false);
     labelSettings_.position_.setVisible(false);

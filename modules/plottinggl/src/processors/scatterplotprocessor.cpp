@@ -140,9 +140,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     addInteractionHandler(&scatterPlot_);
     scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});
     scatterPlot_.properties_.xAxis_.captionSettings_.setChecked(true);
-    scatterPlot_.properties_.xAxis_.captionSettings_.offset_.set(20.0f);
     scatterPlot_.properties_.yAxis_.captionSettings_.setChecked(true);
-    scatterPlot_.properties_.yAxis_.captionSettings_.offset_.set(30.0f);
     scatterPlot_.properties_.setCurrentStateAsDefault();
 
     addProperties(scatterPlot_.properties_, xAxis_, yAxis_, colorCol_, radiusCol_, sortCol_,

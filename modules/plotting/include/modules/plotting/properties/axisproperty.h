@@ -74,6 +74,14 @@ public:
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 
+    /**
+     * \brief aligns and centers caption and labels according to the current axis orientation
+     * For a horizontal axis, both caption and labels are centered horizontally with the vertical
+     * anchor position at the top (or bottom with inside placement). In the vertical case, labels
+     * are right-aligned (left with inside placement) and vertically centered.
+     */
+    void defaultAlignLabels();
+
     virtual AxisProperty& setCaption(std::string_view title);
 
     AxisProperty& setLabelFormat(std::string_view formatStr);
@@ -105,6 +113,8 @@ public:
      * width.
      */
     AxisProperty& setLineWidth(float width);
+
+    virtual void deserialize(Deserializer& d) override;
 
     // Inherited via AxisSettings
     virtual dvec2 getRange() const override;
@@ -149,8 +159,11 @@ public:
 
 private:
     virtual void updateLabels();
+    void updateOrientation();
+    void updatePlacement();
 
-    void adjustAlignment();
+    std::optional<Orientation> prevOrientation_;
+    std::optional<Placement> prevPlacement_;
 };
 
 }  // namespace plot

@@ -52,16 +52,13 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
     , title_("title", "Title", "")
     , color_("color", "Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
     , position_("position", "Position", 0.5f, 0.0f, 1.0f)
-    , offset_("offset", "Offset", 10.0f, 0.0f, 100.0f)
+    , offset_("offset", "Offset", 20.0f, 0.0f, 100.0f)
     , rotation_("rotation", "Rotation", 0.f, 0.f, 360.f, 10.f, InvalidationLevel::InvalidOutput)
     , font_("font", "Font") {
+
     color_.setSemantics(PropertySemantics::Color);
-    addProperty(title_);
-    addProperty(color_);
-    addProperty(offset_);
-    addProperty(position_);
-    addProperty(rotation_);
-    addProperty(font_);
+
+    addProperties(title_, color_, offset_, position_, rotation_, font_);
 
     font_.anchorPos_.set(vec2(0.0f, 0.0f));
 }

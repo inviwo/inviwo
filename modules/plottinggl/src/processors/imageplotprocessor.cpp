@@ -93,7 +93,7 @@ ImagePlotProcessor::ImagePlotProcessor()
                  OutportDeterminesSize::Yes)
     , bgInport_("bg", "Optional background image"_help)
     , outport_("outport", "Output image of the plot"_help)
-    , margins_("margins", "Margins", 5.0f, 5.0f, 30.0f, 50.0f)
+    , margins_("margins", "Margins", 5.0f, 5.0f, 40.0f, 50.0f)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 100.0f)
     , plotImageSize_("plotImageSize", "Plot Image Size", "Size of the plotted image"_help, ivec2(0),
                      {ivec2(0), ConstraintBehavior::Ignore},
@@ -146,6 +146,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     xAxis_.setCaption("x");
     yAxis_.setCaption("y");
     yAxis_.flipped_.set(true);
+    yAxis_.defaultAlignLabels();
 
     auto linkAxisRanges = [this](DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {
         auto func = [&]() {

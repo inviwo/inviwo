@@ -187,9 +187,10 @@ VolumeAxis::VolumeAxis()
                       {"min", "Min Volume Extent", OffsetScaling::MinExtent},
                       {"max", "Max Volume Extent", OffsetScaling::MaxExtent},
                       {"mean", "Mean Volume Extent", OffsetScaling::MeanExtent},
-                      {"diagonal", "Volume Diagonal", OffsetScaling::Diagonal}}}
+                      {"diagonal", "Volume Diagonal", OffsetScaling::Diagonal}},
+                     1}
     , axisOffset_{"axisOffset", "Axis Offset",
-                  util::ordinalLength(0.1f, 10.0f)
+                  util::ordinalLength(10.0f, 50.0f)
                       .set(
                           "Offset between each axis and the volume considering the Offset Scaling mode"_help)}
     , rangeMode_{"rangeMode",
@@ -294,18 +295,10 @@ VolumeAxis::VolumeAxis()
     trackball_.setCollapsed(true);
 
     // initialize axes
-    const float majorTick = 0.3f;
-    const float minorTick = 0.15f;
     for (auto property : {&xAxis_, &yAxis_, &zAxis_}) {
-        property->captionSettings_.offset_.set(0.7f);
-        property->captionSettings_.position_.set(0.5f);
-        property->labelSettings_.offset_.set(0.7f);
-
-        property->majorTicks_.tickLength_.set(majorTick);
         property->majorTicks_.tickWidth_.set(1.5f);
         property->majorTicks_.style_.set(TickStyle::Outside);
 
-        property->minorTicks_.tickLength_.set(minorTick);
         property->minorTicks_.tickWidth_.set(1.3f);
         property->minorTicks_.style_.set(TickStyle::Outside);
     }
