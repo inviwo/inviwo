@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/undomanager.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/threadutil.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 
 #include <warn/push>
@@ -68,6 +69,7 @@ public:
         }()}
         , quit_{false}
         , saver_{[this]() {
+            util::setThreadDescription("Inviwo AutoSave");
             for (;;) {
 
                 std::shared_ptr<const std::string> str;

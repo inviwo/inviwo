@@ -42,12 +42,10 @@
 namespace inviwo {
 
 TimerThread::TimerThread()
-    : sort_(false)
-    , stop_(false)
-    , thread_{std::make_unique<std::thread>([this]() { TimerLoop(); })} {
-
-    util::setThreadDescription(*thread_, "Inviwo Timer Thread");
-}
+    : sort_(false), stop_(false), thread_{std::make_unique<std::thread>([this]() {
+        util::setThreadDescription("Inviwo Timer Thread");
+        TimerLoop();
+    })} {}
 
 TimerThread::~TimerThread() {
     stop_ = true;

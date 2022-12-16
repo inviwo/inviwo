@@ -43,7 +43,7 @@ class InviwoApplication;
 
 namespace util {
 
-IVW_CORE_API void setThreadDescription(std::thread& thread, const std::string& desc);
+IVW_CORE_API void setThreadDescription(const std::string& desc);
 
 IVW_CORE_API ThreadPool& getThreadPool();
 IVW_CORE_API ThreadPool& getThreadPool(InviwoApplication* app);
