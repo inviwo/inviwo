@@ -62,20 +62,70 @@ T maxv() {
 }
 
 template <typename To, typename From>
-void testmax() {
+void testmax(std::string_view to, std::string_view from) {
     auto res = glm_convert_normalized<To>(maxv<From>());
-    EXPECT_EQ(maxv<To>(), res);
+    EXPECT_EQ(maxv<To>(), res) << "Convert range max " << from << " (" << +maxv<From>() << ") to "
+                               << to << " (" << +maxv<To>() << ")";
 }
 
 template <typename To, typename From>
-void testmin() {
+void testmin(std::string_view to, std::string_view from) {
     auto res = glm_convert_normalized<To>(minv<From>());
-    EXPECT_EQ(minv<To>(), res);
+    EXPECT_EQ(minv<To>(), res) << "Convert range min " << from << " (" << +minv<From>() << ") to "
+                               << to << " (" << +minv<To>() << ")";
 }
 
-#define CONV_TEST(Name, From, To)                             \
-    TEST(ConversionTests, Min##Name) { testmin<To, From>(); } \
-    TEST(ConversionTests, Max##Name) { testmax<To, From>(); }
+template <typename F, typename T>
+constexpr bool testMinMax() {
+    return ((glm_convert_normalized<T, F>(std::numeric_limits<F>::min()) ==
+             std::numeric_limits<T>::min()) &&
+            (glm_convert_normalized<T, F>(std::numeric_limits<F>::max()) ==
+             std::numeric_limits<T>::max()));
+}
+
+static_assert(testMinMax<unsigned char, unsigned char>());
+static_assert(testMinMax<unsigned short, unsigned short>());
+static_assert(testMinMax<unsigned int, unsigned int>());
+static_assert(testMinMax<unsigned long long, unsigned long long>());
+
+static_assert(testMinMax<signed char, signed char>());
+static_assert(testMinMax<signed short, signed short>());
+static_assert(testMinMax<signed int, signed int>());
+static_assert(testMinMax<signed long long, signed long long>());
+
+static_assert(testMinMax<unsigned char, signed char>());
+static_assert(testMinMax<signed char, unsigned char>());
+
+static_assert(testMinMax<unsigned short, signed short>());
+static_assert(testMinMax<signed short, unsigned short>());
+
+static_assert(testMinMax<unsigned int, signed int>());
+static_assert(testMinMax<signed int, unsigned int>());
+
+static_assert(testMinMax<unsigned long long, signed long long>());
+static_assert(testMinMax<signed long long, unsigned long long>());
+
+static_assert(testMinMax<unsigned char, unsigned short>());
+static_assert(testMinMax<unsigned short, unsigned int>());
+static_assert(testMinMax<unsigned int, unsigned long long>());
+
+static_assert(testMinMax<unsigned short, unsigned char>());
+static_assert(testMinMax<unsigned int, unsigned short>());
+static_assert(testMinMax<unsigned long long, unsigned int>());
+
+static_assert(testMinMax<signed char, signed short>());
+static_assert(testMinMax<signed short, signed int>());
+//static_assert(testMinMax<signed int, signed long long>());
+
+static_assert(testMinMax<signed short, signed char>());
+static_assert(testMinMax<signed int, signed short>());
+//static_assert(testMinMax<signed long long, signed int>());
+
+TEST(ConversionTests, Custom) { testmax<unsigned char, signed int>("unsigned char", "signed int"); }
+
+#define CONV_TEST(Name, From, To)                                        \
+    TEST(ConversionTests, Min_##Name) { testmin<To, From>(#To, #From); } \
+    TEST(ConversionTests, Max_##Name) { testmax<To, From>(#To, #From); }
 
 /* Mathematica code to generate tests.
 
