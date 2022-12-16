@@ -29,27 +29,28 @@
 
 #include <modules/webbrowser/webbrowsermodule.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                          // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>                               // for ModulePath
-#include <inviwo/core/properties/boolproperty.h>                           // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                         // for ButtonProperty
-#include <inviwo/core/properties/directoryproperty.h>                      // for DirectoryProperty
-#include <inviwo/core/properties/fileproperty.h>                           // for FileProperty
-#include <inviwo/core/properties/minmaxproperty.h>                         // for MinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>                         // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                        // for OrdinalProperty
-#include <inviwo/core/properties/ordinalrefproperty.h>                     // for OrdinalRefProp...
-#include <inviwo/core/properties/stringproperty.h>                         // for StringProperty
-#include <inviwo/core/util/commandlineparser.h>                            // for CommandLineParser
-#include <inviwo/core/util/exception.h>                                    // for ModuleInitExce...
-#include <inviwo/core/util/filesystem.h>                                   // for getExecutablePath
-#include <inviwo/core/util/foreacharg.h>                                   // for for_each_type
-#include <inviwo/core/util/glmmat.h>                                       // for dmat2, dmat3
-#include <inviwo/core/util/glmvec.h>                                       // for dvec2, dvec3
-#include <inviwo/core/util/logcentral.h>                                   // for LogCentral
-#include <inviwo/core/util/settings/settings.h>                            // for Settings
-#include <inviwo/core/util/settings/systemsettings.h>                      // for SystemSettings
-#include <inviwo/core/util/staticstring.h>                                 // for operator+
+#include <inviwo/core/common/inviwoapplication.h>       // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>            // for ModulePath
+#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>      // for ButtonProperty
+#include <inviwo/core/properties/directoryproperty.h>   // for DirectoryProperty
+#include <inviwo/core/properties/fileproperty.h>        // for FileProperty
+#include <inviwo/core/properties/minmaxproperty.h>      // for MinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>      // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>     // for OrdinalProperty
+#include <inviwo/core/properties/ordinalrefproperty.h>  // for OrdinalRefProp...
+#include <inviwo/core/properties/stringproperty.h>      // for StringProperty
+#include <inviwo/core/util/commandlineparser.h>         // for CommandLineParser
+#include <inviwo/core/util/exception.h>                 // for ModuleInitExce...
+#include <inviwo/core/util/filesystem.h>                // for getExecutablePath
+#include <inviwo/core/util/foreacharg.h>                // for for_each_type
+#include <inviwo/core/util/glmmat.h>                    // for dmat2, dmat3
+#include <inviwo/core/util/glmvec.h>                    // for dvec2, dvec3
+#include <inviwo/core/util/logcentral.h>                // for LogCentral
+#include <inviwo/core/util/settings/settings.h>         // for Settings
+#include <inviwo/core/util/settings/systemsettings.h>   // for SystemSettings
+#include <inviwo/core/util/staticstring.h>              // for operator+
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/timer.h>                                        // for Timer, Timer::...
 #include <inviwo/dataframe/properties/columnoptionproperty.h>              // for ColumnOptionPr...
 #include <modules/opengl/shader/shadermanager.h>                           // for ShaderManager
@@ -196,6 +197,9 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     void* sandbox_info = NULL;  // Windows specific
 
+    CefMainArgs args;
+    CefSettings settings;
+
 #ifdef __APPLE__  // Mac specific
 
     // Find CEF framework and helper app in
@@ -210,8 +214,6 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
                                   frameworkPath);
     }
 
-    CefMainArgs args(app->getCommandLineParser().getARGC(), app->getCommandLineParser().getARGV());
-    CefSettings settings;
     // Setting locales_dir_path does not seem to work (tested debug mode with Xcode).
     // We have therefore created symbolic links from the bundle Resources directory to the
     // framework resource files using CMake.
@@ -222,7 +224,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // We still set the variable to potentially avoid other problems such as the one below.
     // Crashes if not set and non-default locale is used
     CefString(&settings.locales_dir_path)
-        .FromASCII((frameworkDirectory + std::string("/Resources")).c_str());
+        .FromWString(util::toWstring(frameworkDirectory + "/Resources"));
 
     // resources_dir_path specified location of:
     // cef.pak
@@ -241,7 +243,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     //      This file contains non-localized resources required for Chrome Developer
     //      Tools. Without this file Chrome Developer Tools will not function.
     CefString(&settings.resources_dir_path)
-        .FromASCII((frameworkDirectory + std::string("/Resources")).c_str());
+        .FromWString(util::toWstring(frameworkDirectory + "/Resources"));
     // Locale returns "en_US.UFT8" but "en.UTF8" is needed by CEF
     auto startErasePos = locale.find('_');
     if (startErasePos != std::string::npos) {
@@ -249,8 +251,6 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     }
 
 #else
-    CefMainArgs args;
-    CefSettings settings;
     // Non-mac systems uses a single helper executable so here we can specify name
     // Linux will have empty extension
     auto subProcessExecutable = fmt::format("{}/{}{}{}", exeDirectory, "cef_web_helper",
@@ -261,7 +261,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     // Necessary to run helpers in separate sub-processes
     // Needed since we do not want to edit the "main" function
-    CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
+    CefString(&settings.browser_subprocess_path).FromWString(util::toWstring(subProcessExecutable));
 #endif
 
 #ifdef WIN32
@@ -293,18 +293,16 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // to be processed in CefDoMessageLoopWork() instead of in the Qt application loop.
     settings.external_message_pump = true;
 
-    CefString(&settings.locale).FromASCII(locale.c_str());
+    CefString(&settings.locale).FromString(locale);
 
     // Optional implementation of the CefApp interface.
     CefRefPtr<WebBrowserApp> browserApp(new WebBrowserApp);
 
-    bool result = CefInitialize(args, settings, browserApp, sandbox_info);
-
-    if (!result) {
+    if (!CefInitialize(args, settings, browserApp, sandbox_info)) {
         throw ModuleInitException("Failed to initialize Chromium Embedded Framework");
     }
 
-    // Add a directory to the search path of the Shadermanager
+    // Add a directory to the search path of the ShaderManager
     webbrowser::addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
