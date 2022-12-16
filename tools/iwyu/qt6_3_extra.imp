@@ -2,5 +2,8 @@
   {"include": ["@[\"<](QtCore/)?qnamespace\\.h[\">]", "private", "<Qt>", "public"]},
   {"include": ["@[\"<](QtCore/)?qcoreevent\\.h[\">]", "private", "<QEvent>", "public"]},
   {"include": ["@[\"<](QtGui/)?qbrush\\.h[\">]", "private", "<QBrush>", "public"]},
-  {"include": ["@[\"<](QtGui/)?qpainterpath\\.h[\">]", "private", "<QPainterPath>", "public"]}
+  {"include": ["@[\"<](QtGui/)?qpainterpath\\.h[\">]", "private", "<QPainterPath>", "public"]},
+  {"include": ["@[\"<](QtCore/)?qobjectdefs\\.h[\">]", "private", "<QMetaObject>", "public"]},
+  {"include": ["@[\"<](QtCore/)?qmath\\.h[\">]", "private", "<QtMath>", "public"]},
+  {"include": ["@[\"<](QtCore/)?qtcoreexports\\.h[\">]", "private", "<QtGlobal>", "public"]}
 ]
