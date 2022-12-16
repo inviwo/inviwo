@@ -233,7 +233,11 @@ public:
      */
     void dispatchFrontAndForget(std::function<void()> fun);
 
-    virtual size_t processFront();
+    size_t processFront();
+    
+    void processEvents();
+    
+    void setProcessEventsCallback(std::function<void()> callback);
 
     /**
      * Get the current number of worker threads in the thread pool
@@ -457,6 +461,7 @@ protected:
 
     std::locale uiLocale_{};
     std::function<void(LongWait)> poolResizeCallback_;
+    std::function<void()> processEventsCallback_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
 
