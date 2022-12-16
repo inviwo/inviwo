@@ -1,5 +1,14 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2022-12-16 VolumeAxis
+The default settings and alignments of the `VolumeAxis` processor, which renders x, y, and z axes next to a volume, have been reworked. It is now possible to define axis, caption, and label offsets as well as tick lengths relative to the extent of the input volume compared to absolute lengths in world coordinates. This links the axes settings more closely with the volume size and therefore no adjustments are needed when switching to a volume with a different extent.
+The `Offset Scaling` property currently supports the following modes:
+- **None** No scaling, offsets and lengths are given in world coordinates. 
+- **Min** (default) Relative scaling based on the shortest extent of the volume. Useful when visualizing a growing volume. 
+- **Max** Relative scaling based on the longest extent of the volume. Useful when visualizing a shrinking volume. 
+- **Mean** Relative scaling basd on the mean volume extent. 
+- **Diagonal** Relative scaling based on the diagonal of the volume. 
+
 ## 2022-11-25 The PropertyListWidget defaults to showing one processor
 Previously the `PropertyListWidget` has shown the properties of all selected processors in the network. 
 This can sometimes be very slow to render for large selections, and in most cases one does not care about the properties when selecting many processors.
