@@ -169,6 +169,7 @@ ColorScaleLegend::ColorScaleLegend()
     rotation_.visibilityDependsOn(legendPlacement_, [](auto l) { return l.get() == 4; });
     position_.visibilityDependsOn(legendPlacement_, [](auto l) { return l.get() == 4; });
     axis_.flipped_.visibilityDependsOn(legendPlacement_, [](auto l) { return l.get() == 4; });
+    axis_.defaultAlignLabels();
 
     // legend style
     axisStyle_.insertProperty(0, labelType_);

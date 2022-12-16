@@ -90,14 +90,17 @@ AxisRenderProcessor::AxisRenderProcessor()
 
     axis1_.captionSettings_.setChecked(true);
     axis1_.setCaption("x Axis");
+    axis1_.defaultAlignLabels();
 
     // flip vertical axis to show labels on the left side
     axis2_.flipped_.set(true);
     axis2_.captionSettings_.setChecked(true);
     axis2_.setCaption("y Axis");
+    axis2_.defaultAlignLabels();
 
     axis3_.captionSettings_.setChecked(true);
     axis3_.setCaption("Diagonal Axis");
+    axis3_.defaultAlignLabels();
 
     style_.setCollapsed(true);
     style_.registerProperties(axis1_, axis2_, axis3_);
