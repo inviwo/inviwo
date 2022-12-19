@@ -49,7 +49,8 @@ namespace inviwo {
  */
 class IsoComponent : public ShaderComponent {
 public:
-    IsoComponent(std::string_view identifier, std::string_view name, Document help, VolumeInport& volume);
+    IsoComponent(std::string_view identifier, std::string_view name, Document help,
+                 VolumeInport& volume);
     virtual std::string_view getName() const override;
 
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;

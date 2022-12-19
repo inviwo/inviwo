@@ -190,7 +190,6 @@ void EmbeddedVolumeSlice::process() {
         shader_.getFragmentShaderObject()->removeShaderDefine("BACKGROUND_AVAILABLE");
         shader_.build();
     }
-    
 
     utilgl::activateTargetAndClearOrCopySource(outport_, backgroundPort_);
     shader_.activate();
