@@ -261,19 +261,19 @@ void swap(flags<E> &fl1, flags<E> &fl2) noexcept {
 }  // namespace
 
 template <class E>
-constexpr auto operator|(E e1, E e2) noexcept ->
+constexpr auto operator|(const E e1, const E e2) noexcept ->
     typename std::enable_if<inviwo::flags::is_flags<E>::value, inviwo::flags::flags<E>>::type {
     return inviwo::flags::flags<E>(e1) | e2;
 }
 
 template <class E>
-constexpr auto operator&(E e1, E e2) noexcept ->
+constexpr auto operator&(const E e1, const E e2) noexcept ->
     typename std::enable_if<inviwo::flags::is_flags<E>::value, inviwo::flags::flags<E>>::type {
     return inviwo::flags::flags<E>(e1) & e2;
 }
 
 template <class E>
-constexpr auto operator^(E e1, E e2) noexcept ->
+constexpr auto operator^(const E e1, const E e2) noexcept ->
     typename std::enable_if<inviwo::flags::is_flags<E>::value, inviwo::flags::flags<E>>::type {
     return inviwo::flags::flags<E>(e1) ^ e2;
 }

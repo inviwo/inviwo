@@ -54,22 +54,22 @@ namespace inviwo {
 void exposeEvents(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::enum_<KeyModifier>(m, "KeyModifier")
-        .value("NoModifier", KeyModifier::None)
-        .value("Control", KeyModifier::Control)
-        .value("Shift", KeyModifier::Shift)
-        .value("Alt", KeyModifier::Alt)
-        .value("Super", KeyModifier::Super)
-        .value("Menu", KeyModifier::Menu)
-        .value("Meta", KeyModifier::Meta);
+    auto keyModifier = py::enum_<KeyModifier>(m, "KeyModifier")
+                           .value("NoModifier", KeyModifier::None)
+                           .value("Control", KeyModifier::Control)
+                           .value("Shift", KeyModifier::Shift)
+                           .value("Alt", KeyModifier::Alt)
+                           .value("Super", KeyModifier::Super)
+                           .value("Menu", KeyModifier::Menu)
+                           .value("Meta", KeyModifier::Meta);
 
-    exposeFlags<KeyModifier>(m, "KeyModifiers");
+    exposeFlags<KeyModifier>(m, keyModifier, "KeyModifiers");
 
-    py::enum_<KeyState>(m, "KeyState")
-        .value("Press", KeyState::Press)
-        .value("Release", KeyState::Release);
+    auto keyState = py::enum_<KeyState>(m, "KeyState")
+                        .value("Press", KeyState::Press)
+                        .value("Release", KeyState::Release);
 
-    exposeFlags<KeyState>(m, "KeyStates");
+    exposeFlags<KeyState>(m, keyState, "KeyStates");
 
     py::enum_<IvwKey>(m, "IvwKey")
         .value("Undefined", IvwKey::Undefined)
@@ -217,30 +217,30 @@ void exposeEvents(pybind11::module& m) {
         .value("LeftMeta", IvwKey::LeftMeta)
         .value("RightMeta", IvwKey::RightMeta);
 
-    py::enum_<MouseButton>(m, "MouseButton")
-        .value("NoButton", MouseButton::None)
-        .value("Left", MouseButton::Left)
-        .value("Middle", MouseButton::Middle)
-        .value("Right", MouseButton::Right);
+    auto mouseButton = py::enum_<MouseButton>(m, "MouseButton")
+                           .value("NoButton", MouseButton::None)
+                           .value("Left", MouseButton::Left)
+                           .value("Middle", MouseButton::Middle)
+                           .value("Right", MouseButton::Right);
 
-    exposeFlags<MouseButton>(m, "MouseButtons");
+    exposeFlags<MouseButton>(m, mouseButton, "MouseButtons");
 
-    py::enum_<MouseState>(m, "MouseState")
-        .value("Press", MouseState::Press)
-        .value("Move", MouseState::Move)
-        .value("Release", MouseState::Release)
-        .value("DoubleClick", MouseState::DoubleClick);
+    auto mouseState = py::enum_<MouseState>(m, "MouseState")
+                          .value("Press", MouseState::Press)
+                          .value("Move", MouseState::Move)
+                          .value("Release", MouseState::Release)
+                          .value("DoubleClick", MouseState::DoubleClick);
 
-    exposeFlags<MouseState>(m, "MouseStates");
+    exposeFlags<MouseState>(m, mouseState, "MouseStates");
 
-    py::enum_<TouchState>(m, "TouchState")
-        .value("NoTouch", TouchState::None)
-        .value("Started", TouchState::Started)
-        .value("Updated", TouchState::Updated)
-        .value("Stationary", TouchState::Stationary)
-        .value("Finished", TouchState::Finished);
+    auto touchState = py::enum_<TouchState>(m, "TouchState")
+                          .value("NoTouch", TouchState::None)
+                          .value("Started", TouchState::Started)
+                          .value("Updated", TouchState::Updated)
+                          .value("Stationary", TouchState::Stationary)
+                          .value("Finished", TouchState::Finished);
 
-    exposeFlags<TouchState>(m, "TouchStates");
+    exposeFlags<TouchState>(m, touchState, "TouchStates");
 
     py::class_<Event>(m, "Event")
         .def("clone", &Event::clone)

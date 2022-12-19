@@ -83,28 +83,9 @@ protected:
 
 private:
     InviwoApplication* app_;
-
     QUrl current_;
-
     std::string currentModulePath_;
 };
-
-/*
- * Paths: qthelp://org.inviwo/doc/<files>
- *
- * This to do to generate info:
- * override css ( the default one is very large and make the text browser slow... )
- * Inviwo-dev\tools\doxygen\doc-qt\html> cp ..\..\style\qt-stylesheet.css .\doxygen.css
- *
- * generate qch (compressed help)
- * Inviwo-dev\tools\doxygen\doc-qt\html> qhelpgenerator.exe -o ..\inviwo.qch .\index.qhp
- *
- * Copy qch
- * Inviwo-dev\data\help> cp ..\..\tools\doxygen\doc-qt\inviwo.qch .
- *
- * Generate qhc (help collection)
- * Inviwo\Inviwo-dev\data\help> qcollectiongenerator.exe inviwo.qhcp -o inviwo.qhc
- */
 
 HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
     : InviwoDockWidget(tr("Help"), mainWindow, "HelpWidget")
@@ -297,6 +278,14 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
         }
     }
 
+    if (auto* fo = processorFactory->getFactoryObject(processor.classIdentifier)) {
+        auto meta = fo->getMetaInformation();
+        if (!meta.empty()) {
+            body.append("h4", "Meta");
+            body.append("div").append(meta);
+        }
+    }
+
     return doc;
 }
 
@@ -437,21 +426,8 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
             return utilqt::toQString(html);
         }
     }
+
     const auto filePath = toFilePath(url);
-    if (filesystem::fileExists(filePath)) {
-        if (filesystem::getFileExtension(filePath) == "inv") {
-            try {
-                util::appendProcessorNetwork(app_->getProcessorNetwork(), filePath, app_);
-            } catch (const Exception& e) {
-                util::log(
-                    e.getContext(),
-                    fmt::format("Unable to append network {} due to {}", filePath, e.getMessage()),
-                    LogLevel::Error);
-            }
-            QTimer::singleShot(0, this, [this]() { backward(); });
-            return {"Workspace loaded"};
-        }
-    }
 
     if (type == QTextDocument::ImageResource) {
         auto qFilePath = utilqt::toQString(filePath);
@@ -465,6 +441,24 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
             }
         }
     }
+
+    if (filesystem::fileExists(filePath)) {
+        if (filesystem::getFileExtension(filePath) == "inv") {
+            try {
+                util::appendProcessorNetwork(app_->getProcessorNetwork(), filePath, app_);
+            } catch (const Exception& e) {
+                util::log(
+                    e.getContext(),
+                    fmt::format("Unable to append network {} due to {}", filePath, e.getMessage()),
+                    LogLevel::Error);
+            }
+            QTimer::singleShot(0, this, [this]() { backward(); });
+            return {"Workspace loaded"};
+        } else {
+            QDesktopServices::openUrl(url);
+        }
+    }
+
     return {};
 }
 

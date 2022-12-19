@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
-
 #include <modules/python3/pybindflags.h>
+
+namespace inviwo {}  // namespace inviwo
