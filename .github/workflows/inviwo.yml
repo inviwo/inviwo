@@ -178,8 +178,8 @@ jobs:
         include:
           - os: 'windows-latest'
             installer: 'inviwo-installer-win'
-          #- os: 'macos-latest'
-          #  installer: 'inviwo-installer-macos'
+          - os: 'macos-latest'
+            installer: 'inviwo-installer-macos'
         
     runs-on: ${{ matrix.os }}
     steps:
