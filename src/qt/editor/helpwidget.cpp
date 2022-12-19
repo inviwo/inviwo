@@ -428,7 +428,7 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
     }
 
     const auto filePath = toFilePath(url);
-    
+
     if (type == QTextDocument::ImageResource) {
         auto qFilePath = utilqt::toQString(filePath);
         if (QFile::exists(qFilePath)) {

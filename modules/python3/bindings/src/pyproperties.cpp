@@ -326,9 +326,9 @@ void exposeProperties(py::module& m) {
         .value("InvalidResources", InvalidationLevel::InvalidResources);
 
     auto listPropertyUIFlag = py::enum_<ListPropertyUIFlag>(m, "ListPropertyUIFlag")
-        .value("Static", ListPropertyUIFlag::Static)
-        .value("Add", ListPropertyUIFlag::Add)
-        .value("Remove", ListPropertyUIFlag::Remove);
+                                  .value("Static", ListPropertyUIFlag::Static)
+                                  .value("Add", ListPropertyUIFlag::Add)
+                                  .value("Remove", ListPropertyUIFlag::Remove);
     exposeFlags<ListPropertyUIFlag>(m, listPropertyUIFlag, "ListPropertyUIFlags");
 
     py::class_<PropertySemantics>(m, "PropertySemantics")

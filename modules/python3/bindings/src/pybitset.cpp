@@ -68,9 +68,9 @@ void exposeBitset(pybind11::module& m) {
     py::class_<BitSet>(m, "BitSet")
         .def(py::init<>())
         .def(py::init<const std::vector<bool>&>())
-        .def(py::init([](py::list list){
+        .def(py::init([](py::list list) {
             BitSet s{};
-            for(auto& i : list) {
+            for (auto& i : list) {
                 s.add(i.cast<uint32_t>());
             }
             return s;
@@ -120,10 +120,12 @@ void exposeBitset(pybind11::module& m) {
         .def(py::self ^= py::self)
         .def(py::self ^ py::self)
 
-        .def("__iter__",
-             [](BitSet& b) {
-                 return BitSetIteratorWrapper{b.begin(), b.end()};
-             }, py::keep_alive<0, 1>())
+        .def(
+            "__iter__",
+            [](BitSet& b) {
+                return BitSetIteratorWrapper{b.begin(), b.end()};
+            },
+            py::keep_alive<0, 1>())
         .def("__len__", &BitSet::size)
         .def("__contains__", &BitSet::contains);
 }

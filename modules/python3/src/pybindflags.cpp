@@ -29,6 +29,4 @@
 
 #include <modules/python3/pybindflags.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

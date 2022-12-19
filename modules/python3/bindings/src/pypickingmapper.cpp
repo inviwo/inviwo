@@ -46,35 +46,35 @@ void exposePickingMapper(pybind11::module& m) {
     namespace py = pybind11;
 
     auto pickingState = py::enum_<PickingState>(m, "PickingState")
-        .value("NoState", PickingState::None)
-        .value("Started", PickingState::Started)
-        .value("Updated", PickingState::Updated)
-        .value("Finished", PickingState::Finished);
+                            .value("NoState", PickingState::None)
+                            .value("Started", PickingState::Started)
+                            .value("Updated", PickingState::Updated)
+                            .value("Finished", PickingState::Finished);
 
     exposeFlags<PickingState>(m, pickingState, "PickingStates");
 
     auto pickingPressState = py::enum_<PickingPressState>(m, "PickingPressState")
-        .value("DoubleClick", PickingPressState::DoubleClick)
-        .value("Move", PickingPressState::Move)
-        .value("NoPress", PickingPressState::None)
-        .value("Press", PickingPressState::Press)
-        .value("Release", PickingPressState::Release);
+                                 .value("DoubleClick", PickingPressState::DoubleClick)
+                                 .value("Move", PickingPressState::Move)
+                                 .value("NoPress", PickingPressState::None)
+                                 .value("Press", PickingPressState::Press)
+                                 .value("Release", PickingPressState::Release);
 
     exposeFlags<PickingPressState>(m, pickingPressState, "PickingPressStates");
 
     auto pickingPressItem = py::enum_<PickingPressItem>(m, "PickingPressItem")
-        .value("NoItem", PickingPressItem::None)
-        .value("Primary", PickingPressItem::Primary)
-        .value("Secondary", PickingPressItem::Secondary)
-        .value("Tertiary", PickingPressItem::Tertiary);
+                                .value("NoItem", PickingPressItem::None)
+                                .value("Primary", PickingPressItem::Primary)
+                                .value("Secondary", PickingPressItem::Secondary)
+                                .value("Tertiary", PickingPressItem::Tertiary);
 
     exposeFlags<PickingPressItem>(m, pickingPressItem, "PickingPressItems");
 
     auto pickingHoverState = py::enum_<PickingHoverState>(m, "PickingHoverState")
-        .value("Enter", PickingHoverState::Enter)
-        .value("Exit", PickingHoverState::Exit)
-        .value("Move", PickingHoverState::Move)
-        .value("NoHover", PickingHoverState::None);
+                                 .value("Enter", PickingHoverState::Enter)
+                                 .value("Exit", PickingHoverState::Exit)
+                                 .value("Move", PickingHoverState::Move)
+                                 .value("NoHover", PickingHoverState::None);
 
     exposeFlags<PickingHoverState>(m, pickingHoverState, "PickingHoverStates");
 
