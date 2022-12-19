@@ -35,32 +35,11 @@
 #include <inviwo/core/processors/poolprocessor.h>              // for PoolProcessor
 #include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
 #include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>            // for OrdinalProperty
 #include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrameInport
 #include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
 
 namespace inviwo {
-
-/** \docpage{org.inviwo.VolumeVoronoiSegmentation, Volume Voronoi Segmentation}
- * ![](org.inviwo.VolumeVoronoiSegmentation.png?classIdentifier=org.inviwo.VolumeVoronoiSegmentation)
- *
- * Processor which calculates the voronoi segmentation of a volume, given the volume together with
- * seed points (and optional weights) as input.
- *
- *
- * ### Inports
- *   * __inputVolume__ The input volume.
- *   * __seedPoints__ Seed points together with indices and optional weights. The seed points are
- *                    expected to be in the model space. The column with the weights should have
- *                    header name "r".
- *
- * ### Outports
- *   * __outport__ Volume where each voxel has the value of the closest seed point, according to the
- *                 voronoi algorithm.
- *
- * ### Properties
- *   * __Weighted voronoi__ Choose whether the weighted version of voronoi should be used or not.
- *
- */
 
 class IVW_MODULE_VOLUME_API VolumeVoronoiSegmentation : public PoolProcessor {
 public:
@@ -79,6 +58,7 @@ private:
     BoolProperty weighted_;
 
     ColumnOptionProperty iCol_;
+    IntProperty indexOffset_;
     ColumnOptionProperty xCol_;
     ColumnOptionProperty yCol_;
     ColumnOptionProperty zCol_;
