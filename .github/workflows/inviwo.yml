@@ -49,11 +49,12 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        choco install doxygen.install 
-        choco install nsis
-        choco install tinytex
+        # Choco-Install is GH Actions wrappers around choco, which does retries
+        Choco-Install -PackageName doxygen.install 
+        Choco-Install -PackageName nsis
+        Choco-Install -PackageName tinytex
+
         GP=`cygpath -u $GITHUB_PATH` 
-        
         echo "/c/Program Files/doxygen/bin" >> $GP
         echo "/c/Program Files (x86)/NSIS" >> $GP
         echo "/c/tools/TinyTeX/bin/win32" >> $GP
