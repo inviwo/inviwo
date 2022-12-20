@@ -62,20 +62,20 @@ R"(
     in a set of properties.
     
     Example network:
-    [basegl/instance_renderer.inv](file:///<modulePath>/data/workspaces/instance_renderer.inv)
+    [basegl/instance_renderer.inv](file:~modulePath~/data/workspaces/instance_renderer.inv)
 )"_unindentHelp};
 ```
 The `_unindentHelp`  suffix will remove any leading indent and parse the string as a markdown document and then convert it to an inviwo document, which is what is expected by the `ProcessorInfo` struct.
 One can refer to images like so:
 ```c++
-"![](file:///<modulePath>/docs/images/heightfield-network.png)"
+"![](file:~modulePath~/docs/images/heightfield-network.png)"
 ```
 or networks
 ```c++
-"[basegl/instance_renderer.inv](file:///<modulePath>/data/workspaces/instance_renderer.inv)"
+"[basegl/instance_renderer.inv](file:~modulePath~/data/workspaces/instance_renderer.inv)"
 ```
 Images will be shown inline, and clicking on processor network will append them to the current network. 
-To be able to refer to files there are two placeholder `<basePath>` and `<modulePath>` the former will refer to the base path of the inviwo installation and the latter to the current module. Make sure that any resources linked are also included in the installer. By default the `data` directory and the `docs` folders are always included in the installer. 
+To be able to refer to files there are two placeholder `~basePath~` and `~modulePath~` the former will refer to the base path of the inviwo installation and the latter to the current module. Make sure that any resources linked are also included in the installer. By default the `data` directory and the `docs` folders are always included in the installer. 
 
 For Ports a second constructor argument has been added for a help Document like so
 ```cpp

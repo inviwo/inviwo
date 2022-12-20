@@ -101,7 +101,7 @@ const ProcessorInfo InstanceRenderer::processorInfo_{
         How the uniforms are applied in the shader can be specified in a set of properties.
         
         Example network:
-        [basegl/instance_renderer.inv](file:///<modulePath>/data/workspaces/instance_renderer.inv)
+        [basegl/instance_renderer.inv](file:~modulePath~/data/workspaces/instance_renderer.inv)
     )"_unindentHelp};
 
 const ProcessorInfo InstanceRenderer::getProcessorInfo() const { return processorInfo_; }

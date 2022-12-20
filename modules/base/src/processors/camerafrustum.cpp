@@ -56,7 +56,7 @@ const ProcessorInfo CameraFrustum::processorInfo_{
     R"(Creates a line mesh of a frustum for a given camera.
     
     Example Workspace:
-    [base/camera_frustum.inv](file:///<modulePath>/data/workspaces/camera_frustum.inv)
+    [base/camera_frustum.inv](file:~modulePath~/data/workspaces/camera_frustum.inv)
     )"_unindentHelp};
 
 const ProcessorInfo CameraFrustum::getProcessorInfo() const { return processorInfo_; }

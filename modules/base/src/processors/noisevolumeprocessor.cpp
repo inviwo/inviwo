@@ -65,7 +65,7 @@ const ProcessorInfo NoiseVolumeProcessor::processorInfo_{
     A processor to generate noise volumes.
     Using the Mersenne Twister 19937 generator to generate random numbers.
     
-    ![Image Of Noise Types](file:///<modulePath>/docs/images/noise_types.png)
+    ![Image Of Noise Types](file:~modulePath~/docs/images/noise_types.png)
     
     #### Available Methods
     * __Random__ Generates a uniform, random value in the range [min,max] for each voxel
@@ -74,7 +74,7 @@ const ProcessorInfo NoiseVolumeProcessor::processorInfo_{
       of different bases (base 2 and base 3 gives good results)
       
     Example workspace:
-    [base/noise_volume_generation.inv](file:///<modulePath>/data/workspaces/noise_volume_generation.inv)
+    [base/noise_volume_generation.inv](file:~modulePath~/data/workspaces/noise_volume_generation.inv)
     )"_unindentHelp};
 
 const ProcessorInfo NoiseVolumeProcessor::getProcessorInfo() const { return processorInfo_; }

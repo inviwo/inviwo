@@ -408,8 +408,8 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
 
     auto toFilePath = [&](const QUrl& url) {
         auto filePath = utilqt::fromQString(url.path());
-        replaceInString(filePath, "<modulePath>", currentModulePath_);
-        replaceInString(filePath, "<basePath>", app_->getBasePath());
+        replaceInString(filePath, "~modulePath~", currentModulePath_);
+        replaceInString(filePath, "~basePath~", app_->getBasePath());
         return filePath;
     };
 
