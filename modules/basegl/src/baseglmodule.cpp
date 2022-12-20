@@ -183,7 +183,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<RowLayout>();
 
     // volume processing
-    registerProcessor<TexturedIsoSurfaceRenderer>();
+    registerProcessor<TexturedIsosurfaceRenderer>();
     registerProcessor<VectorMagnitudeProcessor>();
     registerProcessor<VolumeBinary>();
     registerProcessor<VolumeCombiner>();

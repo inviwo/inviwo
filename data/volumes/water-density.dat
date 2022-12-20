@@ -1,0 +1,26 @@
+RawFile: water-density.raw
+Resolution: 31 34 33
+Format: FLOAT32
+ByteOffset: 0
+BasisVector1: 2.6652052 0 0
+BasisVector2: 0 2.9231284 0
+BasisVector3: 0 0 2.8371542
+Offset: 1.8054618 1.6335129 8.85536
+WorldVector1: 1 0 0 0
+WorldVector2: 0 1 0 0
+WorldVector3: 0 0 1 0
+WorldVector4: 0 0 0 1
+DataRange: 0 12
+ValueRange: 0 12
+ValueUnit: e/Å³
+ValueName: Charge Density
+Axis1Name: x
+Axis2Name: y
+Axis3Name: z
+Axis1Unit: Å
+Axis2Unit: Å
+Axis3Unit: Å
+SwizzleMask: rgba
+Interpolation: Linear
+Wrapping: Clamp Clamp Clamp
+filename: C:/Users/petst55.AD/Documents/Inviwo/inviwo/data/volumes/water-density.dat

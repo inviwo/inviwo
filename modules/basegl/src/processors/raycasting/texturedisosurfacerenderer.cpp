@@ -224,19 +224,28 @@ auto TexturedIsoSurfaceComponent::getSegments() -> std::vector<Segment> {
 }
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo TexturedIsoSurfaceRenderer::processorInfo_{
-    "org.inviwo.TexturedIsoSurfaceRenderer",  // Class identifier
-    "Textured Iso Surface Renderer",          // Display name
+const ProcessorInfo TexturedIsosurfaceRenderer::processorInfo_{
+    "org.inviwo.TexturedIsosurfaceRenderer",  // Class identifier
+    "Textured Isosurface Renderer",           // Display name
     "Volume Rendering",                       // Category
     CodeState::Stable,                        // Code state
     Tags::GL,                                 // Tags
-    R"(Render a iso surface defined by the Volume data.
-       The iso surface is textured by the second color
-       volume and transfer function)"_unindentHelp};
+    R"(Render an isosurface defined by the Volume data,
+       but color it based on the values of a second volume.
+       The isosurface retrieves its color using the second
+       volume's value mapped through the transfer function.
+       This makes it possible to visualize the other volume's
+       value at the isosurface location.
 
-const ProcessorInfo TexturedIsoSurfaceRenderer::getProcessorInfo() const { return processorInfo_; }
+       ![](file:~modulePath~/docs/images/textured_isosurface.png)
 
-TexturedIsoSurfaceRenderer::TexturedIsoSurfaceRenderer(std::string_view identifier,
+       Example Network:
+       [core/textured_isosurface_renderer.inv](file:~modulePath~/data/workspaces/textured_isosurface_renderer.inv)
+    )"_unindentHelp};
+
+const ProcessorInfo TexturedIsosurfaceRenderer::getProcessorInfo() const { return processorInfo_; }
+
+TexturedIsosurfaceRenderer::TexturedIsosurfaceRenderer(std::string_view identifier,
                                                        std::string_view displayName)
     : VolumeRaycasterBase(identifier, displayName)
     , volume_{"volume", VolumeComponent::Gradients::Single,

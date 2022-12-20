@@ -82,10 +82,10 @@ public:
     FloatProperty samplingRate;
 };
 
-class IVW_MODULE_BASEGL_API TexturedIsoSurfaceRenderer : public VolumeRaycasterBase {
+class IVW_MODULE_BASEGL_API TexturedIsosurfaceRenderer : public VolumeRaycasterBase {
 public:
-    TexturedIsoSurfaceRenderer(std::string_view identifier = "", std::string_view displayName = "");
-    virtual ~TexturedIsoSurfaceRenderer() = default;
+    TexturedIsosurfaceRenderer(std::string_view identifier = "", std::string_view displayName = "");
+    virtual ~TexturedIsosurfaceRenderer() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
