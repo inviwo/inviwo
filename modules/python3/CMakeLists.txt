@@ -15,8 +15,10 @@ set(HEADER_FILES
     include/modules/python3/python3module.h
     include/modules/python3/python3moduledefine.h
     include/modules/python3/pythonexecutionoutputobservable.h
+    include/modules/python3/pythoninport.h
     include/modules/python3/pythoninterpreter.h
     include/modules/python3/pythonlogger.h
+    include/modules/python3/pythonoutport.h
     include/modules/python3/pythonprocessorfactoryobject.h
     include/modules/python3/pythonprocessorfolderobserver.h
     include/modules/python3/pythonscript.h
@@ -36,8 +38,10 @@ set(SOURCE_FILES
     src/pyportutils.cpp
     src/python3module.cpp
     src/pythonexecutionoutputobservable.cpp
+    src/pythoninport.cpp
     src/pythoninterpreter.cpp
     src/pythonlogger.cpp
+    src/pythonoutport.cpp
     src/pythonprocessorfactoryobject.cpp
     src/pythonprocessorfolderobserver.cpp
     src/pythonscript.cpp

@@ -34,6 +34,9 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <modules/python3/pythonoutport.h>
+#include <modules/python3/pythoninport.h>
+
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
@@ -71,6 +74,16 @@ void exposePort(pybind11::module& m) {
              py::return_value_policy::reference)
         .def("hasData", &Outport::hasData)
         .def("clear", &Outport::clear);
+
+    py::class_<PythonInport, Inport>(m, "PythonInport")
+        .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
+        .def("hasData", &PythonInport::hasData)
+        .def("getData", &PythonInport::getData);
+
+    py::class_<PythonOutport, Outport>(m, "PythonOutport")
+        .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
+        .def("getData", &PythonOutport::getData)
+        .def("setData", &PythonOutport::setData);
 }
 
 }  // namespace inviwo
