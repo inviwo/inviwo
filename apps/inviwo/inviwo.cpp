@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
         mainWin.exitInviwo(false);
         return 0;
     }
-    
+
     inviwo::util::setThreadDescription("Inviwo Main");
 
     while (true) {
