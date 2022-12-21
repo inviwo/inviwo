@@ -133,8 +133,8 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
         util::make_array<reserved + 1>([](auto i) -> char { return i == 0 ? '\n' : ' '; });
     static constexpr std::string_view delimiter{delim.data(), delim.size()};
     const auto time = std::chrono::system_clock::now();
-    fmt::print(os, "{:%H:%M}:{:%S} {:5} {:25} {}\n", time, time.time_since_epoch(), logLevel,
-               logSource, fmt::join(sublines_, delimiter));
+    fmt::print(os, "{:%H:%M:06.3%S} {:5} {:25} {}\n", time, logLevel, logSource,
+               fmt::join(sublines_, delimiter));
     sublines_.clear();
 
 #ifdef WIN32

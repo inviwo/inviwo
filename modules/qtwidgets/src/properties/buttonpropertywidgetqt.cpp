@@ -56,7 +56,13 @@ ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
     button_ = new QPushButton();
     button_->setText(QString::fromStdString(property_->getDisplayName()));
     connect(button_, &QPushButton::released, this, [&]() {
-        if (!property_->getReadOnly()) property_->pressButton();
+        if (!property_->getReadOnly()) {
+            try {
+                property_->pressButton();
+            } catch (const Exception& e) {
+                util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
+            }
+        }
     });
     setFocusPolicy(button_->focusPolicy());
     setFocusProxy(button_);

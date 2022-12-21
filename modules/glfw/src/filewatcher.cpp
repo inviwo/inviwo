@@ -60,10 +60,7 @@ public:
 
     WatcherThread(
         std::function<void(const std::string&, const std::string&, Action)> changeCallback)
-        : changeCallback_{std::move(changeCallback)} {
-
-        util::setThreadDescription(thread_, "Inviwo File Watcher Thread");
-    }
+        : changeCallback_{std::move(changeCallback)} {}
 
     ~WatcherThread() {
         stop_ = true;
@@ -208,7 +205,10 @@ private:
     std::vector<std::string> toRemove_;
     std::atomic<bool> stop_{false};
     std::chrono::milliseconds timeout_{1000};
-    std::thread thread_{[this]() { watch(); }};
+    std::thread thread_{[this]() {
+        util::setThreadDescription("Inviwo File Watcher Thread");
+        watch();
+    }};
 };
 
 FileWatcher::FileWatcher(InviwoApplication* app)

@@ -39,25 +39,27 @@
 
 namespace inviwo {
 
-void util::setThreadDescription(std::thread& thread, const std::string& desc) {
+void util::setThreadDescription(const std::string& desc) {
 #ifdef WIN32
-    typedef HRESULT(WINAPI * SetTheadDescriptionFunc)(HANDLE hThread, PCWSTR threadDescription);
+    typedef HRESULT(WINAPI * SetThreadDescriptionFunc)(HANDLE hThread, PCWSTR threadDescription);
     // SetThreadDescription was introduced with Windows 10, version 1607
     // For that version and later Windows 10 version, the function should be in kernel32.dll
-    static SetTheadDescriptionFunc setTheadDescription = reinterpret_cast<SetTheadDescriptionFunc>(
-        GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "SetThreadDescription"));
+    static SetThreadDescriptionFunc setThreadDescription =
+        reinterpret_cast<SetThreadDescriptionFunc>(
+            GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "SetThreadDescription"));
     // some Windows versions (e.g. 2016 Server) have the function in KernelBase.dll
-    if (!setTheadDescription) {
-        setTheadDescription = reinterpret_cast<SetTheadDescriptionFunc>(
+    if (!setThreadDescription) {
+        setThreadDescription = reinterpret_cast<SetThreadDescriptionFunc>(
             GetProcAddress(GetModuleHandle(TEXT("KernelBase.dll")), "SetThreadDescription"));
     }
-    if (setTheadDescription) {
-        setTheadDescription(thread.native_handle(), util::toWstring(desc).c_str());
+    if (setThreadDescription) {
+        setThreadDescription(::GetCurrentThread(), util::toWstring(desc).c_str());
     }
 #elif defined(__APPLE__)
     // Apple only supports setting the name on the same thread
+    pthread_setname_np(desc.c_str());
 #else
-    pthread_setname_np(thread.native_handle(), desc.c_str());
+    pthread_setname_np(pthread_self(), desc.c_str());
 #endif
 }
 

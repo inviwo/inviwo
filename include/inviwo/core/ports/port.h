@@ -54,7 +54,13 @@ class IVW_CORE_API Port : public Serializable {
     friend class Processor;
 
 public:
+    Port(const Port&) = delete;
+    Port& operator=(const Port&) = delete;
+    Port(Port&&) = delete;
+    Port& operator=(Port&&) = delete;
+
     virtual ~Port() = default;
+
     const std::string& getIdentifier() const;
     void setIdentifier(const std::string& name);
     Processor* getProcessor() const;

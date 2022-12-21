@@ -85,6 +85,7 @@ ThreadPool::Worker::~Worker() { thread.join(); }
 
 ThreadPool::Worker::Worker(ThreadPool& pool)
     : state{State::Free}, thread{[this, &pool]() {
+        util::setThreadDescription("Inviwo Worker Thread");
         pool.onThreadStart_();
         util::OnScopeExit cleanup{[&pool]() { pool.onThreadStop_(); }};
 
@@ -107,10 +108,7 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
             }
         }
         state = State::Done;
-    }} {
-
-    util::setThreadDescription(thread, "Inviwo Worker Thread");
-}
+    }} {}
 
 void ThreadPool::enqueueRaw(std::function<void()> task) {
     if (workers.empty()) {

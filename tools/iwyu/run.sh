@@ -18,6 +18,8 @@ ${sed} -i 's/#include <math.h>/#include <cmath> /g' inc.fix
 ${sed} -i 's/#include <string.h>/#include <cstring> /g' inc.fix
 
 #${fix} --only_re=".*/opengl/.*" --comments --blank_lines --reorder  --safe_headers --separate_project_includes="<tld>" < inc.fix
-${fix} --only_re="(?!.*/ext/.*).*(inviwo|modules)/${module}/.*" --blank_lines --reorder --comments --update_comments --nosafe_headers --separate_project_includes="<tld>" --basedir "/Users/peter/Documents/Inviwo/inviwo/" < inc.fix
+${fix} --only_re="(?!.*/ext/.*).*(inviwo|modules)/${module}/.*" --blank_lines --reorder --comments --update_comments --nosafe_headers --separate_project_includes="<tld>" --basedir "/Users/peter/Documents/Inviwo/inviwo/" < inc.fix | tee fixed.txt
 
+# Clang format the fixes
+grep ">>> Fixing" fixed.txt | sed "s/>>> Fixing #includes in '//" | sed "s/'//" | xargs clang-format -i
 

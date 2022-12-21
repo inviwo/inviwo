@@ -34,6 +34,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/logerrorcounter.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/threadutil.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
@@ -125,6 +126,8 @@ int main(int argc, char** argv) {
         mainWin.exitInviwo(false);
         return 0;
     }
+
+    inviwo::util::setThreadDescription("Inviwo Main");
 
     while (true) {
         try {
