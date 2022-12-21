@@ -72,7 +72,7 @@ void main() {
     //  * rayLength        the distance from the start to the exit point in texture space
     //  * rayDirection     the direction of the ray in texture space, normalized.
 
-#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
+    #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
 
     if (entryPoint == exitPoint) {
         FragData0 = result;
@@ -91,17 +91,17 @@ void main() {
     // Current sample position in texture spcase
     vec3 samplePosition = entryPoint + rayPosition * rayDirection;
 
-#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_FIRST
+    #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_FIRST
 
     for (rayPosition += rayStep; rayPosition < rayLength; rayPosition += rayStep) {
         samplePosition = entryPoint + rayPosition * rayDirection;
 
-#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
+        #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
 
         if (result.a > 0.99) break;  // early ray termination
     }
 
-#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_POST
+    #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_POST
 
     depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryPointDepth, exitPointDepth),
                 depth, rayDepth == -1.0);

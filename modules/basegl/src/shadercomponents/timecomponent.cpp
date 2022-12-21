@@ -56,7 +56,7 @@ TimeComponent::TimeComponent(std::string_view name,
                              std::function<void(InvalidationLevel)> invalidate)
     : ShaderComponent{}
     , name_{name}
-    , enabled_{"enabled", "Enabled", true, InvalidationLevel::Valid}
+    , enabled_{"enabled", "Animation Enabled", true, InvalidationLevel::Valid}
     , running_{"running", "Running", false, InvalidationLevel::Valid}
     , intervalMs_{"interval",
                   "Interval (ms)",

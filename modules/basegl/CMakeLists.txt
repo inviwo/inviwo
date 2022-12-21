@@ -66,6 +66,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/raycasting/multichannelvolumeraycaster.h
     include/modules/basegl/processors/raycasting/sphericalvolumeraycaster.h
     include/modules/basegl/processors/raycasting/standardvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/texturedisosurfacerenderer.h
     include/modules/basegl/processors/raycasting/volumeraycasterbase.h
     include/modules/basegl/processors/redgreenprocessor.h
     include/modules/basegl/processors/shadercomponentprocessorbase.h
@@ -96,6 +97,7 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/backgroundcomponent.h
     include/modules/basegl/shadercomponents/cameracomponent.h
     include/modules/basegl/shadercomponents/entryexitcomponent.h
+    include/modules/basegl/shadercomponents/isocomponent.h
     include/modules/basegl/shadercomponents/isotfcomponent.h
     include/modules/basegl/shadercomponents/lightcomponent.h
     include/modules/basegl/shadercomponents/positionindicatorcomponent.h
@@ -103,6 +105,7 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/sampletransformcomponent.h
     include/modules/basegl/shadercomponents/shadercomponent.h
     include/modules/basegl/shadercomponents/sphericalcomponent.h
+    include/modules/basegl/shadercomponents/tfcomponent.h
     include/modules/basegl/shadercomponents/timecomponent.h
     include/modules/basegl/shadercomponents/volumecomponent.h
     include/modules/basegl/viewmanager.h
@@ -173,6 +176,7 @@ set(SOURCE_FILES
     src/processors/raycasting/multichannelvolumeraycaster.cpp
     src/processors/raycasting/sphericalvolumeraycaster.cpp
     src/processors/raycasting/standardvolumeraycaster.cpp
+    src/processors/raycasting/texturedisosurfacerenderer.cpp
     src/processors/raycasting/volumeraycasterbase.cpp
     src/processors/redgreenprocessor.cpp
     src/processors/shadercomponentprocessorbase.cpp
@@ -203,6 +207,7 @@ set(SOURCE_FILES
     src/shadercomponents/backgroundcomponent.cpp
     src/shadercomponents/cameracomponent.cpp
     src/shadercomponents/entryexitcomponent.cpp
+    src/shadercomponents/isocomponent.cpp
     src/shadercomponents/isotfcomponent.cpp
     src/shadercomponents/lightcomponent.cpp
     src/shadercomponents/positionindicatorcomponent.cpp
@@ -210,6 +215,7 @@ set(SOURCE_FILES
     src/shadercomponents/sampletransformcomponent.cpp
     src/shadercomponents/shadercomponent.cpp
     src/shadercomponents/sphericalcomponent.cpp
+    src/shadercomponents/tfcomponent.cpp
     src/shadercomponents/timecomponent.cpp
     src/shadercomponents/volumecomponent.cpp
     src/viewmanager.cpp

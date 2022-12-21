@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stringconversion.h>                // for trim
 #include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
 #include <modules/opengl/volume/volumeutils.h>                // for bindAndSetUniforms
+#include <modules/opengl/shader/shader.h>
 
 #include <fmt/core.h>    // for format
 #include <fmt/format.h>  // for compile_string_to_view, FMT...
@@ -42,8 +43,8 @@ class Inport;
 class Shader;
 class TextureUnitContainer;
 
-VolumeComponent::VolumeComponent(std::string_view name, Gradients graidents)
-    : ShaderComponent(), volumePort(std::string(name)), gradients{graidents} {}
+VolumeComponent::VolumeComponent(std::string_view name, Gradients gradients, Document help)
+    : ShaderComponent(), volumePort{name, std::move(help)}, gradients{gradients} {}
 
 std::string_view VolumeComponent::getName() const { return volumePort.getIdentifier(); }
 
@@ -62,8 +63,11 @@ uniform VolumeParameters {0}Parameters;
 uniform sampler3D {0};
 )");
 
+// Initialize the VoxelPrev value to 0 in the data range. Might not be the same as 0 in the
+// normalized [0,1] range. For example if the data range is [-10, 10] then the normalized 0
+// would be 0.5. This value it important mainly for the iso rendering.
 constexpr std::string_view voxelFirst = util::trim(R"(
-vec4 {0}VoxelPrev = vec4(0);
+vec4 {0}VoxelPrev = vec4({0}Parameters.formatOffset * (1.0 - {0}Parameters.formatScaling));
 vec4 {0}Voxel = getNormalizedVoxel({0}, {0}Parameters, samplePosition);
 )");
 

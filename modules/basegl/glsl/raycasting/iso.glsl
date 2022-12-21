@@ -31,11 +31,14 @@
 #define MAX_ISOVALUE_COUNT 1
 #endif
 
+#if !defined INC_ISOVALUEPARAMETERS
+#define INC_ISOVALUEPARAMETERS
 struct IsovalueParameters {
     float values[MAX_ISOVALUE_COUNT];
     vec4 colors[MAX_ISOVALUE_COUNT];
     int size;
 };
+#endif
 
 /**
  * Draws an isosurface if the given isovalue is found along the ray in between the

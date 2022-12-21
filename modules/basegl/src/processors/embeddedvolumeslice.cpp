@@ -144,9 +144,6 @@ void EmbeddedVolumeSlice::planeSettingsChanged() {
     inds.clear();
 
     util::cubePlaneIntersectionAppend(plane, intersections, inds);
-
-    embeddedMesh_.setModelMatrix(inport_.getData()->getModelMatrix());
-    embeddedMesh_.setWorldMatrix(inport_.getData()->getWorldMatrix());
 }
 
 void EmbeddedVolumeSlice::handlePicking(PickingEvent* p) {
@@ -204,6 +201,8 @@ void EmbeddedVolumeSlice::process() {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
 
+    embeddedMesh_.setModelMatrix(inport_.getData()->getModelMatrix());
+    embeddedMesh_.setWorldMatrix(inport_.getData()->getWorldMatrix());
     utilgl::setShaderUniforms(shader_, embeddedMesh_, "geometry");
     shader_.setUniform("pickColor", picking_.getColor(0));
     utilgl::setUniforms(shader_, camera_);
