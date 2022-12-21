@@ -130,7 +130,7 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow)
     , autoSaver_{std::make_unique<AutoSaver>()} {
 
     QApplication::instance()->installEventFilter(this);
-    
+
     mainWindow_->getInviwoApplication()->getProcessorNetwork()->addObserver(this);
 
     undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), mainWindow_);
@@ -296,10 +296,5 @@ bool UndoManager::eventFilter(QObject*, QEvent* e) {
     return false;
 }
 #include <warn/pop>
-
-
-
-
-
 
 }  // namespace inviwo

@@ -111,7 +111,7 @@ public:
     AnnotationsWidget* getAnnotationsWidget() const;
     HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
-    
+
     InviwoEditMenu* getInviwoEditMenu() const;
     ToolsMenu* getToolsMenu() const;
 

@@ -168,14 +168,13 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
                          throw Exception("invalid object");
                      }
                  })
-            .def("address",
-                 [](PropertyEditorWidget* w) {
-                     if (auto qw = dynamic_cast<QWidget*>(w)) {
-                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
-                     } else {
-                         throw Exception("invalid object");
-                     }
-                 });
+            .def("address", [](PropertyEditorWidget* w) {
+                if (auto qw = dynamic_cast<QWidget*>(w)) {
+                    return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                } else {
+                    throw Exception("invalid object");
+                }
+            });
 
         py::class_<PropertyListWidget>(m, "PropertyListWidget")
             .def(py::init([](InviwoApplication* app) {

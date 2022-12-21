@@ -170,9 +170,8 @@ void exposeProcessors(pybind11::module& m) {
                       &ProcessorWidget::setDimensions)
         .def_property("position", &ProcessorWidget::getPosition, &ProcessorWidget::setPosition)
         .def_property("onTop", &ProcessorWidget::isOnTop, &ProcessorWidget::setOnTop)
-        .def_property("fullScreen", &ProcessorWidget::isFullScreen,
-                      &ProcessorWidget::setFullScreen)
-        .def("address", [](ProcessorWidget* w) { 
+        .def_property("fullScreen", &ProcessorWidget::isFullScreen, &ProcessorWidget::setFullScreen)
+        .def("address", [](ProcessorWidget* w) {
             return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
         });
 

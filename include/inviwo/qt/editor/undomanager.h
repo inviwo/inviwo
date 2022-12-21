@@ -73,7 +73,7 @@ public:
 
     bool hasRestore() const;
     void restore();
-    
+
     bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:

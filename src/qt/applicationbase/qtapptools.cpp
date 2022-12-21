@@ -128,8 +128,8 @@ void FileSystemObserverQt::fileChanged(QString fileName) {
 }  // namespace
 
 void utilqt::logQtMessages([[maybe_unused]] QtMsgType type,
-                   [[maybe_unused]] const QMessageLogContext& context,
-                   [[maybe_unused]] const QString& msg) {
+                           [[maybe_unused]] const QMessageLogContext& context,
+                           [[maybe_unused]] const QString& msg) {
 #if defined(__APPLE__)
     // There is some weird bug on mac that sets complains about
     // QWidgetWindow(...) Attempt to set a screen on a child window
@@ -225,8 +225,8 @@ void utilqt::configurePostEnqueueFront(InviwoApplication& app) {
     auto helper = std::make_shared<detail::QtProcessFrontHelper>();
     app.setPostEnqueueFront([helper]() { emit helper->postEnqueue(); });
     QObject::connect(
-        helper.get(), &detail::QtProcessFrontHelper::postEnqueue, qapp, [&app]() { app.processFront(); },
-        Qt::QueuedConnection);
+        helper.get(), &detail::QtProcessFrontHelper::postEnqueue, qapp,
+        [&app]() { app.processFront(); }, Qt::QueuedConnection);
 }
 
 void utilqt::configurePoolResizeWait(InviwoApplication& app, QWidget* window) {

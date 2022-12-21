@@ -64,20 +64,20 @@ int main(int argc, char** argv) {
 #endif
     // Must be set before constructing QApplication
     inviwo::utilqt::configureInviwoQtApp();
-    
+
 #ifdef IVW_DEBUG
     qInstallMessageHandler(&inviwo::utilqt::logQtMessages);
 #endif
 
     QApplication qtApp{argc, argv};
     inviwo::InviwoApplication inviwoApp(argc, argv, "Inviwo");
-    
+
     inviwo::utilqt::configureInviwoDefaultNames();
     inviwo::utilqt::configureFileSystemObserver(inviwoApp);
     inviwo::utilqt::configurePostEnqueueFront(inviwoApp);
     inviwo::utilqt::setStyleSheetFile(":/stylesheets/inviwo.qss");
     inviwoApp.setUILocale(inviwo::utilqt::getCurrentStdLocale());
-    
+
     auto& clp = inviwoApp.getCommandLineParser();
 
     inviwo::InviwoMainWindow mainWin(&inviwoApp);

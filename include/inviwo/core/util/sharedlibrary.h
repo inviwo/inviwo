@@ -61,7 +61,6 @@ IVW_CORE_API std::vector<std::string> getLibrarySearchPaths();
 
 }  // namespace util
 
-
 /**
  * \class SharedLibrary
  * \brief Loader for dll/so/dylib. Get functions from loaded library using findSymbol(...).
