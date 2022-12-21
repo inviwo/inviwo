@@ -68,6 +68,7 @@
 #include <modules/basegl/processors/mesh2drenderprocessorgl.h>
 #include <modules/basegl/processors/meshpicking.h>
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
+#include <modules/basegl/processors/meshsliceviewer.h>
 #include <modules/basegl/processors/multichannelraycaster.h>
 #include <modules/basegl/processors/pointrenderer.h>
 #include <modules/basegl/processors/redgreenprocessor.h>
@@ -131,6 +132,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<Mesh2DRenderProcessorGL>();
     registerProcessor<MeshPicking>();
     registerProcessor<MeshRenderProcessorGL>();
+    registerProcessor<MeshSliceViewer>();
     registerProcessor<MultichannelRaycaster>();
     registerProcessor<PointRenderer>();
     registerProcessor<RedGreenProcessor>();

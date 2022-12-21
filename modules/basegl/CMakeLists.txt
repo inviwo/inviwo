@@ -58,6 +58,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/mesh2drenderprocessorgl.h
     include/modules/basegl/processors/meshpicking.h
     include/modules/basegl/processors/meshrenderprocessorgl.h
+    include/modules/basegl/processors/meshsliceviewer.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
     include/modules/basegl/processors/redgreenprocessor.h
@@ -140,6 +141,7 @@ set(SOURCE_FILES
     src/processors/mesh2drenderprocessorgl.cpp
     src/processors/meshpicking.cpp
     src/processors/meshrenderprocessorgl.cpp
+    src/processors/meshsliceviewer.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
     src/processors/redgreenprocessor.cpp
