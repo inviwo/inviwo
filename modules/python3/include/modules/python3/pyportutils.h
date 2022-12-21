@@ -85,7 +85,7 @@ pybind11::class_<Port, Outport> exposeOutport(pybind11::module& m, const std::st
     using T = typename Port::type;
 
     return pybind11::class_<Port, Outport>(m, StrBuffer{"{}Outport", name}.c_str())
-        .def(py::init<std::string>())
+        .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
         .def("getData", &Port::getData)
         .def("detatchData", &Port::detachData)
         .def("setData", [](Port* p, std::shared_ptr<const T> data) { p->setData(data); });
@@ -102,7 +102,8 @@ pybind11::class_<Port, Inport> exposeInport(pybind11::module& m, const std::stri
     exposeIterRangeGenerator<typename Port::const_iterator_port>(pyInport, "OutportAndData");
     exposeIterRangeGenerator<typename Port::const_iterator_changed>(pyInport, "ChangedAndData");
 
-    pyInport.def(py::init<std::string>())
+    pyInport
+        .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
         .def("hasData", &Port::hasData)
         .def("getData", &Port::getData)
         .def("getVectorData", &Port::getVectorData)
