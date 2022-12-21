@@ -82,7 +82,7 @@ const ProcessorInfo DistanceTransformRAM::processorInfo_{
     distance.
     
     Example Network:
-    [basegl/distance_transform.inv](file:///<modulePath>/tests/regression/distance_transform.inv)
+    [basegl/distance_transform.inv](file:~modulePath~/tests/regression/distance_transform.inv)
     )"_unindentHelp};
 const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const { return processorInfo_; }
 

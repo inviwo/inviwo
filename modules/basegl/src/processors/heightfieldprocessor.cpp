@@ -67,9 +67,10 @@ const ProcessorInfo HeightFieldProcessor::processorInfo_{
     R"(
         Maps a height field onto a geometry and renders it to an image.
         
-        ![](file:///<modulePath>/docs/images/heightfield-network.png)
+        ![](file:~modulePath~/docs/images/heightfield-network.png)
         
-        Example Network: [core/heightfield.inv](file:///<basePath>/data/workspaces/heightfield.inv)
+        Example Network:
+        [core/heightfield.inv](file:~basePath~/data/workspaces/heightfield.inv)
     )"_unindentHelp};
 
 const ProcessorInfo HeightFieldProcessor::getProcessorInfo() const { return processorInfo_; }

@@ -77,7 +77,7 @@ const ProcessorInfo ConvexHull2DProcessor::processorInfo_{
     Tags::CPU,                           // Tags
     R"(Computes the convex hull of a 2D mesh.
     
-    Example Workspace: [core/convexhull.inv](file:///<basePath>/data/workspaces/convexhull.inv)
+    Example Workspace: [core/convexhull.inv](file:~basePath~/data/workspaces/convexhull.inv)
     )"_unindentHelp};
 
 const ProcessorInfo ConvexHull2DProcessor::getProcessorInfo() const { return processorInfo_; }
