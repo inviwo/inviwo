@@ -69,6 +69,8 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <fcntl.h>  // open
 #include <sys/sendfile.h>
 #include <dlfcn.h>
+#include <elf.h>  // To retrieve rpath
+#include <link.h>
 #endif
 
 #include <array>
