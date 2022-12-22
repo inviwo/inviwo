@@ -87,7 +87,6 @@ IVW_QTAPPLICATIONBASE_API void configurePoolResizeWait(InviwoApplication& app, Q
 IVW_QTAPPLICATIONBASE_API void setStyleSheetFile(std::string_view file);
 
 /**
- * \brief getCurrentStdLocale
  * This function returns the current system locale provided by Qt.
  * If the Qt application has not been initialized, the returned
  * value is the environment's default locale.

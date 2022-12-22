@@ -2,14 +2,14 @@ Here we document changes that affect the public API or changes that needs to be 
 
 ## 2022-11-25 The PropertyListWidget defaults to showing one processor
 Previously the `PropertyListWidget` has shown the properties of all selected processors in the network. 
-This can sometimes be very slow to render for large selections, and in most cases one does not care about the properties when selection many processors.
-But one will usually do some operation on the processor network (more/copy/delete/etc). 
-So to make the behavior better we now only show the properties of the first selected processor if multiple ones are selected.
-But if you hold down `shift` we will fall back to the old behavior of showing all properties.
+This can sometimes be very slow to render for large selections, and in most cases one does not care about the properties when selecting many processors.
+But one will usually do some operation on the processor network (move/copy/delete/etc.). 
+So to make the behavior better, we now only show the properties of the first selected processor if multiple processors are selected.
+By holding down <kbd>shift</kbd> during the selection all properties will be shown.
 
 ## 2022-11-25 InviwoApplicationQt removed
-The `InviwoApplicationQt` class has been remove in favor of using a standalone `InviwoApplication` and a `QApplication` to reduce coupling and increase flexibility.
-The functionality that could be found in InviwoApplcationQt can now be access as a set of utility function in `qt/applicationbase/qtapptools.h`
+The `InviwoApplicationQt` class has been removed in favor of using a standalone `InviwoApplication` and a `QApplication` to reduce the coupling and increase flexibility.
+The functionality earlier found in `InviwoApplcationQt` can now be accessed as a set of utility functions in `qt/applicationbase/qtapptools.h`
 
 ## 2022-09-29 Pre-compiled headers overhaul
 The generation of pre-compiled headers (PCH) was changed from Cotire to CMake. This enables using PCH in combination with Qt6.
