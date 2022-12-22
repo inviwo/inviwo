@@ -124,7 +124,7 @@ struct action<bracket_id> {
 template <typename Rule>
 using selector =
     p::parse_tree::selector<Rule, 
-        p::parse_tree::apply_store_content::to<
+        p::parse_tree::store_content::on<
             identifier,
             argument,
             line_comment,
@@ -134,10 +134,10 @@ using selector =
             begin_brace,
             end_brace
         >,
-        p::parse_tree::apply_discard_empty::to<
+        p::parse_tree::discard_empty::on<
             arguments
         >,
-        p::parse_tree::apply_remove_content::to<
+        p::parse_tree::remove_content::on<
             file,  
             command
         >

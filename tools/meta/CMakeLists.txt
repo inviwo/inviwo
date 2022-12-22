@@ -73,26 +73,43 @@ target_link_libraries(inviwo-meta PUBLIC
 )
 
 # Add pegtL 
-option(PEGTL_BUILD_TESTS "Build test programs" OFF)
-option(PEGTL_BUILD_EXAMPLES "Build example programs" OFF)
-add_subdirectory(ext/pegtl)
+option(IVW_USE_EXTERNAL_PEGTL "Pegtl is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_PEGTL)
+    option(PEGTL_BUILD_TESTS "Build test programs" OFF)
+    option(PEGTL_BUILD_EXAMPLES "Build example programs" OFF)
+    add_subdirectory(ext/pegtl)
+    ivw_make_package(pegtl-2 pegtl)
+    ivw_move_targets_in_dir_to_folder(ext/pegtl ext/pegtl)
+    ivw_register_license_file(NAME "PEGTL" VERSION 2.8.3 target taocpp::pegtl MODULE Core EXT
+        URL "https://github.com/taocpp/PEGTL"
+        TYPE "The MIT License"
+        FILES ${IVW_TOOLS_DIR}/meta/ext/pegtl/LICENSE
+    )
+else()
+    find_package(pegtl-2 CONFIG REQUIRED)
+    ivw_vcpkg_install(pegtl-2 MODULE Core EXT)
+endif()
 target_link_libraries(inviwo-meta PUBLIC taocpp::pegtl)
-ivw_move_targets_in_dir_to_folder(ext/pegtl ext/pegtl)
-ivw_register_license_file(NAME "PEGTL" VERSION 2.7.1 target taocpp::pegtl MODULE Core EXT
-    URL "https://github.com/taocpp/PEGTL"
-    TYPE "The MIT License"
-    FILES ${IVW_TOOLS_DIR}/meta/ext/pegtl/LICENSE
-)
 
 # Add inja
-option(BUILD_UNIT_TESTS "Build the unit tests" OFF)
-add_subdirectory(ext/inja)
-target_link_libraries(inviwo-meta PUBLIC inja)
-ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core EXT
-    URL "https://github.com/pantor/inja"
-    TYPE "The MIT License"
-    FILES ${IVW_TOOLS_DIR}/meta/ext/inja/LICENSE
-)
+option(IVW_USE_EXTERNAL_INJA "Inja is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_INJA)
+    set(INJA_BUILD_TESTS OFF)
+    set(INJA_EXPORT OFF)
+    set(INJA_INSTALL OFF)
+    set(BUILD_BENCHMARK OFF)
+    add_subdirectory(ext/inja)
+    ivw_make_package(inja inja)
+    ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core EXT
+        URL "https://github.com/pantor/inja"
+        TYPE "The MIT License"
+        FILES ${IVW_TOOLS_DIR}/meta/ext/inja/LICENSE
+    )
+else()
+    find_package(inja CONFIG REQUIRED)
+    ivw_vcpkg_install(inja MODULE Core EXT)
+endif()
+target_link_libraries(inviwo-meta PUBLIC pantor::inja)
 
 # Added cli app
 option(IVW_APP_META_CLI "Build meta cli tool" ON)

@@ -49,7 +49,7 @@
 #ifdef WIN32
 #include <ciso646>  // required for logical operators 'not', 'and', ... used by inja.hpp
 #endif
-#include <inja.hpp>
+#include <inja/inja.hpp>
 #include <warn/pop>
 
 namespace inviwo::meta {
