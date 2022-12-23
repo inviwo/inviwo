@@ -50,7 +50,6 @@ public:
 
 protected:
     std::string classIdentifier_;
-    
 };
 
 template <typename T>

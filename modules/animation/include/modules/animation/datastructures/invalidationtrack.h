@@ -78,7 +78,7 @@ public:
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-    
+
     std::string processorId;
 };
 
@@ -94,7 +94,7 @@ public:
 
     virtual AnimationTimeState operator()(Seconds from, Seconds to,
                                           AnimationState state) const override;
-                                          
+
     ProcessorNetwork* network;
 };
 

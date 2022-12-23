@@ -234,9 +234,9 @@ public:
     void dispatchFrontAndForget(std::function<void()> fun);
 
     size_t processFront();
-    
+
     void processEvents();
-    
+
     void setProcessEventsCallback(std::function<void()> callback);
 
     /**

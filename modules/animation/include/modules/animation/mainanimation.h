@@ -35,7 +35,6 @@
 
 #include <optional>
 
-
 namespace inviwo {
 
 class AnimationModule;

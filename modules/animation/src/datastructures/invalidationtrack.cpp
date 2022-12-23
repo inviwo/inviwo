@@ -73,8 +73,7 @@ std::string InvalidationTrack::classIdentifier() {
 }
 std::string InvalidationTrack::getClassIdentifier() const { return classIdentifier(); }
 
-AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to,
-                                                 AnimationState state) const {
+AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationState state) const {
     if (!isEnabled() || empty()) return {to, state};
 
     for (auto it = begin(); it != end(); ++it) {

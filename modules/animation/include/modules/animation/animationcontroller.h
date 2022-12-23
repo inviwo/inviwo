@@ -108,7 +108,7 @@ public:
     void setPlaybackDirection(PlaybackDirection newDirection);
 
     Seconds getCurrentTime() const;
-    
+
     Seconds deltaTime() const;
 
     InviwoApplication* getInviwoApplication() override { return app_; }
@@ -149,7 +149,7 @@ protected:
 
     /// Current time of the animation. This is an important variable to keep consistent!
     Seconds currentTime_;
-    
+
     PlaybackDirection direction_;
 
     /// Timer for calling the tick function is regular intervals.
