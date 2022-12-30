@@ -99,36 +99,6 @@ namespace inviwo {
 
 namespace utilqt {
 
-std::locale getCurrentStdLocale() {
-    static std::locale loc = []() -> std::locale {
-#ifdef WIN32
-        // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
-        // although std::locale should only accept locales with underscore, e.g. "sv_SE"
-        std::string localeName(QLocale::system().name().replace('_', '-').toStdString());
-#else
-        std::string localeName(QLocale::system().name().toStdString());
-#endif
-
-        // try to use the system locale provided by Qt
-        std::vector<std::string> localeNames = {localeName, "en_US.UTF-8", "en_US.UTF8",
-                                                "en-US.UTF-8", "en-US.UTF8"};
-        for (auto&& [i, name] : util::enumerate(localeNames)) {
-            try {
-                if (i != 0) {
-                    LogWarnCustom("getStdLocale", fmt::format("Falling back to locale '{}'", name));
-                }
-                return std::locale(name);
-            } catch (std::exception& e) {
-                LogWarnCustom("getStdLocale",
-                              fmt::format("Locale could not be set to '{}', {}", name, e.what()));
-            }
-        }
-        LogWarnCustom("getStdLocale", "Using the default locale");
-        return std::locale{};
-    }();
-
-    return loc;
-}
 std::ios_base& localizeStream(std::ios_base& stream) {
     stream.imbue(getCurrentStdLocale());
     return stream;

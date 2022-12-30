@@ -200,6 +200,7 @@ ivw_create_module(NO_PCH QT ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/qt5.natvis>
 )
 target_link_libraries(inviwo-module-qtwidgets PUBLIC
+    inviwo::qtapplicationbase
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
