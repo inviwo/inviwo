@@ -622,10 +622,12 @@ std::string findBasePath() {
             getParentFolderWithChildren(getExecutablePath(), {"data/workspaces", "modules"})) {
         return *path;
     }
+#ifdef INVIWO_ALL_DYN_LINK
     if (auto path =
             getParentFolderWithChildren(getInviwoBinDir(), {"data/workspaces", "modules"})) {
         return *path;
     }
+#endif
 
     // could not locate base path relative to executable or bin dir, try CMake source path
     if (directoryExists(fmt::format("{}/{}", build::sourceDirectory, "data/workspaces")) &&
