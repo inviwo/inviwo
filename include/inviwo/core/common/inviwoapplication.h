@@ -114,8 +114,8 @@ class LayerRamResizer;
 class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
 public:
     InviwoApplication();
-    InviwoApplication(std::string displayName);
-    InviwoApplication(int argc, char** argv, std::string displayName);
+    InviwoApplication(std::string_view displayName);
+    InviwoApplication(int argc, char** argv, std::string_view displayName);
     InviwoApplication(const InviwoApplication& rhs) = delete;
     InviwoApplication& operator=(const InviwoApplication& that) = delete;
 
@@ -125,7 +125,7 @@ public:
      * \brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
-    virtual void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules);
+    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules);
 
     /**
      * \brief Load modules from dynamic library files in the regular search paths.
@@ -137,7 +137,9 @@ public:
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
      * Forwards to ModuleManager.
      */
-    virtual void registerModules(RuntimeModuleLoading);
+    void registerModules(RuntimeModuleLoading);
+
+    void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> isEnabled);
 
     /**
      * Get the base path of the application.
@@ -213,7 +215,8 @@ public:
     template <class T>
     T* getCapabilitiesByType();
 
-    virtual std::locale getUILocale() const;
+    std::locale getUILocale() const;
+    void setUILocale(const std::locale& locale);
 
     template <class F, class... Args>
     auto dispatchPool(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>>;
@@ -237,11 +240,13 @@ public:
      */
     size_t getPoolSize() const;
 
+    enum class LongWait { Start, Update, End };
     /**
      * Set the number of worker threads in the thread pool. This will block for working threads to
      * finish
      */
-    virtual void resizePool(size_t newSize);
+    void resizePool(size_t newSize);
+    void setPoolResizeWaitCallback(std::function<void(LongWait)> callback);
 
     void waitForPool();
     void setPostEnqueueFront(std::function<void()> func);
@@ -412,9 +417,6 @@ public:
     void setFileSystemObserver(std::unique_ptr<FileSystemObserver> observer);
     FileSystemObserver* getFileSystemObserver() const;
 
-    // Methods to be implemented by deriving classes
-    virtual void closeInviwoApplication();
-
     TimerThread& getTimerThread();
     const std::string& getDisplayName() const;
     virtual void printApplicationInfo();
@@ -453,6 +455,8 @@ protected:
     std::function<void(std::string)> progressCallback_;
     std::unique_ptr<FileSystemObserver> fileSystemObserver_;
 
+    std::locale uiLocale_{};
+    std::function<void(LongWait)> poolResizeCallback_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
 

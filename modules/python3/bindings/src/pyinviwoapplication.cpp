@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include <inviwopy/pyinviwoapplication.h>
+
+#include <pybind11/functional.h>
+
 #include <inviwopy/vectoridentifierwrapper.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -35,19 +38,11 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/processors/processorfactory.h>
 
 namespace inviwo {
-
-class InviwoApplicationTrampoline : public InviwoApplication {
-public:
-    using InviwoApplication::InviwoApplication;
-
-    virtual void closeInviwoApplication() override {
-        PYBIND11_OVERLOAD(void, InviwoApplication, closeInviwoApplication, );
-    };
-};
 
 void exposeInviwoApplication(pybind11::module& m) {
     namespace py = pybind11;
@@ -66,9 +61,11 @@ void exposeInviwoApplication(pybind11::module& m) {
         .value("Help", PathType::Help)
         .value("Tests", PathType::Tests);
 
-    using ModuleVecWrapper = VectorIdentifierWrapper<std::vector<std::unique_ptr<InviwoModule>>>;
-    exposeVectorIdentifierWrapper<std::vector<std::unique_ptr<InviwoModule>>>(
-        m, "ModuleVectorWrapper");
+    using ModuleVecWrapper = VectorIdentifierWrapper<
+        typename std::vector<std::unique_ptr<InviwoModule>>::const_iterator>;
+    exposeVectorIdentifierWrapper<
+        typename std::vector<std::unique_ptr<InviwoModule>>::const_iterator>(m,
+                                                                             "ModuleVectorWrapper");
 
     py::class_<InviwoApplication>(m, "InviwoApplication", py::multiple_inheritance{})
         .def(py::init<>())
@@ -79,8 +76,11 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def_property_readonly("basePath", &InviwoApplication::getBasePath)
         .def_property_readonly("displayName", &InviwoApplication::getDisplayName)
 
-        .def_property_readonly(
-            "modules", [](InviwoApplication* app) { return ModuleVecWrapper(app->getModules()); })
+        .def_property_readonly("modules",
+                               [](InviwoApplication* app) {
+                                   return ModuleVecWrapper(app->getModules().begin(),
+                                                           app->getModules().end());
+                               })
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
              py::return_value_policy::reference)
         .def("getModuleSettings", &InviwoApplication::getModuleSettings,
@@ -89,10 +89,25 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def("waitForPool", &InviwoApplication::waitForPool)
         .def("resizePool", &InviwoApplication::resizePool)
         .def("getPoolSize", &InviwoApplication::getPoolSize)
-        .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
 
         .def("getOutputPath",
              [](InviwoApplication* app) { return app->getCommandLineParser().getOutputPath(); })
+
+        .def("registerModules",
+             [](InviwoApplication* app,
+                std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules) {
+                 app->registerModules(std::move(modules));
+             })
+        .def("registerRuntimeModules",
+             [](InviwoApplication* app) { app->registerModules(RuntimeModuleLoading{}); })
+        .def("registerRuntimeModules",
+             [](InviwoApplication* app, std::function<bool(std::string_view)> filter) {
+                 app->registerModules(RuntimeModuleLoading{}, filter);
+             })
+        .def("runningBackgroundJobs",
+             [](InviwoApplication* app) {
+                 return app->getProcessorNetwork()->runningBackgroundJobs();
+             })
 
         .def_property_readonly("network", &InviwoApplication::getProcessorNetwork,
                                "Get the processor network", py::return_value_policy::reference)
@@ -106,7 +121,8 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
                                py::return_value_policy::reference)
         .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory,
-                               py::return_value_policy::reference);
+                               py::return_value_policy::reference)
+        .def("setProgressCallback", &InviwoApplication::setProgressCallback);
 }
 
 }  // namespace inviwo

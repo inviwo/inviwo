@@ -28,6 +28,10 @@
  *********************************************************************************/
 
 #include <inviwopy/pycompositeproperties.h>
+
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+
 #include <inviwopy/pyflags.h>
 #include <inviwopy/pypropertytypehook.h>
 
@@ -37,7 +41,6 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/filepatternproperty.h>
 
-#include <pybind11/functional.h>
 #include <fmt/format.h>
 
 namespace py = pybind11;

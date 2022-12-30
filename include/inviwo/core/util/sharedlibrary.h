@@ -59,22 +59,7 @@ namespace util {
  */
 IVW_CORE_API std::vector<std::string> getLibrarySearchPaths();
 
-IVW_CORE_API bool hasAddLibrarySearchDirsFunction();
-IVW_CORE_API std::vector<void*> addLibrarySearchDirs(const std::vector<std::string>& dirs);
-IVW_CORE_API void removeLibrarySearchDirs(const std::vector<void*>& dirs);
-
-IVW_CORE_API std::vector<std::string> getLoadedLibraries();
 }  // namespace util
-
-class IVW_CORE_API LibrarySearchDirs {
-public:
-    LibrarySearchDirs(const std::vector<std::string>& dirs = {});
-    void add(const std::vector<std::string>& dirs);
-    ~LibrarySearchDirs();
-
-private:
-    std::vector<void*> addedDirs_;
-};
 
 /**
  * \class SharedLibrary
@@ -88,8 +73,8 @@ public:
     SharedLibrary(const std::string& filePath);
     SharedLibrary(const SharedLibrary& rhs) = delete;
     SharedLibrary& operator=(const SharedLibrary& that) = delete;
-    SharedLibrary(SharedLibrary&& rhs);
-    SharedLibrary& operator=(SharedLibrary&& that);
+    SharedLibrary(SharedLibrary&& rhs) noexcept;
+    SharedLibrary& operator=(SharedLibrary&& that) noexcept;
     ~SharedLibrary();
 
     std::string getFilePath() { return filePath_; }

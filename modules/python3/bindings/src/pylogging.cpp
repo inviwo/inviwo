@@ -80,7 +80,19 @@ void exposeLogging(pybind11::module& m) {
         .def_property("logStacktrace", &LogCentral::getLogStacktrace, &LogCentral::setLogStacktrace)
         .def_property("messageBreakLevel", &LogCentral::getMessageBreakLevel,
                       &LogCentral::setMessageBreakLevel)
-        .def_static("get", &LogCentral::getPtr, py::return_value_policy::reference);
+        .def_static("get", &LogCentral::getPtr, py::return_value_policy::reference)
+        .def("log", &LogCentral::log, py::arg("source") = "", py::arg("level") = LogLevel::Info,
+             py::arg("audience") = LogAudience::Developer, py::arg("file") = "",
+             py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "")
+        .def("logProcessor", &LogCentral::logProcessor, py::arg("processor"),
+             py::arg("level") = LogLevel::Info, py::arg("audience") = LogAudience::Developer,
+             py::arg("msg") = "", py::arg("file") = "", py::arg("function") = "",
+             py::arg("line") = 0)
+        .def("logNetwork", &LogCentral::logNetwork, py::arg("level") = LogLevel::Info,
+             py::arg("audience") = LogAudience::Developer, py::arg("msg") = "",
+             py::arg("file") = "", py::arg("function") = "", py::arg("line") = 0)
+        .def("logAssertion", &LogCentral::logAssertion, py::arg("file") = "",
+             py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "");
 
     py::class_<ConsoleLogger, Logger>(m, "ConsoleLogger")
         .def(py::init<>())

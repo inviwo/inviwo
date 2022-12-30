@@ -40,6 +40,8 @@
 #include <string_view>
 #include <vector>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 class Processor;
@@ -210,6 +212,33 @@ IVW_CORE_API void log(ExceptionContext context, std::string_view message,
 IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string_view message,
                       LogLevel level = LogLevel::Info,
                       LogAudience audience = LogAudience::Developer);
+
+template <typename... Args>
+void log(SourceContext context, LogLevel level, LogAudience audience, std::string_view format,
+         Args&&... args) {
+    LogCentral::getPtr()->log(context.getCaller(), level, audience, context.getFile(),
+                              context.getFunction(), context.getLine(),
+                              fmt::format(format, std::forward<Args>(args)...));
+}
+
+template <typename... Args>
+void logInfo(SourceContext context, std::string_view format, Args&&... args) {
+    LogCentral::getPtr()->log(context.getCaller(), LogLevel::Info, LogAudience::Developer,
+                              context.getFile(), context.getFunction(), context.getLine(),
+                              fmt::format(format, std::forward<Args>(args)...));
+}
+template <typename... Args>
+void logWarn(SourceContext context, std::string_view format, Args&&... args) {
+    LogCentral::getPtr()->log(context.getCaller(), LogLevel::Warn, LogAudience::Developer,
+                              context.getFile(), context.getFunction(), context.getLine(),
+                              fmt::format(format, std::forward<Args>(args)...));
+}
+template <typename... Args>
+void logError(SourceContext context, std::string_view format, Args&&... args) {
+    LogCentral::getPtr()->log(context.getCaller(), LogLevel::Error, LogAudience::Developer,
+                              context.getFile(), context.getFunction(), context.getLine(),
+                              fmt::format(format, std::forward<Args>(args)...));
+}
 
 }  // namespace util
 

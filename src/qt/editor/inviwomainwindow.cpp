@@ -30,6 +30,7 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocore.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -56,7 +57,7 @@
 #include <inviwo/qt/editor/inviwoeditmenu.h>
 #include <inviwo/qt/editor/welcomewidget.h>
 #include <inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h>
-#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <inviwo/qt/applicationbase/qtapptools.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
@@ -99,6 +100,7 @@
 #include <QScreen>
 #include <QToolButton>
 #include <QStackedWidget>
+#include <QApplication>
 
 #include <warn/pop>
 
@@ -207,7 +209,7 @@ auto getFloatingDockWidgets(InviwoMainWindow* win) {
 
 }  // namespace detail
 
-InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
+InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     : QMainWindow()
     , app_(app)
     , menuEventFilter_{new MenuKeyboardEventFilter(this)}
@@ -255,8 +257,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     setObjectName("InviwoMainWindow");
 
-    app_->setMainWindow(this);
-
     setAcceptDrops(true);
 
     // make sure, tooltips are always shown (this includes port inspectors as well)
@@ -266,7 +266,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     currentWorkspaceFileName_ = "";
 
-    app_->installNativeEventFilter(fileAssociations_.get());
+    QApplication::instance()->installNativeEventFilter(fileAssociations_.get());
 
     fileAssociations_->registerFileType(
         "Inviwo.workspace", "Inviwo Workspace", ".inv", 0,
@@ -430,9 +430,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     // initialize menus
     addActions();
     networkEditorView_->setFocus();
+
+    utilqt::configurePoolResizeWait(*app_, this);
 }
 
-InviwoMainWindow::~InviwoMainWindow() = default;
+InviwoMainWindow::~InviwoMainWindow() { app_->setPoolResizeWaitCallback(nullptr); }
 
 void InviwoMainWindow::showWindow() {
     if (maximized_) {
@@ -446,11 +448,11 @@ void InviwoMainWindow::saveSnapshots(std::string path, std::string fileName) {
     if (path.empty()) path = app_->getPath(PathType::Images);
 
     repaint();
-    app_->processEvents();
+    QApplication::instance()->processEvents();
     app_->waitForPool();
 
     while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
-        app_->processEvents();
+        QApplication::instance()->processEvents();
         app_->processFront();
     }
 
@@ -464,7 +466,7 @@ void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
     if (path.empty()) path = filesystem::getPath(PathType::Images);
 
     repaint();
-    app_->processEvents();
+    QApplication::instance()->processEvents();
     app_->waitForPool();
     QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(winId());
     screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
@@ -639,7 +641,7 @@ void InviwoMainWindow::addActions() {
             action->setVisible(false);
             recentWorkspaceMenu->addAction(action);
             connect(action, &QAction::triggered, this, [this, action]() {
-                if (app_->keyboardModifiers() == Qt::ControlModifier) {
+                if (qApp->keyboardModifiers() == Qt::ControlModifier) {
                     appendWorkspace(action->data().toString());
                     hideWelcomeScreen();
                 } else if (askToSaveWorkspaceChanges()) {
@@ -662,7 +664,7 @@ void InviwoMainWindow::addActions() {
         });
 
         connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [recentWorkspaceMenu, this]() {
-            app_->installEventFilter(menuEventFilter_);
+            QApplication::instance()->installEventFilter(menuEventFilter_);
             menuEventFilter_->add(recentWorkspaceMenu);
 
             for (auto elem : workspaceActionRecent_) {
@@ -687,7 +689,7 @@ void InviwoMainWindow::addActions() {
             clearRecentWorkspaces_->setEnabled(!recentFiles.isEmpty());
         });
         connect(recentWorkspaceMenu, &QMenu::aboutToHide, this, [this]() {
-            app_->removeEventFilter(menuEventFilter_);
+            QApplication::instance()->removeEventFilter(menuEventFilter_);
             menuEventFilter_->clear();
         });
     }
@@ -696,7 +698,7 @@ void InviwoMainWindow::addActions() {
     exampleMenu_ = fileMenuItem->addMenu(tr("&Example Workspaces"));
 
     connect(exampleMenu_, &QMenu::aboutToShow, this, [this]() {
-        app_->installEventFilter(menuEventFilter_);
+        QApplication::instance()->installEventFilter(menuEventFilter_);
         menuEventFilter_->add(exampleMenu_);
 
         exampleMenu_->clear();
@@ -735,14 +737,14 @@ void InviwoMainWindow::addActions() {
         }
     });
     connect(exampleMenu_, &QMenu::aboutToHide, this, [this]() {
-        app_->removeEventFilter(menuEventFilter_);
+        QApplication::instance()->removeEventFilter(menuEventFilter_);
         menuEventFilter_->clear();
     });
 
     // create list of all test workspaces
     testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
     connect(testMenu_, &QMenu::aboutToShow, this, [this]() {
-        app_->installEventFilter(menuEventFilter_);
+        QApplication::instance()->installEventFilter(menuEventFilter_);
         menuEventFilter_->add(testMenu_);
 
         testMenu_->clear();
@@ -785,7 +787,7 @@ void InviwoMainWindow::addActions() {
     });
 
     connect(testMenu_, &QMenu::aboutToHide, this, [this]() {
-        app_->removeEventFilter(menuEventFilter_);
+        QApplication::instance()->removeEventFilter(menuEventFilter_);
         menuEventFilter_->clear();
     });
 
@@ -804,8 +806,8 @@ void InviwoMainWindow::addActions() {
         connect(reloadStyle, &QAction::triggered, [this](bool /*state*/) {
             // The following code snippet allows to reload the Qt style sheets during
             // runtime, which is handy while we change them.
-            app_->setStyleSheetFile(QString::fromStdString(app_->getPath(PathType::Resources) +
-                                                           "/stylesheets/inviwo.qss"));
+            utilqt::setStyleSheetFile(app_->getPath(PathType::Resources) +
+                                      "/stylesheets/inviwo.qss");
         });
     }
 #endif
@@ -1260,8 +1262,9 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
             app_->getWorkspaceManager()->clear();
             setCurrentWorkspace(untitledWorkspaceName_);
         }
-        app_->processEvents(QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready
-                                                                  // before we unlock.
+        QApplication::instance()->processEvents(
+            QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready
+                                                  // before we unlock.
     }
     saveWindowState();
     getNetworkEditor()->setModified(false);
@@ -1271,7 +1274,7 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
 void InviwoMainWindow::appendWorkspace(const QString& file) {
     NetworkLock lock(app_->getProcessorNetwork());
     networkEditor_->append(utilqt::fromQString(file));
-    app_->processEvents();  // make sure the gui is ready before we unlock.
+    QApplication::instance()->processEvents();  // make sure the gui is ready before we unlock.
 }
 
 bool InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
@@ -1385,9 +1388,9 @@ void InviwoMainWindow::showWelcomeScreen() {
     centralWidget_->setCurrentWidget(welcomeWidget);
     welcomeWidget->enableRestoreButton(hasRestoreWorkspace());
 
-    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
+    QApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
     setUpdatesEnabled(true);
-    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
+    QApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
     welcomeWidget->setFocus();
 }
 
@@ -1403,7 +1406,7 @@ void InviwoMainWindow::hideWelcomeScreen() {
     visibleWidgetState_.show();
 
     setUpdatesEnabled(true);
-    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
+    QApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
@@ -1471,7 +1474,7 @@ NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor
 void InviwoMainWindow::exitInviwo(bool saveIfModified) {
     if (!saveIfModified) getNetworkEditor()->setModified(false);
     QMainWindow::close();
-    app_->closeInviwoApplication();
+    QApplication::instance()->exit();
 }
 
 void InviwoMainWindow::saveWindowState() {
@@ -1574,7 +1577,6 @@ TextLabelOverlay& InviwoMainWindow::getNetworkEditorOverlay() const {
 }
 
 InviwoApplication* InviwoMainWindow::getInviwoApplication() const { return app_; }
-InviwoApplicationQt* InviwoMainWindow::getInviwoApplicationQt() const { return app_; }
 
 InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const { return editMenu_; }
 ToolsMenu* InviwoMainWindow::getToolsMenu() const { return toolsMenu_; }

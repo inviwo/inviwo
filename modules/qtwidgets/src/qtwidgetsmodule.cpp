@@ -110,14 +110,12 @@
 #include <glm/vec3.hpp>                   // for operator+, vec
 #include <glm/vec4.hpp>                   // for operator+
 
-#ifndef INVIWO_ALL_DYN_LINK
 struct InitQtResources {
     // Needed for loading of resources when building statically
     // see https://wiki.qt.io/QtResources#Q_INIT_RESOURCE
     InitQtResources() { Q_INIT_RESOURCE(inviwo); }
     ~InitQtResources() { Q_CLEANUP_RESOURCE(inviwo); }
-} initQtResources;
-#endif
+};
 
 namespace inviwo {
 
@@ -180,7 +178,9 @@ struct OptionWidgetReghelper {
 }  // namespace
 
 QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
-    : InviwoModule(app, "QtWidgets"), tfMenuHelper_(std::make_unique<TFMenuHelper>()) {
+    : InviwoModule(app, "QtWidgets")
+    , resources_{std::make_unique<InitQtResources>()}
+    , tfMenuHelper_(std::make_unique<TFMenuHelper>()) {
     if (!qApp) {
         throw ModuleInitException("QApplication must be constructed before QtWidgetsModule",
                                   IVW_CONTEXT);

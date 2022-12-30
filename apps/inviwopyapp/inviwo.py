@@ -2,6 +2,177 @@ import argparse
 import pathlib
 import os
 import sys
+import shiboken6
+import PySide6
+import PySide6.QtWidgets
+import PySide6.QtGui
+
+"""
+    If python can't find the`inviwopy` module use the setupPaths to pass
+    in the path to inviwo bin directory.
+
+    If the program complains about missing QT plugins use setupPaths with
+    the path to inviwo bin directory. It will set the 'QT_PLUGIN_PATH' in python.
+    Or you can try and set it manually.
+"""
+
+
+def setupPaths(inviwoLibDir):
+    sys.path.append(str(inviwoLibDir))
+    os.environ['QT_PLUGIN_PATH'] = str(inviwoLibDir)
+
+
+def configureQtApp():
+    PySide6.QtCore.QCoreApplication.setAttribute(
+        PySide6.QtCore.Qt.ApplicationAttribute.AA_NativeWindows)
+    PySide6.QtCore.QCoreApplication.setAttribute(
+        PySide6.QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
+    PySide6.QtCore.QCoreApplication.setAttribute(
+        PySide6.QtCore.Qt.ApplicationAttribute.AA_UseDesktopOpenGL)
+    defaultFormat = PySide6.QtGui.QSurfaceFormat()
+    defaultFormat.setMajorVersion(10)
+    defaultFormat.setProfile(PySide6.QtGui.QSurfaceFormat.CoreProfile)
+    PySide6.QtGui.QSurfaceFormat.setDefaultFormat(defaultFormat)
+
+
+def configureQtNames(qtApp):
+    qtApp.setOrganizationName("Inviwo Foundation")
+    qtApp.setOrganizationDomain("inviwo.org")
+    qtApp.setApplicationName("Inviwo")
+    qtApp.setWindowIcon(PySide6.QtGui.QIcon(":/inviwo/inviwo_light.png"))
+
+
+class Inviwo:
+    def __init__(self):
+        """
+        Constructs an Inviwo application.
+        """
+
+        self.logCentral = None
+        self.loggers = []
+        self.qtApp = None
+        self.inviwoApp = None
+        self.propertyListWidget = None
+        self.mainWindow = None
+
+        try:
+            import inviwopy
+        except ModuleNotFoundError as e:
+            print("Did you remember to add the path to 'inviwppy.*.pyd' to the PYTHONPATH?")
+            print("Powershell: $Env:PYTHONPATH=\"<path to inviwo bin folder>\"")
+            print("CMD: set PYTHONPATH=\"<path to inviwo bin folder>\"")
+            print("BASH: export PYTHONPATH=\"<path to inviwo bin folder>\"")
+            print("You can also use the libdir cli parameter to pass the path.")
+            raise e
+
+        self.inviwopy = inviwopy
+
+        # Inviwo requires that a logcentral is created.
+        self.logCentral = inviwopy.LogCentral()
+
+        # Create and register a console logger
+        cl = inviwopy.ConsoleLogger()
+        self.logCentral.registerLogger(cl)
+        self.loggers.append(cl)
+
+        # Create a Qt application
+        configureQtApp()
+        self.qtApp = PySide6.QtWidgets.QApplication()
+        self.mainWindow = PySide6.QtWidgets.QMainWindow()
+        self.mainWindow.setObjectName("InviwoMainWindow")
+
+        # Create the inviwo application
+        self.inviwoApp = inviwopy.InviwoApplication()
+        inviwopy.app = self.inviwoApp
+        self.inviwoApp.setProgressCallback(lambda x: inviwopy.log(x))
+        self.inviwoApp.registerRuntimeModules(lambda name: name not in ['glfw', 'webbrowser'])
+
+        configureQtNames(self.qtApp)
+        inviwopy.qt.configureFileSystemObserver(self.inviwoApp)
+        inviwopy.qt.configurePostEnqueueFront(self.inviwoApp)
+        inviwopy.qt.setStyleSheetFile(":/stylesheets/inviwo.qss")
+
+        self.propertyListWidget = inviwopy.qt.PropertyListWidget(self.inviwoApp)
+        self.qplw = shiboken6.wrapInstance(
+            self.propertyListWidget.address(), PySide6.QtWidgets.QDockWidget)
+        self.mainWindow.addDockWidget(PySide6.QtCore.Qt.RightDockWidgetArea, self.qplw)
+        self.qplw.setFloating(False)
+
+        self.mainWindow.show()
+
+    def clearProperties(self):
+        self.propertyListWidget.clearProperties()
+        self.propertyListWidget.hide()
+
+    def showProperties(self, properties):
+        """
+        :param properties: List of processor identifiers and property paths to show in the
+        property list widget
+        """
+        for path in properties:
+            if len(path.split('.')) == 1:
+                if proc := self.inviwoApp.network.getProcessorByIdentifier(path):
+                    self.propertyListWidget.addProcessorProperties(proc)
+            else:
+                if prop := self.inviwoApp.network.getProperty(path):
+                    self.propertyListWidget.addPropertyWidgets(prop)
+        self.propertyListWidget.show()
+
+    def load(self, workspace=None):
+        """
+        :param workspace: Path to workspace to load, defaults load boron.inv
+        """
+        workspace = (workspace if workspace else
+                     (pathlib.Path(self.inviwoApp.getPath(self.inviwopy.PathType.Workspaces)
+                                   + "/boron.inv")))
+        self.inviwoApp.network.load(workspace.absolute().as_posix())
+
+    def screenshot(self, filename, canvas="Canvas"):
+        """
+        :param filename: Path to a output file for a screenshot of the 'Canvas' processor
+        :param canvas: a canvas processor instance or a processor identifier
+        """
+
+        if isinstance(canvas, str):
+            canvas = self.inviwoApp.network.getProcessorByIdentifier(canvas)
+
+        if not canvas:
+            self.inviwopy.logWarn("Could not find any canvas")
+            return
+
+        # Make sure the app is ready
+        self.inviwopy.qt.waitForNetwork(self.inviwoApp)
+        # Save a snapshot
+        canvas.snapshot(filename)
+
+    def print_processors(self):
+        for p in self.inviwoApp.network.processors:
+            print(f"{p.identifier:40} {p.classIdentifier:40}")
+
+    def print_properties(self):
+        for processor in self.inviwoApp.network.processors:
+            for prop in processor.getPropertiesRecursive():
+                print(f"{prop.displayName:20} {prop.classIdentifier:40} {prop.path:40}")
+
+    def setCanvasAsCentralWidget(self, canvas):
+        if isinstance(canvas, str):
+            canvas = self.inviwoApp.network.getProcessorByIdentifier(canvas)
+
+        if not canvas:
+            self.inviwopy.logWarn("Could not find any canvas")
+            return
+
+        a = self.inviwopy.qt.address(canvas.widget)
+        w = shiboken6.wrapInstance(a, PySide6.QtWidgets.QWidget)
+        w.setWindowFlags(PySide6.QtCore.Qt.Widget)
+        self.mainWindow.setCentralWidget(w)
+        self.mainWindow.show()
+
+    def hideMenyAndToolBars(self):
+        self.mainWindow.setMinimumSize(800, 600)
+        self.mainWindow.menuBar().hide()
+        for t in self.mainWindow.findChildren(PySide6.QtWidgets.QToolBar):
+            t.hide()
 
 
 def make_cmd_parser():
@@ -19,146 +190,50 @@ def make_cmd_parser():
                         help="List all processors in the workspace")
     parser.add_argument('--list_properties', type=str, nargs='*',
                         help='List properties of processor')
+
+    parser.add_argument('-c', '--central_widget', type=str, help="Canvas processor identifier")
+    parser.add_argument('--hide', action="store_true", help="Hide menu and toolbar items")
+
     parser.add_argument('--libdir', type=pathlib.Path, help='Path to inviowpy.*.pyd')
 
     return parser.parse_args()
-
-
-def main(workspace=None, properties=None, screenshot=None, run=False, ipython=False,
-         list_processors=False, list_properties=None):
-    """ Constructs an Inviwo application and loads a workspace.
-
-    :param workspace: Path to workspace to load, defaults load boron.inv
-    :param properties: List of processor identifiers and property paths to show in the
-        property list widget
-    :param screenshot: Path to a output file for a screenshot of the 'Canvas' processor
-    :paran run: Start the qt event loop, default False
-    :param ipython: Register the ipython event loop hook. Use the ipython magic command
-        '#gui inviwo' to start.
-    :param list_processors: Output a list of all processors, default False.
-    :param list_properties: Output a list of all properties of the Processors identifiers given
-
-
-    If python can't find the i`inviwopy` module use the '--libdir' CLI argument to pass
-    in the path to inviwo bin directory.
-
-    If the program complains about missing QT plugins try passing the '--libdir'
-    CLI argument. It will set the 'QT_PLUGIN_PATH' in python. Or you can try and
-    set it manually.
-    """
-
-    try:
-        import inviwopy as ivw
-        import inviwopyapp as qt
-    except ModuleNotFoundError as e:
-        print("Did you remember to add the path to 'inviwppy.*.pyd' to the PYTHONPATH?")
-        print("Powershell: $Env:PYTHONPATH=\"<path to inviwo bin folder>\"")
-        print("CMD: set PYTHONPATH=\"<path to inviwo bin folder>\"")
-        print("BASH: export PYTHONPATH=\"<path to inviwo bin folder>\"")
-        print("You can also use the libdir cli parameter to pass the path.")
-        raise e
-
-    def addIpythonGuiHook(inviwoApp: qt.InviwoApplicationQt, name: str = "inviwo") -> bool:
-        """ Add a event loop hook in IPyhton to enable simultanious use of the IPython terminal
-        and the inviwo qt gui use the IPython magic function '#gui inviwo' to start the event
-        loop after calling this function.
-        See https://ipython.readthedocs.io/en/stable/config/eventloops.html
-        """
-        try:
-            import IPython
-        except ImportError:
-            return False
-
-        def inputhook(context):
-            while not context.input_is_ready():
-                inviwoApp.update()
-        IPython.terminal.pt_inputhooks.register(name, inputhook)
-
-        return True
-
-    res = []
-
-    # Inviwo requires that a logcentral is created.
-    lc = ivw.LogCentral()
-    res.append(lc)
-
-    # Create and register a console logger
-    cl = ivw.ConsoleLogger()
-    lc.registerLogger(cl)
-
-    # Create the inviwo application
-    try:
-        app = qt.InviwoApplicationQt()
-    except ... as e:
-        print("failed to create app")
-        print(e)
-        raise e
-
-    res.append(app)
-    app.registerModules()
-
-    # load a workspace
-    workspace = (workspace if workspace else
-                 (app.getPath(ivw.PathType.Workspaces) + "/boron.inv"))
-    app.network.load(workspace)
-
-    if properties:
-        plw = ivw.qt.PropertyListWidget(app)
-        res.append(plw)
-        for path in properties:
-            if len(path.split('.')) == 1:
-                if proc := app.network.getProcessorByIdentifier(path):
-                    plw.addProcessorProperties(proc)
-            else:
-                if prop := app.network.getProperty(path):
-                    plw.addPropertyWidgets(prop)
-
-        plw.move(100, 100)
-        plw.show()
-
-    if list_processors:
-        print("Processors:")
-        for p in app.network.processors:
-            print(f"{p.identifier:40} {p.classIdentifier:40}")
-
-    if list_properties:
-        for identifier in list_properties:
-            processor = app.network.getProcessorByIdentifier(identifier)
-            if processor:
-                print(f"Properties for {identifier}")
-                for prop in processor.getPropertiesRecursive():
-                    print(f"{prop.displayName:20} {prop.classIdentifier:40} {prop.path:40}")
-
-    if screenshot:
-        # Make sure the app is ready
-        app.update()
-        app.waitForPool()
-        app.update()
-        # Save a snapshot
-        app.network.Canvas.snapshot(screenshot)
-
-    if run:
-        # run the app event loop
-        app.run()
-
-    if ipython:
-        addIpythonGuiHook(app)
-        print("enter '#gui inviwo' in ipython to start the event loop")
-
-    return app
 
 
 if __name__ == '__main__':
     args = make_cmd_parser()
 
     if args.libdir:
-        sys.path.append(str(args.libdir))
-        os.environ['QT_PLUGIN_PATH'] = str(args.libdir)
+        setupPaths(str(args.libdir))
 
-    main(workspace=args.workspace,
-         properties=args.properties,
-         screenshot=args.screenshot,
-         run=args.run,
-         ipython=args.ipython,
-         list_processors=args.list_processors,
-         list_properties=args.list_properties)
+    app = Inviwo()
+
+    app.load(args.workspace)
+
+    if args.properties:
+        app.showProperties(args.properties)
+
+    if args.list_processors:
+        app.print_processors()
+
+    if args.list_properties:
+        app.print_properties()
+
+    if args.central_widget:
+        app.setCanvasAsCentralWidget(args.central_widget)
+
+    if args.hide:
+        app.hideMenyAndToolBars()
+
+    if args.screenshot:
+        app.screenshot(args.screenshot)
+
+    if args.run and not args.ipython:
+        # run the app event loop
+        app.qtApp.exec()
+
+    if args.ipython:
+        if args.run:
+            import IPython
+            IPython.get_ipython().enable_gui('qt6')
+        else:
+            print("enter '%gui qt6' in ipython to start the event loop")

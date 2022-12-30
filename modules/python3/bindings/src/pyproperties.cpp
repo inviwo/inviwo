@@ -356,19 +356,28 @@ void exposeProperties(py::module& m) {
         .def_property_readonly("keys", [](PropertyFactory* pf) { return pf->getKeys(); })
         .def("create", [](PropertyFactory* pf, std::string key) { return pf->create(key); });
 
-    py::class_<PropertyWidget>(m, "PropertyWidget")
-        .def_property_readonly("editorWidget", &PropertyWidget::getEditorWidget,
-                               py::return_value_policy::reference)
+    py::class_<PropertyWidget>(m, "PropertyWidget", py::multiple_inheritance{})
         .def_property_readonly("property", &PropertyWidget::getProperty,
-                               py::return_value_policy::reference);
+                               py::return_value_policy::reference)
 
-    py::class_<PropertyEditorWidget>(m, "PropertyEditorWidget")
+        .def("getEditorWidget", &PropertyWidget::getEditorWidget)
+        .def("hasEditorWidget", &PropertyWidget::hasEditorWidget)
+        .def("updateFromProperty", &PropertyWidget::updateFromProperty)
+
+        .def("address", [](PropertyWidget* w) {
+            return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
+        });
+
+    py::class_<PropertyEditorWidget>(m, "PropertyEditorWidget", py::multiple_inheritance{})
         .def_property("visible", &PropertyEditorWidget::isVisible,
                       &PropertyEditorWidget::setVisible)
         .def_property("dimensions", &PropertyEditorWidget::getDimensions,
                       &PropertyEditorWidget::setDimensions)
         .def_property("position", &PropertyEditorWidget::getPosition,
-                      &PropertyEditorWidget::setPosition);
+                      &PropertyEditorWidget::setPosition)
+        .def("address", [](PropertyEditorWidget* w) {
+            return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
+        });
 
     py::class_<Property>(m, "Property")
         .def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
@@ -396,7 +405,9 @@ void exposeProperties(py::module& m) {
         .def("readonlyDependsOn",
              [](Property* p, Property* other, std::function<bool(Property&)> func) {
                  p->readonlyDependsOn(*other, func);
-             });
+             })
+        .def("getHelp", static_cast<Document& (Property::*)()>(&Property::getHelp))
+        .def("getDescription", &Property::getDescription);
 
     py::class_<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)

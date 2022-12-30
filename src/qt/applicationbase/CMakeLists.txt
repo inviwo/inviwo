@@ -3,7 +3,7 @@ project(inviwo-qtapplicationbase)
 
 # Add MOC files
 set(MOC_FILES
-    ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/inviwoapplicationqt.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/qtapptools.h
 )
 
 # Add header files
@@ -15,7 +15,7 @@ ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/ ${HE
 
 # Add source files
 set(SOURCE_FILES
-    inviwoapplicationqt.cpp
+    qtapptools.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

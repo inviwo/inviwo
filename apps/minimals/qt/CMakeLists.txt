@@ -12,6 +12,11 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
+set(CMAKE_FILES
+    CMakeLists.txt
+)
+ivw_group("CMake Files" ${CMAKE_FILES})
+
 set(RES_FILES "")
 if(WIN32)
     set(RES_FILES ${RES_FILES} "${IVW_RESOURCES_DIR}/inviwo.rc")
@@ -24,13 +29,12 @@ source_group("Resource Files" FILES ${RES_FILES})
 ivw_retrieve_all_modules(enabled_modules)
 # Only include one OpenGL context creation module
 list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
-# Remove modules not used by this app
-list(REMOVE_ITEM enabled_modules InviwoPython3QtModule)
 
 # Create application
-add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${RES_FILES})
+add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${RES_FILES} ${CMAKE_FILES})
 target_link_libraries(inviwo_qtminimum PUBLIC 
     inviwo::core
+    inviwo::module::qtwidgets
     inviwo::qtapplicationbase
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui

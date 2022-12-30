@@ -1,0 +1,4 @@
+numpy
+rich
+PySide6
+shiboken6

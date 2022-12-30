@@ -36,6 +36,7 @@
 #include <fstream>
 #include <cstdio>
 #include <ctime>
+#include <optional>
 
 namespace inviwo {
 
@@ -149,10 +150,19 @@ IVW_CORE_API bool skipByteOrderMark(std::istream& stream);
 IVW_CORE_API std::string getWorkingDirectory();
 
 /**
+ * Set the working directory of the application.
+ */
+IVW_CORE_API void setWorkingDirectory(std::string_view path);
+
+/**
  * Get full/path/to/executable running the application.
  * @return Full path to the executable if successful, empty string otherwise.
  */
 IVW_CORE_API std::string getExecutablePath();
+
+IVW_CORE_API std::string getInviwoBinDir();
+
+IVW_CORE_API std::vector<std::string> getLoadedLibraries();
 
 /**
  * Get path to the user settings / data folder for Inviwo,
@@ -272,10 +282,10 @@ IVW_CORE_API bool wildcardStringMatchDigits(const std::string& pattern, const st
  *
  * @param path   directory where the search is started
  * @param childFolders   list of subfolders
- * @return path of parent directory holding all childFolders, otherwise empty string
+ * @return path of parent directory holding all childFolders, otherwise std::nullopt
  */
-IVW_CORE_API std::string getParentFolderWithChildren(const std::string& path,
-                                                     const std::vector<std::string>& childFolders);
+IVW_CORE_API std::optional<std::string> getParentFolderWithChildren(
+    std::string_view path, const std::vector<std::string>& childFolders);
 
 /**
  * Try to find the Inviwo base path containing subfolders "data/workspaces" and "modules".

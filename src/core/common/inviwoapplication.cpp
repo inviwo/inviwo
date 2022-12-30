@@ -72,6 +72,8 @@
 
 #include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 
+#include <chrono>
+
 namespace inviwo {
 
 struct AppResourceManagerObserver : ResourceManagerObserver {
@@ -91,7 +93,7 @@ struct AppResourceManagerObserver : ResourceManagerObserver {
 
 InviwoApplication* InviwoApplication::instance_ = nullptr;
 
-InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
+InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view displayName)
     : displayName_(displayName)
     , commandLineParser_(std::make_unique<CommandLineParser>(argc, argv))
     , consoleLogger_{[&]() {
@@ -229,7 +231,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
 InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo") {}
 
-InviwoApplication::InviwoApplication(std::string displayName)
+InviwoApplication::InviwoApplication(std::string_view displayName)
     : InviwoApplication(0, nullptr, displayName) {}
 
 InviwoApplication::~InviwoApplication() { resizePool(0); }
@@ -241,6 +243,11 @@ void InviwoApplication::registerModules(
 
 void InviwoApplication::registerModules(RuntimeModuleLoading token) {
     moduleManager_.registerModules(token);
+}
+
+void InviwoApplication::registerModules(RuntimeModuleLoading token,
+                                        std::function<bool(std::string_view)> isEnabled) {
+    moduleManager_.registerModules(token, isEnabled);
 }
 
 std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
@@ -357,19 +364,56 @@ std::vector<Capabilities*> InviwoApplication::getModuleCapabilities() {
 
 SystemCapabilities& InviwoApplication::getSystemCapabilities() { return *systemCapabilities_; }
 
+void InviwoApplication::setPoolResizeWaitCallback(std::function<void(LongWait)> callback) {
+    poolResizeCallback_ = callback;
+}
+
 void InviwoApplication::resizePool(size_t newSize) {
     if (newSize == pool_.getSize()) return;
+
+    auto start = std::chrono::system_clock::now();
+    std::chrono::milliseconds timeLimit(250);
+    auto timeout = [&timeLimit, &start]() {
+        return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() -
+                                                                start) > timeLimit;
+    };
+
     size_t size = pool_.trySetSize(newSize);
+    while (size != newSize && !timeout()) {
+        processFront();
+        size = pool_.trySetSize(newSize);
+    }
+    util::OnScopeExit cleanup{[this]() {
+        if (poolResizeCallback_) {
+            poolResizeCallback_(LongWait::End);
+        }
+    }};
+
+    if (poolResizeCallback_) {
+        poolResizeCallback_(LongWait::Start);
+    }
+
     while (size != newSize) {
+        if (timeout()) {
+            auto left = size - newSize;
+            LogInfo("Waiting for " << left << " background thread" << (left > 1 ? "s" : "")
+                                   << " to finish");
+            timeLimit += std::chrono::milliseconds(1000);
+        }
+
         size = pool_.trySetSize(newSize);
         processFront();
+        if (poolResizeCallback_) {
+            poolResizeCallback_(LongWait::Update);
+        }
     }
 }
 
 LayerRamResizer* InviwoApplication::getLayerRamResizer() const { return layerRamResizer_; }
 void InviwoApplication::setLayerRamResizer(LayerRamResizer* obj) { layerRamResizer_ = obj; }
 
-std::locale InviwoApplication::getUILocale() const { return std::locale(); }
+std::locale InviwoApplication::getUILocale() const { return uiLocale_; }
+void InviwoApplication::setUILocale(const std::locale& locale) { uiLocale_ = locale; }
 
 void InviwoApplication::dispatchFrontAndForget(std::function<void()> fun) {
     {
@@ -417,8 +461,6 @@ TimerThread& InviwoApplication::getTimerThread() {
     }
     return *timerThread_;
 }
-
-void InviwoApplication::closeInviwoApplication() {}
 
 void InviwoApplication::setFileSystemObserver(std::unique_ptr<FileSystemObserver> observer) {
     fileSystemObserver_ = std::move(observer);

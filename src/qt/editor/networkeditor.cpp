@@ -70,7 +70,6 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
-#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/qt/editor/processormimedata.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -203,10 +202,16 @@ void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
 }
 
 void NetworkEditor::addPropertyWidgets(Processor* processor) {
-    QCoreApplication::postEvent(
-        mainwindow_->getPropertyListWidget(),
-        new PropertyListEvent(PropertyListEvent::Action::Add, processor->getIdentifier()),
-        Qt::LowEventPriority);
+    auto it = std::find_if(
+        processorGraphicsItems_.begin(), processorGraphicsItems_.end(),
+        [&](const auto& item) { return item.first != processor && item.second->isSelected(); });
+    if (it == processorGraphicsItems_.end() ||
+        QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+        QCoreApplication::postEvent(
+            mainwindow_->getPropertyListWidget(),
+            new PropertyListEvent(PropertyListEvent::Action::Add, processor->getIdentifier()),
+            Qt::LowEventPriority);
+    }
 }
 
 void NetworkEditor::removePropertyWidgets(Processor* processor) {

@@ -50,7 +50,7 @@ void TransferFunctionITFWriter::writeData(const TransferFunction* data,
 };
 
 std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeDataToBuffer(
-    const TransferFunction* data, std::string_view fileExtension) const {
+    const TransferFunction* data, std::string_view) const {
 
     Serializer serializer{""};
     data->serialize(serializer);

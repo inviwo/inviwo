@@ -62,8 +62,7 @@ InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) 
     {
         auto deleteAction = addAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"));
         actions_[MenuItemType::del] = deleteAction;
-        deleteAction->setShortcuts(QList<QKeySequence>(
-            {QKeySequence::Delete, QKeySequence(Qt::ControlModifier | Qt::Key_Backspace)}));
+        deleteAction->setShortcuts(QList<QKeySequence>({Qt::Key_Backspace, QKeySequence::Delete}));
     }
     {
         auto selectAllAction = addAction(QIcon(":/svgicons/edit-selectall.svg"), tr("&Select All"));

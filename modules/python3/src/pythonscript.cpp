@@ -93,7 +93,7 @@ bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)
 
     IVW_ASSERT(byteCode_ != nullptr, "No byte code");
 
-    if (auto ret = PyEval_EvalCode(static_cast<PyObject*>(byteCode_), locals.ptr(), locals.ptr())) {
+    if (PyEval_EvalCode(static_cast<PyObject*>(byteCode_), locals.ptr(), locals.ptr())) {
         if (callback) {
             callback(locals);
         }

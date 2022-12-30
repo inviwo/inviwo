@@ -32,49 +32,68 @@
 #endif
 
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
-#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <inviwo/qt/applicationbase/qtapptools.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/networkdebugobserver.h>
+#include <inviwo/core/util/stringconversion.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QSurfaceFormat>
-#include <warn/pop>
+#include <modules/qtwidgets/propertylistwidget.h>  // for PropertyListWidget
 
-using namespace inviwo;
+#include <QApplication>
+#include <QMainWindow>
 
 int main(int argc, char** argv) {
-    LogCentral::init();
-    inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
-    auto logger = std::make_shared<inviwo::ConsoleLogger>();
-    LogCentral::getPtr()->registerLogger(logger);
+    inviwo::LogCentral logger;
+    inviwo::LogCentral::init(&logger);
+
+    auto clogger = std::make_shared<inviwo::ConsoleLogger>();
+    logger.registerLogger(clogger);
 
     // Must be set before constructing QApplication
-    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-    QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-    QSurfaceFormat defaultFormat;
-    defaultFormat.setMajorVersion(10);
-    defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
-    QSurfaceFormat::setDefaultFormat(defaultFormat);
+    inviwo::utilqt::configureInviwoQtApp();
 
-    InviwoApplicationQt inviwoApp(argc, argv, "Inviwo-Qt");
-    inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
+#ifdef IVW_DEBUG
+    qInstallMessageHandler(&inviwo::utilqt::logQtMessages);
+#endif
+
+    QApplication qtApp{argc, argv};
+
+    QMainWindow mainWindow{};
+    mainWindow.setObjectName("InviwoMainWindow");
+    mainWindow.setMinimumSize(800, 600);
+
+    inviwo::InviwoApplication inviwoApp(argc, argv, "Inviwo-Qt");
+
+    inviwo::utilqt::configureInviwoDefaultNames();
+    inviwo::utilqt::configureFileSystemObserver(inviwoApp);
+    inviwo::utilqt::configurePostEnqueueFront(inviwoApp);
+    inviwo::utilqt::setStyleSheetFile(":/stylesheets/inviwo.qss");
+    inviwoApp.setUILocale(inviwo::utilqt::getCurrentStdLocale());
+
     inviwoApp.printApplicationInfo();
-    inviwoApp.setProgressCallback([](std::string m) {
-        LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0,
-                                  m);
+    LogInfoCustom("InviwoInfo", "Qt Version " << QT_VERSION_STR);
+
+    inviwoApp.setProgressCallback([&logger](std::string_view m) {
+        logger.log("InviwoApplication", inviwo::LogLevel::Info, inviwo::LogAudience::User, "", "",
+                   0, m);
     });
 
     // Initialize all modules
     inviwoApp.registerModules(inviwo::getModuleList());
+
+    auto plw = new inviwo::PropertyListWidget(&mainWindow, &inviwoApp);
+    mainWindow.addDockWidget(Qt::RightDockWidgetArea, plw);
+    plw->setFloating(false);
+    plw->hide();
 
     auto& cmdparser = inviwoApp.getCommandLineParser();
     TCLAP::ValueArg<std::string> snapshotArg(
@@ -86,15 +105,16 @@ int main(int argc, char** argv) {
         &snapshotArg,
         [&]() {
             std::string path = cmdparser.getOutputPath();
-            if (path.empty()) path = inviwoApp.getPath(PathType::Images);
-            util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
+            if (path.empty()) path = inviwoApp.getPath(inviwo::PathType::Images);
+            inviwo::util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path,
+                                          snapshotArg.getValue());
         },
         1000);
 
     TCLAP::SwitchArg debugProcess("d", "debug",
                                   "Add debug logging for processor evaluation to the log");
 
-    NetworkDebugObserver obs;
+    inviwo::NetworkDebugObserver obs;
     cmdparser.add(
         &debugProcess,
         [&]() {
@@ -110,8 +130,8 @@ int main(int argc, char** argv) {
     cmdparser.add(&fullscreenArg, [&]() {
         auto network = inviwoApp.getProcessorNetwork();
 
-        std::vector<ProcessorWidget*> widgets;
-        network->forEachProcessor([&](Processor* p) {
+        std::vector<inviwo::ProcessorWidget*> widgets;
+        network->forEachProcessor([&](inviwo::Processor* p) {
             if (p->isSink()) {
                 if (auto widget = p->getProcessorWidget()) {
                     if (widget->isVisible()) {
@@ -126,46 +146,83 @@ int main(int argc, char** argv) {
         }
     });
 
+    TCLAP::ValueArg<std::string> centralWidget(
+        "", "central-widget",
+        "Specify the identifier of the processor to use for the central widget.", false, "Canvas",
+        "Processor Identifier");
+
+    cmdparser.add(&centralWidget, [&]() {
+        auto network = inviwoApp.getProcessorNetwork();
+        if (auto processor = network->getProcessorByIdentifier(centralWidget.getValue())) {
+            if (auto widget = dynamic_cast<QWidget*>(processor->getProcessorWidget())) {
+                mainWindow.setCentralWidget(widget);
+                widget->setWindowFlags(Qt::Widget);
+                mainWindow.show();
+            }
+        }
+    });
+
+    TCLAP::MultiArg<std::string> exposeProperties(
+        "", "property", "Specify a list of property paths to display in the property list widget",
+        false, "Property path");
+
+    cmdparser.add(&exposeProperties, [&]() {
+        auto network = inviwoApp.getProcessorNetwork();
+        for (auto& path : exposeProperties.getValue()) {
+            auto [processorId, propertyPath] = inviwo::util::splitByFirst(path, '.');
+            if (auto processor = network->getProcessorByIdentifier(processorId)) {
+                if (propertyPath.empty()) {
+                    plw->addProcessorProperties(processor);
+                } else {
+                    if (auto prop = processor->getPropertyByPath(propertyPath)) {
+                        plw->addPropertyWidgets(prop);
+                    }
+                }
+            }
+        }
+        plw->show();
+    });
+
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
-
-    QMainWindow mainWin;
-    inviwoApp.setMainWindow(&mainWin);
 
     // Need to clear the network and (will delete processors and processorwidgets)
     // before QMainWindoes is deleted, otherwise it will delete all processorWidgets
     // before Processor can delete them.
-    util::OnScopeExit clearNetwork([&]() { inviwoApp.getProcessorNetwork()->clear(); });
+    inviwo::util::OnScopeExit clearNetwork([&]() { inviwoApp.getProcessorNetwork()->clear(); });
 
     // Load workspace
     inviwoApp.getProcessorNetwork()->lock();
 
-    const std::string workspace = cmdparser.getLoadWorkspaceFromArg()
-                                      ? cmdparser.getWorkspacePath()
-                                      : inviwoApp.getPath(PathType::Workspaces, "/boron.inv");
+    const std::string workspace =
+        cmdparser.getLoadWorkspaceFromArg()
+            ? cmdparser.getWorkspacePath()
+            : inviwoApp.getPath(inviwo::PathType::Workspaces, "/boron.inv");
 
     try {
         if (!workspace.empty()) {
-            inviwoApp.getWorkspaceManager()->load(workspace, [&](ExceptionContext ec) {
+            inviwoApp.getWorkspaceManager()->load(workspace, [&](inviwo::ExceptionContext ec) {
                 try {
                     throw;
-                } catch (const IgnoreException& e) {
-                    util::log(
+                } catch (const inviwo::IgnoreException& e) {
+                    inviwo::util::log(
                         e.getContext(),
                         "Incomplete network loading " + workspace + " due to " + e.getMessage(),
-                        LogLevel::Error);
+                        inviwo::LogLevel::Error);
                 }
             });
         }
-    } catch (const AbortException& exception) {
-        util::log(exception.getContext(),
-                  "Unable to load network " + workspace + " due to " + exception.getMessage(),
-                  LogLevel::Error);
+    } catch (const inviwo::AbortException& exception) {
+        inviwo::util::log(
+            exception.getContext(),
+            "Unable to load network " + workspace + " due to " + exception.getMessage(),
+            inviwo::LogLevel::Error);
         return 1;
-    } catch (const IgnoreException& exception) {
-        util::log(exception.getContext(),
-                  "Incomplete network loading " + workspace + " due to " + exception.getMessage(),
-                  LogLevel::Error);
+    } catch (const inviwo::IgnoreException& exception) {
+        inviwo::util::log(
+            exception.getContext(),
+            "Incomplete network loading " + workspace + " due to " + exception.getMessage(),
+            inviwo::LogLevel::Error);
         return 1;
     }
 
@@ -175,10 +232,8 @@ int main(int argc, char** argv) {
     cmdparser.processCallbacks();  // run any command line callbacks from modules.
 
     if (cmdparser.getQuitApplicationAfterStartup()) {
-        inviwoApp.closeInviwoApplication();
-        inviwoApp.quit();
         return 0;
     } else {
-        return inviwoApp.exec();
+        return qtApp.exec();
     }
 }

@@ -85,7 +85,8 @@ public:
      * @note Which modules to load can be specified by creating a file
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
      */
-    void registerModules(RuntimeModuleLoading);
+    void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> filter =
+                                                   ModuleManager::getEnabledFilter());
 
     /**
      * \brief Removes all modules not marked as protected by the application.

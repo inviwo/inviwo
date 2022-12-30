@@ -87,7 +87,7 @@ void TransferFunctionXMLWriter::writeData(const TransferFunction* data,
 };
 
 std::unique_ptr<std::vector<unsigned char>> TransferFunctionXMLWriter::writeDataToBuffer(
-    const TransferFunction* data, std::string_view fileExtension) const {
+    const TransferFunction* data, std::string_view) const {
     std::string xml = toXML(*data);
 
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());

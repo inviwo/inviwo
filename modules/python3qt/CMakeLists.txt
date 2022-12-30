@@ -43,7 +43,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 # Create module
 ivw_create_module(NO_PCH QT ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-python3qt PUBLIC 
+target_link_libraries(inviwo-module-python3qt PUBLIC
+    inviwo::qtapplicationbase
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets

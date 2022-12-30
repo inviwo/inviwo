@@ -179,7 +179,7 @@ std::string stripModuleFileNameDecoration(std::string_view filePath) {
         inviwoModulePos = decoration1.size();
     }
     auto len = fileNameWithoutExtension.size() - inviwoModulePos;
-#ifdef DEBUG
+#ifdef IVW_DEBUG
     // Remove debug ending "d" at end of file name
     len -= 1;
 #endif

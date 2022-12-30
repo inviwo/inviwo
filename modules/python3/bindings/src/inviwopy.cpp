@@ -98,6 +98,7 @@ PYBIND11_MODULE(inviwopy, m) {
             glm
             properties
             camerautil
+            doc
             
         )doc";
 

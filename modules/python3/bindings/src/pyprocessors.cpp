@@ -164,14 +164,16 @@ void exposeProcessors(pybind11::module& m) {
         .def("registerObject", &ProcessorFactory::registerObject)
         .def("unRegisterObject", &ProcessorFactory::unRegisterObject);
 
-    py::class_<ProcessorWidget>(m, "ProcessorWidget")
+    py::class_<ProcessorWidget>(m, "ProcessorWidget", py::multiple_inheritance{})
         .def_property("visible", &ProcessorWidget::isVisible, &ProcessorWidget::setVisible)
         .def_property("dimensions", &ProcessorWidget::getDimensions,
                       &ProcessorWidget::setDimensions)
         .def_property("position", &ProcessorWidget::getPosition, &ProcessorWidget::setPosition)
         .def_property("onTop", &ProcessorWidget::isOnTop, &ProcessorWidget::setOnTop)
-        .def_property("fullScreen", &ProcessorWidget::isFullScreen,
-                      &ProcessorWidget::setFullScreen);
+        .def_property("fullScreen", &ProcessorWidget::isFullScreen, &ProcessorWidget::setFullScreen)
+        .def("address", [](ProcessorWidget* w) {
+            return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
+        });
 
     py::class_<ProcessorWidgetFactory>(m, "ProcessorWidgetFactory")
         .def("registerObject", &ProcessorWidgetFactory::registerObject)
@@ -192,11 +194,14 @@ void exposeProcessors(pybind11::module& m) {
         .def_property("selected", &ProcessorMetaData::isSelected, &ProcessorMetaData::setSelected)
         .def_property("visible", &ProcessorMetaData::isVisible, &ProcessorMetaData::setVisible);
 
-    using InportVecWrapper = VectorIdentifierWrapper<std::vector<Inport*>>;
-    exposeVectorIdentifierWrapper<std::vector<Inport*>>(m, "InportVectorWrapper");
+    using InportVecWrapper = VectorIdentifierWrapper<typename std::vector<Inport*>::const_iterator>;
+    exposeVectorIdentifierWrapper<typename std::vector<Inport*>::const_iterator>(
+        m, "InportVectorWrapper");
 
-    using OutportVecWrapper = VectorIdentifierWrapper<std::vector<Outport*>>;
-    exposeVectorIdentifierWrapper<std::vector<Outport*>>(m, "OutportVectorWrapper");
+    using OutportVecWrapper =
+        VectorIdentifierWrapper<typename std::vector<Outport*>::const_iterator>;
+    exposeVectorIdentifierWrapper<typename std::vector<Outport*>::const_iterator>(
+        m, "OutportVectorWrapper");
 
     py::class_<Processor, PropertyOwner, ProcessorTrampoline>(
         m, "Processor", py::multiple_inheritance{}, py::dynamic_attr{})
@@ -214,9 +219,15 @@ void exposeProcessors(pybind11::module& m) {
         .def_property_readonly("network", &Processor::getNetwork,
                                py::return_value_policy::reference)
         .def_property_readonly("inports",
-                               [](Processor* p) { return InportVecWrapper(p->getInports()); })
+                               [](Processor* p) {
+                                   return InportVecWrapper(p->getInports().begin(),
+                                                           p->getInports().end());
+                               })
         .def_property_readonly("outports",
-                               [](Processor* p) { return OutportVecWrapper(p->getOutports()); })
+                               [](Processor* p) {
+                                   return OutportVecWrapper(p->getOutports().begin(),
+                                                            p->getOutports().end());
+                               })
         .def("getPort", &Processor::getPort, py::return_value_policy::reference)
         .def("getInport", &Processor::getInport, py::return_value_policy::reference)
         .def("getOutport", &Processor::getOutport, py::return_value_policy::reference)

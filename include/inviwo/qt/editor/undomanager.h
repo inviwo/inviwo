@@ -38,6 +38,8 @@
 #include <optional>
 #include <string>
 
+#include <QObject>
+
 class QAction;
 class QEvent;
 
@@ -49,7 +51,7 @@ class AutoSaver;
 /**
  * \class UndoManager
  */
-class IVW_QTEDITOR_API UndoManager : public ProcessorNetworkObserver {
+class IVW_QTEDITOR_API UndoManager : public QObject, public ProcessorNetworkObserver {
 public:
     UndoManager(InviwoMainWindow* mainWindow);
     UndoManager(const UndoManager&) = delete;
@@ -71,6 +73,8 @@ public:
 
     bool hasRestore() const;
     void restore();
+
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
     using DiffType = std::vector<std::string>::iterator::difference_type;

@@ -46,7 +46,9 @@
 #include <inviwo/core/util/logcentral.h>        // for LogCentral, LogInfo
 #include <inviwo/core/util/sourcecontext.h>     // for IVW_CONTEXT
 #include <inviwo/core/util/stringconversion.h>  // for toString
-#include <modules/python3/pyutils.h>            // for addModulePath
+#include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/filesystem.h>
+#include <modules/python3/pyutils.h>  // for addModulePath
 
 #include <array>        // for array
 #include <exception>    // for exception
@@ -71,8 +73,6 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
     if (!Py_IsInitialized()) {
 
         LogInfo("Python version: " + toString(Py_GetVersion()));
-        static wchar_t programName[] = L"PyInviwo";
-        Py_SetProgramName(programName);
 
         try {
             py::initialize_interpreter(false);
@@ -86,6 +86,9 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
         if (!Py_IsInitialized()) {
             throw ModuleInitException("Python is not Initialized", IVW_CONTEXT);
         }
+
+        auto binDir = filesystem::getFileDirectory(filesystem::getExecutablePath());
+        addModulePath(binDir);
 
 #if defined(__unix__) || defined(__APPLE__)
         auto execpath = filesystem::getExecutablePath();
@@ -124,6 +127,8 @@ class OutputRedirector:
     def flush(self):
         pass
 
+    def fileno(self):
+        return None
 
     def write(self, string):
         self.buffer += string
@@ -149,17 +154,20 @@ PythonInterpreter::~PythonInterpreter() {
     }
 }
 
-void PythonInterpreter::addModulePath(const std::string& path) { pyutil::addModulePath(path); }
+void PythonInterpreter::addModulePath(std::string_view path) { pyutil::addModulePath(path); }
 
-void PythonInterpreter::importModule(const std::string& moduleName) {
+void PythonInterpreter::importModule(std::string_view moduleName) {
     namespace py = pybind11;
+    SafeCStr str(moduleName);
 
     auto dict = py::globals();
-    dict[moduleName.c_str()] = py::module::import(moduleName.c_str());
+    dict[str] = py::module::import(str);
 }
 
-bool PythonInterpreter::runString(std::string code) {
-    auto ret = PyRun_SimpleString(code.c_str());
+bool PythonInterpreter::runString(std::string_view code) {
+    SafeCStr str(code);
+
+    auto ret = PyRun_SimpleString(str);
     return ret == 0;
 }
 
