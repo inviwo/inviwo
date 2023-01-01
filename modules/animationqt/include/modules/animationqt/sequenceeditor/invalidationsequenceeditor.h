@@ -55,7 +55,7 @@ public:
 protected:
     virtual QWidget* create(Keyframe* key) override;
 
-    QLineEdit* processor_{nullptr};
+    QLineEdit* path_{nullptr};
 };
 
 }  // namespace animation

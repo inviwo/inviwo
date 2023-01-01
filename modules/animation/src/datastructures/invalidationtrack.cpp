@@ -30,6 +30,9 @@
 #include <modules/animation/datastructures/invalidationtrack.h>
 
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/animation/algorithm/animationrange.h>  // for animateRange
 
@@ -37,7 +40,8 @@ namespace inviwo {
 
 namespace animation {
 
-InvalidationKeyframe::InvalidationKeyframe(Seconds time) : BaseKeyframe(time) {}
+InvalidationKeyframe::InvalidationKeyframe(Seconds time)
+    : BaseKeyframe(time) {}
 InvalidationKeyframe::~InvalidationKeyframe() = default;
 InvalidationKeyframe::InvalidationKeyframe(const InvalidationKeyframe&) = default;
 InvalidationKeyframe& InvalidationKeyframe::operator=(const InvalidationKeyframe&) = default;
@@ -54,15 +58,16 @@ InvalidationKeyframeSequence* InvalidationKeyframeSequence::clone() const {
 
 void InvalidationKeyframeSequence::serialize(Serializer& s) const {
     BaseKeyframeSequence<InvalidationKeyframe>::serialize(s);
-    s.serialize("processorId", processorId);
+    s.serialize("path", path);
 }
 void InvalidationKeyframeSequence::deserialize(Deserializer& d) {
     BaseKeyframeSequence<InvalidationKeyframe>::deserialize(d);
-    d.deserialize("processorId", processorId);
+    d.deserialize("path", path);
 }
 
 InvalidationTrack::InvalidationTrack(ProcessorNetwork* network)
-    : BaseTrack<InvalidationKeyframeSequence>{"Invalidation Track", 0}, network{network} {}
+    : BaseTrack<InvalidationKeyframeSequence>{"Invalidation Track", 0}
+    , network{network} {}
 
 InvalidationTrack::~InvalidationTrack() = default;
 
@@ -78,8 +83,18 @@ AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationS
 
     for (auto it = begin(); it != end(); ++it) {
         if (it->getFirstTime() <= to && it->getLastTime() >= to) {
-            if (auto processor = network->getProcessorByIdentifier(begin()->processorId)) {
-                processor->invalidate(InvalidationLevel::InvalidOutput);
+            const auto [processorId, propertyPath] = util::splitByFirst(it->path, ".");
+            if (auto processor = network->getProcessorByIdentifier(processorId)) {
+                if (propertyPath.empty()) {
+                    processor->invalidate(InvalidationLevel::InvalidOutput);
+                } else if (auto property = processor->getPropertyByPath(propertyPath)) {
+                    property->propertyModified();
+                } else {
+                    util::logWarn(IVW_CONTEXT, "Unable to find property '{}' of processor '{}'",
+                                  propertyPath, processorId);
+                }
+            } else {
+                util::logWarn(IVW_CONTEXT, "Unable to find processor '{}'", processorId);
             }
         }
     }
@@ -87,6 +102,6 @@ AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationS
     return {to, state};
 }
 
-}  // namespace animation
+}  //namespace animation
 
-}  // namespace inviwo
+}  //namespace inviwo

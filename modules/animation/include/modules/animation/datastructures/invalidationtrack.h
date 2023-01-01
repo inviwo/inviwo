@@ -51,6 +51,9 @@ class ProcessorNetwork;
 
 namespace animation {
 
+/**
+ * @see InvalidationTrack
+ */
 class IVW_MODULE_ANIMATION_API InvalidationKeyframe : public BaseKeyframe {
 public:
     using value_type = void;
@@ -60,10 +63,11 @@ public:
     InvalidationKeyframe& operator=(const InvalidationKeyframe&);
     virtual ~InvalidationKeyframe();
     virtual InvalidationKeyframe* clone() const override;
-
-private:
 };
 
+/**
+ * @see InvalidationTrack
+ */
 class IVW_MODULE_ANIMATION_API InvalidationKeyframeSequence
     : public BaseKeyframeSequence<InvalidationKeyframe> {
 public:
@@ -79,9 +83,13 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    std::string processorId;
+    std::string path;
 };
 
+/**
+ * A special track to invalidate processors and or properties. Mainly useful for debugging of if a
+ * processor has side effects. Can also be useful as a quick profiling tool.
+ */
 class IVW_MODULE_ANIMATION_API InvalidationTrack : public BaseTrack<InvalidationKeyframeSequence> {
 public:
     InvalidationTrack(ProcessorNetwork* network);
@@ -98,6 +106,6 @@ public:
     ProcessorNetwork* network;
 };
 
-}  // namespace animation
+}  //namespace animation
 
-}  // namespace inviwo
+}  //namespace inviwo

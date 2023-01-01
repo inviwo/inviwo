@@ -130,15 +130,15 @@ InvalidationSequenceEditor::InvalidationSequenceEditor(KeyframeSequence& sequenc
     layout->addLayout(subLayout);
     subLayout->setContentsMargins(0, 0, 0, 0);
     subLayout->setSpacing(7);
-    processor_ = new QLineEdit();
-    processor_->setToolTip("Invalidate the specified processor at each network evaluation");
-    subLayout->addWidget(new QLabel("Processor Identifier"), 0, 0);
-    subLayout->addWidget(processor_, 0, 1);
+    path_ = new QLineEdit();
+    path_->setToolTip("Invalidate the specified processor / property at each network evaluation");
+    subLayout->addWidget(new QLabel("Path"), 0, 0);
+    subLayout->addWidget(path_, 0, 1);
 
     if (auto* seq = dynamic_cast<InvalidationKeyframeSequence*>(&sequence)) {
-        processor_->setText(utilqt::toQString(seq->processorId));
-        connect(processor_, &QLineEdit::editingFinished, this,
-                [this, seq]() { seq->processorId = utilqt::fromQString(processor_->text()); });
+        path_->setText(utilqt::toQString(seq->path));
+        connect(path_, &QLineEdit::editingFinished, this,
+                [this, seq]() { seq->path = utilqt::fromQString(path_->text()); });
     }
 
     keyframesLayout_ = new QVBoxLayout();
