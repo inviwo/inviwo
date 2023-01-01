@@ -106,6 +106,6 @@ public:
     ProcessorNetwork* network;
 };
 
-}  //namespace animation
+}  // namespace animation
 
-}  //namespace inviwo
+}  // namespace inviwo

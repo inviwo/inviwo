@@ -91,65 +91,68 @@ namespace animation {
 AnimationController::AnimationController(Animation& animation, InviwoApplication* app)
     : playOptions("PlayOptions", "Play Settings")
     , playWindowMode("PlayFirstLastTimeOption", "Time",
-                     {
-                         {"FullTimeWindow", "Play full animation",  0},
-                         {"UserTimeWindow", "Selected time window", 1}
-},
-                     0),
-    playWindow("PlayFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
-               InvalidationLevel::InvalidOutput, PropertySemantics::Text),
-    framesPerSecond("PlayFramesPerSecond", "Frames per Second", 24.0,
-                    {0.001, ConstraintBehavior::Immutable}, {1000.0, ConstraintBehavior::Immutable},
-                    1.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text),
-    playMode("PlayMode", "Mode",
-             {{"Once", "Play once", PlaybackMode::Once},
-              {"Loop", "Loop animation", PlaybackMode::Loop},
-              {"Swing", "Swing animation", PlaybackMode::Swing}},
-             0),
-    renderOptions("RenderOptions", "Render Animation"),
-    renderWindowMode("RenderFirstLastTimeOption", "Time",
-                     {{"FullTimeWindow", "Render full animation", 0},
+                     {{"FullTimeWindow", "Play full animation", 0},
                       {"UserTimeWindow", "Selected time window", 1}},
-                     0),
-    renderWindow("RenderFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
-                 InvalidationLevel::InvalidOutput, PropertySemantics::Text),
-    renderLocation("RenderLocationDir", "Directory"),
-    renderBaseName("RenderLocationBaseName", "Base Name"),
-    writer("writer", "Type",
-           [&]() {
-               OptionPropertyState<FileExtension> state;
-               const auto exts = util::getDataWriterFactory(app)->getExtensionsForType<Layer>();
-               std::transform(
-                   exts.begin(), exts.end(), std::back_inserter(state.options),
-                   [](const auto& ext) -> OptionPropertyOption<FileExtension> { return ext; });
-               auto it = std::find_if(exts.begin(), exts.end(),
-                                      [&](auto& e) { return e.extension_ == "png"; });
-               if (it != exts.end()) {
-                   state.selectedIndex = std::distance(exts.begin(), it);
-               }
-               return state;
-           }()),
-    renderFPS("renderFPS", "Frames per Second", 24.0, {0.001, ConstraintBehavior::Immutable},
-              {1000.0, ConstraintBehavior::Immutable}, 1.0, InvalidationLevel::InvalidOutput,
-              PropertySemantics::Text),
-    renderAction("renderAction", "Render"), renderActionStop("renderActionStop", "Stop"),
-    controlOptions("controlOptions", "Special Tracks"),
-    insertControlTrack("insertControlTrack", "Add Control Track",
-                       [this]() { animation_->add(std::make_unique<ControlTrack>()); }),
-    insertInvalidationTrack(
-        "insertInvalidationTrack", "Add Invalidation Track",
-        [this]() {
-            animation_->add(std::make_unique<InvalidationTrack>(app_->getProcessorNetwork()));
-        }),
-    animation_(&animation), app_(app), state_(AnimationState::Paused), currentTime_(0),
-    direction_(PlaybackDirection::Forward),
-    timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime()), [this] {
-               if (state_ != AnimationState::Rendering) {
-                   tick();
-               }
-           }} {
+                     0)
+    , playWindow("PlayFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
+                 InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , framesPerSecond("PlayFramesPerSecond", "Frames per Second", 24.0,
+                      {0.001, ConstraintBehavior::Immutable},
+                      {1000.0, ConstraintBehavior::Immutable}, 1.0,
+                      InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , playMode("PlayMode", "Mode",
+               {{"Once", "Play once", PlaybackMode::Once},
+                {"Loop", "Loop animation", PlaybackMode::Loop},
+                {"Swing", "Swing animation", PlaybackMode::Swing}},
+               0)
+    , renderOptions("RenderOptions", "Render Animation")
+    , renderWindowMode("RenderFirstLastTimeOption", "Time",
+                       {{"FullTimeWindow", "Render full animation", 0},
+                        {"UserTimeWindow", "Selected time window", 1}},
+                       0)
+    , renderWindow("RenderFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
+                   InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , renderLocation("RenderLocationDir", "Directory")
+    , renderBaseName("RenderLocationBaseName", "Base Name")
+    , writer("writer", "Type",
+             [&]() {
+                 OptionPropertyState<FileExtension> state;
+                 const auto exts = util::getDataWriterFactory(app)->getExtensionsForType<Layer>();
+                 std::transform(
+                     exts.begin(), exts.end(), std::back_inserter(state.options),
+                     [](const auto& ext) -> OptionPropertyOption<FileExtension> { return ext; });
+                 auto it = std::find_if(exts.begin(), exts.end(),
+                                        [&](auto& e) { return e.extension_ == "png"; });
+                 if (it != exts.end()) {
+                     state.selectedIndex = std::distance(exts.begin(), it);
+                 }
+                 return state;
+             }())
+    , renderFPS("renderFPS", "Frames per Second", 24.0, {0.001, ConstraintBehavior::Immutable},
+                {1000.0, ConstraintBehavior::Immutable}, 1.0, InvalidationLevel::InvalidOutput,
+                PropertySemantics::Text)
+    , renderAction("renderAction", "Render")
+    , renderActionStop("renderActionStop", "Stop")
+    , controlOptions("controlOptions", "Special Tracks")
+    , insertControlTrack("insertControlTrack", "Add Control Track",
+                         [this]() { animation_->add(std::make_unique<ControlTrack>()); })
+    , insertInvalidationTrack(
+          "insertInvalidationTrack", "Add Invalidation Track",
+          [this]() {
+              animation_->add(std::make_unique<InvalidationTrack>(app_->getProcessorNetwork()));
+          })
+    , animation_(&animation)
+    , app_(app)
+    , state_(AnimationState::Paused)
+    , currentTime_(0)
+    , direction_(PlaybackDirection::Forward)
+    , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime()), [this] {
+                 if (state_ != AnimationState::Rendering) {
+                     tick();
+                 }
+             }} {
 
-    //Play Settings
+    // Play Settings
     playWindow.readonlyDependsOn(playWindowMode, [](auto& prop) { return prop.get() == 0; });
 
     playOptions.addProperties(playWindowMode, playWindow, framesPerSecond, playMode);
@@ -160,7 +163,7 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::abs(deltaTime())));
     });
 
-    //Rendering Settings
+    // Rendering Settings
     renderWindow.readonlyDependsOn(renderWindowMode, [](auto& prop) { return prop.get() == 0; });
 
     renderAction.onChange([&]() { render(); });
@@ -183,11 +186,11 @@ AnimationController::~AnimationController() = default;
 void AnimationController::setState(AnimationState newState) {
     if (state_ == newState) return;
 
-    //Switch state
+    // Switch state
     auto oldState = state_;
     state_ = newState;
 
-    //Act on new state
+    // Act on new state
     switch (newState) {
         case AnimationState::Playing: {
             timer_.start();
@@ -209,8 +212,8 @@ void AnimationController::setState(AnimationState newState) {
 }
 
 void AnimationController::setTime(Seconds time) {
-    //No upper boundary check since you might want to set the time after the last keyframe of
-    //animation when creating new ones
+    // No upper boundary check since you might want to set the time after the last keyframe of
+    // animation when creating new ones
     if (currentTime_ != time) {
         auto oldTime = currentTime_;
         currentTime_ = std::max(Seconds(0), time);
@@ -234,23 +237,23 @@ void AnimationController::tick() {
         return;
     }
 
-    //TODO: Implement fully working solution for this.
-    //What to do when network cannot be evaluated in the speed that is given by deltaTime?
-    //Initial solution: Don't care about that, and let it evaluate fully in the speed that it can
-    //muster.
+    // TODO: Implement fully working solution for this.
+    // What to do when network cannot be evaluated in the speed that is given by deltaTime?
+    // Initial solution: Don't care about that, and let it evaluate fully in the speed that it can
+    // muster.
     auto newTime = currentTime_ + deltaTime();
 
-    //Get active time window for playing
-    //init with sub-window, overwrite with full window if necessary
+    // Get active time window for playing
+    // init with sub-window, overwrite with full window if necessary
     Seconds firstTime = Seconds(playWindow.get()[0]);
     Seconds lastTime = Seconds(playWindow.get()[1]);
     if (playWindowMode.get() == 0) {
-        //Full animation window
+        // Full animation window
         firstTime = animation_->getFirstTime();
         lastTime = animation_->getLastTime();
     }
     auto newState{state_};
-    //Ping at the end of time
+    // Ping at the end of time
     if (newTime > lastTime) {
         switch (playMode.get()) {
             case PlaybackMode::Once: {
@@ -272,7 +275,7 @@ void AnimationController::tick() {
         }
     }
 
-    //Pong at the beginning of time
+    // Pong at the beginning of time
     if (newTime < firstTime) {
         switch (playMode.get()) {
             case PlaybackMode::Once: {
@@ -294,10 +297,10 @@ void AnimationController::tick() {
         }
     }
 
-    //Evaluate animation
+    // Evaluate animation
     eval(currentTime_, newTime);
 
-    //May be in paused state
+    // May be in paused state
     setState(newState);
 }
 
@@ -309,7 +312,7 @@ void AnimationController::render() {
 
     setState(AnimationState::Rendering);
 
-    //Gather rendering info
+    // Gather rendering info
     const Seconds firstTime =
         (renderWindowMode.get() == 0) ? animation_->getFirstTime() : Seconds(renderWindow.get()[0]);
     const Seconds lastTime =
@@ -317,7 +320,7 @@ void AnimationController::render() {
     const int numFrames =
         std::max(2, static_cast<int>((lastTime - firstTime) / Seconds{1.0 / renderFPS.get()}));
 
-    //digits of the frame counter
+    // digits of the frame counter
     const int digits = [&]() {
         int d = 0;
         int number(numFrames - 1);
@@ -325,12 +328,12 @@ void AnimationController::render() {
             number /= 10;
             d++;
         }
-        //use at least 4 digits, so we nicely overwrite the files from a previous test rendering
-        //with less frames
+        // use at least 4 digits, so we nicely overwrite the files from a previous test rendering
+        // with less frames
         return std::max(d, 4);
     }();
 
-    //Get all active canvases
+    // Get all active canvases
     std::vector<std::pair<Exporter*, std::string>> exporters;
     network->forEachProcessor([&](Processor* p) {
         if (p->isSink()) {
@@ -342,7 +345,7 @@ void AnimationController::render() {
         }
     });
 
-    //Switch Buttons
+    // Switch Buttons
     renderAction.setReadOnly(true);
     renderActionStop.setReadOnly(false);
 
@@ -352,9 +355,9 @@ void AnimationController::render() {
         renderActionStop.setReadOnly(true);
     }};
 
-    //render frames
+    // render frames
     for (int currentFrame = 0; currentFrame < numFrames; ++currentFrame) {
-        //Evaluate animation
+        // Evaluate animation
         Seconds newTime = firstTime + (lastTime - firstTime) / (numFrames - 1) * currentFrame;
         eval(currentTime_, newTime);
 
@@ -423,6 +426,6 @@ Seconds AnimationController::deltaTime() const {
 
 Seconds AnimationController::getCurrentTime() const { return currentTime_; }
 
-}  //namespace animation
+}  // namespace animation
 
-}  //namespace inviwo
+}  // namespace inviwo

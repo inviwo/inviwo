@@ -40,8 +40,7 @@ namespace inviwo {
 
 namespace animation {
 
-InvalidationKeyframe::InvalidationKeyframe(Seconds time)
-    : BaseKeyframe(time) {}
+InvalidationKeyframe::InvalidationKeyframe(Seconds time) : BaseKeyframe(time) {}
 InvalidationKeyframe::~InvalidationKeyframe() = default;
 InvalidationKeyframe::InvalidationKeyframe(const InvalidationKeyframe&) = default;
 InvalidationKeyframe& InvalidationKeyframe::operator=(const InvalidationKeyframe&) = default;
@@ -66,8 +65,7 @@ void InvalidationKeyframeSequence::deserialize(Deserializer& d) {
 }
 
 InvalidationTrack::InvalidationTrack(ProcessorNetwork* network)
-    : BaseTrack<InvalidationKeyframeSequence>{"Invalidation Track", 0}
-    , network{network} {}
+    : BaseTrack<InvalidationKeyframeSequence>{"Invalidation Track", 0}, network{network} {}
 
 InvalidationTrack::~InvalidationTrack() = default;
 
@@ -102,6 +100,6 @@ AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationS
     return {to, state};
 }
 
-}  //namespace animation
+}  // namespace animation
 
-}  //namespace inviwo
+}  // namespace inviwo
