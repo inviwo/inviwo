@@ -35,6 +35,8 @@
 #include <inviwo/core/util/document.h>              // for Document
 #include <inviwo/core/util/glmmat.h>                // for mat4
 #include <inviwo/core/util/glmvec.h>                // for uvec3, ivec2
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 #include <modules/oit/rasterizeevent.h>
 
@@ -79,6 +81,14 @@ public:
      * @brief Return the world space bounding box of the rendered geometry.
      */
     std::optional<mat4> boundingBox() const;
+
+    struct RaycastingState {
+        std::shared_ptr<TFLookupTable> tfLookup;
+        int channel;
+        float opacityScaling;
+        std::shared_ptr<const Volume> volume;
+    };
+    virtual std::optional<RaycastingState> getRaycastingState() const;
 
 private:
     std::weak_ptr<Rasterizer> processor_;

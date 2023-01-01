@@ -73,6 +73,14 @@ public:
      */
     virtual std::optional<mat4> boundingBox() const { return std::nullopt; }
 
+    /**
+     * @brief Query raycasting state used for volume rendering.
+     * @return raycasting-specific parameters for volume rendering between volume fragments
+     */
+    virtual std::optional<Rasterization::RaycastingState> getRaycastingState() const {
+        return std::nullopt;
+    }
+
     virtual Document getInfo() const { return Document{}; }
 
     virtual void propagateEvent(Event* event, Outport* source) override;

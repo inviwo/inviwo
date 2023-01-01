@@ -70,4 +70,12 @@ std::optional<mat4> Rasterization::boundingBox() const {
     }
 }
 
+auto Rasterization::getRaycastingState() const -> std::optional<RaycastingState> {
+    if (auto p = getProcessor()) {
+        return p->getRaycastingState();
+    } else {
+        return std::nullopt;
+    }
+}
+
 }  // namespace inviwo

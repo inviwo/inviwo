@@ -28,3 +28,5 @@
  *********************************************************************************/
 
 #include <modules/oit/datastructures/transformedrasterization.h>
+
+namespace inviwo {}  // namespace inviwo
