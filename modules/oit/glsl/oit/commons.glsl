@@ -35,16 +35,16 @@
 
 // Helpers
 uint compressColor(vec3 color) {
-    uint c = (int((color.r * 1023)) & 0x3ff) << 20;
-    c += (int((color.g * 1023)) & 0x3ff) << 10;
-    c += (int((color.b * 1023)) & 0x3ff);
+    uint c = (int((color.r * 1023)) & 0x3ff) << 22;
+    c += (int((color.g * 1023)) & 0x3ff) << 12;
+    c += (int((color.b * 1023)) & 0x3ff) << 2;
     return c;
 }
 vec3 uncompressColor(uint c) {
     vec3 color;
-    color.r = float((c >> 20) & 0x3ff) / 1023.0f;
-    color.g = float((c >> 10) & 0x3ff) / 1023.0f;
-    color.b = float(c & 0x3ff) / 1023.0f;
+    color.r = float((c >> 22) & 0x3ff) / 1023.0f;
+    color.g = float((c >> 12) & 0x3ff) / 1023.0f;
+    color.b = float((c >> 2) & 0x3ff) / 1023.0f;
     return color;
 }
 
