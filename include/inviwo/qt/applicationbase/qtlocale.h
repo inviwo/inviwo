@@ -47,8 +47,6 @@ namespace utilqt {
  */
 IVW_QTAPPLICATIONBASE_API std::locale getCurrentStdLocale();
 
-
-
 }  // namespace utilqt
 
 }  // namespace inviwo
