@@ -90,10 +90,8 @@ namespace animation {
 
 AnimationController::AnimationController(Animation& animation, InviwoApplication* app)
     : playOptions("PlayOptions", "Play Settings")
-    , playWindowMode("PlayFirstLastTimeOption", "Time",
-                     {{"FullTimeWindow", "Play full animation", 0},
-                      {"UserTimeWindow", "Selected time window", 1}},
-                     0)
+    , playWindowMode("PlayFirstLastTimeOption", "Play",
+                     {{"FullTimeWindow", "All", 0}, {"UserTimeWindow", "Window", 1}}, 0)
     , playWindow("PlayFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , framesPerSecond("PlayFramesPerSecond", "Frames per Second", 24.0,
@@ -106,14 +104,15 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
                 {"Swing", "Swing animation", PlaybackMode::Swing}},
                0)
     , renderOptions("RenderOptions", "Render Animation")
-    , renderWindowMode("RenderFirstLastTimeOption", "Time",
-                       {{"FullTimeWindow", "Render full animation", 0},
-                        {"UserTimeWindow", "Selected time window", 1}},
-                       0)
+    , renderWindowMode("RenderFirstLastTimeOption", "Render",
+                       {{"FullTimeWindow", "All", 0}, {"UserTimeWindow", "Window", 1}}, 0)
     , renderWindow("RenderFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
                    InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , renderLocation("RenderLocationDir", "Directory")
-    , renderBaseName("RenderLocationBaseName", "Base Name")
+    , renderBaseName("RenderLocationBaseName", "Base Name",
+                     "The final name will be '[base name][zero padded number].[file extension]'."
+                     " For example: 'frame0001.png'"_help,
+                     "frame")
     , writer("writer", "Type",
              [&]() {
                  OptionPropertyState<FileExtension> state;

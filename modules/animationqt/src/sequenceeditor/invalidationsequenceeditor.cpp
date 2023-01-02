@@ -131,7 +131,10 @@ InvalidationSequenceEditor::InvalidationSequenceEditor(KeyframeSequence& sequenc
     subLayout->setContentsMargins(0, 0, 0, 0);
     subLayout->setSpacing(7);
     path_ = new QLineEdit();
-    path_->setToolTip("Invalidate the specified processor / property at each network evaluation");
+    path_->setToolTip(
+        "Invalidate the specified processor / property at each network evaluation."
+        "(processorId.propertyId.propertyId, e.g., VolumeRaycaster or "
+        "VolumeRaycaster.raycasting.sampleRate)");
     subLayout->addWidget(new QLabel("Path"), 0, 0);
     subLayout->addWidget(path_, 0, 1);
 
