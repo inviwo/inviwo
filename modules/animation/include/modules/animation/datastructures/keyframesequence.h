@@ -94,22 +94,46 @@ public:
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
+
+    friend bool operator<(const KeyframeSequence& a, const KeyframeSequence& b) {
+        return a.getFirstTime() < b.getFirstTime();
+    }
+    friend bool operator<=(const KeyframeSequence& a, const KeyframeSequence& b) {
+        return a.getFirstTime() <= b.getFirstTime();
+    }
+    friend bool operator>(const KeyframeSequence& a, const KeyframeSequence& b) {
+        return a.getFirstTime() > b.getFirstTime();
+    }
+    friend bool operator>=(const KeyframeSequence& a, const KeyframeSequence& b) {
+        return a.getFirstTime() >= b.getFirstTime();
+    }
+
+    friend bool operator<(const KeyframeSequence& a, const Seconds& b) {
+        return a.getFirstTime() < b;
+    }
+    friend bool operator<=(const KeyframeSequence& a, const Seconds& b) {
+        return a.getFirstTime() <= b;
+    }
+    friend bool operator>(const KeyframeSequence& a, const Seconds& b) {
+        return a.getFirstTime() > b;
+    }
+    friend bool operator>=(const KeyframeSequence& a, const Seconds& b) {
+        return a.getFirstTime() >= b;
+    }
+
+    friend bool operator<(const Seconds& a, const KeyframeSequence& b) {
+        return a < b.getFirstTime();
+    }
+    friend bool operator<=(const Seconds& a, const KeyframeSequence& b) {
+        return a <= b.getFirstTime();
+    }
+    friend bool operator>(const Seconds& a, const KeyframeSequence& b) {
+        return a > b.getFirstTime();
+    }
+    friend bool operator>=(const Seconds& a, const KeyframeSequence& b) {
+        return a >= b.getFirstTime();
+    }
 };
-
-IVW_MODULE_ANIMATION_API bool operator<(const KeyframeSequence& a, const KeyframeSequence& b);
-IVW_MODULE_ANIMATION_API bool operator<=(const KeyframeSequence& a, const KeyframeSequence& b);
-IVW_MODULE_ANIMATION_API bool operator>(const KeyframeSequence& a, const KeyframeSequence& b);
-IVW_MODULE_ANIMATION_API bool operator>=(const KeyframeSequence& a, const KeyframeSequence& b);
-
-IVW_MODULE_ANIMATION_API bool operator<(const KeyframeSequence& a, const Seconds& b);
-IVW_MODULE_ANIMATION_API bool operator<=(const KeyframeSequence& a, const Seconds& b);
-IVW_MODULE_ANIMATION_API bool operator>(const KeyframeSequence& a, const Seconds& b);
-IVW_MODULE_ANIMATION_API bool operator>=(const KeyframeSequence& a, const Seconds& b);
-
-IVW_MODULE_ANIMATION_API bool operator<(const Seconds& a, const KeyframeSequence& b);
-IVW_MODULE_ANIMATION_API bool operator<=(const Seconds& a, const KeyframeSequence& b);
-IVW_MODULE_ANIMATION_API bool operator>(const Seconds& a, const KeyframeSequence& b);
-IVW_MODULE_ANIMATION_API bool operator>=(const Seconds& a, const KeyframeSequence& b);
 
 }  // namespace animation
 

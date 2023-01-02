@@ -368,6 +368,14 @@ void InviwoApplication::setPoolResizeWaitCallback(std::function<void(LongWait)> 
     poolResizeCallback_ = callback;
 }
 
+void InviwoApplication::processEvents() {
+    if (processEventsCallback_) processEventsCallback_();
+}
+
+void InviwoApplication::setProcessEventsCallback(std::function<void()> callback) {
+    processEventsCallback_ = callback;
+}
+
 void InviwoApplication::resizePool(size_t newSize) {
     if (newSize == pool_.getSize()) return;
 

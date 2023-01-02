@@ -89,9 +89,6 @@ public:
     /// Advances the animation to the next time step in playing state.
     void tick();
 
-    /// Advances the animation to the next time step in rendering state.
-    void tickRender();
-
     /// Asks the animation to update the network to reflect the new time.
     void eval(Seconds oldTime, Seconds newTime);
 
@@ -112,46 +109,34 @@ public:
 
     Seconds getCurrentTime() const;
 
+    Seconds deltaTime() const;
+
     InviwoApplication* getInviwoApplication() override { return app_; }
-
-    virtual void resetAllPoperties() override;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-protected:
-    /// Time span between two frames. Needs to be defined prior framesPerSecond (DoubleRefProperty)
-    Seconds deltaTime_;
 
 public:
     CompositeProperty playOptions;
     OptionPropertyInt playWindowMode;
     DoubleMinMaxProperty playWindow;
-    DoubleRefProperty framesPerSecond;
+    DoubleProperty framesPerSecond;
     OptionProperty<PlaybackMode> playMode;
 
     CompositeProperty renderOptions;
     OptionPropertyInt renderWindowMode;
     DoubleMinMaxProperty renderWindow;
-    OptionPropertyInt renderSizeMode;
-    IntVec2Property renderSize;
-    OptionPropertyInt renderAspectRatio;
     DirectoryProperty renderLocation;
     StringProperty renderBaseName;
-    OptionPropertyString renderImageExtension;
-    IntProperty renderNumFrames;
+    OptionProperty<FileExtension> writer;
+    DoubleProperty renderFPS;
     ButtonProperty renderAction;
     ButtonProperty renderActionStop;
 
     CompositeProperty controlOptions;
-    ButtonProperty controlInsertPauseFrame;
+    ButtonProperty insertControlTrack;
+    ButtonProperty insertInvalidationTrack;
 
 protected:
     /// Low-level setting of currentTime_. Use eval() to set time in the public interface.
     void setTime(Seconds time);
-
-    /// Called to cleanup after rendering
-    void afterRender();
 
     /// The animation to control, non-owning reference.
     Animation* animation_;
@@ -165,31 +150,10 @@ protected:
     /// Current time of the animation. This is an important variable to keep consistent!
     Seconds currentTime_;
 
+    PlaybackDirection direction_;
+
     /// Timer for calling the tick function is regular intervals.
     Timer timer_;
-
-    struct RenderCanvasSize {
-        RenderCanvasSize() = default;
-        std::string canvasIdentifier;
-        bool enableCustomInputDimensions_{false};
-        ivec2 customInputDimensions_{0};
-        bool keepAspectRatio_{true};
-    };
-
-    /// Data structure for the state needed during rendering
-    struct RenderState {
-        Seconds firstTime{0};
-        Seconds lastTime{0};
-        int numFrames{0};
-        int currentFrame{0};
-        int digits{0};
-        std::string baseFileName;
-        std::vector<RenderCanvasSize> origCanvasSettings;
-        std::string canvasIndicator;
-    };
-
-    /// State needed during rendering
-    RenderState renderState_;
 };
 
 }  // namespace animation

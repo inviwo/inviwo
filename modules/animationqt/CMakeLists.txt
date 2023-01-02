@@ -20,6 +20,7 @@ set(HEADER_FILES
     include/modules/animationqt/factories/trackwidgetqtfactory.h
     include/modules/animationqt/factories/trackwidgetqtfactoryobject.h
     include/modules/animationqt/sequenceeditor/controlsequenceeditor.h
+    include/modules/animationqt/sequenceeditor/invalidationsequenceeditor.h
     include/modules/animationqt/sequenceeditor/keyframeeditorwidget.h
     include/modules/animationqt/sequenceeditor/propertysequenceeditor.h
     include/modules/animationqt/sequenceeditor/sequenceeditorpanel.h
@@ -49,6 +50,7 @@ set(SOURCE_FILES
     src/factories/trackwidgetqtfactory.cpp
     src/factories/trackwidgetqtfactoryobject.cpp
     src/sequenceeditor/controlsequenceeditor.cpp
+    src/sequenceeditor/invalidationsequenceeditor.cpp
     src/sequenceeditor/keyframeeditorwidget.cpp
     src/sequenceeditor/propertysequenceeditor.cpp
     src/sequenceeditor/sequenceeditorpanel.cpp

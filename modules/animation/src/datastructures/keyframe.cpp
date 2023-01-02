@@ -29,31 +29,7 @@
 
 #include <modules/animation/datastructures/keyframe.h>
 
-#include <modules/animation/datastructures/animationtime.h>  // for Seconds
-
-#include <chrono>  // for operator<, operator<=, opera...
-
 namespace inviwo {
 
-namespace animation {
-
-bool operator<(const Keyframe& a, const Keyframe& b) { return a.getTime() < b.getTime(); }
-
-bool operator>(const Keyframe& a, const Keyframe& b) { return a.getTime() > b.getTime(); }
-
-bool operator>=(const Keyframe& a, const Keyframe& b) { return a.getTime() >= b.getTime(); }
-
-bool operator<=(const Keyframe& a, const Keyframe& b) { return a.getTime() <= b.getTime(); }
-
-bool operator<(const Keyframe& a, const Seconds& b) { return a.getTime() < b; }
-bool operator<=(const Keyframe& a, const Seconds& b) { return a.getTime() <= b; }
-bool operator>(const Keyframe& a, const Seconds& b) { return a.getTime() > b; }
-bool operator>=(const Keyframe& a, const Seconds& b) { return a.getTime() >= b; }
-
-bool operator<(const Seconds& a, const Keyframe& b) { return a < b.getTime(); }
-bool operator<=(const Seconds& a, const Keyframe& b) { return a <= b.getTime(); }
-bool operator>(const Seconds& a, const Keyframe& b) { return a > b.getTime(); }
-bool operator>=(const Seconds& a, const Keyframe& b) { return a >= b.getTime(); }
-
-}  // namespace animation
+namespace animation {}  // namespace animation
 }  // namespace inviwo

@@ -60,11 +60,12 @@
 #include <inviwo/core/util/stdextensions.h>                       // for transform
 #include <inviwo/core/util/stringconversion.h>                    // for toString
 #include <inviwo/core/util/timer.h>                               // for Timer
-#include <inviwo/core/util/utilities.h>                           // for saveAllCanvases
+#include <inviwo/core/processors/exporter.h>                      // for exportAllFiles
 #include <modules/animation/datastructures/animation.h>           // for Animation
 #include <modules/animation/datastructures/animationstate.h>      // for AnimationState, Playbac...
 #include <modules/animation/datastructures/animationtime.h>       // for Seconds
 #include <modules/animation/datastructures/controltrack.h>        // for ControlTrack
+#include <modules/animation/datastructures/invalidationtrack.h>   // for InvalidationTrack
 #include <modules/animation/datastructures/track.h>               // for Track
 
 #include <algorithm>      // for max, copy_if, find_if, min
@@ -87,152 +88,102 @@ class Layer;
 
 namespace animation {
 
-namespace {
-
-constexpr std::string_view defaultImageExt = "png";
-
-std::vector<std::string> imageExts(InviwoApplication* app) {
-    return util::transform(util::getDataWriterFactory(app)->getExtensionsForType<Layer>(),
-                           [](const auto& i) -> std::string { return toString(i); });
-}
-
-size_t imageExtIndex(InviwoApplication* app, std::string_view ext) {
-    auto exts = util::getDataWriterFactory(app)->getExtensionsForType<Layer>();
-    auto it = std::find_if(exts.begin(), exts.end(), [&](auto& e) { return e.extension_ == ext; });
-    if (it != exts.end()) {
-        return std::distance(exts.begin(), it);
-    } else {
-        return 0;
-    }
-}
-
-}  // namespace
-
 AnimationController::AnimationController(Animation& animation, InviwoApplication* app)
-    : deltaTime_(Seconds(1.0 / 25.0))
-    , playOptions("PlayOptions", "Play Settings")
-    , playWindowMode("PlayFirstLastTimeOption", "Time",
-                     {{"FullTimeWindow", "Play full animation", 0},
-                      {"UserTimeWindow", "Selected time window", 1}},
-                     0)
+    : playOptions("PlayOptions", "Play Settings")
+    , playWindowMode("PlayFirstLastTimeOption", "Play",
+                     {{"FullTimeWindow", "All", 0}, {"UserTimeWindow", "Window", 1}}, 0)
     , playWindow("PlayFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , framesPerSecond(
-          "PlayFramesPerSecond", "Frames per Second",
-          [this]() { return 1.0 / std::abs(deltaTime_.count()); },
-          [this](const double& value) { deltaTime_ = Seconds(1.0 / value); },
-          {0.001, ConstraintBehavior::Immutable}, {1000.0, ConstraintBehavior::Immutable}, 1.0,
-          InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , framesPerSecond("PlayFramesPerSecond", "Frames per Second", 24.0,
+                      {0.001, ConstraintBehavior::Immutable},
+                      {1000.0, ConstraintBehavior::Immutable}, 1.0,
+                      InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , playMode("PlayMode", "Mode",
                {{"Once", "Play once", PlaybackMode::Once},
                 {"Loop", "Loop animation", PlaybackMode::Loop},
                 {"Swing", "Swing animation", PlaybackMode::Swing}},
                0)
     , renderOptions("RenderOptions", "Render Animation")
-    , renderWindowMode("RenderFirstLastTimeOption", "Time",
-                       {{"FullTimeWindow", "Render full animation", 0},
-                        {"UserTimeWindow", "Selected time window", 1}},
-                       0)
+    , renderWindowMode("RenderFirstLastTimeOption", "Render",
+                       {{"FullTimeWindow", "All", 0}, {"UserTimeWindow", "Window", 1}}, 0)
     , renderWindow("RenderFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
                    InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , renderSizeMode("RenderSizeOptions", "Size",
-                     {{"CurrentCanvas", "Use current settings of canvases", 0},
-                      {"720p", "720p for all canvases", 1},
-                      {"1080p", "1080p for all canvases", 2},
-                      {"CustomSize", "User-defined resolution for all canvases", 3}},
-                     0)
-    , renderSize("RenderSize", "Pixels", ivec2(1024), ivec2(1), ivec2(20000), ivec2(256),
-                 InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , renderAspectRatio("RenderSizeAspectRatio", "Aspect Ratio",
-                        {{"Ignore", "Ignore aspect ratio", 0},
-                         {"KeepInside", "Keep aspect ratio within given resolution", 1},
-                         {"KeepEnlarge", "Keep aspect ratio exceeding given resolution", 2}},
-                        1)
     , renderLocation("RenderLocationDir", "Directory")
-    , renderBaseName("RenderLocationBaseName", "Base Name")
-    , renderImageExtension("RenderImageExtension", "Type", imageExts(app),
-                           imageExtIndex(app, defaultImageExt))
-    , renderNumFrames("RenderNumFrames", "# Frames", 100, 2, 1000000, 1,
-                      InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , renderAction("RenderAction", "Render")
-    , renderActionStop("RenderActionStop", "Stop")
-    , controlOptions("ControlOptions", "Control Track")
-    , controlInsertPauseFrame("ControlInsertPauseFrame", "Add Control Track")
+    , renderBaseName("RenderLocationBaseName", "Base Name",
+                     "The final name will be '[base name][zero padded number].[file extension]'."
+                     " For example: 'frame0001.png'"_help,
+                     "frame")
+    , writer("writer", "Type",
+             [&]() {
+                 OptionPropertyState<FileExtension> state;
+                 const auto exts = util::getDataWriterFactory(app)->getExtensionsForType<Layer>();
+                 std::transform(
+                     exts.begin(), exts.end(), std::back_inserter(state.options),
+                     [](const auto& ext) -> OptionPropertyOption<FileExtension> { return ext; });
+                 auto it = std::find_if(exts.begin(), exts.end(),
+                                        [&](auto& e) { return e.extension_ == "png"; });
+                 if (it != exts.end()) {
+                     state.selectedIndex = std::distance(exts.begin(), it);
+                 }
+                 return state;
+             }())
+    , renderFPS("renderFPS", "Frames per Second", 24.0, {0.001, ConstraintBehavior::Immutable},
+                {1000.0, ConstraintBehavior::Immutable}, 1.0, InvalidationLevel::InvalidOutput,
+                PropertySemantics::Text)
+    , renderAction("renderAction", "Render")
+    , renderActionStop("renderActionStop", "Stop")
+    , controlOptions("controlOptions", "Special Tracks")
+    , insertControlTrack("insertControlTrack", "Add Control Track",
+                         [this]() { animation_->add(std::make_unique<ControlTrack>()); })
+    , insertInvalidationTrack(
+          "insertInvalidationTrack", "Add Invalidation Track",
+          [this]() {
+              animation_->add(std::make_unique<InvalidationTrack>(app_->getProcessorNetwork()));
+          })
     , animation_(&animation)
     , app_(app)
     , state_(AnimationState::Paused)
     , currentTime_(0)
-    , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_), [this] {
-                 if (state_ == AnimationState::Rendering)
-                     tickRender();
-                 else
+    , direction_(PlaybackDirection::Forward)
+    , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime()), [this] {
+                 if (state_ != AnimationState::Rendering) {
                      tick();
+                 }
              }} {
 
     // Play Settings
-    playWindowMode.onChange([&]() { playWindow.setVisible(playWindowMode.get() == 1); });
-    playWindow.setVisible(playWindowMode.get() == 1);
+    playWindow.readonlyDependsOn(playWindowMode, [](auto& prop) { return prop.get() == 0; });
 
     playOptions.addProperties(playWindowMode, playWindow, framesPerSecond, playMode);
     playOptions.setCollapsed(true);
-    addProperty(playOptions);
 
     framesPerSecond.onChange([this]() {
         timer_.setInterval(
-            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::abs(deltaTime_)));
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::abs(deltaTime())));
     });
 
     // Rendering Settings
-    renderWindowMode.onChange([&]() { renderWindow.setVisible(renderWindowMode.get() == 1); });
-    renderWindow.setVisible(renderWindowMode.get() == 1);
-
-    renderSizeMode.onChange([&]() {
-        renderSize.setVisible(renderSizeMode.get() == 3);
-        renderAspectRatio.setVisible(renderSizeMode.get() > 0);
-    });
-    renderSize.setVisible(renderSizeMode.get() == 3);
-    renderAspectRatio.setVisible(renderSizeMode.get() > 0);
+    renderWindow.readonlyDependsOn(renderWindowMode, [](auto& prop) { return prop.get() == 0; });
 
     renderAction.onChange([&]() { render(); });
-    renderAction.setVisible(state_ != AnimationState::Rendering);
-
     renderActionStop.onChange([&]() { pause(); });
-    renderActionStop.setVisible(state_ == AnimationState::Rendering);
+    renderAction.setReadOnly(state_ == AnimationState::Rendering);
+    renderActionStop.setReadOnly(state_ != AnimationState::Rendering);
 
-    renderOptions.addProperty(renderWindowMode);
-    renderOptions.addProperty(renderWindow);
-    renderOptions.addProperty(renderSizeMode);
-    renderOptions.addProperty(renderAspectRatio);
-    renderOptions.addProperty(renderSize);
-    renderOptions.addProperty(renderNumFrames);
-    renderOptions.addProperty(renderLocation);
-    renderOptions.addProperty(renderBaseName);
-    renderOptions.addProperty(renderImageExtension);
-    renderOptions.addProperty(renderAction);
-    renderOptions.addProperty(renderActionStop);
+    renderOptions.addProperties(renderWindowMode, renderWindow, renderFPS, renderLocation,
+                                renderBaseName, writer, renderAction, renderActionStop);
     renderOptions.setCollapsed(true);
-    addProperty(renderOptions);
 
-    renderImageExtension.setSerializationMode(PropertySerializationMode::None);
-
-    // Control Track
-    controlInsertPauseFrame.onChange([this]() {
-        auto ct = std::make_unique<ControlTrack>();
-        animation_->add(std::move(ct));
-    });
-
-    controlOptions.addProperty(controlInsertPauseFrame);
+    controlOptions.addProperties(insertControlTrack, insertInvalidationTrack);
     controlOptions.setCollapsed(true);
-    addProperty(controlOptions);
+
+    addProperties(playOptions, renderOptions, controlOptions);
 }
 
 AnimationController::~AnimationController() = default;
 
 void AnimationController::setState(AnimationState newState) {
     if (state_ == newState) return;
-
-    // We will be switching state: clean after rendering
-    if (state_ == AnimationState::Rendering) afterRender();
 
     // Switch state
     auto oldState = state_;
@@ -245,7 +196,7 @@ void AnimationController::setState(AnimationState newState) {
             break;
         }
         case AnimationState::Rendering: {
-            timer_.start();
+            timer_.stop();
             break;
         }
         case AnimationState::Paused: {
@@ -271,128 +222,11 @@ void AnimationController::setTime(Seconds time) {
 
 void AnimationController::play() { setState(AnimationState::Playing); }
 
-void AnimationController::render() {
-    // Gather rendering info
-    renderState_.firstTime =
-        (renderWindowMode.get() == 0) ? animation_->getFirstTime() : Seconds(renderWindow.get()[0]);
-    renderState_.lastTime =
-        (renderWindowMode.get() == 0) ? animation_->getLastTime() : Seconds(renderWindow.get()[1]);
-    renderState_.numFrames = renderNumFrames.get();
-    if (renderState_.numFrames < 2) renderState_.numFrames = 2;
-    renderState_.currentFrame = -1;  // first run, see below in tickRender()
-    renderState_.baseFileName = renderLocation.get() + "/" + renderBaseName.get();
-    // - digits of the frame counter
-    renderState_.digits = 0;
-    int number(renderState_.numFrames - 1);
-    while (number) {
-        number /= 10;
-        renderState_.digits++;
-    }
-    // - use at least 4 digits, so we nicely overwrite the files from a previous test rendering with
-    // less frames
-    renderState_.digits = std::max(renderState_.digits, 4);
-
-    // Get all active canvases
-    auto network = app_->getProcessorNetwork();
-    NetworkLock lock(network);
-    auto allCanvases = network->getProcessorsByType<CanvasProcessor>();
-    std::vector<CanvasProcessor*> activeCanvases;
-    std::copy_if(allCanvases.begin(), allCanvases.end(), std::back_inserter(activeCanvases),
-                 [](auto canvas) { return canvas->isSink(); });
-
-    // Canvas indication replacement in filename
-    renderState_.canvasIndicator = activeCanvases.size() > 1 ? "_UPN_" : "";
-
-    // Alter the settings of the canvases, so we can shoot in the right resolution
-    // - This will be restored later
-    renderState_.origCanvasSettings.clear();
-    if (renderSizeMode.get() != 0) {
-        renderState_.origCanvasSettings.resize(activeCanvases.size());
-        // For each active canvas
-        for (auto canvas : activeCanvases) {
-
-            // Save original state
-            renderState_.origCanvasSettings.emplace_back();
-            auto& settings = renderState_.origCanvasSettings.back();
-            settings.enableCustomInputDimensions_ = canvas->enableCustomInputDimensions_.get();
-            settings.customInputDimensions_ = canvas->customInputDimensions_.get();
-            settings.keepAspectRatio_ = canvas->keepAspectRatio_.get();
-            settings.canvasIdentifier = canvas->getIdentifier();
-
-            // Calculate new dimensions
-            // - dimensions of the canvas widget
-            const dvec2& actualDims = canvas->dimensions_.get();
-            // - basic dimensions desired
-            ivec2 desiredDims{0};
-            switch (renderSizeMode.get()) {
-                case 1: {
-                    desiredDims = ivec2(1280, 720);
-                    break;
-                }
-                case 2: {
-                    desiredDims = ivec2(1920, 1080);
-                    break;
-                }
-                case 3: {
-                    desiredDims = renderSize.get();
-                    break;
-                }
-                default: {
-                    ivwAssert(false, "Should not happen.");
-                }
-            }
-            // - adjust basic dimensions to the aspect ratio
-            if (renderAspectRatio.get() > 0) {
-                const double widthFactor = double(desiredDims.x) / actualDims.x;
-                const double heightFactor = double(desiredDims.y) / actualDims.y;
-                // 1 - image is at most the given resolution, or smaller
-                // 2 - image is at least the given resolution, or larger
-                const double factor = (renderAspectRatio.get() == 1)
-                                          ? std::min(widthFactor, heightFactor)
-                                          : std::max(widthFactor, heightFactor);
-                desiredDims = static_cast<ivec2>(factor * actualDims);
-            }
-
-            // Set new state
-            canvas->enableCustomInputDimensions_.set(true);
-            canvas->keepAspectRatio_.set(false);
-            canvas->customInputDimensions_.set(desiredDims);
-        }
-    }
-
-    // Switch Buttons
-    renderAction.setVisible(false);
-    renderActionStop.setVisible(true);
-
-    // Go for it!
-    setState(AnimationState::Rendering);
-}
-
-void AnimationController::afterRender() {
-    // Switch Buttons
-    renderActionStop.setVisible(false);
-    renderAction.setVisible(true);
-
-    // Restore original state of Canvases
-    auto network = app_->getProcessorNetwork();
-    NetworkLock lock(network);
-    if (!network) return;
-    for (auto& origSettings : renderState_.origCanvasSettings) {
-        if (auto canvas = dynamic_cast<CanvasProcessor*>(
-                network->getProcessorByIdentifier(origSettings.canvasIdentifier))) {
-
-            canvas->enableCustomInputDimensions_.set(origSettings.enableCustomInputDimensions_);
-            canvas->keepAspectRatio_.set(origSettings.keepAspectRatio_);
-            canvas->customInputDimensions_.set(origSettings.customInputDimensions_);
-        }
-    }
-}
-
 void AnimationController::pause() { setState(AnimationState::Paused); }
 
 void AnimationController::stop() {
     setState(AnimationState::Paused);
-    deltaTime_ = std::chrono::abs(deltaTime_);  // Make sure we play forward.
+    direction_ = PlaybackDirection::Forward;
     eval(currentTime_, Seconds(0));
 }
 
@@ -406,7 +240,7 @@ void AnimationController::tick() {
     // What to do when network cannot be evaluated in the speed that is given by deltaTime?
     // Initial solution: Don't care about that, and let it evaluate fully in the speed that it can
     // muster.
-    auto newTime = currentTime_ + deltaTime_;
+    auto newTime = currentTime_ + deltaTime();
 
     // Get active time window for playing
     // init with sub-window, overwrite with full window if necessary
@@ -432,7 +266,7 @@ void AnimationController::tick() {
             }
             case PlaybackMode::Swing: {
                 setPlaybackDirection(PlaybackDirection::Backward);
-                newTime = lastTime + deltaTime_;
+                newTime = lastTime + deltaTime();
                 break;
             }
             default:
@@ -454,7 +288,7 @@ void AnimationController::tick() {
             }
             case PlaybackMode::Swing: {
                 setPlaybackDirection(PlaybackDirection::Forward);
-                newTime = firstTime + deltaTime_;
+                newTime = firstTime + deltaTime();
                 break;
             }
             default:
@@ -469,46 +303,88 @@ void AnimationController::tick() {
     setState(newState);
 }
 
-void AnimationController::tickRender() {
-    if (state_ != AnimationState::Rendering) {
+void AnimationController::render() {
+    auto start = std::chrono::high_resolution_clock::now();
+
+    auto network = app_->getProcessorNetwork();
+    std::optional<NetworkLock> lock{network};
+
+    setState(AnimationState::Rendering);
+
+    // Gather rendering info
+    const Seconds firstTime =
+        (renderWindowMode.get() == 0) ? animation_->getFirstTime() : Seconds(renderWindow.get()[0]);
+    const Seconds lastTime =
+        (renderWindowMode.get() == 0) ? animation_->getLastTime() : Seconds(renderWindow.get()[1]);
+    const int numFrames =
+        std::max(2, static_cast<int>((lastTime - firstTime) / Seconds{1.0 / renderFPS.get()}));
+
+    // digits of the frame counter
+    const int digits = [&]() {
+        int d = 0;
+        int number(numFrames - 1);
+        while (number) {
+            number /= 10;
+            d++;
+        }
+        // use at least 4 digits, so we nicely overwrite the files from a previous test rendering
+        // with less frames
+        return std::max(d, 4);
+    }();
+
+    // Get all active canvases
+    std::vector<std::pair<Exporter*, std::string>> exporters;
+    network->forEachProcessor([&](Processor* p) {
+        if (p->isSink()) {
+            if (auto exporter = dynamic_cast<Exporter*>(p)) {
+                auto base = renderBaseName.get();
+                replaceInString(base, "UPN", p->getIdentifier());
+                exporters.emplace_back(exporter, base);
+            }
+        }
+    });
+
+    // Switch Buttons
+    renderAction.setReadOnly(true);
+    renderActionStop.setReadOnly(false);
+
+    util::OnScopeExit reset{[&]() {
         setState(AnimationState::Paused);
-        return;
+        renderAction.setReadOnly(false);
+        renderActionStop.setReadOnly(true);
+    }};
+
+    // render frames
+    for (int currentFrame = 0; currentFrame < numFrames; ++currentFrame) {
+        // Evaluate animation
+        Seconds newTime = firstTime + (lastTime - firstTime) / (numFrames - 1) * currentFrame;
+        eval(currentTime_, newTime);
+
+        lock.reset();
+
+        while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
+            app_->processFront();
+            app_->processEvents();
+            std::this_thread::yield();
+        }
+        app_->processEvents();
+
+        for (auto&& [exporter, base] : exporters) {
+            const auto file = fmt::format("{}{:0{}}", base, currentFrame, digits);
+            exporter->exportFile(renderLocation.get(), file, {writer.get()}, Overwrite::Yes);
+        }
+
+        lock.emplace(network);
+
+        if (state_ != AnimationState::Rendering) break;
     }
 
-    // Save all active canvases from last rendering tick:
-    // Apparently, we need to be outside of tickRender() to let the system refresh its state
-    // The first call to tickRender() is done with renderState_.currentFrame == -1 to bring the
-    // system to a proper state
-    // - generate filename pattern
-    if (renderState_.currentFrame >= 0) {
-        std::stringstream fileNamePattern;
-        fileNamePattern << renderBaseName.get() << renderState_.canvasIndicator << std::setfill('0')
-                        << std::setw(renderState_.digits) << renderState_.currentFrame;
-        auto ext = FileExtension::createFileExtensionFromString(renderImageExtension.get());
-        // - save active canvases
-        util::saveAllCanvases(app_->getProcessorNetwork(), renderLocation.get(),
-                              fileNamePattern.str(), ext.extension_, true);
-    }
-
-    // Next!
-    renderState_.currentFrame++;
-
-    // Are we finished?
-    if (renderState_.currentFrame >= renderState_.numFrames) {
-        setState(AnimationState::Paused);
-        return;
-    }
-
-    // We render with equidistant steps
-    Seconds newTime = renderState_.firstTime;
-    if (renderState_.currentFrame >= 0) {
-        const double progress =
-            double(renderState_.currentFrame) / double(renderState_.numFrames - 1);
-        newTime += progress * (renderState_.lastTime - renderState_.firstTime);
-    }
-
-    // Evaluate animation
-    eval(currentTime_, newTime);
+    using duration_double = std::chrono::duration<double, std::ratio<1>>;
+    auto seconds = std::chrono::duration_cast<duration_double>(
+                       std::chrono::high_resolution_clock::now() - start)
+                       .count();
+    LogInfo(fmt::format("Rendered {} frames in {:.3f} seconds, {:.3f} per frame", numFrames,
+                        seconds, seconds / numFrames));
 }
 
 void AnimationController::eval(Seconds oldTime, Seconds newTime) {
@@ -533,55 +409,21 @@ Animation& AnimationController::getAnimation() { return *animation_; }
 
 const AnimationState& AnimationController::getState() const { return state_; }
 
-PlaybackDirection AnimationController::getPlaybackDirection() const {
-    return deltaTime_ < Seconds(0) ? PlaybackDirection::Backward : PlaybackDirection::Forward;
-}
+PlaybackDirection AnimationController::getPlaybackDirection() const { return direction_; }
 
 void AnimationController::setPlaybackDirection(PlaybackDirection newDirection) {
-    if (newDirection == PlaybackDirection::Forward) {
-        deltaTime_ = std::chrono::abs(deltaTime_);
+    direction_ = newDirection;
+}
+
+Seconds AnimationController::deltaTime() const {
+    if (direction_ == PlaybackDirection::Forward) {
+        return Seconds{1.0 / framesPerSecond.get()};
     } else {
-        deltaTime_ = -std::chrono::abs(deltaTime_);
+        return Seconds{-1.0 / framesPerSecond.get()};
     }
 }
 
 Seconds AnimationController::getCurrentTime() const { return currentTime_; }
-
-void AnimationController::resetAllPoperties() {
-
-    const auto options = imageExts(app_);
-    const auto selectedIndex = imageExtIndex(app_, defaultImageExt);
-
-    renderImageExtension.replaceOptions(options);
-    renderImageExtension.setSelectedIndex(selectedIndex);
-    renderImageExtension.setCurrentStateAsDefault();
-
-    PropertyOwner::resetAllPoperties();
-}
-
-void AnimationController::serialize(Serializer& s) const {
-    PropertyOwner::serialize(s);
-    s.serialize("framesPerSecond", framesPerSecond.get());
-    if (renderImageExtension.size() > 0) {
-        s.serialize("renderImageExtension", renderImageExtension.getSelectedValue());
-    }
-}
-
-void AnimationController::deserialize(Deserializer& d) {
-    PropertyOwner::deserialize(d);
-
-    const auto options = imageExts(app_);
-    std::string selectedValue{defaultImageExt};
-
-    double fps = framesPerSecond;
-    d.deserialize("framesPerSecond", fps);
-    framesPerSecond.set(fps);
-    d.deserialize("renderImageExtension", selectedValue);
-
-    renderImageExtension.replaceOptions(options);
-    renderImageExtension.setSelectedValue(selectedValue);
-    renderImageExtension.setCurrentStateAsDefault();
-}
 
 }  // namespace animation
 

@@ -33,6 +33,8 @@
 #include <inviwo/core/network/workspacemanager.h>   // for WorkspaceManager, WorkspaceManager:...
 #include <modules/animation/animationcontroller.h>  // for AnimationController
 
+#include <optional>
+
 namespace inviwo {
 
 class AnimationModule;
@@ -86,7 +88,10 @@ private:
      */
     void addKeyframeSequenceCallback(Property* property);
 
-    AnimationController controller_;
+    // create this lazy so we have all the factories ready when we create it
+    Animation* animation_;
+    InviwoApplication* app_;
+    mutable std::optional<AnimationController> controller_;
 
     WorkspaceManager::ClearHandle animationControllerClearHandle_;
     WorkspaceManager::SerializationHandle animationControllerSerializationHandle_;

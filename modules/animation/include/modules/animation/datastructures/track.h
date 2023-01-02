@@ -144,22 +144,30 @@ public:
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
+
+    friend bool operator<(const Track& a, const Track& b) {
+        return a.getFirstTime() < b.getFirstTime();
+    }
+    friend bool operator<=(const Track& a, const Track& b) {
+        return a.getFirstTime() <= b.getFirstTime();
+    }
+    friend bool operator>(const Track& a, const Track& b) {
+        return a.getFirstTime() > b.getFirstTime();
+    }
+    friend bool operator>=(const Track& a, const Track& b) {
+        return a.getFirstTime() >= b.getFirstTime();
+    }
+
+    friend bool operator<(const Track& a, const Seconds& b) { return a.getFirstTime() < b; }
+    friend bool operator<=(const Track& a, const Seconds& b) { return a.getFirstTime() <= b; }
+    friend bool operator>(const Track& a, const Seconds& b) { return a.getFirstTime() > b; }
+    friend bool operator>=(const Track& a, const Seconds& b) { return a.getFirstTime() >= b; }
+
+    friend bool operator<(const Seconds& a, const Track& b) { return a < b.getFirstTime(); }
+    friend bool operator<=(const Seconds& a, const Track& b) { return a <= b.getFirstTime(); }
+    friend bool operator>(const Seconds& a, const Track& b) { return a > b.getFirstTime(); }
+    friend bool operator>=(const Seconds& a, const Track& b) { return a >= b.getFirstTime(); }
 };
-
-IVW_MODULE_ANIMATION_API bool operator<(const Track& a, const Track& b);
-IVW_MODULE_ANIMATION_API bool operator<=(const Track& a, const Track& b);
-IVW_MODULE_ANIMATION_API bool operator>(const Track& a, const Track& b);
-IVW_MODULE_ANIMATION_API bool operator>=(const Track& a, const Track& b);
-
-IVW_MODULE_ANIMATION_API bool operator<(const Track& a, const Seconds& b);
-IVW_MODULE_ANIMATION_API bool operator<=(const Track& a, const Seconds& b);
-IVW_MODULE_ANIMATION_API bool operator>(const Track& a, const Seconds& b);
-IVW_MODULE_ANIMATION_API bool operator>=(const Track& a, const Seconds& b);
-
-IVW_MODULE_ANIMATION_API bool operator<(const Seconds& a, const Track& b);
-IVW_MODULE_ANIMATION_API bool operator<=(const Seconds& a, const Track& b);
-IVW_MODULE_ANIMATION_API bool operator>(const Seconds& a, const Track& b);
-IVW_MODULE_ANIMATION_API bool operator>=(const Seconds& a, const Track& b);
 
 /** \class TrackTyped
  * Track containing KeyFrameSequence of a given KeyFrame type.

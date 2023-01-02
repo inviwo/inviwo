@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2022 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/datastructures/animationtime.h>  // for Seconds
-#include <modules/animation/datastructures/keyframe.h>       // for Keyframe
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
 
-#include <chrono>  // for operator<, operator<=, opera...
+#include <string>  // for string
+
+class QLineEdit;
 
 namespace inviwo {
 
 namespace animation {
 
-bool KeyframeSequence::isAnyKeyframeSelected() const {
-    for (size_t i = 0; i < size(); i++) {
-        if (operator[](i).isSelected()) return true;
-    }
-    return false;
-}
+class AnimationManager;
+class Keyframe;
+class KeyframeSequence;
+class Track;
 
-Seconds KeyframeSequence::getFirstTime() const { return getFirst().getTime(); }
-Seconds KeyframeSequence::getLastTime() const { return getLast().getTime(); }
-std::pair<Seconds, Seconds> KeyframeSequence::getTimeSpan() const {
-    return {getFirstTime(), getLastTime()};
-}
+class IVW_MODULE_ANIMATIONQT_API InvalidationSequenceEditor : public SequenceEditorWidget {
+public:
+    InvalidationSequenceEditor(KeyframeSequence& sequence, Track& track, AnimationManager& manager);
+    virtual ~InvalidationSequenceEditor() = default;
+
+    static std::string classIdentifier();
+
+protected:
+    virtual QWidget* create(Keyframe* key) override;
+
+    QLineEdit* path_{nullptr};
+};
 
 }  // namespace animation
 

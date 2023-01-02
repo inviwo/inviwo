@@ -49,7 +49,7 @@ public:
     const std::string& getClassIdentifier() const;
 
 protected:
-    const std::string classIdentifier_;
+    std::string classIdentifier_;
 };
 
 template <typename T>
