@@ -8,7 +8,7 @@ set(UNITS_ENABLE_EXTRA_COMPILER_WARNINGS ON)
 add_subdirectory(units)
 
 target_compile_definitions(units PUBLIC ENABLE_UNIT_MAP_ACCESS)
-
-ivw_default_install_targets(units)    
+ivw_suppress_compiler_warnings(units)
+ivw_default_install_targets(units)
 ivw_move_targets_in_dir_to_folder(units ext)
 ivw_register_package(units units)
