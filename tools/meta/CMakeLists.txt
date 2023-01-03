@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13...3.18 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16...3.22 FATAL_ERROR)
 project(inviwo-meta VERSION 0.0.1 DESCRIPTION "CMakeList Parser" LANGUAGES CXX)
 
 if(NOT cxx_std_17 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
@@ -94,11 +94,11 @@ target_link_libraries(inviwo-meta PUBLIC taocpp::pegtl)
 # Add inja
 option(IVW_USE_EXTERNAL_INJA "Inja is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_INJA)
-    set(INJA_BUILD_TESTS OFF)
-    set(INJA_EXPORT OFF)
-    set(INJA_INSTALL OFF)
-    set(INJA_USE_EMBEDDED_JSON OFF)
-    set(BUILD_BENCHMARK OFF)
+    option(INJA_BUILD_TESTS "" OFF)
+    option(INJA_EXPORT "" OFF)
+    option(INJA_INSTALL "" OFF)
+    option(INJA_USE_EMBEDDED_JSON "" OFF)
+    option(BUILD_BENCHMARK "" OFF)
     add_subdirectory(ext/inja)
     ivw_make_package(inja inja)
     ivw_register_license_file(NAME "inja" VERSION 3.3.0 target inja MODULE Core EXT
