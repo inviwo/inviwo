@@ -97,10 +97,11 @@ if(NOT IVW_USE_EXTERNAL_INJA)
     set(INJA_BUILD_TESTS OFF)
     set(INJA_EXPORT OFF)
     set(INJA_INSTALL OFF)
+    set(INJA_USE_EMBEDDED_JSON OFF)
     set(BUILD_BENCHMARK OFF)
     add_subdirectory(ext/inja)
     ivw_make_package(inja inja)
-    ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core EXT
+    ivw_register_license_file(NAME "inja" VERSION 3.3.0 target inja MODULE Core EXT
         URL "https://github.com/pantor/inja"
         TYPE "The MIT License"
         FILES ${IVW_TOOLS_DIR}/meta/ext/inja/LICENSE
