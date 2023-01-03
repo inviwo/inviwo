@@ -29,6 +29,7 @@
 #pragma once
 
 #include <inviwo/qt/applicationbase/qtapplicationbasemoduledefine.h>
+#include <inviwo/qt/applicationbase/qtlocale.h>
 
 #include <locale>
 #include <QString>
@@ -85,16 +86,6 @@ IVW_QTAPPLICATIONBASE_API void configurePoolResizeWait(InviwoApplication& app, Q
  * Sets a new style sheet file in the QApplication
  */
 IVW_QTAPPLICATIONBASE_API void setStyleSheetFile(std::string_view file);
-
-/**
- * This function returns the current system locale provided by Qt.
- * If the Qt application has not been initialized, the returned
- * value is the environment's default locale.
- * @note This is a duplicate of utilqt::getCurrentStdLocale
- * in the qtwidgets module. We do not want to depend on modules in external.
- * @return std::locale   Qt locale converted to std::locale
- */
-IVW_QTAPPLICATIONBASE_API std::locale getCurrentStdLocale();
 
 namespace detail {
 class IVW_QTAPPLICATIONBASE_API QtProcessFrontHelper : public QObject {
