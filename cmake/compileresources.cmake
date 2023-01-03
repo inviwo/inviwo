@@ -66,13 +66,12 @@ function(ivw_generate_shader_resource parent_path)
     ivw_private_get_ivw_module_include_path(${CMAKE_CURRENT_LIST_DIR} includePrefix includePath orgName)
 
     foreach(shader_path ${ARGN})
-        if(IS_ABSOLUTE ${shader_path})
-            # Shaders have been added using ${CMAKE_CURRENT_SOURCE_DIR}
-            file(RELATIVE_PATH shaderkey ${parent_path} ${shader_path})
-        else()
+        if(NOT IS_ABSOLUTE ${shader_path})
             # Shaders have been added relative to module folder, e.g., glsl/path_to_shader.frag
-            file(RELATIVE_PATH shaderkey ${parent_path} "${CMAKE_CURRENT_SOURCE_DIR}/${shader_path}")
+            set(shader_path "${CMAKE_CURRENT_SOURCE_DIR}/${shader_path}")
         endif()
+        file(RELATIVE_PATH shaderkey ${parent_path} ${shader_path})
+        
         string(REPLACE "/" "_" tmp ${shaderkey})
         string(REPLACE "." "_" tmp ${tmp})
         string(REPLACE " " "_" varName ${tmp})
