@@ -64,6 +64,10 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include <mach-o/dyld.h>
+
+#include <sysdir.h>  // for sysdir_start_search_path_enumeration
+#include <glob.h>    // for glob needed to expand ~ to user dir
+
 #else
 #include <unistd.h>
 #include <fcntl.h>  // open
@@ -271,6 +275,24 @@ std::string getInviwoBinDir() {
 #endif
 }
 
+#if defined(__APPLE__)
+
+std::string expandTilde(const char* str) {
+    if (!str) return {};
+
+    glob_t globbuf;
+    if (glob(str, GLOB_TILDE, nullptr, &globbuf) == 0) {  // success
+        std::string result(globbuf.gl_pathv[0]);
+        globfree(&globbuf);
+        return result;
+    } else {
+        throw Exception(IVW_CONTEXT_CUSTOM("filesystem"), "Unable to expand tilde in string '{}'",
+                        str);
+    }
+}
+
+#endif
+
 std::string getInviwoUserSettingsPath() {
     std::stringstream ss;
 #ifdef _WIN32
@@ -281,29 +303,22 @@ std::string getInviwoUserSettingsPath() {
         CoTaskMemFree(path);
         ss << util::fromWstring(wpath) << "/Inviwo";
     } else {
-        throw Exception("SHGetKnownFolderPath failed to get settings folder",
-                        IVW_CONTEXT_CUSTOM("filesystem"));
+        throw Exception("Failed to get settings folder", IVW_CONTEXT_CUSTOM("filesystem"));
     }
 
 #elif defined(__unix__)
     ss << std::getenv("HOME");
     ss << "/.inviwo";
+
 #elif defined(__APPLE__)
-    // Taken from:
-    // http://stackoverflow.com/questions/5123361/finding-library-application-support-from-c?rq=1
-    // A deprecated solution, but a solution...
-
-    FSRef ref;
-    OSType folderType = kApplicationSupportFolderType;
-    int MAX_PATH = 512;
     char path[PATH_MAX];
-
-#include <warn/push>
-#include <warn/ignore/deprecated-declarations>
-    FSFindFolder(kUserDomain, folderType, kCreateFolder, &ref);
-    FSRefMakePath(&ref, (UInt8*)&path, MAX_PATH);
-#include <warn/pop>
-    ss << path << "/org.inviwo.network-editor";
+    auto state = sysdir_start_search_path_enumeration(SYSDIR_DIRECTORY_APPLICATION_SUPPORT,
+                                                      SYSDIR_DOMAIN_MASK_USER);
+    if ((state = sysdir_get_next_search_path_enumeration(state, path))) {
+        ss << expandTilde(path) << "/org.inviwo.network-editor";
+    } else {
+        throw Exception("Failed to get settings folder", IVW_CONTEXT_CUSTOM("filesystem"));
+    }
 
 #else
     LogWarnCustom("filesystem::getInviwoApplicationPath",
@@ -622,7 +637,9 @@ std::string findBasePath() {
             getParentFolderWithChildren(getExecutablePath(), {"data/workspaces", "modules"})) {
         return *path;
     }
+
 #ifdef INVIWO_ALL_DYN_LINK
+    // If we have linking dynamically use getInviwoBinDir() which looks for inviwo-core
     if (auto path =
             getParentFolderWithChildren(getInviwoBinDir(), {"data/workspaces", "modules"})) {
         return *path;
@@ -639,9 +656,12 @@ std::string findBasePath() {
     if (auto path = getParentFolderWithChildren(getExecutablePath(), {"modules"})) {
         return *path;
     }
+
+#ifdef INVIWO_ALL_DYN_LINK
     if (auto path = getParentFolderWithChildren(getInviwoBinDir(), {"modules"})) {
         return *path;
     }
+#endif
 
     LogErrorCustom(
         "filesystem::findBasePath",

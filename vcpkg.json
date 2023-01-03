@@ -11,7 +11,6 @@
         },
         "overlay-ports": [ 
             "./tools/vcpkg", 
-            "../modules/tools/vcpkg"
         ]
     },
     "dependencies" : [
