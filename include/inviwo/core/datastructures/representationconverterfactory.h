@@ -77,6 +77,8 @@ public:
 
     virtual BaseReprId getBaseReprId() override final;
 
+    const RepMap& getConverters() const;
+
     // This will not assume ownership.
     bool registerObject(RepresentationConverter<BaseRepr>* representationConverter);
     bool unRegisterObject(RepresentationConverter<BaseRepr>* representationConverter);
@@ -101,6 +103,11 @@ template <typename BaseRepr>
 auto RepresentationConverterFactory<BaseRepr>::getBaseReprId() -> BaseReprId {
     return std::type_index(typeid(BaseRepr));
 }
+
+template <typename BaseRepr>
+auto RepresentationConverterFactory<BaseRepr>::getConverters() const -> const RepMap& {
+    return converters_;
+};
 
 template <typename BaseRepr>
 bool RepresentationConverterFactory<BaseRepr>::registerObject(

@@ -26,21 +26,21 @@
 </style>
 </head>
 <body>
-<h2>2022-11-25 The PropertyListWidget default to one processor</h2>
+<h2>2022-11-25 The PropertyListWidget defaults to showing one processor</h2>
 <p>Previously the <code class="notranslate">PropertyListWidget</code> has shown the properties of all selected processors in the network.<br>
-This can sometimes be very slow to render for large selections, and in most cases one does not care about the properties when selection many processors.<br>
-But one will usually do some operation on the processor network (more/copy/delete/etc).<br>
-So to make the behavior better we now only show the properties of the first selected processor if multiple ones are selected.<br>
-But if you hold down <code class="notranslate">shift</code> we will fall back to the old behavior of showing all properties.</p>
+This can sometimes be very slow to render for large selections, and in most cases one does not care about the properties when selecting many processors.<br>
+But one will usually do some operation on the processor network (move/copy/delete/etc.).<br>
+So to make the behavior better, we now only show the properties of the first selected processor if multiple processors are selected.<br>
+By holding down <kbd>shift</kbd> during the selection all properties will be shown.</p>
 <h2>2022-11-25 InviwoApplicationQt removed</h2>
-<p>The <code class="notranslate">InviwoApplicationQt</code> class has been remove in favor of using a standalone <code class="notranslate">InviwoApplication</code> and a <code class="notranslate">QApplication</code> to reduce coupling and increase flexibility.<br>
-The functionality that could be found in InviwoApplcationQt can now be access as a set of utility function in <code class="notranslate">qt/applicationbase/qtapptools.h</code></p>
+<p>The <code class="notranslate">InviwoApplicationQt</code> class has been removed in favor of using a standalone <code class="notranslate">InviwoApplication</code> and a <code class="notranslate">QApplication</code> to reduce the coupling and increase flexibility.<br>
+The functionality earlier found in <code class="notranslate">InviwoApplcationQt</code> can now be accessed as a set of utility functions in <code class="notranslate">qt/applicationbase/qtapptools.h</code></p>
 <h2>2022-09-29 Pre-compiled headers overhaul</h2>
 <p>The generation of pre-compiled headers (PCH) was changed from Cotire to CMake. This enables using PCH in combination with Qt6.<br>
 A single PCH file is generated for inviwo core including a number of standard includes. In addition, there is a PCH file for the qtwidgets modules with some Qt headers. These PCH files ar reused by all modules by default when depending on qtwidgets or core respectively, and assuming <code class="notranslate">IVW_CFG_PRECOMPILED_HEADERS</code> is checked. Use the <code class="notranslate">NO_PCH</code> option when calling <code class="notranslate">ivw_create_module()</code> to prevent the default PCH from being used in a module.</p>
-<div class="highlight highlight-source-cmake"><pre>ivw_create_module(NO_PCH <span class="pl-smi">${SOURCE_FILES}</span> <span class="pl-smi">${HEADER_FILES}</span>)</pre></div>
+<div class="highlight highlight-source-cmake"><pre class="notranslate">ivw_create_module(NO_PCH <span class="pl-smi">${SOURCE_FILES}</span> <span class="pl-smi">${HEADER_FILES}</span>)</pre></div>
 <p>It is also possible to instead use a custom PCH by manually calling <code class="notranslate">ivw_compile_optimize_on_target()</code> after <code class="notranslate">ivw_create_module(NO_PCH ...)</code>.</p>
-<div class="highlight highlight-source-cmake"><pre><span class="pl-c1">set</span>(PCH_HEADERS header_1.h header_2.h ...)
+<div class="highlight highlight-source-cmake"><pre class="notranslate"><span class="pl-c1">set</span>(PCH_HEADERS header_1.h header_2.h ...)
 ivw_compile_optimize_on_target(inviwo-mymodule HEADERS <span class="pl-smi">${PCH_HEADERS}</span>)</pre></div>
 <p>This will include files listed in <code class="notranslate">${PCH_HEADERS}</code> and all headers marked for PCH inclusion of all target dependendencies as listed in the respective <code class="notranslate">IVW_PCH_HEADERS</code> target properties. In contrast,  using<code class="notranslate">target_precompile_headers()</code> instead will only consider the given header files. Note that using <code class="notranslate">PUBLIC</code> or <code class="notranslate">INTERFACE</code> with <code class="notranslate">target_precompile_headers()</code> enforces the usage of PCH ontor all other targets depending on this one.</p>
 <h2>2022-09-14 Include cleanup and refactoring</h2>
@@ -60,7 +60,7 @@ In the dialog one can select which of the properties in the sub network that sho
 <p>Previously, the File menu received an "Append" functionality which appends a workspace to the current network by holding down Control/Command. This functionality is now also available in the Welcome Screen. The Welcome Screen also no longer immediately closes the current workspace, it is now possible to close the Welcome Screen and continue working without loosing any changes.</p>
 <h2>2022-08-16 New help system</h2>
 <p>The old processor help system based on doxygen and qhp has been removed in favor of a runtime system where help text is added to processor/port/properties at runtime. To add a help text to a processor now you add a new element to the ProcessorInfo for that processor like this</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">const</span> ProcessorInfo InstanceRenderer::processorInfo_{
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">const</span> ProcessorInfo InstanceRenderer::processorInfo_{
 <span class="pl-s"><span class="pl-pds">"</span>org.inviwo.InstanceRenderer<span class="pl-pds">"</span></span>,  <span class="pl-c"><span class="pl-c">//</span> Class identifier</span>
 <span class="pl-s"><span class="pl-pds">"</span>Instance Renderer<span class="pl-pds">"</span></span>,            <span class="pl-c"><span class="pl-c">//</span> Display name</span>
 <span class="pl-s"><span class="pl-pds">"</span>Mesh Rendering<span class="pl-pds">"</span></span>,               <span class="pl-c"><span class="pl-c">//</span> Category</span>
@@ -86,20 +86,20 @@ Tags::GL,                       <span class="pl-c"><span class="pl-c">//</span> 
 <span class="pl-s">    in a set of properties.</span>
 <span class="pl-s">    </span>
 <span class="pl-s">    Example network:</span>
-<span class="pl-s">    [basegl/instance_renderer.inv](file:///&lt;modulePath&gt;/data/workspaces/instance_renderer.inv)</span>
+<span class="pl-s">    [basegl/instance_renderer.inv](file:~modulePath~/data/workspaces/instance_renderer.inv)</span>
 <span class="pl-s"><span class="pl-pds">)"</span></span>_unindentHelp};</pre></div>
 <p>The <code class="notranslate">_unindentHelp</code>  suffix will remove any leading indent and parse the string as a markdown document and then convert it to an inviwo document, which is what is expected by the <code class="notranslate">ProcessorInfo</code> struct.<br>
 One can refer to images like so:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>![](file:///&lt;modulePath&gt;/docs/images/heightfield-network.png)<span class="pl-pds">"</span></span></pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-s"><span class="pl-pds">"</span>![](file:~modulePath~/docs/images/heightfield-network.png)<span class="pl-pds">"</span></span></pre></div>
 <p>or networks</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>[basegl/instance_renderer.inv](file:///&lt;modulePath&gt;/data/workspaces/instance_renderer.inv)<span class="pl-pds">"</span></span></pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-s"><span class="pl-pds">"</span>[basegl/instance_renderer.inv](file:~modulePath~/data/workspaces/instance_renderer.inv)<span class="pl-pds">"</span></span></pre></div>
 <p>Images will be shown inline, and clicking on processor network will append them to the current network.<br>
-To be able to refer to files there are two placeholder <code class="notranslate">&lt;basePath&gt;</code> and <code class="notranslate">&lt;modulePath&gt;</code> the former will refer to the base path of the inviwo installation and the latter to the current module. Make sure that any resources linked are also included in the installer. By default the <code class="notranslate">data</code> directory and the <code class="notranslate">docs</code> folders are always included in the installer.</p>
+To be able to refer to files there are two placeholder <code class="notranslate">~basePath~</code> and <code class="notranslate">~modulePath~</code> the former will refer to the base path of the inviwo installation and the latter to the current module. Make sure that any resources linked are also included in the installer. By default the <code class="notranslate">data</code> directory and the <code class="notranslate">docs</code> folders are always included in the installer.</p>
 <p>For Ports a second constructor argument has been added for a help Document like so</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-en">inport_</span>(<span class="pl-s"><span class="pl-pds">"</span>mesh<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Mesh to be drawn multiple times<span class="pl-pds">"</span></span>_help)</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">inport_</span>(<span class="pl-s"><span class="pl-pds">"</span>mesh<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Mesh to be drawn multiple times<span class="pl-pds">"</span></span>_help)</pre></div>
 <p>the <code class="notranslate">_help</code> suffix will parse the string as markdown and convert it to an inviwo Document.</p>
 <p>For Properties a new constructor with a new third help argument after the identifier and display name has been added. For example the customInputDimensions in the CanvasProcessor:</p>
-<div class="highlight highlight-source-c++"><pre>customInputDimensions_{<span class="pl-s"><span class="pl-pds">"</span>customInputDimensions<span class="pl-pds">"</span></span>,
+<div class="highlight highlight-source-c++"><pre class="notranslate">customInputDimensions_{<span class="pl-s"><span class="pl-pds">"</span>customInputDimensions<span class="pl-pds">"</span></span>,
                        <span class="pl-s"><span class="pl-pds">"</span>Image Size<span class="pl-pds">"</span></span>,
                        <span class="pl-s"><span class="pl-pds">"</span>The size of the image that will be generated. This can be larger <span class="pl-pds">"</span></span>
                        <span class="pl-s"><span class="pl-pds">"</span>or smaller than the canvas size. A smaller size will generate a <span class="pl-pds">"</span></span>
@@ -142,7 +142,7 @@ In addition, the glm utility functions <code class="notranslate">util::rank()</c
 <h2>2022-03-04 DataFrame &amp; CategoricalColumn clean-up</h2>
 <p>The DataFrame interface was cleaned up. <code class="notranslate">getAsDVecn()</code> and <code class="notranslate">std::shared_ptr&lt;DataPointBase&gt; get(size_t idx, bool getStringsAsStrings) const</code> were removed from <code class="notranslate">Column</code>.<br>
 <code class="notranslate">CategoricalColumn</code> no longer derives from <code class="notranslate">TemplateColumn&lt;std::uint32_t&gt;</code>. Its const iterators (<code class="notranslate">CategoricalColumn::begin()</code>, <code class="notranslate">CategoricalColumn::end()</code>) can be used to iterate over the entire column to access the categorical values directly. Alternatively, <code class="notranslate">CategoricalColumn::values()</code> provides an iterator range from <code class="notranslate">begin()</code> to <code class="notranslate">end()</code>.</p>
-<div class="highlight highlight-source-c++"><pre>CategoricalColumn <span class="pl-en">col</span>(<span class="pl-s"><span class="pl-pds">"</span>example<span class="pl-pds">"</span></span>, {<span class="pl-s"><span class="pl-pds">"</span>first<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>second<span class="pl-pds">"</span></span>});
+<div class="highlight highlight-source-c++"><pre class="notranslate">CategoricalColumn <span class="pl-en">col</span>(<span class="pl-s"><span class="pl-pds">"</span>example<span class="pl-pds">"</span></span>, {<span class="pl-s"><span class="pl-pds">"</span>first<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>second<span class="pl-pds">"</span></span>});
 <span class="pl-k">for</span> (<span class="pl-k">auto</span> v : col) {
     std::cout &lt;&lt; <span class="pl-s"><span class="pl-pds">"</span>value: <span class="pl-pds">"</span></span> &lt;&lt; v;
 }</pre></div>
@@ -186,7 +186,7 @@ Brushing &amp; Linking (B&amp;L) was completely reworked. Now the B&amp;L inport
 <p>To trigger a brushing action call <code class="notranslate">brush(BrushAction::Select, target, indices)</code> on either manager or B&amp;L port. The target defines the type of selection. Default targets exist for row selection (default) and column selection with the option to add custom ones if necessary.</p>
 <p>In addition, B&amp;L is now using <code class="notranslate">BitSet</code> (see <code class="notranslate">inviwo/core/datastructures/bitset.h</code>) to represent selections and filtering. Note that the data type of Brushing &amp; Linking indices was changed to <code class="notranslate">uint32_t</code>.</p>
 <p>The manager also provides functionality to query the latest updates: <code class="notranslate">isModified()</code>, <code class="notranslate">getModifiedActions()</code>, <code class="notranslate">isTargetModified()</code>, <code class="notranslate">isSelectionModified()</code>, <code class="notranslate">isHighlightModified()</code>, <code class="notranslate">isFilteringModified()</code>, and more. For example</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">void</span> <span class="pl-en">MyProcessor::process</span>() {
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">void</span> <span class="pl-en">MyProcessor::process</span>() {
 
     <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">isSelectionModified</span>()) {
         <span class="pl-k">const</span> <span class="pl-bu">BitSet</span>&amp; selected = brushingPort_.<span class="pl-c1">getSelectedIndices</span>();
@@ -275,7 +275,7 @@ We now also use QOffScreenSurface for default OpenGL context and threaded render
 <h2>2020-06-26 Vcpkg support</h2>
 <p>We now support using <a href="https://github.com/microsoft/vcpkg">vcpkg</a> for handling external dependencies. The following packages from vcpkg can be used <code class="notranslate">assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib</code>.</p>
 <p>To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do:</p>
-<div class="highlight highlight-source-batchfile"><pre><span class="pl-k">&gt;</span> git clone https://github.com/Microsoft/vcpkg.git
+<div class="highlight highlight-source-batchfile"><pre class="notranslate"><span class="pl-k">&gt;</span> git clone https://github.com/Microsoft/vcpkg.git
 <span class="pl-k">&gt;</span> <span class="pl-k">cd</span> vcpkg
 <span class="pl-k">&gt;</span> ./bootstrap-vcpkg.bat
 <span class="pl-k">&gt;</span> ./vcpkg.exe install --triplet x64-windows assimp benchmark cimg
@@ -317,12 +317,12 @@ to<br>
 And a factory function <code class="notranslate">util::ordinalColor</code> for OrdinalProperties representing Colors<br>
 When instantiating a Ordinal Property for a color value one would need to write something along<br>
 there lines</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-en">color</span>(<span class="pl-s"><span class="pl-pds">"</span>cubeColor<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Cube Color<span class="pl-pds">"</span></span>, vec4(<span class="pl-c1">0</span>.<span class="pl-c1">11f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">42f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">63f</span>, <span class="pl-c1">1</span>.<span class="pl-c1">0f</span>),
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">color</span>(<span class="pl-s"><span class="pl-pds">"</span>cubeColor<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Cube Color<span class="pl-pds">"</span></span>, vec4(<span class="pl-c1">0</span>.<span class="pl-c1">11f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">42f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">63f</span>, <span class="pl-c1">1</span>.<span class="pl-c1">0f</span>),
      {<span class="pl-c1">vec4</span>(<span class="pl-c1">0</span>.<span class="pl-c1">0f</span>), ConstraintBehavior::Immutable},
      {<span class="pl-c1">vec4</span>(<span class="pl-c1">1</span>.<span class="pl-c1">0f</span>), ConstraintBehavior::Immutable}, vec4(<span class="pl-c1">0</span>.<span class="pl-c1">01f</span>),
      InvalidationLevel::InvalidOutput, PropertySemantics::Color)</pre></div>
 <p>by using the helper function most of the boilerplate can be removed:</p>
-<div class="highlight highlight-source-c++"><pre>color{<span class="pl-s"><span class="pl-pds">"</span>cubeColor<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Cube Color<span class="pl-pds">"</span></span>, <span class="pl-c1">util::ordinalColor</span>(<span class="pl-c1">0</span>.<span class="pl-c1">11f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">42f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">63f</span>)}</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate">color{<span class="pl-s"><span class="pl-pds">"</span>cubeColor<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Cube Color<span class="pl-pds">"</span></span>, <span class="pl-c1">util::ordinalColor</span>(<span class="pl-c1">0</span>.<span class="pl-c1">11f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">42f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">63f</span>)}</pre></div>
 <h2>2020-04-01 Constraint Behavior</h2>
 <p>Extends the behavior of the Ordinal Property's min and max bound with a <code class="notranslate">ConstraintBehavior</code> mode.<br>
 Four settings are available:</p>
@@ -333,7 +333,7 @@ Four settings are available:</p>
 <li><strong>Ignore</strong>: Don't clamp values and the boundary is editable by the user and by the programmer. The bounds are only used for interaction purposes. Bounds are linked to other properties. Typical use case would be for a value of unbounded character, like the look from in the camera. The any value is usually valid, the bound are only used to suggest a reasonable value.</li>
 </ul>
 <p>To specify the behavior a new Constructor has been added to the OrdinalProperty:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-en">OrdinalProperty</span>(<span class="pl-k">const</span> std::string&amp; identifier, <span class="pl-k">const</span> std::string&amp; displayName,
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">OrdinalProperty</span>(<span class="pl-k">const</span> std::string&amp; identifier, <span class="pl-k">const</span> std::string&amp; displayName,
                 <span class="pl-k">const</span> T&amp; value = Defaultvalues&lt;T&gt;::getVal(),
                 <span class="pl-k">const</span> std::pair&lt;T, ConstraintBehavior&gt;&amp; minValue =
                     std::pair{Defaultvalues&lt;T&gt;::<span class="pl-c1">getMin</span>(), ConstraintBehavior::Editable},
@@ -347,7 +347,7 @@ Four settings are available:</p>
 <p>Added functionality to retrieve which processor is responsible for the browser API-calls. See InviwoAPI.js and web browser property synchronization example workspace.</p>
 <h2>2019-12-02 PoolProcessor</h2>
 <p>Added a processor base class to make background processing easier. Here is a basic example of how the process function might look like:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">const</span> <span class="pl-k">auto</span> calc = [image = inport_.getData()](pool::Stop stop, pool::Progress progress) 
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-k">auto</span> calc = [image = inport_.getData()](pool::Stop stop, pool::Progress progress) 
     -&gt; std::shared_ptr&lt;<span class="pl-k">const</span> Image&gt; {
     <span class="pl-k">if</span> (stop) <span class="pl-k">return</span> <span class="pl-c1">nullptr</span>;
     <span class="pl-k">auto</span> newImage = std::shared_ptr&lt;Image&gt;(image-&gt;<span class="pl-c1">clone</span>());
@@ -421,7 +421,7 @@ Four settings are available:</p>
 <p>Changed way of synchronizing/setting properties in javascript. Instead of adding properties to the webbrowser processor one can now set them using their path from javascript.<br>
 See web_property_sync.html in the Webbrowser module</p>
 <p>This means that you need to update workspaces/webpages which used the Webbrowser processor.</p>
-<div class="highlight highlight-source-js"><pre><span class="pl-c">// Update html inputs when corresponding Inviwo properties change</span>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-c">// Update html inputs when corresponding Inviwo properties change</span>
 <span class="pl-s1">inviwo</span><span class="pl-kos">.</span><span class="pl-en">subscribe</span><span class="pl-kos">(</span><span class="pl-s">"ordinalProperty"</span><span class="pl-kos">,</span> <span class="pl-s">"MeshCreator.torusRadius2_"</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
 <span class="pl-k">var</span> <span class="pl-s1">slider</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">"ordinalProperty"</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
 <span class="pl-k">var</span> <span class="pl-s1">ordinalPropertyValue</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">"ordinalPropertyValue"</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
@@ -433,7 +433,7 @@ See web_property_sync.html in the Webbrowser module</p>
 <h2>2019-04-30 Python Processors</h2>
 <p>Inviwo Processors can now be implemented directly in Python by creating a python class and deriving from inviwopy.Processor.<br>
 Bellow follows an example of a python processor:</p>
-<div class="highlight highlight-source-python"><pre><span class="pl-c"># Name: PythonExample </span>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-c"># Name: PythonExample </span>
 <span class="pl-k">import</span> <span class="pl-s1">inviwopy</span> <span class="pl-k">as</span> <span class="pl-s1">ivw</span>
 
 <span class="pl-k">class</span> <span class="pl-v">PythonExample</span>(<span class="pl-s1">ivw</span>.<span class="pl-v">Processor</span>):
@@ -471,7 +471,7 @@ To register an Inviwo python processor one can put in in the /python_processor o
 <h2>2019-04-30 Python Applications</h2>
 <p>It is now possible to run inviwo directly from python using a new inviwopyapp python package found in <code class="notranslate">apps/inviwopyapp</code>.<br>
 An example of running inviwo can be found in <code class="notranslate">apps/inviwopyapp/inviwo.py</code>.</p>
-<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> <span class="pl-s1">inviwopy</span> <span class="pl-k">as</span> <span class="pl-s1">ivw</span>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">import</span> <span class="pl-s1">inviwopy</span> <span class="pl-k">as</span> <span class="pl-s1">ivw</span>
 <span class="pl-k">import</span> <span class="pl-s1">inviwopyapp</span> <span class="pl-k">as</span> <span class="pl-s1">qt</span>
 
 <span class="pl-k">if</span> <span class="pl-s1">__name__</span> <span class="pl-c1">==</span> <span class="pl-s">'__main__'</span>:
@@ -502,14 +502,14 @@ An example of running inviwo can be found in <code class="notranslate">apps/invi
 <p>Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding <code class="notranslate">Invert Range</code> property of the axis. In addition, the filtering handles can be hidden if necessary (<code class="notranslate">Axes Settings</code> → <code class="notranslate">Handles Visible</code>).</p>
 <h2>2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)</h2>
 <p>Types of breaking changes:</p>
-<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/plotting/datastructures/dataframe.h<span class="pl-pds">&gt;</span></span>
+<div class="highlight highlight-source-c++"><pre class="notranslate">#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/plotting/datastructures/dataframe.h<span class="pl-pds">&gt;</span></span>
 #<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/plotting/datastructures/dataframeutil.h<span class="pl-pds">&gt;</span></span>
 #<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/plotting/datastructures/column.h<span class="pl-pds">&gt;</span></span>
 
 plot::DataFrame
 plot::Column</pre></div>
 <p>which need to be changed to</p>
-<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/dataframe/datastructures/dataframe.h<span class="pl-pds">&gt;</span></span>
+<div class="highlight highlight-source-c++"><pre class="notranslate">#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/dataframe/datastructures/dataframe.h<span class="pl-pds">&gt;</span></span>
 #<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/dataframe/datastructures/dataframeutil.h<span class="pl-pds">&gt;</span></span>
 #<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/dataframe/datastructures/column.h<span class="pl-pds">&gt;</span></span>
 <span class="pl-c"><span class="pl-c">//</span> Namespace plot removed</span>
@@ -541,7 +541,7 @@ except for files under <code class="notranslate">/ext</code>, <code class="notra
 <h2>2018-11-14</h2>
 <p>Added an option to control if a module should be on by default, and remove the old global setting.<br>
 To enable the module by default add the following to the module <code class="notranslate">depends.cmake</code> file:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-en">set</span>(EnableByDefault ON)</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">set</span>(EnableByDefault ON)</pre></div>
 <h2>2018-11-14</h2>
 <p>A new inviwo-meta library and an inviwo-meta-cli commandline app has been added to supersede the <code class="notranslate">make-new-module.py</code> and <code class="notranslate">make-new-file.py</code> python scripts. The library is also exposed in the tools menu of inviwo. Note that the inviwo-meta library relies on C++17 features and, thus, requires a recent compiler.</p>
 <h2>2018-11-14</h2>
@@ -553,9 +553,9 @@ For a module this means <code class="notranslate">{build folder}/modules/{module
 <pre class="notranslate"><code class="notranslate">{build folder}/modules/core/include/inviwo/core/
 </code></pre>
 <p>Which means that for the module loading in apps</p>
-<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>moduleregistration.h<span class="pl-pds">&gt;</span></span></pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate">#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>moduleregistration.h<span class="pl-pds">&gt;</span></span></pre></div>
 <p>needs to be changed to</p>
-<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/moduleregistration.h<span class="pl-pds">&gt;</span></span></pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate">#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/moduleregistration.h<span class="pl-pds">&gt;</span></span></pre></div>
 <h2>2018-11-14</h2>
 <p>New Module structure. We have introduced a new module structure where we separate headers and source files in the same way as it was already done for the core part of inviwo. Hence, module headers should now be placed under the include folder like:</p>
 <pre class="notranslate"><code class="notranslate">.../{module name}/include/{organization}/{module name}/
@@ -565,7 +565,7 @@ For a module this means <code class="notranslate">{build folder}/modules/{module
 </code></pre>
 <p><code class="notranslate">{module name}</code> it the lower case name of the module, <code class="notranslate">{organization}</code> default to inviwo but can be user-specified.<br>
 The headers can then be included using</p>
-<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>{organization}/{module name}/header.h<span class="pl-pds">&gt;</span></span></pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate">#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>{organization}/{module name}/header.h<span class="pl-pds">&gt;</span></span></pre></div>
 <p>The implementation is backwards compatible so old modules can continue to exist, but the structure is considered deprecated.<br>
 The main reasons for the change are to make packaging of headers easier and to prevent accidentally including headers from modules without depending on them.</p>
 <h2>2018-11-05</h2>
@@ -592,36 +592,36 @@ Invalid input is indicated by red border and changes discarded if either <code c
 <p>InviwoApplicationQt now has the same order of constructor arguments as InviwoApplication.</p>
 <h2>2018-08-21</h2>
 <p>The property class identifier system no longer uses the <code class="notranslate">InviwoPropertyInfo</code> / <code class="notranslate">PropertyClassIdentifier</code> macros but rather implements</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">virtual</span> std::string <span class="pl-en">getClassIdentifier</span>() <span class="pl-k">const</span> <span class="pl-k">override</span></pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">virtual</span> std::string <span class="pl-en">getClassIdentifier</span>() <span class="pl-k">const</span> <span class="pl-k">override</span></pre></div>
 <p>The static class identifier</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">static</span> <span class="pl-k">const</span> std::string CLASS_IDENTIFIER</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">static</span> <span class="pl-k">const</span> std::string CLASS_IDENTIFIER</pre></div>
 <p>can still be added manually, but the preferred way is to either use</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">static</span> <span class="pl-k">const</span> std::string classIdentifier</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">static</span> <span class="pl-k">const</span> std::string classIdentifier</pre></div>
 <p>or specialize the <code class="notranslate">PropertyTraits</code> like:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;&gt;
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">template </span>&lt;&gt;
 <span class="pl-k">struct</span> <span class="pl-en">PropertyTraits</span>&lt;MyProperty&gt; {
     <span class="pl-k">static</span> std::string <span class="pl-en">classIdentifier</span>() {
         <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>org.somename.myproperty<span class="pl-pds">"</span></span>;
     }
 };</pre></div>
 <p>To access a class identifier of a property type statically, the <code class="notranslate">PropertyTraits</code> class should be used</p>
-<div class="highlight highlight-source-c++"><pre>PropertyTraits&lt;MyProperty&gt;::classIdentifier()</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate">PropertyTraits&lt;MyProperty&gt;::classIdentifier()</pre></div>
 <p>instead of accessing the <code class="notranslate">CLASS_IDENTIFIER</code> directly.</p>
 <p>An enum traits class has been added to help working with enums and serialization, especially in the case of OptionProperties.<br>
 For example given an enum:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">enum</span> <span class="pl-k">class</span> <span class="pl-en">MyEnum</span> { a, b };</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">enum</span> <span class="pl-k">class</span> <span class="pl-en">MyEnum</span> { a, b };</pre></div>
 <p>EnumTraits can be specialized to provided a name for <code class="notranslate">MyEnum</code>, i.e.</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;&gt;
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">template </span>&lt;&gt;
 <span class="pl-k">struct</span> <span class="pl-en">EnumTraits</span>&lt;MyEnum&gt; {
     <span class="pl-k">static</span> std::string <span class="pl-en">name</span>() {<span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>MyEnum<span class="pl-pds">"</span></span>; }
 };</pre></div>
 <p>This name will then be used by the TemplateOptionProperty in its class identifier.</p>
-<div class="highlight highlight-source-c++"><pre>TemplateOptionProperty&lt;MyEnum&gt; <span class="pl-en">prop</span>(<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span>);    
+<div class="highlight highlight-source-c++"><pre class="notranslate">TemplateOptionProperty&lt;MyEnum&gt; <span class="pl-en">prop</span>(<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span>);    
 prop.getClassIdentifier();</pre></div>
 <p>which will use</p>
-<div class="highlight highlight-source-c++"><pre>PropertyTraits&lt;TemplateOptionProperty&lt;MyEnum&gt;&gt;::classIdentifier;</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate">PropertyTraits&lt;TemplateOptionProperty&lt;MyEnum&gt;&gt;::classIdentifier;</pre></div>
 <p>which then resolves to</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>org.inviwo.OptionPropertyMyEnum<span class="pl-pds">"</span></span>;</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-s"><span class="pl-pds">"</span>org.inviwo.OptionPropertyMyEnum<span class="pl-pds">"</span></span>;</pre></div>
 <p>This makes it possible to differentiate <code class="notranslate">MyEnum</code> from other enum TemplateOptionPropertys.</p>
 <h2>2018-09-19 Web browser</h2>
 <p>Use html5 web pages inside of Inviwo. Uses Chromium Embedded Framework (CEF) to render web pages off-screen. The rendered web page is transferred to an Inviwo Image.<br>
@@ -629,7 +629,7 @@ Inviwo properties can be synchronized using javascript, see the web browser modu
 <h2>2018-07-26 ListProperty</h2>
 <p>Added <code class="notranslate">ListProperty</code>, a new property for dynamically adding and removing properties.<br>
 A ListProperty holds a number of "prefab" objects, i.e. unique_ptr to properties, which are used to instantiate new list entries. The property widget features small "x" buttons for removing individual elements (if removal is enabled). Pressing the "+" button next to the property label adds new elements (if adding is enabled). In case multiple prefabs exist, a drop-down menu is shown when pressing the "+" button.</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-c"><span class="pl-c">//</span> using a single prefab object and at most 10 elements</span>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-c"><span class="pl-c">//</span> using a single prefab object and at most 10 elements</span>
 ListProperty <span class="pl-en">listProperty</span>(<span class="pl-s"><span class="pl-pds">"</span>myListProperty<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>My ListProperty<span class="pl-pds">"</span></span>,
     std::make_unique&lt;BoolProperty&gt;(<span class="pl-s"><span class="pl-pds">"</span>boolProp<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>BoolProperty<span class="pl-pds">"</span></span>, <span class="pl-c1">true</span>), 10);
 
@@ -643,7 +643,7 @@ ListProperty <span class="pl-en">listProperty</span>(<span class="pl-s"><span cl
         <span class="pl-k">return</span> v;
     }());</pre></div>
 <p>This also works when using different types of properties as prefab objects:</p>
-<div class="highlight highlight-source-c++"><pre>ListProperty <span class="pl-en">listProperty</span>(<span class="pl-s"><span class="pl-pds">"</span>myListProperty<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>My List Property<span class="pl-pds">"</span></span>, 
+<div class="highlight highlight-source-c++"><pre class="notranslate">ListProperty <span class="pl-en">listProperty</span>(<span class="pl-s"><span class="pl-pds">"</span>myListProperty<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>My List Property<span class="pl-pds">"</span></span>, 
     []() {
         std::vector&lt;std::unique_ptr&lt;Property&gt;&gt; v = {
             std::make_unique&lt;BoolProperty&gt;(<span class="pl-s"><span class="pl-pds">"</span>boolProperty1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Boolean Flag<span class="pl-pds">"</span></span>, <span class="pl-c1">true</span>);
@@ -664,10 +664,10 @@ see how they are used.</p>
 <h2>2018-06-28 GLM Version Update</h2>
 <p>GLM was updated to the new 0.9.9.0 version. Major changes are listed at <a href="https://github.com/g-truc/glm/releases/tag/0.9.9.0">https://github.com/g-truc/glm/releases/tag/0.9.9.0</a><br>
 Notable changes include the include of the vector / matrix dimension as a template argument, so the main types are now</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;glm::<span class="pl-c1">length_t</span> L, <span class="pl-k">typename</span> T, glm::qualifier Q&gt;
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">template </span>&lt;glm::<span class="pl-c1">length_t</span> L, <span class="pl-k">typename</span> T, glm::qualifier Q&gt;
 glm::vec&lt;L, T, Q&gt; </pre></div>
 <p>and</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;glm::<span class="pl-c1">length_t</span> C, glm::<span class="pl-c1">length_t</span> R, <span class="pl-k">typename</span> T, glm::qualifier Q&gt;
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">template </span>&lt;glm::<span class="pl-c1">length_t</span> C, glm::<span class="pl-c1">length_t</span> R, <span class="pl-k">typename</span> T, glm::qualifier Q&gt;
 glm::mat&lt;C, R, T, Q&gt;</pre></div>
 <p>Most code should continue working as before. Except for <strong>default constructed values that now are left uninitialized</strong>. Where as before vec where initialized to 0 and mat to identify. This change can <strong>break</strong> user code we have seen.</p>
 <h2>2018-05-02 Refactored Transfer Function</h2>
@@ -722,7 +722,7 @@ The functions in question have been marked as deprecated (<code class="notransla
 <h2>2017-11-09 Port traits refactoring</h2>
 <p>The old port_traits was previously used to acquire information, mainly class identifiers, about data objects used in ports and ports them self. Here we have separated port_traits into PortTraits (only classIdentifier) and DataTraits (with classIdentifier, dataName, colorCode and info). Where DataTraits are only used for data objects and PortTraits only for ports. The naming has also been updated to match the inviwo style better.</p>
 <p>Hence if you have your own port_traits specialization it has to be replaced by something like the following for a Port:</p>
-<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/ports/porttraits.h<span class="pl-pds">&gt;</span></span>
+<div class="highlight highlight-source-c++"><pre class="notranslate">#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/ports/porttraits.h<span class="pl-pds">&gt;</span></span>
 <span class="pl-k">template </span>&lt;<span class="pl-k">typename</span> T&gt;
 <span class="pl-k">struct</span> <span class="pl-en">PortTraits</span>&lt;MyPort&lt;T&gt;&gt; {
     <span class="pl-k">static</span> std::string <span class="pl-en">classIdentifier</span>() {
@@ -730,7 +730,7 @@ The functions in question have been marked as deprecated (<code class="notransla
     }
 };</pre></div>
 <p>And for a data object, i.e. something that you put in a port.</p>
-<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/datastructures/datatraits.h<span class="pl-pds">&gt;</span></span>
+<div class="highlight highlight-source-c++"><pre class="notranslate">#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/datastructures/datatraits.h<span class="pl-pds">&gt;</span></span>
 <span class="pl-k">template </span>&lt;&gt;
 <span class="pl-k">struct</span> <span class="pl-en">DataTraits</span>&lt;MyDataType&gt; {
     <span class="pl-k">static</span> std::string <span class="pl-en">classIdentifier</span>() {
@@ -769,7 +769,7 @@ You can choose to only load a subset of existing modules by modifying inviwo-ena
 <li>Processor performEvaluationRequest has been removed, instead call <code class="notranslate">Processor::invalidate</code> to trigger a network evaluation.</li>
 <li>If you happen to override <code class="notranslate">Processor::isReady()</code>, that will no longer work. You instead have to set the updater for the <code class="notranslate">isReady_</code> StateCoordinator. Most likely, you will just need to move your isReady code to a functor and set it in the constructor of your processor:</li>
 </ul>
-<div class="highlight highlight-source-c++"><pre><span class="pl-c"><span class="pl-c">//</span> (default isReady() behavior)</span>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-c"><span class="pl-c">//</span> (default isReady() behavior)</span>
 isReady_.setUpdate([<span class="pl-c1">this</span>]() { <span class="pl-k">return</span> <span class="pl-c1">allInportsAreReady</span>(); });</pre></div>
 <ul>
 <li>This also applies to <code class="notranslate">isSink_</code> and <code class="notranslate">isSource_</code> in a similar manner. To mark a processor as sink, use <code class="notranslate">isSink_.setUpdate([]() { return true; });</code></li>
@@ -780,11 +780,11 @@ As this is now a state that is pushed instead of pulled you should also call <co
 <h2>2016-11-11 - Moved the QtWidgets project into the modules folder.</h2>
 <p>Moved <code class="notranslate">InviwoApplicationQt</code> from <code class="notranslate">QtWidgets</code> into a new project InviwoQtApplicationBase.<br>
 If a module was using <code class="notranslate">InviwoApplicationQt</code> to get the main window, for example:</p>
-<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/qt/qtwidgets/inviwoapplicationqt.h<span class="pl-pds">&gt;</span></span> 
+<div class="highlight highlight-source-c++"><pre class="notranslate">#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/qt/qtwidgets/inviwoapplicationqt.h<span class="pl-pds">&gt;</span></span> 
 <span class="pl-k">auto</span> app = <span class="pl-k">dynamic_cast</span>&lt;InviwoApplicationQt*&gt;(InviwoApplication::getPtr());
 <span class="pl-k">auto</span> mainWindow = app-&gt;<span class="pl-en">getMainWindow</span>();</pre></div>
 <p>This can be exchanged with:</p>
-<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/qtwidgets/inviwoqtutils.h<span class="pl-pds">&gt;</span></span>  
+<div class="highlight highlight-source-c++"><pre class="notranslate">#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/qtwidgets/inviwoqtutils.h<span class="pl-pds">&gt;</span></span>  
 <span class="pl-k">auto</span> mainWindow = utilqt::getApplicationMainWindow();</pre></div>
 <p>Perform search and replace to accommodate changes:<br>
 Search:  <code class="notranslate">#include &lt;inviwo/qt/widgets/inviwoapplicationqt.h&gt;`` Replace: </code>#include &lt;inviwo/qt/applicationbase/inviwoapplicationqt.h&gt;<code class="notranslate">  Furthermore, make your project depend on</code>InviwoQtApplicationBase<code class="notranslate">instead of</code>InviwoQtWidgets`</p>
@@ -823,13 +823,13 @@ The vector interpolation was removed from the Interpolation helper class. The re
 To simplify refactoring there is a script in <code class="notranslate">tools/refactoring/enumfixes.py</code> that one can run to update code. You only have to specify the relevant paths in the script first.</p>
 <h2>2015-10-28</h2>
 <p>Processors: Updated to use new structure of ProcessorInfo. The macro</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-en">InviwoProcessorInfo</span>();</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">InviwoProcessorInfo</span>();</pre></div>
 <p>should be replaced with:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">virtual</span> <span class="pl-k">const</span> ProcessorInfo <span class="pl-en">getProcessorInfo</span>() <span class="pl-k">const</span> <span class="pl-k">override</span>;
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">virtual</span> <span class="pl-k">const</span> ProcessorInfo <span class="pl-en">getProcessorInfo</span>() <span class="pl-k">const</span> <span class="pl-k">override</span>;
 <span class="pl-k">static</span> <span class="pl-k">const</span> ProcessorInfo processorInfo_;</pre></div>
 <p>in the header file.</p>
 <p>In the cpp file the macros, <code class="notranslate">ProcessorClassIdentifier(VolumeRaycaster, "org.inviwo.VolumeRaycaster");</code> etc. for the static members are replaced with:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">const</span> ProcessorInfo VolumeRaycaster::processorInfo_{
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">const</span> ProcessorInfo VolumeRaycaster::processorInfo_{
     <span class="pl-s"><span class="pl-pds">"</span>org.inviwo.VolumeRaycaster<span class="pl-pds">"</span></span>,  <span class="pl-c"><span class="pl-c">//</span> Class identifer</span>
     <span class="pl-s"><span class="pl-pds">"</span>Volume Raycaster<span class="pl-pds">"</span></span>,            <span class="pl-c"><span class="pl-c">//</span> Display name</span>
     <span class="pl-s"><span class="pl-pds">"</span>Volume Rendering<span class="pl-pds">"</span></span>,            <span class="pl-c"><span class="pl-c">//</span> Category</span>
@@ -841,7 +841,7 @@ To simplify refactoring there is a script in <code class="notranslate">tools/ref
 }</pre></div>
 <p>The old macros should still work, but will be deprecated before next release.</p>
 <p>The name of the static member <code class="notranslate">processorInfo_</code> is important since that is what the <code class="notranslate">ProcessorTraits</code> looks for when it tries to find the information statically. If you want to have a different name or generate the information dynamically you can specialize the <code class="notranslate">ProcessorTraits</code> for your processor. Here is an example for the template processor BasisTransform:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;&gt;
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">template </span>&lt;&gt;
 <span class="pl-k">struct</span> <span class="pl-en">ProcessorTraits</span>&lt;BasisTransform&lt;Mesh&gt;&gt; {
     <span class="pl-k">static</span> ProcessorInfo <span class="pl-en">getProcessorInfo</span>() {
         <span class="pl-k">return</span> {
@@ -858,7 +858,7 @@ To simplify refactoring there is a script in <code class="notranslate">tools/ref
 You will need to edit some path information in it, but otherwise it should be automatic.</p>
 <p><strong>Converting files to UTF-8</strong></p>
 <p>If you need to convert your files to UTF-8 you can use notepad++ and the following python script (python plugin installer can be found at <a href="http://sourceforge.net/projects/npppythonscript/files/" rel="nofollow">http://sourceforge.net/projects/npppythonscript/files/</a>):</p>
-<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> <span class="pl-s1">os</span>;
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">import</span> <span class="pl-s1">os</span>;
 <span class="pl-k">import</span> <span class="pl-s1">sys</span>;
 <span class="pl-c"># Path to the folder with files to convert</span>
 <span class="pl-s1">filePathSrc</span><span class="pl-c1">=</span><span class="pl-s">"C:<span class="pl-cce">\\</span>inviwo<span class="pl-cce">\\</span>vistinct<span class="pl-cce">\\</span>"</span> 
@@ -876,15 +876,15 @@ You will need to edit some path information in it, but otherwise it should be au
 <p><strong>CodeState</strong> CodeState is now an enum class, i.e. <code class="notranslate">CODE_STATE_STABLE</code> -&gt; <code class="notranslate">CodeState::Stable</code> etc</p>
 <h2>2015-10-07</h2>
 <p><strong>Modules</strong> The module registration has change a bit a module now has to take a  <code class="notranslate">InviwoApplication*</code> in the constructor, like:</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">class</span> <span class="pl-en">IVW_MODULE_BASEGL_API</span> BaseGLModule : public InviwoModule {
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">class</span> <span class="pl-en">IVW_MODULE_BASEGL_API</span> BaseGLModule : public InviwoModule {
 <span class="pl-k">public:</span>
     <span class="pl-en">BaseGLModule</span>(InviwoApplication* app);
 };</pre></div>
 <p>And then pass that on to the base class together with the module name</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-en">BaseGLModule::BaseGLModule</span>(InviwoApplication* app) : InviwoModule(app, <span class="pl-s"><span class="pl-pds">"</span>BaseGL<span class="pl-pds">"</span></span>) {</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">BaseGLModule::BaseGLModule</span>(InviwoApplication* app) : InviwoModule(app, <span class="pl-s"><span class="pl-pds">"</span>BaseGL<span class="pl-pds">"</span></span>) {</pre></div>
 <p>There is also not any <code class="notranslate">initialize()</code> do <code class="notranslate">deinitialize()</code> function anymore, just use the constructor and destructor.</p>
 <p>The MACROS for registering object in the module are now replaced by proper function. The most common one for processor now look like this:</p>
-<div class="highlight highlight-source-c++"><pre>registerProcessor&lt;Background&gt;();</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate">registerProcessor&lt;Background&gt;();</pre></div>
 <p>For other object refer to InviwoModule.</p>
 <p>Is is also generally encouraged to avoid using any singletons, especially during initialization but also in general. In the long run we are working on removing most of the.</p>
 <h2>2015-10-01</h2>
@@ -939,7 +939,7 @@ functions now take the shader by reference not pointer.</p>
 <ul>
 <li><strong>Shaders</strong> A shader now has a <code class="notranslate">onReload(std::function&lt;void()&gt;)</code> callback that processors that want to be reloaded on shader reload has to use. So now only affected processors will be invalidated on shader modifications. To get the same behavior as before this needs to be added to an processor using shaders:</li>
 </ul>
-<div class="highlight highlight-source-c++"><pre>shader_.onReload([<span class="pl-c1">this</span>]() { <span class="pl-c1">invalidate</span>(INVALID_RESOURCES); });</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate">shader_.onReload([<span class="pl-c1">this</span>]() { <span class="pl-c1">invalidate</span>(INVALID_RESOURCES); });</pre></div>
 <h2>2015-07-15</h2>
 <ul>
 <li><strong>Timers</strong> The <code class="notranslate">InviwoApplication::createTimer()</code> factory has been removed in favor of a pure c++11 timer. Hence there is no need for a factory. The new class is very similar and can be found in <code class="notranslate">inviwo/core/util/timer.h</code></li>
@@ -948,7 +948,7 @@ functions now take the shader by reference not pointer.</p>
 <ul>
 <li><strong>Observers</strong> The observers now use a unordered_set and the "observers_" member is now typed correctly hence there is no need to static cast. And since unordered_set does not have reverse iterators, if you use that you need to update. The current preferred use looks like this:</li>
 </ul>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">void</span> <span class="pl-en">PropertyObservable::notifyObserversOnSetVisible</span>(<span class="pl-k">bool</span> visible) <span class="pl-k">const</span> {
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">void</span> <span class="pl-en">PropertyObservable::notifyObserversOnSetVisible</span>(<span class="pl-k">bool</span> visible) <span class="pl-k">const</span> {
     <span class="pl-k">for</span> (<span class="pl-k">auto</span> o : observers_) o-&gt;<span class="pl-c1">onSetVisible</span>(visible);
 }</pre></div>
 <ul>
@@ -958,7 +958,7 @@ functions now take the shader by reference not pointer.</p>
 <ul>
 <li><strong>Threading</strong> For handling background work there are now two global functions</li>
 </ul>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;<span class="pl-k">class</span> <span class="pl-en">F</span>, <span class="pl-k">class</span>... Args&gt;
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">template </span>&lt;<span class="pl-k">class</span> <span class="pl-en">F</span>, <span class="pl-k">class</span>... Args&gt;
 <span class="pl-k">auto</span> <span class="pl-en">dispatchFront</span>(F&amp;&amp; f, Args&amp;&amp;... args) -&gt;
     std::future&lt;typename std::result_of&lt;F(Args...)&gt;::type&gt;
 template &lt;class F, class... Args&gt;
@@ -967,9 +967,9 @@ auto dispatchPool(F&amp;&amp; f, Args&amp;&amp;... args) -&gt;
 <p><code class="notranslate">dispatchFront</code> is used to submit a task to the Front thread, i.e. the thread that does handles the GUI and so far all the evaluation. Everything that can have side effects should be run in this thread, changing properties, updating the GUI, triggering evaluation etc.</p>
 <p><code class="notranslate">dispatchPool</code> is used to submit tasks to the thread pool. The size of the thread pool will by default be half of the number of cores and can be change is the system settings. It the pool size is 0 all submitted tasks will be run immediately. This is used in the regression to make sure everything is finished before we close inviwo. At this point we can not run OpenGL operations in the thread pool since we don't have any routines for how to handle the contexts.</p>
 <p>The return value of both <code class="notranslate">dispatchFront</code> and <code class="notranslate">dispatchPool</code> is a future&lt;...&gt; of the return value of the task given. Apart for getting the result of the task this future can be used to check whether the task has finished or is still running. Here is a small example:</p>
-<div class="highlight highlight-source-c++"><pre>std::future&lt;std::unique_ptr&lt;Volume&gt;&gt; result_;</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate">std::future&lt;std::unique_ptr&lt;Volume&gt;&gt; result_;</pre></div>
 <p>result here is a future holding the resulting volume from a subsampling. The following code submits the subsampling task to the thread pool and extracts the result from the future when the calculation is done.</p>
-<div class="highlight highlight-source-c++"><pre><span class="pl-k">void</span> <span class="pl-en">VolumeSubsample::process</span>() { 
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">void</span> <span class="pl-en">VolumeSubsample::process</span>() { 
     <span class="pl-k">if</span> (result_.<span class="pl-c1">valid</span>() &amp;&amp;
         result_.<span class="pl-c1">wait_for</span>(std::chrono::duration&lt;<span class="pl-k">int</span>, std::milli&gt;(<span class="pl-c1">0</span>)) ==
             std::future_status::ready) {

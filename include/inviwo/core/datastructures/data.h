@@ -34,6 +34,8 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationfactorymanager.h>
 
+#include <inviwo/core/util/demangle.h>
+
 #include <typeindex>
 #include <mutex>
 #include <unordered_map>
@@ -269,7 +271,20 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
             }
             return std::dynamic_pointer_cast<T>(data.lastValidRepresentation_);
         } else {
-            throw ConverterException("Found no converters", IVW_CONTEXT_CUSTOM("Data"));
+            auto buff = fmt::memory_buffer();
+            for (const auto& [converterId, converter] : factory->getConverters()) {
+                fmt::format_to(
+                    std::back_inserter(buff), "{}({}) -> {}({})\n",
+                    util::demangle(converterId.first.name()), converterId.first.hash_code(),
+                    util::demangle(converterId.second.name()), converterId.second.hash_code());
+            }
+            throw ConverterException(
+                IVW_CONTEXT_CUSTOM("Data"),
+                "Found no converters, Source {}({}),  Destination {}({})\nConverters:\n{}",
+                util::demangle(data.lastValidRepresentation_->getTypeIndex().name()),
+                data.lastValidRepresentation_->getTypeIndex().hash_code(),
+                util::demangle(typeid(T).name()), std::type_index(typeid(T)).hash_code(),
+                fmt::string_view(buff.data(), buff.size()));
         }
     }
 };
