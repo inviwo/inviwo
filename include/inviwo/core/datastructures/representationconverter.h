@@ -41,10 +41,7 @@ namespace inviwo {
 
 class IVW_CORE_API ConverterException : public Exception {
 public:
-    ConverterException(const std::string& message = "",
-                       ExceptionContext context = ExceptionContext())
-        : Exception(message, context) {}
-    virtual ~ConverterException() noexcept = default;
+    using Exception::Exception;
 };
 
 /**
