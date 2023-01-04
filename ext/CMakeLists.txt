@@ -317,19 +317,6 @@ if(WIN32) # Stackwalker for windows for stack traces in the log
     )
 endif()
 
-if(WIN32 AND MSVC)
-    option(IVW_CFG_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
-    if(IVW_CFG_MSVC_MEMLEAK_TEST)
-        message(STATUS "add subdirectory: vld")
-        add_subdirectory(vld)
-        ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core EXT
-            URL "https://kinddragon.github.io/vld/"
-            TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
-            FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
-        )
-    endif()
-endif()
-
 if(Python3_Development_FOUND)
     option(IVW_USE_EXTERNAL_PYBIND11 "Pybind11 is provided externaly" OFF)
     if(NOT IVW_USE_EXTERNAL_PYBIND11)

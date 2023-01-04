@@ -32,9 +32,3 @@
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/logcentral.h>
-
-#ifdef _MSC_VER
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-#include <vld.h>
-#endif
-#endif

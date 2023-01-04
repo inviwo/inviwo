@@ -60,14 +60,7 @@ int main(int argc, char** argv) {
 
     int ret = -1;
     {
-
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-        VLDDisable();
         ::testing::InitGoogleTest(&argc, argv);
-        VLDEnable();
-#else
-        ::testing::InitGoogleTest(&argc, argv);
-#endif
         ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }

@@ -29,11 +29,6 @@
 
 #ifdef _MSC_VER
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
-
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-#include <vld.h>
-#endif
-
 #endif
 
 #include <warn/push>
@@ -44,14 +39,7 @@
 int main(int argc, char** argv) {
     int ret = -1;
     {
-
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-        VLDDisable();
         ::testing::InitGoogleTest(&argc, argv);
-        VLDEnable();
-#else
-        ::testing::InitGoogleTest(&argc, argv);
-#endif
         ret = RUN_ALL_TESTS();
     }
 
