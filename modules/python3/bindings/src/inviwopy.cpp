@@ -32,6 +32,7 @@
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
 #include <warn/pop>
 
 #include <modules/python3/python3module.h>
@@ -76,7 +77,49 @@
 
 namespace py = pybind11;
 
+#ifdef INVIWO_ALL_DYN_LINK
 PYBIND11_MODULE(inviwopy, m) {
+#else
+// PYBIND11_EMBEDDED_MODULE(inviwopy, m) {
+
+static ::pybind11::module_::module_def pybind11_module_def_inviwopy;
+static void pybind11_init_inviwopy(::pybind11::module_&);
+static PyObject* pybind11_init_wrapper_inviwopy() {
+    auto m = ::pybind11::module_::create_extension_module("inviwopy", nullptr,
+                                                          &pybind11_module_def_inviwopy);
+    try {
+        pybind11_init_inviwopy(m);
+        return m.ptr();
+    } catch (pybind11::error_already_set& e) {
+        pybind11::raise_from(e, PyExc_ImportError, "initialization failed");
+        return nullptr;
+    } catch (const std::exception& e) {
+        PyErr_SetString(PyExc_ImportError, e.what());
+        return nullptr;
+    }
+}
+extern "C" PyObject* pybind11_init_impl_inviwopy();
+extern "C" PyObject* pybind11_init_impl_inviwopy() { return pybind11_init_wrapper_inviwopy(); }
+//::pybind11::detail::embedded_module pybind11_module_inviwopy("inviwopy",
+//                                                             pybind11_init_impl_inviwopy);
+
+namespace inviwo {
+void initInviwoPy() {
+    if (Py_IsInitialized() != 0) {
+        pybind11::pybind11_fail("Can't add new modules after the interpreter has been initialized");
+    }
+
+    auto result = PyImport_AppendInittab("inviwopy", pybind11_init_impl_inviwopy);
+    if (result == -1) {
+        pybind11::pybind11_fail("Insufficient memory to add a new module");
+    }
+}
+}  // namespace inviwo
+
+void pybind11_init_inviwopy(::pybind11::module_& m) {
+
+#endif
+
     using namespace inviwo;
     m.doc() = R"doc(
         Core API

@@ -32,6 +32,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
+#include <pybind11/embed.h>
 #include <warn/pop>
 
 #include <modules/python3/pybindflags.h>
@@ -257,4 +258,8 @@ void exposeBnL(py::module& m) {
 
 }  // namespace inviwo
 
+#ifdef INVIWO_ALL_DYN_LINK
 PYBIND11_MODULE(ivwbnl, m) { inviwo::exposeBnL(m); }
+#else
+PYBIND11_EMBEDDED_MODULE(ivwbnl, m) { inviwo::exposeBnL(m); }
+#endif

@@ -45,10 +45,10 @@ class Property;
 class IVW_MODULE_PYTHON3_API ProcessorTrampoline : public Processor,
                                                    public pybind11::trampoline_self_life_support {
 public:
-    /* Inherit the constructors */
+    // Inherit the constructors
     using Processor::Processor;
 
-    /* Trampoline (need one for each virtual function) */
+    // Trampoline (need one for each virtual function)
     virtual void initializeResources() override;
     virtual void process() override;
     virtual void doIfNotReady() override;
@@ -59,4 +59,5 @@ public:
     virtual void invokeEvent(Event* event) override;
     virtual void propagateEvent(Event* event, Outport* source) override;
 };
+
 }  // namespace inviwo
