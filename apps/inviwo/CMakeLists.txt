@@ -97,7 +97,6 @@ get_property(pymodules GLOBAL PROPERTY IVW_PYMODULE_LIST)
 if(pymodules)
     add_dependencies(inviwo ${pymodules})
 endif()
-ivw_memleak_setup(inviwo)
 
 # add a console version of inviwo.exe called inviwo-cli.exe
 if(WIN32)
@@ -131,8 +130,6 @@ if(WIN32)
 
     # prevent inviwo-cli from building in parallel with inviwo since that might cause errors with the moc generation
     add_dependencies(inviwo-cli inviwo)
-
-    ivw_memleak_setup(inviwo-cli)
 
     set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
         " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
