@@ -41,7 +41,6 @@ class Event;
 class Outport;
 class Property;
 
-/* Trampoline (need one for each virtual function) */
 void ProcessorTrampoline::initializeResources() {
     PYBIND11_OVERLOAD(void, Processor, initializeResources, );
 }

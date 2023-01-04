@@ -50,6 +50,10 @@
 #include <QMessageBox>
 #include <QApplication>
 
+#ifndef INVIWO_ALL_DYN_LINK
+#include <inviwopy/inviwopy.h>
+#endif
+
 int main(int argc, char** argv) {
     inviwo::LogCentral logger;
     inviwo::LogCentral::init(&logger);
@@ -94,7 +98,12 @@ int main(int argc, char** argv) {
 
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
+    
     inviwoApp.registerModules(inviwo::getModuleList());
+
+#ifndef INVIWO_ALL_DYN_LINK
+    inviwo::initInviwoPy();
+#endif
 
     qtApp.processEvents();
 

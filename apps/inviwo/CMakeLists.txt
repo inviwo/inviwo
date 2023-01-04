@@ -92,10 +92,14 @@ endif()
 
 # Add build dependency towards any pybind11 targets and inviwo,
 # if python is not enabled, this list will be empty
-
 get_property(pymodules GLOBAL PROPERTY IVW_PYMODULE_LIST)
 if(pymodules)
-    add_dependencies(inviwo ${pymodules})
+    if(BUILD_SHARED_LIBS)
+        add_dependencies(inviwo ${pymodules})
+    else()
+        #target_link_libraries(inviwo PRIVATE ${pymodules})
+        target_link_libraries(inviwo PRIVATE inviwopy)
+    endif()
 endif()
 
 # add a console version of inviwo.exe called inviwo-cli.exe

@@ -28,10 +28,20 @@
  *********************************************************************************/
 
 #include <inviwopy/pyprocessors.h>
+
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/operators.h>
+#include <pybind11/stl.h>
+#include <pybind11/trampoline_self_life_support.h>  // for trampoline_self_life_support
+#include <warn/pop>
+
 #include <inviwopy/vectoridentifierwrapper.h>
 #include <inviwopy/pypropertytypehook.h>
 
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
@@ -48,12 +58,6 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/python3/processors/pythonscriptprocessor.h>
 #include <modules/python3/processortrampoline.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
-#include <warn/pop>
 
 namespace inviwo {
 
