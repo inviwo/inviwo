@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/applicationbase/qtapptools.h>
+#include <inviwo/qt/applicationbase/qtlocale.h>
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>

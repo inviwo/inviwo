@@ -33,6 +33,7 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
 #include <inviwo/core/util/glmvec.h>                      // for dvec2, ivec2, ivec4, ivec3, uvec4
+#include <inviwo/qt/applicationbase/qtlocale.h>
 
 #include <cstddef>      // for size_t
 #include <ios>          // for ostringstream, istringstream
@@ -83,16 +84,6 @@ struct TFPropertyConcept;
 }
 
 namespace utilqt {
-
-/**
- * \brief getCurrentStdLocale
- * This function returns the current system locale provided by Qt.
- * If the Qt application has not been initialized, the returned
- * value is the environment's default locale.
- *
- * @return std::locale   Qt locale converted to std::locale
- */
-IVW_MODULE_QTWIDGETS_API std::locale getCurrentStdLocale();
 
 /**
  * \brief localize

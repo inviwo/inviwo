@@ -9,6 +9,7 @@ set(MOC_FILES
 # Add header files
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/qtapplicationbasemoduledefine.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/qtlocale.h
     ${MOC_FILES}
 )
 ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/ ${HEADER_FILES})
@@ -16,6 +17,7 @@ ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/ ${HE
 # Add source files
 set(SOURCE_FILES
     qtapptools.cpp
+    qtlocale.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
