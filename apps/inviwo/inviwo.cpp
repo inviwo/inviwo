@@ -47,6 +47,8 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include "inviwosplashscreen.h"
 #include <inviwo/sys/moduleloading.h>
+#include <inviwo/py/pythonhelper.h>
+
 
 #include <sstream>
 #include <algorithm>
@@ -90,6 +92,8 @@ int main(int argc, char** argv) {
     inviwo::InviwoSplashScreen splashScreen(clp.getShowSplashScreen());
     inviwoApp.setProgressCallback([&](std::string_view s) { splashScreen.showMessage(s); });
 
+    inviwo::initializePythonModules();
+
     splashScreen.show();
     splashScreen.showMessage("Loading application...");
     qtApp.processEvents();
@@ -101,6 +105,7 @@ int main(int argc, char** argv) {
     inviwo::util::registerModulesFiltered(inviwoApp.getModuleManager(), filter,
                                           inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
                                           clp.getModuleSearchPaths());
+
 
     qtApp.processEvents();
 

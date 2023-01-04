@@ -51,7 +51,7 @@ endfunction()
 # generete python config file
 function(ivw_private_create_pyconfig)
     set(options )
-    set(oneValueArgs TARGET)
+    set(oneValueArgs )
     set(multiValueArgs MODULE_DIRS ENABLED_MODULES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -66,9 +66,6 @@ function(ivw_private_create_pyconfig)
     endif()
     if(NOT ARG_ENABLED_MODULES)
         message(FATAL_ERROR "ivw_private_create_pyconfig: ENABLED_MODULES not specified")
-    endif()
-    if(NOT ARG_TARGET)
-        message(FATAL_ERROR "ivw_private_create_pyconfig: TARGET not specified")
     endif()
 
     find_package(Git QUIET)
@@ -94,6 +91,25 @@ function(ivw_private_create_pyconfig)
         "path          = ${GIT_EXECUTABLE}\n")
 
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/pyconfig.ini CONTENT "${content}")
+endfunction()
+
+# generete python config file for executable
+function(ivw_private_create_pyconfig_exe)
+    set(options )
+    set(oneValueArgs TARGET)
+    set(multiValueArgs )
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(ARG_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "ivw_private_create_pyconfig: Unparsed arguments ${ARG_UNPARSED_ARGUMENTS}")
+    endif()
+    if(ARG_KEYWORDS_MISSING_VALUES)
+        message(FATAL_ERROR "ivw_private_create_pyconfig: Missing values for keywords ${ARG_KEYWORDS_MISSING_VALUES}")
+    endif()
+    if(NOT ARG_TARGET)
+        message(FATAL_ERROR "ivw_private_create_pyconfig: TARGET not specified")
+    endif()
+
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/pyconfig-$<CONFIG>.ini CONTENT "[Inviwo]\nexecutable = $<TARGET_FILE:${ARG_TARGET}>\n")
 endfunction()
 

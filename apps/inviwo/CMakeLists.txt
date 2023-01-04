@@ -44,6 +44,7 @@ add_executable(inviwo MACOSX_BUNDLE WIN32
 target_link_libraries(inviwo PUBLIC 
     inviwo::core
     inviwo::module-system
+    inviwo::python-helper
     inviwo::qtapplicationbase
     inviwo::qteditor
     Qt6::Core
@@ -76,14 +77,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CPACK_BINARY_DRAGNDROP ON)
 endif()
 
-
-# Add build dependency towards any pybind11 targets and inviwo,
-# if python is not enabled, this list will be empty
-
-get_property(pymodules GLOBAL PROPERTY IVW_PYMODULE_LIST)
-if(pymodules)
-    add_dependencies(inviwo ${pymodules})
-endif()
 
 # add a console version of inviwo.exe called inviwo-cli.exe
 if(WIN32)
@@ -129,3 +122,5 @@ ivw_deploy_qt(inviwo)
 if(IVW_PACKAGE_SELECT_APP STREQUAL "inviwo")
     include(packaging/packaging.cmake) # Package creation
 endif()
+
+ivw_private_create_pyconfig_exe(TARGET inviwo)

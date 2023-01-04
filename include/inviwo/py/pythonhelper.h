@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,4 +29,8 @@
 
 #pragma once
 
-namespace pybind11 {}  // namespace pybind11
+#include <inviwo/py/inviwopythonhelperdefine.h>
+
+namespace inviwo {
+    IVW_PYTHONHELPER_API void initializePythonModules();
+}

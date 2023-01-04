@@ -41,6 +41,8 @@
 #include <inviwopy/pypropertytypehook.h>
 
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorfactoryobject.h>

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2013-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,38 @@
  *
  *********************************************************************************/
 
-#include <ivwdataframe/ivwdataframe.h>
+#pragma once
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-#include <warn/pop>
-
-#include <modules/python3/python3module.h>
-#include <modules/python3/pybindutils.h>
-#include <modules/python3/pythoninterpreter.h>
-#include <modules/python3/pybindmodule.h>
-
-#include <ivwdataframe/pydataframe.h>
-
-namespace py = pybind11;
-
-INVIWO_PYBIND_MODULE(ivwdataframe, m) {
-
-    py::module::import("inviwopy");
-
-    using namespace inviwo;
-
-    m.doc() = R"doc(
-        DataFrame Module API
-        )doc";
-
-    exposeDataFrame(m);
-}
+#ifdef INVIWO_ALL_DYN_LINK  // DYNAMIC
+// If we are building DLL files we must declare dllexport/dllimport
+#ifdef IVW_PYTHONHELPER_EXPORTS
+#ifdef _WIN32
+#define IVW_PYTHONHELPER_API __declspec(dllexport)
+#define IVW_PYTHONHELPER_EXT
+#define IVW_PYTHONHELPER_TMPL_EXP
+#define IVW_PYTHONHELPER_TMPL_INST __declspec(dllexport)
+#else  // UNIX (GCC)
+#define IVW_PYTHONHELPER_API __attribute__((visibility("default")))
+#define IVW_PYTHONHELPER_EXT
+#define IVW_PYTHONHELPER_TMPL_EXP __attribute__((__visibility__("default")))
+#define IVW_PYTHONHELPER_TMPL_INST
+#endif
+#else
+#ifdef _WIN32
+#define IVW_PYTHONHELPER_API __declspec(dllimport)
+#define IVW_PYTHONHELPER_EXT extern
+#define IVW_PYTHONHELPER_TMPL_EXP __declspec(dllimport)
+#define IVW_PYTHONHELPER_TMPL_INST
+#else
+#define IVW_PYTHONHELPER_API
+#define IVW_PYTHONHELPER_EXT extern
+#define IVW_PYTHONHELPER_TMPL_EXP __attribute__((__visibility__("default")))
+#define IVW_PYTHONHELPER_TMPL_INST
+#endif
+#endif
+#else  // STATIC
+#define IVW_PYTHONHELPER_API
+#define IVW_PYTHONHELPER_EXT extern
+#define IVW_PYTHONHELPER_TMPL_EXP
+#define IVW_PYTHONHELPER_TMPL_INST
+#endif

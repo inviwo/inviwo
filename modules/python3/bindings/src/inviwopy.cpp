@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#include <inviwopy/inviwopy.h>
-
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
 #include <warn/pop>
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
+#include <modules/python3/pybindmodule.h>
 #include <modules/python3/pythoninterpreter.h>
 
 #include <inviwopy/pybitset.h>
@@ -76,7 +76,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(inviwopy, m) {
+INVIWO_PYBIND_MODULE(inviwopy, m) {
     using namespace inviwo;
     m.doc() = R"doc(
         Core API

@@ -130,6 +130,7 @@ if(IVW_TEST_INTEGRATION_TESTS OR IVW_TEST_UNIT_TESTS)
 endif()
 
 add_subdirectory(src/sys)                    # Add inviwo module system
+add_subdirectory(src/py)                     # Add inviwo python helper
 
 # Add all the applications, uses the modules.
 if(IVW_ENABLE_QT)

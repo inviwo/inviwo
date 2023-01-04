@@ -8,6 +8,7 @@ set(HEADER_FILES
     include/modules/python3/processortrampoline.h
     include/modules/python3/pybindflags.h
     include/modules/python3/pybindutils.h
+    include/modules/python3/pybindmodule.h
     include/modules/python3/pyportutils.h
     include/modules/python3/python3module.h
     include/modules/python3/python3moduledefine.h
