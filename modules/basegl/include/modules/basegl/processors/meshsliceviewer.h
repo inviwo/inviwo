@@ -76,6 +76,7 @@ private:
     FloatVec3Property position_;
     FloatVec3Property normal_;
     IntSize2Property sliceResolution_;
+    FloatProperty width_;
     CameraProperty camera_;
 
     void planeSettingsChanged();
