@@ -33,7 +33,7 @@
 #include <modules/base/algorithm/mesh/meshclipping.h>
 #include <modules/basegl/processors/meshsliceviewer.h>
 #include <inviwo/core/datastructures/geometry/plane.h>
-
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 
@@ -86,9 +86,9 @@ void MeshSliceViewer::process() {
         auto clippedPlaneGeom = meshutil::clipMeshAgainstPlane(
             *meshutil::clipMeshAgainstPlane(*inport_.getData(), Plane(worldPos, -normal), true),  // Cut Slicing plane
                                                                 Plane(worldPos - 1.0f * normal, normal), true); // Cut backside
-        const auto aabb2 = meshutil::axisAlignedBoundingBox(*clippedPlaneGeom);
-        LogInfo("AABB before cut:" << glm::to_string(aabb1.first) << ", " << glm::to_string(aabb1.second));
-        LogInfo("AABB after cut:" << glm::to_string(aabb2.first) << ", " << glm::to_string(aabb2.second));
+        if(clippedPlaneGeom->getIndexBuffers().size() == 0){
+            clippedPlaneGeom->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
+        }
         clippedPlaneGeom->setModelMatrix(inport_.getData()->getModelMatrix());
         clippedPlaneGeom->setWorldMatrix(inport_.getData()->getWorldMatrix());
         meshOut_.setData(clippedPlaneGeom);
