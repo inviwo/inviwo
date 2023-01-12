@@ -19,6 +19,8 @@ target_link_libraries(inviwo-meta-unittests
         GTest::gtest
 )
 
+set_target_properties(inviwo-meta-unittests PROPERTIES FOLDER unittests)
+
 if(MSVC)
     target_compile_options(inviwo-meta-unittests PRIVATE /W4 /utf-8 /permissive- /diagnostics:caret)
 else()

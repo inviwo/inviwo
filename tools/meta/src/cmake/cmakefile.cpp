@@ -44,23 +44,23 @@ namespace {
 
 void convert(std::vector<ArgElement>& args, const p::parse_tree::node& n) {
     for (const auto& child : n.children) {
-        if (child->is<argument>()) {
-            args.emplace_back(Argument{child->content()});
-        } else if (child->is<space>()) {
-            args.emplace_back(Space{child->content()});
-        } else if (child->is<newline>()) {
+        if (child->is_type<argument>()) {
+            args.emplace_back(Argument{child->string()});
+        } else if (child->is_type<space>()) {
+            args.emplace_back(Space{child->string()});
+        } else if (child->is_type<newline>()) {
             args.emplace_back(LineEnding{});
-        } else if (child->is<line_comment>() || child->is<bracket_comment>()) {
-            args.emplace_back(Comment{child->content()});
-        } else if (child->is<begin_brace>()) {
+        } else if (child->is_type<line_comment>() || child->is_type<bracket_comment>()) {
+            args.emplace_back(Comment{child->string()});
+        } else if (child->is_type<begin_brace>()) {
             args.emplace_back(BeginBrace{});
-        } else if (child->is<end_brace>()) {
+        } else if (child->is_type<end_brace>()) {
             args.emplace_back(EndBrace{});
-        } else if (child->is<arguments>()) {
+        } else if (child->is_type<arguments>()) {
             convert(args, *child);
         } else {
             throw util::makeError("Error: Unhandled node '{}' while parsing CMakeLists: '{}'",
-                                  child->name(), n.source);
+                                  child->type, n.source);
         }
     }
 }
@@ -68,55 +68,55 @@ void convert(std::vector<ArgElement>& args, const p::parse_tree::node& n) {
 void convert(Command& command, const p::parse_tree::node& n) {
     const auto size = n.children.size();
     size_t ind = 0;
-    if (size > ind && n.children[ind]->is<space>()) {
-        command.space1 = {n.children[ind]->content()};
+    if (size > ind && n.children[ind]->is_type<space>()) {
+        command.space1 = {n.children[ind]->string()};
         ++ind;
     }
-    if (size > ind && n.children[ind]->is<identifier>()) {
-        command.identifier = n.children[ind]->content();
-        ++ind;
-    } else {
-        throw std::runtime_error("Error: Missing identifier: " + n.content());
-    }
-
-    if (size > ind && n.children[ind]->is<space>()) {
-        command.space2 = {n.children[ind]->content()};
-        ++ind;
-    }
-
-    if (size > ind && n.children[ind]->is<begin_brace>()) {
+    if (size > ind && n.children[ind]->is_type<identifier>()) {
+        command.identifier = n.children[ind]->string();
         ++ind;
     } else {
-        throw std::runtime_error("Error: Missing begin brace: " + n.content());
+        throw std::runtime_error("Error: Missing identifier: " + n.string());
     }
 
-    if (size > ind && n.children[ind]->is<arguments>()) {
+    if (size > ind && n.children[ind]->is_type<space>()) {
+        command.space2 = {n.children[ind]->string()};
+        ++ind;
+    }
+
+    if (size > ind && n.children[ind]->is_type<begin_brace>()) {
+        ++ind;
+    } else {
+        throw std::runtime_error("Error: Missing begin brace: " + n.string());
+    }
+
+    if (size > ind && n.children[ind]->is_type<arguments>()) {
         convert(command.arguments, *n.children[ind]);
         ++ind;
     }
 
-    if (size > ind && n.children[ind]->is<end_brace>()) {
+    if (size > ind && n.children[ind]->is_type<end_brace>()) {
         ++ind;
     } else {
-        throw std::runtime_error("Error: Missing end brace: " + n.content());
+        throw std::runtime_error("Error: Missing end brace: " + n.string());
     }
 }
 
 void convert(CMakeFile& cmakefile, const p::parse_tree::node& n) {
     for (auto& child : n.children) {
-        if (child->is<line_comment>() || child->is<bracket_comment>()) {
-            cmakefile.items.emplace_back(Comment{child->content()});
-        } else if (child->is<newline>()) {
+        if (child->is_type<line_comment>() || child->is_type<bracket_comment>()) {
+            cmakefile.items.emplace_back(Comment{child->string()});
+        } else if (child->is_type<newline>()) {
             cmakefile.items.emplace_back(LineEnding{});
-        } else if (child->is<space>()) {
-            cmakefile.items.emplace_back(Space{child->content()});
-        } else if (child->is<command>()) {
+        } else if (child->is_type<space>()) {
+            cmakefile.items.emplace_back(Space{child->string()});
+        } else if (child->is_type<command>()) {
             Command cmd{};
             convert(cmd, *child);
             cmakefile.items.emplace_back(std::move(cmd));
         } else {
             throw util::makeError("Error: Unhandled node '{}' while parsing CMakeLists: '{}'",
-                                  child->name(), n.source);
+                                    child->type, n.source);
         }
     }
 }
@@ -130,8 +130,9 @@ void parse(CMakeFile& file, Input&& input) {
             std::forward<Input>(input), bracket_id);
         convert(file, *(root->children[0]));
     } catch (const p::parse_error& e) {
-        throw util::makeError("Error: Parsing CMakeFile: '{}' at line: {}",
-                              e.positions.front().source, e.positions.front().line);
+        auto& pos0 = e.positions().front();
+        throw util::makeError("Error: Parsing CMakeFile: '{}' at line: {} col: {}",
+                              pos0.source, pos0.line, pos0.column);
     }
 }
 
