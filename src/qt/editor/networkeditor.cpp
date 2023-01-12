@@ -396,9 +396,28 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 void NetworkEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
     if (auto p = getProcessorGraphicsItemAt(e->scenePos())) {
-        if (auto processor = p->getProcessor()) {
-            if (auto widget = processor->getProcessorWidget()) {
-                widget->setVisible(!widget->isVisible());
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            for (auto item : selectedItems()) {
+                if (auto gp = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                    for (auto proc : util::getDirectSuccessors(gp->getProcessor())) {
+                        if (auto it = processorGraphicsItems_.find(proc);
+                            it != processorGraphicsItems_.end()) {
+                            it->second->setSelected(true);
+                        }
+                    }
+                    for (auto proc : util::getDirectPredecessors(gp->getProcessor())) {
+                        if (auto it = processorGraphicsItems_.find(proc);
+                            it != processorGraphicsItems_.end()) {
+                            it->second->setSelected(true);
+                        }
+                    }
+                }
+            }
+        } else {
+            if (auto processor = p->getProcessor()) {
+                if (auto widget = processor->getProcessorWidget()) {
+                    widget->setVisible(!widget->isVisible());
+                }
             }
         }
         e->accept();
@@ -630,6 +649,29 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     [this, processor = processor->getProcessor()]() {
                         auto dialog = new LinkDialog(processor, processor, mainwindow_);
                         dialog->show();
+                    });
+
+            menu.addSeparator();
+
+            QAction* selectPre = menu.addAction(tr("Select Predecessors"));
+            connect(selectPre, &QAction::triggered,
+                    [this, processor = processor->getProcessor()]() {
+                        for (auto p : util::getPredecessors(processor)) {
+                            if (auto it = processorGraphicsItems_.find(p);
+                                it != processorGraphicsItems_.end()) {
+                                it->second->setSelected(true);
+                            }
+                        }
+                    });
+            QAction* selectSuc = menu.addAction(tr("Select Successors"));
+            connect(selectSuc, &QAction::triggered,
+                    [this, processor = processor->getProcessor()]() {
+                        for (auto p : util::getSuccessors(processor)) {
+                            if (auto it = processorGraphicsItems_.find(p);
+                                it != processorGraphicsItems_.end()) {
+                                it->second->setSelected(true);
+                            }
+                        }
                     });
 
             menu.addSeparator();
