@@ -54,10 +54,12 @@
 #include <inviwo/core/util/glmmat.h>                                    // for mat3
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, dvec3, vec4
 #include <inviwo/core/util/metadatatoproperty.h>                        // for MetaDataToProperty
-#include <modules/base/algorithm/algorithmoptions.h>                    // for IgnoreSpecialValues
-#include <modules/base/algorithm/dataminmax.h>                          // for volumeMinMax
-#include <modules/base/algorithm/volume/volumesignificantvoxels.h>      // for volumeSignificant...
-#include <modules/base/properties/volumeinformationproperty.h>          // for VolumeInformation...
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/base/algorithm/algorithmoptions.h>                // for IgnoreSpecialValues
+#include <modules/base/algorithm/dataminmax.h>                      // for volumeMinMax
+#include <modules/base/algorithm/volume/volumesignificantvoxels.h>  // for volumeSignificant...
+#include <modules/base/properties/volumeinformationproperty.h>      // for VolumeInformation...
 
 #include <cstddef>        // for size_t
 #include <limits>         // for numeric_limits<>:...
@@ -88,6 +90,18 @@ const ProcessorInfo VolumeInformation::processorInfo_{
     )"_unindentHelp};
 const ProcessorInfo VolumeInformation::getProcessorInfo() const { return processorInfo_; }
 
+std::array<FloatMat4Property, 16> transformProps() {
+    return util::make_array<16>([](auto index) {
+        auto from = static_cast<CoordinateSpace>(index / 4);
+        auto to = static_cast<CoordinateSpace>(index % 4);
+        return FloatMat4Property(fmt::format("{}2{}", from, to), fmt::format("{} To {}", from, to),
+                                 mat4(1.0f),
+                                 util::filled<mat4>(std::numeric_limits<float>::lowest()),
+                                 util::filled<mat4>(std::numeric_limits<float>::max()),
+                                 util::filled<mat4>(0.001f), InvalidationLevel::Valid);
+    });
+}
+
 VolumeInformation::VolumeInformation()
     : Processor()
     , volume_("volume", "Input volume"_help)
@@ -109,24 +123,33 @@ VolumeInformation::VolumeInformation()
     , minMaxChannel4_("minMaxChannel4_", "Min/Max (Channel 4)", 0.0, 255.0, -DataFloat64::max(),
                       DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
                       PropertySemantics::Text)
-    , worldTransform_("worldTransform_", "World Transform", mat4(1.0f),
-                      util::filled<mat4>(std::numeric_limits<float>::lowest()),
-                      util::filled<mat4>(std::numeric_limits<float>::max()),
-                      util::filled<mat4>(0.001f), InvalidationLevel::Valid)
     , basis_("basis", "Basis", mat3(1.0f), util::filled<mat3>(std::numeric_limits<float>::lowest()),
              util::filled<mat3>(std::numeric_limits<float>::max()), util::filled<mat3>(0.001f),
              InvalidationLevel::Valid)
     , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
               vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
               PropertySemantics::Text)
+    , voxelSize_("voxelSize", "Voxel size", dvec3(0), dvec3(std::numeric_limits<float>::lowest()),
+                 dvec3(std::numeric_limits<float>::max()), dvec3(0.0001), InvalidationLevel::Valid,
+                 PropertySemantics::Text)
+    , modelMatrix_("modelMatrix", "Model Matrix", mat4(1.0f),
+                   util::filled<mat4>(std::numeric_limits<float>::lowest()),
+                   util::filled<mat4>(std::numeric_limits<float>::max()),
+                   util::filled<mat4>(0.001f), InvalidationLevel::Valid)
+    , worldMatrix_("worldTransform_", "World Matrix", mat4(1.0f),
+                   util::filled<mat4>(std::numeric_limits<float>::lowest()),
+                   util::filled<mat4>(std::numeric_limits<float>::max()),
+                   util::filled<mat4>(0.001f), InvalidationLevel::Valid)
+    , indexMatrix_("indexMatrix", "Index Matrix", mat4(1.0f),
+                   util::filled<mat4>(std::numeric_limits<float>::lowest()),
+                   util::filled<mat4>(std::numeric_limits<float>::max()),
+                   util::filled<mat4>(0.001f), InvalidationLevel::Valid)
+    , spaceTransforms_(transformProps())
     , perVoxelProperties_("minmaxValues", "Aggregated per Voxel", false)
     , transformations_("transformations", "Transformations")
     , metaDataProperty_(
           "metaData", "Meta Data",
-          "Composite property listing all the metadata stored in the input Image"_help)
-    , voxelSize_("voxelSize", "Voxel size", dvec3(0), dvec3(std::numeric_limits<float>::lowest()),
-                 dvec3(std::numeric_limits<float>::max()), dvec3(0.0001), InvalidationLevel::Valid,
-                 PropertySemantics::Text) {
+          "Composite property listing all the metadata stored in the input Image"_help) {
     addPort(volume_);
 
     volumeInfo_.setReadOnly(true);
@@ -150,7 +173,12 @@ VolumeInformation::VolumeInformation()
             p.setReadOnly(true);
             transformations_.addProperty(p);
         },
-        worldTransform_, basis_, offset_, voxelSize_);
+        basis_, offset_, voxelSize_, modelMatrix_, worldMatrix_, indexMatrix_);
+
+    for (auto& transform : spaceTransforms_) {
+        transform.setReadOnly(true);
+        transformations_.addProperty(transform);
+    }
 
     addProperty(metaDataProperty_);
 
@@ -168,17 +196,26 @@ void VolumeInformation::process() {
     const auto c = volume->getDataFormat()->getComponents();
     const auto numVoxels = dim.x * dim.y * dim.z;
 
-    worldTransform_.set(volume->getWorldMatrix());
+    const auto& trans = volume->getCoordinateTransformer();
+
+    modelMatrix_.set(volume->getModelMatrix());
+    worldMatrix_.set(volume->getWorldMatrix());
+    indexMatrix_.set(volume->getIndexMatrix());
     basis_.set(volume->getBasis());
     offset_.set(volume->getOffset());
 
-    auto m = volume_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
+    auto m = trans.getTextureToWorldMatrix();
     vec4 dx = m * vec4(1.0f / dim.x, 0, 0, 0);
     vec4 dy = m * vec4(0, 1.0f / dim.y, 0, 0);
     vec4 dz = m * vec4(0, 0, 1.0f / dim.z, 0);
     vec3 vs = {glm::length(dx), glm::length(dy), glm::length(dz)};
-
     voxelSize_.set(vs);
+
+    for(auto&& [index, transform] : util::enumerate(spaceTransforms_)) {
+        auto from = static_cast<CoordinateSpace>(index / 4);
+        auto to = static_cast<CoordinateSpace>(index % 4);
+        transform.set(trans.getMatrix(from, to));
+    }
 
     if (perVoxelProperties_.isChecked()) {
 

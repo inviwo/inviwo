@@ -70,15 +70,20 @@ private:
     DoubleMinMaxProperty minMaxChannel3_;
     DoubleMinMaxProperty minMaxChannel4_;
 
-    FloatMat4Property worldTransform_;
     FloatMat3Property basis_;
     FloatVec3Property offset_;
+    DoubleVec3Property voxelSize_;
+
+    FloatMat4Property modelMatrix_;
+    FloatMat4Property worldMatrix_;
+    FloatMat4Property indexMatrix_;
+    
+    std::array<FloatMat4Property, 16> spaceTransforms_;
+
 
     BoolCompositeProperty perVoxelProperties_;
     CompositeProperty transformations_;
     CompositeProperty metaDataProperty_;
-
-    DoubleVec3Property voxelSize_;
 
     util::MetaDataToProperty metaDataProps_;
 };
