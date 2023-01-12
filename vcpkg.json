@@ -1,55 +1,51 @@
 {
-    "name": "inviwo",
-    "version-string" : "0.9.11.1",
-    "homepage" : "https://github.com/inviwo/inviwo",
-    "license": "BSD-2-Clause",
-    "vcpkg-configuration": {
-        "default-registry": {
-            "kind": "builtin",
-            "$baseline-reason" : "This sets all minimal versions to those at this vcpkg commit, from 2022-11-01",
-            "baseline": "fcfda3c78c474aec7187299b684258855259a7a6"
-        },
-        "overlay-ports": [ 
-            "./tools/vcpkg"
-        ]
+  "name": "inviwo",
+  "version-string": "0.9.11.1",
+  "homepage": "https://github.com/inviwo/inviwo",
+  "license": "BSD-2-Clause",
+  "vcpkg-configuration": {
+    "default-registry": {
+      "kind": "builtin",
+      "baseline": "f5d5650913be6a92ec7b405d2e9b5f2c0b51a71e"
     },
-    "dependencies" : [
-        "assimp",
-        "benchmark",
-        "cimg",
-        "eigen3",
-        "fmt",
-        "freetype",
-        "glew",
-        "glfw3",
-        "glm",
-        "gtest",
-        {
-            "name": "hdf5",
-            "features": [ "cpp", "zlib"]
-        },
-        "libjpeg-turbo",
-        "libpng",
-        "minizip",
-        "nlohmann-json",
-        "nifticlib",
-        "openexr",
-        "pybind11",
-        "roaring",
-        "tclap",
-        "tiff",
-        "tinydir",
-        "tinyxml2",
-        "utfcpp",
-        "zlib",
-        "pegtl-2",
-        "inja"
-    ],
-    "overrides" : [
-        {
-            "$reason" : "We get linker errors with 1.7.0. 1.7.0 changed how the export header is created, maybe something broke upstream",
-            "name": "benchmark",
-            "version": "1.6.1"
-        }
+    "overlay-ports": [
+      "./tools/vcpkg",
+      "../modules/tools/vcpkg"
     ]
+  },
+  "dependencies": [
+    "assimp",
+    "benchmark",
+    "cimg",
+    "eigen3",
+    "fmt",
+    "freetype",
+    "glew",
+    "glfw3",
+    "glm",
+    "gtest",
+    {
+      "name": "hdf5",
+      "features": [
+        "cpp",
+        "zlib"
+      ]
+    },
+    "libjpeg-turbo",
+    "libpng",
+    "minizip",
+    "nlohmann-json",
+    "nifticlib",
+    "openexr",
+    "pybind11",
+    "roaring",
+    "tclap",
+    "tiff",
+    "tinydir",
+    "tinyxml2",
+    "utfcpp",
+    "zlib",
+    "pegtl",
+    "inja"
+  ]
 }

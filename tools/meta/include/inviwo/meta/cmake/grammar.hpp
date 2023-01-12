@@ -36,6 +36,7 @@
 struct IUnknown;
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
+#include <tao/pegtl/contrib/analyze.hpp>
 #include <string>
 
 namespace inviwo::meta {
@@ -46,7 +47,8 @@ namespace p = tao::pegtl;
 // Grammar
 struct INVIWO_META_API space : p::plus<p::blank> {};
 struct INVIWO_META_API newline : p::sor<p::string<'\r', '\n'>, p::one<'\n'>> {};
-struct INVIWO_META_API line_comment : p::seq<p::one<'#'>, p::star<p::seq<p::not_at<newline>, p::any>>> {};
+struct INVIWO_META_API line_comment
+    : p::seq<p::one<'#'>, p::star<p::seq<p::not_at<newline>, p::any>>> {};
 struct INVIWO_META_API line_ending : p::seq<p::opt<line_comment>, newline> {};
 struct INVIWO_META_API begin_brace : p::one<'('> {};
 struct INVIWO_META_API end_brace : p::one<')'> {};
@@ -56,7 +58,9 @@ struct INVIWO_META_API separation : p::sor<space, line_ending> {};
 struct INVIWO_META_API bracket_id : p::star<p::one<'='>> {};
 struct INVIWO_META_API bracket_open : p::seq<p::one<'['>, bracket_id, p::one<'['>> {};
 struct INVIWO_META_API bracket_mark {
-    using analyze_t = p::analysis::generic<p::analysis::rule_type::SEQ>;
+    using rule_t = bracket_mark;
+    
+    using subs_t = p::empty_list;
 
     template <p::apply_mode, p::rewind_mode, template <typename...> class Action,
               template <typename...> class Control, typename Input, typename... ExtraStates>
@@ -73,23 +77,28 @@ struct INVIWO_META_API bracket_mark {
 };
 struct INVIWO_META_API bracket_close : p::seq<p::one<']'>, bracket_mark, p::one<']'>> {};
 struct INVIWO_META_API bracket_body : p::any {};
-struct INVIWO_META_API bracket_argument : p::seq<bracket_open, p::until<bracket_close, bracket_body>> {};
+struct INVIWO_META_API bracket_argument
+    : p::seq<bracket_open, p::until<bracket_close, bracket_body>> {};
 struct INVIWO_META_API bracket_comment : p::seq<p::one<'#'>, bracket_argument> {};
 
 struct INVIWO_META_API escape_identity
     : p::seq<p::one<'\\'>,
              p::seq<p::not_at<p::ranges<'A', 'Z', 'a', 'z', '0', '9', ';'>>, p::any>> {};
-struct INVIWO_META_API escape_encoded : p::sor<p::string<'\\', 't'>, p::string<'\\', 'r'>, p::string<'\\', 'n'>> {};
+struct INVIWO_META_API escape_encoded
+    : p::sor<p::string<'\\', 't'>, p::string<'\\', 'r'>, p::string<'\\', 'n'>> {};
 struct INVIWO_META_API escape_semicolon : p::string<'\\', ';'> {};
-struct INVIWO_META_API escape_sequence : p::sor<escape_identity, escape_encoded, escape_semicolon> {};
+struct INVIWO_META_API escape_sequence : p::sor<escape_identity, escape_encoded, escape_semicolon> {
+};
 
 struct INVIWO_META_API unquoted_element
     : p::sor<p::not_one<'(', ')', '#', '"', '\\', ' ', '\t', '\n', '\r'>, escape_sequence> {};
 
 struct INVIWO_META_API quoted_continuation : p::seq<p::one<'\\'>, newline> {};
-struct INVIWO_META_API quoted_element : p::sor<p::not_one<'\\', '"'>, escape_sequence, quoted_continuation> {};
+struct INVIWO_META_API quoted_element
+    : p::sor<p::not_one<'\\', '"'>, escape_sequence, quoted_continuation> {};
 
-struct INVIWO_META_API quoted_argument : p::seq<p::one<'"'>, p::star<quoted_element>, p::one<'"'>> {};
+struct INVIWO_META_API quoted_argument : p::seq<p::one<'"'>, p::star<quoted_element>, p::one<'"'>> {
+};
 struct INVIWO_META_API unquoted_argument : p::plus<unquoted_element> {};  // TODO unquoted_legacy
 
 struct INVIWO_META_API argument : p::sor<bracket_argument, quoted_argument, unquoted_argument> {};
@@ -104,8 +113,9 @@ struct INVIWO_META_API arguments : p::seq<p::opt<argument>, p::star<seperated_ar
 struct INVIWO_META_API command
     : p::seq<p::star<space>, identifier, p::star<space>, begin_brace, arguments, end_brace> {};
 
-struct INVIWO_META_API file_element : p::sor<p::seq<command, p::opt<space>, line_ending>,
-                             p::seq<p::star<p::sor<bracket_comment, space>>, line_ending>> {};
+struct INVIWO_META_API file_element
+    : p::sor<p::seq<command, p::opt<space>, line_ending>,
+             p::seq<p::star<p::sor<bracket_comment, space>>, line_ending>> {};
 
 struct INVIWO_META_API file : p::must<p::seq<p::bof, p::star<file_element>, p::eof>> {};
 
@@ -123,7 +133,7 @@ struct action<bracket_id> {
 // clang-format off
 template <typename Rule>
 using selector =
-    p::parse_tree::selector<Rule, 
+    p::parse_tree::selector<Rule,
         p::parse_tree::store_content::on<
             identifier,
             argument,
@@ -138,7 +148,7 @@ using selector =
             arguments
         >,
         p::parse_tree::remove_content::on<
-            file,  
+            file,
             command
         >
     >;
@@ -146,3 +156,10 @@ using selector =
 
 }  // namespace cmake
 }  // namespace inviwo::meta
+
+namespace tao::pegtl {
+
+template <typename Name>
+struct analyze_traits<Name, inviwo::meta::cmake::bracket_mark> : analyze_seq_traits<> {};
+
+}  // namespace tao::pegtl
