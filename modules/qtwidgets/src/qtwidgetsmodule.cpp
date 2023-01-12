@@ -166,15 +166,6 @@ struct MinMaxTextWidgetReghelper {
     }
 };
 
-struct OptionWidgetReghelper {
-    template <typename T>
-    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
-        using PropertyType = OptionProperty<T>;
-
-        qm.registerPropertyWidget<OptionPropertyWidgetQt, PropertyType>(semantics);
-    }
-};
-
 }  // namespace
 
 QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
@@ -223,9 +214,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     util::for_each_type<ScalarTypes>{}(MinMaxTextWidgetReghelper{}, *this, "Text");
 
     // Register option property widgets
-    using OptionTypes = std::tuple<char, unsigned char, unsigned int, int, size_t, float, double,
-                                   std::string, FileExtension>;
-    util::for_each_type<OptionTypes>{}(OptionWidgetReghelper{}, *this, "Default");
+    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyString>("Default");
 
     // Register string property widgets
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Default");
