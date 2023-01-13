@@ -83,6 +83,7 @@
 #include <string_view>    // for string_view, operator==
 #include <unordered_map>  // for unordered_map
 #include <utility>        // for move
+#include <variant>
 
 #include <glm/vec2.hpp>  // for vec<>::(anonymous), ope...
 
