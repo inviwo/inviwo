@@ -33,8 +33,7 @@
 #include <inviwo/core/processors/processor.h>                // for Processor, Processor::NameDi...
 #include <modules/qtwidgets/processors/processorwidgetqt.h>  // for ProcessorWidgetQt
 
-#include <functional>  // for function
-#include <memory>      // for shared_ptr, unique_ptr
+#include <memory>  // for shared_ptr, unique_ptr
 
 #include <QObject>  // for Q_OBJECT
 
@@ -48,10 +47,7 @@ class DataFrameTableView;
  * \brief A processor widget showing a DataFrame in a table view.
  */
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public ProcessorWidgetQt {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     DataFrameTableProcessorWidget(Processor* p);
     virtual ~DataFrameTableProcessorWidget() = default;
@@ -73,9 +69,7 @@ public:
     void brushingUpdate();
 
 private:
-    using tableview_ptr =
-        std::unique_ptr<DataFrameTableView, std::function<void(DataFrameTableView*)>>;
-    tableview_ptr tableview_;
+    DataFrameTableView* tableview_;
 
     Processor::NameDispatcherHandle nameChange_;
 };
