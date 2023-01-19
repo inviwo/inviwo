@@ -109,10 +109,10 @@ OrdinalPropertyState<float> ordinalAlpha(
 }
 
 void orderTf(TransferFunction& tf, size_t nSegments) {
-    while (tf.size() > 2 * (nSegments + 1)) {
+    while (tf.size() > 2 * nSegments) {
         tf.remove(tf.back());
     }
-    while (tf.size() < 2 * (nSegments + 1)) {
+    while (tf.size() < 2 * nSegments) {
         tf.add(1.0, vec4{1.0});
     }
 
@@ -128,10 +128,9 @@ void orderTf(TransferFunction& tf, size_t nSegments) {
         setPos(pos - 100.0 * std::numeric_limits<double>::epsilon(), i);
     };
 
-    for (size_t i = 0; i <= nSegments; ++i) {
-        const auto start = (-0.5 / nSegments);
-        const auto stop = (nSegments + 0.5) / nSegments;
-        const auto delta = (stop - start) / (nSegments + 1);
+    for (size_t i = 0; i < nSegments; ++i) {
+        const auto delta = 1.0 / (nSegments - 1);
+        const auto start = -0.5 * delta;
 
         setPos(start + i * delta, i * 2);
         setPosAlmost(start + (i + 1) * delta, i * 2 + 1);
@@ -183,6 +182,7 @@ AtlasComponent::AtlasComponent(Processor* p, std::string_view color, TimeCompone
               swizzlemasks::rgba, InterpolationType::Nearest, wrapping2d::clampAll}
     , color_{color}
     , picking_{p, 0, [this](PickingEvent* e) { onPickingEvent(e); }}
+    , minSegmentId_{0}
     , time_{time} {
 
     auto lrp = static_cast<LayerRAMPrecision<vec4>*>(colors_.getEditableRepresentation<LayerRAM>());
@@ -194,44 +194,49 @@ std::string_view AtlasComponent::getName() const { return atlas_.getIdentifier()
 void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, atlas_);
 
-    auto nSegments = static_cast<uint32_t>(atlas_.getData()->dataMap_.dataRange.y);
-    picking_.resize(nSegments + 1);
+    // DataRange is probably inclusive so we need to add 1.
+    const auto nSegments = static_cast<uint32_t>(atlas_.getData()->dataMap_.dataRange.y -
+                                                 atlas_.getData()->dataMap_.dataRange.x + 1.0);
+    minSegmentId_ = static_cast<int32_t>(atlas_.getData()->dataMap_.dataRange.x);
+    picking_.resize(nSegments);
+
     shader.setUniform(fmt::format("{0}PickingStart", getName()),
                       static_cast<uint32_t>(picking_.getPickingId(0)));
-    shader.setUniform(fmt::format("{0}Size", getName()), nSegments);
+    shader.setUniform(fmt::format("{0}Size", getName()), nSegments - 1);
 
     if (coloringAction_ != ColoringAction::None) {
+        // The functor should be called with an index in the range [0,nSegments)
         const auto foreachInGroup = [&]() -> std::function<void(std::function<void(uint32_t)>)> {
             switch (coloringGroup_.get()) {
                 default:
                 case ColoringGroup::All:
                     return [&](std::function<void(uint32_t)> fun) {
-                        for (uint32_t i = 1; i <= nSegments; ++i) {
+                        for (uint32_t i = 0; i < nSegments; ++i) {
                             fun(i);
                         }
                     };
                 case ColoringGroup::Selected:
                     return [&](std::function<void(uint32_t)> fun) {
                         for (auto i : brushing_.getSelectedIndices()) {
-                            fun(i + 1);
+                            fun(i - minSegmentId_);
                         }
                     };
                 case ColoringGroup::Unselected:
                     return [&](std::function<void(uint32_t)> fun) {
-                        for (uint32_t i = 1; i <= nSegments; ++i) {
-                            if (!brushing_.isSelected(i - 1)) fun(i);
+                        for (uint32_t i = 0; i < nSegments; ++i) {
+                            if (!brushing_.isSelected(i + minSegmentId_)) fun(i);
                         }
                     };
                 case ColoringGroup::Filtered:
                     return [&](std::function<void(uint32_t)> fun) {
                         for (auto i : brushing_.getFilteredIndices()) {
-                            fun(i + 1);
+                            fun(i - minSegmentId_);
                         }
                     };
                 case ColoringGroup::Unfiltered:
                     return [&](std::function<void(uint32_t)> fun) {
-                        for (uint32_t i = 1; i <= nSegments; ++i) {
-                            if (!brushing_.isFiltered(i - 1)) fun(i);
+                        for (uint32_t i = 0; i < nSegments; ++i) {
+                            if (!brushing_.isFiltered(i + minSegmentId_)) fun(i);
                         }
                     };
                 case ColoringGroup::Zero:
@@ -289,18 +294,17 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
     const auto colorProps =
         util::ref<Property>(tf_, selectionColor_, selectionAlpha_, selectionMix_, filteredColor_,
                             filteredAlpha_, filteredMix_);
-    if (brushing_.isChanged() || util::any_of(colorProps, &Property::isModified)) {
+    if (colors_.getDimensions().x != nSegments || brushing_.isChanged() ||
+        util::any_of(colorProps, &Property::isModified)) {
 
-        if (colors_.getDimensions().x < nSegments + 1) {
-            colors_.setDimensions(size2_t{nSegments + 1, 2});
-        }
-
+        colors_.setDimensions(size2_t{nSegments, 2});
         util::IndexMapper2D im(colors_.getDimensions());
 
         auto indexCheck = [&](uint32_t i, std::string_view type) {
-            if (i >= nSegments) {
-                throw Exception(IVW_CONTEXT, "{} index {} outside of expected range [0,{})", type,
-                                i, nSegments);
+            const auto ii = static_cast<int32_t>(i);
+            if (ii < minSegmentId_ || ii >= minSegmentId_ + static_cast<int32_t>(nSegments)) {
+                throw Exception(IVW_CONTEXT, "Fund {} index {} outside of expected range [{},{}]",
+                                type, ii, minSegmentId_, minSegmentId_ + nSegments - 1);
             }
         };
 
@@ -308,39 +312,40 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
             static_cast<LayerRAMPrecision<vec4>*>(colors_.getEditableRepresentation<LayerRAM>())
                 ->getDataTyped();
 
-        for (uint32_t i = 0; i <= nSegments; ++i) {
-            auto color = tf_->sample(static_cast<double>(i) / nSegments);
+        for (uint32_t i = 0; i < nSegments; ++i) {
+            auto color = tf_->sample(static_cast<double>(i) / (nSegments-1));
             lrp[im(i, 0)] = color;
             lrp[im(i, 1)] = color;
         }
+
+        auto mix = util::overloaded{
+            [&](auto i, const FloatVec3Property& color, const FloatProperty& mix,
+                const FloatProperty& alpha) {
+                return vec4{glm::mix(color.get(), vec3{lrp[im(i, 0)]}, mix.get()), alpha.get()};
+            },
+            [&](auto i, const vec3& color, const FloatProperty& mix, const FloatProperty& alpha) {
+                return vec4{glm::mix(color, vec3{lrp[im(i, 0)]}, mix.get()), alpha.get()};
+            }};
+
         for (auto i : brushing_.getSelectedIndices()) {
             indexCheck(i, "selection");
-            lrp[im(i + 1, 0)] =
-                vec4{glm::mix(selectionColor_.get(), vec3{lrp[im(i + 1, 0)]}, selectionMix_.get()),
-                     selectionAlpha_.get()};
-
-            lrp[im(i + 1, 1)] =
-                vec4{glm::mix(vec3{1.0, 1.0, 1.0}, vec3{lrp[im(i + 1, 0)]}, selectionMix_.get()),
-                     selectionAlpha_.get()};
+            i -= minSegmentId_;
+            lrp[im(i, 0)] = mix(i, selectionColor_, selectionMix_, selectionAlpha_);
+            lrp[im(i, 1)] = mix(i, vec3{1.0, 1.0, 1.0}, selectionMix_, selectionAlpha_);
         }
 
         for (auto i : brushing_.getHighlightedIndices()) {
             indexCheck(i, "highlight");
-            lrp[im(i + 1, 0)] =
-                vec4{glm::mix(selectionColor_.get(), vec3{lrp[im(i + 1, 0)]}, selectionMix_.get()),
-                     selectionAlpha_.get()};
-
-            lrp[im(i + 1, 1)] =
-                vec4{glm::mix(vec3{1.0, 1.0, 1.0}, vec3{lrp[im(i + 1, 0)]}, selectionMix_.get()),
-                     selectionAlpha_.get()};
+            i -= minSegmentId_;
+            lrp[im(i, 0)] = mix(i, selectionColor_, selectionMix_, selectionAlpha_);
+            lrp[im(i, 1)] = mix(i, vec3{1.0, 1.0, 1.0}, selectionMix_, selectionAlpha_);
         }
 
         for (auto i : brushing_.getFilteredIndices()) {
             indexCheck(i, "filter");
-            lrp[im(i + 1, 0)] =
-                vec4{glm::mix(filteredColor_.get(), vec3{lrp[im(i + 1, 0)]}, filteredMix_.get()),
-                     filteredAlpha_.get()};
-            lrp[im(i + 1, 1)] = lrp[im(i + 1, 0)];
+            i -= minSegmentId_;
+            lrp[im(i, 0)] = mix(i, filteredColor_, filteredMix_, filteredAlpha_);
+            lrp[im(i, 1)] = lrp[im(i, 0)];
         }
     }
     utilgl::bindAndSetUniforms(shader, cont, *colors_.getRepresentation<LayerGL>()->getTexture(),
@@ -351,11 +356,16 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
 }
 
 void AtlasComponent::onPickingEvent(PickingEvent* e) {
-    const auto id = static_cast<uint32_t>(e->getPickedId());
+    const auto id = static_cast<uint32_t>(e->getPickedId() + minSegmentId_);
 
     if (e->getHoverState() == PickingHoverState::Enter) {
-        e->setToolTip(fmt::format("Segment {}", id));
-        brushing_.highlight(BitSet(id - 1));
+        if (auto data = atlas_.getData()) {
+            e->setToolTip(fmt::format("{}: {}{: [}", data->dataMap_.valueAxis.name, id,
+                                      data->dataMap_.valueAxis.unit));
+        } else {
+            e->setToolTip(fmt::format("Segment: {}", id));
+        }
+        brushing_.highlight(BitSet(id));
     } else if (e->getHoverState() == PickingHoverState::Exit) {
         e->setToolTip("");
         brushing_.highlight(BitSet());
@@ -366,7 +376,7 @@ void AtlasComponent::onPickingEvent(PickingEvent* e) {
         e->modifiers().contains(KeyModifier::Control)) {
 
         auto selection = brushing_.getSelectedIndices();
-        selection.flip(id - 1);
+        selection.flip(id);
         brushing_.select(selection);
 
         e->markAsUsed();
@@ -375,7 +385,7 @@ void AtlasComponent::onPickingEvent(PickingEvent* e) {
                e->modifiers().contains(KeyModifier::Shift)) {
 
         auto filtered = brushing_.getFilteredIndices();
-        filtered.flip(id - 1);
+        filtered.flip(id);
         brushing_.filter("atlas", filtered);
 
         e->markAsUsed();
@@ -411,27 +421,25 @@ uniform uint {atlas}Size;
 )");
 
 constexpr std::string_view first = util::trim(R"(
-float {atlas}Scale = float({atlas}Size) / (textureSize({atlas}Colors, 0).x - 1);
 float {atlas}Segment = getNormalizedVoxel({atlas}, {atlas}Parameters, samplePosition).x;
-
-vec4 {atlas}Color1 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.25));
-vec4 {atlas}Color2 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.75));
+vec4 {atlas}Color1 = texture({atlas}Colors, vec2({atlas}Segment, 0.25));
+vec4 {atlas}Color2 = texture({atlas}Colors, vec2({atlas}Segment, 0.75));
 {color} = highlight({color}, {atlas}Color1, {atlas}Color2, time);
 
-if (picking.a == 0.0 && {color}.a > 0.0 && {atlas}Segment != 0.0) {{
-    uint pid = {atlas}PickingStart + uint({atlas}Size * {atlas}Segment + 0.5);
+if (picking.a == 0.0 && {color}.a > 0.0 && {atlas}Color1.a > 0.0) {{
+    uint pid = {atlas}PickingStart + int({atlas}Segment * {atlas}Size + 0.5);
     picking = vec4(pickingIndexToColor(pid), 1.0);
 }}
 )");
 
 constexpr std::string_view loop = util::trim(R"(
 {atlas}Segment = getNormalizedVoxel({atlas}, {atlas}Parameters, samplePosition).x;
-{atlas}Color1 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.25));
-{atlas}Color2 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.75));
+{atlas}Color1 = texture({atlas}Colors, vec2({atlas}Segment, 0.25));
+{atlas}Color2 = texture({atlas}Colors, vec2({atlas}Segment, 0.75));
 {color} = highlight({color}, {atlas}Color1, {atlas}Color2, time);
 
-if (picking.a == 0.0 && {color}.a > 0.0 && {atlas}Segment != 0.0) {{
-    uint pid = {atlas}PickingStart + uint({atlas}Size * {atlas}Segment + 0.5);
+if (picking.a == 0.0 && {color}.a > 0.0 && {atlas}Color1.a > 0.0) {{
+    uint pid = {atlas}PickingStart + int({atlas}Segment * {atlas}Size + 0.5);
     picking = vec4(pickingIndexToColor(pid), 1.0);
 }}
 )");

@@ -224,7 +224,7 @@ constexpr auto wrappingDispatch(Functor&& func, const Wrapping3D& wrapping, Args
         using XT = decltype(x);
         return build_array<3>([](auto y) constexpr {
             using YT = decltype(y);
-            return build_array<3>([](auto z) constexpr->DispatchFunctor {
+            return build_array<3>([](auto z) constexpr -> DispatchFunctor {
                 using ZT = decltype(z);
                 return [](Functor&& func, Args&&... args) {
                     constexpr auto X = static_cast<Wrapping>(XT::value);
@@ -251,6 +251,7 @@ double voxelVolume(const dmat4& transform) {
 
 struct StatsFunctor {
     const size_t nRegions;
+    const size_t minRegionId;
     const size_t channels;
     std::shared_ptr<DataFrame> df;
 
@@ -273,7 +274,8 @@ struct StatsFunctor {
     std::vector<std::vector<std::vector<double>*>> regionCoM;
 
     StatsFunctor(const Volume& volume, const Volume& atlas, CoordinateSpace destSpace)
-        : nRegions{static_cast<size_t>(atlas.dataMap_.dataRange.y)}
+        : nRegions{static_cast<size_t>(atlas.dataMap_.dataRange.y - atlas.dataMap_.dataRange.x + 1)}
+        , minRegionId{static_cast<size_t>(atlas.dataMap_.dataRange.x)}
         , channels{volume.getDataFormat()->getComponents()}
         , df{std::make_shared<DataFrame>(static_cast<uint32_t>(nRegions))}
         , volumeRep{volume.getRepresentation<VolumeRAM>()}
@@ -324,7 +326,7 @@ struct StatsFunctor {
 
     size_t getRegion(size_t index) const {
         return atlasRep->dispatch<size_t, dispatching::filter::UnsignedIntegerScalars>(
-            [&](auto rep) { return rep->getDataTyped()[index]; });
+            [&](auto rep) { return rep->getDataTyped()[index] - minRegionId; });
     }
     double getValue(size_t index, size_t channel) const {
         return volumeRep->dispatch<double, dispatching::filter::All>([&](auto rep) {
@@ -343,10 +345,17 @@ struct StatsFunctor {
         util::forEachVoxel(*volumeRep, [&](const size3_t& pos) {
             const auto p = indexMapper(pos);
             for (size_t c = 0; c < channels; ++c) {
-                const auto region = regionMapper(getRegion(p) - 1, c);
+                const auto region = regionMapper(getRegion(p), c);
                 const auto value = getValue(p, c);
                 const auto dpos = dvec3{index2data * dvec4{pos, 1.0}};
-                stats[region].add(dpos, value);
+                if (region < stats.size()) {
+                    stats[region].add(dpos, value);
+                } else {
+                    throw Exception(
+                        IVW_CONTEXT,
+                        "Unexpected region index found '{}' expected value in range [0,{})", region,
+                        stats.size());
+                }
             }
         });
 
@@ -369,6 +378,14 @@ struct StatsFunctor {
                 (*regionCoM[c][k])[region] = com[k];
             }
         }
+
+        df->getIndexColumn()->setHeader("Region Index");
+        auto& index = df->getIndexColumn()
+                         ->getTypedBuffer()
+                         ->getEditableRAMRepresentation()
+                         ->getDataContainer();
+        std::transform(index.begin(), index.end(), index.begin(),
+                       [&](auto index) { return index + static_cast<std::uint32_t>(minRegionId); });
 
         return df;
     }
