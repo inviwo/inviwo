@@ -75,14 +75,16 @@ DataFrameJoin::DataFrameJoin()
     , columnMatching_("columnMatching", "Match Columns",
                       {{"byname", "By Name", ColumnMatch::ByName},
                        {"ordered", "By Order", ColumnMatch::Ordered}})
-    , key_("key", "Key Column", inportLeft_)
-    , secondaryKeys_(
-          "secondaryKeys", "Secondary Key Columns",
-          std::make_unique<ColumnOptionProperty>("keyColumn2", "Key Column 2", inportLeft_)) {
+    , leftKey_("leftKey", "Left Key Column", inportLeft_)
+    , rightKey_("rightKey", "Right Key Column", inportRight_)
+    , secondaryLeftKeys_(
+          "secondaryLeftKeys", "Secondary Left Key Columns",
+          std::make_unique<ColumnOptionProperty>("leftKey2", "Left Key Column 2", inportLeft_))
+    , secondaryRightKeys_(
+          "secondaryRightKeys", "Secondary Right Key Columns",
+          std::make_unique<ColumnOptionProperty>("rightKey2", "Right Key Column 2", inportRight_)) {
 
-    addPort(inportLeft_);
-    addPort(inportRight_);
-    addPort(outport_);
+    addPorts(inportLeft_, inportRight_, outport_);
 
     ignoreDuplicateCols_.visibilityDependsOn(
         join_, [](const auto& p) { return p == JoinType::AppendColumns; });
@@ -93,14 +95,17 @@ DataFrameJoin::DataFrameJoin()
     auto keyVisible = [](const auto& p) {
         return (p == JoinType::Inner || p == JoinType::OuterLeft);
     };
-    key_.visibilityDependsOn(join_, keyVisible);
-    secondaryKeys_.visibilityDependsOn(join_, keyVisible);
 
-    addProperties(join_, ignoreDuplicateCols_, fillMissingRows_, columnMatching_, key_,
-                  secondaryKeys_);
+    leftKey_.visibilityDependsOn(join_, keyVisible);
+    rightKey_.visibilityDependsOn(join_, keyVisible);
+    secondaryLeftKeys_.visibilityDependsOn(join_, keyVisible);
+    secondaryRightKeys_.visibilityDependsOn(join_, keyVisible);
+
+    addProperties(join_, ignoreDuplicateCols_, fillMissingRows_, columnMatching_, leftKey_,
+                  rightKey_, secondaryLeftKeys_, secondaryRightKeys_);
 
     inportLeft_.onChange([&]() {
-        for (auto p : secondaryKeys_) {
+        for (auto p : secondaryLeftKeys_) {
             if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
                 if (inportLeft_.hasData()) {
                     keyProp->setOptions(*inportLeft_.getData());
@@ -109,15 +114,32 @@ DataFrameJoin::DataFrameJoin()
         }
     });
 
-    secondaryKeys_.PropertyOwnerObservable::addObserver(this);
+    inportRight_.onChange([&]() {
+        for (auto p : secondaryRightKeys_) {
+            if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
+                if (inportLeft_.hasData()) {
+                    keyProp->setOptions(*inportLeft_.getData());
+                }
+            }
+        }
+    });
+
+    secondaryLeftKeys_.PropertyOwnerObservable::addObserver(this);
+    secondaryRightKeys_.PropertyOwnerObservable::addObserver(this);
 }
 
 void DataFrameJoin::process() {
-    std::vector<std::string> keys;
-    keys.push_back(key_.getSelectedColumnHeader());
-    for (auto p : secondaryKeys_) {
-        if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
-            keys.push_back(keyProp->getSelectedColumnHeader());
+
+    std::vector<std::pair<std::string, std::string>> keys;
+    std::vector<std::string> rightKeys;
+    keys.push_back({leftKey_.getSelectedColumnHeader(), rightKey_.getSelectedColumnHeader()});
+
+    for (auto&& [left, right] : util::zip(secondaryLeftKeys_, secondaryRightKeys_)) {
+        if (auto leftKeyProp = dynamic_cast<ColumnOptionProperty*>(left)) {
+            if (auto rightKeyProp = dynamic_cast<ColumnOptionProperty*>(right)) {
+                keys.push_back({leftKeyProp->getSelectedColumnHeader(),
+                                rightKeyProp->getSelectedColumnHeader()});
+            }
         }
     }
 
@@ -144,15 +166,15 @@ void DataFrameJoin::process() {
 }
 
 void DataFrameJoin::onDidAddProperty(Property* property, size_t) {
-    if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(property)) {
-        if (inportLeft_.hasData()) {
-            keyProp->setOptions(*inportLeft_.getData());
-        }
-    }
+    /* if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(property)) {
+         if (inportLeft_.hasData()) {
+             keyProp->setOptions(*inportLeft_.getData());
+         }
+     }*/
 }
 
-void DataFrameJoin::onDidRemoveProperty(PropertyOwner*, Property*, size_t) {
-    secondaryKeys_.setModified();
+void DataFrameJoin::onDidRemoveProperty(PropertyOwner* owner, Property*, size_t) {
+    owner->invalidate(InvalidationLevel::InvalidOutput);
 }
 
 }  // namespace inviwo

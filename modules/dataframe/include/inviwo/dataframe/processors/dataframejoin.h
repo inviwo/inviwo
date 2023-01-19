@@ -101,8 +101,10 @@ private:
     BoolProperty ignoreDuplicateCols_;
     BoolProperty fillMissingRows_;
     OptionProperty<ColumnMatch> columnMatching_;
-    ColumnOptionProperty key_;
-    ListProperty secondaryKeys_;
+    ColumnOptionProperty leftKey_;
+    ColumnOptionProperty rightKey_;
+    ListProperty secondaryLeftKeys_;
+    ListProperty secondaryRightKeys_;
 };
 
 }  // namespace inviwo

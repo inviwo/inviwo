@@ -226,11 +226,12 @@ TEST(InnerJoin, ByCustomColumn) {
     right.addColumnFromBuffer("int2", util::makeBuffer(std::vector<int>{42, 3, 8}));
     right.updateIndexBuffer();
 
-    EXPECT_THROW(dataframe::innerJoin(left, right, "int"), Exception);
+    EXPECT_THROW(
+        dataframe::innerJoin(left, right, std::pair<std::string, std::string>{"int", "int"}),
+        Exception);
 
-    right.getColumn("int2")->setHeader("int");
-
-    auto dataframe = dataframe::innerJoin(left, right, "int");
+    auto dataframe =
+        dataframe::innerJoin(left, right, std::pair<std::string, std::string>{"int", "int2"});
     EXPECT_EQ(2, dataframe->getNumberOfRows()) << "inner join should result in 2 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
     EXPECT_TRUE(dataframe->getColumn("float"));
@@ -275,7 +276,8 @@ TEST(InnerJoin, ByCategoricalColumn) {
     right.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{1, 2, 3}));
     right.updateIndexBuffer();
 
-    auto dataframe = dataframe::innerJoin(left, right, "cat");
+    auto dataframe =
+        dataframe::innerJoin(left, right, std::pair<std::string, std::string>{"cat", "cat"});
     EXPECT_EQ(3, dataframe->getNumberOfRows()) << "inner join should result in 5 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
     EXPECT_TRUE(dataframe->getColumn("int"));
@@ -317,11 +319,12 @@ TEST(LeftJoin, ByCustomColumn) {
     right.addColumnFromBuffer("int2", util::makeBuffer(std::vector<int>{42, 3, 8}));
     right.updateIndexBuffer();
 
-    EXPECT_THROW(dataframe::leftJoin(left, right, "int"), Exception);
+    EXPECT_THROW(
+        dataframe::leftJoin(left, right, std::pair<std::string, std::string>{"int", "int"}),
+        Exception);
 
-    right.getColumn("int2")->setHeader("int");
-
-    auto dataframe = dataframe::leftJoin(left, right, "int");
+    auto dataframe =
+        dataframe::leftJoin(left, right, std::pair<std::string, std::string>{"int", "int2"});
     EXPECT_EQ(5, dataframe->getNumberOfRows()) << "left join should result in 5 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "left join should result in 3 columns";
     EXPECT_TRUE(dataframe->getColumn("float"));
@@ -368,7 +371,9 @@ TEST(LeftJoin, MultipleKeyColumns) {
     right.addCategoricalColumn("cat2", {"hello", "world", "test", "cat", "dog"});
     right.updateIndexBuffer();
 
-    auto dataframe = dataframe::leftJoin(left, right, std::vector<std::string>{"int", "cat"});
+    auto dataframe = dataframe::leftJoin(
+        left, right,
+        std::vector<std::pair<std::string, std::string>>{{"int", "int"}, {"cat", "cat"}});
     EXPECT_EQ(8, dataframe->getNumberOfRows()) << "left join should result in 8 rows";
     EXPECT_EQ(5, dataframe->getNumberOfColumns()) << "left join should result in 5 columns";
     EXPECT_TRUE(dataframe->getColumn("float"));
