@@ -89,6 +89,7 @@ private:
     DataOutport<DataFrame> data_;
     FileProperty inputFile_;
     BoolProperty firstRowIsHeaders_;
+    BoolProperty firstColumnIsIndices_;
     BoolCompositeProperty unitsInHeaders_;
     StringProperty unitRegexp_;
     StringProperty delimiters_;

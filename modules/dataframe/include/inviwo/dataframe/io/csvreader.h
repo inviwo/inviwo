@@ -79,6 +79,10 @@ public:
     CSVReader& setFirstRowHeader(bool hasHeader);
     bool hasFirstRowHeader() const;
 
+    /** @see CSVReader::defaultFirstColIndices */
+    CSVReader& setFirstColIndices(bool hasIndices);
+    bool hasFirstColIndices() const;
+
     /** @see CSVReader::defaultUnitInHeaders */
     CSVReader& setUnitsInHeaders(bool unitInHeaders);
     bool hasUnitsInHeaders() const;
@@ -155,6 +159,7 @@ public:
      * * Delimiters (string)
      * * StripQuotes (bool)
      * * FirstRowHeader (bool)
+     * * FirstColIndices (bool)
      * * UnitsInHeaders (bool)
      * * UnitRegexp (sting)
      * * DoublePrecision (bool)
@@ -170,6 +175,7 @@ public:
      * * Delimiters (string)
      * * StripQuotes (bool)
      * * FirstRowHeader (bool)
+     * * FirstColIndices (bool)
      * * UnitsInHeaders (bool)
      * * UnitRegexp (sting)
      * * DoublePrecision (bool)
@@ -186,6 +192,8 @@ public:
     static constexpr bool defaultStripQuotes = true;
     /** @see CSVReader::setFirstRowHeader */
     static constexpr bool defaultFirstRowHeader = true;
+    /** @see CSVReader::setFirstColIndices */
+    static constexpr bool defaultFirstColIndices = false;
     /** @see CSVReader::setUnitInHeaderss */
     static constexpr bool defaultUnitInHeaders = true;
     /** @see CSVReader::setUnitRegexp */
@@ -201,9 +209,10 @@ public:
 
 private:
     struct TypeCounts {
-        size_t integer;
-        size_t real;
-        size_t string;
+        size_t integer = 0;
+        size_t real = 0;
+        size_t string = 0;
+        bool index = false;
     };
 
     std::vector<TypeCounts> findCellTypes(
@@ -219,6 +228,7 @@ private:
     std::string delimiters_;
     bool stripQuotes_;
     bool firstRowHeader_;
+    bool firstColIndices_;
     bool unitsInHeaders_;
     std::string unitRegexp_;
     bool doublePrecision_;
