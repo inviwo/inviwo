@@ -134,8 +134,14 @@ void DataFrame::updateIndexBuffer() {
 
     auto indexBuffer = std::static_pointer_cast<Buffer<std::uint32_t>>(columns_[0]->getBuffer());
     auto& indexVector = indexBuffer->getEditableRAMRepresentation()->getDataContainer();
+
+    const auto oldSize = indexVector.size();
     indexVector.resize(nrows);
-    std::iota(indexVector.begin(), indexVector.end(), 0);
+    if (oldSize == 0) {
+        std::iota(indexVector.begin(), indexVector.end(), 0);
+    } else if (nrows > oldSize) {
+        std::iota(indexVector.begin() + oldSize, indexVector.end(), indexVector[oldSize - 1]);
+    }
 }
 
 size_t DataFrame::getNumberOfColumns() const { return columns_.size(); }
