@@ -392,7 +392,7 @@ void AnimationController::render() {
                                // ground.
                                cp->getImage()->getColorLayer()->getRepresentation<LayerRAM>();
                                auto layer =
-                                   std::unique_ptr<Layer>(cp->getImage()->getColorLayer()->clone());
+                                   std::shared_ptr<Layer>(cp->getImage()->getColorLayer()->clone());
                                app_->dispatchPool([ext = writer.get(), layer = std::move(layer),
                                                    location = renderLocation.get(), file]() {
                                    util::saveData(*layer, location, file, {ext}, Overwrite::Yes);
