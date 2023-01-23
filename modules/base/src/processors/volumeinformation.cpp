@@ -211,7 +211,7 @@ void VolumeInformation::process() {
     vec3 vs = {glm::length(dx), glm::length(dy), glm::length(dz)};
     voxelSize_.set(vs);
 
-    for(auto&& [index, transform] : util::enumerate(spaceTransforms_)) {
+    for (auto&& [index, transform] : util::enumerate(spaceTransforms_)) {
         auto from = static_cast<CoordinateSpace>(index / 4);
         auto to = static_cast<CoordinateSpace>(index % 4);
         transform.set(trans.getMatrix(from, to));
