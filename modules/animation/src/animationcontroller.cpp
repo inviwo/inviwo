@@ -386,10 +386,10 @@ void AnimationController::render() {
                                                     Overwrite::Yes);
                            },
                            [&](CanvasProcessor* cp) {
-                               // Hackish: Make sure LayerRAM is the last valid rep, so that
-                               // is the one that will be cloned, This also forces the
-                               // download to happen on the main thread instead of in the back
-                               // ground.
+                               // Hackish: Make sure LayerRAM is the last valid rep, so that it
+                               // is the one that will be cloned. This also forces the
+                               // download to happen on the main thread instead of in the 
+                               // background.
                                cp->getImage()->getColorLayer()->getRepresentation<LayerRAM>();
                                auto layer =
                                    std::shared_ptr<Layer>(cp->getImage()->getColorLayer()->clone());

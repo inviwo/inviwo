@@ -299,7 +299,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
 
         auto indexCheck = [&](uint32_t i, std::string_view type) {
             if (i >= nSegments) {
-                throw Exception(IVW_CONTEXT, "Fund {} index {} outside of expected range [0,{})",
+                throw Exception(IVW_CONTEXT, "{} index {} outside of expected range [0,{})",
                                 type, i, nSegments);
             }
         };
