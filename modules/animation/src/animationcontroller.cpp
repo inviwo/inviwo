@@ -388,7 +388,7 @@ void AnimationController::render() {
                            [&](CanvasProcessor* cp) {
                                // Hackish: Make sure LayerRAM is the last valid rep, so that it
                                // is the one that will be cloned. This also forces the
-                               // download to happen on the main thread instead of in the 
+                               // download to happen on the main thread instead of in the
                                // background.
                                cp->getImage()->getColorLayer()->getRepresentation<LayerRAM>();
                                auto layer =
