@@ -90,10 +90,13 @@ const ProcessorInfo VolumeInformation::processorInfo_{
     )"_unindentHelp};
 const ProcessorInfo VolumeInformation::getProcessorInfo() const { return processorInfo_; }
 
-std::array<FloatMat4Property, 16> transformProps() {
-    return util::make_array<16>([](auto index) {
-        auto from = static_cast<CoordinateSpace>(index / 4);
-        auto to = static_cast<CoordinateSpace>(index % 4);
+namespace {
+constexpr auto transforms = util::generateTransforms(std::array{
+    CoordinateSpace::Data, CoordinateSpace::Model, CoordinateSpace::World, CoordinateSpace::Index});
+
+std::array<FloatMat4Property, 12> transformProps() {
+    return util::make_array<12>([](auto index) {
+        auto [from, to] = transforms[index];
         return FloatMat4Property(fmt::format("{}2{}", from, to), fmt::format("{} To {}", from, to),
                                  mat4(1.0f),
                                  util::filled<mat4>(std::numeric_limits<float>::lowest()),
@@ -101,6 +104,7 @@ std::array<FloatMat4Property, 16> transformProps() {
                                  util::filled<mat4>(0.001f), InvalidationLevel::Valid);
     });
 }
+}  // namespace
 
 VolumeInformation::VolumeInformation()
     : Processor()
@@ -212,8 +216,7 @@ void VolumeInformation::process() {
     voxelSize_.set(vs);
 
     for (auto&& [index, transform] : util::enumerate(spaceTransforms_)) {
-        auto from = static_cast<CoordinateSpace>(index / 4);
-        auto to = static_cast<CoordinateSpace>(index % 4);
+        auto [from, to] = transforms[index];
         transform.set(trans.getMatrix(from, to));
     }
 

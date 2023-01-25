@@ -77,6 +77,7 @@ public:
     FloatMat4Property worldTransform_;
     FloatMat3Property basis_;
     FloatVec3Property offset_;
+    std::array<FloatMat4Property, 6> spaceTransforms_;
 
     BoolCompositeProperty meshProperties_;
     FloatVec3Property min_;

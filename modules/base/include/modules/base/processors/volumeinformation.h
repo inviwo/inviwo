@@ -78,7 +78,7 @@ private:
     FloatMat4Property worldMatrix_;
     FloatMat4Property indexMatrix_;
 
-    std::array<FloatMat4Property, 16> spaceTransforms_;
+    std::array<FloatMat4Property, 12> spaceTransforms_;
 
     BoolCompositeProperty perVoxelProperties_;
     CompositeProperty transformations_;
