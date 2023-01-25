@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,35 +31,19 @@
 
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
+uniform mat4 meshDataToVolData = mat4(1);
 
-out vData {
+out fData {
     vec4 worldPosition;
     vec4 position;
     vec3 normal;
-#ifdef SEND_COLOR
-    vec4 color;
-#endif
-#ifdef SEND_TEX_COORD
-    vec2 texCoord;
-#endif
-#ifdef SEND_SCALAR
-    float scalar;
-#endif
-}
-vertex;
+    vec4 volumeDataPos;
+} vertex;
 
 void main() {
-#ifdef SEND_COLOR
-    vertex.color = in_Color;
-#endif
-#ifdef SEND_TEX_COORD
-    vertex.texCoord = in_TexCoord.xy;
-#endif
-#ifdef SEND_SCALAR
-    vertex.scalar = in_TexCoord.x;  // TODO: specify source of scalar value
-#endif
+    vertex.volumeDataPos = meshDataToVolData * in_Vertex;
     vertex.worldPosition = geometry.dataToWorld * in_Vertex;
-    vertex.normal = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
+    vertex.normal = in_Normal;
     vertex.position = camera.worldToClip * vertex.worldPosition;
     gl_Position = vertex.position;
 }

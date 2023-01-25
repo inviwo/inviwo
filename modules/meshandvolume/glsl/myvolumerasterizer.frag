@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,27 +36,8 @@ in fData {
     vec4 worldPosition;
     vec4 position;
     vec3 normal;
-#ifdef SEND_COLOR
-    vec4 color;
-#endif
-#ifdef SEND_TEX_COORD
-    vec2 texCoord;
-#endif
-#ifdef SEND_SCALAR
-    float scalar;
-#endif
-    float area;
-#ifdef ALPHA_SHAPE
-    vec3 sideLengths;
-#endif
-#if defined(DRAW_EDGES) || defined(DRAW_SILHOUETTE)
-    vec3 edgeCoordinates;
-#endif
-#ifdef DRAW_SILHOUETTE
-    flat bvec3 silhouettes;
-#endif
-}
-frag;
+    vec4 volumeDataPos;
+} frag;
 
 #ifdef USE_FRAGMENT_LIST
 #include "oit/myabufferlinkedlist.glsl"
@@ -67,18 +48,7 @@ layout(early_fragment_tests) in;
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 #endif
 
-uniform VolumeParameters volumeParameters;
-uniform sampler3D volume;
-uniform ImageParameters entryParameters;
-uniform sampler2D entryColor;
-uniform sampler2D entryDepth;
-uniform sampler2D entryPicking;
-uniform sampler2D entryNormal;
-
-uniform ImageParameters exitParameters;
-uniform sampler2D exitColor;
-uniform sampler2D exitDepth;
-uniform int id;
+uniform int volumeId;
 
 // How do I get id, parameters needed to pass into abufferVolumeRender?
 void main() {
@@ -86,15 +56,12 @@ void main() {
 
 #ifdef USE_FRAGMENT_LIST
     // fragment list rendering
-    if (id >= 0) {
+    if (volumeId >= 0) {
         ivec2 coords = ivec2(gl_FragCoord.xy);
         float depth = gl_FragCoord.z;
-        float entry_Depth = texture(entryDepth, coords).x;
-        float exit_Depth = texture(exitDepth, coords).x;
-        vec3 entry_Color = texture(entryColor, coords).xyz;
-        vec3 exit_Color = texture(exitColor, coords).xyz;
-        abufferVolumeRender(coords, entry_Depth, entry_Color, id); // Entry
-        abufferVolumeRender(coords, exit_Depth, exit_Color, id); // Exit
+        // TODO: consider winding order to distinguish between front and back facing triangles?
+        // TODO: do we need to fill the mesh in case it gets clipped by the near clip plane?
+        abufferVolumeRender(coords, depth, frag.volumeDataPos.xyz, volumeId);
     }
     discard;
     

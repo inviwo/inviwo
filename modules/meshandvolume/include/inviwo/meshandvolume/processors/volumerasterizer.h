@@ -32,7 +32,7 @@
 #include <inviwo/meshandvolume/meshandvolumemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/meshrenderinggl/ports/rasterizationport.h>
 #include <inviwo/meshandvolume/rendering/myfragmentlistrenderer.h>
@@ -43,22 +43,9 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.volumerasterizer, volumerasterizer}
- * ![](org.inviwo.volumerasterizer.png?classIdentifier=org.inviwo.volumerasterizer)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_MESHANDVOLUME_API VolumeRasterizer : public Processor {
     friend class VolumeRasterization;
+
 public:
     VolumeRasterizer();
     virtual ~VolumeRasterizer() override = default;
@@ -70,36 +57,36 @@ public:
     static const ProcessorInfo processorInfo_;
 
     void setUniforms(Shader& shader, std::string_view prefix) const;
+
 protected:
     VolumeInport volumeInport_;
-    ImageInport entryPort_;
-    ImageInport exitPort_;
+    MeshInport meshInport_;
     RasterizationOutport outport_;
-    //std::vector<std::shared_ptr<const Volume>> enhancedVolumes_;
+
     std::shared_ptr<Shader> shader_;
     IsoTFProperty tf_;
-    SimpleLightingProperty lighting_;
     OptionPropertyInt channel_;
     CameraProperty camera_;
+    SimpleLightingProperty lighting_;
 };
 
 class IVW_MODULE_MESHANDVOLUME_API VolumeRasterization : public Rasterization {
 public:
     VolumeRasterization(const VolumeRasterizer& processor);
     virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-        std::function<void(Shader&)> setUniforms) const override;
+                           std::function<void(Shader&)> setUniforms) const override;
     virtual bool usesFragmentLists() const override {
         return MyFragmentListRenderer::supportsFragmentLists();
     }
+    virtual Document getInfo() const override;
     virtual Rasterization* clone() const override;
     const RaycastingState* getRaycastingState() const;
+
 public:
     RaycastingState raycastState_;
     std::shared_ptr<Shader> shader_;
-    std::shared_ptr<const Image> entry_;
-    std::shared_ptr<const Image> exit_;
     std::shared_ptr<const Volume> volume_;
+    std::shared_ptr<const Mesh> boundingMesh_;
 };
 
 }  // namespace inviwo
-    

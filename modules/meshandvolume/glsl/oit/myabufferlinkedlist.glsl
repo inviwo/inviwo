@@ -200,7 +200,7 @@ uint abufferMeshRender(ivec2 coords, float depth, vec4 color) {
 }
 
 // The central function for the user-code
-uint abufferVolumeRender(ivec2 coords, float depth, vec3 position, uint id) {
+uint abufferVolumeRender(ivec2 coords, float depth, vec3 position, uint volumeId) {
     // coords.x=0; coords.y=0;
     // reserve space for pixel
     uint pixelIdx = dataCounterAtomicInc();
@@ -214,7 +214,7 @@ uint abufferVolumeRender(ivec2 coords, float depth, vec3 position, uint id) {
     abufferVolumePixel p;
     p.previous = prevIdx;
     p.depth = depth;
-    p.id = id;
+    p.id = volumeId;
     p.position = position;
     
     writePixelStorage(pixelIdx, compressVolumePixelData(p));

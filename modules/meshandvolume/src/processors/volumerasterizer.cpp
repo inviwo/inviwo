@@ -29,82 +29,63 @@
 
 #include <inviwo/meshandvolume/processors/volumerasterizer.h>
 
-#include <modules/opengl/volume/volumegl.h>
 #include <variant>
 #include <sstream>
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/texture/texture3d.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/shader/shaderutils.h>
-#pragma optimize("",off)
+#include <modules/opengl/openglutils.h>             // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>  // for MeshDrawerG...
+#include <modules/opengl/geometry/meshgl.h>         // for MeshGL
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
+#include <inviwo/core/util/document.h>
+
+#include <fmt/core.h>  // for format
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeRasterizer::processorInfo_{
     "org.inviwo.VolumeRasterizer",  // Class identifier
-    "Volume Rasterizer",             // Display name
-    "Volume Rendering",          // Category
+    "Volume Rasterizer",            // Display name
+    "Volume Rendering",             // Category
     CodeState::Experimental,        // Code state
-    Tags::GL,                     // Tags
-};
+    Tags::GL,                       // Tags
+    R"(
+        Volume renderer for rendering one or more volumes together with arbitrary, transparent meshes.
+    )"_unindentHelp};
 const ProcessorInfo VolumeRasterizer::getProcessorInfo() const { return processorInfo_; }
-
-void VolumeRasterizer::setUniforms(Shader& shader, std::string_view prefix) const {
-    shader.setUniform(
-        "volumeid", volumeInport_.getData()->getRepresentation<VolumeGL>()->getTexture()->getID());
-    TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader, units, entryPort_, ImageType::ColorDepthPicking);
-    utilgl::bindAndSetUniforms(shader, units, exitPort_, ImageType::ColorDepth);
-    /*
-    uniform ImageParameters entryParameters;
-    uniform sampler2D entryColor;
-    uniform sampler2D entryDepth;
-    uniform sampler2D entryPicking;
-    uniform sampler2D entryNormal;
-
-    uniform ImageParameters exitParameters;
-    uniform sampler2D exitColor;
-    uniform sampler2D exitDepth;
-    */
-
-    std::array<std::pair<std::string_view, std::variant<bool, int, float, vec4>>, 15> uniforms{
-        {{"externalColor", vec4{1.0f, 0.0f, 1.0f, 1.0f}}}};
-
-    for (const auto& [key, val] : uniforms) {
-        std::visit([&, akey = key](
-                       auto aval) { shader.setUniform(fmt::format("{}{}", prefix, akey), aval); },
-                   val);
-    }
-}
 
 VolumeRasterizer::VolumeRasterizer()
     : Processor()
-    , volumeInport_{"volume"}
-    , entryPort_{"entry"}
-    , exitPort_{"exit"}
-    , outport_("outport")
-    , shader_(std::make_shared<Shader>("myvolumerasterizer.vert", "myvolumerasterizer.frag",
-                                       Shader::Build::No))
-    , tf_("tf", "TF & Isovalues", &volumeInport_, InvalidationLevel::InvalidResources)
-    , channel_("channel", "Render Channel",
+    , volumeInport_{"volume", "Input volume"_help}
+    , meshInport_{"geometry",
+                  "Input mesh used for entry and exit points during ray casting. The mesh needs to be closed."_help}
+    , outport_{"outport",
+               "Rasterization functor for volume rendering in a rendering processor"_help}
+    , shader_{std::make_shared<Shader>("myvolumerasterizer.vert", "myvolumerasterizer.frag",
+                                       Shader::Build::No)}
+    , tf_{"tf", "TF & Isovalues", &volumeInport_, InvalidationLevel::InvalidResources}
+    , channel_{"channel",
+               "Render Channel",
                {{"channel1", "Channel 1", 0},
                 {"channel2", "Channel 2", 1},
                 {"channel3", "Channel 3", 2},
                 {"channel4", "Channel 4", 3}},
-               0)
-    , camera_("camera", "Camera", util::boundingBox(volumeInport_))
-    , lighting_("lighting", "Lighting", &camera_) {
+               0}
+    , camera_{"camera", "Camera", util::boundingBox(volumeInport_)}
+    , lighting_{"lighting", "Lighting", &camera_} {
 
     addPort(volumeInport_);
-    addPort(entryPort_);
-    addPort(exitPort_);
+    addPort(meshInport_);
     addPort(outport_);
     addProperties(channel_, tf_, camera_, lighting_);
 }
 
 void VolumeRasterizer::process() {
-    LogWarn("Entry has data " << entryPort_.hasData());
     std::shared_ptr<const Rasterization> rasterization =
         std::make_shared<const VolumeRasterization>(*this);
 
@@ -130,17 +111,26 @@ void VolumeRasterizer::initializeResources() {
     shader_->build();
 }
 
+void VolumeRasterizer::setUniforms(Shader& shader, std::string_view prefix) const {
+    shader.setUniform(
+        "volumeid", volumeInport_.getData()->getRepresentation<VolumeGL>()->getTexture()->getID());
+
+    std::array<std::pair<std::string_view, std::variant<bool, int, float, vec4>>, 15> uniforms{
+        {{"externalColor", vec4{1.0f, 0.0f, 1.0f, 1.0f}}}};
+
+    for (const auto& [key, val] : uniforms) {
+        std::visit([&, akey = key](
+                       auto aval) { shader.setUniform(fmt::format("{}{}", prefix, akey), aval); },
+                   val);
+    }
+}
+
 VolumeRasterization::VolumeRasterization(const VolumeRasterizer& processor)
     : raycastState_{processor.tf_.tf_.get(), processor.lighting_.getState(),
                     processor.channel_.get()}
     , shader_(processor.shader_)
-    , entry_(processor.entryPort_.getData())
-    , exit_(processor.exitPort_.getData())
-    , volume_(processor.volumeInport_.getData()) {
-    if (!entry_) {
-        throw Exception("Entry no data", IVW_CONTEXT);
-    }
-}
+    , volume_(processor.volumeInport_.getData())
+    , boundingMesh_(processor.meshInport_.getData()) {}
 
 void VolumeRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                                     std::function<void(Shader&)> setUniformsRenderer) const {
@@ -148,21 +138,39 @@ void VolumeRasterization::rasterize(const ivec2& imageSize, const mat4& worldMat
 
     shader_->setUniform("halfScreenSize", imageSize / ivec2(2));
 
-    TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(*shader_, cont, *volume_, "volume");
-    utilgl::bindAndSetUniforms(*shader_, cont, *entry_, "entry", ImageType::ColorDepthPicking);
-    utilgl::bindAndSetUniforms(*shader_, cont, *exit_, "exit", ImageType::ColorDepth);
+    const mat4 meshDataToVolumeData =
+        volume_->getCoordinateTransformer().getWorldToDataMatrix() *
+        boundingMesh_->getCoordinateTransformer().getDataToWorldMatrix();
+
+    shader_->setUniform("meshDataToVolData", meshDataToVolumeData);
 
     setUniformsRenderer(*shader_);
 
     // Set opengl states?
     {
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_FALSE);
+        utilgl::DepthMaskState depthMask(GL_FALSE);
 
-        utilgl::singleDrawImagePlaneRect();  // shader use entry/exit to set fragment flag to volume
-                                             // and flag for entry exit
-                                             // empty entry/exit = black and entry=exit in shader
+        utilgl::CullFaceState culling(GL_NONE);
+        utilgl::GlBoolState blend(GL_BLEND, GL_FALSE);
+
+        // Finally, draw it
+        MeshDrawerGL::DrawObject drawer{boundingMesh_->getRepresentation<MeshGL>(),
+                                        boundingMesh_->getDefaultMeshInfo()};
+
+        auto transform = CompositeTransform(boundingMesh_->getModelMatrix(),
+                                            boundingMesh_->getWorldMatrix() * worldMatrixTransform);
+        utilgl::setShaderUniforms(*shader_, transform, "geometry");
+
+        drawer.draw();
     }
     shader_->deactivate();
+}
+
+Document VolumeRasterization::getInfo() const {
+    Document doc;
+    doc.append("p", "Volume rasterization functor");
+    return doc;
 }
 
 Rasterization* VolumeRasterization::clone() const { return new VolumeRasterization(*this); }
