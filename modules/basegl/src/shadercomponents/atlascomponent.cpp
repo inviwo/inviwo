@@ -297,6 +297,13 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
 
         util::IndexMapper2D im(colors_.getDimensions());
 
+        auto indexCheck = [&](uint32_t i, std::string_view type) {
+            if (i >= nSegments) {
+                throw Exception(IVW_CONTEXT, "{} index {} outside of expected range [0,{})", type,
+                                i, nSegments);
+            }
+        };
+
         auto lrp =
             static_cast<LayerRAMPrecision<vec4>*>(colors_.getEditableRepresentation<LayerRAM>())
                 ->getDataTyped();
@@ -307,6 +314,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
             lrp[im(i, 1)] = color;
         }
         for (auto i : brushing_.getSelectedIndices()) {
+            indexCheck(i, "selection");
             lrp[im(i + 1, 0)] =
                 vec4{glm::mix(selectionColor_.get(), vec3{lrp[im(i + 1, 0)]}, selectionMix_.get()),
                      selectionAlpha_.get()};
@@ -317,6 +325,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
         }
 
         for (auto i : brushing_.getHighlightedIndices()) {
+            indexCheck(i, "highlight");
             lrp[im(i + 1, 0)] =
                 vec4{glm::mix(selectionColor_.get(), vec3{lrp[im(i + 1, 0)]}, selectionMix_.get()),
                      selectionAlpha_.get()};
@@ -327,6 +336,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
         }
 
         for (auto i : brushing_.getFilteredIndices()) {
+            indexCheck(i, "filter");
             lrp[im(i + 1, 0)] =
                 vec4{glm::mix(filteredColor_.get(), vec3{lrp[im(i + 1, 0)]}, filteredMix_.get()),
                      filteredAlpha_.get()};

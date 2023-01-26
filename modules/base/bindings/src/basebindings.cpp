@@ -38,9 +38,6 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(ivwbase, m) {
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-    VLDDisable();
-#endif
     m.doc() = R"doc(
         Base Module API
     
@@ -58,8 +55,4 @@ PYBIND11_MODULE(ivwbase, m) {
 
     inviwo::exposeVolumeWriteMethods(ioMod);
     inviwo::exposeVolumeOperations(utilMod);
-
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-    VLDEnable();
-#endif
 }

@@ -29,12 +29,10 @@
 
  ### Generate unittests for modules. ###
 
-#--------------------------------------------------------------------
 # Options for unittests
 option(IVW_TEST_UNIT_TESTS "Enable unittests" ON)
 option(IVW_TEST_UNIT_TESTS_RUN_ON_BUILD "Enable running unittest when building" ON)
 
-#--------------------------------------------------------------------
 # Add unittests
 function(ivw_add_unittest)
     if(IVW_TEST_UNIT_TESTS)
@@ -42,7 +40,6 @@ function(ivw_add_unittest)
     endif()
 endfunction()
 
-#--------------------------------------------------------------------
 # Inviwo Unittest Application
 function(ivw_make_unittest_target name target)
     # Check if there are any tests
@@ -54,12 +51,11 @@ function(ivw_make_unittest_target name target)
     ivw_debug_message(STATUS "create unittests: ${name}")
 
     project(${test_name})
-    #--------------------------------------------------------------------
+
     # Add source files
     set(SOURCE_FILES ${${CMAKE_PROJECT_NAME}_UNITTEST_FILES})
     ivw_group("Test Files" ${SOURCE_FILES})
 
-    #--------------------------------------------------------------------
     # Create application
     add_executable(${test_name} ${SOURCE_FILES})
 
@@ -77,14 +73,10 @@ function(ivw_make_unittest_target name target)
         target_link_libraries(${test_name} PRIVATE -DEBUG:FULL)
     endif()
 
-    #--------------------------------------------------------------------
     # Define defintions and properties
     ivw_define_standard_definitions(${test_name} ${test_name})
     ivw_define_standard_properties(${test_name})
 
-    ivw_memleak_setup(${test_name})
-
-    #--------------------------------------------------------------------
     # Add run on build command
     if(IVW_TEST_UNIT_TESTS_RUN_ON_BUILD)
         add_custom_command(TARGET "${test_name}" POST_BUILD COMMAND "${test_name}" 

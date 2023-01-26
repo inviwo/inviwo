@@ -68,12 +68,13 @@ std::string VolumeInformationProperty::getClassIdentifier() const { return class
 
 namespace {
 auto props(VolumeInformationProperty& prop) {
-    return std::tie(prop.dimensions_, prop.format_, prop.channels_, prop.numVoxels_);
+    return std::tie(prop.dimensions, prop.format, prop.channels, prop.numVoxels);
 }
 
 auto meta(VolumeInformationProperty& prop) {
-    return std::tie(prop.dataRange_, prop.valueRange_, prop.valueName_, prop.valueUnit_,
-                    prop.axesNames_, prop.axesUnits_);
+    return std::tie(prop.dataRange, prop.valueRange, prop.valueName, prop.valueUnit,
+                    prop.interpolation, prop.axesNames, prop.axesUnits, prop.wrapping[0],
+                    prop.wrapping[1], prop.wrapping[2]);
 }
 
 }  // namespace
@@ -84,24 +85,52 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
     : BoolCompositeProperty(identifier, displayName,
                             "Various information and statistics about a volume"_help, false,
                             invalidationLevel, semantics)
-    , dimensions_(
-          "dimensions", "Dimensions",
-          util::ordinalCount(size3_t{0}).set(InvalidationLevel::Valid).set(PropertySemantics::Text))
-    , format_("format", "Format", "")
-    , channels_(
-          "channels", "Channels",
-          util::ordinalCount(size_t{0}).set(InvalidationLevel::Valid).set(PropertySemantics::Text))
-    , numVoxels_(
-          "numVoxels", "Number of Voxels",
-          util::ordinalCount(size_t{0}).set(InvalidationLevel::Valid).set(PropertySemantics::Text))
-    , dataRange_("dataRange", "Data range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(), 0.0,
-                 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , valueRange_("valueRange", "Value range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
-                  0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , valueName_("valueName", "Value name", "")
-    , valueUnit_("valueUnit", "Value unit", "")
-    , axesNames_{"axesNames", "Axes Names"}
-    , axesUnits_{"axesUnits", "Axes Units"} {
+    , dimensions{"dimensions", "Dimensions",
+                 util::ordinalCount(size3_t{0})
+                     .set(InvalidationLevel::Valid)
+                     .set(PropertySemantics::Text)}
+    , format{"format", "Format", ""}
+    , channels{"channels", "Channels",
+               util::ordinalCount(size_t{0})
+                   .set(InvalidationLevel::Valid)
+                   .set(PropertySemantics::Text)}
+    , numVoxels{"numVoxels", "Number of Voxels",
+                util::ordinalCount(size_t{0})
+                    .set(InvalidationLevel::Valid)
+                    .set(PropertySemantics::Text)}
+    , dataRange{"dataRange",
+                "Data range",
+                0.,
+                255.0,
+                -DataFloat64::max(),
+                DataFloat64::max(),
+                0.0,
+                0.0,
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Text}
+    , valueRange{"valueRange",
+                 "Value range",
+                 0.,
+                 255.0,
+                 -DataFloat64::max(),
+                 DataFloat64::max(),
+                 0.0,
+                 0.0,
+                 InvalidationLevel::InvalidOutput,
+                 PropertySemantics::Text}
+    , valueName{"valueName", "Value name", ""}
+    , valueUnit{"valueUnit", "Value unit", ""}
+    , interpolation{"interpolation",
+                    "Interpolation",
+                    {InterpolationType::Linear, InterpolationType::Nearest},
+                    0}
+    , axesNames{"axesNames", "Axes Names"}
+    , axesUnits{"axesUnits", "Axes Units"}
+    , wrapping{{
+          {"xWrappingX", "X Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+          {"yWrappingX", "Y Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+          {"zWrappingX", "Z Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+      }} {
 
     getBoolProperty()
         ->setDisplayName("Keep Changes")
@@ -122,17 +151,19 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
 }
 
 VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProperty& rhs)
-    : BoolCompositeProperty(rhs)
-    , dimensions_(rhs.dimensions_)
-    , format_(rhs.format_)
-    , channels_(rhs.channels_)
-    , numVoxels_(rhs.numVoxels_)
-    , dataRange_(rhs.dataRange_)
-    , valueRange_(rhs.valueRange_)
-    , valueName_(rhs.valueName_)
-    , valueUnit_(rhs.valueUnit_)
-    , axesNames_(rhs.axesNames_)
-    , axesUnits_(rhs.axesUnits_) {
+    : BoolCompositeProperty{rhs}
+    , dimensions{rhs.dimensions}
+    , format{rhs.format}
+    , channels{rhs.channels}
+    , numVoxels{rhs.numVoxels}
+    , dataRange{rhs.dataRange}
+    , valueRange{rhs.valueRange}
+    , valueName{rhs.valueName}
+    , valueUnit{rhs.valueUnit}
+    , interpolation{rhs.interpolation}
+    , axesNames{rhs.axesNames}
+    , axesUnits{rhs.axesUnits}
+    , wrapping{rhs.wrapping} {
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props(*this));
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, meta(*this));
@@ -145,45 +176,51 @@ VolumeInformationProperty* VolumeInformationProperty::clone() const {
 void VolumeInformationProperty::updateForNewVolume(const Volume& volume,
                                                    util::OverwriteState overwrite) {
     const auto dim = volume.getDimensions();
-    dimensions_.set(dim);
-    format_.set(volume.getDataFormat()->getString());
-    channels_.set(volume.getDataFormat()->getComponents());
-    numVoxels_.set(dim.x * dim.y * dim.z);
+    dimensions.set(dim);
+    format.set(volume.getDataFormat()->getString());
+    channels.set(volume.getDataFormat()->getComponents());
+    numVoxels.set(dim.x * dim.y * dim.z);
     util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, props(*this));
 
     overwrite = (overwrite == util::OverwriteState::Yes && !isChecked()) ? util::OverwriteState::Yes
                                                                          : util::OverwriteState::No;
 
-    util::updateDefaultState(dataRange_, volume.dataMap_.dataRange, overwrite);
-    util::updateDefaultState(valueRange_, volume.dataMap_.valueRange, overwrite);
-    util::updateDefaultState(valueName_, volume.dataMap_.valueAxis.name, overwrite);
-    util::updateDefaultState(valueUnit_, fmt::to_string(volume.dataMap_.valueAxis.unit), overwrite);
-    for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
+    util::updateDefaultState(dataRange, volume.dataMap_.dataRange, overwrite);
+    util::updateDefaultState(valueRange, volume.dataMap_.valueRange, overwrite);
+    util::updateDefaultState(valueName, volume.dataMap_.valueAxis.name, overwrite);
+    util::updateDefaultState(valueUnit, fmt::to_string(volume.dataMap_.valueAxis.unit), overwrite);
+    util::updateDefaultState(interpolation, volume.getInterpolation(), overwrite);
+    for (auto&& [prop, axis] : util::zip(axesNames.strings, volume.axes)) {
         util::updateDefaultState(prop, axis.name, overwrite);
     }
-    for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
+    for (auto&& [prop, axis] : util::zip(axesUnits.strings, volume.axes)) {
         util::updateDefaultState(prop, fmt::to_string(axis.unit), overwrite);
+    }
+    for (auto&& [prop, wrap] : util::zip(wrapping, volume.getWrapping())) {
+        util::updateDefaultState(prop, wrap, overwrite);
     }
 }
 
 void VolumeInformationProperty::updateVolume(Volume& volume) {
-    if (volume.dataMap_.dataRange != dataRange_.get()) {
+    if (volume.dataMap_.dataRange != dataRange.get()) {
         if (volume.hasHistograms()) {
             volume.getHistograms().clear();
         }
     }
 
-    volume.dataMap_.dataRange = dataRange_.get();
-    volume.dataMap_.valueRange = valueRange_.get();
-    volume.dataMap_.valueAxis.name = valueName_.get();
-    volume.dataMap_.valueAxis.unit = units::unit_from_string(valueUnit_.get());
-
-    for (auto&& [prop, axis] : util::zip(axesNames_.strings, volume.axes)) {
+    volume.dataMap_.dataRange = dataRange.get();
+    volume.dataMap_.valueRange = valueRange.get();
+    volume.dataMap_.valueAxis.name = valueName.get();
+    volume.dataMap_.valueAxis.unit = units::unit_from_string(valueUnit.get());
+    volume.setInterpolation(interpolation.getSelectedValue());
+    for (auto&& [prop, axis] : util::zip(axesNames.strings, volume.axes)) {
         axis.name = prop.get();
     }
-    for (auto&& [prop, axis] : util::zip(axesUnits_.strings, volume.axes)) {
+    for (auto&& [prop, axis] : util::zip(axesUnits.strings, volume.axes)) {
         axis.unit = units::unit_from_string(prop.get());
     }
+    volume.setWrapping({wrapping[0].getSelectedValue(), wrapping[1].getSelectedValue(),
+                        wrapping[2].getSelectedValue()});
 }
 
 }  // namespace inviwo

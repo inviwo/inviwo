@@ -54,15 +54,15 @@ class IVW_CORE_API Mesh : public DataGroup<Mesh, MeshRepresentation>,
                           public MetaDataOwner {
 public:
     struct IVW_CORE_API MeshInfo {
-        MeshInfo() : dt(DrawType::Points), ct(ConnectivityType::None) {}
-        MeshInfo(DrawType d, ConnectivityType c) : dt(d), ct(c) {}
+        constexpr MeshInfo() : dt(DrawType::Points), ct(ConnectivityType::None) {}
+        constexpr MeshInfo(DrawType d, ConnectivityType c) : dt(d), ct(c) {}
         DrawType dt;
         ConnectivityType ct;
     };
     struct IVW_CORE_API BufferInfo {
-        BufferInfo(BufferType atype) : type(atype), location(static_cast<int>(atype)) {}
-        BufferInfo() : BufferInfo(BufferType::PositionAttrib) {}
-        BufferInfo(BufferType atype, int alocation) : type(atype), location(alocation) {}
+        constexpr BufferInfo(BufferType atype) : type(atype), location(static_cast<int>(atype)) {}
+        constexpr BufferInfo() : BufferInfo(BufferType::PositionAttrib) {}
+        constexpr BufferInfo(BufferType atype, int alocation) : type(atype), location(alocation) {}
 
         BufferType type;
         int location;  //<! attribute location of buffer in GLSL shader

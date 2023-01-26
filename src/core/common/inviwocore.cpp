@@ -400,6 +400,10 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     using Vec3s = std::tuple<vec3, dvec3, ivec3, size3_t>;
     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
 
+    using Mat2s = std::tuple<mat2, dmat2>;
+    using Mat3s = std::tuple<mat3, dmat3>;
+    using Mat4s = std::tuple<mat4, dmat4>;
+
     registerPropertyConverter(std::make_unique<FileToStringConverter>());
     registerPropertyConverter(std::make_unique<StringToFileConverter>());
     registerPropertyConverter(std::make_unique<DirectoryToStringConverter>());
@@ -417,6 +421,10 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type_pair<Vec2s, Vec2s>{}(ConverterRegFunctor{}, *this);
     util::for_each_type_pair<Vec3s, Vec3s>{}(ConverterRegFunctor{}, *this);
     util::for_each_type_pair<Vec4s, Vec4s>{}(ConverterRegFunctor{}, *this);
+
+    util::for_each_type_pair<Mat2s, Mat2s>{}(ConverterRegFunctor{}, *this);
+    util::for_each_type_pair<Mat3s, Mat3s>{}(ConverterRegFunctor{}, *this);
+    util::for_each_type_pair<Mat4s, Mat4s>{}(ConverterRegFunctor{}, *this);
 
     util::for_each_type<Scalars>{}(ScalarStringConverterRegFunctor{}, *this);
     util::for_each_type<Vec2s>{}(VectorStringConverterRegFunctor{}, *this);

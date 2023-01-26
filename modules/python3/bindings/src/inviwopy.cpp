@@ -77,11 +77,6 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(inviwopy, m) {
-
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-    VLDDisable();
-#endif
-
     using namespace inviwo;
     m.doc() = R"doc(
         Core API
@@ -160,8 +155,4 @@ PYBIND11_MODULE(inviwopy, m) {
             }
         }
     });
-
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-    VLDEnable();
-#endif
 }

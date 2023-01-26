@@ -266,7 +266,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
 
     currentWorkspaceFileName_ = "";
 
-    QApplication::instance()->installNativeEventFilter(fileAssociations_.get());
+    qApp->installNativeEventFilter(fileAssociations_.get());
 
     fileAssociations_->registerFileType(
         "Inviwo.workspace", "Inviwo Workspace", ".inv", 0,
@@ -448,11 +448,11 @@ void InviwoMainWindow::saveSnapshots(std::string path, std::string fileName) {
     if (path.empty()) path = app_->getPath(PathType::Images);
 
     repaint();
-    QApplication::instance()->processEvents();
+    qApp->processEvents();
     app_->waitForPool();
 
     while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
-        QApplication::instance()->processEvents();
+        qApp->processEvents();
         app_->processFront();
     }
 
@@ -466,7 +466,7 @@ void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
     if (path.empty()) path = filesystem::getPath(PathType::Images);
 
     repaint();
-    QApplication::instance()->processEvents();
+    qApp->processEvents();
     app_->waitForPool();
     QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(winId());
     screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
@@ -664,7 +664,7 @@ void InviwoMainWindow::addActions() {
         });
 
         connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [recentWorkspaceMenu, this]() {
-            QApplication::instance()->installEventFilter(menuEventFilter_);
+            qApp->installEventFilter(menuEventFilter_);
             menuEventFilter_->add(recentWorkspaceMenu);
 
             for (auto elem : workspaceActionRecent_) {
@@ -689,7 +689,7 @@ void InviwoMainWindow::addActions() {
             clearRecentWorkspaces_->setEnabled(!recentFiles.isEmpty());
         });
         connect(recentWorkspaceMenu, &QMenu::aboutToHide, this, [this]() {
-            QApplication::instance()->removeEventFilter(menuEventFilter_);
+            qApp->removeEventFilter(menuEventFilter_);
             menuEventFilter_->clear();
         });
     }
@@ -698,7 +698,7 @@ void InviwoMainWindow::addActions() {
     exampleMenu_ = fileMenuItem->addMenu(tr("&Example Workspaces"));
 
     connect(exampleMenu_, &QMenu::aboutToShow, this, [this]() {
-        QApplication::instance()->installEventFilter(menuEventFilter_);
+        qApp->installEventFilter(menuEventFilter_);
         menuEventFilter_->add(exampleMenu_);
 
         exampleMenu_->clear();
@@ -737,14 +737,14 @@ void InviwoMainWindow::addActions() {
         }
     });
     connect(exampleMenu_, &QMenu::aboutToHide, this, [this]() {
-        QApplication::instance()->removeEventFilter(menuEventFilter_);
+        qApp->removeEventFilter(menuEventFilter_);
         menuEventFilter_->clear();
     });
 
     // create list of all test workspaces
     testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
     connect(testMenu_, &QMenu::aboutToShow, this, [this]() {
-        QApplication::instance()->installEventFilter(menuEventFilter_);
+        qApp->installEventFilter(menuEventFilter_);
         menuEventFilter_->add(testMenu_);
 
         testMenu_->clear();
@@ -787,7 +787,7 @@ void InviwoMainWindow::addActions() {
     });
 
     connect(testMenu_, &QMenu::aboutToHide, this, [this]() {
-        QApplication::instance()->removeEventFilter(menuEventFilter_);
+        qApp->removeEventFilter(menuEventFilter_);
         menuEventFilter_->clear();
     });
 
@@ -1262,9 +1262,8 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
             app_->getWorkspaceManager()->clear();
             setCurrentWorkspace(untitledWorkspaceName_);
         }
-        QApplication::instance()->processEvents(
-            QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready
-                                                  // before we unlock.
+        qApp->processEvents(QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready
+                                                                  // before we unlock.
     }
     saveWindowState();
     getNetworkEditor()->setModified(false);
@@ -1274,7 +1273,7 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
 void InviwoMainWindow::appendWorkspace(const QString& file) {
     NetworkLock lock(app_->getProcessorNetwork());
     networkEditor_->append(utilqt::fromQString(file));
-    QApplication::instance()->processEvents();  // make sure the gui is ready before we unlock.
+    qApp->processEvents();  // make sure the gui is ready before we unlock.
 }
 
 bool InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
@@ -1388,9 +1387,9 @@ void InviwoMainWindow::showWelcomeScreen() {
     centralWidget_->setCurrentWidget(welcomeWidget);
     welcomeWidget->enableRestoreButton(hasRestoreWorkspace());
 
-    QApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
+    qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     setUpdatesEnabled(true);
-    QApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
+    qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     welcomeWidget->setFocus();
 }
 
@@ -1406,7 +1405,7 @@ void InviwoMainWindow::hideWelcomeScreen() {
     visibleWidgetState_.show();
 
     setUpdatesEnabled(true);
-    QApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
+    qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
@@ -1474,7 +1473,7 @@ NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor
 void InviwoMainWindow::exitInviwo(bool saveIfModified) {
     if (!saveIfModified) getNetworkEditor()->setModified(false);
     QMainWindow::close();
-    QApplication::instance()->exit();
+    qApp->exit();
 }
 
 void InviwoMainWindow::saveWindowState() {

@@ -284,6 +284,10 @@ public:
 
     CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {},
                       Unit unit = Unit{}, std::optional<dvec2> range = std::nullopt);
+    CategoricalColumn(std::string_view header, std::vector<type> data,
+                      std::vector<std::string> lookup, Unit unit = Unit{},
+                      std::optional<dvec2> range = std::nullopt);
+
     CategoricalColumn(const CategoricalColumn& rhs);
     CategoricalColumn(const CategoricalColumn& rhs, const std::vector<std::uint32_t>& rowSelection);
     CategoricalColumn(CategoricalColumn&& rhs) = default;

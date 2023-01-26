@@ -35,10 +35,12 @@
 #include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
 #include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
 #include <inviwo/core/properties/ordinalproperty.h>        // for IntSizeTProperty, IntSize3Prop...
+#include <inviwo/core/properties/optionproperty.h>         // for IntSizeTProperty, IntSize3Prop...
 #include <inviwo/core/properties/property.h>               // for OverwriteState
 #include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
 #include <inviwo/core/properties/stringproperty.h>         // for StringProperty
 #include <inviwo/core/properties/stringsproperty.h>        // for StringsProperty
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 #include <array>        // for array
 #include <string>       // for string
@@ -67,19 +69,23 @@ public:
     void updateVolume(Volume& volume);
     // Read only used to show information
 
-    IntSize3Property dimensions_;
-    StringProperty format_;
-    IntSizeTProperty channels_;
-    IntSizeTProperty numVoxels_;
+    IntSize3Property dimensions;
+    StringProperty format;
+    IntSizeTProperty channels;
+    IntSizeTProperty numVoxels;
 
     // read / write
-    DoubleMinMaxProperty dataRange_;
-    DoubleMinMaxProperty valueRange_;
-    StringProperty valueName_;
-    StringProperty valueUnit_;
+    DoubleMinMaxProperty dataRange;
+    DoubleMinMaxProperty valueRange;
+    StringProperty valueName;
+    StringProperty valueUnit;
 
-    StringsProperty<3> axesNames_;
-    StringsProperty<3> axesUnits_;
+    OptionProperty<InterpolationType> interpolation;
+
+    StringsProperty<3> axesNames;
+    StringsProperty<3> axesUnits;
+
+    std::array<OptionProperty<Wrapping>, 3> wrapping;
 };
 
 }  // namespace inviwo

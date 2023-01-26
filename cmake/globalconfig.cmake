@@ -174,9 +174,6 @@ option(IVW_CFG_PROFILING "Enable profiling" OFF)
 # Build unittest for all modules
 include(${CMAKE_CURRENT_LIST_DIR}/unittests.cmake)
 
-# Use Visual Studio memory leak test
-include(${CMAKE_CURRENT_LIST_DIR}/memleak.cmake)
-
 # Use pybind11 for python bindings
 include(${CMAKE_CURRENT_LIST_DIR}/pybind11.cmake)
 

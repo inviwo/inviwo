@@ -389,11 +389,7 @@ std::string OptionProperty<T>::getClassIdentifier() const {
 
 template <typename T>
 std::string OptionProperty<T>::getClassIdentifierForWidget() const {
-    if constexpr (std::is_enum_v<T>) {
-        return "org.inviwo.OptionProperty" + Defaultvalues<std::underlying_type_t<T>>::getName();
-    } else {
-        return PropertyTraits<OptionProperty<T>>::classIdentifier();
-    }
+    return PropertyTraits<OptionProperty<std::string>>::classIdentifier();
 }
 
 // Legacy name

@@ -29,23 +29,24 @@
 
 #include <modules/base/properties/meshinformationproperty.h>
 
-#include <inviwo/core/algorithm/markdown.h>                     // for operator""_help
-#include <inviwo/core/datastructures/camera/camera.h>           // for mat4
-#include <inviwo/core/datastructures/geometry/geometrytype.h>   // for operator<<, BufferType
-#include <inviwo/core/datastructures/geometry/mesh.h>           // for Mesh, Mesh::MeshInfo
-#include <inviwo/core/properties/boolcompositeproperty.h>       // for BoolCompositeProperty
-#include <inviwo/core/properties/compositeproperty.h>           // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>           // for InvalidationLevel, Invali...
-#include <inviwo/core/properties/ordinalproperty.h>             // for OrdinalProperty, FloatVec...
-#include <inviwo/core/properties/propertysemantics.h>           // for PropertySemantics, Proper...
-#include <inviwo/core/properties/stringproperty.h>              // for StringProperty
-#include <inviwo/core/properties/templateproperty.h>            // for TemplateProperty
-#include <inviwo/core/properties/valuewrapper.h>                // for PropertySerializationMode
-#include <inviwo/core/util/foreacharg.h>                        // for for_each_in_tuple
-#include <inviwo/core/util/glm.h>                               // for filled
-#include <inviwo/core/util/glmmat.h>                            // for mat3
-#include <inviwo/core/util/glmvec.h>                            // for vec3
-#include <inviwo/core/util/stringconversion.h>                  // for toString
+#include <inviwo/core/algorithm/markdown.h>                    // for operator""_help
+#include <inviwo/core/datastructures/camera/camera.h>          // for mat4
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for operator<<, BufferType
+#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>      // for BoolCompositeProperty
+#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invali...
+#include <inviwo/core/properties/ordinalproperty.h>            // for OrdinalProperty, FloatVec...
+#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Proper...
+#include <inviwo/core/properties/stringproperty.h>             // for StringProperty
+#include <inviwo/core/properties/templateproperty.h>           // for TemplateProperty
+#include <inviwo/core/properties/valuewrapper.h>               // for PropertySerializationMode
+#include <inviwo/core/util/foreacharg.h>                       // for for_each_in_tuple
+#include <inviwo/core/util/glm.h>                              // for filled
+#include <inviwo/core/util/glmmat.h>                           // for mat3
+#include <inviwo/core/util/glmvec.h>                           // for vec3
+#include <inviwo/core/util/stringconversion.h>                 // for toString
+#include <inviwo/core/util/zip.h>
 #include <modules/base/algorithm/dataminmax.h>                  // for bufferMinMax
 #include <modules/base/properties/bufferinformationproperty.h>  // for IndexBufferInformationPro...
 
@@ -62,6 +63,23 @@
 #include <glm/vec4.hpp>    // for operator-, vec
 
 namespace inviwo {
+namespace {
+
+constexpr auto transforms = util::generateTransforms(
+    std::array{CoordinateSpace::Data, CoordinateSpace::Model, CoordinateSpace::World});
+
+std::array<FloatMat4Property, 6> transformProps() {
+    return util::make_array<6>([](auto index) {
+        auto [from, to] = transforms[index];
+        return FloatMat4Property(fmt::format("{}2{}", from, to), fmt::format("{} To {}", from, to),
+                                 mat4(1.0f),
+                                 util::filled<mat4>(std::numeric_limits<float>::lowest()),
+                                 util::filled<mat4>(std::numeric_limits<float>::max()),
+                                 util::filled<mat4>(0.001f), InvalidationLevel::Valid);
+    });
+}
+
+}  // namespace
 
 const std::string MeshInformationProperty::classIdentifier = "org.inviwo.MeshInformationProperty";
 std::string MeshInformationProperty::getClassIdentifier() const { return classIdentifier; }
@@ -96,6 +114,7 @@ MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
     , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
               vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
               PropertySemantics::Text)
+    , spaceTransforms_(transformProps())
 
     , meshProperties_("meshProperties", "Mesh Properties", false)
     , min_("minPos", "Minimum Pos", vec3{0.0f}, vec3{std::numeric_limits<float>::lowest()},
@@ -125,6 +144,11 @@ MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
     addProperties(defaultMeshInfo_, numBuffers_, numIndexBuffers_, transformations_,
                   meshProperties_, buffers_, indexBuffers_);
 
+    for (auto& transform : spaceTransforms_) {
+        transform.setReadOnly(true);
+        transformations_.addProperty(transform);
+    }
+
     util::for_each_in_tuple(
         [](auto& e) {
             e.setCollapsed(true);
@@ -145,6 +169,7 @@ MeshInformationProperty::MeshInformationProperty(const MeshInformationProperty& 
     , worldTransform_(rhs.worldTransform_)
     , basis_(rhs.basis_)
     , offset_(rhs.offset_)
+    , spaceTransforms_(rhs.spaceTransforms_)
     , meshProperties_(rhs.meshProperties_)
     , min_(rhs.min_)
     , max_(rhs.max_)
@@ -157,6 +182,9 @@ MeshInformationProperty::MeshInformationProperty(const MeshInformationProperty& 
     meshProperties_.addProperties(min_, max_, extent_);
     addProperties(defaultMeshInfo_, numBuffers_, numIndexBuffers_, transformations_,
                   meshProperties_, buffers_, indexBuffers_);
+    for (auto& transform : spaceTransforms_) {
+        transformations_.addProperty(transform);
+    }
 }
 
 MeshInformationProperty* MeshInformationProperty::clone() const {
@@ -196,6 +224,12 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
     worldTransform_.set(mesh.getWorldMatrix());
     basis_.set(mesh.getBasis());
     offset_.set(mesh.getOffset());
+
+    const auto& trans = mesh.getCoordinateTransformer();
+    for (auto&& [index, transform] : util::enumerate(spaceTransforms_)) {
+        auto [from, to] = transforms[index];
+        transform.set(trans.getMatrix(from, to));
+    }
 
     // general mesh information
     if (meshProperties_.isChecked()) {

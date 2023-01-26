@@ -98,6 +98,10 @@ class SpatialEntity;
 template <unsigned int N>
 class StructuredGridEntity;
 
+enum class CoordinateSpace {
+    Data, Model, World, Index, Clip, View
+};
+
 namespace util {
 
 class Camera2D {
@@ -123,13 +127,28 @@ template <>
 struct cameratype<3> {
     typedef Camera type;
 };
+
+template <size_t N>
+constexpr auto generateTransforms(std::array<CoordinateSpace, N> spaces) {
+    static_assert(N > 0);
+    std::array<std::pair<CoordinateSpace, CoordinateSpace>, N * (N-1)> res;
+    size_t count = 0;
+    for (auto from : spaces) {
+        for (auto to : spaces) {
+            if (from != to) {
+                res[count].first = from;
+                res[count].second = to;
+                ++count;
+            }
+        }
+    }
+    return res;
 }
+
+} //  namespace util
+
 template <unsigned int N>
 using CameraND = typename util::cameratype<N>::type;
-
-enum class CoordinateSpace {
-    Data, Model, World, Index, Clip, View
-};
 
 IVW_CORE_API std::string_view enumToStr(CoordinateSpace s);
 

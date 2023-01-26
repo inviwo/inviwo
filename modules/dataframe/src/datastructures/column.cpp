@@ -38,6 +38,7 @@
 #include <inviwo/core/util/glmvec.h>                                    // for dvec2
 #include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT, IVW_...
 #include <inviwo/core/util/stdextensions.h>                             // for transform
+#include <inviwo/core/util/zip.h>
 
 #include <sstream>        // for basic_stringbuf<>...
 #include <unordered_map>  // for unordered_map
@@ -70,6 +71,20 @@ CategoricalColumn::CategoricalColumn(std::string_view header,
     , range_{range}
     , buffer_{std::make_shared<Buffer<std::uint32_t>>(0)} {
     append(values);
+}
+
+CategoricalColumn::CategoricalColumn(std::string_view header, std::vector<type> data,
+                                     std::vector<std::string> lookup, Unit unit,
+                                     std::optional<dvec2> range)
+    : header_{header}
+    , unit_{unit}
+    , range_{range}
+    , buffer_{util::makeBuffer(std::move(data))}
+    , lookUpTable_{std::move(lookup)} {
+
+    for (auto&& [i, str] : util::enumerate<type>(lookUpTable_)) {
+        lookupMap_[str] = i;
+    }
 }
 
 CategoricalColumn::CategoricalColumn(const CategoricalColumn& rhs)
