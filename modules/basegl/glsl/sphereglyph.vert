@@ -32,8 +32,6 @@
 #include "utils/structs.glsl"
 #include "utils/selectioncolor.glsl"
 
-uniform GeometryParameters geometry;
-
 uniform vec4 defaultColor = vec4(1, 0, 0, 1);
 uniform float defaultRadius = 0.1f;
 
@@ -47,50 +45,62 @@ uniform SelectionColor showHighlighted;
 uniform float selectionScaleFactor = 1.0;
 #endif
 
-out vec4 worldPosition;
-out vec4 sphereColor;
-flat out float sphereRadius;
-flat out uint pickID;
+out SphereVert {
+    vec4 color;
+    flat float radius;
+    flat uint pickID;
+    flat uint index;
+}
+sphere;
+
+#if defined(ENABLE_PERIODICITY)
+flat out uint instance;
+#endif
 
 void main(void) {
 #if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
-    sphereColor = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+    sphere.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
 #elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
-    sphereColor = in_Color;
+    sphere.color = in_Color;
 #else
-    sphereColor = defaultColor;
+    sphere.color = defaultColor;
 #endif
 
 #if defined(HAS_RADII) && !defined(FORCE_RADIUS)
-    sphereRadius = in_Radii;
+    sphere.radius = in_Radii;
 #else
-    sphereRadius = defaultRadius;
+    sphere.radius = defaultRadius;
+#endif
+
+#if defined(HAS_INDEX)
+    sphere.index = in_Index;
+#else
+    sphere.index = gl_VertexID;
 #endif
 
 #if defined(ENABLE_BNL)
     int bnlSize = textureSize(bnl);
-#if defined(HAS_INDEX)
-    uint flags = in_Index < bnlSize ? texelFetch(bnl, int(in_Index)).x : uint(0);
-#else
-    uint flags = gl_VertexID < bnlSize ? texelFetch(bnl, gl_VertexID).x : uint(0);
-#endif
+    uint flags = sphere.index < bnlSize ? texelFetch(bnl, int(sphere.index)).x : uint(0);
 
     if (flags == 3) {
-        sphereColor = applySelectionColor(sphereColor, showFiltered);
+        sphere.color = applySelectionColor(sphere.color, showFiltered);
     } else if (flags == 2) {
-        sphereColor = applySelectionColor(sphereColor, showHighlighted);
+        sphere.color = applySelectionColor(sphere.color, showHighlighted);
     } else if (flags == 1) {
-        sphereColor = applySelectionColor(sphereColor, showSelected);
-        sphereRadius *= selectionScaleFactor;
+        sphere.color = applySelectionColor(sphere.color, showSelected);
+        sphere.radius *= selectionScaleFactor;
     }
 #endif
 
 #if defined(HAS_PICKING)
-    pickID = in_Picking;
+    sphere.pickID = in_Picking;
 #else
-    pickID = 0;
+    sphere.pickID = 0;
 #endif
-
-    worldPosition = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
-    gl_Position = worldPosition;
+    
+    gl_Position = vec4(in_Position.xyz, 1.0);
+    
+#if defined(ENABLE_PERIODICITY)
+    instance = gl_InstanceID;
+#endif
 }

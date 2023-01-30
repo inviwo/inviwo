@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 // Owned by the SphereRenderer Processor
@@ -35,150 +35,180 @@
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-// define HEXAGON for hexagonal glyphs instead of image-space quads
-//#define HEXAGON
+uniform ivec3 repeat = ivec3(1, 1, 1);
+uniform vec3 shift = vec3(0.0, 0.0, 0.0);
+uniform mat4 basis = mat4(1.0);
+uniform float duplicateCutoff = 0.0;
+
+struct Cam {
+    vec3 pos;
+    vec3 right;
+    vec3 up;
+};
+
+struct Sphere {
+    vec4 center;
+    vec4 color;
+    vec4 pickColor;
+    float radius;
+    uint index;
+};
 
 layout(points) in;
-#ifdef HEXAGON
-    layout(triangle_strip, max_vertices = 6) out;
-#else
-    layout(triangle_strip, max_vertices = 4) out;
+layout(triangle_strip, max_vertices = 32) out;
+
+in SphereVert {
+    vec4 color;
+    flat float radius;
+    flat uint pickID;
+    flat uint index;
+}
+inSphere[];
+
+#if defined(ENABLE_PERIODICITY)
+flat in uint instance[];
 #endif
 
-in vec4 worldPosition[];
-in vec4 sphereColor[];
-flat in float sphereRadius[];
-flat in uint pickID[];
+out SphereGeom {
+    vec4 center;
+    vec4 color;
+    flat vec4 pickColor;
+    vec3 camPos;
+    float radius;
+    flat uint index;
+}
+outSphere;
 
-out float radius;
-out vec3 camPos;
-out vec4 center;
-out vec4 color;
-flat out vec4 pickColor;
-
-void main(void) {
-    center = worldPosition[0];
-    radius = sphereRadius[0];
-
-    if (radius <= 0 || sphereColor[0].a <= 0) {
-        EndPrimitive();
-        return;
-    }
-
-    mat4 worldToViewMatrixInv = inverse(camera.worldToView);
-
-    vec3 camDir = normalize((worldToViewMatrixInv[2]).xyz);     
-    vec3 camPosModel =  worldToViewMatrixInv[3].xyz;
-    // calculate cam position (in model space of the sphere)
-    camPos = camPosModel - center.xyz;
-
-#ifdef DISCARD_CLIPPED_GLYPHS
-    if (dot(camPos, camDir) < camera.nearPlane + radius) {
-        // glyph intersects with the near plane of the camera, discard entire glyph, i.e. no output
-        EndPrimitive();
-        return;
-    }
-#endif // DISCARD_CLIPPED_GLYPHS
-
-    vec4 centerMVP = camera.worldToClip * center;
-    float glyphDepth = centerMVP.z / centerMVP.w;
-
-    // send color to fragment shader
-    color = sphereColor[0];
-    // set picking color
-    pickColor = vec4(pickingIndexToColor(pickID[0]), pickID[0] == 0 ? 0.0 : 1.0);
-
-    // camera coordinate system in object space
-    vec3 camUp = (worldToViewMatrixInv[1]).xyz;
-    vec3 camRight = normalize(cross(camDir, camUp));
-    camUp = normalize(cross(camDir, camRight));
-
-
-    float rad2 = radius*radius;
-    float depth = 0.0;
-
-    vec4 projPos;
-    vec3 testPos;
-    vec2 d, d_div;
-    vec2 h, p, q;
-    vec3 c2;
-    vec3 cpj1, cpm1;
-    vec3 cpj2, cpm2;
-
-#ifdef HEXAGON
-
-    float r_hex = 1.15470*radius; // == 2.0/3.0 * sqrt(3.0)
-    float h_hex = r_hex * 0.86602540; // == 1/2 * sqrt(3.0)
-
-    camRight *= r_hex;
-    vec3 camRight_half = camRight * 0.5;
-    camUp *= h_hex;
-
-    testPos = center.xyz - camRight;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
+void emit(in vec3 pos, in Sphere sphere, in vec3 camPos) {
+    vec4 projPos = camera.worldToClip * vec4(pos, 1.0);
     projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    EmitVertex();
 
-    testPos = center.xyz - camRight_half - camUp;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
-    projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    EmitVertex();
+    gl_Position = vec4(projPos.xyz, 1.0);
 
-    testPos = center.xyz - camRight_half + camUp;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
-    projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    EmitVertex();
+    outSphere.radius = sphere.radius;
+    outSphere.camPos = camPos;
+    outSphere.center = sphere.center;
+    outSphere.color = sphere.color;
+    outSphere.pickColor = sphere.pickColor;
+    outSphere.index = sphere.index;
 
-    testPos = center.xyz + camRight_half - camUp;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
-    projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
+}
 
-    testPos = center.xyz + camRight_half + camUp;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
-    projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    EmitVertex();
+void emitQuad(in Sphere sphere, in Cam cam) {
+    cam.right *= sphere.radius * 1.41421356;
+    cam.up *= sphere.radius * 1.41421356;
 
-    testPos = center.xyz + camRight;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
-    projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    EmitVertex();
-
-#else // HEXAGON
-    // square:
-    camRight *= radius * 1.41421356;
-    camUp *= radius * 1.41421356;
-
-    testPos = center.xyz + camRight - camUp;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
-    projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    EmitVertex();
-
-    testPos = center.xyz - camRight - camUp;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
-    projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    EmitVertex();
-
-    testPos = center.xyz + camRight + camUp;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
-    projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    EmitVertex();
-
-    testPos = center.xyz - camRight + camUp;
-    projPos = camera.worldToClip * vec4(testPos, 1.0);
-    projPos /= projPos.w;
-    gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
-    EmitVertex();
-#endif // HEXAGON
+    emit(sphere.center.xyz + cam.right - cam.up, sphere, cam.pos);
+    emit(sphere.center.xyz - cam.right - cam.up, sphere, cam.pos);
+    emit(sphere.center.xyz + cam.right + cam.up, sphere, cam.pos);
+    emit(sphere.center.xyz - cam.right + cam.up, sphere, cam.pos);
 
     EndPrimitive();
+}
+
+ivec3 repeatPosition() {
+#if defined(ENABLE_PERIODICITY)
+    return ivec3((instance[0] % (repeat.x * repeat.y)) % repeat.x,
+                 (instance[0] % (repeat.x * repeat.y)) / repeat.x,
+                 instance[0] / (repeat.x * repeat.y));
+#else
+    return ivec3(0, 0, 0);
+#endif
+}
+
+vec4 data2World(vec4 pos) {
+#if defined(ENABLE_PERIODICITY)
+    vec3 repeatPos = vec3(repeatPosition());
+
+    mat4 trans =
+        mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, repeatPos[0], repeatPos[1], repeatPos[2], 1);
+
+    return geometry.dataToWorld * basis * trans * vec4(pos.xyz, 1.0);
+#else
+    return geometry.dataToWorld * pos;
+#endif
+}
+
+vec4 shiftFractional(vec4 pos) {
+#if defined(ENABLE_PERIODICITY)
+    pos = inverse(basis) * pos;
+    return vec4(mod((pos.xyz + shift), vec3(1, 1, 1)), pos.w);
+#else
+    return pos;
+#endif
+}
+
+bool outOfView(vec3 camPos, vec3 camDir, float radius) {
+#ifdef DISCARD_CLIPPED_GLYPHS
+    // glyph intersects with the near plane of the camera, discard entire glyph, i.e. no output
+    return dot(camPos, camDir) < camera.nearPlane + radius;
+#else
+    return false;
+#endif  // DISCARD_CLIPPED_GLYPHS
+}
+
+void main(void) {
+    if (inSphere[0].radius <= 0 || inSphere[0].color.a <= 0) {
+        EndPrimitive();
+        return;
+    }
+
+    Sphere sphere;
+
+    sphere.color = inSphere[0].color;
+    sphere.pickColor.xyz = pickingIndexToColor(inSphere[0].pickID);
+    sphere.pickColor.w = inSphere[0].pickID == 0 ? 0.0 : 1.0;
+    sphere.radius = inSphere[0].radius;
+    sphere.index = inSphere[0].index;
+
+
+    Cam cam;
+    vec3 camDir = normalize((camera.viewToWorld[2]).xyz);
+    vec3 camPosModel = camera.viewToWorld[3].xyz;
+    // camera coordinate system in object space
+    cam.right = normalize(cross(camDir, camera.viewToWorld[1].xyz));
+    cam.up = normalize(cross(camDir, cam.right));
+    // calculate cam position (in model space of the sphere)
+    
+#if defined(ENABLE_DUPLICATE)
+    vec4 pos = shiftFractional(gl_in[0].gl_Position);
+    ivec3 repeatPos = repeatPosition();
+
+    for (int x = -1; x <= 1; ++x) {
+        for (int y = -1; y <= 1; ++y) {
+            for (int z = -1; z <= 1; ++z) {
+
+                if (x < 0 && repeatPos.x != 0) continue;
+                if (x > 0 && repeatPos.x != repeat.x - 1) continue;
+
+                if (y < 0 && repeatPos.y != 0) continue;
+                if (y > 0 && repeatPos.y != repeat.y - 1) continue;
+
+                if (z < 0 && repeatPos.z != 0) continue;
+                if (z > 0 && repeatPos.z != repeat.z - 1) continue;
+
+                vec3 newPos = pos.xyz + vec3(x, y, z);
+                if (all(greaterThan(newPos, vec3(-duplicateCutoff))) &&
+                    all(lessThan(newPos, vec3(1.0 + duplicateCutoff)))) {
+                    sphere.center = data2World(vec4(newPos, pos.w));
+                    cam.pos = camPosModel - sphere.center.xyz;
+                    if (!outOfView(cam.pos, camDir, sphere.radius)) {
+                        emitQuad(sphere, cam);
+                    }
+                }
+            }
+        }
+    }
+    EndPrimitive();
+#else
+
+    sphere.center = data2World(shiftFractional(gl_in[0].gl_Position));
+    cam.pos = camPosModel - sphere.center.xyz;
+    if (outOfView(cam.pos, camDir, sphere.radius)) {
+        EndPrimitive();
+    } else {
+        emitQuad(sphere, cam);
+    }
+#endif
 }
