@@ -58,6 +58,7 @@
 #include <modules/opengl/shader/shaderutils.h>                         // for addDefines, setSha...
 #include <modules/opengl/texture/textureunit.h>                        // for TextureUnitContainer
 #include <modules/opengl/texture/textureutils.h>                       // for activateTargetAndC...
+#include <modules/opengl/buffer/buffergl.h>
 
 #include <map>          // for __map_iterator, map
 #include <tuple>        // for tuple_element<>::type
@@ -103,7 +104,15 @@ SphereRenderer::SphereRenderer()
     , useMetaColor_("useMetaColor", "Use meta color mapping", false,
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
-    , selection_(inport_, brushLinkPort_)
+    , showHighlighted_("showHighlighted", "Show Highlighted",
+                       "Parameters for color overlay of highlighted data"_help, true,
+                       vec3(0.35f, 0.75f, 0.93f))
+    , showSelected_("showSelected", "Show Selected",
+                    "Parameters for color overlay of a selection"_help, true,
+                    vec3(1.0f, 0.84f, 0.0f))
+    , showFiltered_("showFiltered", "Show Filtered",
+                    "Parameters for color overlay of filtered data"_help, false,
+                    vec3(0.5f, 0.5f, 0.5f))
 
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
@@ -114,9 +123,16 @@ SphereRenderer::SphereRenderer()
 
                {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
                 {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                {BufferType::IndexAttrib, MeshShaderCache::Optional, "uint"},
                 {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
                 {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-                {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+                {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"},
+                {[this](const Mesh&, Mesh::MeshInfo mi) -> int {
+                     return brushLinkPort_.isConnected() ? 1 : 0;
+                 },
+                 [](int mode, Shader& shader) {
+                     shader[ShaderType::Vertex]->setShaderDefine("ENABLE_BNL", mode == 1);
+                 }}},
 
                [&](Shader& shader) -> void {
                    shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -133,8 +149,8 @@ SphereRenderer::SphereRenderer()
     sphereProperties_.addProperties(forceRadius_, defaultRadius_, forceColor_, defaultColor_,
                                     useMetaColor_, metaColor_);
 
-    addProperties(renderMode_, sphereProperties_, selection_.properties, clipping_, camera_,
-                  lighting_, trackball_);
+    addProperties(renderMode_, sphereProperties_, showHighlighted_, showSelected_, showFiltered_,
+                  clipping_, camera_, lighting_, trackball_);
 
     clipShadingFactor_.readonlyDependsOn(
         clipMode_, [](const auto& p) { return p == GlyphClippingMode::Discard; });
@@ -161,10 +177,55 @@ void SphereRenderer::configureShader(Shader& shader) {
     shader.build();
 }
 
+namespace {
+std::uint32_t bit_ceil(std::uint32_t v) {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+}
+}  // namespace
+
 void SphereRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    TextureUnit bnlUnit;
+    if (brushLinkPort_.isConnected()) {
+        if (brushLinkPort_.isChanged() || showFiltered_.isModified() ||
+            showSelected_.isModified() || showHighlighted_.isModified()) {
+            const auto size = brushLinkPort_.getManager().getMax() + 1;
+            if (size > bnlBuffer.getSize()) {
+                bnlBuffer.setSize(bit_ceil(size));
+            }
+
+            auto bnlData = bnlBuffer.map(GL_WRITE_ONLY);
+            std::fill(bnlData.begin(), bnlData.end(), 0);
+            if (showSelected_) {
+                for (auto i : brushLinkPort_.getSelectedIndices()) {
+                    bnlData[i] = 1;
+                }
+            }
+            if (showHighlighted_) {
+                for (auto i : brushLinkPort_.getHighlightedIndices()) {
+                    bnlData[i] = 2;
+                }
+            }
+            if (showFiltered_) {
+                for (auto i : brushLinkPort_.getFilteredIndices()) {
+                    bnlData[i] = 3;
+                }
+            }
+            bnlBuffer.unmap();
+        }
+        utilgl::bindTexture(bnlBuffer, bnlUnit);
+    }
+
+    auto textSize = textRenderer_.computeTextSize("999");
     for (const auto& [port, mesh] : inport_.getSourceVectorData()) {
         if (mesh->getNumberOfBuffers() == 0) continue;
 
@@ -174,9 +235,10 @@ void SphereRenderer::process() {
 
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader, units, metaColor_);
+        shader.setUniform("bnl", bnlUnit);
 
         utilgl::setUniforms(shader, camera_, lighting_, defaultColor_, defaultRadius_,
-                            clipShadingFactor_);
+                            clipShadingFactor_, showFiltered_, showSelected_, showHighlighted_);
         shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
                                            2.0f / outport_.getDimensions().y));
         MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
@@ -209,18 +271,6 @@ void SphereRenderer::process() {
                 drawer.draw(MeshDrawerGL::DrawMode::Points);
                 break;
         }
-
-        // render selection only for first mesh input
-        if (auto indices = selection_.getIndices(port, *mesh)) {
-            shader.setUniform("selectionMix", 1.0f);
-            shader.setUniform("selectionScaleFactor", selection_.radiusFactor.get());
-            shader.setUniform("selectionColor", selection_.color.get());
-            glDrawElements(GL_POINTS, static_cast<GLsizei>(indices->size()), GL_UNSIGNED_INT,
-                           indices->data());
-            // reset selection flag
-            shader.setUniform("selectionMix", 0.0f);
-        }
-
         shader.deactivate();
     }
 

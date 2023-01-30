@@ -48,7 +48,27 @@ namespace inviwo {
 class DataFormatBase;
 struct GLFormat;
 
-class IVW_MODULE_OPENGL_API Texture : public Observable<TextureObserver> {
+class IVW_MODULE_OPENGL_API TextureBase {
+public:
+    TextureBase(GLenum target);
+    TextureBase(const TextureBase& other);
+    TextureBase(TextureBase&& other);
+    TextureBase& operator=(const TextureBase& other);
+    TextureBase& operator=(TextureBase&& other);
+    virtual ~TextureBase();
+
+    GLuint getID() const;
+    GLenum getTarget() const;
+    
+    void bind() const;
+    void unbind() const;
+
+protected:
+    GLuint id_;
+    GLenum target_;
+};
+
+class IVW_MODULE_OPENGL_API Texture : public TextureBase, public Observable<TextureObserver> {
 public:
     Texture(GLenum target, GLFormat glFormat, GLenum filtering, const SwizzleMask& swizzleMask,
             util::span<const GLenum> wrapping, GLint level);
@@ -67,9 +87,7 @@ public:
 
     virtual void upload(const void* data) = 0;
 
-    GLuint getID() const;
 
-    GLenum getTarget() const;
     GLenum getFormat() const;
     GLenum getInternalFormat() const;
     GLenum getDataType() const;
@@ -79,9 +97,6 @@ public:
 
     GLuint getNChannels() const;
     GLuint getSizeInBytes() const;
-
-    void bind() const;
-    void unbind() const;
 
     void setSwizzleMask(SwizzleMask mask);
     SwizzleMask getSwizzleMask() const;
@@ -105,7 +120,6 @@ protected:
     void setupAsyncReadBackPBO() const;
     void setPBOAsInvalid();
 
-    GLenum target_;
     GLenum format_;
     GLenum internalformat_;
     GLenum dataType_;
@@ -129,7 +143,6 @@ protected:
     mutable GLsync syncObj = 0;
 
 private:
-    GLuint id_;
     GLuint pboBack_;  // For asynchronous readback to CPU
 
     mutable bool pboBackIsSetup_;

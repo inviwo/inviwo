@@ -55,7 +55,6 @@ enum class BrushingAction {
     Filter,     //!< filter the given indices and mark them as removed
     Select,     //!< replace the current selection of indices
     Highlight,  //!< replace the currently highlighted indices
-    NumberOfActions
 };
 
 constexpr std::array<BrushingAction, 3> BrushingActions{

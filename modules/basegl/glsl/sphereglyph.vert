@@ -30,16 +30,22 @@
 // Owned by the SphereRenderer Processor
 
 #include "utils/structs.glsl"
+#include "utils/selectioncolor.glsl"
 
 uniform GeometryParameters geometry;
 
 uniform vec4 defaultColor = vec4(1, 0, 0, 1);
 uniform float defaultRadius = 0.1f;
+
 uniform sampler2D metaColor;
 
-uniform float selectionMix = 0.0;
+#if defined(ENABLE_BNL)
+uniform usamplerBuffer bnl;
+uniform SelectionColor showFiltered;
+uniform SelectionColor showSelected;
+uniform SelectionColor showHighlighted;
 uniform float selectionScaleFactor = 1.0;
-uniform vec4 selectionColor = vec4(1.0, 0.769, 0.247, 1.0);
+#endif
 
 out vec4 worldPosition;
 out vec4 sphereColor;
@@ -54,18 +60,34 @@ void main(void) {
 #else
     sphereColor = defaultColor;
 #endif
-    sphereColor = mix(sphereColor, selectionColor, selectionMix);
 
 #if defined(HAS_RADII) && !defined(FORCE_RADIUS)
     sphereRadius = in_Radii;
-#else 
+#else
     sphereRadius = defaultRadius;
 #endif
-    sphereRadius = mix(sphereRadius, sphereRadius * selectionScaleFactor, selectionMix);
+
+#if defined(ENABLE_BNL)
+    int bnlSize = textureSize(bnl);
+#if defined(HAS_INDEX)
+    uint flags = in_Index < bnlSize ? texelFetch(bnl, int(in_Index)).x : uint(0);
+#else
+    uint flags = gl_VertexID < bnlSize ? texelFetch(bnl, gl_VertexID).x : uint(0);
+#endif
+
+    if (flags == 3) {
+        sphereColor = applySelectionColor(sphereColor, showFiltered);
+    } else if (flags == 2) {
+        sphereColor = applySelectionColor(sphereColor, showHighlighted);
+    } else if (flags == 1) {
+        sphereColor = applySelectionColor(sphereColor, showSelected);
+        sphereRadius *= selectionScaleFactor;
+    }
+#endif
 
 #if defined(HAS_PICKING)
     pickID = in_Picking;
-#else 
+#else
     pickID = 0;
 #endif
 

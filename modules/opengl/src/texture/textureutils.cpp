@@ -441,19 +441,19 @@ void multiDrawImagePlaneRect(int instances) {
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instances);
 }
 
-void bindTexture(const Texture& texture, GLenum texUnit) {
+void bindTexture(const TextureBase& texture, GLenum texUnit) {
     glActiveTexture(texUnit);
     texture.bind();
     glActiveTexture(GL_TEXTURE0);
 }
 
-void bindTexture(const Texture& texture, const TextureUnit& texUnit) {
+void bindTexture(const TextureBase& texture, const TextureUnit& texUnit) {
     glActiveTexture(texUnit.getEnum());
     texture.bind();
     glActiveTexture(GL_TEXTURE0);
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Texture& texture,
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const TextureBase& texture,
                         std::string_view samplerID) {
     TextureUnit unit;
     bindTexture(texture, unit);

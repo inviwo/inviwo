@@ -79,67 +79,45 @@ namespace inviwo {
 class Outport;
 class Shader;
 
-class IVW_MODULE_BASEGL_API SphereRendererSelection {
+template <typename T = std::uint8_t, GLenum InternalFormat = GL_R8UI>
+class BufferTexture : public TextureBase {
 public:
-    SphereRendererSelection(Inport& inport, BrushingAndLinkingInport& brushLinkPort)
-        : properties("selection", "Show Selection", true)
-        , color("selectionColor", "Color", vec4(1.0f, 0.769f, 0.247f, 1), vec4(0.0f), vec4(1.0f),
-                vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-        , radiusFactor("selectionRadiusFactor", "Radius Scaling", 1.5f, 0.0f, 10.0f)
-        , inport_{inport}
-        , brushLinkPort_{brushLinkPort} {
+    BufferTexture(std::uint32_t size)
+        : TextureBase(GL_TEXTURE_BUFFER)
+        , storage{size * sizeof(T), GLFormats::get(DataFormat<T>::id()), GL_DYNAMIC_DRAW,
+                  GL_ARRAY_BUFFER} {
 
-        properties.addProperties(color, radiusFactor);
-
-        inport_.onDisconnect([&]() {
-            util::map_erase_remove_if(
-                selectionIndices_, [&](auto elem) { return !inport_.isConnectedTo(elem.first); });
-        });
+        bind();
+        glTexBuffer(GL_TEXTURE_BUFFER, InternalFormat, storage.getId());
+        unbind();
     }
 
-    std::vector<uint32_t>* getIndices(const Outport* port, const Mesh& mesh) {
-        if (properties.isChecked()) {
-            std::vector<uint32_t>& indices = selectionIndices_[port];
+    util::span<T> map(GLenum access) {
+        storage.bind();
+        void* data = glMapBuffer(storage.getTarget(), access);
+        return util::span<T>{reinterpret_cast<T*>(data), getSize()};
+    }
 
-            if (properties.isModified() || brushLinkPort_.isChanged() ||
-                util::contains(inport_.getChangedOutports(), port)) {
-                const auto& selection = brushLinkPort_.getSelectedIndices();
-
-                indices.clear();
-                if (auto res = mesh.findBuffer(BufferType::IndexAttrib);
-                    res.first &&
-                    res.first->getDataFormat()->getId() == DataFormat<uint32_t>::id()) {
-
-                    const auto& indexBuffer =
-                        static_cast<const BufferRAMPrecision<uint32_t, BufferTarget::Data>*>(
-                            res.first->getRepresentation<BufferRAM>())
-                            ->getDataContainer();
-
-                    const auto seq = util::make_sequence(
-                        uint32_t{0}, static_cast<uint32_t>(indexBuffer.size()), uint32_t{1});
-                    std::copy_if(seq.begin(), seq.end(), std::back_inserter(indices),
-                                 [&](uint32_t i) { return selection.contains(indexBuffer[i]); });
-
-                } else {
-                    std::transform(selection.begin(), selection.end(), std::back_inserter(indices),
-                                   [](size_t i) { return static_cast<uint32_t>(i); });
-                }
-            }
-            if (!indices.empty()) {
-                return &indices;
-            }
+    void unmap() {
+        if (!glUnmapBuffer(storage.getTarget())) {
+            // Error
         }
-        return nullptr;
+        storage.unbind();
     }
 
-    BoolCompositeProperty properties;
-    FloatVec4Property color;
-    FloatProperty radiusFactor;
+    void setSize(std::uint32_t size) { storage.setSizeInBytes(size * sizeof(T)); }
 
-private:
-    Inport& inport_;
-    BrushingAndLinkingInport& brushLinkPort_;
-    std::unordered_map<const Outport*, std::vector<uint32_t>> selectionIndices_;
+    std::uint32_t getSize() const {
+        return static_cast<std::uint32_t>(storage.getSizeInBytes() / sizeof(T));
+    }
+
+    BufferTexture(const BufferTexture&) = delete;
+    BufferTexture(BufferTexture&&) = default;
+    BufferTexture& operator=(const BufferTexture&) = delete;
+    BufferTexture& operator=(BufferTexture&&) = default;
+    virtual ~BufferTexture() = default;
+
+    BufferObject storage;
 };
 
 /** \docpage{org.inviwo.SphereRenderer, Sphere Renderer}
@@ -227,13 +205,16 @@ private:
     BoolProperty useMetaColor_;
     TransferFunctionProperty metaColor_;
 
-    SphereRendererSelection selection_;
+    SelectionColorProperty showHighlighted_;
+    SelectionColorProperty showSelected_;
+    SelectionColorProperty showFiltered_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
     SimpleLightingProperty lighting_;
 
     MeshShaderCache shaders_;
+    BufferTexture<std::uint8_t, GL_R8UI> bnlBuffer;
 };
 
 }  // namespace inviwo

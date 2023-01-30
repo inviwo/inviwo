@@ -50,7 +50,7 @@ namespace inviwo {
 class IsoTFProperty;
 class Mesh;
 class Shader;
-class Texture;
+class TextureBase;
 class TextureUnit;
 class TextureUnitContainer;
 class TransferFunctionProperty;
@@ -172,11 +172,11 @@ IVW_MODULE_OPENGL_API void unbindTextures(const ImageInport& inport);
 IVW_MODULE_OPENGL_API void unbindTextures(const ImageOutport& outport);
 
 // convenience texture bindings
-IVW_MODULE_OPENGL_API void bindTexture(const Texture& texture, GLenum texUnit);
-IVW_MODULE_OPENGL_API void bindTexture(const Texture& texture, const TextureUnit& texUnit);
+IVW_MODULE_OPENGL_API void bindTexture(const TextureBase& texture, GLenum texUnit);
+IVW_MODULE_OPENGL_API void bindTexture(const TextureBase& texture, const TextureUnit& texUnit);
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              const Texture& texture, std::string_view samplerID);
+                                              const TextureBase& texture, std::string_view samplerID);
 
 IVW_MODULE_OPENGL_API void bindTexture(const TransferFunctionProperty& tf,
                                        const TextureUnit& texUnit);
