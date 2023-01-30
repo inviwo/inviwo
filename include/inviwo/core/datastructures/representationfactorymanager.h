@@ -149,6 +149,9 @@ public:
         std::unique_ptr<BaseRepresentationConverterFactory> converterFactory);
 
 private:
+    // Allow cleanup of referenced factories in InviwoApplication destructor
+    friend InviwoApplication::~InviwoApplication(); 
+
     std::vector<std::unique_ptr<BaseRepresentationFactory>> representationFactories_;
     std::vector<std::unique_ptr<BaseRepresentationFactoryObject,
                                 std::function<void(BaseRepresentationFactoryObject*)>>>

@@ -234,7 +234,11 @@ InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo")
 InviwoApplication::InviwoApplication(std::string_view displayName)
     : InviwoApplication(0, nullptr, displayName) {}
 
-InviwoApplication::~InviwoApplication() { resizePool(0); }
+InviwoApplication::~InviwoApplication() { resizePool(0); 
+    // Cleanup references to factories owned by InviwoApplication
+    RepresentationFactoryManager::representationMetaFactory_ = nullptr;
+    RepresentationFactoryManager::representationConverterMetaFactory_ = nullptr;
+}
 
 void InviwoApplication::registerModules(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories) {
