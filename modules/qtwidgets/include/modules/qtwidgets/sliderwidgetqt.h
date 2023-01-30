@@ -198,8 +198,10 @@ template <typename T>
 int SliderWidgetQt<T>::reprToSlider(T val) const {
     if constexpr (std::is_floating_point_v<T>) {
         if (this->maxValue_ == this->minValue_) return this->sliderMax_ / 2;
-        return static_cast<int>((val - this->minValue_) / (this->maxValue_ - this->minValue_) *
-                                this->sliderMax_);
+        const auto newVal =
+            (val - this->minValue_) / (this->maxValue_ - this->minValue_) * this->sliderMax_;
+        return static_cast<int>(std::clamp(newVal, T(std::numeric_limits<int>::lowest()),
+                                           T(std::numeric_limits<int>::max())));
     } else {
         return static_cast<int>(val);
     }
