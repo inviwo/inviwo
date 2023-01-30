@@ -424,12 +424,12 @@ void PersistenceDiagramPlotGL::setYAxisLabel(const std::string& caption) {
 }
 
 void PersistenceDiagramPlotGL::setXAxis(std::shared_ptr<const Column> col) {
-    setXAxisLabel(fmt::format("{}{: [}}", col->getHeader(), col->getUnit()));
+    setXAxisLabel(fmt::format("{}{: [}", col->getHeader(), col->getUnit()));
     setXAxisData(col->getBuffer());
 }
 
 void PersistenceDiagramPlotGL::setYAxis(std::shared_ptr<const Column> col) {
-    setYAxisLabel(fmt::format("{}{: [}}", col->getHeader(), col->getUnit()));
+    setYAxisLabel(fmt::format("{}{: [}", col->getHeader(), col->getUnit()));
     setYAxisData(col->getBuffer());
 }
 
