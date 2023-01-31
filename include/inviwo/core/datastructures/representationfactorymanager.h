@@ -183,10 +183,12 @@ private:
 
 template <typename BaseRepr>
 inline RepresentationFactory<BaseRepr>* RepresentationFactoryManager::getRepresentationFactory() {
-    if (!representationMetaFactory_) {
-        representationMetaFactory_ = getDefaultRepresentationMetaFactory();
+    // Use local if available
+    if (representationMetaFactory_) {
+        return representationMetaFactory_->getRepresentationFactory<BaseRepr>();
+    } else {
+        return getDefaultRepresentationMetaFactory()->getRepresentationFactory<BaseRepr>();
     }
-    return representationMetaFactory_->getRepresentationFactory<BaseRepr>();
 }
 
 /**
@@ -201,10 +203,12 @@ inline RepresentationFactory<BaseRepr>* RepresentationFactoryManager::getReprese
 template <typename BaseRepr>
 inline RepresentationConverterFactory<BaseRepr>*
 RepresentationFactoryManager::getRepresentationConverterFactory() {
-    if (!representationConverterMetaFactory_) {
-        representationConverterMetaFactory_ = getDefaultRepresentationConverterMetaFactory();
+    // Use local if available
+    if (representationConverterMetaFactory_) {
+        return representationConverterMetaFactory_->getConverterFactory<BaseRepr>();
+    } else {
+        return getDefaultRepresentationConverterMetaFactory()->getConverterFactory<BaseRepr>();
     }
-    return representationConverterMetaFactory_->getConverterFactory<BaseRepr>();
 }
 
 template <typename BaseRepr>
