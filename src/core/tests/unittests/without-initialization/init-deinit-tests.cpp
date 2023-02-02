@@ -54,10 +54,10 @@ void forceBufferRepresentationCreation() {
 }
 
 TEST(InitDeinit, representationFactoryManager) {
-    
+
     // Create InviwoApplication, request representation, and then destroy InviwoApplication
     forceBufferRepresentationCreation();
-    
+
     // It should be possible to initialize Inviwo a second time and request representations
     forceBufferRepresentationCreation();
 }

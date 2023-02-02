@@ -41,7 +41,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-
 int main(int argc, char** argv) {
     int ret = -1;
 
