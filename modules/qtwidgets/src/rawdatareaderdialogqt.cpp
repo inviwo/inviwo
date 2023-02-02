@@ -197,7 +197,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     QGridLayout* readOptionsLayout = new QGridLayout();
     QLabel* byteOffsetLabel = new QLabel("Byte offset");
     byteOffset_ = new QSpinBox();
-    byteOffset_->setRange(0, 4096);
+    byteOffset_->setRange(0, std::numeric_limits<int>::max());
     byteOffset_->setValue(0);
     byteOffset_->setSuffix(" Byte");
     /*
