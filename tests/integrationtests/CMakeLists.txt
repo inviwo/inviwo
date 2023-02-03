@@ -35,6 +35,11 @@ target_link_libraries(inviwo-integrationtests PRIVATE
     inviwo::testutil
     GTest::gtest
 )
+set_target_properties(inviwo-integrationtests PROPERTIES FOLDER integrationtests)
+
 ivw_configure_application_module_dependencies(inviwo-integrationtests ${enabled_modules})
 ivw_define_standard_definitions(inviwo-integrationtests inviwo-integrationtests)
 ivw_define_standard_properties(inviwo-integrationtests)
+
+# Tests for initialization/deinitialization of InviwoApplication 
+add_subdirectory("recycle-inviwo-application")

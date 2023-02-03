@@ -800,10 +800,7 @@ set(TEST_FILES
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/zip-test.cpp
 )
-# Default inviwo unit tests run after InviwoApplication initialization
 ivw_add_unittest(${TEST_FILES})
-# Tests for initialization/deinitialization of InviwoApplication 
-add_subdirectory(tests/unittests/without-initialization)
 
 set(GEN_FILES
     ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/coremodulesharedlibrary.h
@@ -983,6 +980,7 @@ add_custom_target(inviwo-buildinfo-header ALL
     COMMENT "Generating inviwo build info (buildinfo)"
     VERBATIM
 )
+set_target_properties(inviwo-buildinfo-header PROPERTIES FOLDER tools)
 
 if(IVW_CFG_EMBED_BUILDINFO)
     add_dependencies("inviwo-core" "inviwo-buildinfo-header")
