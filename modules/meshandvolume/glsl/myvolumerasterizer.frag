@@ -50,13 +50,12 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 
 uniform int volumeId;
 
-// How do I get id, parameters needed to pass into abufferVolumeRender?
 void main() {
     vec4 fragColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 #ifdef USE_FRAGMENT_LIST
     // fragment list rendering
-    if (volumeId >= 0) {
+        if (volumeId >= 0) {
         ivec2 coords = ivec2(gl_FragCoord.xy);
         float depth = gl_FragCoord.z;
         // TODO: consider winding order to distinguish between front and back facing triangles?

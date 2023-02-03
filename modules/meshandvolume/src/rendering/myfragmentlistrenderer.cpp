@@ -42,6 +42,7 @@
 #include <fmt/ostream.h>
 
 #include <modules/opengl/volume/volumegl.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -176,10 +177,14 @@ typename Dispatcher<void()>::Handle MyFragmentListRenderer::onReload(
 }
 
 void MyFragmentListRenderer::setRaycastingState(const Rasterization::RaycastingState* rp, int id) {
+    display_.activate();
     display_.setUniform("channel", rp->channel);
     display_.setUniform("volumeId", id);
+    display_.setUniform("volWorldToData", rp->volume->getCoordinateTransformer().getWorldToDataMatrix());
     // display_.setUniform("tf", rp->tf);
     // display_.setUniform("lighting", rp->lighting);
+    //utilgl::setShaderUniforms(display_, *rp->volume, StrBuffer{"volumeParameters[{}]", id});
+    display_.deactivate();
 }
 
 void MyFragmentListRenderer::buildShaders(bool hasBackground) {

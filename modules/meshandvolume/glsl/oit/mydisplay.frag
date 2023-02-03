@@ -41,6 +41,8 @@
 #include "oit/myabufferlinkedlist.glsl"
 #include "oit/mysort.glsl"
 #include "utils/structs.glsl"
+#include "utils/classification.glsl"
+#include "utils/depth.glsl"
 
 // How should the stuff be rendered? (Debugging options)
 #define ABUFFER_DISPNUMFRAGMENTS 0
@@ -72,7 +74,7 @@ uniform sampler3D volumeSamplers[8];
 uniform sampler2D tfSamplers[8];
 
 uniform VolumeParameters volumeParameters[8];
-
+uniform mat4 volWorldToData = mat4(1);
 
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
@@ -88,25 +90,27 @@ int getFragmentCount(uint pixelIdx);
 vec4 resolveClosest(uint idx);
 
 vec3 screenToData(VolumeParameters volume, float depth, vec2 fragCoords) {
-    return vec3(volume.worldToData * camera.clipToWorld * vec4(fragCoords, depth, 1.0));
+    return vec3(volWorldToData * camera.clipToWorld * vec4(fragCoords, depth, 1.0));
 }
 
-vec4 myRaycast(vec4 color, int volumeIndex, vec3 entryData, vec3 exitData) {
+vec4 myRaycast(vec4 color, int volumeIndex, vec3 entryData, float dist) {
     vec4 res = color;
     float t = 0.0;
-    vec3 rayDir = exitData - entryData;
-    float tEnd = length(exitData - entryData);
+    vec3 rayDir = normalize(entryData - camera.position);
+    float tEnd = dist;
     float tIncr = min(
         tEnd, tEnd / (samplingRate * length(rayDir * volumeParameters[volumeIndex].dimensions)));
+        //tIncr = 0.01;
     while(t < tEnd) {
-        vec3 samplePos = entryData * rayDir * t;
+        vec3 samplePos = entryData + rayDir * t;
         float values = texture(volumeSamplers[volumeIndex], samplePos).r;
-        t += tIncr;
+        t += 0.5*tIncr;
         //applyTF()
-        res += vec4(tIncr);
-    }
-    
-    return vec4(1.0, 0.0, 1.0, 1.0);
+        res += vec4(vec3(values), 1.0);
+    } 
+   
+    //return vec4(entryData, 1.0);
+    return res;
 }
 
 void main() {
@@ -151,7 +155,7 @@ void main() {
             gl_FragDepth = min(backgroundDepth, unpackedVolumeFragment.depth);
             depth = unpackedVolumeFragment.depth;
         }
-
+      
         while (depth >= 0 && depth <= backgroundDepth) {
             if(type == 0){ // Shade mesh + find next fragment
                 vec4 c = unpackedMeshFragment.color;
@@ -174,13 +178,14 @@ void main() {
                 nextDepth = unpackedVolumeFragment.depth;
             }
 
-            //
+            // Raycast through each volume
             for(int volumeIndex = 0; volumeIndex < 8; ++volumeIndex) {
                 if(raycastingInfos[volumeIndex].isActive) {
-                    vec3 viewDir = normalize(screenToData(volumeParameters[volumeIndex], nextDepth, screenPos) - screenToData(volumeParameters[volumeIndex], depth, screenPos));
-                    vec3 entryPos = screenToData(volumeParameters[volumeIndex], depth, screenPos);
-                    vec3 exitPos = screenToData(volumeParameters[volumeIndex], nextDepth, screenPos);
-                    color += myRaycast(color, volumeIndex, entryPos, exitPos); // depth + next = 0-1
+                    vec3 entryPos = unpackedVolumeFragment.position; // Might be exitPos, in that case go backwards...
+                    // ...regardless, there does not seem to be a texture.
+                    //color += myRaycast(color, volumeIndex, entryPos, abs(nextDepth-depth));
+                    //color = vec4(vec3(depth*0.5), 1.0); // Check if depth is working
+                    color = vec4(texture(volumeSamplers[volumeIndex], vec3(0.5)).rgb*100.0, 1.0); // Check if there is a texture
                 }
             }
             depth = nextDepth; // Prevent infinite loop
