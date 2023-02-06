@@ -40,8 +40,8 @@
 namespace inviwo {
 
 void forceBufferRepresentationCreation() {
-    LogCentral::init();
-    util::OnScopeExit deleteLogcentral([]() { LogCentral::deleteInstance(); });
+    LogCentral logCentral;
+    LogCentral::init(&logCentral);
     InviwoApplication inviwoApp("Inviwo-InitDeinit-Tests");
     // Initialize all modules
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
