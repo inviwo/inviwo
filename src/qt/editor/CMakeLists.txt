@@ -199,12 +199,13 @@ if(IVW_CFG_BUILD_CHANGELOG)
         COMMENT "Generating HTML version of the Inviwo Changelog"
         VERBATIM
     )
-    add_custom_target("inviwo-changelog"
+    add_custom_target(inviwo-changelog
         DEPENDS ${buildFile}
         COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/CopyIfFound.cmake"
         SOURCES ${srcFile} ${IVW_ROOT_DIR}/tools/changelog-to-html.py 
     )
-    add_dependencies("inviwo-qteditor" "inviwo-changelog")
+    set_target_properties(inviwo-changelog PROPERTIES FOLDER tools)
+    add_dependencies(inviwo-qteditor inviwo-changelog)
 endif()
 
 ivw_deploy_qt(inviwo-qteditor)

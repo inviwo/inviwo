@@ -980,6 +980,7 @@ add_custom_target(inviwo-buildinfo-header ALL
     COMMENT "Generating inviwo build info (buildinfo)"
     VERBATIM
 )
+set_target_properties(inviwo-buildinfo-header PROPERTIES FOLDER tools)
 
 if(IVW_CFG_EMBED_BUILDINFO)
     add_dependencies("inviwo-core" "inviwo-buildinfo-header")

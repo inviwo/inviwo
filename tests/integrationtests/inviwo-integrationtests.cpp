@@ -69,8 +69,8 @@ int main(int argc, char** argv) {
     int ret = -1;
     {
         // scope for ivw app
-        LogCentral::init();
-        util::OnScopeExit deleteLogcentral([]() { LogCentral::deleteInstance(); });
+        LogCentral logCentral;
+        LogCentral::init(&logCentral);
 
         auto logCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(logCounter);
