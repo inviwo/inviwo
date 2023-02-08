@@ -196,7 +196,7 @@ void LineRasterizer::setUniforms(Shader& shader) const {
 }
 
 void LineRasterizer::configureAllShaders() {
-    for (auto shaderPair : lineShaders_->getShaders()) {
+    for (auto& shaderPair : lineShaders_->getShaders()) {
         configureShader(shaderPair.second);
     }
 }

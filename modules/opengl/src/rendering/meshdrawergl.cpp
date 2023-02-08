@@ -196,84 +196,112 @@ GLenum MeshDrawerGL::getGLDrawMode(DrawMode dm) {
 GLenum MeshDrawerGL::getGLDrawMode(Mesh::MeshInfo meshInfo) {
     return getGLDrawMode(getDrawMode(meshInfo.dt, meshInfo.ct));
 }
+MeshDrawerGL::DrawObject::DrawObject(const Mesh& mesh)
+    : DrawObject(mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo()) {}
 
 MeshDrawerGL::DrawObject::DrawObject(const MeshGL* mesh, Mesh::MeshInfo arrayMeshInfo)
     : enable_(mesh), meshGL_(mesh), arrayMeshInfo_(arrayMeshInfo) {}
 
-void MeshDrawerGL::DrawObject::draw() {
-    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+namespace {
+
+void drawElements(const BufferGL& indexBuffer, GLenum drawModeGL) {
+    const auto numIndices = indexBuffer.getSize();
+    if (numIndices > 0) {
+        indexBuffer.bind();
+        glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices), indexBuffer.getFormatType(),
+                       nullptr);
+    }
+}
+void drawElements(const BufferGL& indexBuffer, GLenum drawModeGL, size_t instances) {
+    const auto numIndices = indexBuffer.getSize();
+    if (numIndices > 0) {
+        indexBuffer.bind();
+        glDrawElementsInstanced(drawModeGL, static_cast<GLsizei>(numIndices),
+                                indexBuffer.getFormatType(), nullptr,
+                                static_cast<GLsizei>(instances));
+    }
+}
+
+template <typename GetDrawMode>
+void drawAll(const MeshGL& meshGL, const GetDrawMode& modeForIB, GLenum drawModeGL) {
+    const std::size_t numIndexBuffers = meshGL.getIndexBufferCount();
     if (numIndexBuffers > 0) {
         // draw mesh using the index buffers
         for (std::size_t i = 0; i < numIndexBuffers; ++i) {
-            const auto indexBuffer = meshGL_->getIndexBuffer(i);
-            const auto numIndices = indexBuffer->getSize();
-            if (numIndices > 0) {
-                indexBuffer->bind();
-                const auto drawModeGL = getGLDrawMode(meshGL_->getMeshInfoForIndexBuffer(i));
-                glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices),
-                               indexBuffer->getFormatType(), nullptr);
-            }
+            drawElements(*meshGL.getIndexBuffer(i), modeForIB(i));
         }
-    } else if (!meshGL_->empty()) {
+    } else if (!meshGL.empty()) {
         // the mesh does not contain index buffers, render all vertices
-        const auto drawModeGL = getGLDrawMode(arrayMeshInfo_);
-        glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()));
+        glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL.getBufferGL(0)->getSize()));
     }
+}
+template <typename GetDrawMode>
+void drawAll(const MeshGL& meshGL, const GetDrawMode& modeForIB, GLenum drawModeGL,
+             size_t instances) {
+    const std::size_t numIndexBuffers = meshGL.getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        // draw mesh using the index buffers
+        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
+            drawElements(*meshGL.getIndexBuffer(i), modeForIB(i), instances);
+        }
+    } else if (!meshGL.empty()) {
+        // the mesh does not contain index buffers, render all vertices
+        glDrawArraysInstanced(drawModeGL, 0, static_cast<GLsizei>(meshGL.getBufferGL(0)->getSize()),
+                              static_cast<GLsizei>(instances));
+    }
+}
+
+}  // namespace
+
+void MeshDrawerGL::DrawObject::checkIndex(size_t index) const {
+    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+    if (index >= numIndexBuffers) {
+        throw RangeException(IVW_CONTEXT, "Index ({}) for indexbuffer of size {} is out-of-range",
+                             index, numIndexBuffers);
+    }
+}
+
+void MeshDrawerGL::DrawObject::draw() {
+    drawAll(
+        *meshGL_, [this](size_t i) { return getGLDrawMode(meshGL_->getMeshInfoForIndexBuffer(i)); },
+        getGLDrawMode(arrayMeshInfo_));
 }
 
 void MeshDrawerGL::DrawObject::draw(DrawMode drawMode) {
-    const auto drawModeGL = getGLDrawMode(drawMode);
-
-    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
-    if (numIndexBuffers > 0) {
-        // draw mesh using the index buffers
-        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
-            const auto indexBuffer = meshGL_->getIndexBuffer(i);
-            const auto numIndices = indexBuffer->getSize();
-            if (numIndices > 0) {
-                indexBuffer->bind();
-                glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices),
-                               indexBuffer->getFormatType(), nullptr);
-            }
-        }
-    } else if (!meshGL_->empty()) {
-        // the mesh does not contain index buffers, render all vertices
-        glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()));
-    }
+    drawAll(
+        *meshGL_, [dm = getGLDrawMode(drawMode)](size_t) { return dm; }, getGLDrawMode(drawMode));
 }
 
 void MeshDrawerGL::DrawObject::draw(std::size_t index) {
-    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
-    if (index >= numIndexBuffers) {
-        throw RangeException("Index (" + std::to_string(index) + ") for indexbuffer of size " +
-                                 std::to_string(numIndexBuffers) + " is out-of-range.",
-                             IVW_CONTEXT);
-    }
-    const auto indexBuffer = meshGL_->getIndexBuffer(index);
-    const auto numIndices = indexBuffer->getSize();
-    if (numIndices > 0) {
-        indexBuffer->bind();
-        const auto drawModeGL = getGLDrawMode(meshGL_->getMeshInfoForIndexBuffer(index));
-        glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices), indexBuffer->getFormatType(),
-                       nullptr);
-    }
+    checkIndex(index);
+    drawElements(*meshGL_->getIndexBuffer(index),
+                 getGLDrawMode(meshGL_->getMeshInfoForIndexBuffer(index)));
 }
 
 void MeshDrawerGL::DrawObject::draw(DrawMode drawMode, std::size_t index) {
-    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
-    if (index >= numIndexBuffers) {
-        throw RangeException("Index (" + std::to_string(index) + ") for indexbuffer of size " +
-                                 std::to_string(numIndexBuffers) + " is out-of-range.",
-                             IVW_CONTEXT);
-    }
-    const auto indexBuffer = meshGL_->getIndexBuffer(index);
-    const auto numIndices = indexBuffer->getSize();
-    if (numIndices > 0) {
-        indexBuffer->bind();
-        const auto drawModeGL = getGLDrawMode(drawMode);
-        glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices), indexBuffer->getFormatType(),
-                       nullptr);
-    }
+    checkIndex(index);
+    drawElements(*meshGL_->getIndexBuffer(index), getGLDrawMode(drawMode));
+}
+
+void MeshDrawerGL::DrawObject::drawInstanced(size_t instances) {
+    drawAll(
+        *meshGL_, [this](size_t i) { return getGLDrawMode(meshGL_->getMeshInfoForIndexBuffer(i)); },
+        getGLDrawMode(arrayMeshInfo_), instances);
+}
+void MeshDrawerGL::DrawObject::drawInstanced(DrawMode drawMode, size_t instances) {
+    drawAll(
+        *meshGL_, [dm = getGLDrawMode(drawMode)](size_t) { return dm; }, getGLDrawMode(drawMode),
+        instances);
+}
+void MeshDrawerGL::DrawObject::drawInstanced(std::size_t index, size_t instances) {
+    checkIndex(index);
+    drawElements(*meshGL_->getIndexBuffer(index),
+                 getGLDrawMode(meshGL_->getMeshInfoForIndexBuffer(index)), instances);
+}
+void MeshDrawerGL::DrawObject::drawInstanced(DrawMode drawMode, std::size_t index,
+                                             size_t instances) {
+    checkIndex(index);
+    drawElements(*meshGL_->getIndexBuffer(index), getGLDrawMode(drawMode), instances);
 }
 
 std::size_t MeshDrawerGL::DrawObject::size() const { return meshGL_->getIndexBufferCount(); }

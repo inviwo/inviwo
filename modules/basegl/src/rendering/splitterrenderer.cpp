@@ -79,18 +79,11 @@ SplitterRenderer::SplitterRenderer(Processor* processor)
     , shader_("splitter.vert", "splitter.geom", "linerenderer.frag")
     , triShader_("splitter.vert", "splittertriangle.geom", "standard.frag")
     , mesh_(DrawType::Points, ConnectivityType::None)
-    , pickingMapper_(processor, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {
+    , pickingMapper_(processor_, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {
 
     mesh_.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
                     util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
 }
-
-SplitterRenderer::SplitterRenderer(const SplitterRenderer& rhs)
-    : processor_(rhs.processor_)
-    , shader_(rhs.shader_)
-    , triShader_(rhs.triShader_)
-    , mesh_(rhs.mesh_)
-    , pickingMapper_(processor_, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {}
 
 void SplitterRenderer::setInvalidateAction(InvalidateCallback callback) { invalidate_ = callback; }
 

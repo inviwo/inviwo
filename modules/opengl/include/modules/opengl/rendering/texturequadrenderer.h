@@ -53,7 +53,7 @@ class Texture2D;
 class IVW_MODULE_OPENGL_API TextureQuadRenderer {
 public:
     TextureQuadRenderer();
-    TextureQuadRenderer(const Shader& shader);
+    TextureQuadRenderer(std::shared_ptr<Shader> shader);
     TextureQuadRenderer(Shader&& shader);
     virtual ~TextureQuadRenderer();
 

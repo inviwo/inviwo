@@ -107,9 +107,9 @@ public:
     ShaderObject(std::string fileName);
     ShaderObject(GLenum shaderType, std::string fileName);
 
-    ShaderObject(const ShaderObject& rhs);
+    ShaderObject(const ShaderObject& rhs) = delete;
     ShaderObject(ShaderObject&& rhs) noexcept;
-    ShaderObject& operator=(const ShaderObject& that);
+    ShaderObject& operator=(const ShaderObject& that) = delete;
     ShaderObject& operator=(ShaderObject&& that) noexcept;
 
     ~ShaderObject();

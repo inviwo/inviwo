@@ -119,9 +119,9 @@ public:
     Shader(std::string_view vertexFilename, std::string_view geometryFilename,
            std::string_view fragmentFilename, Build buildShader = Build::Yes);
 
-    Shader(const Shader& rhs);
+    Shader(const Shader& rhs) = delete;
     Shader(Shader&& rhs);
-    Shader& operator=(const Shader& that);
+    Shader& operator=(const Shader& that) = delete;
     Shader& operator=(Shader&& that);
 
     virtual ~Shader();

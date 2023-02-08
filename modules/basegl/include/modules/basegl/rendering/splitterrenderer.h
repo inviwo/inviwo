@@ -56,7 +56,7 @@ public:
     using DragCallback = std::function<void(float, int)>;
 
     SplitterRenderer(Processor* processor);
-    SplitterRenderer(const SplitterRenderer& rhs);
+    SplitterRenderer(const SplitterRenderer& rhs) = delete;
     SplitterRenderer(SplitterRenderer&& rhs) = default;
     SplitterRenderer& operator=(const SplitterRenderer& rhs) = delete;
     SplitterRenderer& operator=(SplitterRenderer&& rhs) = default;

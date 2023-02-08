@@ -112,8 +112,11 @@ void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
                              ContextHolder* canvas, std::thread::id threadId) {
                 if (threadId == std::this_thread::get_id()) {
                     canvas->activate();
-                    setOpenGLDebugMode(mode, severity);
-                    logDebugMode(mode, severity, id);
+                    if (setOpenGLDebugMode(mode, severity)) {
+                        logDebugMode(mode, severity, id);
+                    } else {
+                        LogInfoCustom("OpenGL Debug", "Debug messages not supported");
+                    }
                 }
             });
 
@@ -121,29 +124,31 @@ void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
     }
 }
 
-void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
-    if (glDebugMessageCallback) {
-        switch (mode) {
-            case debug::Mode::Off:
-                glDisable(GL_DEBUG_OUTPUT);
-                glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-                break;
-            case debug::Mode::Debug:
-                glEnable(GL_DEBUG_OUTPUT);
-                glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-                glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
-                configureOpenGLDebugMessages(severity);
-                break;
-            case debug::Mode::DebugSynchronous:
-                glEnable(GL_DEBUG_OUTPUT);
-                glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-                glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
-                configureOpenGLDebugMessages(severity);
-                break;
-            default:
-                break;
-        }
+bool setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
+    if (!glDebugMessageCallback) return false;
+
+    switch (mode) {
+        case debug::Mode::Off:
+            glDisable(GL_DEBUG_OUTPUT);
+            glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            break;
+        case debug::Mode::Debug:
+            glEnable(GL_DEBUG_OUTPUT);
+            glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
+            configureOpenGLDebugMessages(severity);
+            break;
+        case debug::Mode::DebugSynchronous:
+            glEnable(GL_DEBUG_OUTPUT);
+            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
+            configureOpenGLDebugMessages(severity);
+            break;
+        default:
+            break;
     }
+
+    return true;
 }
 
 void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
@@ -154,19 +159,22 @@ void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
                 if (threadId == std::this_thread::get_id()) {
                     const auto rc = RenderContext::getPtr();
                     canvas->activate();
-                    configureOpenGLDebugMessages(severity);
-                    LogInfoCustom("OpenGL Debug", "Debug messages for level: "
-                                                      << severity
-                                                      << " for context: " << rc->getContextName(id)
-                                                      << " (" << id << ")");
+                    if (configureOpenGLDebugMessages(severity)) {
+                        LogInfoCustom("OpenGL Debug",
+                                      "Debug messages for level: " << severity << " for context: "
+                                                                   << rc->getContextName(id) << " ("
+                                                                   << id << ")");
+                    } else {
+                        LogInfoCustom("OpenGL Debug", "Debug messages not supported");
+                    }
                 }
             });
         RenderContext::getPtr()->activateDefaultRenderContext();
     }
 }
 
-void configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
-    if (!glDebugMessageControl) return;
+bool configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
+    if (!glDebugMessageControl) return false;
 
     using namespace debug;
 
@@ -198,6 +206,8 @@ void configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
         default:
             break;
     }
+
+    return true;
 }
 
 void handleOpenGLDebugMode(Canvas::ContextID context) {
