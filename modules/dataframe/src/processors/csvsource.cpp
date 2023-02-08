@@ -148,11 +148,12 @@ void CSVSource::process() {
         const auto overwrite = deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes;
         deserialized_ = false;
 
-        if (util::any_of(util::ref<Property>(
-                             inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_, firstColumnIsIndices_,
-                             unitsInHeaders_, unitRegexp_, doublePrecision_, exampleRows_,
-                             rowComment_, includeFilters_, excludeFilters_, locale_, emptyField_),
-                         &Property::isModified)) {
+        if (util::any_of(
+                util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_,
+                                    firstRowIsHeaders_, firstColumnIsIndices_, unitsInHeaders_,
+                                    unitRegexp_, doublePrecision_, exampleRows_, rowComment_,
+                                    includeFilters_, excludeFilters_, locale_, emptyField_),
+                &Property::isModified)) {
             CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
             reader.setLocale(locale_)
                 .setFirstColIndices(firstColumnIsIndices_)

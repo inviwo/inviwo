@@ -202,7 +202,7 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
                             manager_->isHighlighted(index.column(), BrushingTarget::Column))
                          : false;
             const bool selected = manager_ ? manager_->isSelected(indexCol[index.row()]) : false;
-            
+
             if (highlighted) {
                 return QBrush(QColor(102, 87, 50));
             } else if (selected) {
