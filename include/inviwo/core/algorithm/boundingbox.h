@@ -58,7 +58,7 @@ namespace util {
 IVW_CORE_API mat4 boundingBox(const Mesh& mesh);
 
 /**
- * Calculate a bounding box of the position buffers of all the meshs in world space. The bounding
+ * Calculate a bounding box of the position buffers of all the meshes in world space. The bounding
  * box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y,
  * and z are between 0 and 1.
  */
