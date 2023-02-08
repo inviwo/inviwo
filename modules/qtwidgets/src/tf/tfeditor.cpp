@@ -85,18 +85,6 @@ class QKeyEvent;
 
 namespace inviwo {
 
-class ControlPointEquals {
-public:
-    ControlPointEquals(const TFPrimitive& p) : p_(p) {}
-    bool operator()(TFEditorPrimitive* editorPoint) { return editorPoint->getPrimitive() == p_; }
-    bool operator<(TFEditorPrimitive* editorPoint) {
-        return editorPoint->getPrimitive().getPosition() < p_.getPosition();
-    }
-
-private:
-    const TFPrimitive& p_;
-};
-
 template <typename Operator, typename Proj = util::identity>
 constexpr auto derefOperator(Operator&& op, Proj&& proj = {}) {
     return [o = std::forward<Operator>(op), p = std::forward<Proj>(proj)](auto* a, auto* b) {
@@ -900,13 +888,15 @@ void TFEditor::createIsovalueItem(TFPrimitive& p) {
 void TFEditor::onControlPointRemoved(TFPrimitive& p) {
     // remove point from all groups
     for (auto& elem : groups_) {
-        auto it = std::find_if(elem.begin(), elem.end(), ControlPointEquals(p));
+        auto it = std::find_if(elem.begin(), elem.end(),
+                               [&](TFEditorPrimitive* e) { return &e->getPrimitive() == &p; });
         if (it != elem.end()) elem.erase(it);
     }
 
     // remove item from list of control points
     if (tfPropertyPtr_->hasTF()) {
-        auto it = std::find_if(points_.begin(), points_.end(), ControlPointEquals(p));
+        auto it = std::find_if(points_.begin(), points_.end(),
+                               [&](TFEditorControlPoint* e) { return &e->getPrimitive() == &p; });
         if (it != points_.end()) {
             delete *it;
             points_.erase(it);
@@ -914,7 +904,8 @@ void TFEditor::onControlPointRemoved(TFPrimitive& p) {
         }
     }
     if (tfPropertyPtr_->hasIsovalues()) {
-        auto it = std::find_if(isovalueItems_.begin(), isovalueItems_.end(), ControlPointEquals(p));
+        auto it = std::find_if(isovalueItems_.begin(), isovalueItems_.end(),
+                               [&](TFEditorIsovalue* e) { return &e->getPrimitive() == &p; });
         if (it != isovalueItems_.end()) {
             delete *it;
             isovalueItems_.erase(it);

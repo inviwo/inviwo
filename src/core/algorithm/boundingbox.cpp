@@ -37,15 +37,11 @@ namespace inviwo {
 namespace util {
 
 mat4 boundingBox(const Mesh& mesh) {
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
-
     const auto& buffers = mesh.getBuffers();
     auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
         return buff.first.type == BufferType::PositionAttrib;
     });
     if (it != buffers.end() && it->second->getSize() > 0) {
-
         const auto minmax =
             it->second->getRepresentation<BufferRAM>()->dispatch<std::pair<dvec4, dvec4>>(
                 [](auto br) {
@@ -64,17 +60,17 @@ mat4 boundingBox(const Mesh& mesh) {
                                                    util::glm_convert<dvec4>(minmax.second)};
                 });
 
-        mat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
-        worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
-        worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
-    } else {
-        // No vertices, use same values for min/max
-        worldMin = worldMax = mesh.getOffset();
-    }
+        const vec3 dataMin = vec3(minmax.first);
+        const vec3 dataMax = vec3(minmax.second);
+        auto m = glm::scale(dataMax - dataMin);
+        m[3] = vec4(dataMin, 1.0f);
+        return mesh.getCoordinateTransformer().getDataToWorldMatrix() * m;
 
-    auto m = glm::scale(worldMax - worldMin);
-    m[3] = vec4(worldMin, 1.0f);
-    return m;
+    } else {
+        mat4 m{0.0};
+        m[3] = vec4(mesh.getOffset(), 1.0f);
+        return m;
+    }
 }
 
 mat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes) {
