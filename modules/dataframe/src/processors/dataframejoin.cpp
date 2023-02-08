@@ -117,8 +117,8 @@ DataFrameJoin::DataFrameJoin()
     inportRight_.onChange([&]() {
         for (auto p : secondaryRightKeys_) {
             if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
-                if (inportLeft_.hasData()) {
-                    keyProp->setOptions(*inportLeft_.getData());
+                if (inportRight_.hasData()) {
+                    keyProp->setOptions(*inportRight_.getData());
                 }
             }
         }
@@ -129,9 +129,7 @@ DataFrameJoin::DataFrameJoin()
 }
 
 void DataFrameJoin::process() {
-
     std::vector<std::pair<std::string, std::string>> keys;
-    std::vector<std::string> rightKeys;
     keys.push_back({leftKey_.getSelectedColumnHeader(), rightKey_.getSelectedColumnHeader()});
 
     for (auto&& [left, right] : util::zip(secondaryLeftKeys_, secondaryRightKeys_)) {
@@ -165,13 +163,7 @@ void DataFrameJoin::process() {
     outport_.setData(dataframe);
 }
 
-void DataFrameJoin::onDidAddProperty(Property* property, size_t) {
-    /* if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(property)) {
-         if (inportLeft_.hasData()) {
-             keyProp->setOptions(*inportLeft_.getData());
-         }
-     }*/
-}
+void DataFrameJoin::onDidAddProperty(Property*, size_t) {}
 
 void DataFrameJoin::onDidRemoveProperty(PropertyOwner* owner, Property*, size_t) {
     owner->invalidate(InvalidationLevel::InvalidOutput);

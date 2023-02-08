@@ -548,7 +548,7 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
             }
         }
 
-        if (counts.index > 0) {
+        if (counts.index) {
             appenders.push_back(addColumn<std::uint32_t, true>(
                 df, headerCopy, unit, CSVReader::EmptyField::Throw, cLocale));
         } else if (stripQuotes_ && counts.string > 0) {
