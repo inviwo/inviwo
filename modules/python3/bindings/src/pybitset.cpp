@@ -108,6 +108,7 @@ void exposeBitset(pybind11::module& m) {
         .def("optimize", &BitSet::optimize)
         .def("removeRLECompression", &BitSet::removeRLECompression)
         .def("shrinkToFit", &BitSet::shrinkToFit)
+        .def("toString", &BitSet::toString)
 
         .def(py::self == py::self)
         .def(py::self != py::self)
@@ -127,7 +128,8 @@ void exposeBitset(pybind11::module& m) {
             },
             py::keep_alive<0, 1>())
         .def("__len__", &BitSet::size)
-        .def("__contains__", &BitSet::contains);
+        .def("__contains__", &BitSet::contains)
+        .def("__str__", &BitSet::toString);
 }
 
 #include <warn/pop>

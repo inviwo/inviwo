@@ -141,6 +141,23 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
                 IVW_CONTEXT_CUSTOM("Python"),
                 "Failed to load python processor: '{}' due to missing module: '{}'. File: '{}'",
                 name, missingModule, file);
+        } else if (e.matches(PyExc_SyntaxError)) {
+            const auto filename = e.value().attr("filename").cast<std::string>();
+            auto lineno = e.value().attr("lineno").cast<int>();
+            const auto offset = e.value().attr("offset").cast<int>();
+            const auto text = e.value().attr("text").cast<std::string>();
+
+            if (filename == "<string>") {
+                e.value().attr("filename") = file;
+                // HACK: It seems that when we have a <string> file like this that the
+                // lineno is off by one. At least on mac, and python 3.10. No idea why.
+                lineno -= 1;
+                e.value().attr("lineno") = lineno;
+            }
+
+            throw Exception(IVW_CONTEXT_CUSTOM("Python"), "{}\n{:<6}:{}\n{:>{}}", e.what(), lineno,
+                            rtrim(text), "^", offset + 7);
+
         } else {
             throw Exception(IVW_CONTEXT_CUSTOM("Python"),
                             "Failed to load python processor: '{}'. File: '{}'\n{}", name, file,
