@@ -51,7 +51,11 @@ public:
 
     virtual void process() override;
 
+    virtual void propagateEvent(Event* event, Outport* source) override;
+
 protected:
+    void updateFrustum(const size2_t& dims);
+
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
@@ -60,6 +64,7 @@ protected:
     BoolProperty enableDepthTest_;
 
     CompositeProperty frustum_;
+    BoolProperty useCanvasDims_;
     FloatProperty top_;
     FloatProperty bottom_;
     FloatProperty left_;
