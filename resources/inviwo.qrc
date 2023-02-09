@@ -124,6 +124,15 @@
         <file>svgicons/axis-vertical-left.svg</file>
         <file>svgicons/axis-vertical-right.svg</file>
 
+        <file>svgicons/axis-inside-left.svg</file>
+        <file>svgicons/axis-inside-top.svg</file>
+        <file>svgicons/axis-inside-right.svg</file>
+        <file>svgicons/axis-inside-bottom.svg</file>
+        <file>svgicons/axis-outside-left.svg</file>
+        <file>svgicons/axis-outside-top.svg</file>
+        <file>svgicons/axis-outside-right.svg</file>
+        <file>svgicons/axis-outside-bottom.svg</file>
+
         <file>svgicons/axis-labels-left.svg</file>
         <file>svgicons/axis-labels-center.svg</file>
         <file>svgicons/axis-labels-right.svg</file>
