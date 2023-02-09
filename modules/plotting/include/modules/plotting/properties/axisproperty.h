@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
 #include <inviwo/core/properties/optionproperty.h>         // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>        // for FloatProperty, FloatVec4Property
+#include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
 #include <inviwo/core/util/glmvec.h>                       // for dvec2, vec4
 #include <inviwo/core/util/staticstring.h>                 // for operator+
@@ -63,13 +64,16 @@ public:
 
     AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                  Orientation orientation = Orientation::Horizontal,
+                 bool includeOrientationProperty = true,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
     AxisProperty(std::string_view identifier, std::string_view displayName,
                  Orientation orientation = Orientation::Horizontal,
+                 bool includeOrientationProperty = true,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
+
     AxisProperty(const AxisProperty& rhs);
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
@@ -157,7 +161,9 @@ public:
 
 private:
     virtual void updateLabels();
+    std::vector<ButtonGroupProperty::Button> buttons();
 
+    ButtonGroupProperty alignment_;
 };
 
 }  // namespace plot

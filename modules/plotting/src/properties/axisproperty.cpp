@@ -70,8 +70,8 @@ const std::string AxisProperty::classIdentifier = "org.inviwo.AxisProperty";
 std::string AxisProperty::getClassIdentifier() const { return classIdentifier; }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
-                           Orientation orientation, InvalidationLevel invalidationLevel,
-                           PropertySemantics semantics)
+                           Orientation orientation, bool includeOrientationProperty,
+                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : BoolCompositeProperty{identifier, displayName, help, true, invalidationLevel, semantics}
     , color_{"color", "Color",
              util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Color of the axis"_help)}
@@ -108,7 +108,11 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
                      "Settings for axis labels shown next to major ticks"_help, true}
     , majorTicks_{"majorTicks", "Major Ticks", "Settings for major ticks along the axis"_help}
     , minorTicks_{"minorTicks", "Minor Ticks",
-                  "Settings for minor ticks (shown between major ticks)"_help} {
+                  "Settings for minor ticks (shown between major ticks)"_help}
+    , alignment_{
+          "alignment", "Alignment",
+          "Set axis orientation, label position and the horizontal and vertical alignment of both labels and captions."_help,
+          buttons(), InvalidationLevel::Valid} {
 
     range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
     scalingFactor_.setVisible(false);
@@ -128,8 +132,12 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     majorTicks_.setCollapsed(true);
     minorTicks_.setCollapsed(true);
 
-    addProperties(color_, width_, useDataRange_, range_, scalingFactor_, mirrored_, orientation_,
+    addProperties(color_, width_, useDataRange_, range_, alignment_, scalingFactor_, mirrored_,
                   captionSettings_, labelSettings_, majorTicks_, minorTicks_);
+
+    if (includeOrientationProperty) {
+        insertProperty(7, orientation_);
+    }
 
     setCollapsed(true);
 
@@ -146,9 +154,10 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
 }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName,
-                           Orientation orientation, InvalidationLevel invalidationLevel,
-                           PropertySemantics semantics)
-    : AxisProperty{identifier, displayName, {}, orientation, invalidationLevel, semantics} {}
+                           Orientation orientation, bool includeOrientationProperty,
+                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : AxisProperty{identifier,        displayName, {}, orientation, includeOrientationProperty,
+                   invalidationLevel, semantics} {}
 
 AxisProperty::AxisProperty(const AxisProperty& rhs)
     : BoolCompositeProperty{rhs}
@@ -162,11 +171,16 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , captionSettings_{rhs.captionSettings_}
     , labelSettings_{rhs.labelSettings_}
     , majorTicks_{rhs.majorTicks_}
-    , minorTicks_{rhs.minorTicks_} {
+    , minorTicks_{rhs.minorTicks_}
+    , alignment_{rhs.alignment_} {
 
-    addProperties(color_, width_, useDataRange_, range_, scalingFactor_, mirrored_, orientation_,
+    addProperties(color_, width_, useDataRange_, range_, alignment_, scalingFactor_, mirrored_,
                   captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
+    // insert orientation property only if rhs owns one, too
+    if (rhs.getPropertyByIdentifier(rhs.orientation_.getIdentifier())) {
+        insertProperty(7, orientation_);
+    }
 
     range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
 
@@ -296,6 +310,49 @@ const PlotTextSettings& AxisProperty::getLabelSettings() const { return labelSet
 const MajorTickSettings& AxisProperty::getMajorTicks() const { return majorTicks_; }
 
 const MinorTickSettings& AxisProperty::getMinorTicks() const { return minorTicks_; }
+
+std::vector<ButtonGroupProperty::Button> AxisProperty::buttons() {
+    auto createOrientationButton = [&](std::string_view icon, std::string_view text, Orientation o,
+                                       const vec2 anchor,
+                                       bool mirrored) -> ButtonGroupProperty::Button {
+        return {std::nullopt, std::string{icon}, std::string{text}, [this, o, anchor, mirrored]() {
+                    orientation_.set(o);
+                    mirrored_.set(mirrored);
+                    labelSettings_.font_.anchorPos_.set(anchor);
+                    captionSettings_.font_.anchorPos_.set(anchor);
+                }};
+    };
+    auto createAlignmentButton = [&](std::string_view icon, std::string_view text, float p,
+                                     int axis) -> ButtonGroupProperty::Button {
+        return {std::nullopt, std::string{icon}, std::string{text}, [this, p, axis]() {
+                    labelSettings_.font_.anchorPos_.set(p, axis);
+                    captionSettings_.font_.anchorPos_.set(p, axis);
+                }};
+    };
+
+    return {{
+        createOrientationButton(":svgicons/axis-horizontal-bottom.svg",
+                                "Horizontal axis with labels below", Orientation::Horizontal,
+                                vec2{0.0f, 1.0f}, false),
+        createOrientationButton(":svgicons/axis-horizontal-top.svg",
+                                "Horizontal axis with labels above", Orientation::Horizontal,
+                                vec2{0.0f, -1.0f}, true),
+        createOrientationButton(":svgicons/axis-vertical-left.svg",
+                                "Vertical axis with labels on the left", Orientation::Vertical,
+                                vec2{1.0f, 0.0f}, true),
+        createOrientationButton(":svgicons/axis-vertical-right.svg",
+                                "Vertical axis with labels on the right", Orientation::Vertical,
+                                vec2{-1.0f, 0.0f}, false),
+        createAlignmentButton(":svgicons/axis-labels-left.svg", "Align labels left", -1.0f, 0),
+        createAlignmentButton(":svgicons/axis-labels-center.svg", "Center labels", 0.0f, 0),
+        createAlignmentButton(":svgicons/axis-labels-right.svg", "Align labels right", 1.0f, 0),
+        createAlignmentButton(":svgicons/axis-labels-top.svg", "Align labels at the top", 1.0f, 1),
+        createAlignmentButton(":svgicons/axis-labels-middle.svg", "Align labels in the middle",
+                              0.0f, 1),
+        createAlignmentButton(":svgicons/axis-labels-bottom.svg", "Align labels at the bottom",
+                              -1.0f, 1),
+    }};
+}
 
 }  // namespace plot
 

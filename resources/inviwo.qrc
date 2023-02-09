@@ -119,6 +119,18 @@
         <file>svgicons/view-flip.svg</file>
         <file>svgicons/view-fit-to-data.svg</file>
 
+        <file>svgicons/axis-horizontal-bottom.svg</file>
+        <file>svgicons/axis-horizontal-top.svg</file>
+        <file>svgicons/axis-vertical-left.svg</file>
+        <file>svgicons/axis-vertical-right.svg</file>
+
+        <file>svgicons/axis-labels-left.svg</file>
+        <file>svgicons/axis-labels-center.svg</file>
+        <file>svgicons/axis-labels-right.svg</file>
+        <file>svgicons/axis-labels-top.svg</file>
+        <file>svgicons/axis-labels-middle.svg</file>
+        <file>svgicons/axis-labels-bottom.svg</file>
+
         <file>svgicons/fullscreen.svg</file>
         <file>svgicons/canvas-hide.svg</file>
         <file>svgicons/canvas-show.svg</file>
