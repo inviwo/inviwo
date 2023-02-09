@@ -84,7 +84,7 @@ struct LogTableModelEntry {
     LogAudience audience;
     std::string fileName;
     int lineNumber;
-    std::string funcionName;
+    std::string functionName;
     std::string message;
 
     std::string getDate() const;
@@ -130,6 +130,9 @@ private:
     QColor errorTextColor_ = {255, 107, 107};
 
     LogModel model_;
+    QFont logFont_;
+    int lineHeight_;
+    int margin_;
 };
 
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
@@ -200,6 +203,8 @@ private:
     QAction* clearAction_;
     InviwoMainWindow* mainwindow_;
     std::shared_ptr<MenuItem> editActionsHandle_;
+
+
 };
 
 }  // namespace inviwo
