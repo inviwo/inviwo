@@ -292,29 +292,25 @@ void ParallelCoordinates::adjustMargins() {
         vec2 llMargin(0);
         vec2 urMargin(0);
 
-        do {
-            std::pair<vec2, vec2> bRect = {vec2{dim} * 0.5f, vec2{dim} * 0.5f};
-            for (auto& axis : axes_) {
-                if (axis.pcp->isChecked()) {
-                    const auto ap = axisPos(axis.pcp->columnId());
-                    const auto axisBRect = axis.axisRender->boundingRect(ap.first, ap.second);
-                    bRect.first = glm::min(bRect.first, axisBRect.first);
-                    bRect.second = glm::max(bRect.second, axisBRect.second);
-                }
+        marginsInternal_.first = margins_.getLowerLeftMargin();
+        marginsInternal_.second = margins_.getUpperRightMargin();
+
+        std::pair<vec2, vec2> bRect = {vec2{dim} * 0.5f, vec2{dim} * 0.5f};
+        for (auto& axis : axes_) {
+            if (axis.pcp->isChecked()) {
+                const auto ap = axisPos(axis.pcp->columnId());
+                const auto axisBRect = axis.axisRender->boundingRect(ap.first, ap.second);
+                bRect.first = glm::min(bRect.first, axisBRect.first);
+                bRect.second = glm::max(bRect.second, axisBRect.second);
             }
+        }
 
-            const auto rect = getDisplayRect(vec2{dim} - 1.0f);
-            llMargin = rect.first - glm::floor(bRect.first);
-            urMargin = glm::ceil(bRect.second) - rect.second;
+        const auto rect = getDisplayRect(vec2{dim} - 1.0f);
+        llMargin = rect.first - glm::floor(bRect.first);
+        urMargin = glm::ceil(bRect.second) - rect.second;
 
-            marginsInternal_.first = llMargin;
-            marginsInternal_.second = urMargin;
-
-        } while (marginsInternal_.first != llMargin || marginsInternal_.second != urMargin);
-
-        marginsInternal_.first += margins_.getLowerLeftMargin();
-        marginsInternal_.second += margins_.getUpperRightMargin();
-
+        marginsInternal_.first = llMargin + margins_.getLowerLeftMargin();
+        marginsInternal_.second = urMargin + margins_.getUpperRightMargin();
     } else {
         marginsInternal_.first = margins_.getLowerLeftMargin();
         marginsInternal_.second = margins_.getUpperRightMargin();
