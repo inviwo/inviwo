@@ -86,6 +86,7 @@ public:
      */
     void defaultAlignLabels();
 
+    using BoolCompositeProperty::set;
     void set(Orientation orientation, bool mirrored);
 
     virtual AxisProperty& setCaption(std::string_view title);

@@ -295,9 +295,9 @@ private:
 /**
  * \brief Renderer for 2D axes in screen coordinates. The side to the right of the line from start
  * to end position of the axis is defined as the "outside". As an example, consider the x axis at
- * the bottom of a 2D plot, the outside is below the axis while the inside lies within the plot area.
- * Mirroring the axis exchanges "outside" and "inside", that is labels and ticks will appear on the
- * opposing side of the axis.
+ * the bottom of a 2D plot, the outside is below the axis while the inside lies within the plot
+ * area. Mirroring the axis exchanges "outside" and "inside", that is labels and ticks will appear
+ * on the opposing side of the axis.
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer : public AxisRendererBase {
 public:
