@@ -76,7 +76,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerDataVisualizer(std::make_unique<ScatterPlotDataFrameVisualizer>(app));
 }
 
-int PlottingGLModule::getVersion() const { return 3; }
+int PlottingGLModule::getVersion() const { return 4; }
 
 std::unique_ptr<VersionConverter> PlottingGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -270,9 +270,31 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                 return true;
             }};
             conv.convert(root);
+            [[fallthrough]];
+        }
+        case 3: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                std::string key;
+                node->GetValue(&key);
+                if (key != "Processor") return true;
+                if (auto type = node->GetAttributeOrDefault("type", "");
+                    type != "org.inviwo.ParallelCoordinates") {
+                    return true;
+                }
+                if (auto elem =
+                        xml::getElement(node,
+                                        "Properties/Property&identifier=lines/Properties/"
+                                        "Property&identifier=blendMode/selectedIdentifier")) {
+                    if (elem->GetAttribute("content") == "subractive") {
+                        elem->SetAttribute("content", "subtractive");
+                        res = true;
+                    }
+                }
+                return true;
+            }};
+            conv.convert(root);
             return res;
         }
-
         default:
             return false;  // No changes
     }

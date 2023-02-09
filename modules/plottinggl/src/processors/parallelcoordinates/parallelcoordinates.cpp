@@ -134,7 +134,7 @@ ParallelCoordinates::ParallelCoordinates()
     , lineSettings_{"lines", "Line Settings"}
     , blendMode_("blendMode", "Blend Mode",
                  {{"additive", "Additive", BlendMode::Additive},
-                  {"subractive", "Subractive", BlendMode::Subtractive},
+                  {"subtractive", "Subtractive", BlendMode::Subtractive},
                   {"regular", "Regular", BlendMode::Regular},
                   {"noblend", "None", BlendMode::None}},
                  2)
