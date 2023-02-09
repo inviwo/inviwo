@@ -65,6 +65,7 @@ public:
 
     // Inherited via PlotTextSettings
     virtual bool isEnabled() const override;
+    virtual LabelPlacement getPlacement() const override;
     virtual vec4 getColor() const override;
     virtual float getPosition() const override;
     virtual vec2 getOffset() const override;
@@ -81,6 +82,7 @@ public:
 
     // Inherited via PlotTextSettings
     virtual bool isEnabled() const override;
+    virtual LabelPlacement getPlacement() const override;
     virtual vec4 getColor() const override;
     virtual float getPosition() const override;
     virtual vec2 getOffset() const override;
@@ -184,12 +186,11 @@ public:
     virtual bool getUseDataRange() const override;
 
     virtual bool getAxisVisible() const override;
-    virtual bool getFlipped() const override;
+    virtual bool getMirrored() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
     virtual float getScalingFactor() const override;
     virtual Orientation getOrientation() const override;
-    virtual Placement getPlacement() const override;
 
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;
@@ -230,4 +231,5 @@ private:
 };
 
 }  // namespace plot
+
 }  // namespace inviwo

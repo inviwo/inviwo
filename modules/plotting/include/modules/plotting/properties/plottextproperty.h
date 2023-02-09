@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/boolcompositeproperty.h>      // for BoolCompositeProperty
 #include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
 #include <inviwo/core/properties/ordinalproperty.h>            // for FloatProperty, FloatVec4Pr...
+#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty
 #include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Propert...
 #include <inviwo/core/properties/stringproperty.h>             // for StringProperty
 #include <inviwo/core/util/glmvec.h>                           // for vec2, vec4
@@ -67,6 +68,7 @@ public:
     virtual ~PlotTextProperty() = default;
 
     StringProperty title_;
+    OptionProperty<LabelPlacement> placement_;
     FloatVec4Property color_;
     FloatProperty position_;  //!< position along axis [0,1]
     FloatProperty offset_;    //!< offset from axis
@@ -76,6 +78,7 @@ public:
 
     // Inherited via PlotTextSettings
     virtual bool isEnabled() const override;
+    virtual LabelPlacement getPlacement() const override;
     virtual vec4 getColor() const override;
     virtual float getPosition() const override;
     virtual vec2 getOffset() const override;

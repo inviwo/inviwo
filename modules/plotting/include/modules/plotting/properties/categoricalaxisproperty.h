@@ -90,12 +90,11 @@ public:
     virtual bool getUseDataRange() const override;
 
     virtual bool getAxisVisible() const override;
-    virtual bool getFlipped() const override;
+    virtual bool getMirrored() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
     virtual float getScalingFactor() const override;
     virtual Orientation getOrientation() const override;
-    virtual Placement getPlacement() const override;
 
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;
@@ -112,9 +111,8 @@ public:
     FloatProperty width_;
     FloatProperty scalingFactor_;
 
-    BoolProperty flipped_;
+    BoolProperty mirrored_;
     OptionProperty<Orientation> orientation_;
-    OptionProperty<Placement> placement_;
 
     // caption besides axis
     PlotTextProperty captionSettings_;

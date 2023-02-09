@@ -198,7 +198,7 @@ struct AxisLabels {
         labelsSettings_.check(*this, settings.getLabelSettings());
         major_.check(*this, settings.getMajorTicks());
         tickDirection_.check(*this, tickDirection);
-        flipped_.check(*this, settings.getFlipped());
+        flipped_.check(*this, settings.getMirrored());
         scalingFactor_.check(*this, settings.getScalingFactor());
 
         if (positions_.empty()) {

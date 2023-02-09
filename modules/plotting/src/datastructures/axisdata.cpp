@@ -46,11 +46,11 @@ AxisData::AxisData(const AxisSettings& s)
     : range{s.getRange()}
     , useDataRange{s.getUseDataRange()}
     , visible{s.getAxisVisible()}
+    , mirrored{s.getMirrored()}
     , color{s.getColor()}
     , width{s.getWidth()}
     , scalingFactor{s.getScalingFactor()}
     , orientation{s.getOrientation()}
-    , placement{s.getPlacement()}
     , caption{s.getCaption()}
     , captionSettings{s.getCaptionSettings()}
     , labels{s.getLabels()}
@@ -60,7 +60,7 @@ AxisData::AxisData(const AxisSettings& s)
 
 bool AxisData::getAxisVisible() const { return visible; }
 
-bool AxisData::getFlipped() const { return flipped; }
+bool AxisData::getMirrored() const { return mirrored; }
 
 vec4 AxisData::getColor() const { return color; }
 
@@ -73,8 +73,6 @@ bool AxisData::getUseDataRange() const { return useDataRange; }
 dvec2 AxisData::getRange() const { return range; }
 
 AxisSettings::Orientation AxisData::getOrientation() const { return orientation; }
-
-AxisSettings::Placement AxisData::getPlacement() const { return placement; }
 
 const std::string& AxisData::getCaption() const { return caption; }
 
@@ -89,4 +87,5 @@ const MajorTickSettings& AxisData::getMajorTicks() const { return majorTicks; }
 const MinorTickSettings& AxisData::getMinorTicks() const { return minorticks; }
 
 }  // namespace plot
+
 }  // namespace inviwo

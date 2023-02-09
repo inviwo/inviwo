@@ -325,9 +325,9 @@ std::pair<vec2, vec2> tickBoundingRect(const AxisSettings& settings, const vec2&
                 startPos + scaling * static_cast<float>(tickPositions.back() - axisRange.x);
 
             const auto ext1 =
-                getSize(pos1, tickDirection, majorTicks.getStyle(), settings.getFlipped());
+                getSize(pos1, tickDirection, majorTicks.getStyle(), settings.getMirrored());
             const auto ext2 =
-                getSize(pos2, tickDirection, majorTicks.getStyle(), settings.getFlipped());
+                getSize(pos2, tickDirection, majorTicks.getStyle(), settings.getMirrored());
 
             lowerLeft = glm::min(lowerLeft, ext1.first);
             lowerLeft = glm::min(lowerLeft, ext1.second);
@@ -351,9 +351,9 @@ std::pair<vec2, vec2> tickBoundingRect(const AxisSettings& settings, const vec2&
                 startPos + scaling * static_cast<float>(tickPositions.back() - axisRange.x);
 
             const auto ext1 =
-                getSize(pos1, tickDirection, minorTicks.getStyle(), settings.getFlipped());
+                getSize(pos1, tickDirection, minorTicks.getStyle(), settings.getMirrored());
             const auto ext2 =
-                getSize(pos2, tickDirection, minorTicks.getStyle(), settings.getFlipped());
+                getSize(pos2, tickDirection, minorTicks.getStyle(), settings.getMirrored());
 
             lowerLeft = glm::min(lowerLeft, ext1.first);
             lowerLeft = glm::min(lowerLeft, ext1.second);
@@ -380,7 +380,7 @@ std::unique_ptr<Mesh> generateMajorTicksMesh(const AxisSettings& settings, const
 
     return generateTicksMesh(tickPositions, settings.getRange(), vec3(startPos, 0.0f),
                              vec3(endPos, 0.0f), tickDir, ticks.getTickLength(), ticks.getStyle(),
-                             ticks.getColor(), settings.getFlipped());
+                             ticks.getColor(), settings.getMirrored());
 }
 
 std::unique_ptr<Mesh> generateMinorTicksMesh(const AxisSettings& settings, const vec2& startPos,
@@ -394,7 +394,7 @@ std::unique_ptr<Mesh> generateMinorTicksMesh(const AxisSettings& settings, const
 
     return generateTicksMesh(tickPositions, settings.getRange(), vec3(startPos, 0.0f),
                              vec3(endPos, 0.0f), tickDir, ticks.getTickLength(), ticks.getStyle(),
-                             ticks.getColor(), settings.getFlipped());
+                             ticks.getColor(), settings.getMirrored());
 }
 
 std::unique_ptr<Mesh> generateAxisMesh(const vec2& startPos, const vec2& endPos, const vec4& color,
@@ -409,7 +409,7 @@ std::unique_ptr<Mesh> generateMajorTicksMesh3D(const AxisSettings& settings, con
 
     return generateTicksMesh(tickPositions, settings.getRange(), startPos, endPos, tickDirection,
                              ticks.getTickLength(), ticks.getStyle(), ticks.getColor(),
-                             settings.getFlipped());
+                             settings.getMirrored());
 }
 
 std::unique_ptr<Mesh> generateMinorTicksMesh3D(const AxisSettings& settings, const vec3& startPos,
@@ -420,7 +420,7 @@ std::unique_ptr<Mesh> generateMinorTicksMesh3D(const AxisSettings& settings, con
 
     return generateTicksMesh(tickPositions, settings.getRange(), startPos, endPos, tickDirection,
                              ticks.getTickLength(), ticks.getStyle(), ticks.getColor(),
-                             settings.getFlipped());
+                             settings.getMirrored());
 }
 
 std::unique_ptr<Mesh> generateAxisMesh3D(const vec3& startPos, const vec3& endPos,
@@ -452,7 +452,7 @@ vec2 getAxisCaptionPosition(const AxisSettings& settings, const vec2& startPos,
     const auto axisDir = glm::normalize(endPos - startPos);
     auto normal = vec2(axisDir.y, -axisDir.x) * settings.getScalingFactor();
 
-    if (settings.getFlipped()) {
+    if (settings.getMirrored()) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }
@@ -472,7 +472,7 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& setti
     const auto axisDir = glm::normalize(endPos - startPos);
     auto normal = vec2(axisDir.y, -axisDir.x) * settings.getScalingFactor();
 
-    if (settings.getFlipped()) {
+    if (settings.getMirrored()) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }
@@ -512,7 +512,7 @@ vec3 getAxisCaptionPosition3D(const AxisSettings& settings, const vec3& startPos
     const vec3 axisPos(glm::mix(startPos, endPos, settings.getCaptionSettings().getPosition()));
     auto normal = -glm::normalize(tickDirection) * settings.getScalingFactor();
 
-    if (settings.getFlipped()) {
+    if (settings.getMirrored()) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }
@@ -533,7 +533,7 @@ std::vector<std::pair<double, vec3>> getLabelPositions3D(const AxisSettings& set
     const auto axisDir = glm::normalize(endPos - startPos);
     auto normal = -glm::normalize(tickDirection) * settings.getScalingFactor();
 
-    if (settings.getFlipped()) {
+    if (settings.getMirrored()) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }

@@ -130,9 +130,6 @@ ScatterPlotGL::Properties::Properties(std::string_view identifier, std::string_v
 
     axisStyle_.registerProperties(xAxis_, yAxis_);
 
-    yAxis_.flipped_.set(true);
-    yAxis_.defaultAlignLabels();
-
     color_.setVisible(true);
     tf_.setVisible(!color_.getVisible());
     minRadius_.setVisible(false);

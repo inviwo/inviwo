@@ -44,5 +44,19 @@ bool operator==(const MajorTickSettings& a, const MajorTickSettings& b) {
 
 bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b) { return !(a == b); }
 
+TickStyle utilplot::flip(TickStyle s) {
+    switch (s) {
+        case TickStyle::Inside:
+            return TickStyle::Outside;
+        case TickStyle::Outside:
+            return TickStyle::Inside;
+        case TickStyle::None:
+        case TickStyle::Both:
+        default:
+            return s;
+    }
+}
+
 }  // namespace plot
+
 }  // namespace inviwo

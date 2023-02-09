@@ -50,6 +50,8 @@ PlotTextData::PlotTextData(const PlotTextSettings& s)
 
 bool PlotTextData::isEnabled() const { return enabled; }
 
+LabelPlacement PlotTextData::getPlacement() const { return placement; }
+
 vec4 PlotTextData::getColor() const { return color; }
 
 float PlotTextData::getPosition() const { return position; }

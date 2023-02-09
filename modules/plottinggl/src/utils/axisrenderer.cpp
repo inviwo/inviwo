@@ -100,7 +100,7 @@ Mesh* AxisMeshes::getMajor(const AxisSettings& settings, const vec3& start, cons
     startPos_.check(*this, start);
     endPos_.check(*this, end);
     range_.check(*this, settings.getRange());
-    flip_.check(*this, settings.getFlipped());
+    flip_.check(*this, settings.getMirrored());
     major_.check(*this, settings.getMajorTicks());
     tickDirection_.check(*this, tickDirection);
     scalingFactor_.check(*this, settings.getScalingFactor());
@@ -119,7 +119,7 @@ Mesh* AxisMeshes::getMinor(const AxisSettings& settings, const vec3& start, cons
     startPos_.check(*this, start);
     endPos_.check(*this, end);
     range_.check(*this, settings.getRange());
-    flip_.check(*this, settings.getFlipped());
+    flip_.check(*this, settings.getMirrored());
     major_.check(*this, settings.getMajorTicks());
     minor_.check(*this, settings.getMinorTicks());
     tickDirection_.check(*this, tickDirection);

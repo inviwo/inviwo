@@ -37,12 +37,15 @@ class FontSettings;
 
 namespace plot {
 
+enum class LabelPlacement { Outside, Inside };
+
 class IVW_MODULE_PLOTTING_API PlotTextSettings {
 public:
     PlotTextSettings() = default;
     virtual ~PlotTextSettings() = default;
 
     virtual bool isEnabled() const = 0;
+    virtual LabelPlacement getPlacement() const = 0;
     virtual vec4 getColor() const = 0;
     virtual float getPosition() const = 0;  //!< position along axis [0,1]
     virtual vec2 getOffset() const = 0;     //!< offset from axis
@@ -55,6 +58,13 @@ public:
 
 IVW_MODULE_PLOTTING_API bool operator==(const PlotTextSettings& a, const PlotTextSettings& b);
 IVW_MODULE_PLOTTING_API bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b);
+
+namespace utilplot {
+/**
+ * flip inside and outside direction of placement \p p
+ */
+IVW_MODULE_PLOTTING_API LabelPlacement flip(LabelPlacement p);
+}  // namespace utilplot
 
 }  // namespace plot
 

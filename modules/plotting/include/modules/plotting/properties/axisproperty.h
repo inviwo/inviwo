@@ -75,12 +75,14 @@ public:
     virtual ~AxisProperty() = default;
 
     /**
-     * \brief aligns and centers caption and labels according to the current axis orientation
-     * For a horizontal axis, both caption and labels are centered horizontally with the vertical
-     * anchor position at the top (or bottom with inside placement). In the vertical case, labels
-     * are right-aligned (left with inside placement) and vertically centered.
+     * \brief aligns and centers caption and labels according to the current axis orientation and
+     * mirror state. For a horizontal axis, both caption and labels are centered horizontally with
+     * the vertical anchor position at the top (or bottom when mirrored). In the vertical
+     * case, labels are right-aligned (left when mirrored) and vertically centered.
      */
     void defaultAlignLabels();
+
+    void set(Orientation orientation, bool mirrored);
 
     virtual AxisProperty& setCaption(std::string_view title);
 
@@ -114,19 +116,16 @@ public:
      */
     AxisProperty& setLineWidth(float width);
 
-    virtual void deserialize(Deserializer& d) override;
-
     // Inherited via AxisSettings
     virtual dvec2 getRange() const override;
     virtual bool getUseDataRange() const override;
 
     virtual bool getAxisVisible() const override;
-    virtual bool getFlipped() const override;
+    virtual bool getMirrored() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
     virtual float getScalingFactor() const override;
     virtual Orientation getOrientation() const override;
-    virtual Placement getPlacement() const override;
 
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;
@@ -144,9 +143,8 @@ public:
     DoubleMinMaxProperty range_;
     FloatProperty scalingFactor_;
 
-    BoolProperty flipped_;
+    BoolProperty mirrored_;
     OptionProperty<Orientation> orientation_;
-    OptionProperty<Placement> placement_;
 
     // caption besides axis
     PlotTextProperty captionSettings_;
@@ -159,11 +157,7 @@ public:
 
 private:
     virtual void updateLabels();
-    void updateOrientation();
-    void updatePlacement();
 
-    std::optional<Orientation> prevOrientation_;
-    std::optional<Placement> prevPlacement_;
 };
 
 }  // namespace plot

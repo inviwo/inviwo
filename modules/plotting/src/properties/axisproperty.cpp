@@ -93,20 +93,16 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
                          .set("Scaling factor affecting tick lengths and offsets of axis caption "
                               "and labels"_help)
                          .setMin(std::numeric_limits<float>::min())}
-    , flipped_{"flipped", "Swap Label Position",
-               "Show labels on the opposite side of the axis"_help, false}
+    , mirrored_{"mirrored", "Mirror ",
+                "Swap axis inside and outside. If not mirrored, the outside will be to the right "
+                "of the axis pointing from start point to end point."_help,
+                orientation == Orientation::Vertical}
     , orientation_{"orientation",
                    "Orientation",
                    "Determines the orientation of the axis (horizontal or vertical)"_help,
                    {{"horizontal", "Horizontal", Orientation::Horizontal},
                     {"vertical", "Vertical", Orientation::Vertical}},
                    orientation == Orientation::Horizontal ? size_t{0} : size_t{1}}
-    , placement_{"placement",
-                 "Placement",
-                 "Sets the axis placement to either bottom/left or top/right"_help,
-                 {{"outside", "Bottom / Left", Placement::Outside},
-                  {"inside", "Top / Right", Placement::Inside}},
-                 0}
     , captionSettings_{"caption", "Caption", "Caption settings"_help, true}
     , labelSettings_{"labels", "Axis Labels",
                      "Settings for axis labels shown next to major ticks"_help, true}
@@ -132,22 +128,21 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     majorTicks_.setCollapsed(true);
     minorTicks_.setCollapsed(true);
 
-    addProperties(color_, width_, useDataRange_, range_, scalingFactor_, flipped_, orientation_,
-                  placement_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
+    addProperties(color_, width_, useDataRange_, range_, scalingFactor_, mirrored_, orientation_,
+                  captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
     setCollapsed(true);
 
-    orientation_.onChange([this]() { updateOrientation(); });
-    placement_.onChange([this]() { updatePlacement(); });
+    // orientation_.onChange([this]() { defaultAlignLabels(); });
+    defaultAlignLabels();
+
+    setCurrentStateAsDefault();
+
     majorTicks_.onChange([this]() { updateLabels(); });
     range_.onChange([this]() { updateLabels(); });
     labelSettings_.title_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
-    updateOrientation();
-    updatePlacement();
     updateLabels();
-
-    setCurrentStateAsDefault();
 }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName,
@@ -162,50 +157,47 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , useDataRange_{rhs.useDataRange_}
     , range_{rhs.range_}
     , scalingFactor_{rhs.scalingFactor_}
-    , flipped_{rhs.flipped_}
+    , mirrored_{rhs.mirrored_}
     , orientation_{rhs.orientation_}
-    , placement_{rhs.placement_}
     , captionSettings_{rhs.captionSettings_}
     , labelSettings_{rhs.labelSettings_}
     , majorTicks_{rhs.majorTicks_}
     , minorTicks_{rhs.minorTicks_} {
-    addProperties(color_, width_, useDataRange_, range_, scalingFactor_, flipped_, orientation_,
-                  placement_);
 
-    range_.setReadOnly(useDataRange_.get());
-    useDataRange_.onChange([this]() { range_.setReadOnly(useDataRange_.get()); });
+    addProperties(color_, width_, useDataRange_, range_, scalingFactor_, mirrored_, orientation_,
+                  captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
-    addProperties(captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
-    orientation_.onChange([this]() { updateOrientation(); });
-    placement_.onChange([this]() { updatePlacement(); });
+    range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
+
     majorTicks_.onChange([this]() { updateLabels(); });
     range_.onChange([this]() { updateLabels(); });
     labelSettings_.title_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
-    updateOrientation();
-    updatePlacement();
     updateLabels();
 }
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
 
-void AxisProperty::deserialize(Deserializer& d) {
-    prevOrientation_.reset();
-    prevPlacement_.reset();
-    BoolCompositeProperty::deserialize(d);
+void AxisProperty::defaultAlignLabels() {
+    captionSettings_.offset_.set(orientation_ == Orientation::Vertical ? 50.0f : 35.0f);
+    captionSettings_.rotation_.set(orientation_ == Orientation::Vertical ? 90.0f : 0.0f);
+
+    const vec2 anchor = [&]() {
+        if (orientation_ == Orientation::Vertical) {
+            return (mirrored_ ? vec2{1.0f, 0.0f} : vec2{-1.0f, 0.0f});
+        } else {
+            return (mirrored_ ? vec2{0.0f, -1.0f} : vec2{0.0f, 1.0f});
+        }
+    }();
+    captionSettings_.font_.anchorPos_.set(anchor);
+    labelSettings_.font_.anchorPos_.set(anchor);
 }
 
-void AxisProperty::defaultAlignLabels() {
-    const float dir = (placement_ == Placement::Outside) ? 1.0f : -1.0f;
-    if (orientation_ == Orientation::Horizontal) {
-        captionSettings_.font_.anchorPos_.set(vec2(0.0f, dir));
-        labelSettings_.font_.anchorPos_.set(vec2(0.0f, dir));
-    } else {
-        // vertical caption of a 2D axis is rotated 90° ccw and requires a different offset
-        captionSettings_.font_.anchorPos_.set(vec2(0.0f, -dir));
-        labelSettings_.font_.anchorPos_.set(vec2(dir, 0.0f));
-    }
+void AxisProperty::set(Orientation orientation, bool mirrored) {
+    orientation_.set(orientation);
+    mirrored_.set(mirrored);
+    defaultAlignLabels();
 }
 
 AxisProperty& AxisProperty::setCaption(std::string_view title) {
@@ -277,34 +269,9 @@ void AxisProperty::updateLabels() {
                    [&](auto tick) { return fmt::sprintf(format, tick); });
 }
 
-void AxisProperty::updateOrientation() {
-    if (prevOrientation_ && prevOrientation_ != orientation_.get()) {
-        // flip anchor positions from vertical to horizontal and vice versa
-        labelSettings_.font_.anchorPos_.set(glm::yx(labelSettings_.font_.anchorPos_.get()));
-        captionSettings_.font_.anchorPos_.set(glm::yx(captionSettings_.font_.anchorPos_.get()));
-    }
-    prevOrientation_ = orientation_;
-}
-
-void AxisProperty::updatePlacement() {
-    if (prevPlacement_ && prevPlacement_ != placement_.get()) {
-        // invert positioning orthogonal to current orientation
-        auto flip = [o = orientation_.get()](auto& prop) {
-            if (o == Orientation::Horizontal) {
-                prop.set(prop.get() * vec2(1.0f, -1.0f));
-            } else {
-                prop.set(prop.get() * vec2(-1.0f, 1.0f));
-            }
-        };
-        flip(labelSettings_.font_.anchorPos_);
-        flip(captionSettings_.font_.anchorPos_);
-    }
-    prevPlacement_ = placement_;
-}
-
 bool AxisProperty::getAxisVisible() const { return isChecked(); }
 
-bool AxisProperty::getFlipped() const { return flipped_.get(); }
+bool AxisProperty::getMirrored() const { return mirrored_.get(); }
 
 vec4 AxisProperty::getColor() const { return color_.get(); }
 
@@ -319,8 +286,6 @@ dvec2 AxisProperty::getRange() const { return range_.get(); }
 AxisSettings::Orientation AxisProperty::getOrientation() const {
     return orientation_.getSelectedValue();
 }
-
-AxisSettings::Placement AxisProperty::getPlacement() const { return placement_.getSelectedValue(); }
 
 const PlotTextSettings& AxisProperty::getCaptionSettings() const { return captionSettings_; }
 

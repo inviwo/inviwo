@@ -134,6 +134,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     axisStyle_.labelFormat_.set("%g");
     axisStyle_.setCurrentStateAsDefault();
     plotImageSize_.setReadOnly(true);
+    margins_.setLowerLeftMargin({65.0f, 60.0f});
 
     addProperties(margins_, axisMargin_, plotImageSize_, rangeMode_, customRanges_, axisStyle_,
                   xAxis_, yAxis_, imageInteraction_);
@@ -145,8 +146,6 @@ ImagePlotProcessor::ImagePlotProcessor()
 
     xAxis_.setCaption("x");
     yAxis_.setCaption("y");
-    yAxis_.flipped_.set(true);
-    yAxis_.defaultAlignLabels();
 
     auto linkAxisRanges = [this](DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {
         auto func = [&]() {
