@@ -109,6 +109,10 @@ void MeshDrawerGL::draw(DrawMode drawMode) {
     }
 }
 
+MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(Mesh::MeshInfo meshInfo) {
+    return getDrawMode(meshInfo.dt, meshInfo.ct);
+}
+
 MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType ct) {
     switch (dt) {
         case DrawType::Triangles:
@@ -302,6 +306,36 @@ void MeshDrawerGL::DrawObject::drawInstanced(DrawMode drawMode, std::size_t inde
                                              size_t instances) {
     checkIndex(index);
     drawElements(*meshGL_->getIndexBuffer(index), getGLDrawMode(drawMode), instances);
+}
+
+void MeshDrawerGL::DrawObject::drawOnly(DrawMode drawMode) {
+    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        // draw mesh using the index buffers
+        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
+            if (getDrawMode(meshGL_->getMeshInfoForIndexBuffer(i)) == drawMode) {
+                drawElements(*meshGL_->getIndexBuffer(i), getGLDrawMode(drawMode));
+            }
+        }
+    } else if (!meshGL_->empty() && getDrawMode(arrayMeshInfo_) == drawMode) {
+        glDrawArrays(getGLDrawMode(drawMode), 0,
+                     static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()));
+    }
+}
+void MeshDrawerGL::DrawObject::drawOnlyInstanced(DrawMode drawMode, size_t instances) {
+    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        // draw mesh using the index buffers
+        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
+            if (getDrawMode(meshGL_->getMeshInfoForIndexBuffer(i)) == drawMode) {
+                drawElements(*meshGL_->getIndexBuffer(i), getGLDrawMode(drawMode), instances);
+            }
+        }
+    } else if (!meshGL_->empty() && getDrawMode(arrayMeshInfo_) == drawMode) {
+        glDrawArraysInstanced(getGLDrawMode(drawMode), 0,
+                              static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()),
+                              static_cast<GLsizei>(instances));
+    }
 }
 
 std::size_t MeshDrawerGL::DrawObject::size() const { return meshGL_->getIndexBufferCount(); }
