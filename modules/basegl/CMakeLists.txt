@@ -108,6 +108,12 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/tfcomponent.h
     include/modules/basegl/shadercomponents/timecomponent.h
     include/modules/basegl/shadercomponents/volumecomponent.h
+    include/modules/basegl/util/glyphclipping.h
+    include/modules/basegl/util/meshbnlgl.h
+    include/modules/basegl/util/meshtexturing.h
+    include/modules/basegl/util/periodicitygl.h
+    include/modules/basegl/util/sphereconfig.h
+    include/modules/basegl/util/uniformlabelatlasgl.h
     include/modules/basegl/viewmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -218,6 +224,12 @@ set(SOURCE_FILES
     src/shadercomponents/tfcomponent.cpp
     src/shadercomponents/timecomponent.cpp
     src/shadercomponents/volumecomponent.cpp
+    src/util/glyphclipping.cpp
+    src/util/meshbnlgl.cpp
+    src/util/meshtexturing.cpp
+    src/util/periodicitygl.cpp
+    src/util/sphereconfig.cpp
+    src/util/uniformlabelatlasgl.cpp
     src/viewmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

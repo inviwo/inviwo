@@ -547,6 +547,4 @@ Document MeshRasterization::getInfo() const {
     return doc;
 }
 
-Rasterization* MeshRasterization::clone() const { return new MeshRasterization(*this); }
-
 }  // namespace inviwo

@@ -43,10 +43,13 @@ uniform vec4 viewport;
 uniform float clipShadingFactor = 0.9;
 
 #if defined(ENABLE_LABELS)
-uniform sampler2D labels;
-uniform float labelAspect;
-uniform vec4 labelColor;
-uniform float labelSize;
+struct Label {
+    sampler2D tex;
+    float aspect;
+    vec4 color;
+    float size;
+};
+uniform Label label;
 #endif
 
 #if defined(ENABLE_TEXTURING)
@@ -68,8 +71,8 @@ in SphereGeom {
     vec3 camPos;
     float radius;
     flat uint index;
-} sphere;
-
+}
+sphere;
 
 void main() {
     vec4 pixelPos = gl_FragCoord;
@@ -91,7 +94,7 @@ void main() {
     float d2s = dot(coord.xyz, coord.xyz) - d1 * d1;
     float radicand = sphere.radius * sphere.radius - d2s;
 
-    if (radicand < 0.0) { // no valid intersection found
+    if (radicand < 0.0) {  // no valid intersection found
         discard;
     }
 
@@ -114,7 +117,7 @@ void main() {
 
 #if defined(ENABLE_LABELS)
     const vec2 labelSpherePos = vec2(0.5, 0.5);
-    vec2 labelSphereSize = vec2(labelSize, labelSize * labelAspect);
+    vec2 labelSphereSize = vec2(label.size, label.size * label.aspect);
     const ivec2 atlasDims = ivec2(30, 30);
 
     vec2 labelSphereStart = labelSpherePos - 0.5 * labelSphereSize;
@@ -130,10 +133,11 @@ void main() {
 
         if (all(lessThan(labelSphereStart, uv)) && all(lessThan(uv, labelSphereEnd))) {
             vec2 altasUv = (uv - labelSphereStart) * sphereToTexture;
-            altasUv += vec2(int(sphere.index / atlasDims.x), sphere.index % atlasDims.y) / atlasDims;
-            vec4 label = labelColor * texture(labels, altasUv);
-            label.a *= sphere.color.a;
-            glyphColor = blendBackToFront(label, glyphColor);
+            altasUv +=
+                vec2(int(sphere.index / atlasDims.x), sphere.index % atlasDims.y) / atlasDims;
+            vec4 labelColor = label.color * texture(label.tex, altasUv);
+            labelColor.a *= sphere.color.a;
+            glyphColor = blendBackToFront(labelColor, glyphColor);
         }
     }
 #endif
@@ -143,7 +147,6 @@ void main() {
 
     // depth correction for glyph
     float depth = glyphDepth(intersection + sphere.center.xyz, camera.worldToClip);
-
     if (clipGlypNearPlane(coord, sphere.camPos - coord.xyz, camera.viewToWorld[2].xyz, lighting,
                           sphere.color.rgb * clipShadingFactor, glyphColor, depth)) {
         discard;

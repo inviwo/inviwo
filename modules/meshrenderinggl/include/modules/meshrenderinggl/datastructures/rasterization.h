@@ -48,7 +48,12 @@ class Shader;
  */
 class IVW_MODULE_MESHRENDERINGGL_API Rasterization {
 public:
+    Rasterization() = default;
     virtual ~Rasterization() = default;
+    Rasterization(const Rasterization&) = delete;
+    Rasterization(Rasterization&&) = delete;
+    Rasterization& operator=(const Rasterization&) = delete;
+    Rasterization& operator=(Rasterization&&) = delete;
 
     /**
      * \brief Render the fragments, with all setup and evaluation taken care of.
@@ -71,12 +76,6 @@ public:
      * @return Specific information about this rasterization type/instance.
      */
     virtual Document getInfo() const;
-
-    /**
-     * \brief Get a copy of the object. Ownership goes to the caller.
-     * @return A copy with the same data and type as the original.
-     */
-    virtual Rasterization* clone() const = 0;
 };
 
 template <>

@@ -66,7 +66,6 @@ public:
     }
 
     virtual Document getInfo() const override { return innerRasterization_->getInfo(); }
-    virtual Rasterization* clone() const override { return new TransformedRasterization(*this); }
 
 protected:
     std::shared_ptr<const Rasterization> innerRasterization_;

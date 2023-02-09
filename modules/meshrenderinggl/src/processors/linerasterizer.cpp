@@ -284,6 +284,4 @@ Document LineRasterization::getInfo() const {
     return doc;
 }
 
-Rasterization* LineRasterization::clone() const { return new LineRasterization(*this); }
-
 }  // namespace inviwo

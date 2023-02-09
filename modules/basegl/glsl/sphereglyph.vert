@@ -32,17 +32,21 @@
 #include "utils/structs.glsl"
 #include "utils/selectioncolor.glsl"
 
-uniform vec4 defaultColor = vec4(1, 0, 0, 1);
-uniform float defaultRadius = 0.1f;
+
+struct Config {
+    vec3 color;
+    float alpha;
+    float radius;
+};
+uniform Config config = Config(vec3(1, 0, 0), 1.0, 0.1);
 
 uniform sampler2D metaColor;
 
 #if defined(ENABLE_BNL)
 uniform usamplerBuffer bnl;
-uniform SelectionColor showFiltered;
-uniform SelectionColor showSelected;
-uniform SelectionColor showHighlighted;
-uniform float selectionScaleFactor = 1.0;
+uniform SelectionColor bnlFilter;
+uniform SelectionColor bnlSelect;
+uniform SelectionColor bnlHighlight;
 #endif
 
 out SphereVert {
@@ -58,15 +62,23 @@ flat out uint instance;
 #endif
 
 void main(void) {
-#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
+#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR)
     sphere.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
-#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
+#elif defined(HAS_COLOR)
     sphere.color = in_Color;
 #else
-    sphere.color = defaultColor;
+     sphere.color = vec4(0,0,0,0);
 #endif
 
-#if defined(HAS_RADII) && !defined(FORCE_RADIUS)
+#if defined(OVERRIDE_COLOR)
+    sphere.color.rbg = config.color;
+#endif
+
+#if defined(OVERRIDE_ALPHA)
+    sphere.color.a = config.alpha;
+#endif
+
+#if defined(HAS_RADII) && !defined(OVERRIDE_RADIUS)
     sphere.radius = in_Radii;
 #else
     sphere.radius = defaultRadius;
@@ -83,12 +95,11 @@ void main(void) {
     uint flags = sphere.index < bnlSize ? texelFetch(bnl, int(sphere.index)).x : uint(0);
 
     if (flags == 3) {
-        sphere.color = applySelectionColor(sphere.color, showFiltered);
+        sphere.color = applySelectionColor(sphere.color, bnlFilter);
     } else if (flags == 2) {
-        sphere.color = applySelectionColor(sphere.color, showHighlighted);
+        sphere.color = applySelectionColor(sphere.color, bnlHighlight);
     } else if (flags == 1) {
-        sphere.color = applySelectionColor(sphere.color, showSelected);
-        sphere.radius *= selectionScaleFactor;
+        sphere.color = applySelectionColor(sphere.color, bnlSelect);
     }
 #endif
 
