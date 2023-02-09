@@ -254,8 +254,9 @@ private:
 
 }  // namespace detail
 
-/*
- *\brief Renders AxisProperty and CategoricalAxisProperty
+/**
+ * \brief Renders an axis based on AxisSettings
+ * \see AxisSettings AxisProperty CategoricalAxisProperty
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
 public:
@@ -291,6 +292,13 @@ private:
     static std::vector<MeshShaderCache::Requirement> shaderRequirements_;
 };
 
+/**
+ * \brief Renderer for 2D axes in screen coordinates. The side to the right of the line from start
+ * to end position of the axis is defined as the "outside". As an example, consider the x axis at
+ * the bottom of a 2D plot, the outside is below the axis while the inside lies within the plot area.
+ * Mirroring the axis exchanges "outside" and "inside", that is labels and ticks will appear on the
+ * opposing side of the axis.
+ */
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer : public AxisRendererBase {
 public:
     using Labels = detail::AxisLabels<ivec2>;
@@ -301,6 +309,14 @@ public:
     AxisRenderer& operator=(AxisRenderer&& rhs) noexcept = default;
     virtual ~AxisRenderer() = default;
 
+    /**
+     * Render the axis into the current framebuffer from pixel position \p startPos to \p endPos
+     * @param outputDims   Dimensions of the currently bound output framebuffer
+     * @param startPos     Start point of the axis in 2D screen coordinates [0, outputDims)
+     * @param endPos       End point of the axis in 2D screen coordinates [0, outputDims)
+     * @param antialiasing If true, lines will be rendered using an exponential alpha fall-off at
+     *                     the edges and alpha blending
+     */
     void render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
                 bool antialiasing = true);
 
@@ -316,10 +332,13 @@ private:
     Labels labels_;
 };
 
+/**
+ * \brief Renderer for arbitrary axes in world coordinates
+ */
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer3D : public AxisRendererBase {
 public:
     using Labels = detail::AxisLabels<vec3>;
-    AxisRenderer3D(const AxisSettings& property);
+    AxisRenderer3D(const AxisSettings& settings);
     AxisRenderer3D(const AxisRenderer3D& rhs) = default;
     AxisRenderer3D(AxisRenderer3D&& rhs) noexcept = default;
     AxisRenderer3D& operator=(const AxisRenderer3D& rhs) = delete;
@@ -336,7 +355,7 @@ public:
      * @param startPos       Start point of the axis in world space
      * @param endPos         End point of the axis in world space
      * @param tickDirection  Direction of major and minor ticks, the length is determined through
-     *                       the axis settings
+     *                       the axis settings, also defines the outside of the axis.
      * @param antialiasing   If true, lines will be rendered using an exponential alpha fall-off at
      *                       the edges and alpha blending
      */

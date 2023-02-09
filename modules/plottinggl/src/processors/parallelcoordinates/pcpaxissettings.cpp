@@ -335,7 +335,7 @@ float PCPCaptionSettings::getPosition() const {
 vec2 PCPCaptionSettings::getOffset() const {
     return {0.0f, settings_->pcp_->captionOffset_ * (settings_->getMirrored() ? -1.0f : 1.0f)};
 }
-float PCPCaptionSettings::getRotation() const { return 270.f; }
+float PCPCaptionSettings::getRotation() const { return 0.f; }
 const FontSettings& PCPCaptionSettings::getFont() const {
     return settings_->pcp_->captionSettings_;
 }

@@ -253,6 +253,29 @@ void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, cons
     renderText(outputDims, startPos, endPos);
 }
 
+namespace detail {
+
+// create a transformation matrix that consideres the anchor position _after_ the bbox rotation
+mat4 textTransform(const TextBoundingBox& bbox, const vec2& anchor, float angleRadians) {
+    const auto textExtentRotated = [&]() {
+        const float c = std::abs(cos(angleRadians));
+        const float s = std::abs(sin(angleRadians));
+        return vec2{
+            bbox.textExtent.x * c + bbox.textExtent.y * s,
+            bbox.textExtent.x * s + bbox.textExtent.y * c,
+        };
+    }();
+    const vec2 translation = textExtentRotated * 0.5f * -(anchor);
+    const auto textCenter = glm::round(vec2{bbox.textExtent} * 0.5f);
+
+    // translate to anchor pos and apply rotation
+    return glm::translate(vec3(translation, 0.0f)) *
+           glm::rotate(angleRadians, vec3(0.0f, 0.0f, 1.0f)) *
+           glm::translate(vec3(-textCenter + vec2(bbox.glyphsOrigin), 0.f));
+}
+
+}  // namespace detail
+
 void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
                               const ivec2& endPos) {
     // axis caption
@@ -260,25 +283,12 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         auto& captex =
             caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
 
-        // render axis caption centered at the axis using the offset
-        const auto anchor = captionSettings.getFont().getAnchorPos();
-
-        // The anchor position in the texture;
-        const auto anchorPos =
-            glm::round(vec2{captex.bbox.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
-                       vec2{captex.bbox.glyphsOrigin});
-
-        const auto angle = glm::radians(captionSettings.getRotation()) +
-                           (settings_.get().isVertical() ? glm::half_pi<float>() : 0.0f);
-
-        // translate to anchor pos and apply rotation
-        const auto transform =
-            glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) * glm::translate(vec3(-anchorPos, 0.f));
-
         const auto pos = plot::getAxisCaptionPosition(settings_, startPos, endPos);
-
         const auto posi = glm::ivec2{glm::round(pos)};
-        quadRenderer_.render(*captex.texture, posi, outputDims, transform);
+
+        const auto m = detail::textTransform(captex.bbox, captionSettings.getFont().getAnchorPos(),
+                                             glm::radians(captionSettings.getRotation()));
+        quadRenderer_.render(*captex.texture, posi, outputDims, m);
     }
 
     // axis labels
@@ -295,14 +305,9 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         // translate to anchor pos and apply rotation
         std::vector<mat4> transforms;
         const auto& ri = atlas.getRenderInfo();
-        std::transform(ri.boundingBoxes.begin(), ri.boundingBoxes.end(),
-                       std::back_inserter(transforms), [&](const TextBoundingBox& bb) {
-                           const auto anchorPos =
-                               glm::round(vec2{bb.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
-                                          vec2{bb.glyphsOrigin});
-                           return glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) *
-                                  glm::translate(vec3(-anchorPos, 0.f));
-                       });
+        std::transform(
+            ri.boundingBoxes.begin(), ri.boundingBoxes.end(), std::back_inserter(transforms),
+            [&](const TextBoundingBox& bb) { return detail::textTransform(bb, anchor, angle); });
 
         // render axis labels
         quadRenderer_.renderToRect(*atlas.getTexture(), pos, ri.size, ri.texTransform, outputDims,
@@ -315,29 +320,17 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
     auto bRect = tickBoundingRect(settings_, startPos, endPos);
 
     if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
-
         auto& captex =
             caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
         const auto texDims(captex.texture->getDimensions());
 
-        const auto anchor = captionSettings.getFont().getAnchorPos();
-
-        // The anchor position in the texture;
-        const auto anchorPos =
-            glm::round(vec2{captex.bbox.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
-                       vec2{captex.bbox.glyphsOrigin});
-
-        const auto angle = glm::radians(captionSettings.getRotation()) +
-                           (settings_.get().isVertical() ? glm::half_pi<float>() : 0.0f);
-
-        // translate to anchor pos and apply rotation
-        const auto transform =
-            glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) * glm::translate(vec3(-anchorPos, 0.f));
+        const auto m = detail::textTransform(captex.bbox, captionSettings.getFont().getAnchorPos(),
+                                             glm::radians(captionSettings.getRotation()));
 
         const auto pos = plot::getAxisCaptionPosition(settings_, startPos, endPos);
 
-        const auto pos1 = pos + vec2{transform * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
-        const auto pos2 = pos + vec2{transform * vec4{texDims.x, texDims.y, 0.0f, 1.0f}};
+        const auto pos1 = pos + vec2{m * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+        const auto pos2 = pos + vec2{m * vec4{texDims.x, texDims.y, 0.0f, 1.0f}};
 
         bRect.first = glm::min(bRect.first, pos1);
         bRect.first = glm::min(bRect.first, pos2);
@@ -363,12 +356,10 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
         for (auto&& item : util::zip(positions, ri.boundingBoxes)) {
             const auto& pos = item.first();
             const auto& bb = item.second();
-            const auto anchorPos = glm::round(vec2{bb.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
-                                              vec2{bb.glyphsOrigin});
-            const auto transform =
-                glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) * glm::translate(vec3(-anchorPos, 0.f));
-            const auto pos1 = vec2{pos} + vec2{transform * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
-            const auto pos2 = vec2{pos} + vec2{transform * vec4{bb.glyphsExtent, 0.0f, 1.0f}};
+            const auto m = detail::textTransform(bb, anchor, angle);
+
+            const auto pos1 = vec2{pos} + vec2{m * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+            const auto pos2 = vec2{pos} + vec2{m * vec4{bb.glyphsExtent, 0.0f, 1.0f}};
 
             bRect.first = glm::min(bRect.first, pos1);
             bRect.first = glm::min(bRect.first, pos2);
