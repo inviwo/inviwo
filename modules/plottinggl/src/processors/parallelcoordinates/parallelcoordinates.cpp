@@ -115,14 +115,16 @@ const ProcessorInfo ParallelCoordinates::processorInfo_{
     "Plotting",                        // Category
     CodeState::Stable,                 // Code state
     "GL, Plotting",                    // Tags
-};
+    "This processor plots a given DataFrame using a Parallel Coordinate Plot."_help};
+
 const ProcessorInfo ParallelCoordinates::getProcessorInfo() const { return processorInfo_; }
 
 ParallelCoordinates::ParallelCoordinates()
     : Processor()
-    , dataFrame_{"dataFrame"}
-    , brushingAndLinking_{"brushingAndLinking"}
-    , outport_{"outport"}
+    , dataFrame_{"dataFrame", "Data input for plotting"_help}
+    , brushingAndLinking_{"brushingAndLinking", "Port for brushing & linking interactions"_help}
+    , imageInport_("imageInport", "Background image (optional)"_help)
+    , outport_{"outport", "Rendered image of the parallel coordinate plot"_help}
 
     , axisProperties_{"axisProps_", "Axis"}
     , colormap_("colormap", "Colormap", dataFrame_)
@@ -205,7 +207,10 @@ ParallelCoordinates::ParallelCoordinates()
 {
     addPort(dataFrame_);
     addPort(brushingAndLinking_);
+    addPort(imageInport_);
     addPort(outport_);
+
+    imageInport_.setOptional(true);
 
     addProperties(axisProperties_, colormap_, axisSelection_);
 
@@ -320,11 +325,11 @@ void ParallelCoordinates::adjustMargins() {
 ParallelCoordinates::~ParallelCoordinates() = default;
 
 void ParallelCoordinates::process() {
+    utilgl::ClearColor clearColor(vec4(0.0f));
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+
     if (axes_.empty()) {
         // Nothing render, just draw the background
-        const vec4 backgroundColor(blendMode_.get() == BlendMode::Subtractive ? 1.0f : 0.0f);
-        utilgl::ClearColor clearColor(backgroundColor);
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
         utilgl::deactivateCurrentTarget();
         return;
     }
@@ -360,9 +365,6 @@ void ParallelCoordinates::process() {
         adjustMargins();
     }
 
-    const vec4 backgroundColor(blendMode_.get() == BlendMode::Subtractive ? 1.0f : 0.0f);
-    utilgl::ClearColor clearColor(backgroundColor);
-    utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
 
     drawLines(dims);
@@ -602,18 +604,17 @@ void ParallelCoordinates::drawLines(size2_t size) {
     auto state = [&]() {
         switch (blendMode_.get()) {
             case BlendMode::Additive:
-                return std::make_tuple(
-                    utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
-                    utilgl::BlendModeEquationState(GL_SRC_ALPHA, GL_ONE, GL_FUNC_ADD));
+                return std::make_tuple(utilgl::GlBoolState(GL_DEPTH_TEST, false),
+                                       utilgl::GlBoolState(GL_BLEND, true),
+                                       utilgl::BlendModeEquationState(GL_ONE, GL_ONE, GL_FUNC_ADD));
             case BlendMode::Subtractive:
                 return std::make_tuple(
                     utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
-                    utilgl::BlendModeEquationState(GL_SRC_ALPHA, GL_ONE, GL_FUNC_REVERSE_SUBTRACT));
+                    utilgl::BlendModeEquationState(GL_ONE, GL_ONE, GL_FUNC_REVERSE_SUBTRACT));
             case BlendMode::Regular:
-                return std::make_tuple(utilgl::GlBoolState(GL_DEPTH_TEST, false),
-                                       utilgl::GlBoolState(GL_BLEND, true),
-                                       utilgl::BlendModeEquationState(
-                                           GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD));
+                return std::make_tuple(
+                    utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
+                    utilgl::BlendModeEquationState(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD));
             case BlendMode::None:
             default:
                 return std::make_tuple(

@@ -58,6 +58,8 @@ void main() {
         res.a *= pow(lFalloffAlpha, fallofPower);
     }
 
+    // pre-multiply color for blending
+    res.rgb *= res.a;
     PickingData = lPickColor;
     FragData0 = res;
 }
