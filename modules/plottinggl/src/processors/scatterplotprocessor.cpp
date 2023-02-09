@@ -138,7 +138,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             }
         });
     addInteractionHandler(&scatterPlot_);
-    scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});
+    scatterPlot_.properties_.margins_.setLowerLeftMargin({65.0f, 60.0f});
     scatterPlot_.properties_.xAxis_.captionSettings_.setChecked(true);
     scatterPlot_.properties_.yAxis_.captionSettings_.setChecked(true);
     scatterPlot_.properties_.setCurrentStateAsDefault();
@@ -203,14 +203,14 @@ void ScatterPlotProcessor::process() {
         return rows;
     };
 
-    if (brushingPort_.isSelectionModified()) {
+    if (brushingPort_.isSelectionModified() || dataFramePort_.isChanged()) {
         scatterPlot_.setSelectedIndices(transformIdsToRows(brushingPort_.getSelectedIndices()));
     }
-    if (brushingPort_.isHighlightModified()) {
+    if (brushingPort_.isHighlightModified() || dataFramePort_.isChanged()) {
         scatterPlot_.setHighlightedIndices(
             transformIdsToRows(brushingPort_.getHighlightedIndices()));
     }
-    if (brushingPort_.isFilteringModified()) {
+    if (brushingPort_.isFilteringModified() || dataFramePort_.isChanged()) {
         scatterPlot_.setFilteredIndices(transformIdsToRows(brushingPort_.getFilteredIndices()));
     }
 
