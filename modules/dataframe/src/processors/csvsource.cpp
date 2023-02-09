@@ -79,30 +79,33 @@ const ProcessorInfo CSVSource::processorInfo_{
 const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
 
 CSVSource::CSVSource(const std::string& file)
-    : Processor()
-    , data_("data")
-    , inputFile_("inputFile_", "CSV File", file, "dataframe")
-    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers",
-                         CSVReader::defaultFirstRowHeader)
-    , unitsInHeaders_("unitsInHeaders", "Look for units in headers",
-                      CSVReader::defaultUnitInHeaders)
-    , unitRegexp_("unitRegexp", "Unit regexp", CSVReader::defaultUnitRegexp)
-    , delimiters_("delimiters", "Delimiters", CSVReader::defaultDelimiters)
-    , stripQuotes_("stripQuotes", "Strip surrounding quotes", CSVReader::defaultStripQuotes)
-    , doublePrecision_("doublePrecision", "Double Precision", CSVReader::defaultDoublePrecision)
-    , exampleRows_("exampleRows", "Example Rows", CSVReader::defaultNumberOfExampleRows, 0, 10000)
-    , rowComment_("rowComment", "Comment marker", "")
-    , includeFilters_("includeFilters", "Include Filters", true,
+    : Processor{}
+    , data_{"data"}
+    , inputFile_{"inputFile_", "CSV File", file, "dataframe"}
+    , firstRowIsHeaders_{"firstRowIsHeaders", "First Row Contains Column Headers",
+                         CSVReader::defaultFirstRowHeader}
+    , firstColumnIsIndices_{"firstColumnIsIndices", "First Column Contains Indices",
+                            CSVReader::defaultFirstColIndices}
+    , unitsInHeaders_{"unitsInHeaders", "Look for units in headers",
+                      CSVReader::defaultUnitInHeaders}
+    , unitRegexp_{"unitRegexp", "Unit regexp", CSVReader::defaultUnitRegexp}
+    , delimiters_{"delimiters", "Delimiters", CSVReader::defaultDelimiters}
+    , stripQuotes_{"stripQuotes", "Strip surrounding quotes", CSVReader::defaultStripQuotes}
+    , doublePrecision_{"doublePrecision", "Double Precision", CSVReader::defaultDoublePrecision}
+    , exampleRows_{"exampleRows", "Example Rows", CSVReader::defaultNumberOfExampleRows, 0, 10000}
+    , rowComment_{"rowComment", "Comment marker", ""}
+    , includeFilters_{"includeFilters", "Include Filters", true,
                       FilterType::Rows | FilterType::StringItem | FilterType::DoubleItem |
-                          FilterType::DoubleRange)
-    , excludeFilters_("excludeFilters", "Exclude Filters", true)
-    , locale_("locale", "Locale", CSVReader::defaultLocale)
-    , emptyField_("emptyField", "Missing Data Mode",
+                          FilterType::DoubleRange}
+    , excludeFilters_{"excludeFilters", "Exclude Filters", true}
+    , locale_{"locale", "Locale", CSVReader::defaultLocale}
+    , emptyField_{"emptyField",
+                  "Missing Data Mode",
                   {{"throw", "Throw Exception", CSVReader::EmptyField::Throw},
                    {"emptyOrZero", "Empty Or Zero", CSVReader::EmptyField::EmptyOrZero},
-                   {"nanOrZero", "Nan Or Zero", CSVReader::EmptyField::NanOrZero}})
-    , reloadData_("reloadData", "Reload Data")
-    , columns_("columns", "Column MetaData")
+                   {"nanOrZero", "Nan Or Zero", CSVReader::EmptyField::NanOrZero}}}
+    , reloadData_{"reloadData", "Reload Data"}
+    , columns_{"columns", "Column MetaData"}
     , loadingFailed_{false}
     , deserialized_{false} {
 
@@ -112,9 +115,9 @@ CSVSource::CSVSource(const std::string& file)
     addPort(data_);
 
     unitsInHeaders_.addProperty(unitRegexp_);
-    addProperties(inputFile_, firstRowIsHeaders_, unitsInHeaders_, delimiters_, stripQuotes_,
-                  doublePrecision_, exampleRows_, rowComment_, locale_, emptyField_, reloadData_,
-                  includeFilters_, excludeFilters_, columns_);
+    addProperties(inputFile_, firstRowIsHeaders_, firstColumnIsIndices_, unitsInHeaders_,
+                  delimiters_, stripQuotes_, doublePrecision_, exampleRows_, rowComment_, locale_,
+                  emptyField_, reloadData_, includeFilters_, excludeFilters_, columns_);
 
     includeFilters_.setCollapsed(true);
     excludeFilters_.setCollapsed(true);
@@ -123,8 +126,8 @@ CSVSource::CSVSource(const std::string& file)
         [this]() { return !loadingFailed_ && filesystem::fileExists(inputFile_.get()); });
     for (auto&& item :
          util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_,
-                             unitsInHeaders_, unitRegexp_, doublePrecision_, exampleRows_,
-                             rowComment_, locale_, emptyField_)) {
+                             firstColumnIsIndices_, unitsInHeaders_, unitRegexp_, doublePrecision_,
+                             exampleRows_, rowComment_, locale_, emptyField_)) {
         std::invoke(&Property::onChange, item, [this]() {
             loadingFailed_ = false;
             isReady_.update();
@@ -145,13 +148,15 @@ void CSVSource::process() {
         const auto overwrite = deserialized_ ? util::OverwriteState::No : util::OverwriteState::Yes;
         deserialized_ = false;
 
-        if (util::any_of(util::ref<Property>(
-                             inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_,
-                             unitsInHeaders_, unitRegexp_, doublePrecision_, exampleRows_,
-                             rowComment_, includeFilters_, excludeFilters_, locale_, emptyField_),
-                         &Property::isModified)) {
+        if (util::any_of(
+                util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_,
+                                    firstRowIsHeaders_, firstColumnIsIndices_, unitsInHeaders_,
+                                    unitRegexp_, doublePrecision_, exampleRows_, rowComment_,
+                                    includeFilters_, excludeFilters_, locale_, emptyField_),
+                &Property::isModified)) {
             CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
             reader.setLocale(locale_)
+                .setFirstColIndices(firstColumnIsIndices_)
                 .setStripQuotes(stripQuotes_)
                 .setNumberOfExampleRows(exampleRows_)
                 .setHandleEmptyFields(emptyField_)

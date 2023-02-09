@@ -174,15 +174,6 @@ int DataFrameModel::columnCount(const QModelIndex&) const {
 QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) return QVariant();
 
-    const auto& indexCol =
-        data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-
-    const bool highlighted = manager_
-                                 ? (manager_->isHighlighted(indexCol[index.row()]) ||
-                                    manager_->isHighlighted(index.column(), BrushingTarget::Column))
-                                 : false;
-    const bool selected = manager_ ? manager_->isSelected(indexCol[index.row()]) : false;
-
     switch (role) {
         case Qt::DisplayRole: {
             QVariant val = valueFuncs_[index.column()](index.row());
@@ -200,14 +191,26 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
             return valueFuncs_[index.column()](index.row());
         case Qt::ToolTipRole:
             return tooltipFuncs_[index.column()](index.row());
-        case Qt::BackgroundRole:
+        case Qt::BackgroundRole: {
+            const auto& indexCol = data_->getIndexColumn()
+                                       ->getTypedBuffer()
+                                       ->getRAMRepresentation()
+                                       ->getDataContainer();
+
+            const bool highlighted =
+                manager_ ? (manager_->isHighlighted(indexCol[index.row()]) ||
+                            manager_->isHighlighted(index.column(), BrushingTarget::Column))
+                         : false;
+            const bool selected = manager_ ? manager_->isSelected(indexCol[index.row()]) : false;
+
             if (highlighted) {
                 return QBrush(QColor(102, 87, 50));
             } else if (selected) {
-                return QBrush(QColor("#47474b"));
+                return QBrush(QColor("#47477b"));
             } else {
                 return QBrush();
             }
+        }
         default:
             return QVariant();
     }

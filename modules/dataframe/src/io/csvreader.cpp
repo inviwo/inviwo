@@ -87,6 +87,7 @@ CSVReader::CSVReader(std::string_view delim, bool hasHeader, bool doublePrecisio
     , delimiters_(delim)
     , stripQuotes_{defaultStripQuotes}
     , firstRowHeader_(hasHeader)
+    , firstColIndices_{defaultFirstColIndices}
     , unitsInHeaders_(defaultUnitInHeaders)
     , unitRegexp_(defaultUnitRegexp)
     , doublePrecision_(doublePrecision)
@@ -116,6 +117,12 @@ CSVReader& CSVReader::setFirstRowHeader(bool hasHeader) {
     return *this;
 }
 bool CSVReader::hasFirstRowHeader() const { return firstRowHeader_; }
+
+CSVReader& CSVReader::setFirstColIndices(bool hasIndices) {
+    firstColIndices_ = hasIndices;
+    return *this;
+}
+bool CSVReader::hasFirstColIndices() const { return firstColIndices_; }
 
 CSVReader& CSVReader::setUnitsInHeaders(bool unitsInHeaders) {
     unitsInHeaders_ = unitsInHeaders;
@@ -171,6 +178,10 @@ bool CSVReader::setOption(std::string_view key, std::any value) {
                firstRowHeader && key == "FirstRowHeader") {
         setFirstRowHeader(*firstRowHeader);
         return true;
+    } else if (auto* firstColIndices = std::any_cast<bool>(&value);
+               firstColIndices && key == "FirstColIndices") {
+        setFirstColIndices(*firstColIndices);
+        return true;
     } else if (auto* unitsInHeaders = std::any_cast<bool>(&value);
                unitsInHeaders && key == "UnitsInHeaders") {
         setUnitsInHeaders(*unitsInHeaders);
@@ -209,6 +220,8 @@ std::any CSVReader::getOption(std::string_view key) {
         return getStripQuotes();
     } else if (key == "FirstRowHeader") {
         return hasFirstRowHeader();
+    } else if (key == "FirstColIndices") {
+        return hasFirstColIndices();
     } else if (key == "UnitsInHeaders") {
         return hasUnitsInHeaders();
     } else if (key == "UnitRegexp") {
@@ -358,6 +371,23 @@ std::optional<T> toNumberLocale(std::string_view str) {
         } else {
             return std::nullopt;
         }
+    } else if constexpr (std::is_same_v<T, std::uint32_t>) {
+        char* end = nullptr;
+        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        errno = 0;
+        unsigned long val = strtoul(cstr.c_str(), &end, 10);
+        std::swap(errno, errno_save);
+
+        if (errno_save == 0 && static_cast<size_t>(end - cstr.c_str()) == str.size()) {
+            if (val >= std::numeric_limits<std::uint32_t>::min() &&
+                val <= std::numeric_limits<std::uint32_t>::max()) {
+                return static_cast<std::uint32_t>(val);
+            } else {
+                return std::nullopt;
+            }
+        } else {
+            return std::nullopt;
+        }
     } else if constexpr (std::is_same_v<T, std::int64_t>) {
         char* end = nullptr;
         typename std::remove_reference<decltype(errno)>::type errno_save = errno;
@@ -449,15 +479,26 @@ std::vector<CSVReader::TypeCounts> CSVReader::findCellTypes(
     return counts;
 }
 
-template <typename T>
+template <typename T, bool index = false>
 std::function<void(std::string_view, size_t, size_t)> addColumn(DataFrame& df,
                                                                 std::string_view header, Unit unit,
                                                                 CSVReader::EmptyField emptyField,
                                                                 bool cLocale) {
-    auto& data = df.addColumn<T>(header, 0, unit)
-                     ->getTypedBuffer()
-                     ->getEditableRAMRepresentation()
-                     ->getDataContainer();
+    auto& data = [&]() -> decltype(auto) {
+        if constexpr (index && std::is_same_v<T, std::uint32_t>) {
+            df.getIndexColumn()->setHeader(header);
+            df.getIndexColumn()->setUnit(unit);
+            return df.getIndexColumn()
+                ->getTypedBuffer()
+                ->getEditableRAMRepresentation()
+                ->getDataContainer();
+        } else {
+            return df.addColumn<T>(header, 0, unit)
+                ->getTypedBuffer()
+                ->getEditableRAMRepresentation()
+                ->getDataContainer();
+        }
+    }();
     return [&data, cLocale, emptyField](std::string_view str, size_t line, size_t col) {
         if (str.empty()) {
             switch (emptyField) {
@@ -507,7 +548,10 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
             }
         }
 
-        if (stripQuotes_ && counts.string > 0) {
+        if (counts.index) {
+            appenders.push_back(addColumn<std::uint32_t, true>(
+                df, headerCopy, unit, CSVReader::EmptyField::Throw, cLocale));
+        } else if (stripQuotes_ && counts.string > 0) {
             auto col = df.addCategoricalColumn(header);
             appenders.emplace_back([f = col->addMany()](std::string_view str, size_t, size_t) {
                 f(util::stripQuotes(str));
@@ -654,7 +698,14 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
 
     // Construct Data Frame
     auto df = std::make_shared<DataFrame>();
-    const auto types = findCellTypes(headers.size(), rows, exampleRows_);
+    auto types = findCellTypes(headers.size(), rows, exampleRows_);
+    if (firstColIndices_) {
+        if (!types.empty() && types.front().string == 0 && types.front().real == 0) {
+            types.front().index = true;
+        } else {
+            throw Exception("Unable to use first column as index, invalid data found");
+        }
+    }
     const auto appenders = addColumns(*df, types, headers);
 
     for (const auto& [row, lineNumber] : rows) {
@@ -667,7 +718,10 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
         }
     }
 
-    df->updateIndexBuffer();
+    if (!firstColIndices_) {
+        df->updateIndexBuffer();
+    }
+
     return df;
 }
 

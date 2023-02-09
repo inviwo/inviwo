@@ -237,8 +237,8 @@ void exposeDataFrame(pybind11::module& m) {
                      Otherwise columns are matched by order (default)
              )delim")
         .def("innerJoin",
-             py::overload_cast<const DataFrame&, const DataFrame&, const std::string&>(
-                 dataframe::innerJoin),
+             py::overload_cast<const DataFrame&, const DataFrame&,
+                               const std::pair<std::string, std::string>&>(dataframe::innerJoin),
              py::arg("left"), py::arg("right"), py::arg("keyColumn") = "index",
              R"delim(
              Create a new DataFrame by using an inner join of DataFrame left and DataFrame
@@ -252,7 +252,8 @@ void exposeDataFrame(pybind11::module& m) {
                      (default: index column)
              )delim")
         .def("innerJoin",
-             py::overload_cast<const DataFrame&, const DataFrame&, const std::vector<std::string>&>(
+             py::overload_cast<const DataFrame&, const DataFrame&,
+                               const std::vector<std::pair<std::string, std::string>>&>(
                  dataframe::innerJoin),
              py::arg("left"), py::arg("right"), py::arg("keyColumn"),
              R"delim(
@@ -266,8 +267,8 @@ void exposeDataFrame(pybind11::module& m) {
                  keyColumn: list of headers of the columns used as key for the join operation
              )delim")
         .def("innerJoin",
-             py::overload_cast<const DataFrame&, const DataFrame&, const std::string&>(
-                 dataframe::leftJoin),
+             py::overload_cast<const DataFrame&, const DataFrame&,
+                               const std::pair<std::string, std::string>&>(dataframe::leftJoin),
              py::arg("left"), py::arg("right"), py::arg("keyColumn") = "index",
              R"delim(
              Create a new DataFrame by using an outer left join of DataFrame left and DataFrame
@@ -281,7 +282,8 @@ void exposeDataFrame(pybind11::module& m) {
                      (default: index column)
              )delim")
         .def("leftJoin",
-             py::overload_cast<const DataFrame&, const DataFrame&, const std::vector<std::string>&>(
+             py::overload_cast<const DataFrame&, const DataFrame&,
+                               const std::vector<std::pair<std::string, std::string>>&>(
                  dataframe::leftJoin),
              py::arg("left"), py::arg("right"), py::arg("keyColumn"),
              R"delim(

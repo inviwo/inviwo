@@ -187,15 +187,18 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
 namespace detail {
 
 void columnCheck(const DataFrame& left, const DataFrame& right,
-                 const std::vector<std::string>& keyColumns, const std::string& context) {
-    for (const auto& col : keyColumns) {
-        auto indexCol1 = left.getColumn(col);
-        auto indexCol2 = right.getColumn(col);
-        if (!indexCol1 || !indexCol2) {
-            throw Exception(IVW_CONTEXT_CUSTOM(context), "key column '{}' missing in {}", col,
-                            (!indexCol1 && !indexCol2)
-                                ? "both DataFrames"
-                                : fmt::format("{} DataFrame", !indexCol1 ? "left" : "right"));
+                 const std::vector<std::pair<std::string, std::string>>& keyColumns,
+                 const std::string& context) {
+    for (const auto& [leftCol, rightCol] : keyColumns) {
+        auto indexCol1 = left.getColumn(leftCol);
+        auto indexCol2 = right.getColumn(rightCol);
+        if (!indexCol1) {
+            throw Exception(IVW_CONTEXT_CUSTOM(context),
+                            "key column '{}' missing in the left data frame", leftCol);
+        }
+        if (!indexCol2) {
+            throw Exception(IVW_CONTEXT_CUSTOM(context),
+                            "key column '{}' missing in the right data frame", rightCol);
         }
 
         const bool catcol1 = indexCol1->getColumnType() == ColumnType::Categorical;
@@ -204,15 +207,15 @@ void columnCheck(const DataFrame& left, const DataFrame& right,
         // This enables combining a regular column with an index column, e.g. for indexing.
         if (catcol1 != catcol2) {
             throw Exception(IVW_CONTEXT_CUSTOM(context),
-                            "column type mismatch in key columns '{}': left = {}, right = {}", col,
-                            indexCol1->getColumnType(), indexCol2->getColumnType());
+                            "column type mismatch in key columns '{}' = {}, '{}' = {}", leftCol,
+                            indexCol1->getColumnType(), rightCol, indexCol2->getColumnType());
         }
 
         if (indexCol1->getBuffer()->getDataFormat()->getId() !=
             indexCol2->getBuffer()->getDataFormat()->getId()) {
             throw Exception(IVW_CONTEXT_CUSTOM(context),
-                            "format mismatch in key columns '{}': left = {}, right = {}", col,
-                            indexCol1->getBuffer()->getDataFormat()->getString(),
+                            "format mismatch in key columns '{}' = {}, '{}' = {}", leftCol,
+                            indexCol1->getBuffer()->getDataFormat()->getString(), rightCol,
                             indexCol2->getBuffer()->getDataFormat()->getString());
         }
     }
@@ -267,15 +270,17 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Co
 }
 
 std::vector<std::vector<std::uint32_t>> getMatchingRows(
-    const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns) {
-    auto indexCol1 = left.getColumn(keyColumns.front());
-    auto indexCol2 = right.getColumn(keyColumns.front());
+    const DataFrame& left, const DataFrame& right,
+    const std::vector<std::pair<std::string, std::string>>& keyColumns) {
+
+    auto indexCol1 = left.getColumn(keyColumns.front().first);
+    auto indexCol2 = right.getColumn(keyColumns.front().second);
 
     auto rows = detail::getMatchingRows(indexCol1, indexCol2);
     // narrow down row selection by filtering with remaining keys
-    for (auto keyColName : util::as_range(keyColumns.begin() + 1, keyColumns.end())) {
-        auto leftCol = left.getColumn(keyColName);
-        auto rightCol = right.getColumn(keyColName);
+    for (auto&& [leftName, rightName] : util::as_range(keyColumns.begin() + 1, keyColumns.end())) {
+        auto leftCol = left.getColumn(leftName);
+        auto rightCol = right.getColumn(rightName);
 
         if (auto catCol1 = dynamic_cast<const CategoricalColumn*>(leftCol.get())) {
             auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
@@ -360,11 +365,11 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
 }  // namespace detail
 
 std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& right,
-                                     const std::string& keyColumn) {
+                                     const std::pair<std::string, std::string>& keyColumn) {
     detail::columnCheck(left, right, {keyColumn}, "dataframe::innerJoin");
 
-    auto indexCol1 = left.getColumn(keyColumn);
-    auto indexCol2 = right.getColumn(keyColumn);
+    auto indexCol1 = left.getColumn(keyColumn.first);
+    auto indexCol2 = right.getColumn(keyColumn.second);
 
     std::vector<std::uint32_t> rowsLeft;
     std::vector<std::uint32_t> rowsRight;
@@ -381,14 +386,16 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
     auto dataframe = std::make_shared<DataFrame>();
     dataframe->dropColumn(0);
     dataframe->addColumn(std::shared_ptr<Column>(left.getIndexColumn()->clone(rowsLeft)));
-    detail::addColumns(dataframe, left, rowsLeft, {keyColumn}, false);
-    detail::addColumns(dataframe, right, rowsRight, {keyColumn}, true);
+    detail::addColumns(dataframe, left, rowsLeft, {keyColumn.first}, false);
+    detail::addColumns(dataframe, right, rowsRight, {keyColumn.second}, true);
 
     return dataframe;
 }
 
-std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& right,
-                                     const std::vector<std::string>& keyColumns) {
+std::shared_ptr<DataFrame> innerJoin(
+    const DataFrame& left, const DataFrame& right,
+    const std::vector<std::pair<std::string, std::string>>& keyColumns) {
+
     if (keyColumns.empty()) {
         throw Exception("no key columns given", IVW_CONTEXT_CUSTOM("dataframe::innerJoin"));
     }
@@ -407,21 +414,28 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
 
     IVW_ASSERT(rowsLeft.size() == rowsRight.size(), "incorrect number of matching row indices");
 
+    std::vector<std::string> leftKeys;
+    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(leftKeys),
+                   [](const auto& item) { return item.first; });
+    std::vector<std::string> rightKeys;
+    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(rightKeys),
+                   [](const auto& item) { return item.second; });
+
     auto dataframe = std::make_shared<DataFrame>();
     dataframe->dropColumn(0);
     dataframe->addColumn(std::shared_ptr<Column>(left.getIndexColumn()->clone(rowsLeft)));
-    detail::addColumns(dataframe, left, rowsLeft, keyColumns, false);
-    detail::addColumns(dataframe, right, rowsRight, keyColumns, true);
+    detail::addColumns(dataframe, left, rowsLeft, leftKeys, false);
+    detail::addColumns(dataframe, right, rowsRight, rightKeys, true);
 
     return dataframe;
 }
 
 std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& right,
-                                    const std::string& keyColumn) {
+                                    const std::pair<std::string, std::string>& keyColumn) {
     detail::columnCheck(left, right, {keyColumn}, "dataframe::leftJoin");
 
-    auto indexCol1 = left.getColumn(keyColumn);
-    auto indexCol2 = right.getColumn(keyColumn);
+    auto indexCol1 = left.getColumn(keyColumn.first);
+    auto indexCol2 = right.getColumn(keyColumn.second);
 
     auto rows = util::transform(
         detail::getMatchingRows<true>(indexCol1, indexCol2),
@@ -438,14 +452,16 @@ std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& righ
     auto dataframe = std::make_shared<DataFrame>();
     dataframe->dropColumn(0);
     dataframe->addColumn(std::shared_ptr<Column>(left.getIndexColumn()->clone()));
-    detail::addColumns(dataframe, left, {keyColumn}, false);
-    detail::addColumns(dataframe, right, rows, {keyColumn}, true);
+    detail::addColumns(dataframe, left, {keyColumn.first}, false);
+    detail::addColumns(dataframe, right, rows, {keyColumn.second}, true);
 
     return dataframe;
 }
 
-std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& right,
-                                    const std::vector<std::string>& keyColumns) {
+std::shared_ptr<DataFrame> leftJoin(
+    const DataFrame& left, const DataFrame& right,
+    const std::vector<std::pair<std::string, std::string>>& keyColumns) {
+
     if (keyColumns.empty()) {
         throw Exception("no key columns given", IVW_CONTEXT_CUSTOM("dataframe::leftJoin"));
     }
@@ -462,11 +478,18 @@ std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& righ
             }
         });
 
+    std::vector<std::string> leftKeys;
+    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(leftKeys),
+                   [](const auto& item) { return item.first; });
+    std::vector<std::string> rightKeys;
+    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(rightKeys),
+                   [](const auto& item) { return item.second; });
+
     auto dataframe = std::make_shared<DataFrame>();
     dataframe->dropColumn(0);
     dataframe->addColumn(std::shared_ptr<Column>(left.getIndexColumn()->clone()));
-    detail::addColumns(dataframe, left, keyColumns, false);
-    detail::addColumns(dataframe, right, rows, keyColumns, true);
+    detail::addColumns(dataframe, left, leftKeys, false);
+    detail::addColumns(dataframe, right, rows, rightKeys, true);
 
     return dataframe;
 }

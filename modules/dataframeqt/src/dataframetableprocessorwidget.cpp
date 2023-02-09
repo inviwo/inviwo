@@ -48,23 +48,19 @@ namespace inviwo {
 DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     : ProcessorWidgetQt(p), tableview_(nullptr) {
 
-    this->setParent(utilqt::getApplicationMainWindow());
+    setParent(utilqt::getApplicationMainWindow());
     setMinimumSize(32, 32);
     QObject::setProperty("bgType", "window");
 
-    tableview_ = tableview_ptr(new DataFrameTableView(this), [&](DataFrameTableView* c) {
-        layout()->removeWidget(c);
-        delete c;
-    });
-
+    tableview_ = new DataFrameTableView(this);
     tableview_->setMouseTracking(true);
     tableview_->setAttribute(Qt::WA_OpaquePaintEvent);
 
-    setFocusProxy(tableview_.get());
+    setFocusProxy(tableview_);
 
     auto* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(tableview_.get());
+    layout->addWidget(tableview_);
 }
 
 void DataFrameTableProcessorWidget::setVisible(bool visible) {

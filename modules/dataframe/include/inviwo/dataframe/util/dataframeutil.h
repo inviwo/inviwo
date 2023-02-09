@@ -98,13 +98,14 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendRows(const DataFrame& 
  * It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
  * @param left
  * @param right
- * @param keyColumn   header of the column used as key for the join operation (default: index
- * column)
+ * @param keyColumns   headers of the columns used as keys for the join operation (default: index
+ * and index column)
  * @return inner join of \p left and \p right DataFrame
  * @throws Exception if keyColumn does not exist in either \p left or \p right
  */
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
-    const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
+    const DataFrame& left, const DataFrame& right,
+    const std::pair<std::string, std::string>& keyColumns = {"index", "index"});
 
 /**
  * \brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
@@ -118,7 +119,8 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
  * @throws Exception if keyColumn does not exist in either \p left or \p right
  */
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
-    const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
+    const DataFrame& left, const DataFrame& right,
+    const std::vector<std::pair<std::string, std::string>>& keyColumns);
 
 /**
  * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
@@ -130,13 +132,14 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
  *
  * @param left
  * @param right
- * @param keyColumn   header of the column used as key for the join operation (default: index
- * column)
+ * @param keyColumns  headers of the columns used as keys for the join operation (default: index and
+ * index column)
  * @return left join of \p left and \p right DataFrame
  * @throws Exception if keyColumn does not exist in either \p left or \p right
  */
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> leftJoin(
-    const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
+    const DataFrame& left, const DataFrame& right,
+    const std::pair<std::string, std::string>& keyColumns = {"index", "index"});
 
 /**
  * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
@@ -153,7 +156,8 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> leftJoin(
  * @throws Exception if keyColumn does not exist in either \p left or \p right
  */
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> leftJoin(
-    const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
+    const DataFrame& left, const DataFrame& right,
+    const std::vector<std::pair<std::string, std::string>>& keyColumns);
 
 IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> combineDataFrames(
     std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipIndexColumn = false,
