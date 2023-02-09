@@ -236,9 +236,12 @@ VolumeAxis::VolumeAxis()
           {"negXposY", "Z -X+Y", false},
       }}
     , axisStyle_{"axisStyle", "Global Axis Style"}
-    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help}
-    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help}
-    , zAxis_{"zAxis", "Z Axis", "Axis properties for y"_help}
+    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisSettings::Orientation::Horizontal,
+             false}
+    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisSettings::Orientation::Horizontal,
+             false}
+    , zAxis_{"zAxis", "Z Axis", "Axis properties for y"_help, AxisSettings::Orientation::Horizontal,
+             false}
     , camera_{"camera", "Camera", util::boundingBox(inport_)}
     , trackball_{&camera_}
     , axisRenderers_{{xAxis_, yAxis_, zAxis_}}
