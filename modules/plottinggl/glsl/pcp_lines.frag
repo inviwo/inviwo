@@ -40,7 +40,9 @@ uniform float mixColor;
 uniform float mixAlpha;
 uniform float mixSelection;
 
+uniform float lineWidth = 3;
 uniform float fallofPower = 2.0;
+uniform float antialiasing = 0.5; // width of antialised edged [pixel]
 
 uniform sampler2D tf;
 
@@ -60,6 +62,18 @@ void main() {
 
     // pre-multiply color for blending
     res.rgb *= res.a;
+
+    // antialiasing around the edges
+    float alpha = 1.0;
+    float linewidthHalf = lineWidth * 0.5;
+    if (lFalloffAlpha < antialiasing / linewidthHalf ) {
+        // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
+        float d = 1.0 - lFalloffAlpha / (antialiasing / linewidthHalf);
+        alpha = exp(-d * d);
+    }
+    // prevent fragments with low alpha from being rendered
+    if (alpha < 0.05) discard;
+
     PickingData = lPickColor;
-    FragData0 = res;
+    FragData0 = res * alpha;
 }
