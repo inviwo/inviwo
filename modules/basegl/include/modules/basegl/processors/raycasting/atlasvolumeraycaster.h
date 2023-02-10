@@ -45,6 +45,7 @@
 #include <modules/basegl/shadercomponents/positionindicatorcomponent.h>  // for PositionIndicato...
 #include <modules/basegl/shadercomponents/raycastingcomponent.h>         // for RaycastingComponent
 #include <modules/basegl/shadercomponents/sampletransformcomponent.h>    // for SampleTransformC...
+#include <modules/basegl/shadercomponents/segmentsurfacecomponent.h>     // for SegmentSurfaceCo...
 #include <modules/basegl/shadercomponents/timecomponent.h>               // for TimeComponent
 #include <modules/basegl/shadercomponents/volumecomponent.h>             // for VolumeComponent
 
@@ -105,6 +106,7 @@ private:
     PositionIndicatorComponent positionIndicator_;
     SampleTransformComponent sampleTransform_;
     AtlasComponent atlas_;
+    SegmentSurfaceComponent segmentSurface_;
 };
 
 }  // namespace inviwo

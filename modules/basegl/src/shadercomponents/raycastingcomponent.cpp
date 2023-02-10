@@ -60,7 +60,6 @@ const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel
                                                            {"channel2", "Channel 2", 0},
                                                            {"channel3", "Channel 3", 0},
                                                            {"channel4", "Channel 4", 0}};
-
 }
 
 RaycastingComponent::RaycastingComponent(std::string_view volume, IsoTFProperty& isotf)
