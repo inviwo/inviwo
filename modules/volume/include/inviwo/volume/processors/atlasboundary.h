@@ -43,6 +43,7 @@ namespace inviwo {
  * - 1 = selected
  * - 2 = filtered
  * - 3 = highlighted
+ * Note: Rendering of selections can be made within Atlas Volume Raycaster processor.
  *
  * ### Inports
  *   * __volume__ Atlas volume.
@@ -55,10 +56,7 @@ class IVW_MODULE_VOLUME_API AtlasBoundary : public Processor {
 public:
     AtlasBoundary();
     virtual ~AtlasBoundary() override = default;
-
     virtual void process() override;
-
-
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -67,6 +65,8 @@ private:
     BrushingAndLinkingInport brushing_;
     VolumeOutport outport_;
     std::shared_ptr<Volume> volume_;
+    std::vector<int> sourceIndices_;
+    std::vector<int> destinationIndices_;
 };
 
 }  // namespace inviwo

@@ -29,6 +29,7 @@
 
 #include <inviwo/volume/processors/atlasboundary.h>
 #include <inviwo/volume/algorithm/volumemap.h>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -36,7 +37,7 @@ namespace inviwo {
 const ProcessorInfo AtlasBoundary::processorInfo_{
     "org.inviwo.atlasboundary",  // Class identifier
     "Atlas Boundary",            // Display name
-    "Volume Rendering",          // Category
+    "Volume Operation",          // Category
     CodeState::Experimental,     // Code state
     "GL, Volume, Atlas",         // Tags
 };
@@ -58,38 +59,34 @@ void AtlasBoundary::process() {
         highlighted -= filtered;
         selected -= highlighted;
         selected -= filtered;
-        std::vector<int> selectedDestination(selected.toVector().size(), 1);
-        std::vector<int> filteredDestination(filtered.toVector().size(), 2);
-        std::vector<int> highlightedDestination(highlighted.toVector().size(), 3);
 
-        // Append to
-        std::vector<int> sourceIndices;
-        std::vector<int> destinationIndices;
+        // Append B&L to vectors
+        sourceIndices_.clear();
+        sourceIndices_.insert(sourceIndices_.end(), selected.begin(), selected.end());
+        sourceIndices_.insert(sourceIndices_.end(), filtered.begin(), filtered.end());
+        sourceIndices_.insert(sourceIndices_.end(), highlighted.begin(), highlighted.end());
 
-        sourceIndices.insert(sourceIndices.end(), selected.begin(), selected.end());
-        sourceIndices.insert(sourceIndices.end(), filtered.begin(), filtered.end());
-        sourceIndices.insert(sourceIndices.end(), highlighted.begin(), highlighted.end());
-        destinationIndices.insert(destinationIndices.end(), selectedDestination.begin(),
-                                  selectedDestination.end());
-        destinationIndices.insert(destinationIndices.end(), filteredDestination.begin(),
-                                  filteredDestination.end());
-        destinationIndices.insert(destinationIndices.end(), highlightedDestination.begin(),
-                                  highlightedDestination.end());
+        destinationIndices_.clear();
+        destinationIndices_.insert(destinationIndices_.end(), selected.cardinality(), 1);
+        destinationIndices_.insert(destinationIndices_.end(), filtered.cardinality(), 2);
+        destinationIndices_.insert(destinationIndices_.end(), highlighted.cardinality(), 3);
 
-        if (sourceIndices.size() == 0) {
-            sourceIndices.push_back(0);
-            destinationIndices.push_back(0);
+        // util::remap throws exception if vectors are empty
+        if (sourceIndices_.empty()) {
+            sourceIndices_.push_back(0);
+            destinationIndices_.push_back(0);
         }
 
+        // Remap using vectors and cloned volume
         auto volume = volumeInport_.getData();
         volume_ = std::shared_ptr<Volume>(volume->clone());
-        remap(volume_, sourceIndices, destinationIndices, 0, true);
-        volume_->setInterpolation(InterpolationType::Nearest);
+        util::remap(*volume_, sourceIndices_, destinationIndices_, 0, true);
+
+        // Set volume properties
         volume_->setSwizzleMask(swizzlemasks::luminance);
         volume_->dataMap_.dataRange = dvec2{0.0, 3.0};
         volume_->dataMap_.valueRange = volume_->dataMap_.dataRange;
     }
-
     outport_.setData(volume_);
 }
 
