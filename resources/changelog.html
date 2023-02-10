@@ -26,6 +26,8 @@
 </style>
 </head>
 <body>
+<h2>2023-02-10</h2>
+<p>The <code class="notranslate">TickProperty</code> provided by the <code class="notranslate">plotting</code> module was removed as it only added one more level of nested properties. Both <code class="notranslate">MajorTickProperty</code> and <code class="notranslate">MinorTickProperty</code> should be used directly instead.</p>
 <h2>2022-12-16 VolumeAxis</h2>
 <p>The default settings and alignments of the <code class="notranslate">VolumeAxis</code> processor, which renders x, y, and z axes next to a volume, have been reworked. It is now possible to define axis, caption, and label offsets as well as tick lengths relative to the extent of the input volume compared to absolute lengths in world coordinates. This links the axes settings more closely with the volume size and therefore no adjustments are needed when switching to a volume with a different extent.<br>
 The <code class="notranslate">Offset Scaling</code> property currently supports the following modes:</p>

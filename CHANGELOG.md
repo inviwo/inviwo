@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-02-10
+The `TickProperty` provided by the `plotting` module was removed as it only added one more level of nested properties. Both `MajorTickProperty` and `MinorTickProperty` should be used directly instead.
+
 ## 2022-12-16 VolumeAxis
 The default settings and alignments of the `VolumeAxis` processor, which renders x, y, and z axes next to a volume, have been reworked. It is now possible to define axis, caption, and label offsets as well as tick lengths relative to the extent of the input volume compared to absolute lengths in world coordinates. This links the axes settings more closely with the volume size and therefore no adjustments are needed when switching to a volume with a different extent.
 The `Offset Scaling` property currently supports the following modes:
