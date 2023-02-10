@@ -50,7 +50,7 @@ bool operator==(const PlotTextSettings& a, const PlotTextSettings& b) {
 
 bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b) { return !(a == b); }
 
-LabelPlacement utilplot::flip(LabelPlacement p) {
+LabelPlacement flip(LabelPlacement p) {
     switch (p) {
         case LabelPlacement::Outside:
             return LabelPlacement::Inside;

@@ -59,12 +59,10 @@ public:
 IVW_MODULE_PLOTTING_API bool operator==(const PlotTextSettings& a, const PlotTextSettings& b);
 IVW_MODULE_PLOTTING_API bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b);
 
-namespace utilplot {
 /**
  * flip inside and outside direction of placement \p p
  */
 IVW_MODULE_PLOTTING_API LabelPlacement flip(LabelPlacement p);
-}  // namespace utilplot
 
 }  // namespace plot
 

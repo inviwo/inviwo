@@ -56,7 +56,6 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::MarginProperty>();
     registerProperty<plot::MinorTickProperty>();
     registerProperty<plot::PlotTextProperty>();
-    registerProperty<plot::TickProperty>();
 }
 
 int PlottingModule::getVersion() const { return 2; }

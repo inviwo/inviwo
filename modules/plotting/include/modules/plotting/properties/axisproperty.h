@@ -49,6 +49,7 @@
 #include <string>       // for operator==, string, operator+
 #include <string_view>  // for operator==, string_view
 #include <vector>       // for operator!=, vector, operator==
+#include <optional>
 
 namespace inviwo {
 
@@ -149,7 +150,7 @@ public:
     FloatProperty scalingFactor_;
 
     BoolProperty mirrored_;
-    OptionProperty<Orientation> orientation_;
+    std::optional<OptionProperty<Orientation>> orientation_;
 
     // caption besides axis
     PlotTextProperty captionSettings_;
@@ -162,7 +163,7 @@ public:
 
 private:
     virtual void updateLabels();
-    std::vector<ButtonGroupProperty::Button> buttons();
+    std::vector<ButtonGroupProperty::Button> buttons(bool hasOrientation);
 
     ButtonGroupProperty alignment_;
 };

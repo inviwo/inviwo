@@ -43,9 +43,6 @@ namespace inviwo {
 
 namespace plot {
 
-const std::string TickProperty::classIdentifier = "org.inviwo.TickProperty";
-std::string TickProperty::getClassIdentifier() const { return classIdentifier; }
-
 const std::string MajorTickProperty::classIdentifier = "org.inviwo.MajorTickProperty";
 std::string MajorTickProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -53,9 +50,10 @@ const std::string MinorTickProperty::classIdentifier = "org.inviwo.MinorTickProp
 std::string MinorTickProperty::getClassIdentifier() const { return classIdentifier; }
 
 MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_view displayName,
-                                     Document help, InvalidationLevel invalidationLevel,
+                                     InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, "Settings for major ticks along the axis"_help,
+                        invalidationLevel, semantics)
     , style_("style", "Style",
              {{"none", "None", TickStyle::None},
               {"inside", "Inside", TickStyle::Inside},
@@ -80,11 +78,6 @@ MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_vi
 
     addProperties(style_, color_, tickLength_, tickWidth_, tickDelta_, rangeBasedTicks_);
 }
-
-MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_view displayName,
-                                     InvalidationLevel invalidationLevel,
-                                     PropertySemantics semantics)
-    : MajorTickProperty(identifier, displayName, {}, invalidationLevel, semantics) {}
 
 MajorTickProperty::MajorTickProperty(const MajorTickProperty& rhs)
     : CompositeProperty(rhs)
@@ -113,9 +106,11 @@ double MajorTickProperty::getTickDelta() const { return tickDelta_.get(); }
 bool MajorTickProperty::getRangeBasedTicks() const { return rangeBasedTicks_.get(); }
 
 MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_view displayName,
-                                     Document help, InvalidationLevel invalidationLevel,
+                                     InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName,
+                        "Settings for minor ticks (shown between major ticks)"_help,
+                        invalidationLevel, semantics)
     , style_("style", "Style",
              {{"none", "None", TickStyle::None},
               {"inside", "Inside", TickStyle::Inside},
@@ -133,11 +128,6 @@ MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_vi
 
     addProperties(style_, fillAxis_, color_, tickLength_, tickWidth_, tickFrequency_);
 }
-
-MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_view displayName,
-                                     InvalidationLevel invalidationLevel,
-                                     PropertySemantics semantics)
-    : MinorTickProperty(identifier, displayName, {}, invalidationLevel, semantics) {}
 
 MinorTickProperty::MinorTickProperty(const MinorTickProperty& rhs)
     : CompositeProperty(rhs)
@@ -164,29 +154,6 @@ float MinorTickProperty::getTickLength() const { return tickLength_.get(); }
 float MinorTickProperty::getTickWidth() const { return tickWidth_.get(); }
 
 int MinorTickProperty::getTickFrequency() const { return tickFrequency_.get(); }
-
-TickProperty::TickProperty(std::string_view identifier, std::string_view displayName,
-                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , majorTicks_("majorTicks", "Major Ticks")
-    , minorTicks_("minorTicks", "Minor Ticks") {
-
-    addProperties(majorTicks_, minorTicks_);
-
-    majorTicks_.setCollapsed(true);
-    minorTicks_.setCollapsed(true);
-}
-
-TickProperty::TickProperty(const TickProperty& rhs)
-    : CompositeProperty(rhs), majorTicks_(rhs.majorTicks_), minorTicks_(rhs.minorTicks_) {
-
-    addProperties(majorTicks_, minorTicks_);
-
-    majorTicks_.setCollapsed(true);
-    minorTicks_.setCollapsed(true);
-}
-
-TickProperty* TickProperty::clone() const { return new TickProperty(*this); }
 
 }  // namespace plot
 

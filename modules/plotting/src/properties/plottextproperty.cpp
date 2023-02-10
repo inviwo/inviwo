@@ -80,7 +80,9 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
 PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view displayName,
                                    bool checked, InvalidationLevel invalidationLevel,
                                    PropertySemantics semantics)
-    : PlotTextProperty(identifier, displayName, {}, checked, invalidationLevel, semantics) {}
+    : PlotTextProperty(identifier, displayName,
+                       "Font and alignment settings for text elements of an axis"_help, checked,
+                       invalidationLevel, semantics) {}
 
 PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
     : BoolCompositeProperty(rhs)

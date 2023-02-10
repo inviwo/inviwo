@@ -54,12 +54,10 @@ public:
 IVW_MODULE_PLOTTING_API bool operator==(const MajorTickSettings& a, const MajorTickSettings& b);
 IVW_MODULE_PLOTTING_API bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b);
 
-namespace utilplot {
 /**
  * flip inside and outside direction of tick style \p s
  */
 IVW_MODULE_PLOTTING_API TickStyle flip(TickStyle s);
-}  // namespace utilplot
 
 }  // namespace plot
 

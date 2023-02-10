@@ -44,7 +44,7 @@ bool operator==(const MajorTickSettings& a, const MajorTickSettings& b) {
 
 bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b) { return !(a == b); }
 
-TickStyle utilplot::flip(TickStyle s) {
+TickStyle flip(TickStyle s) {
     switch (s) {
         case TickStyle::Inside:
             return TickStyle::Outside;

@@ -82,7 +82,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     , captionSettings_{"caption", "Caption", "Caption settings"_help, false}
     , labelSettings_{"labels", "Axis Labels",
                      "Settings for axis labels shown next to major ticks"_help, true}
-    , majorTicks_{"majorTicks", "Major Ticks", "Settings for major ticks along the axis"_help} {
+    , majorTicks_{"majorTicks", "Major Ticks"} {
 
     scalingFactor_.setVisible(false);
     addProperties(visible_, color_, width_, scalingFactor_, mirrored_, orientation_);

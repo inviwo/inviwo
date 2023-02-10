@@ -54,7 +54,11 @@ std::string AxisStyleProperty::getClassIdentifier() const { return classIdentifi
 AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(
+          identifier, displayName,
+          "Convenience property for updating/overriding multiple axes properties. "
+          "A property change will propagate to all the subproperties of the registered axes."_help,
+          invalidationLevel, semantics)
     , fontFace_("fontFace", "Font Face", "Font face used for axis labels and captions"_help,
                 font::FontType::Label)
     , fontSize_("fontSize", "Font Size",

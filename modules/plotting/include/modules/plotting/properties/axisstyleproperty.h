@@ -48,7 +48,7 @@ namespace plot {
 class AxisProperty;
 
 /**
- * \brief a convenience property for updating/overriding multiple axes properties. A property change
+ * \brief A convenience property for updating/overriding multiple axes properties. A property change
  * will propagate to all the subproperties of the registered axes.
  */
 class IVW_MODULE_PLOTTING_API AxisStyleProperty : public CompositeProperty {
