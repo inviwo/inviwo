@@ -58,26 +58,6 @@ namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.VolumeAxis, Volume Axis}
- * ![](org.inviwo.VolumeAxis.png?classIdentifier=org.inviwo.VolumeAxis)
- * Renders a x, y, and z axis next to the input volume.
- *
- * ### Inports
- *   * __Volume__      input volume
- *   * __imageInport__ background image (optional)
- *
- * ### Outports
- *   * __image__       output image containing the rendered volume axes and the optional input image
- *
- * ### Properties
- *   * __Axis Offset__      offset between each axis and the volume
- *   * __Axis Range Mode__  determines axis ranges (volume dimension, volume basis, or customized)
- *   * __Visibility__       visibility of all available axes (default: all axis start at the origin)
- *   * __X Axis__           axis properties for x
- *   * __Y Axis__           axis properties for y
- *   * __Z Axis__           axis properties for z
- */
-
 /**
  * \class VolumeAxis
  * \brief Processor for rendering axis annotations next to a volume
@@ -86,6 +66,7 @@ class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
 public:
     enum class AxisRangeMode { VolumeDims, VolumeBasis, VolumeBasisOffset, Custom };
     enum class CaptionType { String, Data, Custom };
+    enum class OffsetScaling { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
 
     VolumeAxis();
     virtual ~VolumeAxis() = default;
@@ -96,6 +77,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void adjustScalingFactor();
     void adjustRanges();
     void updateCaptions();
 
@@ -103,6 +85,7 @@ private:
     ImageInport imageInport_;
     ImageOutport outport_;
 
+    OptionProperty<OffsetScaling> offsetScaling_;
     FloatProperty axisOffset_;
 
     OptionProperty<AxisRangeMode> rangeMode_;

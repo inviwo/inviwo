@@ -47,7 +47,7 @@ void IsoValueCollectionIIVWriter::writeData(const IsoValueCollection* data,
 };
 
 std::unique_ptr<std::vector<unsigned char>> IsoValueCollectionIIVWriter::writeDataToBuffer(
-    const IsoValueCollection* data, std::string_view fileExtension) const {
+    const IsoValueCollection* data, std::string_view) const {
 
     Serializer serializer{""};
     data->serialize(serializer);

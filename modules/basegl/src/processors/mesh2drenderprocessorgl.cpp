@@ -43,13 +43,14 @@
 #include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
 #include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
 #include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty
-#include <modules/opengl/geometry/meshgl.h>            // for MeshGL
-#include <modules/opengl/inviwoopengl.h>               // for GL_DEPTH_TEST, GL_ONE_MINUS_SRC_ALPHA
-#include <modules/opengl/openglutils.h>                // for BlendModeState, GlBoolState
-#include <modules/opengl/rendering/meshdrawergl.h>     // for MeshDrawerGL::DrawObject, MeshDraw...
-#include <modules/opengl/shader/shader.h>              // for Shader
-#include <modules/opengl/shader/shaderutils.h>         // for setShaderUniforms
-#include <modules/opengl/texture/textureutils.h>       // for activateTargetAndClearOrCopySource
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <modules/opengl/geometry/meshgl.h>         // for MeshGL
+#include <modules/opengl/inviwoopengl.h>            // for GL_DEPTH_TEST, GL_ONE_MINUS_SRC_ALPHA
+#include <modules/opengl/openglutils.h>             // for BlendModeState, GlBoolState
+#include <modules/opengl/rendering/meshdrawergl.h>  // for MeshDrawerGL::DrawObject, MeshDraw...
+#include <modules/opengl/shader/shader.h>           // for Shader
+#include <modules/opengl/shader/shaderutils.h>      // for setShaderUniforms
+#include <modules/opengl/texture/textureutils.h>    // for activateTargetAndClearOrCopySource
 
 #include <functional>   // for __base
 #include <memory>       // for shared_ptr, shared_ptr<>::element_...
@@ -82,18 +83,24 @@ Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
                        "Toggles the depth test during rendering"_help, true)
     , frustum_("frustum", "Orthographic Frustum",
                "Parameters to define the orthographic projection"_help)
-    , top_("top", "Top", 1.0f, -1.0f, 1.0f)
-    , bottom_("bottom", "Bottom", 0.0f, -1.0f, 1.0f)
-    , left_("left", "Left", 0.0f, -1.0f, 1.0f)
-    , right_("right", "Right", 1.0f, -1.0f, 1.0f)
-    , near_("near", "Near", -1.0f, -1.0f, 1.0f)
-    , far_("far", "Far", 1.0f, -1.0f, 1.0f) {
+    , useCanvasDims_("useCanvasDims", "Use Canvas Dimensions", false)
+    , top_("top", "Top", util::ordinalSymmetricVector(1.0f))
+    , bottom_("bottom", "Bottom", util::ordinalSymmetricVector(0.0f))
+    , left_("left", "Left", util::ordinalSymmetricVector(0.0f))
+    , right_("right", "Right", util::ordinalSymmetricVector(1.0f))
+    , near_("near", "Near", util::ordinalSymmetricVector(-1.0f).set(PropertySemantics::Default))
+    , far_("far", "Far", util::ordinalSymmetricVector(1.0f).set(PropertySemantics::Default)) {
 
     addPorts(inport_, imageInport_, outport_);
     imageInport_.setOptional(true);
 
     addProperties(enableDepthTest_, frustum_);
-    frustum_.addProperties(left_, right_, bottom_, top_, near_, far_);
+    frustum_.addProperties(useCanvasDims_, left_, right_, bottom_, top_, near_, far_);
+
+    top_.readonlyDependsOn(useCanvasDims_, [](BoolProperty& p) { return p; });
+    bottom_.readonlyDependsOn(useCanvasDims_, [](BoolProperty& p) { return p; });
+    left_.readonlyDependsOn(useCanvasDims_, [](BoolProperty& p) { return p; });
+    right_.readonlyDependsOn(useCanvasDims_, [](BoolProperty& p) { return p; });
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -101,6 +108,10 @@ Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
 Mesh2DRenderProcessorGL::~Mesh2DRenderProcessorGL() = default;
 
 void Mesh2DRenderProcessorGL::process() {
+    if (useCanvasDims_.isModified() && useCanvasDims_) {
+        updateFrustum(outport_.getDimensions());
+    }
+
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
     shader_.activate();
 
@@ -120,6 +131,23 @@ void Mesh2DRenderProcessorGL::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
+}
+
+void Mesh2DRenderProcessorGL::propagateEvent(Event* event, Outport* source) {
+    if (event->hash() == ResizeEvent::chash() && useCanvasDims_) {
+        auto resizeEvent = static_cast<ResizeEvent*>(event);
+
+        updateFrustum(resizeEvent->size());
+    }
+
+    Processor::propagateEvent(event, source);
+}
+
+void Mesh2DRenderProcessorGL::updateFrustum(const size2_t& dims) {
+    top_.set(static_cast<float>(dims.y));
+    right_.set(static_cast<float>(dims.x));
+    bottom_.set(0.0f);
+    left_.set(0.0f);
 }
 
 }  // namespace inviwo

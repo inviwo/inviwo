@@ -45,10 +45,10 @@ bool AxisSettings::isVertical() const { return getOrientation() == Orientation::
 
 bool operator==(const AxisSettings& a, const AxisSettings& b) {
     return a.getCaption() == b.getCaption() && a.getLabels() == b.getLabels() &&
-           a.getAxisVisible() == b.getAxisVisible() && a.getFlipped() == b.getFlipped() &&
+           a.getAxisVisible() == b.getAxisVisible() && a.getMirrored() == b.getMirrored() &&
            a.getColor() == b.getColor() && a.getWidth() == b.getWidth() &&
            a.getUseDataRange() == b.getUseDataRange() && a.getRange() == b.getRange() &&
-           a.getOrientation() == b.getOrientation() && a.getPlacement() == b.getPlacement() &&
+           a.getOrientation() == b.getOrientation() &&
            a.getCaptionSettings() == b.getCaptionSettings() &&
            a.getLabelSettings() == b.getLabelSettings() && a.getMajorTicks() == b.getMajorTicks() &&
            a.getMinorTicks() == b.getMinorTicks();

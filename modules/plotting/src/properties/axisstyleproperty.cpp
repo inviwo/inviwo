@@ -54,18 +54,31 @@ std::string AxisStyleProperty::getClassIdentifier() const { return classIdentifi
 AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , fontFace_("fontFace", "Font Face", font::FontType::Label)
-    , fontSize_("fontSize", "Font Size", 14, 0, 144, 1)
-    , color_("defaultcolor", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))
-    , lineWidth_("lineWidth", "Line Width", 2.5f, 0.0f, 20.0f)
-    , tickLength_("tickLength", "Tick Length", 8.0f, 0.0f, 20.0f)
-    , labelFormat_("labelFormat", "Label Format", "%.1f") {
+    : CompositeProperty(
+          identifier, displayName,
+          "Convenience property for updating/overriding multiple axes properties. "
+          "A property change will propagate to all the subproperties of the registered axes."_help,
+          invalidationLevel, semantics)
+    , fontFace_("fontFace", "Font Face", "Font face used for axis labels and captions"_help,
+                font::FontType::Label)
+    , fontSize_("fontSize", "Font Size",
+                util::ordinalCount(14, 144)
+                    .set("Font size for both axis labels and captions"_help)
+                    .set(PropertySemantics("Fontsize")))
+    , color_("defaultcolor", "Color",
+             util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Default color of the axis"_help))
+    , lineWidth_("lineWidth", "Line Width",
+                 util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help))
+    , tickLength_(
+          "tickLength", "Tick Length",
+          util::ordinalLength(8.0f, 20.0f)
+              .set(
+                  "Length of major ticks. The length of minor tick will be set to 75% of this length"_help))
+    , labelFormat_("labelFormat", "Label Format",
+                   "Formatting string for labels using the printf format specification."_help,
+                   "%.1f") {
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
-
-    fontSize_.setSemantics(PropertySemantics("Fontsize"));
-    color_.setSemantics(PropertySemantics::Color);
 
     fontFace_.onChange([this]() {
         NetworkLock lock(this);

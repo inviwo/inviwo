@@ -36,6 +36,11 @@ uniform sampler2D transferFunction;
 // 3 -> 270 degree rotation ccw
 uniform int legendRotation;
 
+// orientation of the legend
+// 0 -> horizontal legend
+// 1 -> vertical legend
+uniform int legendOrientation = 0;
+
 // background style
 //  0 no background
 //  1 solid color
@@ -91,7 +96,7 @@ void main() {
     vec2 centeredPos = (texCoord - viewport.zw * 0.5);
     vec2 normPos = (texCoord - vec2(borderWidth)) / outputDim;
 
-    float tfSamplePos = mix(normPos.x, normPos.y, mod(legendRotation, 2));
+    float tfSamplePos = mix(normPos.x, normPos.y, legendOrientation);
     vec4 colorTF = texture(transferFunction, vec2(tfSamplePos, 0.0));
 
     // increase alpha for better visibility by 1 - (1 - a)^4

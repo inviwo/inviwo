@@ -109,22 +109,6 @@ public:
     virtual int getTickFrequency() const override;
 };
 
-class IVW_MODULE_PLOTTING_API TickProperty : public CompositeProperty {
-public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    TickProperty(std::string_view identifier, std::string_view displayName,
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                 PropertySemantics semantics = PropertySemantics::Default);
-    TickProperty(const TickProperty& rhs);
-    virtual TickProperty* clone() const override;
-    virtual ~TickProperty() = default;
-
-    MajorTickProperty majorTicks_;
-    MinorTickProperty minorTicks_;
-};
-
 }  // namespace plot
 
 }  // namespace inviwo

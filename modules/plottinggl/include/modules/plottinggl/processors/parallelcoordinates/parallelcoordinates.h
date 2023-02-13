@@ -78,18 +78,6 @@ class Deserializer;
 class PickingEvent;
 class Serializer;
 
-/** \docpage{org.inviwo.ParallelCoordinates, Parallel Coordinates}
- * ![](org.inviwo.ParallelCoordinates.png?classIdentifier=org.inviwo.ParallelCoordinates)
- * This processor plots a given DataFrame using a Parallel Coordinate Plot.
- *
- * ### Inports
- *   * __DataFrame__  data input for plotting
- *   * __BrushingAndLinking__   inport for brushing & linking interactions
- *
- * ### Outports
- *   * __outport__   rendered image of the parallel coordinate plot
- *
- */
 namespace plot {
 
 class PCPAxisSettings;
@@ -116,6 +104,7 @@ public:
 
     DataInport<DataFrame> dataFrame_;
     BrushingAndLinkingInport brushingAndLinking_;
+    ImageInport imageInport_;
     ImageOutport outport_;
 
     CompositeProperty axisProperties_;

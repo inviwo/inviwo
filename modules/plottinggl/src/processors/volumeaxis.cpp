@@ -59,6 +59,7 @@
 #include <inviwo/core/util/raiiutils.h>                         // for KeepTrueWhileInScope
 #include <inviwo/core/util/staticstring.h>                      // for operator+
 #include <inviwo/core/util/zip.h>                               // for enumerate, zipIterator
+#include <inviwo/core/algorithm/markdown.h>                     // for _help
 #include <modules/opengl/texture/textureutils.h>                // for activateAndClearTarget
 #include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, TickStyle::Out...
 #include <modules/plotting/properties/axisproperty.h>           // for AxisProperty
@@ -161,18 +162,40 @@ const ProcessorInfo VolumeAxis::processorInfo_{
     "Plotting",               // Category
     CodeState::Stable,        // Code state
     "GL, Plotting",           // Tags
-};
+    "Renders x, y, and z axes next to the input volume."_help};
 
 const ProcessorInfo VolumeAxis::getProcessorInfo() const { return processorInfo_; }
 
 VolumeAxis::VolumeAxis()
     : Processor()
-    , inport_{"volume"}
-    , imageInport_{"imageInport"}
-    , outport_{"outport"}
-    , axisOffset_{"axisOffset", "Axis Offset (%)", 0.1f, 0.0f, 10.0f}
+    , inport_{"volume", "Input volume"_help}
+    , imageInport_{"imageInport", "Background image (optional)"_help}
+    , outport_{"outport",
+               "Output image containing the rendered volume axes and the optional input image"_help}
+    , offsetScaling_{"offsetScaling",
+                     "Offset Scaling",
+                     R"(Offset scaling affects tick lengths and offsets of axis captions and labels.
+                        + **None** No scaling, offsets and lengths are given in world coordinates.
+                        + **Min** Relative scaling based on the shortest extent of the volume. Useful 
+                                when visualizing a growing volume.
+                        + **Max** Relative scaling based on the longest extent of the volume. Useful 
+                                when visualizing a shrinking volume.
+                        + **Mean** Relative scaling basd on the mean volume extent.
+                        + **Diagonal** Relative scaling based on the diagonal of the volume.
+                      )"_unindentHelp,
+                     {{"none", "None (absolute World coordinates)", OffsetScaling::None},
+                      {"min", "Min Volume Extent", OffsetScaling::MinExtent},
+                      {"max", "Max Volume Extent", OffsetScaling::MaxExtent},
+                      {"mean", "Mean Volume Extent", OffsetScaling::MeanExtent},
+                      {"diagonal", "Volume Diagonal", OffsetScaling::Diagonal}},
+                     1}
+    , axisOffset_{"axisOffset", "Axis Offset",
+                  util::ordinalLength(10.0f, 50.0f)
+                      .set(
+                          "Offset between each axis and the volume considering the Offset Scaling mode"_help)}
     , rangeMode_{"rangeMode",
                  "Axis Range Mode",
+                 "Determines axis ranges (volume dimension, volume basis, or customized)"_help,
                  {{"dims", "Volume Dimensions (voxel)", AxisRangeMode::VolumeDims},
                   {"basis", "Volume Basis", AxisRangeMode::VolumeBasis},
                   {"basisOffset", "Volume Basis & Offset", AxisRangeMode::VolumeBasisOffset},
@@ -187,7 +210,9 @@ VolumeAxis::VolumeAxis()
                     {"custom", "Custom Format (example '{n}{u: [}')", CaptionType::Custom}},
                    0)
     , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
-    , visibility_{"visibility", "Axis Visibility", true}
+    , visibility_{"visibility", "Axis Visibility",
+                  "Visibility of all available axes (default: all axis start at the origin)"_help,
+                  true}
     , presets_{"visibilityPresets",
                "Presets",
                {{"default", "Default (origin)", "default"},
@@ -211,9 +236,12 @@ VolumeAxis::VolumeAxis()
           {"negXposY", "Z -X+Y", false},
       }}
     , axisStyle_{"axisStyle", "Global Axis Style"}
-    , xAxis_{"xAxis", "X Axis"}
-    , yAxis_{"yAxis", "Y Axis"}
-    , zAxis_{"zAxis", "Z Axis"}
+    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisSettings::Orientation::Horizontal,
+             false}
+    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisSettings::Orientation::Horizontal,
+             false}
+    , zAxis_{"zAxis", "Z Axis", "Axis properties for y"_help, AxisSettings::Orientation::Horizontal,
+             false}
     , camera_{"camera", "Camera", util::boundingBox(inport_)}
     , trackball_{&camera_}
     , axisRenderers_{{xAxis_, yAxis_, zAxis_}}
@@ -260,8 +288,9 @@ VolumeAxis::VolumeAxis()
     }
 
     axisStyle_.registerProperties(xAxis_, yAxis_, zAxis_);
-    addProperties(axisOffset_, rangeMode_, customRanges_, captionType_, customCaption_, visibility_,
-                  axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+    addProperties(offsetScaling_, axisOffset_, rangeMode_, customRanges_, captionType_,
+                  customCaption_, visibility_, axisStyle_, xAxis_, yAxis_, zAxis_, camera_,
+                  trackball_);
 
     axisStyle_.setCollapsed(true);
     visibility_.setCollapsed(true);
@@ -269,18 +298,10 @@ VolumeAxis::VolumeAxis()
     trackball_.setCollapsed(true);
 
     // initialize axes
-    const float majorTick = 0.3f;
-    const float minorTick = 0.15f;
     for (auto property : {&xAxis_, &yAxis_, &zAxis_}) {
-        property->captionSettings_.offset_.set(0.7f);
-        property->captionSettings_.position_.set(0.5f);
-        property->labelSettings_.offset_.set(0.7f);
-
-        property->majorTicks_.tickLength_.set(majorTick);
         property->majorTicks_.tickWidth_.set(1.5f);
         property->majorTicks_.style_.set(TickStyle::Outside);
 
-        property->minorTicks_.tickLength_.set(minorTick);
         property->minorTicks_.tickWidth_.set(1.3f);
         property->minorTicks_.style_.set(TickStyle::Outside);
     }
@@ -309,8 +330,12 @@ VolumeAxis::VolumeAxis()
         }
     });
 
+    // adjust scaling factor for label offsets and tick lengths
+    offsetScaling_.onChange([&]() { adjustScalingFactor(); });
+
     // adjust axis ranges when input volume, i.e. its basis, changes
     inport_.onChange([&]() {
+        adjustScalingFactor();
         adjustRanges();
         updateCaptions();
     });
@@ -334,9 +359,7 @@ void VolumeAxis::process() {
     const dmat4 m = volume->getCoordinateTransformer().getDataToWorldMatrix();
     const dmat3 nm = glm::transpose(glm::inverse(m));
     // the mean length of the three basis vectors is used for a relative axis offset (%)
-    const double offset =
-        axisOffset_.get() / 100 *
-        (glm::length(dvec3(m[0])) + glm::length(dvec3(m[1])) + glm::length(dvec3(m[2]))) / 3.0;
+    const double offset = axisOffset_.get() * xAxis_.getScalingFactor();
 
     const auto render = [&](const util::AxisParams& axis, size_t axisIdx) {
         const dvec3 center{0.5, 0.5, 0.5};
@@ -383,6 +406,36 @@ void VolumeAxis::process() {
     }
 
     utilgl::deactivateCurrentTarget();
+}
+
+void VolumeAxis::adjustScalingFactor() {
+    if (const auto volume = inport_.getData()) {
+        const mat4 m{volume->getCoordinateTransformer().getDataToWorldMatrix()};
+
+        float factor = [l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])}, &m,
+                        mode = offsetScaling_.get()]() {
+            switch (mode) {
+                case OffsetScaling::MinExtent:
+                    return glm::compMin(l) / 100.0f;
+                case OffsetScaling::MaxExtent:
+                    return glm::compMax(l) / 100.0f;
+                case OffsetScaling::MeanExtent:
+                    return glm::compAdd(l) / (3.0f * 100.0f);
+                case OffsetScaling::Diagonal:
+                    return glm::length(m[0] + m[1] + m[2]) / 100.0f;
+                case OffsetScaling::None:
+                default:
+                    return 1.0f;
+            }
+        }();
+        xAxis_.scalingFactor_.set(factor);
+        yAxis_.scalingFactor_.set(factor);
+        zAxis_.scalingFactor_.set(factor);
+    } else {
+        xAxis_.scalingFactor_.set(1.0f);
+        yAxis_.scalingFactor_.set(1.0f);
+        zAxis_.scalingFactor_.set(1.0f);
+    }
 }
 
 void VolumeAxis::adjustRanges() {

@@ -51,6 +51,7 @@ public:
 
     // Inherited via PlotTextSettings
     virtual bool isEnabled() const override;
+    virtual LabelPlacement getPlacement() const override;
     virtual vec4 getColor() const override;
     virtual float getPosition() const override;
     virtual vec2 getOffset() const override;
@@ -58,6 +59,7 @@ public:
     virtual const FontSettings& getFont() const override;
 
     bool enabled = true;
+    LabelPlacement placement = LabelPlacement::Outside;
     vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     float position = 0.5f;
     vec2 offset = vec2{10.0f, 0.0f};

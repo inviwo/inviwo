@@ -115,14 +115,16 @@ const ProcessorInfo ParallelCoordinates::processorInfo_{
     "Plotting",                        // Category
     CodeState::Stable,                 // Code state
     "GL, Plotting",                    // Tags
-};
+    "This processor plots a given DataFrame using a Parallel Coordinate Plot."_help};
+
 const ProcessorInfo ParallelCoordinates::getProcessorInfo() const { return processorInfo_; }
 
 ParallelCoordinates::ParallelCoordinates()
     : Processor()
-    , dataFrame_{"dataFrame"}
-    , brushingAndLinking_{"brushingAndLinking"}
-    , outport_{"outport"}
+    , dataFrame_{"dataFrame", "Data input for plotting"_help}
+    , brushingAndLinking_{"brushingAndLinking", "Port for brushing & linking interactions"_help}
+    , imageInport_("imageInport", "Background image (optional)"_help)
+    , outport_{"outport", "Rendered image of the parallel coordinate plot"_help}
 
     , axisProperties_{"axisProps_", "Axis"}
     , colormap_("colormap", "Colormap", dataFrame_)
@@ -134,7 +136,7 @@ ParallelCoordinates::ParallelCoordinates()
     , lineSettings_{"lines", "Line Settings"}
     , blendMode_("blendMode", "Blend Mode",
                  {{"additive", "Additive", BlendMode::Additive},
-                  {"subractive", "Subractive", BlendMode::Subtractive},
+                  {"subtractive", "Subtractive", BlendMode::Subtractive},
                   {"regular", "Regular", BlendMode::Regular},
                   {"noblend", "None", BlendMode::None}},
                  2)
@@ -205,7 +207,10 @@ ParallelCoordinates::ParallelCoordinates()
 {
     addPort(dataFrame_);
     addPort(brushingAndLinking_);
+    addPort(imageInport_);
     addPort(outport_);
+
+    imageInport_.setOptional(true);
 
     addProperties(axisProperties_, colormap_, axisSelection_);
 
@@ -292,29 +297,25 @@ void ParallelCoordinates::adjustMargins() {
         vec2 llMargin(0);
         vec2 urMargin(0);
 
-        do {
-            std::pair<vec2, vec2> bRect = {vec2{dim} * 0.5f, vec2{dim} * 0.5f};
-            for (auto& axis : axes_) {
-                if (axis.pcp->isChecked()) {
-                    const auto ap = axisPos(axis.pcp->columnId());
-                    const auto axisBRect = axis.axisRender->boundingRect(ap.first, ap.second);
-                    bRect.first = glm::min(bRect.first, axisBRect.first);
-                    bRect.second = glm::max(bRect.second, axisBRect.second);
-                }
+        marginsInternal_.first = margins_.getLowerLeftMargin();
+        marginsInternal_.second = margins_.getUpperRightMargin();
+
+        std::pair<vec2, vec2> bRect = {vec2{dim} * 0.5f, vec2{dim} * 0.5f};
+        for (auto& axis : axes_) {
+            if (axis.pcp->isChecked()) {
+                const auto ap = axisPos(axis.pcp->columnId());
+                const auto axisBRect = axis.axisRender->boundingRect(ap.first, ap.second);
+                bRect.first = glm::min(bRect.first, axisBRect.first);
+                bRect.second = glm::max(bRect.second, axisBRect.second);
             }
+        }
 
-            const auto rect = getDisplayRect(vec2{dim} - 1.0f);
-            llMargin = rect.first - glm::floor(bRect.first);
-            urMargin = glm::ceil(bRect.second) - rect.second;
+        const auto rect = getDisplayRect(vec2{dim} - 1.0f);
+        llMargin = rect.first - glm::floor(bRect.first);
+        urMargin = glm::ceil(bRect.second) - rect.second;
 
-            marginsInternal_.first = llMargin;
-            marginsInternal_.second = urMargin;
-
-        } while (marginsInternal_.first != llMargin || marginsInternal_.second != urMargin);
-
-        marginsInternal_.first += margins_.getLowerLeftMargin();
-        marginsInternal_.second += margins_.getUpperRightMargin();
-
+        marginsInternal_.first = llMargin + margins_.getLowerLeftMargin();
+        marginsInternal_.second = urMargin + margins_.getUpperRightMargin();
     } else {
         marginsInternal_.first = margins_.getLowerLeftMargin();
         marginsInternal_.second = margins_.getUpperRightMargin();
@@ -324,11 +325,11 @@ void ParallelCoordinates::adjustMargins() {
 ParallelCoordinates::~ParallelCoordinates() = default;
 
 void ParallelCoordinates::process() {
+    utilgl::ClearColor clearColor(vec4(0.0f));
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+
     if (axes_.empty()) {
         // Nothing render, just draw the background
-        const vec4 backgroundColor(blendMode_.get() == BlendMode::Subtractive ? 1.0f : 0.0f);
-        utilgl::ClearColor clearColor(backgroundColor);
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
         utilgl::deactivateCurrentTarget();
         return;
     }
@@ -364,9 +365,6 @@ void ParallelCoordinates::process() {
         adjustMargins();
     }
 
-    const vec4 backgroundColor(blendMode_.get() == BlendMode::Subtractive ? 1.0f : 0.0f);
-    utilgl::ClearColor clearColor(backgroundColor);
-    utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
 
     drawLines(dims);
@@ -606,18 +604,17 @@ void ParallelCoordinates::drawLines(size2_t size) {
     auto state = [&]() {
         switch (blendMode_.get()) {
             case BlendMode::Additive:
-                return std::make_tuple(
-                    utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
-                    utilgl::BlendModeEquationState(GL_SRC_ALPHA, GL_ONE, GL_FUNC_ADD));
+                return std::make_tuple(utilgl::GlBoolState(GL_DEPTH_TEST, false),
+                                       utilgl::GlBoolState(GL_BLEND, true),
+                                       utilgl::BlendModeEquationState(GL_ONE, GL_ONE, GL_FUNC_ADD));
             case BlendMode::Subtractive:
                 return std::make_tuple(
                     utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
-                    utilgl::BlendModeEquationState(GL_SRC_ALPHA, GL_ONE, GL_FUNC_REVERSE_SUBTRACT));
+                    utilgl::BlendModeEquationState(GL_ONE, GL_ONE, GL_FUNC_REVERSE_SUBTRACT));
             case BlendMode::Regular:
-                return std::make_tuple(utilgl::GlBoolState(GL_DEPTH_TEST, false),
-                                       utilgl::GlBoolState(GL_BLEND, true),
-                                       utilgl::BlendModeEquationState(
-                                           GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD));
+                return std::make_tuple(
+                    utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
+                    utilgl::BlendModeEquationState(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD));
             case BlendMode::None:
             default:
                 return std::make_tuple(

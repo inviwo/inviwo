@@ -31,16 +31,17 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTINGGL_API
 
-#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
-#include <inviwo/core/ports/volumeport.h>                   // for VolumeInport
-#include <inviwo/core/processors/processor.h>               // for Processor
-#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
-#include <inviwo/core/properties/isotfproperty.h>           // for IsoTFProperty
-#include <inviwo/core/properties/optionproperty.h>          // for OptionProperty, OptionPropert...
-#include <inviwo/core/properties/ordinalproperty.h>         // for IntProperty, FloatProperty
-#include <inviwo/core/properties/stringproperty.h>          // for StringProperty
+#include <inviwo/core/ports/imageport.h>               // for ImageInport, ImageOutport
+#include <inviwo/core/ports/volumeport.h>              // for VolumeInport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/isotfproperty.h>      // for IsoTFProperty
+#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty, OptionPropert...
+#include <inviwo/core/properties/ordinalproperty.h>    // for IntProperty, FloatProperty
+#include <inviwo/core/properties/stringproperty.h>     // for StringProperty
+#include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/util/glmvec.h>                        // for ivec2
 #include <inviwo/core/util/staticstring.h>                  // for operator+
 #include <modules/opengl/rendering/texturequadrenderer.h>   // for TextureQuadRenderer
@@ -78,7 +79,20 @@ private:
         Opaque
     };
     enum class LabelType { String, Data, Custom };
+    enum class Placement {
+        OutsideLeft,
+        OutsideTop,
+        OutsideRight,
+        OutsideBottom,
+        InsideLeft,
+        InsideTop,
+        InsideRight,
+        InsideBottom,
+    };
     std::tuple<ivec2, ivec2, ivec2, ivec2> getPositions(ivec2 dim) const;
+
+    std::vector<ButtonGroupProperty::Button> buttons();
+    void setPlacement(Placement placement);
 
     ImageInport inport_;
     VolumeInport volumeInport_;
@@ -87,11 +101,9 @@ private:
     BoolProperty enabled_;
     IsoTFProperty isotfComposite_;
 
-    CompositeProperty positioning_;
-
     // position properties
-    OptionPropertyInt legendPlacement_;
-    OptionPropertyInt rotation_;
+    CompositeProperty positioning_;
+    ButtonGroupProperty legendPresets_;
     FloatVec2Property position_;
     IntProperty margin_;
     IntVec2Property legendSize_;

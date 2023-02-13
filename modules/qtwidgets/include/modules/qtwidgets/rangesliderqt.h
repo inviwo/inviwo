@@ -58,7 +58,7 @@ public:
     int maxValue() const;
     int minRange() const;
     int maxRange() const;
-    int minSeperation() const;
+    int minSeparation() const;
 
     void setValue(int, int);
     void setMinValue(int);
@@ -87,7 +87,7 @@ protected:
 private:
     ivec2 range_;
     ivec2 value_;
-    int minSeperation_;
+    int minSeparation_;
     std::function<std::string(int, int)> formatTooltip_;
     int lastPos_;
 };

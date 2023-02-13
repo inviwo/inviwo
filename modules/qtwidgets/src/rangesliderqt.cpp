@@ -57,7 +57,7 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool 
     : QSplitter(orientation, parent)
     , range_{0, 10}
     , value_{0, 10}
-    , minSeperation_(0)
+    , minSeparation_(0)
     , formatTooltip_{[](int /*handle*/, int pos) { return toString(pos); }} {
 
     QFrame* left = new QFrame(this);
@@ -91,7 +91,7 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool 
         left->setMinimumHeight(0);
         right->setMinimumHeight(0);
     }
-    setMinSeparation(minSeperation_);
+    setMinSeparation(minSeparation_);
     QSplitter::setChildrenCollapsible(false);
     connect(this, &RangeSliderQt::splitterMoved, this, &RangeSliderQt::updateSplitterPosition);
     updateSlidersFromState();
@@ -110,7 +110,7 @@ int RangeSliderQt::minRange() const { return range_.x; }
 
 int RangeSliderQt::maxRange() const { return range_.y; }
 
-int RangeSliderQt::minSeperation() const { return minSeperation_; }
+int RangeSliderQt::minSeparation() const { return minSeparation_; }
 
 void RangeSliderQt::setValue(int minVal, int maxVal) {
     setMinValue(minVal);
@@ -121,12 +121,12 @@ void RangeSliderQt::setMinValue(int minVal) {
     if (value_.x != minVal) {
         value_.x = minVal;
 
-        if (value_.x > range_.y - minSeperation_) {
-            value_.x = range_.y - minSeperation_;
+        if (value_.x > range_.y - minSeparation_) {
+            value_.x = range_.y - minSeparation_;
         }
 
-        if (value_.y - value_.x < minSeperation_) {
-            value_.y = value_.x + minSeperation_;
+        if (value_.y - value_.x < minSeparation_) {
+            value_.y = value_.x + minSeparation_;
         }
 
         updateSlidersFromState();
@@ -136,12 +136,12 @@ void RangeSliderQt::setMinValue(int minVal) {
 void RangeSliderQt::setMaxValue(int maxVal) {
     if (value_.y != maxVal) {
         value_.y = maxVal;
-        if (value_.y < range_.x + minSeperation_) {
-            value_.y = range_.x + minSeperation_;
+        if (value_.y < range_.x + minSeparation_) {
+            value_.y = range_.x + minSeparation_;
         }
 
-        if (value_.y - value_.x < minSeperation_) {
-            value_.x = value_.y - minSeperation_;
+        if (value_.y - value_.x < minSeparation_) {
+            value_.x = value_.y - minSeparation_;
         }
 
         updateSlidersFromState();
@@ -154,7 +154,7 @@ void RangeSliderQt::setRange(int minR, int maxR) {
 }
 
 void RangeSliderQt::setMinSeparation(int sep) {
-    minSeperation_ = sep;
+    minSeparation_ = sep;
     QList<int> sizes = QSplitter::sizes();
     int range = sizes[0] + sizes[1] + sizes[2];
 
@@ -164,9 +164,9 @@ void RangeSliderQt::setMinSeparation(int sep) {
     }
 
     if (orientation() == Qt::Horizontal) {
-        widget(1)->setMinimumWidth(range * minSeperation_ / size);
+        widget(1)->setMinimumWidth(range * minSeparation_ / size);
     } else {
-        widget(1)->setMinimumHeight(range * minSeperation_ / size);
+        widget(1)->setMinimumHeight(range * minSeparation_ / size);
     }
 }
 
@@ -199,7 +199,7 @@ void RangeSliderQt::setMaxRange(int maxR) {
 void RangeSliderQt::resizeEvent(QResizeEvent* event) {
     QSplitter::resizeEvent(event);
     updateSlidersFromState();
-    setMinSeparation(minSeperation_);
+    setMinSeparation(minSeparation_);
 }
 
 void RangeSliderQt::updateStateFromSliders() {

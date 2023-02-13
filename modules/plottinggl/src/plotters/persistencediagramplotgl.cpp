@@ -135,8 +135,6 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
     axisStyle_.setCollapsed(true);
     axisStyle_.registerProperties(xAxis_, yAxis_);
 
-    yAxis_.flipped_.set(true);
-
     pointColor_.setVisible(true);
     tf_.setVisible(!pointColor_.getVisible());
 }

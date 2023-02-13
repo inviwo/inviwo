@@ -49,8 +49,16 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
+    FontFaceOptionProperty(std::string_view identifier, std::string_view displayName, Document help,
+                           font::FontType fontType = font::FontType::Default,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
     FontFaceOptionProperty(std::string_view identifier, std::string_view displayName,
                            font::FontType fontType = font::FontType::Default,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
+    FontFaceOptionProperty(std::string_view identifier, std::string_view displayName, Document help,
+                           std::string_view fontFaceName,
                            InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                            PropertySemantics semantics = PropertySemantics::Default);
     FontFaceOptionProperty(std::string_view identifier, std::string_view displayName,

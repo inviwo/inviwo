@@ -45,7 +45,6 @@ class PlotTextSettings;
 class IVW_MODULE_PLOTTING_API AxisSettings {
 public:
     enum class Orientation { Horizontal, Vertical };
-    enum class Placement { Outside, Inside };
 
     AxisSettings() = default;
     virtual ~AxisSettings() = default;
@@ -54,11 +53,12 @@ public:
     virtual bool getUseDataRange() const = 0;
 
     virtual bool getAxisVisible() const = 0;
-    virtual bool getFlipped() const = 0;
+    virtual bool getMirrored() const = 0;
     virtual vec4 getColor() const = 0;
     virtual float getWidth() const = 0;
+    // scaling factor affecting tick lengths and offsets of axis caption and labels
+    virtual float getScalingFactor() const = 0;
 
-    virtual Placement getPlacement() const = 0;
     virtual Orientation getOrientation() const = 0;
 
     // caption besides axis

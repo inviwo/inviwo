@@ -72,6 +72,7 @@
 
 #include <fmt/core.h>    // for basic_string_view, arg
 #include <glm/vec2.hpp>  // for operator+, operator-
+#include <glm/gtx/vec_swizzle.hpp>
 
 namespace inviwo {
 namespace plot {
@@ -100,33 +101,18 @@ ColorScaleLegend::ColorScaleLegend()
     , isotfComposite_("isotfComposite", "TF & Isovalues",
                       "The transfer function used in the legend."_help)
     , positioning_("positioning", "Positioning & Size")
-    , legendPlacement_(
-          "legendPlacement", "Legend Placement",
-          "Defines to which side of the canvas the legend should be aligned or if the position and "
-          "rotation should be customly set by the user"_help,
-          {{"top", "Top", 0},
-           {"right", "Right", 1},
-           {"bottom", "Bottom", 2},
-           {"left", "Left", 3},
-           {"custom", "Custom", 4}},
-          1)
-    , rotation_("legendRotation", "Legend Rotation",
-                "Sets the legend rotation (only available for custom placement)"_help,
-                {{"degree0", "0 degrees", 0},
-                 {"degree90", "90 degrees", 1},
-                 {"degree180", "180 degrees", 2},
-                 {"degree270", "270 degrees", 3}},
-                1)
-    , position_(
-          "position", "Position",
-          "Sets the legend position in screen coordinates [0,1] (only available for custom placement)"_help,
-          vec2(0.5f), {vec2(0.0f), ConstraintBehavior::Editable},
-          {vec2(1.0f), ConstraintBehavior::Editable})
-    , margin_(
-          "margin", "Margin (in pixels)",
-          util::ordinalCount(25, 100).set(
-              "Sets the legend margin to canvas borders in pixels (only available for custom placement)"_help))
-    , legendSize_("legendSize", "Legend Size", "Sets the legend width and height in pixel"_help,
+    , legendPresets_(
+          "legendPresets", "Presets",
+          "Adjust the placement of the legend on the canvas according to the presets."_help,
+          buttons(), InvalidationLevel::Valid)
+    , position_("position", "Position",
+                "Sets the legend position in screen coordinates [0,1]."_help, vec2(0.5f, 0.0f),
+                {vec2(0.0f), ConstraintBehavior::Editable},
+                {vec2(1.0f), ConstraintBehavior::Editable})
+    , margin_("margin", "Margin (in pixels)",
+              util::ordinalCount(10, 100).set(
+                  "Sets the legend margin to canvas borders in pixels."_help))
+    , legendSize_("legendSize", "Legend Size", "Sets the legend width and height in pixel."_help,
                   vec2(200, 25), {vec2(10, 10), ConstraintBehavior::Editable},
                   {vec2(2000, 500), ConstraintBehavior::Editable})
     , axisStyle_("style", "Style")
@@ -138,7 +124,7 @@ ColorScaleLegend::ColorScaleLegend()
                  0}
     , title_("title", "Legend Title", "Legend")
     , backgroundStyle_("backgroundStyle", "Background",
-                       "Background style when dealing with transparent transfer functions"_help,
+                       "Background style when dealing with transparent transfer functions."_help,
                        {{"noBackground", "No background", BackgroundStyle::NoBackground},
                         {"checkerBoard", "Checkerboard", BackgroundStyle::CheckerBoard},
                         {"solid", "Solid", BackgroundStyle::SolidColor},
@@ -147,13 +133,13 @@ ColorScaleLegend::ColorScaleLegend()
                         {"opaque", "Opaque TF (ignore alpha)", BackgroundStyle::Opaque}},
                        0)
     , checkerBoardSize_("checkerBoardSize", "Checkerboard Size",
-                        "Size of the checkerboard cells in pixel"_help, 5.0f,
+                        "Size of the checkerboard cells in pixel."_help, 5.0f,
                         {1.0f, ConstraintBehavior::Editable}, {20.0f, ConstraintBehavior::Editable})
     , bgColor_("backgroundColor", "Background Color",
                util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f))
-                   .set("Color of the solid background"_help))
+                   .set("Color of the solid background."_help))
     , borderWidth_("borderWidth", "Border Width",
-                   util::ordinalCount(2, 10).set("Border width of the legend in pixel"_help))
+                   util::ordinalCount(2, 10).set("Border width of the legend in pixel."_help))
     , shader_("img_texturequad.vert", "legend.frag")
     , axis_("axis", "Scale Axis")
     , axisRenderer_(axis_) {
@@ -165,10 +151,7 @@ ColorScaleLegend::ColorScaleLegend()
     addPorts(inport_, volumeInport_, outport_);
 
     // legend position
-    positioning_.addProperties(legendPlacement_, rotation_, position_, margin_, legendSize_);
-    rotation_.visibilityDependsOn(legendPlacement_, [](auto l) { return l.get() == 4; });
-    position_.visibilityDependsOn(legendPlacement_, [](auto l) { return l.get() == 4; });
-    axis_.flipped_.visibilityDependsOn(legendPlacement_, [](auto l) { return l.get() == 4; });
+    positioning_.addProperties(legendPresets_, margin_, position_, legendSize_);
 
     // legend style
     axisStyle_.insertProperty(0, labelType_);
@@ -194,8 +177,6 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.setCaption(title_.get());
     axis_.captionSettings_.setChecked(true);
     axis_.labelSettings_.font_.fontFace_.set(axis_.captionSettings_.font_.fontFace_.get());
-    axis_.captionSettings_.offset_.set(20);
-    axis_.captionSettings_.font_.anchorPos_.set(vec2{0.0f, 0.0f});
     axis_.majorTicks_.style_.set(plot::TickStyle::Outside);
     axis_.setCurrentStateAsDefault();
 
@@ -230,65 +211,17 @@ ColorScaleLegend::ColorScaleLegend()
     volumeInport_.onChange(updateTitle);
     labelType_.onChange(updateTitle);
     title_.onChange(updateTitle);
-
-    const auto getAxisOrientation = [](int i) {
-        switch (i) {
-            default:
-            case 0:  // 0 degrees rotation (top)
-                return AxisProperty::Orientation::Horizontal;
-            case 1:  // 90 degrees rotation (right)
-                return AxisProperty::Orientation::Vertical;
-            case 2:  // 180 degrees rotation (bottom)
-                return AxisProperty::Orientation::Horizontal;
-            case 3:  // 270 degrees rotation (left)
-                return AxisProperty::Orientation::Vertical;
-        }
-    };
-    const auto getAxisPlacement = [](int i) {
-        switch (i) {
-            default:
-            case 0:  // 0 degrees rotation (top)
-                return AxisProperty::Placement::Outside;
-            case 1:  // 90 degrees rotation (right)
-                return AxisProperty::Placement::Outside;
-            case 2:  // 180 degrees rotation (bottom)
-                return AxisProperty::Placement::Inside;
-            case 3:  // 270 degrees rotation (left)
-                return AxisProperty::Placement::Inside;
-        }
-    };
-
-    legendPlacement_.onChange([this]() {
-        if (legendPlacement_ != 4) rotation_.set(legendPlacement_.get());
-    });
-    if (legendPlacement_ != 4) rotation_.set(legendPlacement_.get());
-
-    auto updatePlacement = [&]() {
-        axis_.orientation_.set(getAxisOrientation(rotation_.get()));
-        axis_.placement_.set(getAxisPlacement(rotation_.get()));
-
-        if (rotation_ == 0 || rotation_ == 3) {  // Top/Left
-            axis_.flipped_ = false;
-        } else if (rotation_ == 1 || rotation_ == 2) {  // Right/Bottom
-            axis_.flipped_ = true;
-        }
-    };
-
-    rotation_.onChange(updatePlacement);
-    updatePlacement();
 }
 
-// this function handles the legend rotation and updates the axis thereafter
 std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dimensions) const {
     const float ticsWidth = ceil(axis_.majorTicks_.tickWidth_.get());
     const auto borderWidth = borderWidth_.get();
 
     const auto [position, legendSize] = [&]() {
-        const std::array<vec2, 4> pos = {{{0.5f, 1.0f}, {1.0f, 0.5f}, {0.5f, 0.0f}, {0.0f, 0.5f}}};
-        const auto initialPos = legendPlacement_ == 4 ? position_.get() : pos[legendPlacement_];
-        const auto rotation = legendPlacement_ == 4 ? rotation_.get() : legendPlacement_.get();
-        const auto size =
-            rotation % 2 == 0 ? legendSize_.get() : ivec2{legendSize_.get().y, legendSize_.get().x};
+        const auto initialPos = position_.get();
+        const auto size = (axis_.orientation_ == AxisProperty::Orientation::Horizontal)
+                              ? legendSize_.get()
+                              : glm::yx(legendSize_.get());
 
         auto lpos = 0.5f * vec2{size + 2 * ivec2{margin_}} +
                     initialPos * vec2{dimensions - size - 2 * ivec2{margin_}};
@@ -298,31 +231,29 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
 
     // define the legend corners
     const ivec2 bottomLeft = position - vec2{legendSize} * vec2{0.5};
-    const ivec2 bottomRight = vec2(bottomLeft.x + legendSize.x, bottomLeft.y);
-    const ivec2 topLeft = vec2(bottomLeft.x, bottomLeft.y + legendSize.y);
-    const ivec2 topRight = vec2(bottomRight.x, topLeft.y);
+    const ivec2 bottomRight(bottomLeft.x + legendSize.x, bottomLeft.y);
+    const ivec2 topLeft(bottomLeft.x, bottomLeft.y + legendSize.y);
+    const ivec2 topRight(bottomRight.x, topLeft.y);
 
     ivec2 axisStart{0};
     ivec2 axisEnd{0};
 
-    switch (rotation_.get()) {
-        default:
-        case 0:  // 0 degrees rotation (top)
-            axisStart = bottomLeft + ivec2(ticsWidth / 2, 0) - ivec2(borderWidth);
-            axisEnd = bottomRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth, -borderWidth);
-            break;
-        case 1:  // 90 degrees rotation (right)
-            axisStart = bottomLeft + ivec2(0, ticsWidth / 2) - ivec2(borderWidth);
-            axisEnd = topLeft - ivec2(0, ticsWidth / 2) + ivec2(-borderWidth, borderWidth);
-            break;
-        case 2:  // 180 degrees rotation (bottom)
+    if (axis_.getOrientation() == AxisProperty::Orientation::Horizontal) {
+        if (axis_.getMirrored()) {
             axisStart = topLeft + ivec2(ticsWidth / 2, 0) + ivec2(-borderWidth, borderWidth);
             axisEnd = topRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth);
-            break;
-        case 3:  // 270 degrees rotation (left)
+        } else {
+            axisStart = bottomLeft + ivec2(ticsWidth / 2, 0) - ivec2(borderWidth);
+            axisEnd = bottomRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth, -borderWidth);
+        }
+    } else {
+        if (axis_.getMirrored()) {
+            axisStart = bottomLeft + ivec2(0, ticsWidth / 2) - ivec2(borderWidth);
+            axisEnd = topLeft - ivec2(0, ticsWidth / 2) + ivec2(-borderWidth, borderWidth);
+        } else {
             axisStart = bottomRight + ivec2(0, ticsWidth / 2) + ivec2(borderWidth, -borderWidth);
             axisEnd = topRight - ivec2(0, ticsWidth / 2) + ivec2(borderWidth);
-            break;
+        }
     }
     return {bottomLeft, legendSize, axisStart, axisEnd};
 }
@@ -356,7 +287,9 @@ void ColorScaleLegend::process() {
     utilgl::Activate<Shader> activate(&shader_);
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::setUniforms(shader_, axis_.color_, borderWidth_, backgroundStyle_, checkerBoardSize_,
-                        rotation_, isotfComposite_);
+                        isotfComposite_);
+    shader_.setUniform("legendOrientation",
+                       (axis_.getOrientation() == AxisProperty::Orientation::Horizontal) ? 0 : 1);
 
     if (backgroundStyle_ == BackgroundStyle::NoBackground) {
         shader_.setUniform("backgroundColor", vec4(0.0f));
@@ -374,6 +307,74 @@ void ColorScaleLegend::process() {
     axisRenderer_.render(dimensions, axisStart, axisEnd);
 
     utilgl::deactivateCurrentTarget();
+}
+
+std::vector<ButtonGroupProperty::Button> ColorScaleLegend::buttons() {
+    return {
+        {{std::nullopt, ":svgicons/axis-inside-left.svg", "Legend on the left with inside labels",
+          [this] { setPlacement(Placement::InsideLeft); }},
+         {std::nullopt, ":svgicons/axis-inside-top.svg", "Legend on the top with inside labels",
+          [this] { setPlacement(Placement::InsideTop); }},
+         {std::nullopt, ":svgicons/axis-inside-right.svg", "Legend on the right with inside labels",
+          [this] { setPlacement(Placement::InsideRight); }},
+         {std::nullopt, ":svgicons/axis-inside-bottom.svg",
+          "Legend on the bottom with inside labels",
+          [this] { setPlacement(Placement::InsideBottom); }},
+         {std::nullopt, ":svgicons/axis-outside-left.svg", "Legend on the left with outside labels",
+          [this] { setPlacement(Placement::OutsideLeft); }},
+         {std::nullopt, ":svgicons/axis-outside-top.svg", "Legend on the top with outside labels",
+          [this] { setPlacement(Placement::OutsideTop); }},
+         {std::nullopt, ":svgicons/axis-outside-right.svg",
+          "Legend on the right with outside labels",
+          [this] { setPlacement(Placement::OutsideRight); }},
+         {std::nullopt, ":svgicons/axis-outside-bottom.svg",
+          "Legend on the bottom with outside labels",
+          [this] { setPlacement(Placement::OutsideBottom); }}}};
+}
+
+void ColorScaleLegend::setPlacement(Placement placement) {
+
+    auto setPositions = [&](const vec2& legendPos, const vec2& anchor) {
+        axis_.labelSettings_.font_.anchorPos_.set(anchor);
+        axis_.captionSettings_.font_.anchorPos_.set(anchor);
+        position_.set(legendPos);
+    };
+
+    switch (placement) {
+        case Placement::OutsideLeft:
+        default:
+            axis_.set(AxisProperty::Orientation::Vertical, true);
+            setPositions(vec2{0.0f, 0.5f}, vec2{1.0f, 0.0f});
+            break;
+        case Placement::OutsideTop:
+            axis_.set(AxisProperty::Orientation::Horizontal, true);
+            setPositions(vec2{0.5f, 1.0f}, vec2{0.0f, -1.0f});
+            break;
+        case Placement::OutsideRight:
+            axis_.set(AxisProperty::Orientation::Vertical, false);
+            setPositions(vec2{1.0f, 0.5f}, vec2{-1.0f, 0.0f});
+            break;
+        case Placement::OutsideBottom:
+            axis_.set(AxisProperty::Orientation::Horizontal, false);
+            setPositions(vec2{0.5f, 0.0f}, vec2{0.0f, 1.0f});
+            break;
+        case Placement::InsideLeft:
+            axis_.set(AxisProperty::Orientation::Vertical, false);
+            setPositions(vec2{0.0f, 0.5f}, vec2{-1.0f, 0.0f});
+            break;
+        case Placement::InsideTop:
+            axis_.set(AxisProperty::Orientation::Horizontal, false);
+            setPositions(vec2{0.5f, 1.0f}, vec2{0.0f, 1.0f});
+            break;
+        case Placement::InsideRight:
+            axis_.set(AxisProperty::Orientation::Vertical, true);
+            setPositions(vec2{1.0f, 0.5f}, vec2{1.0f, 0.0f});
+            break;
+        case Placement::InsideBottom:
+            axis_.set(AxisProperty::Orientation::Horizontal, true);
+            setPositions(vec2{0.5f, 0.0f}, vec2{0.0f, -1.0f});
+            break;
+    }
 }
 
 }  // namespace plot

@@ -281,7 +281,7 @@ bool PCPAxisSettings::getUseDataRange() const { return false; }
 
 bool PCPAxisSettings::getAxisVisible() const { return BoolCompositeProperty::isChecked(); }
 
-bool PCPAxisSettings::getFlipped() const { return invertRange.get(); }
+bool PCPAxisSettings::getMirrored() const { return invertRange.get(); }
 
 vec4 PCPAxisSettings::getColor() const {
     const auto hover = pcp_->getHoveredAxis() == static_cast<int>(columnId_);
@@ -308,8 +308,8 @@ float PCPAxisSettings::getWidth() const {
     }
 }
 
+float PCPAxisSettings::getScalingFactor() const { return 1.0f; }
 AxisSettings::Orientation PCPAxisSettings::getOrientation() const { return Orientation::Vertical; }
-AxisSettings::Placement PCPAxisSettings::getPlacement() const { return Placement::Inside; }
 const std::string& PCPAxisSettings::getCaption() const { return caption_; }
 const PlotTextSettings& PCPAxisSettings::getCaptionSettings() const { return captionSettings_; }
 const std::vector<std::string>& PCPAxisSettings::getLabels() const {
@@ -323,23 +323,25 @@ const MinorTickSettings& PCPAxisSettings::getMinorTicks() const { return minor_;
 bool PCPCaptionSettings::isEnabled() const {
     return settings_->pcp_->captionPosition_.get() != ParallelCoordinates::LabelPosition::None;
 }
+LabelPlacement PCPCaptionSettings::getPlacement() const { return LabelPlacement::Outside; }
 vec4 PCPCaptionSettings::getColor() const { return settings_->pcp_->captionColor_; }
 float PCPCaptionSettings::getPosition() const {
     return (settings_->pcp_->captionPosition_.get() == ParallelCoordinates::LabelPosition::Above) !=
-                   settings_->getFlipped()
+                   settings_->getMirrored()
                ? 1.0f
                : 0.0f;
 }
 
 vec2 PCPCaptionSettings::getOffset() const {
-    return {0.0f, settings_->pcp_->captionOffset_ * (settings_->getFlipped() ? -1.0f : 1.0f)};
+    return {0.0f, settings_->pcp_->captionOffset_ * (settings_->getMirrored() ? -1.0f : 1.0f)};
 }
-float PCPCaptionSettings::getRotation() const { return 270.f; }
+float PCPCaptionSettings::getRotation() const { return 0.f; }
 const FontSettings& PCPCaptionSettings::getFont() const {
     return settings_->pcp_->captionSettings_;
 }
 
 bool PCPLabelSettings::isEnabled() const { return settings_->pcp_->showLabels_; }
+LabelPlacement PCPLabelSettings::getPlacement() const { return LabelPlacement::Outside; }
 vec4 PCPLabelSettings::getColor() const { return settings_->pcp_->labelColor_; }
 float PCPLabelSettings::getPosition() const { return 0.0f; }
 vec2 PCPLabelSettings::getOffset() const { return {settings_->pcp_->labelOffset_, 0.0f}; }

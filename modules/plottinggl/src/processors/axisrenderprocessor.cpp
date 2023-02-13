@@ -69,7 +69,7 @@ AxisRenderProcessor::AxisRenderProcessor()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , margins_("margins", "Margins", 5.0f, 5.0f, 55.0f, 60.0f)
+    , margins_("margins", "Margins", 5.0f, 5.0f, 55.0f, 65.0f)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
     , antialiasing_("antialias", "Antialiasing", true)
     , style_("style", "Global Style")
@@ -91,8 +91,6 @@ AxisRenderProcessor::AxisRenderProcessor()
     axis1_.captionSettings_.setChecked(true);
     axis1_.setCaption("x Axis");
 
-    // flip vertical axis to show labels on the left side
-    axis2_.flipped_.set(true);
     axis2_.captionSettings_.setChecked(true);
     axis2_.setCaption("y Axis");
 

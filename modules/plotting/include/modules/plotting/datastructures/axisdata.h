@@ -56,11 +56,11 @@ public:
     bool useDataRange = true;
 
     bool visible = true;
-    bool flipped = false;
+    bool mirrored = false;
     vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     float width = 2.5f;
+    float scalingFactor = 1.0f;
     Orientation orientation = Orientation::Horizontal;
-    Placement placement = Placement::Outside;
 
     std::string caption;
     PlotTextData captionSettings;
@@ -76,11 +76,11 @@ public:
     virtual bool getUseDataRange() const override;
 
     virtual bool getAxisVisible() const override;
-    virtual bool getFlipped() const override;
+    virtual bool getMirrored() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
+    virtual float getScalingFactor() const override;
     virtual Orientation getOrientation() const override;
-    virtual Placement getPlacement() const override;
 
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;

@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
 #include <inviwo/core/properties/optionproperty.h>         // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>        // for FloatProperty, FloatVec4Property
+#include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
 #include <inviwo/core/util/glmvec.h>                       // for dvec2, vec4
 #include <inviwo/core/util/staticstring.h>                 // for operator+
@@ -48,6 +49,7 @@
 #include <string>       // for operator==, string, operator+
 #include <string_view>  // for operator==, string_view
 #include <vector>       // for operator!=, vector, operator==
+#include <optional>
 
 namespace inviwo {
 
@@ -61,13 +63,32 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    AxisProperty(std::string_view identifier, std::string_view displayName,
+    AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                  Orientation orientation = Orientation::Horizontal,
+                 bool includeOrientationProperty = true,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
+
+    AxisProperty(std::string_view identifier, std::string_view displayName,
+                 Orientation orientation = Orientation::Horizontal,
+                 bool includeOrientationProperty = true,
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                 PropertySemantics semantics = PropertySemantics::Default);
+
     AxisProperty(const AxisProperty& rhs);
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
+
+    /**
+     * \brief aligns and centers caption and labels according to the current axis orientation and
+     * mirror state. For a horizontal axis, both caption and labels are centered horizontally with
+     * the vertical anchor position at the top (or bottom when mirrored). In the vertical
+     * case, labels are right-aligned (left when mirrored) and vertically centered.
+     */
+    void defaultAlignLabels();
+
+    using BoolCompositeProperty::set;
+    void set(Orientation orientation, bool mirrored);
 
     virtual AxisProperty& setCaption(std::string_view title);
 
@@ -106,11 +127,11 @@ public:
     virtual bool getUseDataRange() const override;
 
     virtual bool getAxisVisible() const override;
-    virtual bool getFlipped() const override;
+    virtual bool getMirrored() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
+    virtual float getScalingFactor() const override;
     virtual Orientation getOrientation() const override;
-    virtual Placement getPlacement() const override;
 
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;
@@ -126,10 +147,10 @@ public:
     FloatProperty width_;
     BoolProperty useDataRange_;
     DoubleMinMaxProperty range_;
+    FloatProperty scalingFactor_;
 
-    BoolProperty flipped_;
-    OptionProperty<Orientation> orientation_;
-    OptionProperty<Placement> placement_;
+    BoolProperty mirrored_;
+    std::optional<OptionProperty<Orientation>> orientation_;
 
     // caption besides axis
     PlotTextProperty captionSettings_;
@@ -142,8 +163,9 @@ public:
 
 private:
     virtual void updateLabels();
+    std::vector<ButtonGroupProperty::Button> buttons(bool hasOrientation);
 
-    void adjustAlignment();
+    ButtonGroupProperty alignment_;
 };
 
 }  // namespace plot

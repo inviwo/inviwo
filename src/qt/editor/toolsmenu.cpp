@@ -35,6 +35,8 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/properties/property.h>
@@ -72,7 +74,13 @@ namespace {
 void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
     auto factory = app->getProcessorFactory();
 
-    for (auto& m : app->getModules()) {
+    const auto& modules = app->getModules();
+    auto order = util::ordering(modules, [](auto& a, auto& b) {
+        return iCaseLess(a->getIdentifier(), b->getIdentifier());
+    });
+    for (size_t i : order) {
+        const auto& m = modules[i];
+
         auto& processors = m->getProcessors();
         if (processors.empty()) continue;
 
@@ -130,7 +138,12 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
 }
 
 void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* menu) {
-    for (const auto& module : app->getModules()) {
+    const auto& modules = app->getModules();
+    auto order = util::ordering(modules, [](auto& a, auto& b) {
+        return iCaseLess(a->getIdentifier(), b->getIdentifier());
+    });
+    for (size_t i : order) {
+        const auto& module = modules[i];
         auto action = menu->addAction(utilqt::toQString(module->getIdentifier()));
 
         QObject::connect(
