@@ -36,6 +36,7 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/volume/volumeutils.h>
 
 #include <cstdio>
 #include <fmt/format.h>
@@ -111,6 +112,7 @@ void MyFragmentListRenderer::prePass(const size2_t& screenSize) {
 
 void MyFragmentListRenderer::setShaderUniforms(Shader& shader) {
     setUniforms(shader, textureUnits_[0]);
+    // other uniforms
 }
 
 bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* background) {
@@ -156,8 +158,6 @@ bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* backgro
         utilgl::singleDrawImagePlaneRect();
         display_.deactivate();
     }
-    TextureUnit idxUnit;
-    TextureUnit countUnit;
     textureUnits_.clear();
 
     return true;  // success, enough storage available
@@ -176,14 +176,19 @@ typename Dispatcher<void()>::Handle MyFragmentListRenderer::onReload(
     return onReload_.add(callback);
 }
 
-void MyFragmentListRenderer::setRaycastingState(const Rasterization::RaycastingState* rp, int id) {
+void MyFragmentListRenderer::setRaycastingState(const Rasterization::RaycastingState* rp, int id, TextureUnitContainer& units) {
     display_.activate();
     display_.setUniform("channel", rp->channel);
     display_.setUniform("volumeId", id);
     display_.setUniform("volWorldToData", rp->volume->getCoordinateTransformer().getWorldToDataMatrix());
-    // display_.setUniform("tf", rp->tf);
-    // display_.setUniform("lighting", rp->lighting);
-    //utilgl::setShaderUniforms(display_, *rp->volume, StrBuffer{"volumeParameters[{}]", id});
+    
+    utilgl::bindAndSetUniforms(display_, units, *rp->volume, fmt::format("volumeSamplers[{}]", id));
+   
+    auto& unit = units.emplace_back();
+    utilgl::bindTexture(rp->tf, unit);
+    display_.setUniform(fmt::format("tfSamplers[{}]", id), unit);
+    //utilgl::setUniforms(display_, rp->lighting);
+
     display_.deactivate();
 }
 

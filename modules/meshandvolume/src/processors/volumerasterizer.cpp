@@ -110,10 +110,8 @@ void VolumeRasterizer::initializeResources() {
     }
     shader_->build();
 }
-
+// Bind tf and volume first
 void VolumeRasterizer::setUniforms(Shader& shader, std::string_view prefix) const {
-    shader.setUniform(
-        "volumeId", volumeInport_.getData()->getRepresentation<VolumeGL>()->getTexture()->getID());
 
     std::array<std::pair<std::string_view, std::variant<bool, int, float, vec4>>, 15> uniforms{
         {{"externalColor", vec4{1.0f, 0.0f, 1.0f, 1.0f}}}};
@@ -126,7 +124,7 @@ void VolumeRasterizer::setUniforms(Shader& shader, std::string_view prefix) cons
 }
 
 VolumeRasterization::VolumeRasterization(const VolumeRasterizer& processor)
-    : raycastState_{processor.tf_.tf_.get(), processor.lighting_.getState(),
+    : raycastState_{processor.tf_, processor.lighting_.getState(),
                     processor.channel_.get(), processor.volumeInport_.getData()}
     , shader_(processor.shader_)
     , volume_(processor.volumeInport_.getData())

@@ -43,6 +43,7 @@
 #include "utils/structs.glsl"
 #include "utils/classification.glsl"
 #include "utils/depth.glsl"
+#include "utils/sampler3d.glsl"
 
 // How should the stuff be rendered? (Debugging options)
 #define ABUFFER_DISPNUMFRAGMENTS 0
@@ -100,16 +101,16 @@ vec4 myRaycast(vec4 color, int volumeIndex, vec3 entryData, float dist) {
     float tEnd = dist;
     float tIncr = min(
         tEnd, tEnd / (samplingRate * length(rayDir * volumeParameters[volumeIndex].dimensions)));
-        //tIncr = 0.01;
     while(t < tEnd) {
         vec3 samplePos = entryData + rayDir * t;
-        float values = texture(volumeSamplers[volumeIndex], samplePos).r;
+        //vec4 voxel = texture(volumeSamplers[volumeIndex], samplePos);
+        vec4 voxel = getNormalizedVoxel(volumeSamplers[volumeIndex], volumeParameters[volumeIndex], samplePos);
+        res = texture(tfSamplers[volumeIndex], vec2(voxel.x, 0.5));
+        //res += voxel*0.3;
         t += 0.5*tIncr;
         //applyTF()
-        res += vec4(vec3(values), 1.0);
-    } 
-   
-    //return vec4(entryData, 1.0);
+        //res += vec4(voxel.rgb, 0.1);
+    }
     return res;
 }
 
@@ -120,18 +121,13 @@ void main() {
         coords.y >= AbufferParams.screenHeight) {
         discard;
     }
-
     uint pixelIdx = getPixelLink(coords);
-
     if (pixelIdx > 0) {
         float backgroundDepth = 1.0;
 #ifdef BACKGROUND_AVAILABLE
-        // Assume the camera used to render the background has the same near and far plane,
-        // so we can directly compare depths.
         vec2 texCoord = (gl_FragCoord.xy + 0.5) * reciprocalDimensions;
         backgroundDepth = texture(bgDepth, texCoord).x;
 #endif  // BACKGROUND_AVAILABLE
-
         // Initialize fragments
         abufferMeshPixel unpackedMeshFragment = abufferMeshPixel(0, 1.0, vec4(0.0, 1.0, 1.0, 1.0));
         abufferVolumePixel unpackedVolumeFragment = abufferVolumePixel(0, 1.0, vec3(0.0), 0);
@@ -157,7 +153,7 @@ void main() {
         }
       
         while (depth >= 0 && depth <= backgroundDepth) {
-            if(type == 0){ // Shade mesh + find next fragment
+            if(type == 0) { // Shade mesh + find next fragment
                 vec4 c = unpackedMeshFragment.color;
                 color.rgb = color.rgb + (1 - color.a) * c.a * c.rgb;
                 color.a = color.a + (1 - color.a) * c.a;
@@ -171,31 +167,37 @@ void main() {
             // Check depth of next fragment
             type = getPixelDataType(nextFragment);
             if(type == 0) {
+                color = vec4(1.0, 0.0, 0.0, 1.0);
                 unpackedMeshFragment = uncompressMeshPixelData(nextFragment);
                 nextDepth = unpackedMeshFragment.depth;
             } else if(type == 1) {
                 unpackedVolumeFragment = uncompressVolumePixelData(nextFragment);
                 nextDepth = unpackedVolumeFragment.depth;
+                color = vec4(0.0, 0.0, 1.0, 1.0);
+
             }
 
             // Raycast through each volume
-            for(int volumeIndex = 0; volumeIndex < 8; ++volumeIndex) {
-                if(raycastingInfos[volumeIndex].isActive) {
-                    vec3 entryPos = unpackedVolumeFragment.position; // Might be exitPos, in that case go backwards...
-                    // ...regardless, there does not seem to be a texture.
-                    //color += myRaycast(color, volumeIndex, entryPos, abs(nextDepth-depth));
-                    //color = vec4(vec3(depth*0.5), 1.0); // Check if depth is working
-                    color = vec4(texture(volumeSamplers[volumeIndex], vec3(0.5)).rgb*100.0, 1.0); // Check if there is a texture
-                }
-            }
+//            for(int volumeIndex = 0; volumeIndex < 8; ++volumeIndex) {
+//                if(raycastingInfos[volumeIndex].isActive) {
+//                    vec3 entryPos = unpackedVolumeFragment.position; // Might be exitPos, in that case go backwards...
+//                    // ...regardless, there does not seem to be a texture.
+//                    //color += myRaycast(color, volumeIndex, entryPos, abs(nextDepth-depth));
+//                    //color = vec4(vec3(depth*0.5), 1.0); // Check if depth is working
+//                    //color = vec4(texture(volumeSamplers[volumeIndex], vec3(0.1)).rrr*2.5, 1.0); // Check if there is a texture
+//                }
+//            }
+            //color = (type == 0) ? vec4(1.0, 0.0, 0.0, 1.0) : vec4(0.0, 0.0, 1.0, 1.0);
+           
             depth = nextDepth; // Prevent infinite loop
         }
-        FragData0 = color;
+        FragData0 = vec4(0.0, 1.0, 0.0, 1.0);//color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
     } else {  // no pixel found
         FragData0 = vec4(0.0);
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
     }
+    //FragData0 = vec4(screenPos, 0.0, 1.0);
 }
 
 int getFragmentCount(uint pixelIdx) {

@@ -37,6 +37,7 @@
 #include <inviwo/core/util/glmvec.h>                // for uvec3, ivec2
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/properties/isotfproperty.h>
 
 #include <modules/oit/rasterizeevent.h>
 

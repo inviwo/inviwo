@@ -37,7 +37,7 @@
 // GL_NV_gpu_shader5, GL_EXT_shader_image_load_store, GL_NV_shader_buffer_load,
 // GL_NV_shader_buffer_store, GL_EXT_bindable_uniform
 
-#include "oit/abufferlinkedlist.glsl"
+#include "oit/myabufferlinkedlist.glsl"
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;

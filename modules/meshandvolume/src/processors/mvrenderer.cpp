@@ -36,11 +36,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MVRenderer::processorInfo_{
-    "org.inviwo.MVRenderer",  // Class identifier
-    "Mesh and Volume Renderer",             // Display name
-    "Volume Rendering",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::GL,               // Tags
+    "org.inviwo.MVRenderer",     // Class identifier
+    "Mesh and Volume Renderer",  // Display name
+    "Volume Rendering",          // Category
+    CodeState::Experimental,     // Code state
+    Tags::GL,                    // Tags
 };
 const ProcessorInfo MVRenderer::getProcessorInfo() const { return processorInfo_; }
 
@@ -52,15 +52,12 @@ MVRenderer::MVRenderer()
     , intermediateImage_()
     , camera_("camera", "Camera")
     , trackball_(&camera_)
-    , flr_{MyFragmentListRenderer::supportsFragmentLists()
-               ? std::make_unique<MyFragmentListRenderer>()
-               : nullptr} {
-
-    if (!FragmentListRenderer::supportsFragmentLists()) {
-        LogProcessorWarn(
-            "Fragment lists are not supported by the hardware -> use blending without sorting, may "
-            "lead to errors");
-    }
+    , flr_{[this]() {
+        if (!MyFragmentListRenderer::supportsFragmentLists()) {
+            throw Exception{IVW_CONTEXT, "Fragment list not supported."};
+        }
+        return std::make_unique<MyFragmentListRenderer>();
+    }()} {
 
     addPort(rasterizations_);
     addPort(*imageInport_).setOptional(true);
@@ -70,9 +67,7 @@ MVRenderer::MVRenderer()
     camera_.setCollapsed(true);
     trackball_.setCollapsed(true);
 
-    if (flr_) {
-        flrReload_ = flr_->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    }
+    flrReload_ = flr_->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     imageInport_->onChange([this]() {
         if (imageInport_->hasData()) {
@@ -84,58 +79,45 @@ MVRenderer::MVRenderer()
 }
 
 void MVRenderer::process() {
-    bool fragmentLists = false;
-    bool containsOpaque = false;
-    for (auto rasterization : rasterizations_) {
-        if (rasterization->usesFragmentLists()) {
-            fragmentLists = true;
-        } else {
-            containsOpaque = true;
-        }
-    }
+    LGL_ERROR;
 
-    bool useIntermediateTarget = imageInport_->getData() && fragmentLists && containsOpaque;
-    if (useIntermediateTarget) {
-        utilgl::activateTargetAndClearOrCopySource(intermediateImage_, *imageInport_);
-    } else {
-        utilgl::activateTargetAndClearOrCopySource(imageOutport_, *imageInport_);
-    }
-    int volumeId = -1;
+    utilgl::activateTargetAndClearOrCopySource(intermediateImage_, *imageInport_);
+
     // Loop: fragment list may need another try if not enough space for the pixels was available
     bool retry = false;
     do {
         retry = false;
+        LGL_ERROR;
+        flr_->prePass(imageOutport_.getDimensions());
 
-        if (flr_ && fragmentLists) {
-            // prepare fragment list rendering
-            flr_->prePass(imageOutport_.getDimensions());
-        }
+        int volumeId = 0;
         for (auto rasterization : rasterizations_) {  // Calculate color
             rasterization->rasterize(imageOutport_.getDimensions(), mat4(1.0),
-                                     [this, fragmentLists](Shader& sh) {  // volume
+                                     [this, volumeId](Shader& sh) {  // volume
                                          utilgl::setUniforms(sh, camera_);
-                                         if (flr_ && fragmentLists) flr_->setShaderUniforms(sh);
+                                         sh.setUniform("volumeId", volumeId);
+                                         flr_->setShaderUniforms(sh);
                                      });
+            volumeId++;
         }
+        LGL_ERROR;
 
-        if (flr_ && fragmentLists) {
-            // final processing of fragment list rendering
-            if (useIntermediateTarget) {
-                utilgl::deactivateCurrentTarget();
-                utilgl::activateTargetAndCopySource(imageOutport_, intermediateImage_);
-            }
+        // final processing of fragment list rendering
+        utilgl::deactivateCurrentTarget();
+        utilgl::activateTargetAndCopySource(imageOutport_, intermediateImage_);
 
-            for (auto rasterization : rasterizations_) {
-                if (auto raycastingState = rasterization->getRaycastingState()) {
-                    ++volumeId;
-                    flr_->setRaycastingState(raycastingState, volumeId);
-                    // ENSURE ID < 8
-                }
+        volumeId = 0;
+        TextureUnitContainer units;
+        for (auto rasterization : rasterizations_) {
+            if (auto raycastingState = rasterization->getRaycastingState()) {
+                flr_->setRaycastingState(raycastingState, volumeId, units);
+                // ENSURE ID < 8
             }
-            const Image* background =
-                useIntermediateTarget ? &intermediateImage_ : imageInport_->getData().get();
-            retry = !flr_->postPass(false, background);  // Start blending
+            ++volumeId;
         }
+        LGL_ERROR;
+        retry = !flr_->postPass(false, &intermediateImage_);  // Start blending
+
     } while (retry);
 
     utilgl::deactivateCurrentTarget();
