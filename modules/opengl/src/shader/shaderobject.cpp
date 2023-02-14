@@ -444,7 +444,22 @@ void ShaderObject::addDefines(std::ostringstream& source) {
     lnr_.addLine("Version", 0);
 
     for (const auto& se : shaderExtensions_) {
-        source << "#extension " << se.first << " : " << (se.second ? "enable" : "disable") << "\n";
+        source << "#extension " << se.first << " : ";
+        switch (se.second) {
+            case ExtensionBehavior::Enable:
+                source << "enable";
+                break;
+            case ExtensionBehavior::Require:
+                source << "require";
+                break;
+            case ExtensionBehavior::Warn:
+                source << "warn";
+                break;
+            case ExtensionBehavior::Disable:
+                source << "disable";
+                break;
+        }
+        source << "\n";
         lnr_.addLine("Extensions", 0);
     }
 
@@ -628,11 +643,23 @@ bool ShaderObject::hasShaderDefine(std::string_view name) const {
 void ShaderObject::clearShaderDefines() { shaderDefines_.clear(); }
 
 void ShaderObject::addShaderExtension(std::string_view extName, bool enabled) {
+    addShaderExtension(extName, enabled ? ExtensionBehavior::Enable : ExtensionBehavior::Disable);
+}
+
+void ShaderObject::addShaderExtension(std::string_view extName, ExtensionBehavior behavior) {
     const auto it = shaderExtensions_.find(extName);
     if (it == shaderExtensions_.end()) {
-        shaderExtensions_.emplace(extName, enabled);
+        shaderExtensions_.emplace(extName, behavior);
     } else {
-        it->second = enabled;
+        it->second = behavior;
+    }
+}
+void ShaderObject::setShaderExtension(std::string_view extName, ExtensionBehavior behavior,
+                                      bool shouldAdd) {
+    if (shouldAdd) {
+        addShaderExtension(extName, behavior);
+    } else {
+        removeShaderExtension(extName);
     }
 }
 

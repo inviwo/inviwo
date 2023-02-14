@@ -98,6 +98,8 @@ public:
         std::string toString() const;
     };
 
+    enum class ExtensionBehavior { Enable, Require, Warn, Disable };
+
     using Callback = std::function<void(ShaderObject*)>;
     using ShaderDefines = std::map<std::string, std::string, std::less<>>;
 
@@ -141,7 +143,7 @@ public:
     /*
      * Get list of shader defines
      */
-    ShaderDefines getShaderDefines() const { return shaderDefines_; }
+    const ShaderDefines& getShaderDefines() const { return shaderDefines_; }
 
     /**
      * Adds or removed a define with name 'name'
@@ -158,6 +160,8 @@ public:
     void clearShaderDefines();
 
     void addShaderExtension(std::string_view extName, bool enabled);
+    void addShaderExtension(std::string_view extName, ExtensionBehavior behavior);
+    void setShaderExtension(std::string_view extName, ExtensionBehavior behavior, bool shouldAdd);
     void removeShaderExtension(std::string_view extName);
     bool hasShaderExtension(std::string_view extName) const;
     void clearShaderExtensions();
@@ -258,8 +262,7 @@ private:
 
     ShaderDefines shaderDefines_;
 
-    using ShaderExtensions =
-        std::map<std::string, bool, std::less<>>;  // extension name, enable flag
+    using ShaderExtensions = std::map<std::string, ExtensionBehavior, std::less<>>;
     ShaderExtensions shaderExtensions_;
 
     std::vector<ShaderSegment> shaderSegments_;
