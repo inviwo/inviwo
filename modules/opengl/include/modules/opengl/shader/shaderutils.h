@@ -230,7 +230,6 @@ template <class T>
 constexpr auto HasSetShaderUniformsFunction =
     util::is_detected_exact_v<void, setShaderUniformsFunctionType, T>;
 
-
 template <typename T>
 void addDefinesImpl(Shader& shader, const T& element) {
     if constexpr (detail::HasAddDefinesMember<T>) {
@@ -258,7 +257,6 @@ void setUniformsImpl(Shader& shader, const T& element) {
                       "or void T::setUniforms(Shader& shader) const;");
     }
 }
-
 
 }  // namespace detail
 

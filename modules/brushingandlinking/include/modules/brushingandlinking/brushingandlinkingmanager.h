@@ -271,7 +271,7 @@ public:
 
     uint32_t getMax(util::span<const BrushingAction> actions = BrushingActions,
                     BrushingTarget target = BrushingTarget::Row) const;
-    
+
     uint32_t getMin(util::span<const BrushingAction> actions = BrushingActions,
                     BrushingTarget target = BrushingTarget::Row) const;
 

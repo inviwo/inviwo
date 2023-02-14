@@ -176,7 +176,8 @@ IVW_MODULE_OPENGL_API void bindTexture(const TextureBase& texture, GLenum texUni
 IVW_MODULE_OPENGL_API void bindTexture(const TextureBase& texture, const TextureUnit& texUnit);
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              const TextureBase& texture, std::string_view samplerID);
+                                              const TextureBase& texture,
+                                              std::string_view samplerID);
 
 IVW_MODULE_OPENGL_API void bindTexture(const TransferFunctionProperty& tf,
                                        const TextureUnit& texUnit);

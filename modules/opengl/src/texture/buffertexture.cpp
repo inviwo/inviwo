@@ -29,6 +29,4 @@
 
 #include <modules/opengl/texture/buffertexture.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

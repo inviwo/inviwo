@@ -143,8 +143,8 @@ HistogramContainer::HistogramContainer(dvec2 dataRange, size_t bins, FirstIter b
         sum2 += val * val;
         count++;
 
-        const auto ind = static_cast<I>(
-            glm::clamp((val - rangeMin) * rangeScaleFactor, D{0.0}, D{static_cast<double>(bins - 1)}));
+        const auto ind = static_cast<I>(glm::clamp((val - rangeMin) * rangeScaleFactor, D{0.0},
+                                                   D{static_cast<double>(bins - 1)}));
         for (size_t i = 0; i < extent; ++i) {
             const auto v = util::glmcomp(ind, i);
             ++histData[i][v];

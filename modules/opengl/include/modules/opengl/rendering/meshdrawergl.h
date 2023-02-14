@@ -83,7 +83,7 @@ public:
         void drawInstanced(DrawMode drawMode, size_t instances);
         void drawInstanced(std::size_t index, size_t instances);
         void drawInstanced(DrawMode drawMode, std::size_t index, size_t instances);
-                
+
         void drawOnly(DrawMode drawMode);
         void drawOnlyInstanced(DrawMode drawMode, size_t instances);
         /**
@@ -93,7 +93,7 @@ public:
 
     private:
         void checkIndex(size_t index) const;
-    
+
         utilgl::Enable<MeshGL> enable_;
         const MeshGL* meshGL_;
         Mesh::MeshInfo arrayMeshInfo_;

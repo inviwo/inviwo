@@ -208,7 +208,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
             using XT = decltype(x);
             return detail::build_array<3>([&](auto y) constexpr {
                 using YT = decltype(y);
-                return detail::build_array<3>([&](auto z) constexpr -> Functor {
+                return detail::build_array<3>([&](auto z) constexpr->Functor {
                     using ZT = decltype(z);
                     return [](const size3_t dim, const mat4& i2d, const mat4& d2m,
                               const std::vector<std::pair<unsigned short, vec3>>& sp,
@@ -237,7 +237,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
             using XT = decltype(x);
             return detail::build_array<3>([&](auto y) constexpr {
                 using YT = decltype(y);
-                return detail::build_array<3>([&](auto z) constexpr -> Functor {
+                return detail::build_array<3>([&](auto z) constexpr->Functor {
                     using ZT = decltype(z);
                     return [](const size3_t dim, const mat4& i2d, const mat4& d2m,
                               const std::vector<std::pair<unsigned short, vec3>>& sp,

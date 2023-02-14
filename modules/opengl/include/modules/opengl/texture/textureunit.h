@@ -128,6 +128,6 @@ void bind(TextureUnitContainer& cont, Ts&... elements) {
     (detail::bindImpl(cont, elements), ...);
 }
 
-}  // namespace util
+}  // namespace utilgl
 
 }  // namespace inviwo

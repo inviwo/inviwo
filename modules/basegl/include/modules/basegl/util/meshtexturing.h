@@ -50,5 +50,4 @@ public:
     int unitNumber;
 };
 
-
 }  // namespace inviwo

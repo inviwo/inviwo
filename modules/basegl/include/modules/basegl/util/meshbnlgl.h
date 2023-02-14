@@ -33,7 +33,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/selectioncolorproperty.h>
 
-
 #include <modules/opengl/texture/buffertexture.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinkin...
 #include <modules/basegl/datastructures/meshshadercache.h>

@@ -34,7 +34,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/meshport.h>
 
-
 namespace inviwo {
 
 class Shader;

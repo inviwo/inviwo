@@ -313,7 +313,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                 ->getDataTyped();
 
         for (uint32_t i = 0; i < nSegments; ++i) {
-            auto color = tf_->sample(static_cast<double>(i) / (nSegments-1));
+            auto color = tf_->sample(static_cast<double>(i) / (nSegments - 1));
             lrp[im(i, 0)] = color;
             lrp[im(i, 1)] = color;
         }

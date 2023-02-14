@@ -226,7 +226,6 @@ void VolumeRegionShrink::process() {
 
     utilgl::Activate as{&shader_};
 
-    
     if (volumeNumericType_ == "i") {
         shader_.setUniform("fillValue", ivec4{fillValue_.get()});
     } else if (volumeNumericType_ == "u") {

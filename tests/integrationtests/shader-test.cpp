@@ -38,13 +38,13 @@
 namespace inviwo {
 
 TEST(ShaderTests, initTest) {
-    
+
     Shader shader{"img_texturequad.vert", "img_texturequad.frag"};
     ASSERT_TRUE(shader.isReady());
 
     Shader copy{std::move(shader)};
     ASSERT_TRUE(copy.isReady());
-        
+
     Shader shader2{"img_identity.vert", "img_copy.frag"};
     ASSERT_TRUE(shader2.isReady());
 

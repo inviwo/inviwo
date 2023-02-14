@@ -55,7 +55,7 @@ public:
 
     void addDefines(Shader& shader) const;
     void setUniforms(Shader& shader) const;
-    
+
     CompositeProperty clipping;
     OptionProperty<Mode> mode;
     FloatProperty shadingFactor;  //!< multiplied with glyph color for clip surfaces

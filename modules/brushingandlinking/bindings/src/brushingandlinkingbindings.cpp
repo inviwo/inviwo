@@ -207,9 +207,8 @@ void exposeBnL(py::module& m) {
              py::arg("target"), py::arg("action"))
         .def("hasIndices", &BrushingAndLinkingManager::hasIndices, py::arg("action"),
              py::arg("target") = BrushingTarget::Row)
-        .def("getIndices", &BrushingAndLinkingManager::getIndices,
-             py::return_value_policy::copy, py::arg("action"),
-             py::arg("target") = BrushingTarget::Row)
+        .def("getIndices", &BrushingAndLinkingManager::getIndices, py::return_value_policy::copy,
+             py::arg("action"), py::arg("target") = BrushingTarget::Row)
         .def("getNumber", &BrushingAndLinkingManager::getNumber, py::arg("action"),
              py::arg("target") = BrushingTarget::Row)
         .def("getNumberOfFiltered", &BrushingAndLinkingManager::getNumberOfFiltered,

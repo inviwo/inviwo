@@ -224,7 +224,7 @@ constexpr auto wrappingDispatch(Functor&& func, const Wrapping3D& wrapping, Args
         using XT = decltype(x);
         return build_array<3>([](auto y) constexpr {
             using YT = decltype(y);
-            return build_array<3>([](auto z) constexpr -> DispatchFunctor {
+            return build_array<3>([](auto z) constexpr->DispatchFunctor {
                 using ZT = decltype(z);
                 return [](Functor&& func, Args&&... args) {
                     constexpr auto X = static_cast<Wrapping>(XT::value);
@@ -381,9 +381,9 @@ struct StatsFunctor {
 
         df->getIndexColumn()->setHeader("Region Index");
         auto& index = df->getIndexColumn()
-                         ->getTypedBuffer()
-                         ->getEditableRAMRepresentation()
-                         ->getDataContainer();
+                          ->getTypedBuffer()
+                          ->getEditableRAMRepresentation()
+                          ->getDataContainer();
         std::transform(index.begin(), index.end(), index.begin(),
                        [&](auto index) { return index + static_cast<std::uint32_t>(minRegionId); });
 

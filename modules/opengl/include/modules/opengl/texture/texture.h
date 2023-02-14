@@ -59,7 +59,7 @@ public:
 
     GLuint getID() const;
     GLenum getTarget() const;
-    
+
     void bind() const;
     void unbind() const;
 
@@ -86,7 +86,6 @@ public:
     virtual size_t getNumberOfValues() const = 0;
 
     virtual void upload(const void* data) = 0;
-
 
     GLenum getFormat() const;
     GLenum getInternalFormat() const;

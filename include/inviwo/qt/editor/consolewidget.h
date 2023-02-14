@@ -203,8 +203,6 @@ private:
     QAction* clearAction_;
     InviwoMainWindow* mainwindow_;
     std::shared_ptr<MenuItem> editActionsHandle_;
-
-
 };
 
 }  // namespace inviwo
