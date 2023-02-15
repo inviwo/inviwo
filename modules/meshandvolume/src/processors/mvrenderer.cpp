@@ -81,43 +81,70 @@ MVRenderer::MVRenderer()
 void MVRenderer::process() {
     LGL_ERROR;
 
+    bool fragmentLists = false;
+    bool containsOpaque = false;
+    for (auto rasterization : rasterizations_) {
+        if (rasterization->usesFragmentLists()) {
+            fragmentLists = true;
+        } else {
+            containsOpaque = true;
+        }
+    }
+
     utilgl::activateTargetAndClearOrCopySource(intermediateImage_, *imageInport_);
+
+    bool useIntermediateTarget = imageInport_->getData() && fragmentLists && containsOpaque;
+    if (useIntermediateTarget) {
+        utilgl::activateTargetAndClearOrCopySource(intermediateImage_, *imageInport_);
+    } else {
+        utilgl::activateTargetAndClearOrCopySource(imageOutport_, *imageInport_);
+    }
 
     // Loop: fragment list may need another try if not enough space for the pixels was available
     bool retry = false;
     do {
         retry = false;
         LGL_ERROR;
-        flr_->prePass(imageOutport_.getDimensions());
+        if (flr_ && fragmentLists) {
+            flr_->prePass(imageOutport_.getDimensions());
+        }
 
         int volumeId = 0;
         for (auto rasterization : rasterizations_) {  // Calculate color
             rasterization->rasterize(imageOutport_.getDimensions(), mat4(1.0),
-                                     [this, volumeId](Shader& sh) {  // volume
+                                     [this, volumeId, fragmentLists](Shader& sh) {  // volume
                                          utilgl::setUniforms(sh, camera_);
                                          sh.setUniform("volumeId", volumeId);
-                                         flr_->setShaderUniforms(sh);
+                                         if (flr_ && fragmentLists) {
+                                             flr_->setShaderUniforms(sh);
+                                         }
                                      });
             volumeId++;
         }
         LGL_ERROR;
 
-        // final processing of fragment list rendering
-        utilgl::deactivateCurrentTarget();
-        utilgl::activateTargetAndCopySource(imageOutport_, intermediateImage_);
-
-        volumeId = 0;
-        TextureUnitContainer units;
-        for (auto rasterization : rasterizations_) {
-            if (auto raycastingState = rasterization->getRaycastingState()) {
-                flr_->setRaycastingState(raycastingState, volumeId, units);
-                // ENSURE ID < 8
+        if (flr_ && fragmentLists) {
+            // final processing of fragment list rendering
+            if (useIntermediateTarget) {
+                utilgl::deactivateCurrentTarget();
+                utilgl::activateTargetAndCopySource(imageOutport_, intermediateImage_);
             }
-            ++volumeId;
-        }
-        LGL_ERROR;
-        retry = !flr_->postPass(false, &intermediateImage_);  // Start blending
 
+            volumeId = 0;
+            TextureUnitContainer units;
+            for (auto rasterization : rasterizations_) {
+                if (auto raycastingState = rasterization->getRaycastingState()) {
+                    flr_->setRaycastingState(raycastingState, volumeId, units);
+                    // ENSURE ID < 8
+                }
+                ++volumeId;
+            }
+            LGL_ERROR;
+
+            const Image* background =
+                useIntermediateTarget ? &intermediateImage_ : imageInport_->getData().get();
+            retry = !flr_->postPass(false, background);
+        }
     } while (retry);
 
     utilgl::deactivateCurrentTarget();

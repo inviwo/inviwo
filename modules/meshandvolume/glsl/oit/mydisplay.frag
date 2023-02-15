@@ -167,14 +167,13 @@ void main() {
             // Check depth of next fragment
             type = getPixelDataType(nextFragment);
             if(type == 0) {
-                color = vec4(1.0, 0.0, 0.0, 1.0);
+//                color = vec4(1.0, 0.0, 0.0, 1.0);
                 unpackedMeshFragment = uncompressMeshPixelData(nextFragment);
                 nextDepth = unpackedMeshFragment.depth;
             } else if(type == 1) {
                 unpackedVolumeFragment = uncompressVolumePixelData(nextFragment);
                 nextDepth = unpackedVolumeFragment.depth;
                 color = vec4(0.0, 0.0, 1.0, 1.0);
-
             }
 
             // Raycast through each volume
@@ -191,13 +190,14 @@ void main() {
            
             depth = nextDepth; // Prevent infinite loop
         }
-        FragData0 = vec4(0.0, 1.0, 0.0, 1.0);//color;
+//        FragData0 = vec4(0.0, 1.0, 0.0, 1.0);//color;
+        FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
     } else {  // no pixel found
         FragData0 = vec4(0.0);
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
     }
-    //FragData0 = vec4(screenPos, 0.0, 1.0);
+    // FragData0 = vec4(screenPos, 0.0, 1.0);
 }
 
 int getFragmentCount(uint pixelIdx) {
