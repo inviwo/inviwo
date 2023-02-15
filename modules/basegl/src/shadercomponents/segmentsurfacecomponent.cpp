@@ -30,6 +30,7 @@
 #include <modules/basegl/shadercomponents/segmentsurfacecomponent.h>
 
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
