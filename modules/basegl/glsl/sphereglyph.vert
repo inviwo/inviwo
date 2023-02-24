@@ -81,7 +81,7 @@ void main(void) {
 #if defined(HAS_RADII) && !defined(OVERRIDE_RADIUS)
     sphere.radius = in_Radii;
 #else
-    sphere.radius = defaultRadius;
+    sphere.radius = config.radius;
 #endif
 
 #if defined(HAS_INDEX)
