@@ -672,7 +672,9 @@ void InviwoMainWindow::addActions() {
             }
 
             auto recentFiles = getRecentWorkspaceList();
-            for (int i = 0; i < recentFiles.size(); ++i) {
+            const int maxRecentFiles =
+                std::min<int>(recentFiles.size(), static_cast<int>(workspaceActionRecent_.size()));
+            for (int i = 0; i < maxRecentFiles; ++i) {
                 if (!recentFiles[i].isEmpty()) {
                     const bool exists = QFileInfo(recentFiles[i]).exists();
                     const auto menuEntry = QString("&%1 %2%3")
