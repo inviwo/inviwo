@@ -489,7 +489,7 @@ void InviwoMainWindow::addActions() {
     workspaceToolBar->setFloatable(false);
 
     auto editToolBar = addToolBar("Edit");
-    editToolBar->setObjectName("fileToolBar");
+    editToolBar->setObjectName("editToolBar");
     editToolBar->setMovable(false);
     editToolBar->setFloatable(false);
 
