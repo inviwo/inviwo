@@ -29,13 +29,6 @@
 
 uniform sampler2D transferFunction;
 
-// variable legendRotation =
-// 0 -> 0 degree rotation ccw
-// 1 -> 90 degree rotation ccw
-// 2 -> 180 degree rotation ccw
-// 3 -> 270 degree rotation ccw
-uniform int legendRotation;
-
 // orientation of the legend
 // 0 -> horizontal legend
 // 1 -> vertical legend
@@ -108,7 +101,7 @@ void main() {
     } else if (backgroundStyle == 2) {
         finalColor = checkerboardBackground(colorTF, centeredPos);
     } else if (backgroundStyle == 3) {
-        float verticalPos = mix(1.0 - normPos.y, normPos.x, mod(legendRotation, 2));
+        float verticalPos = mix(1.0 - normPos.y, normPos.x, legendOrientation);
         if (verticalPos > 0.5) {
             finalColor = checkerboardBackground(colorTF, centeredPos);
         } else {
