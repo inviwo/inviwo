@@ -231,7 +231,8 @@ void VolumeRegionShrink::process() {
     } else if (volumeNumericType_ == "u") {
         shader_.setUniform("fillValue", uvec4{static_cast<std::uint32_t>(fillValue_.get())});
     } else {
-        const auto fill = static_cast<double>(fillValue_) / (1.0 + out_[0]->getDataFormat()->getMax());
+        const auto fill =
+            static_cast<double>(fillValue_) / (1.0 + out_[0]->getDataFormat()->getMax());
         shader_.setUniform("fillValue", vec4{static_cast<float>(fill)});
     }
 
