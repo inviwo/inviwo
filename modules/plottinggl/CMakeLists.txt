@@ -51,14 +51,16 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/isovaluetri.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/isovaluetri.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/legend.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_common.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_lines.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_lines.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_lines.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/plotting/common.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/persistencediagram.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/persistencediagramlines.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/plotting/common.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/scatterplot.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/scatterplot.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/scatterplot.vert
