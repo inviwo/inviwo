@@ -26,6 +26,9 @@
 </style>
 </head>
 <body>
+<h2>2023-02-28 ColorScale Legend now shows isovalues</h2>
+<p>The legend produced by the <code class="notranslate">ColorScale Legend</code> processor now shows the isovalues similar to the transfer function property and TF editor.<br>
+<a target="_blank" rel="noopener noreferrer" href="resources/changelog/colorscalelegend.jpg"><img src="resources/changelog/colorscalelegend.jpg" alt="ColorScale Legend with isovalues" style="max-width: 100%;"></a></p>
 <h2>2023-02-10</h2>
 <p>The <code class="notranslate">TickProperty</code> provided by the <code class="notranslate">plotting</code> module was removed as it only added one more level of nested properties. Both <code class="notranslate">MajorTickProperty</code> and <code class="notranslate">MinorTickProperty</code> should be used directly instead.</p>
 <h2>2022-12-16 VolumeAxis</h2>
@@ -63,7 +66,7 @@ Several new utility headers have also been added or extended. For example, <code
 Similarly there is a <code class="notranslate">inviwo/core/common/factoryutil.h</code> to easily access various factories, and a <code class="notranslate">inviwo/core/util/moduleutils.h</code> to get to various inviwo modules.</p>
 <h2>2022-09-14 New CompositeProcessor property configuration dialog</h2>
 <p>The long deprecated UsageMode has now been removed and with that the only way to select which properties was shown in a <code class="notranslate">CompositeProcessor</code>.<br>
-To fix that, the <code class="notranslate">CompositeProcessor</code> got a new dialog <code class="notranslate">Configure Properties</code>, accessable from the context menu in the network editor.<br>
+To fix that, the <code class="notranslate">CompositeProcessor</code> got a new dialog <code class="notranslate">Configure Properties</code>, accessible from the context menu in the network editor.<br>
 <a target="_blank" rel="noopener noreferrer" href="resources/changelog/configure-properties.png"><img src="resources/changelog/configure-properties.png" alt="Configure Properties" style="max-width: 100%;"></a><br>
 In the dialog one can select which of the properties in the sub network that should be exposed in the <code class="notranslate">CompositeProcessor</code>,It is also possible to mark sub properties as read only or invisible to potentially reduce complexity.</p>
 <h2>2022-09-09 Updated ext/libtiff</h2>
@@ -102,9 +105,9 @@ Tags::GL,                       <span class="pl-c"><span class="pl-c">//</span> 
 <span class="pl-s"><span class="pl-pds">)"</span></span>_unindentHelp};</pre></div>
 <p>The <code class="notranslate">_unindentHelp</code>  suffix will remove any leading indent and parse the string as a markdown document and then convert it to an inviwo document, which is what is expected by the <code class="notranslate">ProcessorInfo</code> struct.<br>
 One can refer to images like so:</p>
-<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-s"><span class="pl-pds">"</span>![](file:///&lt;modulePath&gt;/docs/images/heightfield-network.png)<span class="pl-pds">"</span></span></pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-s"><span class="pl-pds">"</span>![](file:~modulePath~/docs/images/heightfield-network.png)<span class="pl-pds">"</span></span></pre></div>
 <p>or networks</p>
-<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-s"><span class="pl-pds">"</span>[basegl/instance_renderer.inv](file:///&lt;modulePath&gt;/data/workspaces/instance_renderer.inv)<span class="pl-pds">"</span></span></pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-s"><span class="pl-pds">"</span>[basegl/instance_renderer.inv](file:~modulePath~/data/workspaces/instance_renderer.inv)<span class="pl-pds">"</span></span></pre></div>
 <p>Images will be shown inline, and clicking on processor network will append them to the current network.<br>
 To be able to refer to files there are two placeholder <code class="notranslate">~basePath~</code> and <code class="notranslate">~modulePath~</code> the former will refer to the base path of the inviwo installation and the latter to the current module. Make sure that any resources linked are also included in the installer. By default the <code class="notranslate">data</code> directory and the <code class="notranslate">docs</code> folders are always included in the installer.</p>
 <p>For Ports a second constructor argument has been added for a help Document like so</p>
