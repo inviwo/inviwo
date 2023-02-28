@@ -502,23 +502,21 @@ void exposeProperties(py::module& m) {
     py::class_<IsoValueProperty, Property>(m, "IsoValueProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          const IsoValueCollection& value, VolumeInport* volumeInport,
-                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                         PropertySemantics semantics) {
                  return new IsoValueProperty(identifier, displayName, std::move(help), value,
-                                             volumeInport, invalidationLevel, semantics);
+                                             volumeInport, semantics);
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value"),
              py::arg("inport") = nullptr,
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          const IsoValueCollection& value, VolumeInport* volumeInport,
-                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                         PropertySemantics semantics) {
                  return new IsoValueProperty(identifier, displayName, value, volumeInport,
-                                             invalidationLevel, semantics);
+                                             semantics);
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("value"),
              py::arg("inport") = nullptr,
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
         .def_property("zoomH", &IsoValueProperty::getZoomH, &IsoValueProperty::setZoomH)
         .def_property("zoomV", &IsoValueProperty::getZoomV, &IsoValueProperty::setZoomV)
