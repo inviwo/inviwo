@@ -174,8 +174,6 @@ void SphereRasterizer::configureShader(Shader& shader) {
     shader.build();
 }
 
-void SphereRasterizer::configureOITShader(Shader& shader) {}
-
 bool SphereRasterizer::usesFragmentLists() const {
     return !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists() &&
            oitExtensionsAvailable_;

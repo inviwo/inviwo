@@ -46,6 +46,7 @@ class IVW_MODULE_BASEGL_API MeshBnLGL {
 public:
     MeshBnLGL();
 
+    /// return the smallest power of two not smaller than \p v
     static constexpr std::uint32_t bit_ceil(std::uint32_t v) noexcept {
         v--;
         v |= v >> 1;

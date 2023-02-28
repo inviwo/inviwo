@@ -572,7 +572,7 @@ LogTableModel::LogTableModel()
     opt.text = "One line text";
     auto* style = qApp->style();
     auto size1 = style->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(), nullptr);
-    opt.text = "One line text\nAn other line";
+    opt.text = "One line text\nAnother line";
     opt.text.replace(QLatin1Char('\n'), QChar::LineSeparator);
     auto size2 = style->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(), nullptr);
 

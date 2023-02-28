@@ -183,7 +183,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
 
     if (itMax->first > std::numeric_limits<unsigned short>::max()) {
         throw Exception(IVW_CONTEXT_CUSTOM("VoronoiSegmentation"),
-                        "Seed point index greater than {} it not supported",
+                        "Seed point index greater than {} is not supported",
                         std::numeric_limits<unsigned short>::max());
     }
 

@@ -423,7 +423,7 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
 }
 
 void TextRenderer::clear(std::shared_ptr<Texture2D> texture, vec4 color) {
-    auto state = setupRenderState(texture, vec4(0.0));
+    auto state = setupRenderState(texture, color);
 }
 
 vec2 TextRenderer::computeTextSize(std::string_view str, const vec2& scale) {

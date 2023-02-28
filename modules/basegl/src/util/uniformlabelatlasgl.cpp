@@ -52,7 +52,8 @@ UniformLabelAtlasGL::UniformLabelAtlasGL()
     , size{"size", "Size", util::ordinalLength(0.3f, 1.0f)}
     , aspect{1.0f}
     , atlas{}
-    , renderer{} {
+    , renderer{}
+    , unitNumber{0} {
 
     labels.addProperties(font, color, size, fontSize);
     labels.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);

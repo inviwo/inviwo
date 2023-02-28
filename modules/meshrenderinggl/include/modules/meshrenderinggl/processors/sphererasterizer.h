@@ -84,7 +84,6 @@ public:
 
 private:
     void configureShader(Shader& shader);
-    void configureOITShader(Shader& shader);
     bool usesFragmentLists() const;
     void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                    std::function<void(Shader&)> setUniforms);

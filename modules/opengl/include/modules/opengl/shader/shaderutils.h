@@ -231,6 +231,14 @@ constexpr auto HasSetShaderUniformsFunction =
     util::is_detected_exact_v<void, setShaderUniformsFunctionType, T>;
 
 template <typename T>
+using setShaderUniformsNamedFunctionType = decltype(setShaderUniforms(
+    std::declval<Shader&>(), std::declval<const T&>(), std::declval<std::string_view>()));
+
+template <class T>
+constexpr auto HasSetShaderUniformsNamedFunction =
+    util::is_detected_exact_v<void, setShaderUniformsNamedFunctionType, T>;
+
+template <typename T>
 void addDefinesImpl(Shader& shader, const T& element) {
     if constexpr (detail::HasAddDefinesMember<T>) {
         element.addDefines(shader);
@@ -248,6 +256,13 @@ template <typename T>
 void setUniformsImpl(Shader& shader, const T& element) {
     if constexpr (detail::HasSetUniformsMember<T>) {
         element.setUniforms(shader);
+    } else if constexpr (detail::HasSetShaderUniformsNamedFunction<T> &&
+                         std::is_base_of_v<Property, T>) {
+        setShaderUniforms(shader, element, element.getIdentifier());
+    } else if constexpr (detail::HasSetShaderUniformsNamedFunction<T> &&
+                         std::is_base_of_v<Port, T>) {
+        StrBuffer buff;
+        setShaderUniforms(shader, element, buff.replace("{}Parameters", element.getIdentifier()));
     } else if constexpr (detail::HasSetShaderUniformsFunction<T>) {
         setShaderUniforms(shader, element);
     } else {

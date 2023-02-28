@@ -61,15 +61,14 @@ SphereRenderer::SphereRenderer()
     : Processor()
     , inport_{"geometry", R"(
         The input mesh uses the following buffers:
-        * PositionAttrib   vec3
-        * ColorAttrib      vec4   (optional will fall-back to use __Custom Color__)
-        * IndexAttrib      uint   (optional used for labeling and BnL)
-        * RadiiAttrib      float  (optional will fall-back to use __Custom Radius__)
-        * PickingAttrib    uint32 (optional will fall-back to not draw any picking)
-        * ScalarMetaAttrib float  (optional used for custom coloring)
+        * *PositionAttrib*   `vec3`
+        * *ColorAttrib*      `vec4`   (optional will fall-back to use __Custom Color__)
+        * *IndexAttrib*      `uint`   (optional used for labeling and BnL)
+        * *RadiiAttrib*      `float`  (optional will fall-back to use __Custom Radius__)
+        * *PickingAttrib*    `uint32` (optional will fall-back to not draw any picking)
+        * *ScalarMetaAttrib* `float`  (optional used for custom coloring)
     )"_unindentHelp}
     , imageInport_{"imageInport", "Optional background image"_help}
-
     , outport_{"image",
                "output image containing the rendered spheres and the optional input image"_help}
     , renderMode_{"renderMode",

@@ -36,7 +36,7 @@
 namespace inviwo {
 
 MeshTexturing::MeshTexturing(std::string_view identifier, Document help)
-    : inport{identifier, std::move(help), OutportDeterminesSize::Yes} {}
+    : inport{identifier, std::move(help), OutportDeterminesSize::Yes}, unitNumber{0} {}
 
 void MeshTexturing::bind(TextureUnitContainer& cont) {
     if (inport.hasData()) {

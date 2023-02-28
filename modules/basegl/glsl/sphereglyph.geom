@@ -55,7 +55,13 @@ struct Sphere {
 };
 
 layout(points) in;
+
+#if defined(ENABLE_DUPLICATE)
+// account for potential duplication of the sphere billboard (4 vertices) along each axis
 layout(triangle_strip, max_vertices = 32) out;
+#else
+layout(triangle_strip, max_vertices = 4) out;
+#endif
 
 in SphereVert {
     vec4 color;
@@ -169,7 +175,6 @@ void main(void) {
     // camera coordinate system in object space
     cam.right = normalize(cross(camDir, camera.viewToWorld[1].xyz));
     cam.up = normalize(cross(camDir, cam.right));
-    // calculate cam position (in model space of the sphere)
     
 #if defined(ENABLE_DUPLICATE)
     vec4 pos = shiftFractional(gl_in[0].gl_Position);
@@ -192,6 +197,7 @@ void main(void) {
                 if (all(greaterThan(newPos, vec3(-duplicateCutoff))) &&
                     all(lessThan(newPos, vec3(1.0 + duplicateCutoff)))) {
                     sphere.center = data2World(vec4(newPos, pos.w));
+                     // calculate cam position (in model space of the sphere)
                     cam.pos = camPosModel - sphere.center.xyz;
                     if (!outOfView(cam.pos, camDir, sphere.radius)) {
                         emitQuad(sphere, cam);
@@ -204,6 +210,7 @@ void main(void) {
 #else
 
     sphere.center = data2World(shiftFractional(gl_in[0].gl_Position));
+    // calculate cam position (in model space of the sphere)
     cam.pos = camPosModel - sphere.center.xyz;
     if (outOfView(cam.pos, camDir, sphere.radius)) {
         EndPrimitive();
