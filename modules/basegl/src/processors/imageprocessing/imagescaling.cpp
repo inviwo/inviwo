@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>      // for IntSize2Property, DoubleProperty
 #include <inviwo/core/util/glmvec.h>                     // for size2_t, dvec2
 #include <inviwo/core/util/raiiutils.h>                  // for KeepTrueWhileInScope
+#include <inviwo/core/util/rendercontext.h>              // for RenderContext
 #include <modules/opengl/texture/textureutils.h>         // for activateTargetAndCopySource, dea...
 
 #include <functional>   // for __base
@@ -155,6 +156,9 @@ size2_t ImageScaling::calcInputImageSize() const {
 bool ImageScaling::resizeInports() {
     if (deserializing_) return false;
     if (!enabled_) return false;
+
+    // enable default render context since the latest change might be triggered by the Qt GUI
+    rendercontext::activateDefault();
 
     ResizeEvent e(calcInputImageSize());
 
