@@ -76,7 +76,7 @@ AxisRenderProcessor::AxisRenderProcessor()
     , axis1_("axis1", "Axis 1")
     , axis2_("axis2", "Axis 2", AxisProperty::Orientation::Vertical)
     , axis3_("axis3", "Axis 3")
-    , axisRenderers_({axis1_, axis2_, axis3_}) {
+    , axisRenderers_{axis1_, axis2_, axis3_} {
 
     inport_.setOptional(true);
 

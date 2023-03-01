@@ -227,8 +227,8 @@ void TextureAtlas::initAtlas(TextRenderer& textRenderer, const std::vector<TexAt
 }
 
 static_assert(std::is_default_constructible_v<TextureAtlas>);
-static_assert(std::is_copy_constructible_v<TextureAtlas>);
-static_assert(std::is_copy_assignable_v<TextureAtlas>);
+static_assert(!std::is_copy_constructible_v<TextureAtlas>);
+static_assert(!std::is_copy_assignable_v<TextureAtlas>);
 static_assert(std::is_nothrow_move_constructible_v<TextureAtlas>);
 static_assert(std::is_nothrow_move_assignable_v<TextureAtlas>);
 
