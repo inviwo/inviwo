@@ -88,7 +88,7 @@ const ProcessorInfo SphereRasterizer::processorInfo_{
 const ProcessorInfo SphereRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 SphereRasterizer::SphereRasterizer()
-    : Processor()
+    : RasterizationProcessor()
     , inport_("inport", R"(
         The input mesh uses the following buffers:
         * PositionAttrib   vec3
@@ -98,22 +98,20 @@ SphereRasterizer::SphereRasterizer()
         * PickingAttrib    uint32 (optional will fall-back to not draw any picking)
         * ScalarMetaAttrib float  (optional used for custom coloring)
     )"_unindentHelp)
-    , outport_("rasterization", "rasterization functor rendering spheres"_help)
     , renderMode_("renderMode", "Render Mode",
                   "render only input meshes marked as points or everything"_help,
                   {{"entireMesh", "Entire Mesh", RenderMode::EntireMesh},
                    {"pointsOnly", "Points Only", RenderMode::PointsOnly}})
-    , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
+    , forceOpaque_(
+          "forceOpaque", "Shade Opaque",
+          "Draw the mesh opaquely instead of transparent. Disables all transparency settings"_help,
+          false, InvalidationLevel::InvalidResources)
     , bnl_{}
     , clip_{}
     , config_{}
     , labels_{}
     , periodic_{}
     , texture_{"sphereTexture", "Texture to apply to spheres"_help}
-
-    , camera_("camera", "Camera", util::boundingBox(inport_))
-    , lighting_("lighting", "Lighting", &camera_)
-    , transformSetting_("transformSettings", "Additional Transform")
 
     , shaders_{{{ShaderType::Vertex, std::string{"sphereglyph.vert"}},
                 {ShaderType::Geometry, std::string{"sphereglyph.geom"}},
@@ -131,26 +129,14 @@ SphereRasterizer::SphereRasterizer()
                [&](Shader& shader) -> void {
                    shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
                    configureShader(shader);
-               }}
-
-    , oitExtensionsAvailable_(
-          OpenGLCapabilities::isExtensionSupported("GL_NV_gpu_shader5") &&
-          OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store") &&
-          OpenGLCapabilities::isExtensionSupported("GL_NV_shader_buffer_load") &&
-          OpenGLCapabilities::isExtensionSupported("GL_EXT_bindable_uniform")) {
+               }} {
 
     addPort(inport_);
     addPort(texture_.inport, "Textures").setOptional(true);
     addPort(bnl_.inport);
-    addPort(outport_);
 
     addProperties(renderMode_, forceOpaque_, config_.config, labels_.labels, bnl_.highlight,
-                  bnl_.select, bnl_.filter, periodic_.periodicity, transformSetting_,
-                  clip_.clipping, camera_, lighting_);
-
-    transformSetting_.setCollapsed(true);
-    camera_.setCollapsed(true);
-    lighting_.setCollapsed(true);
+                  bnl_.select, bnl_.filter, periodic_.periodicity, clip_.clipping);
 }
 
 void SphereRasterizer::initializeResources() {
@@ -162,39 +148,21 @@ void SphereRasterizer::initializeResources() {
 }
 
 void SphereRasterizer::configureShader(Shader& shader) {
-    utilgl::addDefines(shader, lighting_, labels_, periodic_, config_, clip_);
+    utilgl::addDefines(shader, labels_, periodic_, config_, clip_);
 
     auto* fso = shader.getFragmentShaderObject();
-    fso->addShaderExtension("GL_NV_gpu_shader5", oitExtensionsAvailable_);
-    fso->addShaderExtension("GL_EXT_shader_image_load_store", oitExtensionsAvailable_);
-    fso->addShaderExtension("GL_NV_shader_buffer_load", oitExtensionsAvailable_);
-    fso->addShaderExtension("GL_EXT_bindable_uniform", oitExtensionsAvailable_);
     fso->setShaderDefine("USE_FRAGMENT_LIST", usesFragmentLists());
-
-    shader.build();
 }
 
 bool SphereRasterizer::usesFragmentLists() const {
-    return !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists() &&
-           oitExtensionsAvailable_;
-}
-
-void SphereRasterizer::process() {
-    auto rasterization = std::make_shared<SphereRasterization>(
-        std::dynamic_pointer_cast<SphereRasterizer>(shared_from_this()));
-
-    bnl_.update();
-
-    if (transformSetting_.transforms_.empty()) {
-        outport_.setData(rasterization);
-    } else {
-        outport_.setData(std::make_shared<TransformedRasterization>(rasterization,
-                                                                    transformSetting_.getMatrix()));
-    }
+    return !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists();
 }
 
 void SphereRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                                 std::function<void(Shader&)> setUniforms) {
+                                 std::function<void(Shader&)> setUniforms,
+                                 std::function<void(Shader&)> initializeShader) {
+
+    bnl_.update();
 
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, !usesFragmentLists());
@@ -204,9 +172,11 @@ void SphereRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrix
 
     for (auto mesh : inport_) {
         auto& shader = shaders_.getShader(*mesh);
+        initializeShader(shader);
+
         shader.activate();
 
-        utilgl::setUniforms(shader, lighting_, config_, clip_, bnl_, periodic_, labels_, texture_);
+        utilgl::setUniforms(shader, config_, clip_, bnl_, periodic_, labels_, texture_);
         shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / imageSize.x, 2.0f / imageSize.y));
         setUniforms(shader);
 
@@ -230,23 +200,15 @@ void SphereRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrix
     }
 }
 
-SphereRasterization::SphereRasterization(std::shared_ptr<SphereRasterizer> processor)
-    : Rasterization{}, processor_{processor} {}
-
-void SphereRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                                    std::function<void(Shader&)> setUniforms) const {
-    processor_->rasterize(imageSize, worldMatrixTransform, setUniforms);
-}
-
-bool SphereRasterization::usesFragmentLists() const { return processor_->usesFragmentLists(); }
-
-Document SphereRasterization::getInfo() const {
+Document SphereRasterizer::getInfo() const {
     Document doc;
-    const auto size = processor_->inport_.getVectorData().size();
+    const auto size = inport_.getVectorData().size();
     doc.append("p", fmt::format("Sphere mesh rasterization functor with {} mesh{}. {}.", size,
                                 (size == 1) ? "" : "es",
                                 usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
     return doc;
 }
+
+std::optional<mat4> SphereRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
 
 }  // namespace inviwo

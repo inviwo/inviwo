@@ -64,85 +64,14 @@ class Layer;
 class Mesh;
 class Shader;
 
-/** \docpage{org.inviwo.MeshRasterizer, Mesh Rasterizer}
- * ![](org.inviwo.MeshRasterizer.png?classIdentifier=org.inviwo.MeshRasterizer)
- * Mesh Renderer specialized for rendering highly layered and transparent surfaces.
- * Example usages: stream surfaces, isosurfaces, separatrices.
- *
- * Encompasses the work from:
- *   * IRIS: Illustrative Rendering of Integral Surfaces, IEEE TVCG (2010), Hummel et al.
- *   * Smoke Surfaces: An Interactive Flow Visualization Technique
- *     Inspired by Real-World Flow Experiments, IEEE TVCG (2008), von Funck et al.
- *
- * Fragment lists are used to render the transparent pixels with correct alpha blending.
- * Many different alpha modes, shading modes, coloring modes are available.
- *
- * ### Inports
- *   * __geometry__ Input meshes
- *
- * ### Outports
- *   * __image__ Rasterization functir to facilitate rendering in a rendering processor
- *
- * ### Properties
- *   * __Lighting__ Standard lighting settings
- *   * __Additional Transform__ Additional world/model transform applied to all input meshes
- *   * __Shade Opaque__ Draw the mesh opaquly instead of transparent. Disables all transparency
- * settings
- *   * __Alpha__ Assemble construction of the alpha value out of many factors (which are summed up)
- *       + __Uniform__ uniform alpha value
- *       + __Angle-based__ based on the angle between the pixel normal and the direction to the
- * camera
- *       + __Normal variation__ based on the variation (norm of the derivative) of the pixel normal
- *       + __Density-based__ based on the size of the triangle / density of the smoke volume inside
- * the triangle
- *       + __Shape-based__ based on the shape of the triangle. The more stretched, the more
- * transparent
- *   * __Edges__ Settings for the display of triangle edges
- *       + __Thickness__ The thickness of the edges in pixels
- *       + __Depth dependent__ If checked, the thickness also depends on the depth.
- *           If unchecked, every edge has the same size in screen space regardless of the distance
- * to the camera
- *       + __Smooth edges__ If checked, a simple anti-alising is used
- *   * __Front Face__ Settings for the front face
- *       + __Show__ Shows or hides that face (culling)
- *       + __Color Source__ The source of the color: vertex color, transfer function, or external
- * constant color
- *       + __Separate Uniform Alpha__ Overwrite alpha settings from above with a constant alpha
- * value
- *       + __Normal Source__ Source of the pixel normal: interpolated or not
- *       + __Shading Mode__ The shading that is applied to the pixel color
- *       + __Show Edges__ Show triangle edges
- *       + __Edge Color__ The color of the edges
- *       + __Edge Opacity__ Blending of the edge color:
- *           0-1: blending factor of the edge color into the triangle color, alpha unmodified;
- *           1-2: full edge color and alpha is increased to fully opaque
- *   * __Back Face__ Settings for the back face
- *       + __Show__ Shows or hides that face (culling)
- *       + __Same as front face__ use the settings from the front face, disables all other settings
- * for the back face
- *       + __Copy Front to Back__ Copies all settings from the front face to the back face
- *       + __Color Source__ The source of the color: vertex color, transfer function, or external
- * constant color
- *       + __Separate Uniform Alpha__ Overwrite alpha settings from above with a constant alpha
- * value
- *       + __Normal Source__ Source of the pixel normal: interpolated or not
- *       + __Shading Mode__ The shading that is applied to the pixel color
- *       + __Show Edges__ Show triangle edges
- *       + __Edge Color__ The color of the edges
- *       + __Edge Opacity__ Blending of the edge color:
- *           0-1: blending factor of the edge color into the triangle color, alpha unmodified;
- *           1-2: full edge color and alpha is increased to fully opaque
- */
-
 /**
- * \class MeshRasterizer
  * \brief Mesh Renderer specialized for rendering highly layered and transparent surfaces.
  *
  * Its settings will be used to add fragments to a FragmentListRenderer for the rendering of the
  * transparent mesh. Many alpha computation modes, shading modes, color modes can be combined and
  * even selected individually for the front- and back face.
  */
-class IVW_MODULE_MESHRENDERINGGL_API MeshRasterizer : public Processor {
+class IVW_MODULE_MESHRENDERINGGL_API MeshRasterizer : public RasterizationProcessor {
     friend class MeshRasterization;
 
 public:
@@ -152,11 +81,19 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    /**
-     * \brief Outputs a Rasterization instance to be rendered later.
-     */
-    virtual void process() override;
     virtual void initializeResources() override;
+
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
+                           std::function<void(Shader&)> setUniforms,
+                           std::function<void(Shader&)> initializeShader) override;
+
+    virtual bool usesFragmentLists() const override {
+        return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
+    }
+
+    virtual std::optional<mat4> boundingBox() const override;
+
+    virtual Document getInfo() const override;
 
 protected:
     /**
@@ -167,10 +104,8 @@ protected:
     void updateMeshes();
 
     MeshFlatMultiInport inport_;
-    RasterizationOutport outport_;
 
     SimpleLightingProperty lightingProperty_;
-    TransformListProperty transformSetting_;
 
     BoolProperty forceOpaque_;
 
@@ -291,32 +226,6 @@ protected:
      */
     bool meshHasAdjacency_;
     bool supportsFragmentLists_;
-};
-
-/**
- * \brief Functor object that will render into a fragment list.
- */
-class IVW_MODULE_MESHRENDERINGGL_API MeshRasterization : public Rasterization {
-public:
-    /**
-     * \brief Copy all settings and the shader to hand to a renderer.
-     */
-    MeshRasterization(const MeshRasterizer& rasterizerProcessor);
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms) const override;
-    virtual bool usesFragmentLists() const override {
-        return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
-    }
-    virtual Document getInfo() const override;
-
-public:
-    std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
-
-    const bool forceOpaque_;
-    const bool showFace_[2];
-    const Layer* tfTextures_[2];
-
-    std::shared_ptr<Shader> shader_;
 };
 
 }  // namespace inviwo

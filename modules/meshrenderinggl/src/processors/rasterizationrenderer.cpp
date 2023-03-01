@@ -29,6 +29,7 @@
 
 #include <modules/meshrenderinggl/processors/rasterizationrenderer.h>
 
+#include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/datastructures/image/image.h>                  // for Image
 #include <inviwo/core/interaction/cameratrackball.h>                 // for CameraTrackball
 #include <inviwo/core/ports/imageport.h>                             // for BaseImageInport, Ima...
@@ -60,27 +61,12 @@
 #include <string_view>  // for string_view
 #include <type_traits>  // for remove_extent_t
 #include <vector>       // for vector
+#include <functional>
 
 #include <fmt/core.h>  // for format_to, basic_str...
 
 namespace inviwo {
 class Shader;
-
-namespace {
-void configComposite(BoolCompositeProperty& comp) {
-
-    auto callback = [&comp]() mutable {
-        comp.setCollapsed(!comp.isChecked());
-        for (auto p : comp) {
-            if (p == comp.getBoolProperty()) continue;
-            p->setReadOnly(!comp.isChecked());
-        }
-    };
-
-    comp.getBoolProperty()->onChange(callback);
-    callback();
-}
-}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo RasterizationRenderer::processorInfo_{
@@ -89,27 +75,38 @@ const ProcessorInfo RasterizationRenderer::processorInfo_{
     "Mesh Rendering",                    // Category
     CodeState::Stable,                   // Code state
     Tags::GL,                            // Tags
-};
+    R"(Renderer bringing together several kinds of rasterizations objects.
+       Fragment lists are used to render the transparent pixels with correct alpha blending.
+       Illustration effects can be applied as a post-process.)"_unindentHelp};
+
 const ProcessorInfo RasterizationRenderer::getProcessorInfo() const { return processorInfo_; }
 
 RasterizationRenderer::RasterizationRenderer()
-    : Processor()
-    , rasterizations_("rastarizations")
-    , imageInport_(std::make_shared<ImageInport>("imageInport"))
-    , outport_("image")
-    , intermediateImage_()
-    , camera_("camera", "Camera")
-    , trackball_(&camera_)
-    , flr_{FragmentListRenderer::supportsFragmentLists() ? std::make_unique<FragmentListRenderer>()
-                                                         : nullptr}
-    , supportesIllustration_{FragmentListRenderer::supportsIllustration()} {
+    : Processor{}
+    , rasterizations_{"rastarizations",
+                      "Input rasterizations filling the fragment lists/render target"_help}
+    , imageInport_{"imageInport", "Optional background image"_help}
+    , outport_{"image",
+               "output image containing the rendered objects and the optional input image"_help}
+    , intermediateImage_{}
+    , camera_{"camera", "Camera", [this]() { return boundingBox(); }}
+    , lighting_{"lighting", "Lighting", &camera_}
+    , trackball_{&camera_}
+    , illustrationSettings_{}
+    , flr_{[]() -> std::optional<FragmentListRenderer> {
+        if (FragmentListRenderer::supportsFragmentLists())
+            return std::optional<FragmentListRenderer>{std::in_place};
+        else {
+            return std::nullopt;
+        }
+    }()} {
 
     if (!FragmentListRenderer::supportsFragmentLists()) {
         LogProcessorWarn(
-            "Fragment lists are not supported by the hardware -> use blending without sorting, may "
-            "lead to errors");
+            "Fragment lists are not supported by the hardware -> use blending without sorting, "
+            "may lead to errors");
     }
-    if (!supportesIllustration_) {
+    if (!FragmentListRenderer::supportsIllustration()) {
         LogProcessorWarn(
             "Illustration Buffer not supported by the hardware, screen-space silhouettes not "
             "available");
@@ -117,26 +114,34 @@ RasterizationRenderer::RasterizationRenderer()
 
     // input and output ports
     addPort(rasterizations_);
-    addPort(*imageInport_).setOptional(true);
+    addPort(imageInport_).setOptional(true);
     addPort(outport_);
 
-    addProperties(camera_, trackball_, illustrationSettings_.enabled_);
+    addProperties(camera_, lighting_, trackball_, illustrationSettings_.enabled_);
     camera_.setCollapsed(true);
     trackball_.setCollapsed(true);
 
-    illustrationSettings_.enabled_.setReadOnly(!supportesIllustration_);
+    illustrationSettings_.enabled_.setReadOnly(!FragmentListRenderer::supportsIllustration());
 
     if (flr_) {
         flrReload_ = flr_->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
 
-    imageInport_->onChange([this]() {
-        if (imageInport_->hasData()) {
-            intermediateImage_.setDimensions(imageInport_->getData()->getDimensions());
+    imageInport_.onChange([this]() {
+        if (imageInport_.hasData()) {
+            intermediateImage_.setDimensions(imageInport_.getData()->getDimensions());
         } else {
             intermediateImage_.setDimensions(outport_.getData()->getDimensions());
         }
     });
+}
+
+std::optional<mat4> RasterizationRenderer::boundingBox() const {
+    std::optional<mat4> bb;
+    for (const auto& rasterization : rasterizations_) {
+        bb = util::boundingBoxUnion(bb, rasterization->boundingBox());
+    }
+    return bb;
 }
 
 RasterizationRenderer::IllustrationSettings::IllustrationSettings()
@@ -152,7 +157,11 @@ RasterizationRenderer::IllustrationSettings::IllustrationSettings()
     enabled_.addProperties(edgeColor_, edgeStrength_, haloStrength_, smoothingSteps_,
                            edgeSmoothing_, haloSmoothing_);
 
-    configComposite(enabled_);
+    for (auto* p : enabled_) {
+        if (p != enabled_.getBoolProperty()) {
+            p->readonlyDependsOn(enabled_, std::not_fn(&BoolCompositeProperty::isChecked));
+        }
+    }
 }
 
 FragmentListRenderer::IllustrationSettings
@@ -167,18 +176,20 @@ void RasterizationRenderer::process() {
     bool fragmentLists = false;
     bool containsOpaque = false;
     for (auto rasterization : rasterizations_) {
-        if (rasterization->usesFragmentLists()) {
-            fragmentLists = true;
-        } else {
-            containsOpaque = true;
+        if (auto rp = rasterization->getProcessor()) {
+            if (rp->usesFragmentLists()) {
+                fragmentLists = true;
+            } else {
+                containsOpaque = true;
+            }
         }
     }
 
-    bool useIntermediateTarget = imageInport_->getData() && fragmentLists && containsOpaque;
+    bool useIntermediateTarget = imageInport_.getData() && fragmentLists && containsOpaque;
     if (useIntermediateTarget) {
-        utilgl::activateTargetAndClearOrCopySource(intermediateImage_, *imageInport_);
+        utilgl::activateTargetAndClearOrCopySource(intermediateImage_, imageInport_);
     } else {
-        utilgl::activateTargetAndClearOrCopySource(outport_, *imageInport_);
+        utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
     }
 
     // Loop: fragment list may need another try if not enough space for the pixels was available
@@ -192,11 +203,33 @@ void RasterizationRenderer::process() {
         }
 
         for (auto rasterization : rasterizations_) {
-            rasterization->rasterize(outport_.getDimensions(), mat4(1.0),
-                                     [this, fragmentLists](Shader& sh) {
-                                         utilgl::setUniforms(sh, camera_);
-                                         if (flr_ && fragmentLists) flr_->setShaderUniforms(sh);
-                                     });
+            if (auto rp = rasterization->getProcessor()) {
+                rp->rasterize(
+                    outport_.getDimensions(), mat4(1.0),
+                    [this, fragmentLists](Shader& shader) {
+                        utilgl::setUniforms(shader, camera_, lighting_);
+                        if (flr_ && fragmentLists) flr_->setShaderUniforms(shader);
+                    },
+                    [this](Shader& shader) {
+                        if (!shader.isReady() || lighting_.shadingMode_.isModified() ||
+                            !shader.getFragmentShaderObject()->hasShaderDefine(
+                                "APPLY_LIGHTING(lighting, materialAmbientColor, "
+                                "materialDiffuseColor, "
+                                "materialSpecularColor, position, normal, toCameraDir)")) {
+
+                            const bool set = FragmentListRenderer::supportsFragmentLists();
+                            constexpr auto Enable = ShaderObject::ExtensionBehavior::Enable;
+                            auto* fso = shader.getFragmentShaderObject();
+                            fso->setShaderExtension("GL_NV_gpu_shader5", Enable, set);
+                            fso->setShaderExtension("GL_EXT_shader_image_load_store", Enable, set);
+                            fso->setShaderExtension("GL_NV_shader_buffer_load", Enable, set);
+                            fso->setShaderExtension("GL_EXT_bindable_uniform", Enable, set);
+
+                            utilgl::addDefines(shader, lighting_);
+                            shader.build();
+                        }
+                    });
+            }
         }
 
         if (flr_ && fragmentLists) {
@@ -206,13 +239,13 @@ void RasterizationRenderer::process() {
                 utilgl::activateTargetAndCopySource(outport_, intermediateImage_);
             }
 
-            const bool useIllustration =
-                illustrationSettings_.enabled_.isChecked() && supportesIllustration_;
+            const bool useIllustration = illustrationSettings_.enabled_.isChecked() &&
+                                         FragmentListRenderer::supportsIllustration();
             if (useIllustration) {
                 flr_->setIllustrationSettings(illustrationSettings_.getSettings());
             }
             const Image* background =
-                useIntermediateTarget ? &intermediateImage_ : imageInport_->getData().get();
+                useIntermediateTarget ? &intermediateImage_ : imageInport_.getData().get();
             retry = !flr_->postPass(useIllustration, background);
         }
     } while (retry);

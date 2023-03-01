@@ -39,84 +39,15 @@
 #include <inviwo/core/properties/boolcompositeproperty.h>            // for BoolCompositeProperty
 #include <inviwo/core/properties/cameraproperty.h>                   // for CameraProperty
 #include <inviwo/core/properties/ordinalproperty.h>                  // for FloatProperty, Float...
+#include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/util/dispatcher.h>                             // for Dispatcher, Dispatch...
 #include <modules/meshrenderinggl/ports/rasterizationport.h>         // for RasterizationInport
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
 
-#include <memory>  // for shared_ptr, unique_ptr
+#include <optional>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.RasterizationRenderer, Rasterization Renderer}
- * ![](org.inviwo.RasterizationRenderer.png?classIdentifier=org.inviwo.RasterizationRenderer)
- * Renderer bringing together several kinds of rasterizations objects.
- *
- * Fragment lists are used to render the transparent pixels with correct alpha blending.
- * Illustration effects can be applied as a post-process.
- *
- * ### Inports
- *   * __rasterizations__ Input rasterizations filling the fragment lists/render target
- *   * __imageInport__ Optional background image
- *
- * ### Outports
- *   * __image__ output image containing the rendered objects and the optional input image
- *
- *   * __Force Opaque__ Draw the mesh opaquly instead of transparent. Disables all transparency
- * settings
- *   * __Alpha__ Assemble construction of the alpha value out of many factors (which are summed up)
- *       + __Uniform__ uniform alpha value
- *       + __Angle-based__ based on the angle between the pixel normal and the direction to the
- * camera
- *       + __Normal variation__ based on the variation (norm of the derivative) of the pixel normal
- *       + __Density-based__ based on the size of the triangle / density of the smoke volume inside
- * the triangle
- *       + __Shape-based__ based on the shape of the triangle. The more stretched, the more
- * transparent
- *   * __Edges__ Settings for the display of triangle edges
- *       + __Thickness__ The thickness of the edges
- *       + __Depth dependent__ If checked, the thickness also depends on the depth.
- *           If unchecked, every edge has the same size in screen space regardless of the distance
- * to the camera
- *       + __Smooth edges__ If checked, a simple anti-alising is used
- *   * __Front Face__ Settings for the front face
- *       + __Show__ Shows or hides that face (culling)
- *       + __Color Source__ The source of the color: vertex color, transfer function, or external
- * constant color
- *       + __Separate Uniform Alpha__ Overwrite alpha settings from above with a constant alpha
- * value
- *       + __Normal Source__ Source of the pixel normal: interpolated or not
- *       + __Shading Mode__ The shading that is applied to the pixel color
- *       + __Show Edges__ Show triangle edges
- *       + __Edge Color__ The color of the edges
- *       + __Edge Opacity__ Blending of the edge color:
- *           0-1: blending factor of the edge color into the triangle color, alpha unmodified;
- *           1-2: full edge color and alpha is increased to fully opaque
- *   * __Back Face__ Settings for the back face
- *       + __Show__ Shows or hides that face (culling)
- *       + __Same as front face__ use the settings from the front face, disables all other settings
- * for the back face
- *       + __Copy Front to Back__ Copies all settings from the front face to the back face
- *       + __Color Source__ The source of the color: vertex color, transfer function, or external
- * constant color
- *       + __Separate Uniform Alpha__ Overwrite alpha settings from above with a constant alpha
- * value
- *       + __Normal Source__ Source of the pixel normal: interpolated or not
- *       + __Shading Mode__ The shading that is applied to the pixel color
- *       + __Show Edges__ Show triangle edges
- *       + __Edge Color__ The color of the edges
- *       + __Edge Opacity__ Blending of the edge color:
- *           0-1: blending factor of the edge color into the triangle color, alpha unmodified;
- *           1-2: full edge color and alpha is increased to fully opaque
- */
-
-/**
- * \class RasterizationRenderer
- * \brief Mesh Renderer specialized for rendering highly layered and transparent surfaces.
- *
- * It uses the FragmentListRenderer for the rendering of the transparent mesh.
- * Many alpha computation modes, shading modes, color modes can be combined
- * and even selected individually for the front- and back face.
- */
 class IVW_MODULE_MESHRENDERINGGL_API RasterizationRenderer : public Processor {
 public:
     RasterizationRenderer();
@@ -131,13 +62,15 @@ public:
     virtual void process() override;
 
 protected:
-    RasterizationInport rasterizations_;
+    std::optional<mat4> boundingBox() const;
 
-    std::shared_ptr<ImageInport> imageInport_;
+    RasterizationInport rasterizations_;
+    ImageInport imageInport_;
     ImageOutport outport_;
     Image intermediateImage_;
 
     CameraProperty camera_;
+    SimpleLightingProperty lighting_;
     CameraTrackball trackball_;
 
     struct IllustrationSettings {
@@ -155,9 +88,8 @@ protected:
     };
     IllustrationSettings illustrationSettings_;
 
-    std::unique_ptr<FragmentListRenderer> flr_;
+    std::optional<FragmentListRenderer> flr_;
     typename Dispatcher<void()>::Handle flrReload_;
-    bool supportesIllustration_;
 };
 
 }  // namespace inviwo

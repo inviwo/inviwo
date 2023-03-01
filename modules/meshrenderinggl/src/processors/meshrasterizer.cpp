@@ -29,6 +29,7 @@
 
 #include <modules/meshrenderinggl/processors/meshrasterizer.h>
 
+#include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>                         // for IndexBuffer
 #include <inviwo/core/datastructures/data.h>                                  // for noData
 #include <inviwo/core/datastructures/geometry/geometrytype.h>                 // for Connectivit...
@@ -95,15 +96,12 @@ class Rasterization;
 
 namespace {
 void configComposite(BoolCompositeProperty& comp) {
-
-    auto callback = [&comp]() mutable {
-        comp.setCollapsed(!comp.isChecked());
-        for (auto p : comp) {
-            if (p == comp.getBoolProperty()) continue;
-            p->setReadOnly(!comp.isChecked());
+    for (auto* p : comp) {
+        if (p != comp.getBoolProperty()) {
+            p->readonlyDependsOn(comp, std::not_fn(&BoolCompositeProperty::isChecked));
         }
-    };
-
+    }
+    auto callback = [&comp]() { comp.setCollapsed(!comp.isChecked()); };
     comp.getBoolProperty()->onChange(callback);
     callback();
 }
@@ -116,16 +114,26 @@ const ProcessorInfo MeshRasterizer::processorInfo_{
     "Mesh Rendering",             // Category
     CodeState::Experimental,      // Code state
     Tags::GL,                     // Tags
-};
+    R"(Mesh Renderer specialized for rendering highly layered and transparent surfaces.
+       Example usages: stream surfaces, isosurfaces, separatrices.
+       
+       Encompasses the work from:
+       * IRIS: Illustrative Rendering of Integral Surfaces, IEEE TVCG (2010), Hummel et al.
+       * Smoke Surfaces: An Interactive Flow Visualization Technique
+         Inspired by Real-World Flow Experiments, IEEE TVCG (2008), von Funck et al.
+       
+       Fragment lists are used to render the transparent pixels with correct alpha blending.
+       Many different alpha modes, shading modes, coloring modes are available.)"_unindentHelp};
+
 const ProcessorInfo MeshRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 MeshRasterizer::MeshRasterizer()
-    : Processor()
-    , inport_("geometry")
-    , outport_("image")
+    : RasterizationProcessor()
+    , inport_("geometry", "Input meshes"_help)
     , lightingProperty_("lighting", "Lighting")
-    , transformSetting_("transformSettings", "Additional Transform")
-    , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
+    , forceOpaque_("forceOpaque", "Shade Opaque",
+                   "Draw the mesh opaquly instead of transparent. Disables all transparency"_help,
+                   false, InvalidationLevel::InvalidResources)
     , drawSilhouette_("drawSilhouette", "Draw Silhouette", false,
                       InvalidationLevel::InvalidResources)
     , silhouetteColor_("silhouetteColor", "Silhouette Color", {0.f, 0.f, 0.f, 1.f})
@@ -149,13 +157,12 @@ MeshRasterizer::MeshRasterizer()
                                        "fancymeshrenderer.frag", Shader::Build::No)) {
     // input and output ports
     addPort(inport_).onChange([this]() { updateMeshes(); });
-    addPort(outport_);
 
     drawSilhouette_.onChange([this]() { updateMeshes(); });
 
-    addProperties(lightingProperty_, transformSetting_, forceOpaque_, drawSilhouette_,
-                  silhouetteColor_, normalSource_, normalComputationMode_, alphaSettings_,
-                  edgeSettings_, faceSettings_[0].show_, faceSettings_[1].show_);
+    addProperties(lightingProperty_, forceOpaque_, drawSilhouette_, silhouetteColor_, normalSource_,
+                  normalComputationMode_, alphaSettings_, edgeSettings_, faceSettings_[0].show_,
+                  faceSettings_[1].show_);
 
     silhouetteColor_.visibilityDependsOn(drawSilhouette_, [](const auto& p) { return p.get(); });
     normalComputationMode_.visibilityDependsOn(
@@ -163,17 +170,15 @@ MeshRasterizer::MeshRasterizer()
 
     alphaSettings_.visibilityDependsOn(forceOpaque_, [](const auto& p) { return !p.get(); });
 
-    auto edgevis = [this](auto) {
+    auto edgeVis = [this](auto) {
         return drawSilhouette_.get() || faceSettings_[0].showEdges_.get() ||
                faceSettings_[1].showEdges_.get();
     };
-    edgeSettings_.visibilityDependsOn(drawSilhouette_, edgevis);
-    edgeSettings_.visibilityDependsOn(faceSettings_[0].showEdges_, edgevis);
-    edgeSettings_.visibilityDependsOn(faceSettings_[1].showEdges_, edgevis);
+    edgeSettings_.visibilityDependsOn(drawSilhouette_, edgeVis);
+    edgeSettings_.visibilityDependsOn(faceSettings_[0].showEdges_, edgeVis);
+    edgeSettings_.visibilityDependsOn(faceSettings_[1].showEdges_, edgeVis);
 
     lightingProperty_.setCollapsed(true);
-    transformSetting_.setCollapsed(true);
-    transformSetting_.setCurrentStateAsDefault();
 
     silhouetteColor_.setSemantics(PropertySemantics::Color);
 
@@ -181,20 +186,33 @@ MeshRasterizer::MeshRasterizer()
 }
 
 MeshRasterizer::AlphaSettings::AlphaSettings()
-    : CompositeProperty("alphaContainer", "Alpha")
-    , enableUniform_("alphaUniform", "Uniform", true, InvalidationLevel::InvalidResources)
+    : CompositeProperty(
+          "alphaContainer", "Alpha",
+          "Assemble construction of the alpha value out of many factors (which are summed up)"_help)
+    , enableUniform_("alphaUniform", "Uniform", "uniform alpha value"_help, true,
+                     InvalidationLevel::InvalidResources)
     , uniformScaling_("alphaUniformScaling", "Scaling", 0.5f, 0.f, 1.f, 0.01f)
     , minimumAlpha_("minimumAlpha", "Minimum Alpha", 0.1f, 0.f, 1.f, 0.01f)
-    , enableAngleBased_("alphaAngleBased", "Angle-based", false,
-                        InvalidationLevel::InvalidResources)
+    , enableAngleBased_(
+          "alphaAngleBased", "Angle-based",
+          "based on the angle between the pixel normal and the direction to the camera "_help,
+          false, InvalidationLevel::InvalidResources)
     , angleBasedExponent_("alphaAngleBasedExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
-    , enableNormalVariation_("alphaNormalVariation", "Normal variation", false,
-                             InvalidationLevel::InvalidResources)
+    , enableNormalVariation_(
+          "alphaNormalVariation", "Normal variation",
+          "based on the variation (norm of the derivative) of the pixel normal"_help, false,
+          InvalidationLevel::InvalidResources)
     , normalVariationExponent_("alphaNormalVariationExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
-    , enableDensity_("alphaDensity", "Density-based", false, InvalidationLevel::InvalidResources)
+    , enableDensity_(
+          "alphaDensity", "Density-based",
+          "based on the size of the triangle / density of the smoke volume inside the triangle"_help,
+          false, InvalidationLevel::InvalidResources)
     , baseDensity_("alphaBaseDensity", "Base density", 1.f, 0.f, 2.f, 0.01f)
     , densityExponent_("alphaDensityExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
-    , enableShape_("alphaShape", "Shape-based", false, InvalidationLevel::InvalidResources)
+    , enableShape_(
+          "alphaShape", "Shape-based",
+          "based on the shape of the triangle. The more stretched, the more transparent"_help,
+          false, InvalidationLevel::InvalidResources)
     , shapeExponent_("alphaShapeExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f) {
     addProperties(minimumAlpha_, enableUniform_, uniformScaling_, enableAngleBased_,
                   angleBasedExponent_, enableNormalVariation_, normalVariationExponent_,
@@ -225,13 +243,18 @@ void MeshRasterizer::AlphaSettings::setUniforms(Shader& shader, std::string_view
                        auto& aval) { shader.setUniform(fmt::format("{}{}", prefix, akey), aval); },
                    val);
     }
-}  // namespace inviwo
+}
 
 MeshRasterizer::EdgeSettings::EdgeSettings()
-    : CompositeProperty("edges", "Edges")
-    , edgeThickness_("thickness", "Thickness", 2.f, 0.1f, 10.f, 0.1f)
-    , depthDependent_("depth", "Depth dependent", false, InvalidationLevel::InvalidResources)
-    , smoothEdges_("smooth", "Smooth edges", true, InvalidationLevel::InvalidResources) {
+    : CompositeProperty("edges", "Edges", "Settings for the display of triangle edges"_help)
+    , edgeThickness_("thickness", "Thickness",
+                     util::ordinalScale(2.f, 10.f).set("The thickness of the edges in pixels"_help))
+    , depthDependent_("depth", "Depth dependent",
+                      "If checked, the thickness also depends on the depth. If unchecked, every"
+                      "edge has the same size in screen space regardless of the distance"_help,
+                      false, InvalidationLevel::InvalidResources)
+    , smoothEdges_("smooth", "Smooth edges", "If checked, a simple anti-alising is used"_help, true,
+                   InvalidationLevel::InvalidResources) {
     addProperties(edgeThickness_, depthDependent_, smoothEdges_);
 }
 
@@ -283,23 +306,37 @@ MeshRasterizer::HatchingSettings::HatchingSettings()
 MeshRasterizer::FaceSettings::FaceSettings(bool frontFace)
     : frontFace_(frontFace)
     , show_(frontFace ? "frontcontainer" : "backcontainer", frontFace ? "Front Face" : "Back Face",
-            true)
-    , sameAsFrontFace_("same", "Same as Front Face")
-    , copyFrontToBack_("copy", "Copy Front to Back")
+            "Shows or hides that face (culling)"_help, true)
+    , sameAsFrontFace_("same", "Same as Front Face",
+                       "use the settings from the front face, disables all"
+                       "other settings for the back face"_help)
+    , copyFrontToBack_("copy", "Copy Front to Back",
+                       "Copies all settings from the front face to the back face"_help)
     , transferFunction_("tf", "Transfer Function")
     , externalColor_("extraColor", "Color", {1.f, 0.3f, 0.01f})
     , colorSource_("colorSource", "Color Source",
+                   "The source of the color: vertex color, transfer function,"
+                   "or external constant color"_help,
                    {{"vertexColor", "VertexColor", ColorSource::VertexColor},
                     {"tf", "Transfer Function", ColorSource::TransferFunction},
                     {"external", "Constant Color", ColorSource::ExternalColor}},
                    2, InvalidationLevel::InvalidResources)
-    , separateUniformAlpha_("separateUniformAlpha", "Separate Uniform Alpha")
+    , separateUniformAlpha_("separateUniformAlpha", "Separate Uniform Alpha",
+                            "Overwrite alpha settings from above with a constant alpha value"_help)
     , uniformAlpha_("uniformAlpha", "Uniform Alpha", 0.5f, 0.f, 1.f, 0.01f)
     , shadingMode_("shadingMode", "Shading Mode",
+                   "The shading that is applied to the pixel color"_help,
                    {{"off", "Off", ShadingMode::Off}, {"phong", "Phong", ShadingMode::Phong}})
-    , showEdges_("showEdges", "Show Edges", false, InvalidationLevel::InvalidResources)
-    , edgeColor_("edgeColor", "Edge color", {0.f, 0.f, 0.f})
-    , edgeOpacity_("edgeOpacity", "Edge Opacity", 0.5f, 0.f, 2.f, 0.01f)
+    , showEdges_("showEdges", "Show Edges", "Show triangle edges"_help, false,
+                 InvalidationLevel::InvalidResources)
+    , edgeColor_("edgeColor", "Edge color",
+                 util::ordinalColor(vec3{0.0f}).set("The color of the edges"_help))
+    , edgeOpacity_("edgeOpacity", "Edge Opacity",
+                   R"(Blending of the edge color:
+        0-1: blending factor of the edge color into the triangle color, alpha unmodified;
+        1-2: full edge color and alpha is increased to fully opaque)"_unindentHelp,
+                   0.5f, {0.f, ConstraintBehavior::Immutable}, {2.f, ConstraintBehavior::Immutable},
+                   0.01f)
     , hatching_() {
 
     externalColor_.setSemantics(PropertySemantics::Color);
@@ -337,6 +374,36 @@ void MeshRasterizer::FaceSettings::copyFrontToBack() {
     }
 }
 
+void MeshRasterizer::initializeResources() {
+    // shading defines
+    utilgl::addShaderDefines(*shader_, lightingProperty_);
+
+    const std::array<std::pair<std::string, bool>, 15> defines = {
+        {{"USE_FRAGMENT_LIST", !forceOpaque_.get()},
+         {"ALPHA_UNIFORM", alphaSettings_.enableUniform_},
+         {"ALPHA_ANGLE_BASED", alphaSettings_.enableAngleBased_},
+         {"ALPHA_NORMAL_VARIATION", alphaSettings_.enableNormalVariation_},
+         {"ALPHA_DENSITY", alphaSettings_.enableDensity_},
+         {"ALPHA_SHAPE", alphaSettings_.enableShape_},
+         {"DRAW_EDGES", faceSettings_[0].showEdges_ || faceSettings_[1].showEdges_},
+         {"DRAW_EDGES_DEPTH_DEPENDENT", edgeSettings_.depthDependent_},
+         {"DRAW_EDGES_SMOOTHING", edgeSettings_.smoothEdges_},
+         {"MESH_HAS_ADJACENCY", meshHasAdjacency_},
+         {"DRAW_SILHOUETTE", drawSilhouette_},
+         {"SEND_TEX_COORD", faceSettings_[0].hatching_.hatching_.isChecked() ||
+                                faceSettings_[1].hatching_.hatching_.isChecked()},
+         {"SEND_SCALAR", faceSettings_[0].colorSource_ == ColorSource::TransferFunction ||
+                             faceSettings_[1].colorSource_ == ColorSource::TransferFunction},
+         {"SEND_COLOR", faceSettings_[0].colorSource_ == ColorSource::VertexColor ||
+                            faceSettings_[1].colorSource_ == ColorSource::VertexColor}}};
+
+    for (auto&& [key, val] : defines) {
+        for (auto&& so : shader_->getShaderObjects()) {
+            so.setShaderDefine(key, val);
+        }
+    }
+}
+
 void MeshRasterizer::FaceSettings::setUniforms(Shader& shader, std::string_view prefix) const {
 
     std::array<std::pair<std::string_view, std::variant<bool, int, float, vec4>>, 15> uniforms{
@@ -364,13 +431,17 @@ void MeshRasterizer::FaceSettings::setUniforms(Shader& shader, std::string_view 
                    val);
     }
 }
+void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
+                               std::function<void(Shader&)> setUniformsRenderer,
+                               std::function<void(Shader&)> initializeShader) {
 
-void MeshRasterizer::process() {
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
         outport_.setData(nullptr);
         LogWarn("Both sides are disabled, not rendering anything.");
         return;  // everything is culled
     }
+
+    initializeShader(*shader_);
 
     shader_->activate();
 
@@ -378,7 +449,6 @@ void MeshRasterizer::process() {
     utilgl::setUniforms(*shader_, lightingProperty_);
 
     // update face render settings
-    std::array<TextureUnit, 2> transFuncUnit;
     for (size_t j = 0; j < faceSettings_.size(); ++j) {
         const std::string prefix = fmt::format("renderSettings[{}].", j);
         auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
@@ -398,15 +468,52 @@ void MeshRasterizer::process() {
 
     shader_->deactivate();
 
-    std::shared_ptr<const Rasterization> rasterization =
-        std::make_shared<const MeshRasterization>(*this);
-    // If transform is applied, wrap rasterization.
-    if (transformSetting_.transforms_.size() > 0) {
-        outport_.setData(std::make_shared<TransformedRasterization>(rasterization,
-                                                                    transformSetting_.getMatrix()));
-    } else {
-        outport_.setData(rasterization);
+    std::array<bool, 2> showFace = {faceSettings_[0].show_, faceSettings_[1].show_};
+
+    std::array<const Layer*, 2> tfTextures = {
+        faceSettings_[0].transferFunction_->getData(),
+        faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : 1]
+            .transferFunction_->getData()};
+
+    shader_->activate();
+
+    // set transfer function textures
+    std::array<TextureUnit, 2> transFuncUnit;
+    for (size_t j = 0; j < 2; ++j) {
+        const LayerGL* transferFunctionGL = tfTextures[j]->getRepresentation<LayerGL>();
+        transferFunctionGL->bindTexture(transFuncUnit[j].getEnum());
+        shader_->setUniform(fmt::format("transferFunction{}", j), transFuncUnit[j].getUnitNumber());
     }
+
+    shader_->setUniform("halfScreenSize", imageSize / ivec2(2));
+
+    // call the callback provided by the renderer calling this function
+    setUniformsRenderer(*shader_);
+    {
+        // various OpenGL states: depth, blending, culling
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
+        utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
+
+        utilgl::CullFaceState culling(!showFace[0] && showFace[1]   ? GL_FRONT
+                                      : showFace[0] && !showFace[1] ? GL_BACK
+                                                                    : GL_NONE);
+        utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
+                                              forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
+
+        // Finally, draw it
+        for (auto mesh : enhancedMeshes_) {
+            MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                            mesh->getDefaultMeshInfo()};
+            auto transform = CompositeTransform(mesh->getModelMatrix(),
+                                                mesh->getWorldMatrix() * worldMatrixTransform);
+            utilgl::setShaderUniforms(*shader_, transform, "geometry");
+            shader_->setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+
+            drawer.draw();
+        }
+    }
+
+    shader_->deactivate();
 }
 
 void MeshRasterizer::updateMeshes() {
@@ -447,99 +554,9 @@ void MeshRasterizer::updateMeshes() {
     }
 }
 
-MeshRasterization::MeshRasterization(const MeshRasterizer& processor)
-    : enhancedMeshes_(processor.enhancedMeshes_)
-    , forceOpaque_(processor.forceOpaque_)
-    , showFace_{processor.faceSettings_[0].show_, processor.faceSettings_[1].show_}
-    , tfTextures_{processor.faceSettings_[0].transferFunction_->getData(),
-                  processor.faceSettings_[processor.faceSettings_[1].sameAsFrontFace_.get() ? 0 : 1]
-                      .transferFunction_->getData()}
-    , shader_(processor.shader_) {}
+std::optional<mat4> MeshRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
 
-void MeshRasterizer::initializeResources() {
-    auto fso = shader_->getFragmentShaderObject();
-
-    fso->addShaderExtension("GL_NV_gpu_shader5", true);
-    fso->addShaderExtension("GL_EXT_shader_image_load_store", true);
-    fso->addShaderExtension("GL_NV_shader_buffer_load", true);
-    fso->addShaderExtension("GL_EXT_bindable_uniform", true);
-
-    // shading defines
-    utilgl::addShaderDefines(*shader_, lightingProperty_);
-
-    const std::array<std::pair<std::string, bool>, 15> defines = {
-        {{"USE_FRAGMENT_LIST", !forceOpaque_.get()},
-         {"ALPHA_UNIFORM", alphaSettings_.enableUniform_},
-         {"ALPHA_ANGLE_BASED", alphaSettings_.enableAngleBased_},
-         {"ALPHA_NORMAL_VARIATION", alphaSettings_.enableNormalVariation_},
-         {"ALPHA_DENSITY", alphaSettings_.enableDensity_},
-         {"ALPHA_SHAPE", alphaSettings_.enableShape_},
-         {"DRAW_EDGES", faceSettings_[0].showEdges_ || faceSettings_[1].showEdges_},
-         {"DRAW_EDGES_DEPTH_DEPENDENT", edgeSettings_.depthDependent_},
-         {"DRAW_EDGES_SMOOTHING", edgeSettings_.smoothEdges_},
-         {"MESH_HAS_ADJACENCY", meshHasAdjacency_},
-         {"DRAW_SILHOUETTE", drawSilhouette_},
-         {"SEND_TEX_COORD", faceSettings_[0].hatching_.hatching_.isChecked() ||
-                                faceSettings_[1].hatching_.hatching_.isChecked()},
-         {"SEND_SCALAR", faceSettings_[0].colorSource_ == ColorSource::TransferFunction ||
-                             faceSettings_[1].colorSource_ == ColorSource::TransferFunction},
-         {"SEND_COLOR", faceSettings_[0].colorSource_ == ColorSource::VertexColor ||
-                            faceSettings_[1].colorSource_ == ColorSource::VertexColor}}};
-
-    for (auto&& [key, val] : defines) {
-        for (auto&& so : shader_->getShaderObjects()) {
-            so.setShaderDefine(key, val);
-        }
-    }
-
-    shader_->build();
-}
-
-void MeshRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                                  std::function<void(Shader&)> setUniformsRenderer) const {
-
-    shader_->activate();
-
-    // set transfer function textures
-    std::array<TextureUnit, 2> transFuncUnit;
-    for (size_t j = 0; j < 2; ++j) {
-        const LayerGL* transferFunctionGL = tfTextures_[j]->getRepresentation<LayerGL>();
-        transferFunctionGL->bindTexture(transFuncUnit[j].getEnum());
-        shader_->setUniform(fmt::format("transferFunction{}", j), transFuncUnit[j].getUnitNumber());
-    }
-
-    shader_->setUniform("halfScreenSize", imageSize / ivec2(2));
-
-    // call the callback provided by the renderer calling this function
-    setUniformsRenderer(*shader_);
-    {
-        // various OpenGL states: depth, blending, culling
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
-        utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
-
-        utilgl::CullFaceState culling(!showFace_[0] && showFace_[1]   ? GL_FRONT
-                                      : showFace_[0] && !showFace_[1] ? GL_BACK
-                                                                      : GL_NONE);
-        utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
-                                              forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
-
-        // Finally, draw it
-        for (auto mesh : enhancedMeshes_) {
-            MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
-                                            mesh->getDefaultMeshInfo()};
-            auto transform = CompositeTransform(mesh->getModelMatrix(),
-                                                mesh->getWorldMatrix() * worldMatrixTransform);
-            utilgl::setShaderUniforms(*shader_, transform, "geometry");
-            shader_->setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
-
-            drawer.draw();
-        }
-    }
-
-    shader_->deactivate();
-}
-
-Document MeshRasterization::getInfo() const {
+Document MeshRasterizer::getInfo() const {
     Document doc;
     doc.append("p", fmt::format("Mesh rasterization functor with {} {}. {}", enhancedMeshes_.size(),
                                 (enhancedMeshes_.size() == 1) ? " mesh" : " meshes",

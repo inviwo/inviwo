@@ -241,20 +241,27 @@ void FragmentListRenderer::setUniforms(Shader& shader, TextureUnit& abuffUnit) c
 }
 
 bool FragmentListRenderer::supportsFragmentLists() {
-    return OpenGLCapabilities::getOpenGLVersion() >= 430 &&
-           OpenGLCapabilities::isExtensionSupported("GL_NV_gpu_shader5") &&
-           OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store") &&
-           OpenGLCapabilities::isExtensionSupported("GL_NV_shader_buffer_load") &&
-           OpenGLCapabilities::isExtensionSupported("GL_EXT_bindable_uniform");
+    static const bool support =
+        OpenGLCapabilities::getOpenGLVersion() >= 430 &&
+        OpenGLCapabilities::isExtensionSupported("GL_NV_gpu_shader5") &&
+        OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store") &&
+        OpenGLCapabilities::isExtensionSupported("GL_NV_shader_buffer_load") &&
+        OpenGLCapabilities::isExtensionSupported("GL_EXT_bindable_uniform");
+
+    return support;
 }
 
 bool FragmentListRenderer::supportsIllustration() {
-    if (OpenGLCapabilities::getOpenGLVersion() >= 460)
-        return true;
-    else if (OpenGLCapabilities::getOpenGLVersion() >= 450)
-        return OpenGLCapabilities::isExtensionSupported("GL_ARB_shader_atomic_counter_ops");
-    else
-        return false;
+    static const bool support = []() {
+        if (OpenGLCapabilities::getOpenGLVersion() >= 460)
+            return true;
+        else if (OpenGLCapabilities::getOpenGLVersion() >= 450)
+            return OpenGLCapabilities::isExtensionSupported("GL_ARB_shader_atomic_counter_ops");
+        else
+            return false;
+    }();
+
+    return support;
 }
 
 typename Dispatcher<void()>::Handle FragmentListRenderer::onReload(std::function<void()> callback) {
@@ -282,26 +289,18 @@ void FragmentListRenderer::buildShaders(bool hasBackground) {
     }
 
     auto* ffs = illustration_.fill.getFragmentShaderObject();
-    if (supportsIllustration()) ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
+    ffs->setShaderExtension("GL_ARB_shader_atomic_counter_ops",
+                            ShaderObject::ExtensionBehavior::Enable, supportsIllustration());
 
     if (supportsFragmentLists()) {
-        if (builtWithBackground_) {
-            dfs->addShaderDefine("BACKGROUND_AVAILABLE");
-        } else {
-            dfs->removeShaderDefine("BACKGROUND_AVAILABLE");
-        }
-
+        dfs->setShaderDefine("BACKGROUND_AVAILABLE", builtWithBackground_);
         display_.build();
         clear_.build();
     }
 
     if (supportsIllustration()) {
-        if (builtWithBackground_) {
-            illustration_.fill.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
-        } else {
-            illustration_.fill.getFragmentShaderObject()->removeShaderDefine(
-                "BACKGROUND_AVAILABLE");
-        }
+        illustration_.fill.getFragmentShaderObject()->setShaderDefine("BACKGROUND_AVAILABLE",
+                                                                      builtWithBackground_);
         illustration_.fill.build();
         illustration_.draw.build();
         illustration_.neighbors.build();

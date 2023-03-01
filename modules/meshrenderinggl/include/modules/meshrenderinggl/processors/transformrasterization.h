@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
 #include <modules/base/properties/transformlistproperty.h>    // for TransformListProperty
 #include <modules/meshrenderinggl/ports/rasterizationport.h>  // for RasterizationInport
+#include <modules/meshrenderinggl/datastructures/rasterization.h>
 
 namespace inviwo {
 
@@ -56,18 +57,24 @@ namespace inviwo {
  * \class TransformRasterization
  * \brief Applies an additional transform on a given rasterization object.
  */
-class IVW_MODULE_MESHRENDERINGGL_API TransformRasterization : public Processor {
+class IVW_MODULE_MESHRENDERINGGL_API TransformRasterization : public RasterizationProcessor {
 public:
     TransformRasterization();
     virtual ~TransformRasterization() = default;
 
-    virtual void process() override;
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
+                           std::function<void(Shader&)> setUniforms,
+                           std::function<void(Shader&)> initializeShader) override;
+    virtual bool usesFragmentLists() const override;
+
+    virtual std::optional<mat4> boundingBox() const override;
+
+    virtual Document getInfo() const override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     RasterizationInport inport_;
-    RasterizationOutport outport_;
     TransformListProperty transformSetting_;
 };
 

@@ -53,27 +53,38 @@ const ProcessorInfo TransformRasterization::processorInfo_{
 const ProcessorInfo TransformRasterization::getProcessorInfo() const { return processorInfo_; }
 
 TransformRasterization::TransformRasterization()
-    : Processor()
+    : RasterizationProcessor()
     , inport_("input")
-    , outport_("output")
     , transformSetting_("transformSettings", "Additional Transform") {
 
     addPort(inport_);
-    addPort(outport_);
 
     addProperties(transformSetting_);
 
     transformSetting_.setCollapsed(false);
 }
 
-void TransformRasterization::process() {
-    if (!inport_.hasData()) {
-        outport_.setData(nullptr);
-        return;
-    }
+void TransformRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
+                                       std::function<void(Shader&)> setUniforms,
+                                       std::function<void(Shader&)> initializeShader) {
 
-    outport_.setData(
-        new TransformedRasterization(inport_.getData(), transformSetting_.getMatrix()));
+    if (auto p = inport_.getData()->getProcessor()) {
+        p->rasterize(imageSize, transformSetting_.getMatrix() * worldMatrixTransform, setUniforms,
+                     initializeShader);
+    }
 }
+bool TransformRasterization::usesFragmentLists() const {
+    return inport_.getData()->usesFragmentLists();
+}
+
+std::optional<mat4> TransformRasterization::boundingBox() const {
+    if (auto bb = inport_.getData()->boundingBox()) {
+        return transformSetting_.getMatrix() * (*bb);
+    } else {
+        return std::nullopt;
+    }
+}
+
+Document TransformRasterization::getInfo() const { return inport_.getData()->getInfo(); }
 
 }  // namespace inviwo

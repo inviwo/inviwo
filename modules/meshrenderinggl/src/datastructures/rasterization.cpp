@@ -33,10 +33,51 @@
 
 namespace inviwo {
 
+RasterizationProcessor::RasterizationProcessor(std::string_view identifier,
+                                               std::string_view displayName)
+    : Processor(identifier, displayName), outport_{"image"}, needsInitialize_{false} {
+    addPort(outport_);
+}
+
+void RasterizationProcessor::initializeResources() { needsInitialize_ = true; }
+
+void RasterizationProcessor::process() {
+    auto rasterization = std::make_shared<Rasterization>(
+        std::dynamic_pointer_cast<RasterizationProcessor>(shared_from_this()));
+    outport_.setData(rasterization);
+}
+
 Document Rasterization::getInfo() const {
-    Document doc;
-    doc.append("p", "Rasterization functor.");
-    return doc;
+    if (auto p = getProcessor()) {
+        return p->getInfo();
+    } else {
+        Document doc;
+        doc.append("p", "Rasterization functor.");
+        return doc;
+    }
+}
+
+Rasterization::Rasterization(std::shared_ptr<RasterizationProcessor> processor)
+    : processor_{processor} {}
+
+std::shared_ptr<RasterizationProcessor> Rasterization::getProcessor() const {
+    return processor_.lock();
+}
+
+bool Rasterization::usesFragmentLists() const {
+    if (auto p = getProcessor()) {
+        return p->usesFragmentLists();
+    } else {
+        return false;
+    }
+}
+
+std::optional<mat4> Rasterization::boundingBox() const {
+    if (auto p = getProcessor()) {
+        return p->boundingBox();
+    } else {
+        return std::nullopt;
+    }
 }
 
 }  // namespace inviwo

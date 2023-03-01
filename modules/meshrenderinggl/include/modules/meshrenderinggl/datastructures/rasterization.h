@@ -31,6 +31,9 @@
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
 
+#include <inviwo/core/processors/processor.h>
+#include <modules/meshrenderinggl/ports/rasterizationport.h>
+
 #include <inviwo/core/datastructures/datatraits.h>  // for DataTraits
 #include <inviwo/core/util/document.h>              // for Document
 #include <inviwo/core/util/glmmat.h>                // for mat4
@@ -38,9 +41,11 @@
 
 #include <functional>  // for function
 #include <string>      // for string
+#include <optional>
 
 namespace inviwo {
 class Shader;
+class RasterizationProcessor;
 
 /**
  * \brief A functor class for rendering geometry into a fragment list
@@ -49,11 +54,45 @@ class Shader;
 class IVW_MODULE_MESHRENDERINGGL_API Rasterization {
 public:
     Rasterization() = default;
-    virtual ~Rasterization() = default;
+    Rasterization(std::shared_ptr<RasterizationProcessor> processor);
     Rasterization(const Rasterization&) = delete;
     Rasterization(Rasterization&&) = delete;
     Rasterization& operator=(const Rasterization&) = delete;
     Rasterization& operator=(Rasterization&&) = delete;
+
+    std::shared_ptr<RasterizationProcessor> getProcessor() const;
+
+    /**
+     * \brief Query whether fragments will be emitted.
+     * @return True for order-independent rendering, false for opaque rasterization.
+     */
+    bool usesFragmentLists() const;
+
+    /**
+     * \brief Get data description for the network interface.
+     * @return Specific information about this rasterization type/instance.
+     */
+    Document getInfo() const;
+
+    /**
+     * \brief Return the world space bounding box of the rendered geometry.
+     */
+    std::optional<mat4> boundingBox() const;
+
+private:
+    std::weak_ptr<RasterizationProcessor> processor_;
+};
+
+class IVW_MODULE_MESHRENDERINGGL_API RasterizationProcessor : public Processor {
+public:
+    RasterizationProcessor(std::string_view identifier = "", std::string_view displayName = "");
+
+    virtual void initializeResources() override;
+
+    virtual void process() final;
+ 
+
+
 
     /**
      * \brief Render the fragments, with all setup and evaluation taken care of.
@@ -63,7 +102,8 @@ public:
      * @param setUniforms Binds the fragment list buffer and sets required uniforms.
      */
     virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms) const = 0;
+                           std::function<void(Shader&)> setUniforms,
+                           std::function<void(Shader&)> initializeShader) = 0;
 
     /**
      * \brief Query whether fragments will be emitted.
@@ -72,10 +112,15 @@ public:
     virtual bool usesFragmentLists() const = 0;
 
     /**
-     * \brief Get data description for the network interface.
-     * @return Specific information about this rasterization type/instance.
+     * \brief Return the world space bounding box of the rendered geometry.
      */
-    virtual Document getInfo() const;
+    virtual std::optional<mat4> boundingBox() const { return std::nullopt; }
+
+    virtual Document getInfo() const { return Document{}; }
+
+    RasterizationOutport outport_;
+    
+    bool needsInitialize_;
 };
 
 template <>
