@@ -86,6 +86,9 @@ public:
 
         void drawOnly(DrawMode drawMode);
         void drawOnlyInstanced(DrawMode drawMode, size_t instances);
+        void drawOnly(std::function<bool(const Mesh::MeshInfo&)> filter);
+        void drawOnlyInstanced(std::function<bool(const Mesh::MeshInfo&)> filter, size_t instances);
+
         /**
          * \brief returns the number of index buffers associated with the mesh representation
          */
