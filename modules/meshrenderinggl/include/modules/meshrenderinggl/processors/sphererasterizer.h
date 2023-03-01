@@ -69,24 +69,28 @@ class Mesh;
 class MeshShaderCache;
 class Shader;
 
-class IVW_MODULE_MESHRENDERINGGL_API SphereRasterizer : public Processor {
+class IVW_MODULE_MESHRENDERINGGL_API SphereRasterizer : public RasterizationProcessor {
     friend class SphereRasterization;
 
 public:
     SphereRasterizer();
     virtual ~SphereRasterizer() = default;
 
-    virtual void process() override;
     virtual void initializeResources() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual Document getInfo() const override;
+    virtual std::optional<mat4> boundingBox() const override;
+    virtual bool usesFragmentLists() const override;
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
+                           std::function<void(Shader&)> setUniforms,
+                           std::function<void(Shader&)> initializeShader) override;
+
 private:
     void configureShader(Shader& shader);
-    bool usesFragmentLists() const;
-    void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                   std::function<void(Shader&)> setUniforms);
+    void configureOITShader(Shader& shader);
 
     enum class RenderMode {
         EntireMesh,  //!< render all vertices of the input mesh as glyphs
@@ -94,7 +98,6 @@ private:
     };
 
     MeshFlatMultiInport inport_;
-    RasterizationOutport outport_;
 
     OptionProperty<RenderMode> renderMode_;
 
@@ -107,28 +110,7 @@ private:
     PeriodicityGL periodic_;
     MeshTexturing texture_;
 
-    CameraProperty camera_;
-    SimpleLightingProperty lighting_;
-
-    TransformListProperty transformSetting_;
     MeshShaderCache shaders_;
-    bool oitExtensionsAvailable_;
-};
-
-/**
- * \brief Functor object that will render molecular data into a fragment list.
- */
-class IVW_MODULE_MESHRENDERINGGL_API SphereRasterization : public Rasterization {
-public:
-    SphereRasterization(std::shared_ptr<SphereRasterizer> processor);
-
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms) const override;
-    virtual bool usesFragmentLists() const override;
-    virtual Document getInfo() const override;
-
-protected:
-    std::shared_ptr<SphereRasterizer> processor_;
 };
 
 }  // namespace inviwo

@@ -45,32 +45,6 @@
 #include <glm/vec4.hpp>    // for operator*, operator+
 
 namespace inviwo {
-class Shader;
-
-/**
- * \brief Rasterization wrapper to add an additional transform on the render call.
- */
-class IVW_MODULE_MESHRENDERINGGL_API TransformedRasterization : public Rasterization {
-public:
-    TransformedRasterization(std::shared_ptr<const Rasterization> rasterization,
-                             const mat4& additionalWorldTransform)
-        : innerRasterization_(rasterization), additionalWorldTransform_(additionalWorldTransform) {}
-
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms) const override {
-        innerRasterization_->rasterize(imageSize, additionalWorldTransform_ * worldMatrixTransform,
-                                       setUniforms);
-    }
-    virtual bool usesFragmentLists() const override {
-        return innerRasterization_->usesFragmentLists();
-    }
-
-    virtual Document getInfo() const override { return innerRasterization_->getInfo(); }
-
-protected:
-    std::shared_ptr<const Rasterization> innerRasterization_;
-    const mat4 additionalWorldTransform_;
-};
 
 /**
  * \brief A very simple SpatialEntity<3> to handle a world and model transform
