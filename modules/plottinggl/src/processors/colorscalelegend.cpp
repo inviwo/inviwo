@@ -152,12 +152,12 @@ ColorScaleLegend::ColorScaleLegend()
     , isoValueShader_("isovaluetri.vert", "isovaluetri.geom", "standard.frag", Shader::Build::No)
     , axis_("axis", "Scale Axis")
     , axisRenderer_(axis_)
-    , dummyMesh_(DrawType::Points, ConnectivityType::None) {
+    , isovalueMesh_(DrawType::Points, ConnectivityType::None) {
 
-    dummyMesh_.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                         util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
-    dummyMesh_.addIndices(Mesh::MeshInfo{DrawType::Points, ConnectivityType::None},
-                          util::makeIndexBuffer({{0u}}));
+    isovalueMesh_.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
+                            util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
+    isovalueMesh_.addIndices(Mesh::MeshInfo{DrawType::Points, ConnectivityType::None},
+                             util::makeIndexBuffer({0u}));
 
     inport_.setOptional(true);
     volumeInport_.setOptional(true);
@@ -335,8 +335,8 @@ void ColorScaleLegend::process() {
         if (!isotfComposite_.isovalues_.get().empty() && isovalues_) {
             isoValueShader_.activate();
 
-            MeshDrawerGL::DrawObject drawer(dummyMesh_.getRepresentation<MeshGL>(),
-                                            dummyMesh_.getDefaultMeshInfo());
+            MeshDrawerGL::DrawObject drawer(isovalueMesh_.getRepresentation<MeshGL>(),
+                                            isovalueMesh_.getDefaultMeshInfo());
 
             if (axis_.getOrientation() == AxisSettings::Orientation::Horizontal) {
                 isoValueShader_.setUniform("trafo", mat4(1.0f));

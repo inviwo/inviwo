@@ -132,7 +132,7 @@ private:
     AxisProperty axis_;
     AxisRenderer axisRenderer_;
 
-    Mesh dummyMesh_;
+    Mesh isovalueMesh_;
 };
 
 }  // namespace plot

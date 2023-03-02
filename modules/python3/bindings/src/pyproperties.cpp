@@ -507,8 +507,7 @@ void exposeProperties(py::module& m) {
                                              volumeInport, semantics);
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value"),
-             py::arg("inport") = nullptr,
-             py::arg("semantics") = PropertySemantics::Default)
+             py::arg("inport") = nullptr, py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          const IsoValueCollection& value, VolumeInport* volumeInport,
                          PropertySemantics semantics) {
@@ -516,8 +515,7 @@ void exposeProperties(py::module& m) {
                                              semantics);
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("value"),
-             py::arg("inport") = nullptr,
-             py::arg("semantics") = PropertySemantics::Default)
+             py::arg("inport") = nullptr, py::arg("semantics") = PropertySemantics::Default)
         .def_property("zoomH", &IsoValueProperty::getZoomH, &IsoValueProperty::setZoomH)
         .def_property("zoomV", &IsoValueProperty::getZoomV, &IsoValueProperty::setZoomV)
         .def("clear", [](IsoValueProperty& ivp) { ivp.get().clear(); })
