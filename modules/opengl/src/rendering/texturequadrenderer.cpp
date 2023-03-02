@@ -501,8 +501,9 @@ void TextureQuadRenderer::renderToRect3D(const Camera& camera, const Texture2D& 
     auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
     utilgl::Enable<MeshGL> enable(rect);
 
+    const vec2 dims{canvasSize};
     // scaling factor from screen coords to normalized dev coords
-    const vec2 scaling(vec2(2.0f) / vec2(canvasSize));
+    const vec2 invDims(vec2(2.0f) / dims);
 
     const mat4 viewprojMatrix(camera.getProjectionMatrix() * camera.getViewMatrix());
 
@@ -513,14 +514,13 @@ void TextureQuadRenderer::renderToRect3D(const Camera& camera, const Texture2D& 
 
         const auto ext = vec2{elem.second()};
         // consider anchor position
-        const auto offset = 0.5f * ext * scaling * (anchor + vec2{1.0f, 1.0f});
+        const auto offset = 0.5f * ext * invDims * (anchor + vec2{1.0f, 1.0f});
 
         // ensure that the lower left position is pixel aligned
-        const vec3 origin{
-            glm::round(vec2{p.x - offset.x, p.y - offset.y} * vec2{canvasSize} * 0.5f) * scaling,
-            p.z};
+        const vec3 origin{glm::round(((vec2{p} - offset) * 0.5f + 0.5f) * dims) * invDims - 1.0f,
+                          p.z};
 
-        const mat4 dataToWorld = glm::translate(origin) * glm::scale(vec3{scaling, 1.f}) *
+        const mat4 dataToWorld = glm::translate(origin) * glm::scale(vec3{invDims, 1.f}) *
                                  transformation * glm::scale(vec3{ext, 1.f});
 
         shader_->setUniform("geometry_.dataToWorld", dataToWorld);
