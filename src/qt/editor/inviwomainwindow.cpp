@@ -489,7 +489,7 @@ void InviwoMainWindow::addActions() {
     workspaceToolBar->setFloatable(false);
 
     auto editToolBar = addToolBar("Edit");
-    editToolBar->setObjectName("fileToolBar");
+    editToolBar->setObjectName("editToolBar");
     editToolBar->setMovable(false);
     editToolBar->setFloatable(false);
 
@@ -672,7 +672,9 @@ void InviwoMainWindow::addActions() {
             }
 
             auto recentFiles = getRecentWorkspaceList();
-            for (int i = 0; i < recentFiles.size(); ++i) {
+            const int maxRecentFiles =
+                std::min<int>(recentFiles.size(), static_cast<int>(workspaceActionRecent_.size()));
+            for (int i = 0; i < maxRecentFiles; ++i) {
                 if (!recentFiles[i].isEmpty()) {
                     const bool exists = QFileInfo(recentFiles[i]).exists();
                     const auto menuEntry = QString("&%1 %2%3")
@@ -1265,7 +1267,6 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
         qApp->processEvents(QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready
                                                                   // before we unlock.
     }
-    saveWindowState();
     getNetworkEditor()->setModified(false);
     return true;
 }
@@ -1394,7 +1395,7 @@ void InviwoMainWindow::showWelcomeScreen() {
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {
-    if (!welcomeWidget_) {
+    if (!welcomeWidget_ || !welcomeWidget_->isVisible()) {
         return;
     }
     setUpdatesEnabled(false);
@@ -1430,12 +1431,12 @@ WelcomeWidget* inviwo::InviwoMainWindow::getWelcomeWidget() {
                 [this](const QString& filename, bool isExample) {
                     if (askToSaveWorkspaceChanges()) {
                         hideWelcomeScreen();
-                        saveWindowState();
                         if (isExample) {
                             openExample(filename);
                         } else {
                             openWorkspace(filename);
                         }
+                        saveWindowState();
                     }
                 });
         connect(welcomeWidget_, &WelcomeWidget::appendWorkspace, this,
@@ -1616,6 +1617,8 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
                        urlList = mimeData->urls()]() {
             RenderContext::getPtr()->activateDefaultRenderContext();
 
+            hideWelcomeScreen();
+
             bool first = true;
             for (auto& file : urlList) {
                 auto filename = file.toLocalFile();
@@ -1634,10 +1637,7 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
                 }
                 first = false;
             }
-            if (welcomeWidget_->isVisible()) {
-                hideWelcomeScreen();
-                saveWindowState();
-            }
+            saveWindowState();
             undoManager_.pushStateIfDirty();
         };
         app_->dispatchFrontAndForget(action);
