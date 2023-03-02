@@ -45,6 +45,7 @@
 #include <inviwo/core/processors/exporter.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/workspaceutils.h>
+#include <inviwo/core/network/lambdanetworkvisitor.h>
 
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -301,6 +302,45 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
             }
         }
     });
+
+    auto propertyPaths = workspaceMenu->addAction("Load and log all properties");
+    connect(propertyPaths, &QAction::triggered, [win]() {
+        auto app = win->getInviwoApplication();
+        auto factory = app->getProcessorFactory();
+
+        std::string buffer;
+
+        for (auto&& key : factory->getKeyView()) {
+            try {
+            auto processor = factory->create(key, app);
+
+            size_t indent = 0;
+            LambdaNetworkVisitor visitor{
+                [&](CompositeProperty& p, NetworkVisitorEnter) {
+                    fmt::format_to(std::back_inserter(buffer), "{:{}}{}\n", "", indent,
+                                   p.getIdentifier());
+                    indent += 4;
+                },
+                [&](CompositeProperty&, NetworkVisitorExit) { indent -= 4; },
+                [&](Processor& p, NetworkVisitorEnter) {
+                    fmt::format_to(std::back_inserter(buffer), "{:{}}{}\n", "", indent,
+                                   p.getIdentifier());
+                    indent += 4;
+                },
+                [&](Processor&, NetworkVisitorExit) { indent -= 4; },
+
+                [&](Property& p) {
+                    fmt::format_to(std::back_inserter(buffer), "{:{}}{}\n", "", indent,
+                                   p.getIdentifier());
+                }};
+            processor->accept(visitor);
+            } catch (const Exception& e) {
+                util::log(e.getContext(), e.getMessage());
+            }
+        }
+        LogInfo(buffer);
+    });
+
 }  // namespace inviwo
 
 }  // namespace inviwo
