@@ -31,7 +31,7 @@
 #define IVW_ISOSURFACE_GLSL
 
 #if !defined MAX_ISOVALUE_COUNT
-#  define MAX_ISOVALUE_COUNT 5
+#  define MAX_ISOVALUE_COUNT 1
 #endif // MAX_ISOVALUE_COUNT
 
 // need to ensure there is always at least one isovalue due to the use of the macro

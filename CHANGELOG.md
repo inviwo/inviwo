@@ -1,5 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-02-28 ColorScale Legend now shows isovalues
+The legend produced by the `ColorScale Legend` processor now shows the isovalues similar to the transfer function property and TF editor.
+![ColorScale Legend with isovalues](resources/changelog/colorscalelegend.jpg)
+
 ## 2023-02-10
 The `TickProperty` provided by the `plotting` module was removed as it only added one more level of nested properties. Both `MajorTickProperty` and `MinorTickProperty` should be used directly instead.
 
@@ -46,7 +50,7 @@ Similarly there is a `inviwo/core/common/factoryutil.h` to easily access various
 
 ## 2022-09-14 New CompositeProcessor property configuration dialog
 The long deprecated UsageMode has now been removed and with that the only way to select which properties was shown in a `CompositeProcessor`. 
-To fix that, the `CompositeProcessor` got a new dialog `Configure Properties`, accessable from the context menu in the network editor.
+To fix that, the `CompositeProcessor` got a new dialog `Configure Properties`, accessible from the context menu in the network editor.
 ![Configure Properties](resources/changelog/configure-properties.png) 
 In the dialog one can select which of the properties in the sub network that should be exposed in the `CompositeProcessor`,It is also possible to mark sub properties as read only or invisible to potentially reduce complexity.
 

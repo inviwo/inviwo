@@ -53,6 +53,8 @@
 #include <modules/fontrendering/properties/fontproperty.h>            // for FontProperty
 #include <modules/opengl/inviwoopengl.h>                              // for GL_ALWAYS, GL_ONE
 #include <modules/opengl/openglutils.h>                               // for Activate, BlendMode...
+#include <modules/opengl/geometry/meshgl.h>                           // for MeshGL
+#include <modules/opengl/rendering/meshdrawergl.h>                    // for MeshDrawerGL::Dra...
 #include <modules/opengl/shader/shader.h>                             // for Shader
 #include <modules/opengl/shader/shaderutils.h>                        // for setUniforms
 #include <modules/opengl/texture/textureunit.h>                       // for TextureUnitContainer
@@ -99,7 +101,7 @@ ColorScaleLegend::ColorScaleLegend()
           "The color legend will be rendered if enabled. Otherwise the input image is passed through."_help,
           true)
     , isotfComposite_("isotfComposite", "TF & Isovalues",
-                      "The transfer function used in the legend."_help)
+                      "The transfer function used in the legend."_help, &volumeInport_)
     , positioning_("positioning", "Positioning & Size")
     , legendPresets_(
           "legendPresets", "Presets",
@@ -140,11 +142,22 @@ ColorScaleLegend::ColorScaleLegend()
                    .set("Color of the solid background."_help))
     , borderWidth_("borderWidth", "Border Width",
                    util::ordinalCount(2, 10).set("Border width of the legend in pixel."_help))
+    , isovalues_("isovalues", "Show Isovalues", "Indicate isovalues with small triangles"_help,
+                 true)
+    , triSize_("triSize", "Triangle Size (pixel)",
+               util::ordinalLength(10.0f, 50.0f)
+                   .setInc(0.5f)
+                   .set("Size of the isovalue indicators in pixel."_help))
     , shader_("img_texturequad.vert", "legend.frag")
+    , isoValueShader_("isovaluetri.vert", "isovaluetri.geom", "standard.frag", Shader::Build::No)
     , axis_("axis", "Scale Axis")
-    , axisRenderer_(axis_) {
+    , axisRenderer_(axis_)
+    , isovalueMesh_(DrawType::Points, ConnectivityType::None) {
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    isovalueMesh_.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
+                            util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
+    isovalueMesh_.addIndices(Mesh::MeshInfo{DrawType::Points, ConnectivityType::None},
+                             util::makeIndexBuffer({0u}));
 
     inport_.setOptional(true);
     volumeInport_.setOptional(true);
@@ -154,9 +167,13 @@ ColorScaleLegend::ColorScaleLegend()
     positioning_.addProperties(legendPresets_, margin_, position_, legendSize_);
 
     // legend style
+    isovalues_.addProperty(triSize_);
+    isovalues_.setCollapsed(true);
+
     axisStyle_.insertProperty(0, labelType_);
     axisStyle_.insertProperty(1, title_);
-    axisStyle_.addProperties(backgroundStyle_, checkerBoardSize_, bgColor_, borderWidth_);
+    axisStyle_.addProperties(backgroundStyle_, checkerBoardSize_, bgColor_, borderWidth_,
+                             isovalues_);
     checkerBoardSize_.setVisible(false);
     bgColor_.setVisible(false);
 
@@ -174,6 +191,7 @@ ColorScaleLegend::ColorScaleLegend()
 
     // set initial axis parameters
     axis_.width_ = 0;
+    axis_.color_.setVisible(false);
     axis_.setCaption(title_.get());
     axis_.captionSettings_.setChecked(true);
     axis_.labelSettings_.font_.fontFace_.set(axis_.captionSettings_.font_.fontFace_.get());
@@ -211,6 +229,9 @@ ColorScaleLegend::ColorScaleLegend()
     volumeInport_.onChange(updateTitle);
     labelType_.onChange(updateTitle);
     title_.onChange(updateTitle);
+
+    isoValueShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dimensions) const {
@@ -258,6 +279,14 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
     return {bottomLeft, legendSize, axisStart, axisEnd};
 }
 
+void ColorScaleLegend::initializeResources() {
+    const auto isovalueCount = isotfComposite_.isovalues_.get().size();
+    isoValueShader_.getGeometryShaderObject()->addShaderDefine(
+        "MAX_ISOVALUE_COUNT", StrBuffer{"{}", std::max<size_t>(1, isovalueCount)});
+
+    isoValueShader_.build();
+}
+
 void ColorScaleLegend::process() {
     if (!enabled_) {
         if (inport_.isReady()) {
@@ -302,6 +331,28 @@ void ColorScaleLegend::process() {
     {
         utilgl::ViewportState viewport(view);
         utilgl::singleDrawImagePlaneRect();
+
+        if (!isotfComposite_.isovalues_.get().empty() && isovalues_) {
+            isoValueShader_.activate();
+
+            MeshDrawerGL::DrawObject drawer(isovalueMesh_.getRepresentation<MeshGL>(),
+                                            isovalueMesh_.getDefaultMeshInfo());
+
+            if (axis_.getOrientation() == AxisSettings::Orientation::Horizontal) {
+                isoValueShader_.setUniform("trafo", mat4(1.0f));
+                isoValueShader_.setUniform("screenDim", vec2(view.z, view.w));
+                isoValueShader_.setUniform("screenDimInv", 1.0f / vec2(view.z, view.w));
+            } else {
+                isoValueShader_.setUniform(
+                    "trafo", glm::rotate(-glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f)));
+                isoValueShader_.setUniform("screenDim", vec2(view.w, view.z));
+                isoValueShader_.setUniform("screenDimInv", 1.0f / vec2(view.w, view.z));
+            }
+            utilgl::setUniforms(isoValueShader_, isotfComposite_, borderWidth_, axis_.color_,
+                                triSize_);
+            glDrawArraysInstanced(GL_POINTS, 0, 1,
+                                  static_cast<GLsizei>(isotfComposite_.isovalues_.get().size()));
+        }
     }
 
     axisRenderer_.render(dimensions, axisStart, axisEnd);

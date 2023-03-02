@@ -38,16 +38,13 @@ namespace inviwo {
 IsoComponent::IsoComponent(std::string_view identifier, std::string_view name, Document help,
                            VolumeInport& volume)
     : ShaderComponent()
-    , iso{identifier,
-          name,
-          std::move(help),
+    , iso{identifier, name, std::move(help),
           IsoValueCollection{std::vector<TFPrimitiveData>{TFPrimitiveData{0.5, vec4{1}}}},
-          &volume,
-          InvalidationLevel::InvalidResources} {}
+          &volume} {}
 
 std::string_view IsoComponent::getName() const { return iso.getIdentifier(); }
 
-void IsoComponent::process(Shader& shader, TextureUnitContainer& cont) {
+void IsoComponent::process(Shader& shader, TextureUnitContainer&) {
     const auto positions = iso.get().getPositionsf();
     const auto colors = iso.get().getColors();
     const auto name = iso.getIdentifier();

@@ -38,9 +38,9 @@ std::string IsoValueProperty::getClassIdentifier() const { return classIdentifie
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    Document help, const IsoValueCollection& value,
-                                   VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
-                                   PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+                                   VolumeInport* volumeInport, PropertySemantics semantics)
+    : Property(identifier, displayName, std::move(help), InvalidationLevel::InvalidResources,
+               semantics)
     , iso_("IsoValues", value)
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
@@ -53,14 +53,12 @@ IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    const IsoValueCollection& value, VolumeInport* volumeInport,
-                                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : IsoValueProperty(identifier, displayName, Document{}, value, volumeInport, invalidationLevel,
-                       semantics) {}
+                                   PropertySemantics semantics)
+    : IsoValueProperty(identifier, displayName, Document{}, value, volumeInport, semantics) {}
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
-                                   VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
-                                   PropertySemantics semantics)
-    : IsoValueProperty(identifier, displayName, {}, volumeInport, invalidationLevel, semantics) {}
+                                   VolumeInport* volumeInport, PropertySemantics semantics)
+    : IsoValueProperty(identifier, displayName, {}, volumeInport, semantics) {}
 
 IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     : Property(rhs)

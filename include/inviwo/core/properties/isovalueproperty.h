@@ -47,6 +47,8 @@ class IsoTFProperty;
  * \ingroup properties
  * \class IsoValueProperty
  * \brief property managing a collection of isovalues
+ * The InvalidationLevel is set to InvalidationLevel::InvalidResources when isovalues are added or
+ * removed. Otherwise InvalidationLevel::InvalidOutput is used.
  */
 class IVW_CORE_API IsoValueProperty : public Property,
                                       public TFPrimitiveSetObserver,
@@ -57,17 +59,14 @@ public:
 
     IsoValueProperty(std::string_view identifier, std::string_view displayName, Document help,
                      const IsoValueCollection& value = {}, VolumeInport* volumeInport = nullptr,
-                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
 
     IsoValueProperty(std::string_view identifier, std::string_view displayName,
                      const IsoValueCollection& value = {}, VolumeInport* volumeInport = nullptr,
-                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
 
     IsoValueProperty(std::string_view identifier, std::string_view displayName,
                      VolumeInport* volumeInport,
-                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
 
     IsoValueProperty(const IsoValueProperty& rhs);

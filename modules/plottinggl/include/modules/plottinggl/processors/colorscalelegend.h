@@ -31,17 +31,19 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTINGGL_API
 
-#include <inviwo/core/ports/imageport.h>               // for ImageInport, ImageOutport
-#include <inviwo/core/ports/volumeport.h>              // for VolumeInport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/isotfproperty.h>      // for IsoTFProperty
-#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty, OptionPropert...
-#include <inviwo/core/properties/ordinalproperty.h>    // for IntProperty, FloatProperty
-#include <inviwo/core/properties/stringproperty.h>     // for StringProperty
+#include <inviwo/core/ports/imageport.h>                   // for ImageInport, ImageOutport
+#include <inviwo/core/ports/volumeport.h>                  // for VolumeInport
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/isotfproperty.h>          // for IsoTFProperty
+#include <inviwo/core/properties/optionproperty.h>         // for OptionProperty, OptionPropert...
+#include <inviwo/core/properties/ordinalproperty.h>        // for IntProperty, FloatProperty
+#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
 #include <inviwo/core/properties/buttongroupproperty.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>       // for Mesh
 #include <inviwo/core/util/glmvec.h>                        // for ivec2
 #include <inviwo/core/util/staticstring.h>                  // for operator+
 #include <modules/opengl/rendering/texturequadrenderer.h>   // for TextureQuadRenderer
@@ -64,6 +66,8 @@ class IVW_MODULE_PLOTTINGGL_API ColorScaleLegend : public Processor {
 public:
     ColorScaleLegend();
     virtual ~ColorScaleLegend() = default;
+
+    virtual void initializeResources() override;
 
     virtual void process() override;
 
@@ -116,14 +120,19 @@ private:
     FloatProperty checkerBoardSize_;
     FloatVec4Property bgColor_;
     IntProperty borderWidth_;
+    BoolCompositeProperty isovalues_;
+    FloatProperty triSize_;
 
     // shader variables
     TextureQuadRenderer textureRenderer_;
     Shader shader_;
+    Shader isoValueShader_;
 
     // axis properties
     AxisProperty axis_;
     AxisRenderer axisRenderer_;
+
+    Mesh isovalueMesh_;
 };
 
 }  // namespace plot
