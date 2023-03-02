@@ -171,7 +171,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                             const auto workspaceName = testdir + "/" + lname + ".inv";
                             LogInfoCustom("ToolMenu",
                                           "Saving regression workspace to: " << workspaceName);
-                                          
+
                             app->getWorkspaceManager()->save(workspaceName);
                             util::exportAllFiles(
                                 *app->getProcessorNetwork(), testdir, "UPN",
