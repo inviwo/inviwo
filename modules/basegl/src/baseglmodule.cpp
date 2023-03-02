@@ -465,9 +465,11 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
 
                         alpha->ToElement()->SetAttribute("identifier", "alpha");
                         alpha->ToElement()->SetAttribute("type", "org.inviwo.FloatProperty");
-                        auto a = alpha->FirstChild()->ToElement()->GetAttribute("w");
-                        alpha->FirstChild()->ToElement()->SetAttribute("content", a);
-                        color->Parent()->InsertEndChild(*alpha);
+                        if (auto* value = alpha->FirstChild(false)) {
+                            auto a = value->ToElement()->GetAttribute("w");
+                            value->ToElement()->SetAttribute("content", a);
+                            color->Parent()->InsertEndChild(*alpha);
+                        }
 
                         res |= true;
                     }
