@@ -96,7 +96,7 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEnt
 
     const auto minArea = std::accumulate(
         bboxes.begin(), bboxes.end(), 0.0, [&](double sum, const TextBoundingBox& bbox) {
-            return sum + (bbox.glyphsExtent.x + margin_) * (bbox.glyphsExtent.y + margin_);
+            return sum + (bbox.glyphsExtent.x + 2 * margin_) * (bbox.glyphsExtent.y + 2 * margin_);
         });
 
     if (minArea > static_cast<double>(maxTexSize_ * maxTexSize_)) {
@@ -227,8 +227,8 @@ void TextureAtlas::initAtlas(TextRenderer& textRenderer, const std::vector<TexAt
 }
 
 static_assert(std::is_default_constructible_v<TextureAtlas>);
-static_assert(std::is_copy_constructible_v<TextureAtlas>);
-static_assert(std::is_copy_assignable_v<TextureAtlas>);
+static_assert(!std::is_copy_constructible_v<TextureAtlas>);
+static_assert(!std::is_copy_assignable_v<TextureAtlas>);
 static_assert(std::is_nothrow_move_constructible_v<TextureAtlas>);
 static_assert(std::is_nothrow_move_assignable_v<TextureAtlas>);
 

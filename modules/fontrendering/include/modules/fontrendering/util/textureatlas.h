@@ -55,6 +55,13 @@ namespace util {
  */
 class IVW_MODULE_FONTRENDERING_API TextureAtlas {
 public:
+    TextureAtlas() = default;
+    TextureAtlas(TextureAtlas&&) = default;
+    TextureAtlas(const TextureAtlas&) = delete;
+    ~TextureAtlas() = default;
+    TextureAtlas& operator=(TextureAtlas&&) = default;
+    TextureAtlas& operator=(const TextureAtlas&) = delete;
+
     bool valid() const;
 
     void clear();

@@ -41,7 +41,7 @@
 #include <modules/plotting/properties/marginproperty.h>     // for MarginProperty
 #include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 
-#include <vector>  // for vector
+#include <array>
 
 namespace inviwo {
 
@@ -79,7 +79,7 @@ private:
     AxisProperty axis2_;
     AxisProperty axis3_;
 
-    std::vector<AxisRenderer> axisRenderers_;
+    std::array<AxisRenderer, 3> axisRenderers_;
 };
 
 }  // namespace plot

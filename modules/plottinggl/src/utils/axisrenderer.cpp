@@ -149,9 +149,6 @@ std::vector<MeshShaderCache::Requirement> AxisRendererBase::shaderRequirements_ 
 AxisRendererBase::AxisRendererBase(const AxisSettings& settings)
     : settings_(settings), shaders_{getShaders()} {}
 
-AxisRendererBase::AxisRendererBase(const AxisRendererBase& rhs)
-    : settings_{rhs.settings_}, shaders_{getShaders()} {}
-
 std::shared_ptr<MeshShaderCache> AxisRendererBase::getShaders() {
     static std::weak_ptr<MeshShaderCache> cache_;
 
@@ -418,7 +415,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
         const auto& pos =
             labels_.getLabelPos(settings_, startPos, endPos, textRenderer_, tickDirection);
 
-        auto atlas = labels_.getAtlas(settings_, startPos, endPos, textRenderer_);
+        auto& atlas = labels_.getAtlas(settings_, startPos, endPos, textRenderer_);
 
         // render axis labels
         const vec2 anchorPos(labels.getFont().getAnchorPos());
@@ -428,8 +425,8 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
     }
 }
 
-static_assert(std::is_copy_constructible_v<detail::AxisCaption>);
-static_assert(std::is_copy_assignable_v<detail::AxisCaption>);
+static_assert(!std::is_copy_constructible_v<detail::AxisCaption>);
+static_assert(!std::is_copy_assignable_v<detail::AxisCaption>);
 static_assert(std::is_nothrow_move_constructible_v<detail::AxisCaption>);
 static_assert(std::is_nothrow_move_assignable_v<detail::AxisCaption>);
 
@@ -441,23 +438,23 @@ static_assert(std::is_nothrow_move_assignable_v<TextRenderer>);
 static_assert(std::is_nothrow_move_constructible_v<TextureQuadRenderer>);
 static_assert(std::is_nothrow_move_assignable_v<TextureQuadRenderer>);
 
-static_assert(std::is_copy_constructible_v<detail::AxisLabels<ivec2>>);
-static_assert(std::is_copy_assignable_v<detail::AxisLabels<ivec2>>);
+static_assert(!std::is_copy_constructible_v<detail::AxisLabels<ivec2>>);
+static_assert(!std::is_copy_assignable_v<detail::AxisLabels<ivec2>>);
 static_assert(std::is_nothrow_move_constructible_v<detail::AxisLabels<ivec2>>);
 static_assert(std::is_nothrow_move_assignable_v<detail::AxisLabels<ivec2>>);
 
-static_assert(std::is_copy_constructible_v<AxisRendererBase>);
+static_assert(!std::is_copy_constructible_v<AxisRendererBase>);
 static_assert(!std::is_copy_assignable_v<AxisRendererBase>);
 static_assert(std::is_move_constructible_v<AxisRendererBase>);
 static_assert(std::is_nothrow_move_constructible_v<AxisRendererBase>);
 static_assert(std::is_nothrow_move_assignable_v<AxisRendererBase>);
 
-static_assert(std::is_copy_constructible_v<AxisRenderer>);
+static_assert(!std::is_copy_constructible_v<AxisRenderer>);
 static_assert(!std::is_copy_assignable_v<AxisRenderer>);
 static_assert(std::is_nothrow_move_constructible_v<AxisRenderer>);
 static_assert(std::is_nothrow_move_assignable_v<AxisRenderer>);
 
-static_assert(std::is_copy_constructible_v<AxisRenderer3D>);
+static_assert(!std::is_copy_constructible_v<AxisRenderer3D>);
 static_assert(!std::is_copy_assignable_v<AxisRenderer3D>);
 static_assert(std::is_nothrow_move_constructible_v<AxisRenderer3D>);
 static_assert(std::is_nothrow_move_assignable_v<AxisRenderer3D>);

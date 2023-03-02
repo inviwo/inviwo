@@ -52,7 +52,6 @@
 #include <functional>   // for __base
 #include <string>       // for operator==, operator+, string
 #include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, operator==
 
 namespace inviwo {
 
@@ -110,7 +109,7 @@ private:
     CameraProperty camera_;
     CameraTrackball trackball_;
 
-    std::vector<AxisRenderer3D> axisRenderers_;
+    std::array<AxisRenderer3D, 3> axisRenderers_;
 
     bool propertyUpdate_;
 };

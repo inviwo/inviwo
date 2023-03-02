@@ -244,7 +244,7 @@ VolumeAxis::VolumeAxis()
              false}
     , camera_{"camera", "Camera", util::boundingBox(inport_)}
     , trackball_{&camera_}
-    , axisRenderers_{{xAxis_, yAxis_, zAxis_}}
+    , axisRenderers_{xAxis_, yAxis_, zAxis_}
     , propertyUpdate_{false} {
 
     imageInport_.setOptional(true);

@@ -165,9 +165,9 @@ struct AxisLabels {
                                        const vec3&, const vec3&, const vec3&)>;
 
     AxisLabels(Updater updatePos) : updatePos_{updatePos} {}
-    AxisLabels(const AxisLabels&) = default;
+    AxisLabels(const AxisLabels&) = delete;
     AxisLabels(AxisLabels&&) noexcept = default;
-    AxisLabels& operator=(const AxisLabels&) = default;
+    AxisLabels& operator=(const AxisLabels&) = delete;
     AxisLabels& operator=(AxisLabels&&) noexcept = default;
 
     util::TextureAtlas& getAtlas(const AxisSettings& settings, const vec3& start, const vec3& end,
@@ -230,6 +230,11 @@ protected:
 
 struct IVW_MODULE_PLOTTINGGL_API AxisCaption {
     AxisCaption() = default;
+    AxisCaption(const AxisCaption&) = delete;
+    AxisCaption(AxisCaption&&) noexcept = default;
+    AxisCaption& operator=(const AxisCaption&) = delete;
+    AxisCaption& operator=(AxisCaption&&) noexcept = default;
+
     TextTextureObject& getCaption(const std::string& caption, const PlotTextSettings& settings,
                                   TextRenderer& renderer) {
         caption_.check(*this, caption);
@@ -261,7 +266,7 @@ private:
 class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
 public:
     AxisRendererBase(const AxisSettings& settings);
-    AxisRendererBase(const AxisRendererBase& rhs);
+    AxisRendererBase(const AxisRendererBase& rhs) = delete;
     AxisRendererBase(AxisRendererBase&& rhs) noexcept = default;
     AxisRendererBase& operator=(const AxisRendererBase& rhs) = delete;
     AxisRendererBase& operator=(AxisRendererBase&& rhs) noexcept = default;
@@ -303,7 +308,7 @@ class IVW_MODULE_PLOTTINGGL_API AxisRenderer : public AxisRendererBase {
 public:
     using Labels = detail::AxisLabels<ivec2>;
     AxisRenderer(const AxisSettings& settings);
-    AxisRenderer(const AxisRenderer& rhs) = default;
+    AxisRenderer(const AxisRenderer& rhs) = delete;
     AxisRenderer(AxisRenderer&& rhs) noexcept = default;
     AxisRenderer& operator=(const AxisRenderer& rhs) = delete;
     AxisRenderer& operator=(AxisRenderer&& rhs) noexcept = default;
@@ -339,7 +344,7 @@ class IVW_MODULE_PLOTTINGGL_API AxisRenderer3D : public AxisRendererBase {
 public:
     using Labels = detail::AxisLabels<vec3>;
     AxisRenderer3D(const AxisSettings& settings);
-    AxisRenderer3D(const AxisRenderer3D& rhs) = default;
+    AxisRenderer3D(const AxisRenderer3D& rhs) = delete;
     AxisRenderer3D(AxisRenderer3D&& rhs) noexcept = default;
     AxisRenderer3D& operator=(const AxisRenderer3D& rhs) = delete;
     AxisRenderer3D& operator=(AxisRenderer3D&& rhs) noexcept = default;
