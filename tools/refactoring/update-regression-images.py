@@ -31,9 +31,9 @@ except ImportError:
 class ImageTest:
     def __init__(self, **entries):
         self.image = None
-        self.difference = None
-        self.max_difference = 0.0
-        self.different_pixels = None
+        self.difference_percent = 0.0
+        self.max_differences = 0.0
+        self.difference_pixels = None
         self.test_size = [None, None]
         self.ref_size = [None, None]
         self.test_mode = "RGBA"
@@ -50,7 +50,7 @@ def updateImg(src, dst, auth):
 def main():
     desc = '''Script for updating the regression test images. Example call:\n\n
      python.exe ./update-regression-images.py --user <github username> --token <github token>\n
-            --save --min 0.00 --max 0.05 -j "http://jenkins.inviwo.org:8080/job/inviwo/job/feature%252Fworkspaces2"\n 
+            --save --min 0.00 --max 0.05 -j "http://jenkins.inviwo.org:8080/job/inviwo/job/feature%252Fworkspaces2"\n
             -r inviwo=<path to repo> modules=<path to repo>\n
     Tokens can be created at https://github.com/settings/tokens and needs user access to authenticate with jenkins
     '''
@@ -94,23 +94,25 @@ def main():
 
         localdir = localRepos[repo] / srcdir.relative_to(basedir / repo)
 
-        for imageTest in testResult['image_tests']:
+        for imageTest in testResult['images']['tests']:
             test = ImageTest(**imageTest)
             if test.test_size != test.ref_size:
                 imgcount += 1
                 print(testName)
                 print_error(
                     "   {0.image} has wrong size: {0.test_size} != {0.ref_size}".format(test))
-            elif test.difference < args.max and test.difference > args.min and test.difference > 0.0:
+            elif (test.difference_percent < args.max and test.difference_percent > args.min
+                  and test.difference_percent > 0.0):
                 imgcount += 1
                 print_error(testName)
-                print_warn(
-                    "   {0.image:30} Diff: {0.difference:<09.4}%, Max: {0.max_difference:<09.4}, #Pixels: {0.different_pixels}".format(test))
-                src = args.job + "/" + (Path('Regression') / testdir /
-                                        'imgtest' / test.image).as_posix()
+                print_warn(f"   {test.image:30} Diff: {test.difference_percent:<9.4}%,"
+                           + f" Max: {test.max_differences}, "
+                           + f"#Pixels: {test.difference_pixels}")
+                src = (args.job + "/"
+                       + (Path('Regression') / testdir / 'imgtest' / test.image).as_posix())
                 dst = localdir / test.image
-                print("   src: {}".format(src))
-                print("   dst: {}".format(dst))
+                print(f"   src: {src}")
+                print(f"   dst: {dst}")
                 if args.save:
                     print_warn("   reference image saved")
                     updateImg(src, dst, auth)
