@@ -439,29 +439,40 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 5: {
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRenderer",
-                                                 "sphereProperties.defaultRadius", "radius");
+            for (auto&& [path, newName] :
+                 {std::pair{"sphereProperties.defaultRadius", "radius"},
+                  std::pair{"sphereProperties.forceRadius", "overrideRadius"},
+                  std::pair{"sphereProperties.defaultColor", "color"},
+                  std::pair{"sphereProperties.forceColor", "overrideColor"},
+                  std::pair{"clipping.clipMode", "mode"}}) {
 
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRenderer",
-                                                 "sphereProperties.forceRadius", "overrideRadius");
+                res |=
+                    xml::renamePropertyIdentifier(root, "org.inviwo.SphereRenderer", path, newName);
+                res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRasterizer", path,
+                                                     newName);
+            }
 
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRenderer",
-                                                 "sphereProperties.defaultColor", "color");
+            xml::visitMatchingNodesRecursive(
+                root, {"Processor", {{"type", "org.inviwo.SphereRenderer"}}}, [&](TxElement* prop) {
+                    if (auto color =
+                            xml::getElement(prop,
+                                            "Properties/Property&identifier=sphereProperties/"
+                                            "Properties/Property&identifier=color")) {
 
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRenderer",
-                                                 "sphereProperties.forceColor", "overrideColor");
+                        auto alpha = color->Clone();
 
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRasterizer",
-                                                 "sphereProperties.defaultRadius", "radius");
+                        color->SetAttribute("type", "org.inviwo.FloatVec3Property");
 
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRasterizer",
-                                                 "sphereProperties.forceRadius", "overrideRadius");
+                        alpha->ToElement()->SetAttribute("identifier", "alpha");
+                        alpha->ToElement()->SetAttribute("type", "org.inviwo.FloatProperty");
+                        auto a = alpha->FirstChild()->ToElement()->GetAttribute("w");
+                        alpha->FirstChild()->ToElement()->SetAttribute("content", a);
+                        color->Parent()->InsertEndChild(*alpha);
 
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRasterizer",
-                                                 "sphereProperties.defaultColor", "color");
+                        res |= true;
+                    }
+                });
 
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRasterizer",
-                                                 "sphereProperties.forceColor", "overrideColor");
             return res;
         }
 

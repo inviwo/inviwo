@@ -67,7 +67,7 @@ void main(void) {
 #elif defined(HAS_COLOR)
     sphere.color = in_Color;
 #else
-     sphere.color = vec4(0,0,0,0);
+    sphere.color = vec4(config.color, config.alpha);
 #endif
 
 #if defined(OVERRIDE_COLOR)
