@@ -171,7 +171,8 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                             const auto workspaceName = testdir + "/" + lname + ".inv";
                             LogInfoCustom("ToolMenu",
                                           "Saving regression workspace to: " << workspaceName);
-                            util::saveNetwork(app->getProcessorNetwork(), workspaceName);
+                                          
+                            app->getWorkspaceManager()->save(workspaceName);
                             util::exportAllFiles(
                                 *app->getProcessorNetwork(), testdir, "UPN",
                                 {FileExtension{"png", ""}, FileExtension{"csv", ""},
@@ -179,7 +180,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                                 Overwrite::Yes);
 
                         } catch (const Exception& error) {
-                            LogErrorCustom("TooMenu",
+                            LogErrorCustom("ToolsMenu",
                                            fmt::format("Failed to create regression test: {}",
                                                        error.getMessage()));
                             // TODO delete testdir here
