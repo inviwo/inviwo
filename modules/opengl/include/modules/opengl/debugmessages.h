@@ -170,9 +170,9 @@ IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Severity s);
 
 IVW_MODULE_OPENGL_API void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity);
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMode(Canvas::ContextID context);
-IVW_MODULE_OPENGL_API void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity);
+IVW_MODULE_OPENGL_API bool setOpenGLDebugMode(debug::Mode mode, debug::Severity severity);
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity);
-IVW_MODULE_OPENGL_API void configureOpenGLDebugMessages(utilgl::debug::Severity severity);
+IVW_MODULE_OPENGL_API bool configureOpenGLDebugMessages(utilgl::debug::Severity severity);
 }  // namespace utilgl
 
 }  // namespace inviwo

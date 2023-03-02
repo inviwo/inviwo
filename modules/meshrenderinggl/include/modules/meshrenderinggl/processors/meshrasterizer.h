@@ -308,7 +308,6 @@ public:
         return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
     }
     virtual Document getInfo() const override;
-    virtual Rasterization* clone() const override;
 
 public:
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;

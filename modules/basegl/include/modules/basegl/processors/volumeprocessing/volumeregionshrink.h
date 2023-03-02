@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>         // for Processor
 #include <inviwo/core/processors/processorinfo.h>     // for ProcessorInfo
 #include <inviwo/core/properties/ordinalproperty.h>   // for IntProperty
+#include <inviwo/core/properties/minmaxproperty.h>    // for DoubleMinMaxProperty
 #include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
 #include <modules/opengl/shader/shader.h>             // for Shader
 
@@ -48,9 +49,7 @@ class Volume;
 
 /** \docpage{org.inviwo.VolumeRegionShrink, Volume Region Shrink}
  * ![](org.inviwo.VolumeRegionShrink.png?classIdentifier=org.inviwo.VolumeRegionShrink)
- * Shrinks regions of identical values. The processor will assign 0 to each border voxel in each
- * iteration. A voxel is considered on the border if the value of any of the 26 closest neighbors is
- * different. The procedure is repeated number of iterations times.
+
  *
  * ### Inports
  *   * __inputVolume__ Input volume
@@ -77,6 +76,9 @@ private:
     VolumeInport inport_;
     VolumeOutport outport_;
     IntProperty iterations_;
+    DoubleMinMaxProperty dataRange_;
+    DoubleMinMaxProperty valueRange_;
+    IntProperty fillValue_;
 
     std::string volumeNumericType_;
     bool blockShaderReload_ = false;

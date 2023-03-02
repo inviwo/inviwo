@@ -63,8 +63,8 @@ namespace inviwo {
 
 TextureQuadRenderer::TextureQuadRenderer() : shader_(getDefaultShader()) {}
 
-TextureQuadRenderer::TextureQuadRenderer(const Shader& shader)
-    : shader_(std::make_shared<Shader>(shader)) {}
+TextureQuadRenderer::TextureQuadRenderer(std::shared_ptr<Shader> shader)
+    : shader_(std::move(shader)) {}
 
 TextureQuadRenderer::TextureQuadRenderer(Shader&& shader)
     : shader_(std::make_shared<Shader>(std::move(shader))) {}

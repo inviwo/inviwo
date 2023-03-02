@@ -32,6 +32,7 @@
 #include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
 #include <modules/opengl/inviwoopengl.h>  // for GLint, glActiveTexture, GL_TEXTURE0
+#include <inviwo/core/util/detected.h>
 
 #include <cstddef>  // for size_t
 #include <vector>   // for vector
@@ -87,5 +88,46 @@ public:
 private:
     std::vector<TextureUnit> units_;
 };
+
+namespace utilgl {
+
+namespace detail {
+
+template <typename T>
+using bindMemberType = decltype(std::declval<T&>().bind(std::declval<TextureUnitContainer&>()));
+
+template <class T>
+constexpr auto HasBindMember = util::is_detected_exact_v<void, bindMemberType, T>;
+
+template <typename T>
+using bindTextureFunctionType =
+    decltype(bindTexture(std::declval<const T&>(), std::declval<TextureUnit&>()));
+
+template <class T>
+constexpr auto HasBindTextureFunction = util::is_detected_exact_v<void, bindTextureFunctionType, T>;
+
+template <typename T>
+void bindImpl(TextureUnitContainer& cont, T& element) {
+    if constexpr (detail::HasBindMember<T>) {
+        element.bind(cont);
+    } else if constexpr (detail::HasBindTextureFunction<T>) {
+        auto& unit = cont.emplace_back();
+        bindTexture(element, unit);
+    } else {
+        static_assert(util::alwaysFalse<T>(),
+                      "Did not find an overload of either: "
+                      "void bindTexture(T& elem, TextureUnit& unit); "
+                      "or void T::bind(TextureUnitContainer& cont);");
+    }
+}
+
+}  // namespace detail
+
+template <typename... Ts>
+void bind(TextureUnitContainer& cont, Ts&... elements) {
+    (detail::bindImpl(cont, elements), ...);
+}
+
+}  // namespace utilgl
 
 }  // namespace inviwo

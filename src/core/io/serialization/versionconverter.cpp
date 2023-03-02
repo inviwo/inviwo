@@ -415,4 +415,60 @@ void xml::logNode(TxElement* node) {
     LogInfoCustom("xml", ss.str());
 }
 
+bool xml::renamePropertyIdentifier(TxElement* root, std::string_view processorClassId,
+                                   std::string_view propertyPath, std::string_view newIdentifier) {
+
+    bool res = false;
+    auto processors = xml::getElement(root, "ProcessorNetwork/Processors");
+
+    if (!processors) return res;
+
+    std::vector<std::string> processorIds;
+
+    auto path = util::splitStringView(propertyPath, '.');
+
+    xml::visitMatchingNodes(
+        processors, {{"Processor", {{"type", std::string{processorClassId}}}}},
+        [&](TxElement* elem) {
+            processorIds.push_back(elem->GetAttribute("identifier"));
+
+            std::vector<xml::ElementMatcher> selector;
+            for (auto item : path) {
+                selector.push_back({"Properties", {}});
+                selector.push_back({"Property", {{"identifier", std::string(item)}}});
+            }
+
+            xml::visitMatchingNodes(elem, selector, [&](TxElement* prop) {
+                prop->SetAttribute("identifier", newIdentifier);
+                res |= true;
+            });
+        });
+
+    // Update any links
+    auto links = xml::getElement(root, "ProcessorNetwork/PropertyLinks");
+    if (!links) return res;
+
+    auto newPathParts = path;
+    newPathParts.back() = newIdentifier;
+    auto newPath = joinString(newPathParts, ".");
+
+    xml::visitMatchingNodes(links, {{"PropertyLink", {}}}, [&](TxElement* elem) {
+        auto src = elem->GetAttribute("src");
+        auto dst = elem->GetAttribute("dst");
+        for (const auto& pid : processorIds) {
+            if (fmt::format("{}.{}", pid, propertyPath) == src) {
+                elem->SetAttribute("src", fmt::format("{}.{}", pid, newPath));
+                res |= true;
+            }
+
+            if (fmt::format("{}.{}", pid, propertyPath) == dst) {
+                elem->SetAttribute("dst", fmt::format("{}.{}", pid, newPath));
+                res |= true;
+            }
+        }
+    });
+
+    return res;
+}
+
 }  // namespace inviwo

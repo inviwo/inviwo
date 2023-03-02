@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 // Owned by the SphereRenderer Processor
@@ -33,65 +33,126 @@
 #include "utils/shading.glsl"
 #include "utils/glyphs.glsl"
 
+#define PI 3.1415926535897932384626433832795
+
 uniform CameraParameters camera;
 uniform LightParameters lighting;
 
-uniform vec4 viewport; // holds viewport offset x, offset y, 2 / viewport width, 2 / viewport height
+// holds viewport offset x, offset y, 2 / viewport width, 2 / viewport height
+uniform vec4 viewport;
 uniform float clipShadingFactor = 0.9;
 
-in vec4 color;
-in float radius;
-in vec3 camPos;
-in vec4 center;
-flat in vec4 pickColor;
+#if defined(ENABLE_LABELS)
+struct Label {
+    sampler2D tex;
+    float aspect;
+    vec4 color;
+    float size;
+};
+uniform Label label;
+#endif
+
+#if defined(ENABLE_TEXTURING)
+uniform sampler2D sphereTexture;
+#endif
+
+vec4 blendBackToFront(vec4 srcColor, vec4 dstColor) {
+    return srcColor + dstColor * (1.0 - srcColor.a);
+}
+
+const mat3 rotations[] = mat3[](mat3(1, 0, 0, 0, 1, 0, 0, 0, 1), mat3(0, 0, 1, 0, 1, 0, -1, 0, 0),
+                                mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1), mat3(0, 0, -1, 0, 1, 0, 1, 0, 0),
+                                mat3(0, -1, 0, 1, 0, 0, 0, 0, 1), mat3(0, 1, 0, -1, 0, 0, 0, 0, 1));
+
+in SphereGeom {
+    vec4 center;
+    vec4 color;
+    flat vec4 pickColor;
+    vec3 camPos;
+    float radius;
+    flat uint index;
+}
+sphere;
 
 void main() {
     vec4 pixelPos = gl_FragCoord;
     pixelPos.xy -= viewport.xy;
     // transform fragment coordinates from window coordinates to view coordinates.
-    vec4 coord = pixelPos
-        * vec4(viewport.z, viewport.w, 2.0, 0.0)
-        + vec4(vec3(-1.0), 1.0);
+    vec4 coord = pixelPos * vec4(viewport.z, viewport.w, 2.0, 0.0) + vec4(vec3(-1.0), 1.0);
 
     // transform fragment coord into object space
-    //coord = gl_ModelViewProjectionMatrixInverse * coord;
+    // coord = gl_ModelViewProjectionMatrixInverse * coord;
     coord = camera.clipToWorld * coord;
     coord /= coord.w;
-    coord -= center;
+    coord -= sphere.center;
     // setup viewing ray
-    vec3 ray = normalize(coord.xyz - camPos);
-    
+    vec3 ray = normalize(coord.xyz - sphere.camPos);
+
     // calculate sphere-ray intersection
     // start ray at current coordinate and not at the camera
     float d1 = -dot(coord.xyz, ray);
-    float d2s = dot(coord.xyz, coord.xyz) - d1*d1;
-    float radicand = radius*radius - d2s;
-    
-    if (radicand < 0.0) {
-        // no valid intersection found
+    float d2s = dot(coord.xyz, coord.xyz) - d1 * d1;
+    float radicand = sphere.radius * sphere.radius - d2s;
+
+    if (radicand < 0.0) {  // no valid intersection found
         discard;
     }
 
     // calculate intersection point
-    vec3 intersection = (d1 - sqrt(radicand))*ray + coord.xyz;
-    
-    vec3 normal = intersection / radius;
+    vec3 intersection = (d1 - sqrt(radicand)) * ray + coord.xyz;
+    vec3 normal = intersection / sphere.radius;
 
     // shading
-    vec4 glyphColor;
-    glyphColor.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), intersection,
-                               normal, normalize(camPos - intersection));
-    glyphColor.a = color.a;
+    vec4 glyphColor = sphere.color;
+
+#if defined(ENABLE_TEXTURING)
+    {
+        float theta = acos(normal.z);
+        float phi =
+            sign(normal.y) * acos(normal.x / sqrt(normal.x * normal.x + normal.y * normal.y));
+        vec2 uv = vec2(theta / PI, (phi + PI) / 2.0 / PI);
+        glyphColor = blendBackToFront(texture(sphereTexture, uv), glyphColor);
+    }
+#endif
+
+#if defined(ENABLE_LABELS)
+    const vec2 labelSpherePos = vec2(0.5, 0.5);
+    vec2 labelSphereSize = vec2(label.size, label.size * label.aspect);
+    const ivec2 atlasDims = ivec2(30, 30);
+
+    vec2 labelSphereStart = labelSpherePos - 0.5 * labelSphereSize;
+    vec2 labelSphereEnd = labelSpherePos + 0.5 * labelSphereSize;
+    vec2 sphereToTexture = 1.0 / (labelSphereSize * atlasDims);
+
+    for (int i = 0; i < 6; ++i) {
+        vec3 pos = rotations[i] * normal;
+
+        float theta = acos(pos.z);
+        float phi = sign(pos.y) * acos(pos.x / sqrt(pos.x * pos.x + pos.y * pos.y));
+        vec2 uv = vec2(theta / PI, (phi + PI) / 2.0 / PI);
+
+        if (all(lessThan(labelSphereStart, uv)) && all(lessThan(uv, labelSphereEnd))) {
+            vec2 altasUv = (uv - labelSphereStart) * sphereToTexture;
+            altasUv +=
+                vec2(int(sphere.index / atlasDims.x), sphere.index % atlasDims.y) / atlasDims;
+            vec4 labelColor = label.color * texture(label.tex, altasUv);
+            labelColor.a *= sphere.color.a;
+            glyphColor = blendBackToFront(labelColor, glyphColor);
+        }
+    }
+#endif
+
+    glyphColor.rgb = APPLY_LIGHTING(lighting, glyphColor.rgb, glyphColor.rgb, vec3(1.0f),
+                                    intersection, normal, normalize(sphere.camPos - intersection));
 
     // depth correction for glyph
-    float depth = glyphDepth(intersection + center.xyz, camera.worldToClip);
-
-    if (clipGlypNearPlane(coord, camPos - coord.xyz, camera.viewToWorld[2].xyz, lighting,
-        color.rgb * clipShadingFactor, glyphColor, depth)) {
+    float depth = glyphDepth(intersection + sphere.center.xyz, camera.worldToClip);
+    if (clipGlypNearPlane(coord, sphere.camPos - coord.xyz, camera.viewToWorld[2].xyz, lighting,
+                          sphere.color.rgb * clipShadingFactor, glyphColor, depth)) {
         discard;
     }
 
     FragData0 = glyphColor;
     gl_FragDepth = depth;
-    PickingData = pickColor;
+    PickingData = sphere.pickColor;
 }

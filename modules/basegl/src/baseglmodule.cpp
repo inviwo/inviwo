@@ -204,7 +204,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerDataVisualizer(std::make_unique<MeshVisualizer>(app));
 }
 
-int BaseGLModule::getVersion() const { return 5; }
+int BaseGLModule::getVersion() const { return 6; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -436,6 +436,45 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                                           xml::Kind::property("org.inviwo.BoolCompositeProperty")}},
                                         "type", "org.inviwo.BoolCompositeProperty",
                                         "org.inviwo.SplitterProperty");
+            [[fallthrough]];
+        }
+        case 5: {
+            for (auto&& [path, newName] :
+                 {std::pair{"sphereProperties.defaultRadius", "radius"},
+                  std::pair{"sphereProperties.forceRadius", "overrideRadius"},
+                  std::pair{"sphereProperties.defaultColor", "color"},
+                  std::pair{"sphereProperties.forceColor", "overrideColor"},
+                  std::pair{"clipping.clipMode", "mode"}}) {
+
+                res |=
+                    xml::renamePropertyIdentifier(root, "org.inviwo.SphereRenderer", path, newName);
+                res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRasterizer", path,
+                                                     newName);
+            }
+
+            xml::visitMatchingNodesRecursive(
+                root, {"Processor", {{"type", "org.inviwo.SphereRenderer"}}}, [&](TxElement* prop) {
+                    if (auto color =
+                            xml::getElement(prop,
+                                            "Properties/Property&identifier=sphereProperties/"
+                                            "Properties/Property&identifier=color")) {
+
+                        auto alpha = color->Clone();
+
+                        color->SetAttribute("type", "org.inviwo.FloatVec3Property");
+
+                        alpha->ToElement()->SetAttribute("identifier", "alpha");
+                        alpha->ToElement()->SetAttribute("type", "org.inviwo.FloatProperty");
+                        if (auto* value = alpha->FirstChild(false)) {
+                            auto a = value->ToElement()->GetAttribute("w");
+                            value->ToElement()->SetAttribute("content", a);
+                            color->Parent()->InsertEndChild(*alpha);
+                        }
+
+                        res |= true;
+                    }
+                });
+
             return res;
         }
 

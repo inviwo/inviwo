@@ -313,6 +313,22 @@ size_t BrushingAndLinkingManager::getNumberOfHighlighted(BrushingTarget target) 
     return getIndices(BrushingAction::Highlight, target).size();
 }
 
+uint32_t BrushingAndLinkingManager::getMax(util::span<const BrushingAction> actions,
+                                           BrushingTarget target) const {
+    return std::transform_reduce(
+        actions.begin(), actions.end(), std::uint32_t{0},
+        [](auto a, auto b) { return std::max(a, b); },
+        [&](BrushingAction action) { return getIndices(action, target).max(); });
+}
+
+uint32_t BrushingAndLinkingManager::getMin(util::span<const BrushingAction> actions,
+                                           BrushingTarget target) const {
+    return std::transform_reduce(
+        actions.begin(), actions.end(), std::uint32_t{0},
+        [](auto a, auto b) { return std::min(a, b); },
+        [&](BrushingAction action) { return getIndices(action, target).min(); });
+}
+
 const BitSet& BrushingAndLinkingManager::getFilteredIndices(BrushingTarget target) const {
     return getIndices(BrushingAction::Filter, target);
 }
@@ -444,10 +460,6 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
 }
 
 int BrushingAndLinkingManager::getActionIndex(BrushingAction action) {
-    if (action == BrushingAction::NumberOfActions) {
-        throw Exception(IVW_CONTEXT_CUSTOM("BrushingAndLinkingManager"),
-                        "Invalid brushing action '{}'", action);
-    }
     return static_cast<int>(action);
 }
 

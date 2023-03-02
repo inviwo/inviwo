@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -114,8 +114,8 @@ struct TextTextureObject {
  */
 class IVW_MODULE_FONTRENDERING_API TextRenderer {
 public:
-    TextRenderer(const std::string& fontPath = font::getFont(font::FontType::Default,
-                                                             font::FullPath::Yes));
+    TextRenderer(std::string_view fontPath = font::getFont(font::FontType::Default,
+                                                           font::FullPath::Yes));
     TextRenderer(const TextRenderer& rhs) = delete;
     TextRenderer(TextRenderer&& rhs) noexcept;
     TextRenderer& operator=(const TextRenderer& rhs) = delete;
@@ -129,9 +129,14 @@ public:
      * @throws Exception      if the font file could not be opened
      * @throws FileException  if the font format is unsupported
      */
-    void setFont(const std::string& fontPath);
+    void setFont(std::string_view fontPath);
 
-    void render(const std::string& str, const vec2& posf, const vec2& scale, const vec4& color);
+    std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState,
+               utilgl::ActivateFBO>
+    setupRenderState(std::shared_ptr<Texture2D> texture,
+                     std::optional<vec4> clearColor = std::nullopt);
+
+    void render(std::string_view str, const vec2& posf, const vec2& scale, const vec4& color);
 
     /**
      * \brief renders the given string with the specified color at position x, y in normalized
@@ -143,7 +148,20 @@ public:
      * @param scale  scaling factor from screen space (pixel) to normalized device coords
      * @param color  color of rendered text
      */
-    void render(const std::string& str, float x, float y, const vec2& scale, const vec4& color);
+    void render(std::string_view str, float x, float y, const vec2& scale, const vec4& color);
+
+    /**
+     * \brief renders the given string with the specified color into a subregion of the current
+     * destination
+     *
+     * @param textBoundingBox the text bounding box of the given str
+     * @param origin          origin of sub region within the destination (lower left corner, in
+     *                        pixel)
+     * @param str             input string
+     * @param color           color of rendered text
+     */
+    void render(const TextBoundingBox& textBoundingBox, const ivec2& origin, std::string_view str,
+                const vec4& color);
 
     /**
      * \brief renders the given string with the specified color into a texture.
@@ -153,10 +171,10 @@ public:
      * @param color  color of rendered text
      * @param clearTexture   if true, the texture is cleared before rendering the text
      */
-    void renderToTexture(std::shared_ptr<Texture2D> texture, const std::string& str,
+    void renderToTexture(std::shared_ptr<Texture2D> texture, std::string_view str,
                          const vec4& color, bool clearTexture = true);
 
-    void renderToTexture(const TextTextureObject& texObject, const std::string& str,
+    void renderToTexture(const TextTextureObject& texObject, std::string_view str,
                          const vec4& color, bool clearTexture = true);
     /**
      * \brief renders the given string with the specified color into a subregion of the texture.
@@ -169,10 +187,10 @@ public:
      * @param clearTexture   if true, the texture is cleared before rendering the text
      */
     void renderToTexture(const TextTextureObject& texObject, const size2_t& origin,
-                         const size2_t& size, const std::string& str, const vec4& color,
+                         const size2_t& size, std::string_view str, const vec4& color,
                          bool clearTexture = true);
     void renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t& origin,
-                         const size2_t& size, const std::string& str, const vec4& color,
+                         const size2_t& size, std::string_view str, const vec4& color,
                          bool clearTexture = true);
 
     void renderToTexture(std::shared_ptr<Texture2D> texture, const std::vector<size2_t>& origin,
@@ -181,6 +199,12 @@ public:
 
     void renderToTexture(std::shared_ptr<Texture2D> texture,
                          const std::vector<TexAtlasEntry>& entries, bool clearTexture = true);
+
+    /**
+     * Clear the texture using the fbo of the text renderer. Useful when rendering many times into
+     * the texture.
+     */
+    void clear(std::shared_ptr<Texture2D> texture, vec4 color);
 
     /**
      * \brief computes the glyph bounding box of a given string in normalized device coordinates
@@ -195,7 +219,7 @@ public:
      *
      * \see computeBoundingBox
      */
-    vec2 computeTextSize(const std::string& str, const vec2& scale);
+    vec2 computeTextSize(std::string_view str, const vec2& scale);
 
     /**
      * \brief computes the glyph bounding box of a given string in pixels (screen space). The
@@ -207,7 +231,7 @@ public:
      *
      * \see computeBoundingBox
      */
-    size2_t computeTextSize(const std::string& str);
+    size2_t computeTextSize(std::string_view str);
 
     /**
      * \brief computes the bounding boxes of both text and all glyphs for a given string in pixels
@@ -221,7 +245,7 @@ public:
      * @param str  input string
      * @return bounding box of the given string
      */
-    TextBoundingBox computeBoundingBox(const std::string& str);
+    TextBoundingBox computeBoundingBox(std::string_view str);
 
     void setFontSize(int val);
     int getFontSize() const { return fontSize_; }
@@ -309,11 +333,7 @@ protected:
 
     FontFamilyStyle getFontTuple() const;
 
-    std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState,
-               utilgl::ActivateFBO>
-    setupRenderState(std::shared_ptr<Texture2D> texture, bool clearTexture);
-
-    std::string::const_iterator validateString(const std::string& str) const;
+    std::string_view::const_iterator validateString(std::string_view str) const;
 
     static constexpr char lf = '\n';   // Line Feed Ascii for std::endl, \n
     static constexpr char tab = '\t';  // Tab Ascii

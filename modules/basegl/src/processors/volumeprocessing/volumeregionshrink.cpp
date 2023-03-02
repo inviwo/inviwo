@@ -77,7 +77,11 @@ const ProcessorInfo VolumeRegionShrink::processorInfo_{
     "Volume Operation",               // Category
     CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
-};
+    R"(Shrinks regions of identical values. The processor will assign a FillValue to
+    each border voxel in each iteration. A voxel is considered on the border if the
+    value of any of the 26 closest neighbors is different. The procedure is repeated
+    number of iterations times.)"_unindentHelp};
+
 const ProcessorInfo VolumeRegionShrink::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
@@ -90,6 +94,8 @@ layout(location = 0) out {0}vec4 FragData0;
 
 uniform {0}sampler3D volume;
 uniform VolumeParameters volumeParameters;
+uniform VolumeParameters dstParameters;
+uniform {0}vec4 fillValue;
 
 in vec4 texCoord_;
 
@@ -106,7 +112,7 @@ void main() {{
             }}
         }}
     }}
-    FragData0 = mix(value, {0}vec4(0), bvec4(border));
+    FragData0 = mix(value, fillValue, bvec4(border));
 }}
 )";
 
@@ -117,6 +123,34 @@ VolumeRegionShrink::VolumeRegionShrink()
     , inport_{"inputVolume"}
     , outport_{"outputVolume"}
     , iterations_{"iterations", "Iterations", 3, 0, 25}
+    , dataRange_{"dataRange",
+                 "Data range",
+                 0.,
+                 255.0,
+                 -DataFloat64::max(),
+                 DataFloat64::max(),
+                 0.0,
+                 0.0,
+                 InvalidationLevel::Valid,
+                 PropertySemantics::Text}
+    , valueRange_{"valueRange",
+                  "Value range",
+                  0.,
+                  255.0,
+                  -DataFloat64::max(),
+                  DataFloat64::max(),
+                  0.0,
+                  0.0,
+                  InvalidationLevel::Valid,
+                  PropertySemantics::Text}
+    , fillValue_{"fillValue",
+                 "Fill Value",
+                 0,
+                 0,
+                 DataInt32::max(),
+                 1,
+                 InvalidationLevel::InvalidOutput,
+                 PropertySemantics::Text}
     , volumeNumericType_{""}
     , fragShader_{std::make_shared<StringShaderResource>("VolumeRegionShrink.frag",
                                                          fmt::format(fragStr, volumeNumericType_))}
@@ -128,7 +162,10 @@ VolumeRegionShrink::VolumeRegionShrink()
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(iterations_);
+    dataRange_.setReadOnly(true);
+    valueRange_.setReadOnly(true);
+
+    addProperties(iterations_, dataRange_, valueRange_, fillValue_);
 
     shader_.onReload([this]() {
         if (blockShaderReload_) return;
@@ -163,6 +200,9 @@ void VolumeRegionShrink::process() {
         out_[0] = std::shared_ptr<Volume>(volume->clone());
     }
 
+    dataRange_.set(volume->dataMap_.dataRange);
+    valueRange_.set(volume->dataMap_.valueRange);
+
     out_[0]->setModelMatrix(volume->getModelMatrix());
     out_[0]->setWorldMatrix(volume->getWorldMatrix());
     out_[0]->setSwizzleMask(volume->getSwizzleMask());
@@ -170,6 +210,11 @@ void VolumeRegionShrink::process() {
     out_[0]->setInterpolation(volume->getInterpolation());
     out_[0]->copyMetaDataFrom(*volume);
     out_[0]->dataMap_ = volume->dataMap_;
+    out_[0]->dataMap_.dataRange.x =
+        std::min(out_[0]->dataMap_.dataRange.x, static_cast<double>(fillValue_));
+    out_[0]->dataMap_.dataRange.y =
+        std::max(out_[0]->dataMap_.dataRange.y, static_cast<double>(fillValue_));
+    out_[0]->dataMap_.valueRange = out_[0]->dataMap_.dataRange;
 
     const size3_t dim{volume->getDimensions()};
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
@@ -181,11 +226,22 @@ void VolumeRegionShrink::process() {
 
     utilgl::Activate as{&shader_};
 
+    if (volumeNumericType_ == "i") {
+        shader_.setUniform("fillValue", ivec4{fillValue_.get()});
+    } else if (volumeNumericType_ == "u") {
+        shader_.setUniform("fillValue", uvec4{static_cast<std::uint32_t>(fillValue_.get())});
+    } else {
+        const auto fill =
+            static_cast<double>(fillValue_) / (1.0 + out_[0]->getDataFormat()->getMax());
+        shader_.setUniform("fillValue", vec4{static_cast<float>(fill)});
+    }
+
     // Iteration 1
     {
         glDrawBuffer(GL_COLOR_ATTACHMENT0);
         TextureUnitContainer cont;
         utilgl::bindAndSetUniforms(shader_, cont, *volume, "volume");
+        utilgl::setShaderUniforms(shader_, *out_[0], "dstParameters");
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
     }
     if (iterations_ == 1) {
@@ -207,6 +263,11 @@ void VolumeRegionShrink::process() {
     out_[1]->setInterpolation(volume->getInterpolation());
     out_[1]->copyMetaDataFrom(*volume);
     out_[1]->dataMap_ = volume->dataMap_;
+    out_[1]->dataMap_.dataRange.x =
+        std::min(out_[1]->dataMap_.dataRange.x, static_cast<double>(fillValue_));
+    out_[1]->dataMap_.dataRange.y =
+        std::max(out_[1]->dataMap_.dataRange.y, static_cast<double>(fillValue_));
+    out_[1]->dataMap_.valueRange = out_[1]->dataMap_.dataRange;
 
     VolumeGL* outGL1 = out_[1]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL1->getTexture().get(), 1);
@@ -219,6 +280,7 @@ void VolumeRegionShrink::process() {
         glDrawBuffer(static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + dst));
         TextureUnitContainer cont;
         utilgl::bindAndSetUniforms(shader_, cont, *out_[src], "volume");
+        utilgl::setShaderUniforms(shader_, *out_[dst], "dstParameters");
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
     }
 

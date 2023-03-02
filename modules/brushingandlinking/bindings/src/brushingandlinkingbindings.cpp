@@ -142,15 +142,14 @@ void exposeBnL(py::module& m) {
              py::arg("target") = BrushingTarget::Row)
         .def("isHighlighted", &BrushingAndLinkingInport::isHighlighted, py::arg("index"),
              py::arg("target") = BrushingTarget::Row)
-        .def("getIndices", &BrushingAndLinkingInport::getIndices,
-             py::return_value_policy::reference, py::arg("action"),
-             py::arg("target") = BrushingTarget::Row)
+        .def("getIndices", &BrushingAndLinkingInport::getIndices, py::return_value_policy::copy,
+             py::arg("action"), py::arg("target") = BrushingTarget::Row)
         .def("getFilteredIndices", &BrushingAndLinkingInport::getFilteredIndices,
-             py::return_value_policy::reference, py::arg("target") = BrushingTarget::Row)
+             py::return_value_policy::copy, py::arg("target") = BrushingTarget::Row)
         .def("getSelectedIndices", &BrushingAndLinkingInport::getSelectedIndices,
-             py::return_value_policy::reference, py::arg("target") = BrushingTarget::Row)
+             py::return_value_policy::copy, py::arg("target") = BrushingTarget::Row)
         .def("getHighlightedIndices", &BrushingAndLinkingInport::getHighlightedIndices,
-             py::return_value_policy::reference, py::arg("target") = BrushingTarget::Row)
+             py::return_value_policy::copy, py::arg("target") = BrushingTarget::Row)
         .def("getInvalidationLevels", &BrushingAndLinkingInport::getInvalidationLevels)
         .def("setInvalidationLevels", &BrushingAndLinkingInport::setInvalidationLevels)
         .def("getManager",
@@ -208,9 +207,8 @@ void exposeBnL(py::module& m) {
              py::arg("target"), py::arg("action"))
         .def("hasIndices", &BrushingAndLinkingManager::hasIndices, py::arg("action"),
              py::arg("target") = BrushingTarget::Row)
-        .def("getIndices", &BrushingAndLinkingManager::getIndices,
-             py::return_value_policy::reference, py::arg("action"),
-             py::arg("target") = BrushingTarget::Row)
+        .def("getIndices", &BrushingAndLinkingManager::getIndices, py::return_value_policy::copy,
+             py::arg("action"), py::arg("target") = BrushingTarget::Row)
         .def("getNumber", &BrushingAndLinkingManager::getNumber, py::arg("action"),
              py::arg("target") = BrushingTarget::Row)
         .def("getNumberOfFiltered", &BrushingAndLinkingManager::getNumberOfFiltered,
@@ -241,11 +239,11 @@ void exposeBnL(py::module& m) {
                              const>(&BrushingAndLinkingManager::getTargets),
              py::arg("action"))
         .def("getFilteredIndices", &BrushingAndLinkingManager::getFilteredIndices,
-             py::return_value_policy::reference, py::arg("target") = BrushingTarget::Row)
+             py::return_value_policy::copy, py::arg("target") = BrushingTarget::Row)
         .def("getSelectedIndices", &BrushingAndLinkingManager::getSelectedIndices,
-             py::return_value_policy::reference, py::arg("target") = BrushingTarget::Row)
+             py::return_value_policy::copy, py::arg("target") = BrushingTarget::Row)
         .def("getHighlightedIndices", &BrushingAndLinkingManager::getHighlightedIndices,
-             py::return_value_policy::reference, py::arg("target") = BrushingTarget::Row)
+             py::return_value_policy::copy, py::arg("target") = BrushingTarget::Row)
         .def("setParent", &BrushingAndLinkingManager::setParent, py::arg("parent"))
         .def("onBrush", &BrushingAndLinkingManager::onBrush, py::arg("callback"))
         .def("getInvalidationLevel",

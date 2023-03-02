@@ -66,6 +66,7 @@ public:
      */
     class IVW_MODULE_OPENGL_API DrawObject {
     public:
+        DrawObject(const Mesh& mesh);
         DrawObject(const MeshGL* mesh, Mesh::MeshInfo arrayMeshInfo);
         DrawObject(const DrawObject&) = delete;
         DrawObject(DrawObject&&) = default;
@@ -75,16 +76,24 @@ public:
 
         void draw();
         void draw(DrawMode drawMode);
-
         void draw(std::size_t index);
         void draw(DrawMode drawMode, std::size_t index);
 
+        void drawInstanced(size_t instances);
+        void drawInstanced(DrawMode drawMode, size_t instances);
+        void drawInstanced(std::size_t index, size_t instances);
+        void drawInstanced(DrawMode drawMode, std::size_t index, size_t instances);
+
+        void drawOnly(DrawMode drawMode);
+        void drawOnlyInstanced(DrawMode drawMode, size_t instances);
         /**
          * \brief returns the number of index buffers associated with the mesh representation
          */
         std::size_t size() const;
 
     private:
+        void checkIndex(size_t index) const;
+
         utilgl::Enable<MeshGL> enable_;
         const MeshGL* meshGL_;
         Mesh::MeshInfo arrayMeshInfo_;
@@ -124,6 +133,7 @@ public:
     virtual void draw(DrawMode drawMode);
 
     static DrawMode getDrawMode(DrawType, ConnectivityType);
+    static DrawMode getDrawMode(Mesh::MeshInfo meshInfo);
     static GLenum getGLDrawMode(DrawMode);
     static GLenum getGLDrawMode(Mesh::MeshInfo meshInfo);
 

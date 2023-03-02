@@ -1,5 +1,26 @@
 <?xml version="1.0" ?>
 <InviwoWorkspace version="2">
+    <InviwoSetup>
+        <Modules>
+            <Module name="OpenGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CanvasGL" />
+                </Processors>
+            </Module>
+            <Module name="Base" version="4">
+                <Processors>
+                    <Processor content="org.inviwo.MeshCreator" />
+                    <Processor content="org.inviwo.PointGenerationProcessor" />
+                </Processors>
+            </Module>
+            <Module name="BaseGL" version="5">
+                <Processors>
+                    <Processor content="org.inviwo.Background" />
+                    <Processor content="org.inviwo.InstanceRenderer" />
+                </Processors>
+            </Module>
+        </Modules>
+    </InviwoSetup>
     <ProcessorNetworkVersion content="19" />
     <Processors>
         <Processor type="org.inviwo.SphereRenderer" identifier="SphereRenderer3" displayName="Sphere Renderer">

@@ -34,9 +34,10 @@
 #include <inviwo/core/datastructures/light/lightingstate.h>  // for ShadingMode
 #include <inviwo/core/datastructures/spatialdata.h>          // for SpatialEntity
 #include <inviwo/core/properties/raycastingproperty.h>       // for RaycastingProperty, Raycasti...
-#include <modules/opengl/inviwoopengl.h>                     // for GLuint
-#include <modules/opengl/shader/shader.h>                    // IWYU pragma: keep
-#include <modules/opengl/texture/textureutils.h>             // IWYU pragma: keep
+#include <inviwo/core/util/detected.h>
+#include <modules/opengl/inviwoopengl.h>          // for GLuint
+#include <modules/opengl/shader/shader.h>         // IWYU pragma: keep
+#include <modules/opengl/texture/textureutils.h>  // IWYU pragma: keep
 
 #include <cstddef>      // for size_t
 #include <memory>       // for shared_ptr
@@ -190,29 +191,98 @@ void setShaderUniforms(Shader& shader, const MinMaxProperty<T>& property, std::s
     shader.setUniform(name, property.get());
 }
 
-// Template magic...
 template <typename T, typename std::enable_if<std::is_base_of<Property, T>::value, int>::type = 0>
-void addDefines(Shader& shader, const T& property) {
-    addShaderDefines(shader, property);
-}
-template <typename T, typename... Ts>
-void addDefines(Shader& shader, const T& elem, const Ts&... elements) {
-    addDefines(shader, elem);
-    addDefines(shader, elements...);
-}
-
-template <typename T, typename std::enable_if<std::is_base_of<Property, T>::value, int>::type = 0>
-void setUniforms(Shader& shader, const T& property) {
+void setShaderUniforms(Shader& shader, const T& property) {
     setShaderUniforms(shader, property, property.getIdentifier());
 }
 template <typename T, typename std::enable_if<std::is_base_of<Port, T>::value, int>::type = 0>
-void setUniforms(Shader& shader, const T& port) {
+void setShaderUniforms(Shader& shader, const T& port) {
     setShaderUniforms(shader, port, port.getIdentifier() + "Parameters");
 }
-template <typename T, typename... Ts>
-void setUniforms(Shader& shader, const T& elem, const Ts&... elements) {
-    setUniforms(shader, elem);
-    setUniforms(shader, elements...);
+
+namespace detail {
+template <typename T>
+using addDefinesMemberType = decltype(std::declval<const T&>().addDefines(std::declval<Shader&>()));
+
+template <class T>
+constexpr auto HasAddDefinesMember = util::is_detected_exact_v<void, addDefinesMemberType, T>;
+
+template <typename T>
+using addShaderDefinesFunctionType =
+    decltype(addShaderDefines(std::declval<Shader&>(), std::declval<const T&>()));
+
+template <class T>
+constexpr auto HasAddShaderDefinesFunction =
+    util::is_detected_exact_v<void, addShaderDefinesFunctionType, T>;
+
+template <typename T>
+using setUniformsMemberType =
+    decltype(std::declval<const T&>().setUniforms(std::declval<Shader&>()));
+
+template <class T>
+constexpr auto HasSetUniformsMember = util::is_detected_exact_v<void, setUniformsMemberType, T>;
+
+template <typename T>
+using setShaderUniformsFunctionType =
+    decltype(setShaderUniforms(std::declval<Shader&>(), std::declval<const T&>()));
+
+template <class T>
+constexpr auto HasSetShaderUniformsFunction =
+    util::is_detected_exact_v<void, setShaderUniformsFunctionType, T>;
+
+template <typename T>
+using setShaderUniformsNamedFunctionType = decltype(setShaderUniforms(
+    std::declval<Shader&>(), std::declval<const T&>(), std::declval<std::string_view>()));
+
+template <class T>
+constexpr auto HasSetShaderUniformsNamedFunction =
+    util::is_detected_exact_v<void, setShaderUniformsNamedFunctionType, T>;
+
+template <typename T>
+void addDefinesImpl(Shader& shader, const T& element) {
+    if constexpr (detail::HasAddDefinesMember<T>) {
+        element.addDefines(shader);
+    } else if constexpr (detail::HasAddShaderDefinesFunction<T>) {
+        addShaderDefines(shader, element);
+    } else {
+        static_assert(util::alwaysFalse<T>(),
+                      "Did not find an overload of either: "
+                      "void addShaderDefines(Shader& shader, const T& element); "
+                      "or void T::addDefines(Shader& shader) const;");
+    }
+}
+
+template <typename T>
+void setUniformsImpl(Shader& shader, const T& element) {
+    if constexpr (detail::HasSetUniformsMember<T>) {
+        element.setUniforms(shader);
+    } else if constexpr (detail::HasSetShaderUniformsNamedFunction<T> &&
+                         std::is_base_of_v<Property, T>) {
+        setShaderUniforms(shader, element, element.getIdentifier());
+    } else if constexpr (detail::HasSetShaderUniformsNamedFunction<T> &&
+                         std::is_base_of_v<Port, T>) {
+        StrBuffer buff;
+        setShaderUniforms(shader, element, buff.replace("{}Parameters", element.getIdentifier()));
+    } else if constexpr (detail::HasSetShaderUniformsFunction<T>) {
+        setShaderUniforms(shader, element);
+    } else {
+        static_assert(util::alwaysFalse<T>(),
+                      "Did not find an overload of either: "
+                      "void setShaderUniforms(Shader& shader, const T& element); "
+                      "or void T::setUniforms(Shader& shader) const;");
+    }
+}
+
+}  // namespace detail
+
+template <typename... Ts>
+void addDefines(Shader& shader, const Ts&... elements) {
+    (detail::addDefinesImpl(shader, elements), ...);
+}
+
+template <typename... Ts>
+void setUniforms(Shader& shader, const Ts&... elements) {
+    (detail::setUniformsImpl(shader, elements), ...);
 }
 
 IVW_MODULE_OPENGL_API int getLogLineNumber(std::string_view compileLogLine);

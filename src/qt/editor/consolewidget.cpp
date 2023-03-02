@@ -54,6 +54,7 @@
 #include <QWheelEvent>
 #include <QMessageBox>
 #include <QTimer>
+#include <QPlainTextEdit>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -82,9 +83,8 @@ QWidget* TextSelectionDelegate::createEditor(QWidget* parent, const QStyleOption
                                              const QModelIndex& index) const {
     if (index.column() == static_cast<int>(LogTableModelEntry::ColumnID::Message)) {
         auto value = index.model()->data(index, Qt::EditRole).toString();
-        auto widget = new QLineEdit(parent);
+        auto widget = new QPlainTextEdit(value, parent);
         widget->setReadOnly(true);
-        widget->setText(value);
         return widget;
     } else {
         return QItemDelegate::createEditor(parent, option, index);
@@ -118,7 +118,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , levelFilter_(new QSortFilterProxyModel(this))
     , textSelectionDelegate_(new TextSelectionDelegate(this))
     , filterPattern_(new QLineEdit(this))
-    , mainwindow_(parent) {
+    , mainwindow_(parent)
+    , editActionsHandle_{} {
 
     setAllowedAreas(Qt::BottomDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
@@ -180,11 +181,9 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     tableView_->verticalHeader()->setVisible(false);
     tableView_->verticalHeader()->setResizeContentsPrecision(0);
-    tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    const auto height = QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
-    constexpr int margin = 2;
-    tableView_->verticalHeader()->setMinimumSectionSize(height + margin);
-    tableView_->verticalHeader()->setDefaultSectionSize(height + margin);
+    tableView_->verticalHeader()->setMinimumSectionSize(1);
+    tableView_->verticalHeader()->setDefaultSectionSize(1);
+    tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     QHBoxLayout* statusBar = new QHBoxLayout();
     statusBar->setObjectName("StatusBar");
@@ -214,21 +213,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         return action;
     };
 
-    auto updateRowsHeights = [=]() {
-        tableView_->setUpdatesEnabled(false);
-
-        auto vrows = tableView_->verticalHeader()->count();
-        for (int i = 0; i < vrows; ++i) {
-            auto mind = mapToSource(i, static_cast<int>(LogTableModelEntry::ColumnID::Message));
-            const auto message = mind.data(Qt::DisplayRole).toString();
-            const auto lines = std::count(message.begin(), message.end(), '\n') + 1;
-            tableView_->verticalHeader()->resizeSection(i,
-                                                        margin + static_cast<int>(lines) * height);
-        }
-        tableView_->setUpdatesEnabled(true);
-    };
-
-    auto levelCallback = [this, updateRowsHeights](bool /*checked*/) {
+    auto levelCallback = [this](bool /*checked*/) {
         if (util::all_of(levels, [](const auto& level) { return level.action->isChecked(); })) {
             levelFilter_->setFilterRegularExpression("");
         } else {
@@ -240,7 +225,6 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
             }
             levelFilter_->setFilterRegularExpression(QString::fromStdString(ss.str()));
         }
-        updateRowsHeights();
     };
 
     auto levelGroup = new QMenu(this);
@@ -286,12 +270,10 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     auto clearFilter = new QAction(makeIcon("find-clear"), "C&lear Filter", this);
     clearFilter->setEnabled(false);
 
-    connect(filterPattern_, &QLineEdit::textChanged,
-            [this, updateRowsHeights, clearFilter](const QString& text) {
-                filter_->setFilterRegularExpression(text);
-                updateRowsHeights();
-                clearFilter->setEnabled(!text.isEmpty());
-            });
+    connect(filterPattern_, &QLineEdit::textChanged, [this, clearFilter](const QString& text) {
+        filter_->setFilterRegularExpression(text);
+        clearFilter->setEnabled(!text.isEmpty());
+    });
 
     connect(clearFilter, &QAction::triggered, [this]() { filterPattern_->setText(""); });
 
@@ -496,23 +478,9 @@ void ConsoleWidget::logEntry(LogTableModelEntry e) {
         return;
     }
 
-    auto lines = std::count(e.message.begin(), e.message.end(), '\n') + 1;
-    auto height = QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
-
     tableView_->setUpdatesEnabled(false);
-
-    model_.log(e);
     updateIndicators(e.level);
-
-    // Faster but messes with filters.
-    if (lines != 1) {
-        auto vind = mapFromSource(model_.model()->rowCount() - 1, 0);
-        if (vind.isValid()) {
-            tableView_->verticalHeader()->resizeSection(vind.row(),
-                                                        2 + static_cast<int>(lines) * height);
-        }
-    }
-
+    model_.log(std::move(e));
     tableView_->scrollToBottom();
     tableView_->setUpdatesEnabled(true);
 }
@@ -590,7 +558,27 @@ void ConsoleWidget::closeEvent(QCloseEvent* event) {
     InviwoDockWidget::closeEvent(event);
 }
 
-LogTableModel::LogTableModel() : model_(0, static_cast<int>(LogTableModelEntry::size())) {
+LogTableModel::LogTableModel()
+    : model_(0, static_cast<int>(LogTableModelEntry::size()))
+    , logFont_{QFontDatabase::systemFont(QFontDatabase::FixedFont)}
+    , lineHeight_{0}
+    , margin_{0} {
+
+    QStyleOptionViewItem opt;
+    opt.font = logFont_;
+    opt.fontMetrics = QFontMetrics{logFont_};
+    opt.features |= QStyleOptionViewItem::HasDisplay;
+    opt.styleObject = nullptr;
+    opt.text = "One line text";
+    auto* style = qApp->style();
+    auto size1 = style->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(), nullptr);
+    opt.text = "One line text\nAnother line";
+    opt.text.replace(QLatin1Char('\n'), QChar::LineSeparator);
+    auto size2 = style->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(), nullptr);
+
+    lineHeight_ = size2.height() - size1.height();
+    margin_ = size1.height() - lineHeight_;
+
     for (size_t i = 0; i < LogTableModelEntry::size(); ++i) {
         auto item = new QStandardItem(getName(static_cast<LogTableModelEntry::ColumnID>(i)));
         item->setTextAlignment(Qt::AlignLeft);
@@ -599,14 +587,15 @@ LogTableModel::LogTableModel() : model_(0, static_cast<int>(LogTableModelEntry::
 }
 
 void LogTableModel::log(LogTableModelEntry entry) {
+    entry.message = rtrim(std::move(entry.message));
+
     QList<QStandardItem*> items;
     items.reserve(static_cast<int>(LogTableModelEntry::size()));
     for (size_t i = 0; i < LogTableModelEntry::size(); ++i) {
         items.append(entry.get(static_cast<LogTableModelEntry::ColumnID>(i)));
-        items.last()->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+        items.last()->setFont(logFont_);
         items.last()->setTextAlignment(Qt::AlignLeft);
         items.last()->setEditable(false);
-        // items.last()->setSizeHint(QSize(1, lines * height));
 
         switch (entry.level) {
             case LogLevel::Info:
@@ -625,6 +614,11 @@ void LogTableModel::log(LogTableModelEntry entry) {
     }
 
     model_.appendRow(items);
+
+    auto lines = std::count(entry.message.begin(), entry.message.end(), '\n') + 1;
+    auto* vHeaderItem = new QStandardItem();
+    vHeaderItem->setSizeHint(QSize(1, static_cast<int>(margin_ + lines * lineHeight_)));
+    model_.setVerticalHeaderItem(model_.rowCount() - 1, vHeaderItem);
 }
 
 LogModel* LogTableModel::model() { return &model_; }
@@ -694,7 +688,7 @@ QStandardItem* LogTableModelEntry::get(ColumnID ind) const {
         case ColumnID::Line:
             return new QStandardItem(utilqt::toQString(toString(lineNumber)));
         case ColumnID::Function:
-            return new QStandardItem(utilqt::toQString(funcionName));
+            return new QStandardItem(utilqt::toQString(functionName));
         case ColumnID::Message: {
             auto item = std::make_unique<QStandardItem>();
             item->setData(utilqt::toQString(message), detail::Roles::Fulltext);

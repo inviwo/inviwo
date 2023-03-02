@@ -45,23 +45,57 @@
 #include <string>       // for string
 #include <string_view>  // for string_view
 #include <type_traits>  // for remove_reference<>::type
+#include <utility>
 
 #include <tcb/span.hpp>  // for span
 
 namespace inviwo {
 
+TextureBase::TextureBase(GLenum target) : id_{0}, target_{target} { glGenTextures(1, &id_); }
+TextureBase::TextureBase(const TextureBase& other) : id_{0}, target_{other.target_} {
+    glGenTextures(1, &id_);
+}
+TextureBase::TextureBase(TextureBase&& rhs)
+    : id_{std::exchange(rhs.id_, 0)}, target_{rhs.target_} {}
+
+TextureBase& TextureBase::operator=(const TextureBase& rhs) {
+    if (this != &rhs) {
+        target_ = rhs.target_;
+    }
+    return *this;
+}
+
+TextureBase& TextureBase::operator=(TextureBase&& rhs) {
+    if (this != &rhs) {
+        glDeleteTextures(1, &id_);
+        target_ = rhs.target_;
+        id_ = std::exchange(rhs.id_, 0);
+    }
+    return *this;
+}
+
+TextureBase::~TextureBase() {
+    if (id_ != 0) {
+        glDeleteTextures(1, &id_);
+    }
+}
+
+GLuint TextureBase::getID() const { return id_; }
+GLenum TextureBase::getTarget() const { return target_; }
+void TextureBase::bind() const { glBindTexture(target_, id_); }
+void TextureBase::unbind() const { glBindTexture(target_, 0); }
+
 Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const SwizzleMask& swizzleMask,
                  util::span<const GLenum> wrapping, GLint level)
-    : Observable<TextureObserver>()
-    , target_(target)
+    : TextureBase(target)
+    , Observable<TextureObserver>()
+
     , format_(glFormat.format)
     , internalformat_(glFormat.internalFormat)
     , dataType_(glFormat.type)
     , level_(level)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
-
-    glGenTextures(1, &id_);
 
     glGenBuffers(1, &pboBack_);
 
@@ -74,23 +108,20 @@ Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const Swizz
     for (auto [i, wrap] : util::enumerate(wrapping)) {
         glTexParameteri(target_, wrapNames[i], wrap);
     }
-
     glBindTexture(target_, 0);
 }
 
 Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType,
                  GLenum filtering, const SwizzleMask& swizzleMask,
                  util::span<const GLenum> wrapping, GLint level)
-    : Observable<TextureObserver>()
-    , target_(target)
+    : TextureBase(target)
+    , Observable<TextureObserver>()
     , format_(format)
     , internalformat_(internalformat)
     , dataType_(dataType)
     , level_(level)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
-
-    glGenTextures(1, &id_);
 
     glGenBuffers(1, &pboBack_);
 
@@ -106,8 +137,8 @@ Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataT
 }
 
 Texture::Texture(const Texture& other)
-    : Observable<TextureObserver>()
-    , target_(other.target_)
+    : TextureBase(other)
+    , Observable<TextureObserver>()
     , format_(other.format_)
     , internalformat_(other.internalformat_)
     , dataType_(other.dataType_)
@@ -115,7 +146,6 @@ Texture::Texture(const Texture& other)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
-    glGenTextures(1, &id_);
     glGenBuffers(1, &pboBack_);
 
     std::array<GLint, 4> swizzleMaskGL;
@@ -144,25 +174,23 @@ Texture::Texture(const Texture& other)
 }
 
 Texture::Texture(Texture&& other)
-    : Observable<TextureObserver>(std::move(other))
-    , target_(other.target_)
+    : TextureBase(std::move(other))
+    , Observable<TextureObserver>(std::move(other))
     , format_(other.format_)
     , internalformat_(other.internalformat_)
     , dataType_(other.dataType_)
     , level_(other.level_)
-    , id_(other.id_)  // Steal texture
     , pboBack_(other.pboBack_)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
     // Free resources from other
-    other.id_ = 0;
     other.pboBack_ = 0;
 }
 
 Texture& Texture::operator=(const Texture& rhs) {
     if (this != &rhs) {
-        target_ = rhs.target_;
+        TextureBase::operator=(rhs);
         format_ = rhs.format_;
         internalformat_ = rhs.internalformat_;
         dataType_ = rhs.dataType_;
@@ -196,22 +224,18 @@ Texture& Texture::operator=(const Texture& rhs) {
 
 Texture& Texture::operator=(Texture&& rhs) {
     if (this != &rhs) {
+        TextureBase::operator=(std::move(rhs));
         // Free existing resources
-        glDeleteTextures(1, &id_);
         glDeleteBuffers(1, &pboBack_);
 
         // Steal resources
         Observable<TextureObserver>::operator=(std::move(rhs));
-        target_ = rhs.target_;
         format_ = rhs.format_;
         internalformat_ = rhs.internalformat_;
         dataType_ = rhs.dataType_;
-
-        id_ = rhs.id_;
         pboBack_ = rhs.pboBack_;
 
         // Release resources from source object
-        rhs.id_ = 0;
         rhs.pboBack_ = 0;
     }
 
@@ -219,10 +243,9 @@ Texture& Texture::operator=(Texture&& rhs) {
 }
 
 Texture::~Texture() {
-    if (id_ != 0 || pboBack_ != 0) {
+    if (pboBack_ != 0) {
         // These functions silently ignores zeros,
         // which happens when move operations has been used
-        glDeleteTextures(1, &id_);
         glDeleteBuffers(1, &pboBack_);
     }
     if (syncObj != 0) {
@@ -235,10 +258,6 @@ size_t Texture::targetDims(GLenum target) {
                                  [&](auto& item) { return item.first == target; });
     return it != targetToDim.end() ? it->second : size_t{0};
 }
-
-GLuint Texture::getID() const { return id_; }
-
-GLenum Texture::getTarget() const { return target_; }
 
 GLenum Texture::getFormat() const { return format_; }
 
@@ -265,10 +284,6 @@ GLuint Texture::getNChannels() const { return channels(format_); }
 GLuint Texture::getSizeInBytes() const {
     return static_cast<GLuint>(channels(format_) * dataTypeSize(dataType_));
 }
-
-void Texture::bind() const { glBindTexture(target_, id_); }
-
-void Texture::unbind() const { glBindTexture(target_, 0); }
 
 void Texture::setSwizzleMask(SwizzleMask mask) {
     auto swizzleMaskGL = utilgl::convertSwizzleMaskToGL(mask);

@@ -287,6 +287,10 @@ IVW_CORE_API TxElement* createNode(std::string_view desc, TxElement* parent = nu
 
 IVW_CORE_API void logNode(TxElement* root);
 
+IVW_CORE_API bool renamePropertyIdentifier(TxElement* root, std::string_view processorClassId,
+                                           std::string_view propertyPath,
+                                           std::string_view newIdentifier);
+
 }  // namespace xml
 
 }  // namespace inviwo

@@ -105,6 +105,7 @@ private:
     Layer colors_;
     std::string color_;
     PickingMapper picking_;
+    int minSegmentId_;
     TimeComponent* time_;
 };
 

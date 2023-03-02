@@ -3,6 +3,7 @@
 set(dependencies
     InviwoOpenGLModule
     InviwoBaseModule
-	InviwoBrushingAndLinkingModule
+    InviwoBrushingAndLinkingModule
+    InviwoFontrenderingModule   
 )
 set(EnableByDefault ON)

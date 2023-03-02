@@ -60,7 +60,7 @@ namespace util {
 
 namespace detail {
 template <Wrapping X, Wrapping Y, Wrapping Z>
-auto distance2(const vec3& a, const vec3& b, const mat4& dataToModelMatrix) {
+auto distance2(const vec3& a, const vec3& b, const mat3& dataToModelMatrix) {
     auto delta = b - a;
 
     if constexpr (X == Wrapping::Repeat) {
@@ -78,7 +78,7 @@ auto distance2(const vec3& a, const vec3& b, const mat4& dataToModelMatrix) {
         if (delta.z < -0.5f) delta.z += 1.0f;
     }
 
-    return glm::length2(vec3{dataToModelMatrix * vec4{delta, 0.0f}});
+    return glm::length2(dataToModelMatrix * delta);
 }
 
 template <typename Index, typename Functor, Index... Is>
@@ -95,34 +95,40 @@ constexpr auto build_array(Functor&& func) noexcept {
 }  // namespace detail
 
 template <Wrapping X, Wrapping Y, Wrapping Z>
-void voronoiSegmentationImpl(const size3_t volumeDimensions, const mat4& indexToDataMatrix,
-                             const mat4& dataToModelMatrix,
-                             const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
-                             VolumeRAMPrecision<unsigned short>& voronoiVolumeRep) {
+void voronoiSegmentationImpl(
+    const size3_t volumeDimensions, const mat4& indexToDataMatrix, const mat4& dataToModelMatrix,
+    const std::vector<std::pair<unsigned short, vec3>>& seedPointsWithIndices,
+    VolumeRAMPrecision<unsigned short>& voronoiVolumeRep) {
 
     auto volumeIndices = voronoiVolumeRep.getDataTyped();
     util::IndexMapper3D index(volumeDimensions);
 
+    // We can ignore any translations
+    const auto d2m = mat3{dataToModelMatrix};
+
     util::forEachVoxelParallel(volumeDimensions, [&](const size3_t& voxelPos) {
         const auto dataVoxelPos = vec3{indexToDataMatrix * vec4{voxelPos, 1.0f}};
-        const auto it = std::min_element(
-            seedPointsWithIndices.cbegin(), seedPointsWithIndices.cend(),
-            [&](const auto& p1, const auto& p2) {
-                return detail::distance2<X, Y, Z>(p1.second, dataVoxelPos, dataToModelMatrix) <
-                       detail::distance2<X, Y, Z>(p2.second, dataVoxelPos, dataToModelMatrix);
-            });
-        volumeIndices[index(voxelPos)] = static_cast<unsigned short>(it->first);
+        const auto it =
+            std::min_element(seedPointsWithIndices.cbegin(), seedPointsWithIndices.cend(),
+                             [&](const auto& p1, const auto& p2) {
+                                 return detail::distance2<X, Y, Z>(p1.second, dataVoxelPos, d2m) <
+                                        detail::distance2<X, Y, Z>(p2.second, dataVoxelPos, d2m);
+                             });
+        volumeIndices[index(voxelPos)] = it->first;
     });
 }
 
 template <Wrapping X, Wrapping Y, Wrapping Z>
 void weightedVoronoiSegmentationImpl(
     const size3_t volumeDimensions, const mat4& indexToDataMatrix, const mat4& dataToModelMatrix,
-    const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
+    const std::vector<std::pair<unsigned short, vec3>>& seedPointsWithIndices,
     const std::vector<float>& weights, VolumeRAMPrecision<unsigned short>& voronoiVolumeRep) {
 
     auto volumeIndices = voronoiVolumeRep.getDataTyped();
     util::IndexMapper3D index(volumeDimensions);
+
+    // We can ignore any translations
+    const auto d2m = mat3{dataToModelMatrix};
 
     util::forEachVoxelParallel(volumeDimensions, [&](const size3_t& voxelPos) {
         const auto dataVoxelPos = vec3{indexToDataMatrix * vec4{voxelPos, 1.0f}};
@@ -132,12 +138,10 @@ void weightedVoronoiSegmentationImpl(
             *std::min_element(zipped.begin(), zipped.end(), [&](auto&& i1, auto&& i2) {
                 auto&& [p1, w1] = i1;
                 auto&& [p2, w2] = i2;
-                return detail::distance2<X, Y, Z>(p1.second, dataVoxelPos, dataToModelMatrix) -
-                           w1 * w1 <
-                       detail::distance2<X, Y, Z>(p2.second, dataVoxelPos, dataToModelMatrix) -
-                           w2 * w2;
+                return detail::distance2<X, Y, Z>(p1.second, dataVoxelPos, d2m) - w1 * w1 <
+                       detail::distance2<X, Y, Z>(p2.second, dataVoxelPos, d2m) - w2 * w2;
             });
-        volumeIndices[index(voxelPos)] = static_cast<unsigned short>(posWithIndex.first);
+        volumeIndices[index(voxelPos)] = posWithIndex.first;
     });
 }
 
@@ -169,26 +173,35 @@ std::shared_ptr<Volume> voronoiSegmentation(
     voronoiVolume->setInterpolation(InterpolationType::Nearest);
     voronoiVolume->setWrapping(wrapping);
 
-    const auto itMax =
-        std::max_element(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
-                         [](const auto& a, const auto& b) { return a.first < b.first; });
+    const auto [itMin, itMax] =
+        std::minmax_element(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
+                            [](const auto& a, const auto& b) { return a.first < b.first; });
 
-    voronoiVolume->dataMap_.dataRange = dvec2{0.0, static_cast<double>(itMax->first)};
+    voronoiVolume->dataMap_.dataRange =
+        dvec2{static_cast<double>(itMin->first), static_cast<double>(itMax->first)};
     voronoiVolume->dataMap_.valueRange = voronoiVolume->dataMap_.dataRange;
 
-    std::vector<std::pair<uint32_t, vec3>> dataSeedPointsWithIndices{seedPointsWithIndices.size()};
+    if (itMax->first > std::numeric_limits<unsigned short>::max()) {
+        throw Exception(IVW_CONTEXT_CUSTOM("VoronoiSegmentation"),
+                        "Seed point index greater than {} is not supported",
+                        std::numeric_limits<unsigned short>::max());
+    }
+
+    std::vector<std::pair<unsigned short, vec3>> dataSeedPointsWithIndices{
+        seedPointsWithIndices.size()};
 
     const auto modelToDataMatrix = glm::inverse(dataToModelMatrix);
     std::transform(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
                    dataSeedPointsWithIndices.begin(),
                    [&modelToDataMatrix](const std::pair<uint32_t, vec3>& pair) {
                        return std::pair<uint32_t, vec3>{
-                           pair.first, vec3{modelToDataMatrix * vec4{pair.second, 1.0f}}};
+                           static_cast<unsigned short>(pair.first),
+                           vec3{modelToDataMatrix * vec4{pair.second, 1.0f}}};
                    });
 
     if (weights.has_value()) {
         using Functor = void (*)(const size3_t, const mat4&, const mat4&,
-                                 const std::vector<std::pair<uint32_t, vec3>>&,
+                                 const std::vector<std::pair<unsigned short, vec3>>&,
                                  const std::vector<float>&, VolumeRAMPrecision<unsigned short>&);
 
         constexpr auto table = detail::build_array<3>([&](auto x) constexpr {
@@ -198,7 +211,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
                 return detail::build_array<3>([&](auto z) constexpr->Functor {
                     using ZT = decltype(z);
                     return [](const size3_t dim, const mat4& i2d, const mat4& d2m,
-                              const std::vector<std::pair<uint32_t, vec3>>& sp,
+                              const std::vector<std::pair<unsigned short, vec3>>& sp,
                               const std::vector<float>& w,
                               VolumeRAMPrecision<unsigned short>& volRep) {
                         constexpr auto X = static_cast<Wrapping>(XT::value);
@@ -217,7 +230,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
 
     } else {
         using Functor = void (*)(const size3_t, const mat4&, const mat4&,
-                                 const std::vector<std::pair<uint32_t, vec3>>&,
+                                 const std::vector<std::pair<unsigned short, vec3>>&,
                                  VolumeRAMPrecision<unsigned short>&);
 
         constexpr auto table = detail::build_array<3>([&](auto x) constexpr {
@@ -227,7 +240,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
                 return detail::build_array<3>([&](auto z) constexpr->Functor {
                     using ZT = decltype(z);
                     return [](const size3_t dim, const mat4& i2d, const mat4& d2m,
-                              const std::vector<std::pair<uint32_t, vec3>>& sp,
+                              const std::vector<std::pair<unsigned short, vec3>>& sp,
                               VolumeRAMPrecision<unsigned short>& volRep) {
                         constexpr auto X = static_cast<Wrapping>(XT::value);
                         constexpr auto Y = static_cast<Wrapping>(YT::value);

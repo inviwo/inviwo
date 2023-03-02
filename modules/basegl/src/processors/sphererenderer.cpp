@@ -29,41 +29,19 @@
 
 #include <modules/basegl/processors/sphererenderer.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>                         // for boundingBox
-#include <inviwo/core/datastructures/geometry/geometrytype.h>          // for BufferType, DrawType
-#include <inviwo/core/datastructures/geometry/mesh.h>                  // for Mesh::MeshInfo, Mesh
-#include <inviwo/core/ports/imageport.h>                               // for ImageOutport, Base...
-#include <inviwo/core/ports/meshport.h>                                // for MeshFlatMultiInport
-#include <inviwo/core/processors/processor.h>                          // for Processor
-#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
-#include <inviwo/core/processors/processortags.h>                      // for Tags
-#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>                     // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>                  // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>                     // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                    // for FloatProperty, ord...
-#include <inviwo/core/util/glmvec.h>                                   // for size2_t, vec4
-#include <inviwo/core/util/staticstring.h>                             // for operator+
-#include <modules/basegl/datastructures/meshshadercache.h>             // for MeshShaderCache::R...
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
-#include <modules/opengl/geometry/meshgl.h>                            // for MeshGL
-#include <modules/opengl/inviwoopengl.h>                               // for glDrawElements
-#include <modules/opengl/openglutils.h>                                // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>                     // for MeshDrawerGL, Mesh...
-#include <modules/opengl/shader/shader.h>                              // for Shader
-#include <modules/opengl/shader/shaderobject.h>                        // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>                          // for ShaderType, Shader...
-#include <modules/opengl/shader/shaderutils.h>                         // for addDefines, setSha...
-#include <modules/opengl/texture/textureunit.h>                        // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>                       // for activateTargetAndC...
-
-#include <map>          // for __map_iterator, map
-#include <tuple>        // for tuple_element<>::type
-#include <type_traits>  // for remove_extent_t
-
-#include <glm/vec2.hpp>  // for vec<>::(anonymous)
+#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferType, DrawType
+#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh::MeshInfo, Mesh
+#include <inviwo/core/util/glmvec.h>                           // for size2_t, vec4
+#include <inviwo/core/util/staticstring.h>                     // for operator+
+#include <modules/opengl/geometry/meshgl.h>                    // for MeshGL
+#include <modules/opengl/openglutils.h>                        // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>             // for MeshDrawerGL, Mesh...
+#include <modules/opengl/shader/shader.h>                      // for Shader
+#include <modules/opengl/shader/shaderobject.h>                // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                  // for ShaderType, Shader...
+#include <modules/opengl/shader/shaderutils.h>                 // for addDefines, setSha...
+#include <modules/opengl/texture/textureunit.h>                // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>               // for activateTargetAndC...
 
 namespace inviwo {
 
@@ -74,49 +52,52 @@ const ProcessorInfo SphereRenderer::processorInfo_{
     "Mesh Rendering",             // Category
     CodeState::Stable,            // Code state
     "GL, Brushing, Linking",      // Tags
-};
+    R"(This processor renders a set of point meshes using spherical glyphs in OpenGL.
+    The glyphs are resolution independent and consist only of a single point.
+    )"_unindentHelp};
 const ProcessorInfo SphereRenderer::getProcessorInfo() const { return processorInfo_; }
 
 SphereRenderer::SphereRenderer()
     : Processor()
-    , inport_("geometry")
-    , imageInport_("imageInport")
-    , brushLinkPort_("brushingAndLinking")
-    , outport_("image")
-    , renderMode_("renderMode", "Render Mode",
+    , inport_{"geometry", R"(
+        The input mesh uses the following buffers:
+        * *PositionAttrib*   `vec3`
+        * *ColorAttrib*      `vec4`   (optional will fall-back to use __Custom Color__)
+        * *IndexAttrib*      `uint`   (optional used for labeling and BnL)
+        * *RadiiAttrib*      `float`  (optional will fall-back to use __Custom Radius__)
+        * *PickingAttrib*    `uint32` (optional will fall-back to not draw any picking)
+        * *ScalarMetaAttrib* `float`  (optional used for custom coloring)
+    )"_unindentHelp}
+    , imageInport_{"imageInport", "Optional background image"_help}
+    , outport_{"image",
+               "output image containing the rendered spheres and the optional input image"_help}
+    , renderMode_{"renderMode",
+                  "Render Mode",
+                  "render only input meshes marked as points or everything"_help,
                   {{"entireMesh", "Entire Mesh", RenderMode::EntireMesh},
-                   {"pointsOnly", "Points Only", RenderMode::PointsOnly}})
-    , clipping_("clipping", "Clipping")
-    , clipMode_("clipMode", "Clip Mode",
-                {{"discard", "Discard Glyph", GlyphClippingMode::Discard},
-                 {"cut", "Cut Glypyh", GlyphClippingMode::Cut}},
-                0, InvalidationLevel::InvalidResources)
-    , clipShadingFactor_("clipShadingFactor", "Clip Surface Adjustment", 0.9f, 0.0f, 2.0f)
-    , shadeClippedArea_("shadeClippedArea", "Shade Clipped Area", false,
-                        InvalidationLevel::InvalidResources)
-    , sphereProperties_("sphereProperties", "Sphere Properties")
-    , forceRadius_("forceRadius", "Force Radius", false, InvalidationLevel::InvalidResources)
-    , defaultRadius_("defaultRadius", "Default Radius", 0.05f, 0.00001f, 2.0f, 0.01f)
-    , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
-    , defaultColor_("defaultColor", "Default Color",
-                    util::ordinalColor(vec4(0.7f, 0.7f, 0.7f, 1.0f)))
-    , useMetaColor_("useMetaColor", "Use meta color mapping", false,
-                    InvalidationLevel::InvalidResources)
-    , metaColor_("metaColor", "Meta Color Mapping")
-    , selection_(inport_, brushLinkPort_)
+                   {"pointsOnly", "Points Only", RenderMode::PointsOnly}}}
+    , bnl_{}
+    , clip_{}
+    , config_{}
+    , labels_{}
+    , periodic_{}
+    , texture_{"sphereTexture", "Texture to apply to spheres"_help}
+    , camera_{"camera", "Camera", periodic_.boundingBox(inport_)}
+    , trackball_{&camera_}
+    , lighting_{"lighting", "Lighting", &camera_}
 
-    , camera_("camera", "Camera", util::boundingBox(inport_))
-    , trackball_(&camera_)
-    , lighting_("lighting", "Lighting", &camera_)
     , shaders_{{{ShaderType::Vertex, std::string{"sphereglyph.vert"}},
                 {ShaderType::Geometry, std::string{"sphereglyph.geom"}},
                 {ShaderType::Fragment, std::string{"sphereglyph.frag"}}},
 
                {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
                 {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                {BufferType::IndexAttrib, MeshShaderCache::Optional, "uint"},
                 {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
                 {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-                {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+                {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"},
+                bnl_.getRequirement(),
+                texture_.getRequirement()},
 
                [&](Shader& shader) -> void {
                    shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -125,102 +106,59 @@ SphereRenderer::SphereRenderer()
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
-    addPort(brushLinkPort_);
+    addPort(texture_.inport, "Textures").setOptional(true);
+    addPort(bnl_.inport);
     addPort(outport_);
 
-    clipping_.addProperties(clipMode_, clipShadingFactor_, shadeClippedArea_);
-
-    sphereProperties_.addProperties(forceRadius_, defaultRadius_, forceColor_, defaultColor_,
-                                    useMetaColor_, metaColor_);
-
-    addProperties(renderMode_, sphereProperties_, selection_.properties, clipping_, camera_,
-                  lighting_, trackball_);
-
-    clipShadingFactor_.readonlyDependsOn(
-        clipMode_, [](const auto& p) { return p == GlyphClippingMode::Discard; });
-    shadeClippedArea_.readonlyDependsOn(
-        clipMode_, [](const auto& p) { return p == GlyphClippingMode::Discard; });
+    addProperties(renderMode_, config_.config, labels_.labels, bnl_.highlight, bnl_.select,
+                  bnl_.filter, periodic_.periodicity, clip_.clipping, camera_, lighting_,
+                  trackball_);
 }
 
 void SphereRenderer::initializeResources() {
-    for (auto& item : shaders_.getShaders()) {
-        configureShader(item.second);
+    labels_.initializeResources();
+
+    for (auto& [state, shader] : shaders_.getShaders()) {
+        configureShader(shader);
     }
 }
 
 void SphereRenderer::configureShader(Shader& shader) {
-    utilgl::addDefines(shader, lighting_);
-    shader[ShaderType::Vertex]->setShaderDefine("FORCE_RADIUS", forceRadius_);
-    shader[ShaderType::Vertex]->setShaderDefine("FORCE_COLOR", forceColor_);
-    shader[ShaderType::Vertex]->setShaderDefine("USE_SCALARMETACOLOR", useMetaColor_);
-    shader[ShaderType::Fragment]->setShaderDefine("SHADE_CLIPPED_AREA", shadeClippedArea_);
-    shader[ShaderType::Fragment]->setShaderDefine("DISCARD_CLIPPED_GLYPHS",
-                                                  clipMode_.get() == GlyphClippingMode::Discard);
-    shader[ShaderType::Geometry]->setShaderDefine("DISCARD_CLIPPED_GLYPHS",
-                                                  clipMode_.get() == GlyphClippingMode::Discard);
+    utilgl::addDefines(shader, lighting_, labels_, periodic_, config_, clip_);
     shader.build();
 }
 
 void SphereRenderer::process() {
-    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
-    for (const auto& [port, mesh] : inport_.getSourceVectorData()) {
-        if (mesh->getNumberOfBuffers() == 0) continue;
+    bnl_.update();
 
+    TextureUnitContainer cont;
+    utilgl::bind(cont, bnl_, labels_, config_, texture_);
+
+    for (const auto& mesh : inport_) {
         auto& shader = shaders_.getShader(*mesh);
-
         shader.activate();
 
-        TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader, units, metaColor_);
-
-        utilgl::setUniforms(shader, camera_, lighting_, defaultColor_, defaultRadius_,
-                            clipShadingFactor_);
+        utilgl::setUniforms(shader, camera_, lighting_, config_, clip_, bnl_, periodic_, labels_,
+                            texture_);
         shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
                                            2.0f / outport_.getDimensions().y));
-        MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
-                                        mesh->getDefaultMeshInfo());
+
         utilgl::setShaderUniforms(shader, *mesh, "geometry");
+
+        MeshDrawerGL::DrawObject drawer(*mesh);
         switch (renderMode_) {
             case RenderMode::PointsOnly: {
-                // render only index buffers marked as points (or the entire mesh if none
-                // exists)
-                if (mesh->getNumberOfIndicies() > 0) {
-                    for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
-                        auto meshinfo = mesh->getIndexMeshInfo(i);
-                        if ((meshinfo.dt == DrawType::Points) ||
-                            (meshinfo.dt == DrawType::NotSpecified)) {
-                            drawer.draw(MeshDrawerGL::DrawMode::Points, i);
-                        }
-                    }
-                } else {
-                    // no index buffers, check mesh default draw type
-                    auto drawtype = mesh->getDefaultMeshInfo().dt;
-                    if ((drawtype == DrawType::Points) || (drawtype == DrawType::NotSpecified)) {
-                        drawer.draw(MeshDrawerGL::DrawMode::Points);
-                    }
-                }
+                drawer.drawOnlyInstanced(MeshDrawerGL::DrawMode::Points, periodic_.instances());
                 break;
             }
-            case RenderMode::EntireMesh:
-                [[fallthrough]];
-            default:  // render all parts of the input meshes as points
-                drawer.draw(MeshDrawerGL::DrawMode::Points);
+            case RenderMode::EntireMesh: {
+                drawer.drawInstanced(MeshDrawerGL::DrawMode::Points, periodic_.instances());
                 break;
+            }
         }
-
-        // render selection only for first mesh input
-        if (auto indices = selection_.getIndices(port, *mesh)) {
-            shader.setUniform("selectionMix", 1.0f);
-            shader.setUniform("selectionScaleFactor", selection_.radiusFactor.get());
-            shader.setUniform("selectionColor", selection_.color.get());
-            glDrawElements(GL_POINTS, static_cast<GLsizei>(indices->size()), GL_UNSIGNED_INT,
-                           indices->data());
-            // reset selection flag
-            shader.setUniform("selectionMix", 0.0f);
-        }
-
         shader.deactivate();
     }
 

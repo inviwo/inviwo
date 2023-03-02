@@ -30,13 +30,14 @@
 
 #include <modules/fontrendering/textrenderer.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>              // for mat4
-#include <inviwo/core/util/exception.h>                            // for Exception, FileException
-#include <inviwo/core/util/glmvec.h>                               // for ivec2, vec2, size2_t
-#include <inviwo/core/util/logcentral.h>                           // for LogCentral, LogWarn
-#include <inviwo/core/util/sourcecontext.h>                        // for IVW_CONTEXT
-#include <inviwo/core/util/stdextensions.h>                        // for hash
-#include <inviwo/core/util/zip.h>                                  // for get, zip, zipIterator
+#include <inviwo/core/datastructures/camera/camera.h>  // for mat4
+#include <inviwo/core/util/exception.h>                // for Exception, FileException
+#include <inviwo/core/util/glmvec.h>                   // for ivec2, vec2, size2_t
+#include <inviwo/core/util/logcentral.h>               // for LogCentral, LogWarn
+#include <inviwo/core/util/sourcecontext.h>            // for IVW_CONTEXT
+#include <inviwo/core/util/stdextensions.h>            // for hash
+#include <inviwo/core/util/zip.h>                      // for get, zip, zipIterator
+#include <inviwo/core/util/safecstr.h>
 #include <modules/fontrendering/datastructures/fontsettings.h>     // for FontSettings
 #include <modules/fontrendering/datastructures/texatlasentry.h>    // for TexAtlasEntry
 #include <modules/fontrendering/datastructures/textboundingbox.h>  // for TextBoundingBox
@@ -73,7 +74,7 @@
 
 namespace inviwo {
 
-TextRenderer::TextRenderer(const std::string& fontPath)
+TextRenderer::TextRenderer(std::string_view fontPath)
     : fontface_(nullptr), fontSize_(10), lineSpacing_(0.2), shader_{getShader()} {
 
     if (FT_Init_FreeType(&fontlib_)) {
@@ -127,26 +128,25 @@ TextRenderer::~TextRenderer() {
     }
 }
 
-void TextRenderer::setFont(const std::string& fontPath) {
+void TextRenderer::setFont(std::string_view fontPath) {
     // free previous font face
     if (fontface_) {
         FT_Done_Face(fontface_);
     }
     fontface_ = nullptr;
 
-    int error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
+    int error = FT_New_Face(fontlib_, SafeCStr{fontPath}.c_str(), 0, &fontface_);
     if (error == FT_Err_Unknown_File_Format) {
-        throw Exception(std::string("Unsupported font format: \"") + fontPath + "\"", IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Unsupported font format: \"{}\"", fontPath);
     } else if (error) {
-        throw FileException(std::string("Could not open font file: \"") + fontPath + "\"",
-                            IVW_CONTEXT);
+        throw FileException(IVW_CONTEXT, "Could not open font file: \"{}\"", fontPath);
     }
 
     FT_Select_Charmap(fontface_, ft_encoding_unicode);
     FT_Set_Pixel_Sizes(fontface_, 0, fontSize_);
 }
 
-std::string::const_iterator TextRenderer::validateString(const std::string& str) const {
+std::string_view::const_iterator TextRenderer::validateString(std::string_view str) const {
     // check input string for invalid utf8 encoding, process only valid part
     auto end = utf8::find_invalid(str.begin(), str.end());
     if (end != str.end()) {
@@ -156,7 +156,7 @@ std::string::const_iterator TextRenderer::validateString(const std::string& str)
     return end;
 }
 
-TextBoundingBox TextRenderer::computeBoundingBox(const std::string& str) {
+TextBoundingBox TextRenderer::computeBoundingBox(std::string_view str) {
     if (str.empty()) return {};  // empty string, return empty bounding box
 
     // the pen position defines where the current glyph is positioned
@@ -179,8 +179,8 @@ TextBoundingBox TextRenderer::computeBoundingBox(const std::string& str) {
     // check input string for invalid utf8 encoding
     auto end = validateString(str);
 
-    for (utf8::iterator<std::string::const_iterator> it{str.begin(), str.begin(), end};
-         it != utf8::iterator<std::string::const_iterator>{end, str.begin(), end}; ++it) {
+    for (utf8::iterator it{str.begin(), str.begin(), end};
+         it != utf8::iterator{end, str.begin(), end}; ++it) {
         const uint32_t charCode = *it;
 
         // query font cache for glyph matching the character code
@@ -232,7 +232,7 @@ TextBoundingBox TextRenderer::computeBoundingBox(const std::string& str) {
     return {textBoxExtent, glyphsBottomLeft, glyphsExtent, getBaseLineOffset()};
 }
 
-void TextRenderer::render(const std::string& str, const vec2& posf, const vec2& scaling,
+void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& scaling,
                           const vec4& color) {
 
     auto& fc = getFontCache();
@@ -256,8 +256,8 @@ void TextRenderer::render(const std::string& str, const vec2& posf, const vec2& 
     // check input string for invalid utf8 encoding
     auto end = validateString(str);
 
-    for (utf8::iterator<std::string::const_iterator> it{str.begin(), str.begin(), end};
-         it != utf8::iterator<std::string::const_iterator>{end, str.begin(), end}; ++it) {
+    for (utf8::iterator it{str.begin(), str.begin(), end};
+         it != utf8::iterator{end, str.begin(), end}; ++it) {
         const uint32_t charCode = *it;
 
         auto p = requestGlyph(fc, charCode);
@@ -303,30 +303,44 @@ void TextRenderer::render(const std::string& str, const vec2& posf, const vec2& 
     shader_->deactivate();
 }
 
-void TextRenderer::render(const std::string& str, float x, float y, const vec2& scale,
+void TextRenderer::render(std::string_view str, float x, float y, const vec2& scale,
                           const vec4& color) {
     render(str, vec2(x, y), scale, color);
 }
 
-void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const std::string& str,
+void TextRenderer::render(const TextBoundingBox& textBoundingBox, const ivec2& origin,
+                          std::string_view str, const vec4& color) {
+    // set up viewport
+    ivec2 dim(textBoundingBox.glyphsExtent);
+    utilgl::ViewportState viewport(origin.x, origin.y, dim.x, dim.y);
+
+    // adjust text position, i.e. the pen position, to match the first baseline
+    vec2 textPos(textBoundingBox.glyphPenOffset);
+
+    // render text into texture
+    vec2 scale(2.f / vec2(dim));
+    render(str, vec2(-1.0f, 1.0f) - textPos * scale, scale, color);
+}
+
+void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, std::string_view str,
                                    const vec4& color, bool clearTexture) {
     renderToTexture(texture, size2_t(0u), texture->getDimensions(), str, color, clearTexture);
 }
 
-void TextRenderer::renderToTexture(const TextTextureObject& texObject, const std::string& str,
+void TextRenderer::renderToTexture(const TextTextureObject& texObject, std::string_view str,
                                    const vec4& color, bool clearTexture) {
     renderToTexture(texObject, size2_t(0u), texObject.texture->getDimensions(), str, color,
                     clearTexture);
 }
 
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t& origin,
-                                   const size2_t& size, const std::string& str, const vec4& color,
+                                   const size2_t& size, std::string_view str, const vec4& color,
                                    bool clearTexture) {
     renderToTexture({texture, computeBoundingBox(str)}, origin, size, str, color, clearTexture);
 }
 
 std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState, utilgl::ActivateFBO>
-TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, bool clearTexture) {
+TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, std::optional<vec4> clearColor) {
     // disable depth test and writing depth
     utilgl::DepthMaskState depthMask(GL_FALSE);
     utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
@@ -338,8 +352,8 @@ TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, bool clearTex
         fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);
         currTexture_ = texture;
     }
-    if (clearTexture) {
-        utilgl::ClearColor clearColor{vec4{0.0f}};
+    if (clearColor) {
+        utilgl::ClearColor clear{*clearColor};
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
@@ -348,9 +362,10 @@ TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, bool clearTex
 }
 
 void TextRenderer::renderToTexture(const TextTextureObject& texObject, const size2_t& origin,
-                                   const size2_t& size, const std::string& str, const vec4& color,
+                                   const size2_t& size, std::string_view str, const vec4& color,
                                    bool clearTexture) {
-    const auto state = setupRenderState(texObject.texture, clearTexture);
+    const auto state = setupRenderState(
+        texObject.texture, clearTexture ? std::optional<vec4>{vec4{0.0}} : std::optional<vec4>{});
 
     // set up viewport
     ivec2 pos(origin);
@@ -371,7 +386,8 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
                                    const std::vector<std::string>& str, const vec4& color,
                                    bool clearTexture) {
 
-    auto state = setupRenderState(texture, clearTexture);
+    auto state = setupRenderState(
+        texture, clearTexture ? std::optional<vec4>{vec4{0.0}} : std::optional<vec4>{});
 
     for (auto&& elem : util::zip(origin, size, str)) {
         // set up viewport
@@ -390,7 +406,8 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
                                    const std::vector<TexAtlasEntry>& entries, bool clearTexture) {
 
-    auto state = setupRenderState(texture, clearTexture);
+    auto state = setupRenderState(
+        texture, clearTexture ? std::optional<vec4>{vec4{0.0}} : std::optional<vec4>{});
 
     for (auto& elem : entries) {
         // set up viewport
@@ -405,11 +422,15 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
     }
 }
 
-vec2 TextRenderer::computeTextSize(const std::string& str, const vec2& scale) {
+void TextRenderer::clear(std::shared_ptr<Texture2D> texture, vec4 color) {
+    auto state = setupRenderState(texture, color);
+}
+
+vec2 TextRenderer::computeTextSize(std::string_view str, const vec2& scale) {
     return vec2(computeTextSize(str)) * scale;
 }
 
-size2_t TextRenderer::computeTextSize(const std::string& str) {
+size2_t TextRenderer::computeTextSize(std::string_view str) {
     return computeBoundingBox(str).glyphsExtent;
 }
 

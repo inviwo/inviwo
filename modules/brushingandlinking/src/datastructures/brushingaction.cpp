@@ -69,8 +69,6 @@ std::string_view enumToStr(BrushingAction action) {
             return "Select";
         case BrushingAction::Highlight:
             return "Highlight";
-        case BrushingAction::NumberOfActions:
-            break;
     }
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid BrushingAction enum value '{}'",
                     static_cast<int>(action));

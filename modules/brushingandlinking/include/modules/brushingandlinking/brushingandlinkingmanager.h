@@ -269,6 +269,12 @@ public:
     //! convenience function for getIndices(BrushingAction::Highlight, target).size()
     size_t getNumberOfHighlighted(BrushingTarget target = BrushingTarget::Row) const;
 
+    uint32_t getMax(util::span<const BrushingAction> actions = BrushingActions,
+                    BrushingTarget target = BrushingTarget::Row) const;
+
+    uint32_t getMin(util::span<const BrushingAction> actions = BrushingActions,
+                    BrushingTarget target = BrushingTarget::Row) const;
+
     /**
      * clear the selection for \p action and \p target. \p action must be different from
      * BrushingAction::Filter. Does nothing if \p target does not exist.
@@ -394,8 +400,8 @@ private:
     using BitSetTargets = std::unordered_map<BrushingTarget, BitSet>;
     using IndexListTargets = std::unordered_map<BrushingTarget, IndexList>;
 
-    using SelectionMap = std::array<std::variant<BitSetTargets, IndexListTargets>,
-                                    static_cast<size_t>(BrushingAction::NumberOfActions)>;
+    using SelectionMap =
+        std::array<std::variant<BitSetTargets, IndexListTargets>, BrushingActions.size()>;
 
     SelectionMap selections_{{IndexListTargets(), BitSetTargets(), BitSetTargets()}};
 

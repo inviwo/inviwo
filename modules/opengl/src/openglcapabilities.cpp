@@ -244,10 +244,10 @@ OpenGLCapabilities::GLSLShaderVersion OpenGLCapabilities::getShaderVersion(size_
 size_t OpenGLCapabilities::getCurrentShaderIndex() const { return currentGlobalGLSLVersionIdx_; }
 
 bool OpenGLCapabilities::isExtensionSupported(const char* name) {
-    return (glewIsExtensionSupported(name) != '0');
+    return bool(glewIsSupported(name));
 }
 
-bool OpenGLCapabilities::isSupported(const char* name) { return (glewIsSupported(name) != '0'); }
+bool OpenGLCapabilities::isSupported(const char* name) { return bool(glewIsSupported(name)); }
 bool OpenGLCapabilities::isTexturesSupported() const { return texSupported_; }
 bool OpenGLCapabilities::isTextureArraysSupported() const { return texArraySupported_; }
 bool OpenGLCapabilities::is3DTexturesSupported() const { return tex3DSupported_; }

@@ -196,7 +196,7 @@ void LineRasterizer::setUniforms(Shader& shader) const {
 }
 
 void LineRasterizer::configureAllShaders() {
-    for (auto shaderPair : lineShaders_->getShaders()) {
+    for (auto& shaderPair : lineShaders_->getShaders()) {
         configureShader(shaderPair.second);
     }
 }
@@ -283,7 +283,5 @@ Document LineRasterization::getInfo() const {
                                 usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
     return doc;
 }
-
-Rasterization* LineRasterization::clone() const { return new LineRasterization(*this); }
 
 }  // namespace inviwo

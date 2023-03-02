@@ -147,18 +147,6 @@ Shader::Shader(std::string_view fragmentFilename, Build buildShader)
               {ShaderType::Fragment, utilgl::findShaderResource(fragmentFilename)}},
              buildShader) {}
 
-Shader::Shader(const Shader& rhs) : program_{rhs.program_}, warningLevel_{rhs.warningLevel_} {
-    for (auto& elem : rhs.shaderObjects_) {
-        shaderObjects_.emplace_back(elem);
-        attached_.emplace_back(false);
-        callbacks_.emplace_back(
-            shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
-    }
-
-    if (rhs.isReady()) build();
-    ShaderManager::getPtr()->registerShader(this);
-}
-
 Shader::Shader(Shader&& rhs)
     : program_{[&]() {
         ShaderManager::getPtr()->unregisterShader(&rhs);
@@ -176,33 +164,6 @@ Shader::Shader(Shader&& rhs)
         callbacks_.emplace_back(elem.onChange([this](ShaderObject* o) { rebuildShader(o); }));
     }
     ShaderManager::getPtr()->registerShader(this);
-}
-
-Shader& Shader::operator=(const Shader& that) {
-    if (this != &that) {
-        program_ = that.program_;
-
-        detach();
-
-        callbacks_.clear();
-        attached_.clear();
-        shaderObjects_.clear();
-
-        for (auto& elem : that.shaderObjects_) {
-            shaderObjects_.emplace_back(elem);
-            attached_.emplace_back(false);
-            callbacks_.emplace_back(
-                shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
-        }
-        warningLevel_ = that.warningLevel_;
-
-        if (that.isReady()) build();
-        if (!ShaderManager::getPtr()->isRegistered(this)) {
-            // Need to re-register if we have been moved from
-            ShaderManager::getPtr()->registerShader(this);
-        }
-    }
-    return *this;
 }
 
 Shader& Shader::operator=(Shader&& that) {

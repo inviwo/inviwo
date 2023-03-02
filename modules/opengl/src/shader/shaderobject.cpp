@@ -329,69 +329,49 @@ ShaderObject::ShaderObject(std::string fileName)
 ShaderObject::ShaderObject(GLenum shaderType, std::string fileName)
     : ShaderObject(ShaderType(shaderType), loadResource(fileName)) {}
 
-ShaderObject::ShaderObject(const ShaderObject& rhs)
-    : shaderType_(rhs.shaderType_)
-    , id_(rhs.id_ == 0 ? 0 : glCreateShader(rhs.shaderType_))
-    , resource_(rhs.resource_)
-    , inDeclarations_(rhs.inDeclarations_)
-    , outDeclarations_(rhs.outDeclarations_)
-    , shaderDefines_(rhs.shaderDefines_)
-    , shaderExtensions_(rhs.shaderExtensions_)
-    , sourceProcessed_{}
-    , includeResources_{}
-    , lnr_{}
-    , callbacks_{}
-    , resourceCallbacks_{} {}
-
 ShaderObject::ShaderObject(ShaderObject&& rhs) noexcept
     : shaderType_(rhs.shaderType_)
-    , id_(rhs.id_)
+    , id_(std::exchange(rhs.id_, 0))
     , resource_(std::move(rhs.resource_))
     , inDeclarations_(std::move(rhs.inDeclarations_))
     , outDeclarations_(std::move(rhs.outDeclarations_))
     , shaderDefines_(std::move(rhs.shaderDefines_))
     , shaderExtensions_(std::move(rhs.shaderExtensions_))
-    , sourceProcessed_{}
-    , includeResources_{}
-    , lnr_{}
-    , callbacks_{}
+    , sourceProcessed_{std::move(rhs.sourceProcessed_)}
+    , includeResources_{std::move(rhs.includeResources_)}
+    , lnr_{std::move(rhs.lnr_)}
+    , callbacks_{std::move(rhs.callbacks_)}
     , resourceCallbacks_{} {
 
-    rhs.id_ = 0;
     rhs.resourceCallbacks_.clear();
-}
-
-ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
-    ShaderObject copy(that);
-    std::swap(shaderType_, copy.shaderType_);
-    std::swap(id_, copy.id_);
-    std::swap(resource_, copy.resource_);
-    std::swap(inDeclarations_, copy.inDeclarations_);
-    std::swap(outDeclarations_, copy.outDeclarations_);
-    std::swap(shaderDefines_, copy.shaderDefines_);
-    std::swap(shaderExtensions_, copy.shaderExtensions_);
-    std::swap(sourceProcessed_, copy.sourceProcessed_);
-    std::swap(includeResources_, copy.includeResources_);
-    std::swap(lnr_, copy.lnr_);
-    std::swap(callbacks_, copy.callbacks_);
-    std::swap(resourceCallbacks_, copy.resourceCallbacks_);
-    return *this;
+    for (auto& resource : includeResources_) {
+        resource->onChange([this](const ShaderResource*) { callbacks_.invoke(this); });
+    }
 }
 
 ShaderObject& ShaderObject::operator=(ShaderObject&& that) noexcept {
-    ShaderObject copy(std::move(that));
-    std::swap(shaderType_, copy.shaderType_);
-    std::swap(id_, copy.id_);
-    std::swap(resource_, copy.resource_);
-    std::swap(inDeclarations_, copy.inDeclarations_);
-    std::swap(outDeclarations_, copy.outDeclarations_);
-    std::swap(shaderDefines_, copy.shaderDefines_);
-    std::swap(shaderExtensions_, copy.shaderExtensions_);
-    std::swap(sourceProcessed_, copy.sourceProcessed_);
-    std::swap(includeResources_, copy.includeResources_);
-    std::swap(lnr_, copy.lnr_);
-    std::swap(callbacks_, copy.callbacks_);
-    std::swap(resourceCallbacks_, copy.resourceCallbacks_);
+    if (this != &that) {
+        if (id_ != 0) {
+            glDeleteShader(id_);
+        }
+        shaderType_ = that.shaderType_;
+        id_ = std::exchange(that.id_, 0);
+        resource_ = std::move(that.resource_);
+        inDeclarations_ = std::move(that.inDeclarations_);
+        outDeclarations_ = std::move(that.outDeclarations_);
+        shaderDefines_ = std::move(that.shaderDefines_);
+        shaderExtensions_ = std::move(that.shaderExtensions_);
+        sourceProcessed_ = std::move(that.sourceProcessed_);
+        includeResources_ = std::move(that.includeResources_);
+        lnr_ = std::move(that.lnr_);
+        callbacks_ = std::move(that.callbacks_);
+        that.resourceCallbacks_.clear();
+        resourceCallbacks_.clear();
+
+        for (auto& resource : includeResources_) {
+            resource->onChange([this](const ShaderResource*) { callbacks_.invoke(this); });
+        }
+    }
     return *this;
 }
 
