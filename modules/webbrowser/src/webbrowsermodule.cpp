@@ -197,9 +197,6 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     void* sandbox_info = NULL;  // Windows specific
 
-    CefMainArgs args;
-    CefSettings settings;
-
 #ifdef __APPLE__  // Mac specific
 
     // Find CEF framework and helper app in
@@ -214,6 +211,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
                                   frameworkPath);
     }
 
+    CefSettings settings;
     // Setting locales_dir_path does not seem to work (tested debug mode with Xcode).
     // We have therefore created symbolic links from the bundle Resources directory to the
     // framework resource files using CMake.
@@ -251,6 +249,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     }
 
 #else
+     CefSettings settings;
     // Non-mac systems uses a single helper executable so here we can specify name
     // Linux will have empty extension
     auto subProcessExecutable = fmt::format("{}/{}{}{}", exeDirectory, "cef_web_helper",
@@ -298,6 +297,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // Optional implementation of the CefApp interface.
     CefRefPtr<WebBrowserApp> browserApp(new WebBrowserApp);
 
+    CefMainArgs args;
     if (!CefInitialize(args, settings, browserApp, sandbox_info)) {
         throw ModuleInitException("Failed to initialize Chromium Embedded Framework");
     }
