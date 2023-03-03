@@ -99,7 +99,7 @@ void Inport::setChanged(bool changed, const Outport* source) {
         if (source == nullptr) {
             changedSources_.clear();
         } else {
-            util::erase_remove(changedSources_, source);
+            std::erase(changedSources_, source);
         }
     } else if (source) {
         util::push_back_unique(changedSources_, source);

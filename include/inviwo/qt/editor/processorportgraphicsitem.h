@@ -92,7 +92,7 @@ public:
     Inport* getPort();
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ProcessorInportGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(ProcessorInportGraphicsType) };
     virtual int type() const override { return Type; }
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;
@@ -112,7 +112,7 @@ public:
 
     Outport* getPort();
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ProcessorOutportGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(ProcessorOutportGraphicsType) };
     virtual int type() const override { return Type; }
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;

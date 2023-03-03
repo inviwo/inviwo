@@ -54,6 +54,7 @@
 #include <unordered_map>  // for unordered_map
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for move
+#include <numbers>
 
 #include <glm/ext/matrix_transform.hpp>  // for rotate
 #include <glm/fwd.hpp>                   // for vec4, vec3, uint32_t
@@ -97,7 +98,7 @@ std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis, co
                                    const size_t& nsegments) {
     auto mesh = std::make_shared<BasicMesh>();
     vec3 p, p1;
-    float angle = static_cast<float>(M_PI * 2.0 / nsegments);
+    float angle = static_cast<float>(std::numbers::pi * 2.0 / nsegments);
     float a = glm::length(majorAxis);
     float b = glm::length(minorAxis);
     float eradius, eradius1;
@@ -161,7 +162,7 @@ std::shared_ptr<BasicMesh> disk(const vec3& center, const vec3& normal, const ve
     vec3 to = vec3(0.5f, 0.0f, 0.0f);
     vec3 p;
     vec3 t;
-    double angle = 2.0 * M_PI / segments;
+    double angle = 2.0 * std::numbers::pi / segments;
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
         p = center + radius * glm::rotate(orth, static_cast<float>(i * angle), normal);
@@ -188,7 +189,7 @@ std::shared_ptr<BasicMesh> cone(const vec3& start, const vec3& stop, const vec4&
     float height = glm::length(stop - start);
     float ratio = radius / height;
 
-    double angle = 2.0 * M_PI / segments;
+    double angle = 2.0 * std::numbers::pi / segments;
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
         // first vertex at base
@@ -240,7 +241,7 @@ std::shared_ptr<BasicMesh> cylinder(const vec3& start, const vec3& stop, const v
     vec3 e3 = glm::cross(e1, e2);
     mat3 basis(e1, e2, e3);
 
-    double angle = 2.0 * M_PI / segments;
+    double angle = 2.0 * std::numbers::pi / segments;
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
         // first vertex at base
@@ -693,7 +694,8 @@ std::shared_ptr<BasicMesh> torus(const vec3& center, const vec3& up_, float r1, 
     auto numVertex = subdivisions.x * subdivisions.y;
 
     for (int i = 0; i < subdivisions.x; i++) {
-        auto axis = glm::rotate(side, static_cast<float>(i * 2 * M_PI / subdivisions.x), up);
+        auto axis =
+            glm::rotate(side, static_cast<float>(i * 2 * std::numbers::pi / subdivisions.x), up);
         auto centerP = center + axis * r1;
 
         auto N = glm::normalize(glm::cross(axis, up));
@@ -702,7 +704,8 @@ std::shared_ptr<BasicMesh> torus(const vec3& center, const vec3& up_, float r1, 
         int startJ = ((i + 1) % subdivisions.x) * subdivisions.y;
 
         for (int j = 0; j < subdivisions.y; j++) {
-            auto axis2 = glm::rotate(axis, static_cast<float>(j * 2 * M_PI / subdivisions.y), N);
+            auto axis2 =
+                glm::rotate(axis, static_cast<float>(j * 2 * std::numbers::pi / subdivisions.y), N);
             auto VP = centerP + axis2 * r2;
 
             mesh->addVertex(VP, axis2, N, color);

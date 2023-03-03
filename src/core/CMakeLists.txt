@@ -869,7 +869,6 @@ target_link_libraries(inviwo-core
         inviwo::tclap
         inviwo::warn
         inviwo::sml
-        inviwo::span
         inviwo::half
         inviwo::flags
         inviwo::tracy

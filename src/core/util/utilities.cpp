@@ -150,7 +150,7 @@ std::string cleanIdentifier(std::string_view identifier, std::string_view extra)
     std::replace_if(
         str.begin(), str.end(), [&](char c) { return !util::isValidIdentifierCharacter(c, extra); },
         ' ');
-    util::erase_remove_if(str, [s = false](char c) mutable {
+    std::erase_if(str, [s = false](char c) mutable {
         if (s && c == ' ') return true;
         s = c == ' ';
         return false;
@@ -206,7 +206,7 @@ std::string stripIdentifier(std::string_view identifier) {
         stripped = stripped.substr(1);
     }
 
-    util::erase_remove_if(stripped, testRest);
+    std::erase_if(stripped, testRest);
     return stripped;
 }
 

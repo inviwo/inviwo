@@ -56,7 +56,10 @@ public:
     void updateShape();
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + TFEditorPrimitive::TFControlPointConnectionType };
+    enum {
+        Type = static_cast<int>(UserType) +
+               static_cast<int>(TFEditorPrimitive::TFControlPointConnectionType)
+    };
     int type() const { return Type; }
 
     friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFControlPointConnection& lhs,

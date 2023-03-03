@@ -41,7 +41,7 @@ bool EventHandler::addEventListener(EventListener* listener) {
 }
 
 bool EventHandler::removeEventListener(EventListener* listener) {
-    return util::erase_remove(eventListeners_, listener) != 0;
+    return std::erase(eventListeners_, listener) != 0;
 }
 
 }  // namespace inviwo

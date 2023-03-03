@@ -36,8 +36,7 @@
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 
-#include <tcb/span.hpp>
-
+#include <span>
 #include <vector>
 #include <unordered_set>
 #include <algorithm>
@@ -68,7 +67,7 @@ TEST(bitset, constructors) {
 
     std::vector<std::uint32_t> indices = getIndices(20);
     BitSet{indices};
-    BitSet(util::span<std::uint32_t>(indices));
+    BitSet(std::span<std::uint32_t>(indices));
     BitSet(indices.begin(), indices.end());
 
     EXPECT_TRUE(true);

@@ -272,21 +272,12 @@ bool UndoManager::eventFilter(QObject*, QEvent* e) {
         }
         case QEvent::TouchEnd: {
             auto te = static_cast<QTouchEvent*>(e);
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
             if (util::all_of(te->points(), [](const QTouchEvent::TouchPoint& tp) {
                     return tp.state() == QEventPoint::Released;
                 })) {
                 pushStateIfDirty();
                 break;
             }
-#else
-            if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint& tp) {
-                    return tp.state() == Qt::TouchPointReleased;
-                })) {
-                pushStateIfDirty();
-                break;
-            }
-#endif
 
             break;
         }

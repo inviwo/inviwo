@@ -30,8 +30,9 @@
 #include <modules/qtwidgets/angleradiuswidget.h>
 
 #include <algorithm>  // for max, min
-#include <cmath>      // for atan2, cos, sin, sqrt, M_PI
+#include <cmath>      // for atan2, cos, sin, sqrt, std::numbers::pi
 #include <sstream>    // for stringstream, basic_ostream, fixed
+#include <numbers>
 
 #include <QChar>          // for QChar
 #include <QFontMetrics>   // for QFontMetrics
@@ -45,7 +46,6 @@
 #include <QString>        // for QString, operator+
 #include <QStylePainter>  // for QStylePainter
 #include <Qt>             // for MiterJoin, SquareCap, SolidLine, DashLine, LeftButton
-#include <QtGlobal>       // for qMin, qreal, QT_VERSION, QT_VERSION_CHECK
 #include <QBrush>         // for QBrush
 #include <QPainterPath>   // for QPainterPath
 
@@ -98,7 +98,7 @@ void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     // Display angle bounds by drawing a pie (pacman) if min/max is not 0/2pi
     int innerBoundsCircleRadius =
         static_cast<int>(static_cast<double>(referenceRadius) * (getMinRadius() / getMaxRadius()));
-    if (getMinAngle() > 0. || getMaxAngle() < 2. * M_PI) {
+    if (getMinAngle() > 0. || getMaxAngle() < 2. * std::numbers::pi) {
         // drawPie wants 16*degrees
         int pieStart = static_cast<int>(16 * glm::degrees(getMinAngle()));
         int pieEnd =
@@ -123,7 +123,7 @@ void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     painter.setPen(QPen(palette().text().color()));
     QPainterPath anglePath;
     // Make sure that angle goes from 0 to 2*pi
-    double sweepAngle = getAngle() < 0. ? 2. * M_PI + getAngle() : getAngle();
+    double sweepAngle = getAngle() < 0. ? 2. * std::numbers::pi + getAngle() : getAngle();
     // Draw angle arc and text
     anglePath.arcTo(-10., -10., 20., 20., 0., glm::degrees(sweepAngle));
     painter.drawPath(anglePath);
@@ -134,11 +134,8 @@ void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     int anglePosY = -10;
     QFontMetrics fm(painter.font());
     QString angleText = QString::fromStdString(angleStream.str()) + QChar(0260);
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-    int angleTextWidth = fm.width(angleText);
-#else
+
     int angleTextWidth = fm.horizontalAdvance(angleText);
-#endif
     if (anglePosX + angleTextWidth > referenceRadius) {
         anglePosX = referenceRadius + 2;
         anglePosY = -2;
@@ -258,7 +255,7 @@ void AngleRadiusWidget::setAngleRadiusAtPosition(const QPoint& pos) {
     double radius = std::sqrt(x * x + y * y);
     double theta = std::atan2(y, x);
     // Convert angle to lie within [0 2pi), http://en.wikipedia.org/wiki/Atan2
-    if (theta < 0.) theta += 2. * M_PI;
+    if (theta < 0.) theta += 2. * std::numbers::pi;
     setAngle(theta);
     setRadius(radius);
 }

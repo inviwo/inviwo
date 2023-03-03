@@ -54,7 +54,9 @@ public:
     virtual int getLevel() const override;
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + LinkDialogProcessorGraphicsItemType };
+    enum {
+        Type = static_cast<int>(UserType) + static_cast<int>(LinkDialogProcessorGraphicsItemType)
+    };
     virtual int type() const override { return Type; }
     virtual void updatePositions() override;
 

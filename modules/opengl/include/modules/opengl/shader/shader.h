@@ -47,8 +47,7 @@
 #include <type_traits>  // for enable_if_t
 #include <utility>      // for pair
 #include <vector>       // for vector, vector<>::const_iterator, vector...
-
-#include <tcb/span.hpp>  // for span
+#include <span>         // for span
 
 namespace inviwo {
 
@@ -165,48 +164,48 @@ public:
     void deactivate();
 
     void setUniform(std::string_view name, bool value) const;
-    void setUniform(std::string_view name, util::span<const bool> values) const;
+    void setUniform(std::string_view name, std::span<const bool> values) const;
     void setUniform(std::string_view name, int value) const;
-    void setUniform(std::string_view name, util::span<const int> values) const;
+    void setUniform(std::string_view name, std::span<const int> values) const;
     void setUniform(std::string_view name, unsigned int value) const;
-    void setUniform(std::string_view name, util::span<const unsigned int> values) const;
+    void setUniform(std::string_view name, std::span<const unsigned int> values) const;
     void setUniform(std::string_view name, float value) const;
-    void setUniform(std::string_view name, util::span<const float> values) const;
+    void setUniform(std::string_view name, std::span<const float> values) const;
 
     void setUniform(std::string_view name, bvec2 value) const;
-    void setUniform(std::string_view name, util::span<const bvec2> values) const;
+    void setUniform(std::string_view name, std::span<const bvec2> values) const;
     void setUniform(std::string_view name, bvec3 value) const;
-    void setUniform(std::string_view name, util::span<const bvec3> values) const;
+    void setUniform(std::string_view name, std::span<const bvec3> values) const;
     void setUniform(std::string_view name, bvec4 value) const;
-    void setUniform(std::string_view name, util::span<const bvec4> values) const;
+    void setUniform(std::string_view name, std::span<const bvec4> values) const;
 
     void setUniform(std::string_view name, ivec2 value) const;
-    void setUniform(std::string_view name, util::span<const ivec2> values) const;
+    void setUniform(std::string_view name, std::span<const ivec2> values) const;
     void setUniform(std::string_view name, ivec3 value) const;
-    void setUniform(std::string_view name, util::span<const ivec3> values) const;
+    void setUniform(std::string_view name, std::span<const ivec3> values) const;
     void setUniform(std::string_view name, ivec4 value) const;
-    void setUniform(std::string_view name, util::span<const ivec4> values) const;
+    void setUniform(std::string_view name, std::span<const ivec4> values) const;
 
     void setUniform(std::string_view name, uvec2 value) const;
-    void setUniform(std::string_view name, util::span<const uvec2> values) const;
+    void setUniform(std::string_view name, std::span<const uvec2> values) const;
     void setUniform(std::string_view name, uvec3 value) const;
-    void setUniform(std::string_view name, util::span<const uvec3> values) const;
+    void setUniform(std::string_view name, std::span<const uvec3> values) const;
     void setUniform(std::string_view name, uvec4 value) const;
-    void setUniform(std::string_view name, util::span<const uvec4> values) const;
+    void setUniform(std::string_view name, std::span<const uvec4> values) const;
 
     void setUniform(std::string_view name, vec2 value) const;
-    void setUniform(std::string_view name, util::span<const vec2> values) const;
+    void setUniform(std::string_view name, std::span<const vec2> values) const;
     void setUniform(std::string_view name, vec3 value) const;
-    void setUniform(std::string_view name, util::span<const vec3> values) const;
+    void setUniform(std::string_view name, std::span<const vec3> values) const;
     void setUniform(std::string_view name, vec4 value) const;
-    void setUniform(std::string_view name, util::span<const vec4> values) const;
+    void setUniform(std::string_view name, std::span<const vec4> values) const;
 
     void setUniform(std::string_view name, const mat2& value) const;
-    void setUniform(std::string_view name, util::span<const mat2> values) const;
+    void setUniform(std::string_view name, std::span<const mat2> values) const;
     void setUniform(std::string_view name, const mat3& value) const;
-    void setUniform(std::string_view name, util::span<const mat3> values) const;
+    void setUniform(std::string_view name, std::span<const mat3> values) const;
     void setUniform(std::string_view name, const mat4& value) const;
-    void setUniform(std::string_view name, util::span<const mat4> values) const;
+    void setUniform(std::string_view name, std::span<const mat4> values) const;
 
     void setUniform(std::string_view name, const TextureUnit& value) const;
 

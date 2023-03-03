@@ -118,11 +118,7 @@ class IVW_QTEDITOR_API FileAssociations : public QAbstractNativeEventFilter {
     friend FileAssociationData;
 
 public:
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    using ResultType = long;
-#else
     using ResultType = qintptr;
-#endif
 
     FileAssociations(QMainWindow* win);
     virtual ~FileAssociations();

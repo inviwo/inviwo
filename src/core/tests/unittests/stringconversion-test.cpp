@@ -43,15 +43,15 @@ namespace inviwo {
 
 TEST(StringConversion, fromWstring) {
     const std::wstring wstr = L"widestr\U000000E5\U000000E4\U000000F6\U0001F609";
-    const std::string u8str = u8"widestr\U000000E5\U000000E4\U000000F6\U0001F609";
+    const std::string str = "widestr\U000000E5\U000000E4\U000000F6\U0001F609";
     const auto conv = util::fromWstring(wstr);
-    EXPECT_EQ(u8str, conv);
+    EXPECT_EQ(str, conv);
 }
 
 TEST(StringConversion, toWstring) {
     const std::wstring wstr = L"widestr\U000000E5\U000000E4\U000000F6\U0001F609";
-    const std::string u8str = u8"widestr\U000000E5\U000000E4\U000000F6\U0001F609";
-    const auto conv = util::toWstring(u8str);
+    const std::string str = "widestr\U000000E5\U000000E4\U000000F6\U0001F609";
+    const auto conv = util::toWstring(str);
     EXPECT_EQ(wstr, conv);
 }
 

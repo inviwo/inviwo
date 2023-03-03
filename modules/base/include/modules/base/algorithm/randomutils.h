@@ -44,6 +44,7 @@
 #include <inviwo/core/util/imagesampler.h>
 
 #include <random>
+#include <numbers>
 
 namespace inviwo {
 
@@ -339,7 +340,7 @@ std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     auto generateRandomPointAround = [&](const glm::i32vec2& point) {
         auto radius = minDist * (rand(randomNumberGenerator) +
                                  1);  // random radius between mindist and 2 * mindist
-        auto angle = 2 * M_PI * rand(randomNumberGenerator);  // random angle
+        auto angle = 2 * std::numbers::pi * rand(randomNumberGenerator);  // random angle
         auto newX = point.x + radius * std::cos(angle);
         auto newY = point.y + radius * std::sin(angle);
         return glm::i32vec2(newX, newY);

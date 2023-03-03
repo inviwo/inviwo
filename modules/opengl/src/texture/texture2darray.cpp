@@ -41,21 +41,21 @@
 #include <vector>  // for vector
 
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), vec
-#include <tcb/span.hpp>  // for span
+#include <span>  // for span
 
 namespace inviwo {
 
 Texture2DArray::Texture2DArray(size3_t dimensions, GLFormat glFormat, GLenum filtering,
                                const SwizzleMask& swizzleMask, const std::array<GLenum, 2>& wrap,
                                GLint level)
-    : Texture(GL_TEXTURE_2D_ARRAY, glFormat, filtering, swizzleMask, util::span(wrap), level)
+    : Texture(GL_TEXTURE_2D_ARRAY, glFormat, filtering, swizzleMask, std::span(wrap), level)
     , dimensions_(dimensions) {}
 
 Texture2DArray::Texture2DArray(size3_t dimensions, GLint format, GLint internalformat,
                                GLenum dataType, GLenum filtering, const SwizzleMask& swizzleMask,
                                const std::array<GLenum, 2>& wrap, GLint level)
     : Texture(GL_TEXTURE_2D_ARRAY, format, internalformat, dataType, filtering, swizzleMask,
-              util::span(wrap), level)
+              std::span(wrap), level)
     , dimensions_(dimensions) {}
 
 Texture2DArray::Texture2DArray(const Texture2DArray& rhs)
@@ -145,12 +145,12 @@ void Texture2DArray::uploadAndResize(const void* data, const size3_t& dim) {
 }
 
 void Texture2DArray::setWrapping(const std::array<GLenum, 2>& wrapping) {
-    Texture::setWrapping(util::span(wrapping));
+    Texture::setWrapping(std::span(wrapping));
 }
 
 std::array<GLenum, 2> Texture2DArray::getWrapping() const {
     std::array<GLenum, 2> wrapping{};
-    Texture::getWrapping(util::span(wrapping));
+    Texture::getWrapping(std::span(wrapping));
     return wrapping;
 }
 

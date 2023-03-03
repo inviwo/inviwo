@@ -27,7 +27,7 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.16...3.22 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16...3.25 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
@@ -86,9 +86,9 @@ ivw_enable_modules_if(IVW_TEST_INTEGRATION_TESTS GLFW Base)
 # Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
 if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
     include(cmake/locateqt.cmake)
-    ivw_locateqt(QT5_PATH)
-    if(QT5_PATH)
-        ivw_debug_message(STATUS "Found qt at: ${QT5_PATH}")
+    ivw_locateqt(QT_PATH)
+    if(QT_PATH)
+        ivw_debug_message(STATUS "Found qt at: ${QT_PATH}")
         list(APPEND CMAKE_PREFIX_PATH ${QT5_PATH})
     endif()
 endif()

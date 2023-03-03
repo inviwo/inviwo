@@ -162,7 +162,7 @@ private:
 
         std::vector<std::pair<std::string, Action>> changed;
 
-        util::map_erase_remove_if(files, [&](auto& item) {
+        std::erase_if(files, [&](auto& item) {
             if (!filesystem::fileExists(item.first)) {
                 changed.emplace_back(item.first, Action::Removed);
                 return true;
@@ -316,7 +316,7 @@ void FileWatcher::registerFileObserver(FileObserver* fileObserver) {
 }
 
 void FileWatcher::unRegisterFileObserver(FileObserver* fileObserver) {
-    util::erase_remove(fileObservers_, fileObserver);
+    std::erase(fileObservers_, fileObserver);
 }
 
 void FileWatcher::stopFileObservation(const std::string& fileName) {}

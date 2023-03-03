@@ -62,7 +62,7 @@ size_t ThreadPool::trySetSize(size_t size) {
 
         condition.notify_all();
 
-        util::erase_remove_if(
+        std::erase_if(
             workers, [](std::unique_ptr<Worker>& worker) { return worker->state == State::Done; });
     }
     return workers.size();

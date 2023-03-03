@@ -590,7 +590,7 @@ template <typename T>
 OptionProperty<T>& OptionProperty<T>::removeOption(std::string_view identifier) {
     if (options_.empty()) return *this;
     std::string id = getSelectedIdentifier();
-    util::erase_remove_if(
+    std::erase_if(
         options_, [&](const OptionPropertyOption<T>& opt) { return opt.id_ == identifier; });
     if (!setSelectedIdentifier(id)) {
         selectedIndex_ = 0;

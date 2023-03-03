@@ -91,7 +91,7 @@ bool BitSet::BitSetIterator::operator!=(const BitSetIterator& rhs) const {
 
 BitSet::BitSet() : roaring_(std::make_unique<roaring::Roaring>()) {}
 
-BitSet::BitSet(util::span<const uint32_t> span) : BitSet() { addMany(span.size(), span.data()); }
+BitSet::BitSet(std::span<const uint32_t> span) : BitSet() { addMany(span.size(), span.data()); }
 
 BitSet::BitSet(const std::vector<bool>& v) : BitSet() { add(v); }
 
@@ -143,7 +143,7 @@ bool BitSet::set(const BitSet& b) {
     return true;
 }
 
-void BitSet::add(util::span<const uint32_t> span) { addMany(span.size(), span.data()); }
+void BitSet::add(std::span<const uint32_t> span) { addMany(span.size(), span.data()); }
 
 void BitSet::add(const std::vector<bool>& v) {
     auto it = v.begin();
@@ -254,7 +254,7 @@ BitSet BitSet::operator^(const BitSet& b) const {
     return result;
 }
 
-BitSet BitSet::fastUnion(util::span<const BitSet*> bitsets) {
+BitSet BitSet::fastUnion(std::span<const BitSet*> bitsets) {
     using namespace roaring;
 
     std::vector<const Roaring*> inputs;

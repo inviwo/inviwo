@@ -337,7 +337,7 @@ void ParallelCoordinates::process() {
 
     enabledAxesModified_ |= [&]() {
         std::vector<size_t> enabledAxes{enabledAxes_};
-        util::erase_remove_if(enabledAxes, [&](auto id) {
+        std::erase_if(enabledAxes, [&](auto id) {
             return id >= axes_.size() || !axes_[id].pcp->isChecked();
         });
         for (auto& axis : axes_) {

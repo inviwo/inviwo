@@ -48,6 +48,7 @@
 #include <utility>        // for pair
 #include <variant>        // for variant
 #include <vector>         // for vector, vector<>:...
+#include <span>
 
 #include <flags/flags.h>  // for any, flags, opera...
 
@@ -269,10 +270,10 @@ public:
     //! convenience function for getIndices(BrushingAction::Highlight, target).size()
     size_t getNumberOfHighlighted(BrushingTarget target = BrushingTarget::Row) const;
 
-    uint32_t getMax(util::span<const BrushingAction> actions = BrushingActions,
+    uint32_t getMax(std::span<const BrushingAction> actions = BrushingActions,
                     BrushingTarget target = BrushingTarget::Row) const;
 
-    uint32_t getMin(util::span<const BrushingAction> actions = BrushingActions,
+    uint32_t getMin(std::span<const BrushingAction> actions = BrushingActions,
                     BrushingTarget target = BrushingTarget::Row) const;
 
     /**

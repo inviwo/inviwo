@@ -95,7 +95,7 @@ void Outport::connectTo(Inport* inport) {
 
 // Is called exclusively by Inport, which means a connection has been removed.
 void Outport::disconnectFrom(Inport* inport) {
-    util::erase_remove(connectedInports_, inport);
+    std::erase(connectedInports_, inport);
     onDisconnectCallback_.invokeAll();
 }
 

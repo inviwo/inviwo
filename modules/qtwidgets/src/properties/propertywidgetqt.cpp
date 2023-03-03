@@ -452,7 +452,7 @@ bool PropertyWidgetQt::event(QEvent* event) {
         auto mouseEvent = static_cast<QMouseEvent*>(event);
         if (mouseEvent->button() == Qt::RightButton) {
             if (auto menu = getContextMenu()) {
-                menu->exec(mouseEvent->globalPos());
+                menu->exec(mouseEvent->globalPosition().toPoint());
                 mouseEvent->accept();
                 return true;
             }

@@ -289,7 +289,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
             auto valuesLeftIt = catCol1->begin();
             auto valuesRightIt = catCol2->begin();
             for (auto&& [i, rowMatches] : util::enumerate<std::uint32_t>(rows)) {
-                util::erase_remove_if(rowMatches,
+                std::erase_if(rowMatches,
                                       [key = *(valuesLeftIt + i), valuesRightIt](auto row) {
                                           return key != *(valuesRightIt + row);
                                       });
@@ -305,7 +305,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
                                             ->getDataContainer();
 
                     for (auto&& [i, rowMatches] : util::enumerate(rows)) {
-                        util::erase_remove_if(rowMatches, [key = left[i], &right](auto row) {
+                        std::erase_if(rowMatches, [key = left[i], &right](auto row) {
                             return key != right[row];
                         });
                     }

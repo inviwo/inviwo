@@ -47,8 +47,6 @@
 #include <type_traits>  // for remove_reference<>::type
 #include <utility>
 
-#include <tcb/span.hpp>  // for span
-
 namespace inviwo {
 
 TextureBase::TextureBase(GLenum target) : id_{0}, target_{target} { glGenTextures(1, &id_); }
@@ -86,7 +84,7 @@ void TextureBase::bind() const { glBindTexture(target_, id_); }
 void TextureBase::unbind() const { glBindTexture(target_, 0); }
 
 Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const SwizzleMask& swizzleMask,
-                 util::span<const GLenum> wrapping, GLint level)
+                 std::span<const GLenum> wrapping, GLint level)
     : TextureBase(target)
     , Observable<TextureObserver>()
 
@@ -112,8 +110,8 @@ Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const Swizz
 }
 
 Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType,
-                 GLenum filtering, const SwizzleMask& swizzleMask,
-                 util::span<const GLenum> wrapping, GLint level)
+                 GLenum filtering, const SwizzleMask& swizzleMask, std::span<const GLenum> wrapping,
+                 GLint level)
     : TextureBase(target)
     , Observable<TextureObserver>()
     , format_(format)
@@ -317,7 +315,7 @@ InterpolationType Texture::getInterpolation() const {
     return utilgl::convertInterpolationFromGL(filtering);
 }
 
-void Texture::setWrapping(util::span<const GLenum> wrapping) {
+void Texture::setWrapping(std::span<const GLenum> wrapping) {
     bind();
     for (auto [i, wrap] : util::enumerate(wrapping)) {
         glTexParameteri(target_, wrapNames[i], wrap);
@@ -325,7 +323,7 @@ void Texture::setWrapping(util::span<const GLenum> wrapping) {
     unbind();
 }
 
-void Texture::getWrapping(util::span<GLenum> wrapping) const {
+void Texture::getWrapping(std::span<GLenum> wrapping) const {
     bind();
     for (auto&& [i, wrap] : util::enumerate(wrapping)) {
         glGetTexParameterIuiv(target_, wrapNames[i], &wrap);

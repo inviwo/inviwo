@@ -63,7 +63,8 @@
 #include <unordered_set>         // for unordered_set
 #include <utility>               // for pair, make_pair
 #include <vector>                // for vector
-                                 // for operator*, Matrix...
+#include <numbers>
+
 #include <glm/detail/setup.hpp>  // for size_t
 #include <glm/geometric.hpp>     // for distance, normalize
 #include <glm/vec3.hpp>          // for vec<>::(anonymous)
@@ -103,7 +104,7 @@ RBFVectorFieldGenerator3D::RBFVectorFieldGenerator3D()
     , arrowColor_("arrowColor", "Arrow Color", vec4(0, 0, 1, 1))
     , rd_()
     , mt_(rd_())
-    , theta_(0, 2 * M_PI)
+    , theta_(0, 2 * std::numbers::pi)
     , x_(-1.0, 1.0) {
     addPort(volume_);
     addPort(mesh_);

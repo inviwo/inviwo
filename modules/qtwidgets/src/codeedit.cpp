@@ -50,7 +50,7 @@
 #include <QTextEdit>        // for QTextEdit::ExtraSelection, QTextEdit
 #include <QTextFormat>      // for QTextFormat, QTextFormat::FullWidthSele...
 #include <QTextOption>      // for QTextOption, QTextOption::NoWrap
-#include <QtGlobal>         // for QT_VERSION, QT_VERSION_CHECK, qMax, qreal
+#include <QtGlobal>         // for qMax, qreal
 #include <QBrush>           // for QBrush
 #include <Qt>               // for AlignRight, Key_Tab
 #include <fmt/core.h>       // for format
@@ -93,11 +93,7 @@ CodeEdit::CodeEdit(QWidget* parent)
         highlightColor_ = sh_->highlight();
 
         QFontMetrics metrics(QFont(utilqt::toQString(sh_->font()), sh_->fontSize()));
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-        setTabStopWidth(4 * metrics.width(' '));
-#else
         setTabStopDistance(static_cast<qreal>(4 * metrics.horizontalAdvance(' ')));
-#endif
         sh_->rehighlight();
     };
 
@@ -137,11 +133,7 @@ int CodeEdit::lineNumberAreaWidth() {
         ++digits;
     }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-    const int w = fontMetrics().width(' ');
-#else
     const int w = fontMetrics().horizontalAdvance(' ');
-#endif
     return (annotationSpace_(digits) + 2) * w;
 }
 
@@ -193,11 +185,8 @@ void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent* event) {
     int blockNumber = block.blockNumber();
     int top = static_cast<int>(blockBoundingGeometry(block).translated(contentOffset()).top());
     int bottom = top + static_cast<int>(blockBoundingRect(block).height());
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-    const int offset = fontMetrics().width(' ');
-#else
+
     const int offset = fontMetrics().horizontalAdvance(' ');
-#endif
     const int height = fontMetrics().height();
     const int width = lineNumberArea_->width() - offset;
 

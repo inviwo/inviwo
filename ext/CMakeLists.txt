@@ -232,15 +232,6 @@ else()
     ivw_vcpkg_install(fmt MODULE Core EXT)
 endif()
 
-# span
-message(STATUS "add subdirectory: span")
-add_subdirectory(span)
-ivw_register_license_file(NAME "tcbrindle/span" target inviwo::span MODULE Core EXT
-    URL "https://github.com/tcbrindle/span"
-    TYPE " Boost Software License"
-    FILES ${IVW_EXTENSIONS_DIR}/span/span/LICENSE_1_0.txt
-)
-
 # sml
 message(STATUS "add subdirectory: sml")
 add_subdirectory(sml)

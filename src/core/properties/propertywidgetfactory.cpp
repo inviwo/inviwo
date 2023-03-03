@@ -59,7 +59,7 @@ bool PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* property
 }
 
 bool PropertyWidgetFactory::unRegisterObject(PropertyWidgetFactoryObject* propertyWidget) {
-    size_t removed = util::map_erase_remove_if(
+    size_t removed = std::erase_if(
         widgetMap_,
         [propertyWidget](WidgetMap::value_type& elem) { return elem.second == propertyWidget; });
 

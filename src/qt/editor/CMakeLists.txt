@@ -117,23 +117,11 @@ endif()
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add resource file
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
-else()
-    qt5_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
-endif()
+qt_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
 source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/changelog.qrc ${QRC_FILE})
 
-# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
-find_package(QT 5.15 NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg Help REQUIRED)
-if(QT_VERSION_MAJOR EQUAL 5)
-    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg Help REQUIRED)
-    qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
-else()
-    # SvgWidget has moved to SvgWidgets in Qt6
-    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg SvgWidgets Help REQUIRED)
-    qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
-endif()
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SvgWidgets Help )
+qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 
 source_group("MOC Files" FILES ${MOCED_FILES})
 add_library(inviwo-qteditor ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES} ${QRC_FILE})
@@ -142,26 +130,18 @@ target_link_libraries(inviwo-qteditor PUBLIC
     inviwo::core 
     inviwo::qtapplicationbase
     inviwo::module::qtwidgets
-    Qt${QT_VERSION_MAJOR}::Core 
-    Qt${QT_VERSION_MAJOR}::Gui 
-    Qt${QT_VERSION_MAJOR}::Widgets 
-    Qt${QT_VERSION_MAJOR}::Help
-    Qt${QT_VERSION_MAJOR}::Svg
+    Qt6::Core 
+    Qt6::Gui 
+    Qt6::Widgets 
+    Qt6::Help
+    Qt6::Svg
+    Qt6::SvgWidgets
 )
-if(QT_VERSION_MAJOR GREATER_EQUAL 6)
-    target_link_libraries(inviwo-qteditor PUBLIC 
-        Qt${QT_VERSION_MAJOR}::SvgWidgets
-    )
-endif()
 
 if(TARGET inviwo::meta)
     target_link_libraries(inviwo-qteditor PUBLIC inviwo::meta)
     target_compile_definitions(inviwo-qteditor PRIVATE IVW_INVIWO_META)
 endif()
-
-target_compile_definitions(inviwo-qteditor PUBLIC 
-    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
-)
 
 # Define defintions
 ivw_define_standard_definitions(IVW_QTEDITOR inviwo-qteditor)

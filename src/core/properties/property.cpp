@@ -163,7 +163,7 @@ void Property::registerWidget(PropertyWidget* propertyWidget) {
 }
 
 void Property::deregisterWidget(PropertyWidget* propertyWidget) {
-    util::erase_remove(propertyWidgets_, propertyWidget);
+    std::erase(propertyWidgets_, propertyWidget);
 }
 
 void Property::setInitiatingWidget(PropertyWidget* propertyWidget) {

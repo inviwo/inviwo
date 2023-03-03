@@ -121,11 +121,11 @@ bool RepresentationConverterFactory<BaseRepr>::registerObject(
 template <typename BaseRepr>
 bool RepresentationConverterFactory<BaseRepr>::unRegisterObject(
     RepresentationConverter<BaseRepr>* converter) {
-    size_t removed = util::map_erase_remove_if(
+    size_t removed = std::erase_if(
         converters_,
         [converter](typename RepMap::value_type& elem) { return elem.second == converter; });
 
-    util::map_erase_remove_if(packages_, [converter](typename PackageMap::value_type& elem) {
+    std::erase_if(packages_, [converter](typename PackageMap::value_type& elem) {
         for (auto& conv : elem.second->getConverters()) {
             if (conv == converter) return true;
         }

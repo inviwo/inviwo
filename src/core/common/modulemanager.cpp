@@ -176,7 +176,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
 
     auto libraryTypes = SharedLibrary::libraryFileExtensions();
     // Remove unsupported files and files belonging to already loaded modules.
-    util::map_erase_remove_if(libraryFiles, [&](const auto& file) {
+    std::erase_if(libraryFiles, [&](const auto& file) {
         return libraryTypes.count(filesystem::getFileExtension(file)) == 0 ||
                (file.find("inviwo-module") == std::string::npos &&
                 file.find("inviwo-core") == std::string::npos) ||

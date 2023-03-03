@@ -250,10 +250,10 @@ void CompositeProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
 
     if (auto sink = dynamic_cast<CompositeSinkBase*>(p)) {
         removePort(&sink->getSuperOutport());
-        util::erase_remove(sinks_, sink);
+        std::erase(sinks_, sink);
     } else if (auto source = dynamic_cast<CompositeSourceBase*>(p)) {
         removePort(&source->getSuperInport());
-        util::erase_remove(sources_, source);
+        std::erase(sources_, source);
     }
 }
 

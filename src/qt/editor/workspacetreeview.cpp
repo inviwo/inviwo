@@ -253,21 +253,6 @@ WorkspaceTreeView::WorkspaceTreeView(QAbstractItemModel* theModel, QWidget* pare
             });
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
-// QTreeView::expandRecursively() was introduced in Qt 5.13
-// see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
-void WorkspaceTreeView::expandRecursively(const QModelIndex& index) {
-    if (index.isValid()) {
-        for (int i = 0; i < index.model()->rowCount(index); ++i) {
-            expandRecursively(index.child(i, 0));
-        }
-        if (!isExpanded(index)) {
-            expand(index);
-        }
-    }
-}
-#endif
-
 void WorkspaceTreeView::collapseRecursively(const QModelIndex& index) {
     if (index.isValid()) {
         for (int i = 0; i < model()->rowCount(index); ++i) {

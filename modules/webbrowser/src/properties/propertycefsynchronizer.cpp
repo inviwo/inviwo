@@ -199,7 +199,7 @@ void PropertyCefSynchronizer::startSynchronize(Property* property, std::string_v
 }
 
 void PropertyCefSynchronizer::stopSynchronize(Property* property) {
-    util::erase_remove_if(widgets_,
+    std::erase_if(widgets_,
                           [property](auto& widget) { return property == widget->getProperty(); });
 }
 

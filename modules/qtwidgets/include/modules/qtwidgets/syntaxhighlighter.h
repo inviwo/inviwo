@@ -43,8 +43,7 @@
 #include <string>       // for string
 #include <string_view>  // for string_view
 #include <vector>       // for vector
-
-#include <tcb/span.hpp>  // for span
+#include <span>         // for span
 
 class QTextCharFormat;
 class QTextDocument;
@@ -114,12 +113,12 @@ public:
     void setHighlight(const vec4& highlight) { highlight_ = highlight; }
 
     void addPattern(QTextCharFormat format, std::string_view pattern);
-    void addPatterns(QTextCharFormat format, util::span<const std::string_view> patterns);
+    void addPatterns(QTextCharFormat format, std::span<const std::string_view> patterns);
     void addPatternWithFormatStr(QTextCharFormat format,
-                                 util::span<const std::string_view> patterns,
+                                 std::span<const std::string_view> patterns,
                                  std::string_view formatStr);
     void addWordBoundaryPattern(QTextCharFormat format,
-                                util::span<const std::string_view> patterns);
+                                std::span<const std::string_view> patterns);
     void addMultBlockPattern(QTextCharFormat format, std::string_view startPattern,
                              std::string_view endPattern);
 

@@ -181,7 +181,7 @@ public:
      * Example if you want to do it earlier:
      * @code
      * auto& callbackActions = app_->getCallbackActions();
-     * util::erase_remove_if(callbackActions, [&](auto& a) { return a->getModule() == this; });
+     * std::erase_if(callbackActions, [&](auto& a) { return a->getModule() == this; });
      * @endcode
      * @see getCallbackActions
      */

@@ -46,7 +46,7 @@ public:
     virtual ~ProcessorProgressGraphicsItem() {}
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ProcessorProgressGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(ProcessorProgressGraphicsType) };
     int type() const override { return Type; }
 
 protected:

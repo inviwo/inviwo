@@ -67,7 +67,7 @@ public:
     virtual QPainterPath shape() const;
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + LinkGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(LinkGraphicsType) };
     int type() const { return Type; }
 
 protected:
@@ -94,7 +94,7 @@ public:
     virtual ProcessorLinkGraphicsItem* getSrcProcessorLinkGraphicsItem() const;
     virtual ProcessorGraphicsItem* getSrcProcessorGraphicsItem() const;
 
-    enum { Type = UserType + LinkConnectionDragGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(LinkConnectionDragGraphicsType) };
     virtual int type() const override { return Type; }
 
 protected:
@@ -122,7 +122,7 @@ public:
     virtual ProcessorLinkGraphicsItem* getDestProcessorLinkGraphicsItem() const;
     virtual ProcessorGraphicsItem* getDestProcessorGraphicsItem() const;
 
-    enum { Type = UserType + LinkConnectionGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(LinkConnectionGraphicsType) };
     virtual int type() const override { return Type; }
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;

@@ -88,7 +88,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
                 menu.addSeparator();
             }
             if (contextMenuCallback_(menu)) {
-                menu.exec(e->globalPos());
+                menu.exec(e->globalPosition().toPoint());
             }
         },
         [this](Qt::CursorShape cursor) { setCursor(cursor); });

@@ -201,7 +201,7 @@ void ProcessorNetwork::removeConnection(const PortConnection& connection) {
 
         connection.getInport()->disconnectFrom(connection.getOutport());
         connections_.erase(it);
-        util::erase_remove(connectionsVec_, connection);
+        std::erase(connectionsVec_, connection);
 
         notifyObserversProcessorNetworkDidRemoveConnection(connection);
     }
@@ -337,7 +337,7 @@ void ProcessorNetwork::onProcessorInvalidationBegin(Processor* p) {
 }
 
 void ProcessorNetwork::onProcessorInvalidationEnd(Processor* p) {
-    util::erase_remove(processorsInvalidating_, p);
+    std::erase(processorsInvalidating_, p);
 
     if (processorsInvalidating_.empty()) {
         notifyObserversProcessorNetworkEvaluateRequest();
@@ -483,7 +483,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
         // remove any already existing connections.
         std::unordered_set<PortConnection> save;
-        util::erase_remove_if(connections, [&](auto& c) {
+        std::erase_if(connections, [&](auto& c) {
             if (connections_.count(c) != 0) {
                 save.insert(c);
                 return true;
@@ -534,7 +534,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
         // remove any already existing links.
         std::unordered_set<PropertyLink> save;
-        util::erase_remove_if(links, [&](auto& l) {
+        std::erase_if(links, [&](auto& l) {
             if (links_.count(l) != 0) {
                 save.insert(l);
                 return true;

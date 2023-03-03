@@ -91,7 +91,7 @@ void LightPositionWidgetQt::mouseReleaseEvent(QMouseEvent* e) {
 
 void LightPositionWidgetQt::setNewPosition(QMouseEvent* e) {
     const auto rect = QRectF{pixmap_.rect()};
-    auto p = utilqt::toGLM(e->localPos() - rect.center()) / gradient_.radius();
+    auto p = utilqt::toGLM(e->position() - rect.center()) / gradient_.radius();
 
     const auto radius = glm::length(p);
     if (radius > 1.0) {

@@ -38,7 +38,6 @@
 #include <vector>
 #include <memory>
 #include <string_view>
-#include <tcb/span.hpp>
 
 namespace inviwo {
 

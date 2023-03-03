@@ -42,26 +42,25 @@ endif()
 # Requirement checks
 include(CheckCXXCompilerFlag)
 if(MSVC) 
-    if(MSVC_VERSION LESS 1910)
-        message(FATAL_ERROR "Inviwo requires C++17 features. " 
-                "You need at least Visual Studio 15 (Microsoft Visual Studio 2017) "
+    # https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B
+    if(MSVC_VERSION LESS 1930) # Visual Studio 2022 version 17.0.1
+        message(FATAL_ERROR "Inviwo requires C++20 features. " 
+                "You need at least Visual Studio 19 (Microsoft Visual Studio 2022) "
                 "The latest Visual Studio version is available at "
                 "https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
     endif()
-    CHECK_CXX_COMPILER_FLAG("/std:c++17" compiler_supports_cxx17)
+    CHECK_CXX_COMPILER_FLAG("/std:c++20" compiler_supports_cxx20)
 else()
-    CHECK_CXX_COMPILER_FLAG("-std=c++17" compiler_supports_cxx17)
+    CHECK_CXX_COMPILER_FLAG("-std=c++20" compiler_supports_cxx20)
 endif()
-if(compiler_supports_cxx17)
-    message(STATUS "C++17 enabled")
-    set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ ISO Standard" FORCE)
-else()
+if(NOT compiler_supports_cxx20)
     message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. "
             "Please use a different C++ compiler.")
 endif()
 
-set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 20)
 
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(FATAL_ERROR "Inviwo is only supported for 64-bit architectures. Resolve the error by deleting "

@@ -60,13 +60,13 @@
 #include <unordered_map>  // for unordered_map
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for move
+#include <span>           // for span
 
 #include <glm/ext/matrix_transform.hpp>  // for scale
 #include <glm/fwd.hpp>                   // for vec3
 #include <glm/gtx/transform.hpp>         // for scale
 #include <glm/vec2.hpp>                  // for vec<>::(anonymous)
 #include <glm/vec4.hpp>                  // for operator*
-#include <tcb/span.hpp>                  // for span
 
 namespace inviwo {
 
@@ -100,7 +100,7 @@ auto ImageGL::activate(ImageType type) -> ActiveState {
 
     auto fbo = utilgl::ActivateFBO{frameBufferObject_};
 
-    const util::span drawBuffers =
+    const std::span drawBuffers =
         typeContainsPicking(type) ? colorAndPickingAttachmentIDs_ : colorAttachmentIDs_;
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 
@@ -117,7 +117,7 @@ auto ImageGL::activate(ImageType type) -> ActiveState {
 void ImageGL::activateBuffer(ImageType type) {
     frameBufferObject_.activate();
 
-    const util::span drawBuffers =
+    const std::span drawBuffers =
         typeContainsPicking(type) ? colorAndPickingAttachmentIDs_ : colorAttachmentIDs_;
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 

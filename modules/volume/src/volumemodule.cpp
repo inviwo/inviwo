@@ -35,9 +35,6 @@
 namespace inviwo {
 
 VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
@@ -45,33 +42,6 @@ VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume")
     registerProcessor<VolumeRegionStatistics>();
     registerProcessor<VolumeVoronoiSegmentation>();
 
-    // Properties
-    // registerProperty<VolumeProperty>();
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<VolumeReader>());
-    // registerDataWriter(std::make_unique<VolumeWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<VolumeDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<VolumeOutport>();
-    // registerPort<VolumeInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<VolumePropertyWidget, VolumeProperty>("Default");
-
-    // Dialogs
-    // registerDialog<VolumeDialog>(VolumeOutport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<VolumeCapabilities>());
-    // registerSettings(std::make_unique<VolumeSettings>());
-    // registerMetaData(std::make_unique<VolumeMetaData>());
-    // registerPortInspector("VolumeOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget); registerDrawer(util::make_unique_ptr<VolumeDrawer>());
 }
 
 }  // namespace inviwo

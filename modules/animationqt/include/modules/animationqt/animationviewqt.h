@@ -57,7 +57,7 @@ public:
     AnimationViewQt(AnimationController& controller, AnimationEditorQt* scene);
     virtual ~AnimationViewQt() = default;
 
-    void setTimelinePos(int x);
+    void setTimelinePos(double x);
     AnimationController& getController();
 
 protected:

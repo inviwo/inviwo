@@ -43,9 +43,6 @@
 [submodule "modules/fontrendering/ext/freetype/freetype"]
     path = modules/fontrendering/ext/freetype/freetype
     url = https://github.com/inviwo/freetype2.git
-[submodule "ext/span/span"]
-	path = ext/span/span
-	url = https://github.com/inviwo/span.git
 [submodule "ext/units/units"]
 	path = ext/units/units
 	url = https://github.com/LLNL/units.git

@@ -131,8 +131,8 @@ QImage utilqt::generatePreview(Processor& processor) {
         scene->clearSelection();  // Selections would also render to the file
                                   // Re-shrink the scene to it's bounding contents
         scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10.0, -padAbove, 10.0, padBelow));
-        const auto scale =
-            utilqt::emToPx(QApplication::fontMetrics(), 1.0) / static_cast<double>(utilqt::refEm());
+        const auto scale = utilqt::emToPx(QFontMetrics{QApplication::font()}, 1.0) /
+                           static_cast<double>(utilqt::refEm());
 
         QImage image(
             (scene->sceneRect().size() * scale).toSize(),

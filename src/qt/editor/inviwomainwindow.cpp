@@ -672,8 +672,8 @@ void InviwoMainWindow::addActions() {
             }
 
             auto recentFiles = getRecentWorkspaceList();
-            const int maxRecentFiles =
-                std::min<int>(recentFiles.size(), static_cast<int>(workspaceActionRecent_.size()));
+            const int maxRecentFiles = std::min(static_cast<int>(recentFiles.size()),
+                                                static_cast<int>(workspaceActionRecent_.size()));
             for (int i = 0; i < maxRecentFiles; ++i) {
                 if (!recentFiles[i].isEmpty()) {
                     const bool exists = QFileInfo(recentFiles[i]).exists();
@@ -1593,7 +1593,7 @@ void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
         if (ext == "inv" ||
             !app_->getDataVisualizerManager()->getDataVisualizersForFile(filename).empty()) {
 
-            if (event->keyboardModifiers() & Qt::ControlModifier) {
+            if (event->modifiers() & Qt::ControlModifier) {
                 event->setDropAction(Qt::CopyAction);
             } else {
                 event->setDropAction(Qt::MoveAction);
@@ -1613,8 +1613,7 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
     if (mimeData->hasUrls()) {
         // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows
         // Explorer, while the drop operation is performed
-        auto action = [this, keyModifiers = event->keyboardModifiers(),
-                       urlList = mimeData->urls()]() {
+        auto action = [this, keyModifiers = event->modifiers(), urlList = mimeData->urls()]() {
             RenderContext::getPtr()->activateDefaultRenderContext();
 
             hideWelcomeScreen();

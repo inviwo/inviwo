@@ -48,7 +48,7 @@ public:
     virtual ~ProcessorLinkGraphicsItem() {}
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ProcessorLinkGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(ProcessorLinkGraphicsType) };
     int type() const override { return Type; }
 
     ProcessorGraphicsItem* getProcessorGraphicsItem() const;

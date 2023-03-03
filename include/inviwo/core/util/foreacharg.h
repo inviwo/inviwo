@@ -100,12 +100,7 @@ template <typename T>
 struct for_each_type<std::tuple<T>> {
     template <class F, class... Args>
     auto operator()(F&& f, Args&&... args) {
-// Old versions of VS does not handle this correctly
-#if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 191200000
-        f.operator()<T>(std::forward<Args>(args)...);
-#else
         f.template operator()<T>(std::forward<Args>(args)...);
-#endif
         return std::forward<F>(f);
     }
 };
@@ -114,12 +109,7 @@ template <class T, class... Types>
 struct for_each_type<std::tuple<T, Types...>> {
     template <class F, class... Args>
     auto operator()(F&& f, Args&&... args) {
-// Old versions of VS does not handle this correctly
-#if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 191200000
-        f.operator()<T>(std::forward<Args>(args)...);
-#else
         f.template operator()<T>(std::forward<Args>(args)...);
-#endif
         return for_each_type<std::tuple<Types...>>{}(std::forward<F>(f),
                                                      std::forward<Args>(args)...);
     }
@@ -150,12 +140,7 @@ private:
     struct nestedhelper {
         template <typename BType, class F, class... Args>
         auto operator()(F&& f, Args&&... args) {
-// Old versions of VS does not handle this correctly
-#if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 191200000
-            f.operator()<AType, BType>(std::forward<Args>(args)...);
-#else
             f.template operator()<AType, BType>(std::forward<Args>(args)...);
-#endif
         }
     };
 

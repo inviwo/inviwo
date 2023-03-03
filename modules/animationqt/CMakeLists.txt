@@ -1,9 +1,7 @@
 # Inviwo AnimationQt Module
 ivw_module(AnimationQt)
 
-# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 # Add header files
 set(HEADER_FILES
@@ -67,22 +65,15 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add some qt specific things
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
-else()
-    qt5_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
-endif()
+qt_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
 source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc ${QRC_FILE})
 
 # Create module
 ivw_create_module(QT ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
 target_link_libraries(inviwo-module-animationqt PUBLIC 
-    Qt${QT_VERSION_MAJOR}::Core 
-    Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::Widgets
-)
-target_compile_definitions(inviwo-module-animationqt PUBLIC 
-    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
+    Qt6::Core 
+    Qt6::Gui
+    Qt6::Widgets
 )
 
 ivw_make_package(InviwoAnimationQtModule inviwo-module-animationqt)

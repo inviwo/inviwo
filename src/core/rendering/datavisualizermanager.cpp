@@ -40,7 +40,7 @@ void DataVisualizerManager::registerObject(DataVisualizer* visualizer) {
 }
 
 void DataVisualizerManager::unRegisterObject(DataVisualizer* visualizer) {
-    util::erase_remove(visualizers_, visualizer);
+    std::erase(visualizers_, visualizer);
 }
 
 std::vector<FileExtension> DataVisualizerManager::getSupportedFileExtensions() const {

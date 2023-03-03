@@ -33,7 +33,7 @@
 #include <inviwo/core/util/detected.h>
 #include <inviwo/core/io/serialization/serializable.h>
 
-#include <tcb/span.hpp>
+#include <span>
 
 #include <memory>
 #include <vector>
@@ -95,7 +95,7 @@ public:
 
     BitSet();
 
-    BitSet(util::span<const uint32_t> span);
+    BitSet(std::span<const uint32_t> span);
 
     BitSet(const std::vector<bool>& v);
 
@@ -152,7 +152,7 @@ public:
      */
     bool set(const BitSet& b);
 
-    void add(util::span<const uint32_t> span);
+    void add(std::span<const uint32_t> span);
     void add(const std::vector<bool>& v);
 
     template <typename InputIt, class = typename std::enable_if_t<is_iterator<InputIt>::value>>
@@ -339,7 +339,7 @@ public:
     /**
      * compute the union of multiple \p bitsets
      */
-    static BitSet fastUnion(util::span<const BitSet*> bitsets);
+    static BitSet fastUnion(std::span<const BitSet*> bitsets);
 
     /**
      * Convert bitset to a std::vector holding only set elements. The output is ordered.

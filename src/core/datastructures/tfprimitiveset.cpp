@@ -274,7 +274,7 @@ bool TFPrimitiveSet::remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator 
         // make sure we call the destructor after we have removed the point from points_
         auto dp = std::move(*it);
         values_.erase(it);
-        util::erase_remove(sorted_, dp.get());
+        std::erase(sorted_, dp.get());
         invalidate();
         notifyTFPrimitiveRemoved(*dp);
         return true;
@@ -357,7 +357,7 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
             notifyTFPrimitiveAdded(*p);
         })
         .onRemove([&](std::unique_ptr<TFPrimitive>& p) {
-            util::erase_remove(sorted_, p.get());
+            std::erase(sorted_, p.get());
             notifyTFPrimitiveRemoved(*p);
         })(d, values_);
     invalidate();

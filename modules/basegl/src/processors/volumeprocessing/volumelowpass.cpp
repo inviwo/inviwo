@@ -60,6 +60,7 @@
 #include <string_view>  // for string_view
 #include <type_traits>  // for remove_extent_t
 #include <utility>      // for pair
+#include <numbers>
 
 #include <glm/vec4.hpp>  // for vec, vec<>::(a...
 
@@ -114,7 +115,7 @@ void VolumeLowPass::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, kernelSize_);
 
     float sigmaSq2 = 2.0f * sigma_.get() * sigma_.get();
-    float a = static_cast<float>(1.0 / (sigmaSq2 * M_PI));
+    float a = 1.0f / (sigmaSq2 * std::numbers::pi_v<float>);
 
     shader_.setUniform("sigmaSq2", sigmaSq2);
     shader_.setUniform("a", a);

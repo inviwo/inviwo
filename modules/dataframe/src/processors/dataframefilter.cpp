@@ -61,7 +61,6 @@
 
 #include <flags/flags.h>  // for operator|, flags
 #include <glm/vec2.hpp>   // for vec, vec<>::(anony...
-#include <tcb/span.hpp>   // for span
 
 namespace inviwo {
 

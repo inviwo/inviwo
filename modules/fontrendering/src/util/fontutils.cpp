@@ -54,7 +54,7 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
     auto fonts = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
 
     // remove unsupported files
-    util::erase_remove_if(fonts, [supportedExt](const std::string& str) {
+    std::erase_if(fonts, [supportedExt](const std::string& str) {
         return !util::contains(supportedExt, filesystem::getFileExtension(str));
     });
 

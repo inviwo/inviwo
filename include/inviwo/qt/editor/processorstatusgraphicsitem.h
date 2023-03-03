@@ -52,7 +52,7 @@ public:
     void setRunning(bool);
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ProcessorStatusGraphicsType };
+    enum { Type =static_cast<int>(UserType) + static_cast<int>(ProcessorStatusGraphicsType) };
     int type() const override { return Type; }
 
     virtual void update(const QRectF& rect = QRectF());

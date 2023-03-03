@@ -52,7 +52,10 @@ public:
     ~TFEditorIsovalue() = default;
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + TFEditorPrimitive::TFEditorIsovalueType };
+    enum {
+        Type =
+            static_cast<int>(UserType) + static_cast<int>(TFEditorPrimitive::TFEditorIsovalueType)
+    };
     int type() const override { return Type; }
 
     virtual void onTFPrimitiveChange(const TFPrimitive& p) override;

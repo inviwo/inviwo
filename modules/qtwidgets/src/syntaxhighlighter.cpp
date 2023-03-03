@@ -33,10 +33,10 @@
 
 #include <chrono>       // for literals
 #include <string_view>  // for string_view
+#include <span>         // for span
 
 #include <QRegularExpressionMatchIterator>  // for QRegularExpressionMatchIterator
 #include <fmt/core.h>                       // for format
-#include <tcb/span.hpp>                     // for span
 
 class QTextCharFormat;
 
@@ -131,14 +131,14 @@ void SyntaxHighlighter::addPattern(QTextCharFormat format, std::string_view patt
 }
 
 void SyntaxHighlighter::addPatterns(QTextCharFormat format,
-                                    util::span<const std::string_view> patterns) {
+                                    std::span<const std::string_view> patterns) {
     for (auto pattern : patterns) {
         rules_.push_back(Rule{format, QRegularExpression{utilqt::toQString(pattern)}});
     }
 }
 
 void SyntaxHighlighter::addPatternWithFormatStr(QTextCharFormat format,
-                                                util::span<const std::string_view> patterns,
+                                                std::span<const std::string_view> patterns,
                                                 std::string_view formatStr) {
     for (auto pattern : patterns) {
         auto str = utilqt::toQString(fmt::format(formatStr, pattern));
@@ -147,7 +147,7 @@ void SyntaxHighlighter::addPatternWithFormatStr(QTextCharFormat format,
 }
 
 void SyntaxHighlighter::addWordBoundaryPattern(QTextCharFormat format,
-                                               util::span<const std::string_view> patterns) {
+                                               std::span<const std::string_view> patterns) {
     addPatternWithFormatStr(format, patterns, "\\b{}\\b");
 }
 
