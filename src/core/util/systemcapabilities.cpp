@@ -33,9 +33,6 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/filesystem.h>
-#ifdef IVW_USE_SIGAR
-#include <sigar.h>
-#endif
 
 #include <sstream>
 #include <iomanip>
@@ -43,17 +40,11 @@
 namespace inviwo {
 
 SystemCapabilities::SystemCapabilities() {
-#ifdef IVW_USE_SIGAR
-    sigar_open(&sigar_);
-#endif
     retrieveStaticInfo();
     retrieveDynamicInfo();
 }
 
 SystemCapabilities::~SystemCapabilities() {
-#ifdef IVW_USE_SIGAR
-    sigar_close(sigar_);
-#endif
 }
 
 void SystemCapabilities::retrieveStaticInfo() {
@@ -71,121 +62,25 @@ void SystemCapabilities::retrieveDynamicInfo() {
 const util::BuildInfo& SystemCapabilities::getBuildInfo() const { return buildInfo_; }
 
 bool SystemCapabilities::lookupOSInfo() {
-#ifdef IVW_USE_SIGAR
-    sigar_sys_info_t systeminfo;
-    int status = sigar_sys_info_get(sigar_, &systeminfo);
-
-    if (status == SIGAR_OK) {
-        infoOS_.description = std::string(systeminfo.description);
-
-        if (strcmp(systeminfo.arch, "x86") == 0)
-            infoOS_.platform = 32;
-        else
-            infoOS_.platform = 64;
-
-        return true;
-    } else {
-        return false;
-    }
-
-#else
     return false;
-#endif
 }
 
 bool SystemCapabilities::lookupCPUInfo() {
     infoCPUs_.clear();
-#ifdef IVW_USE_SIGAR
-    sigar_cpu_info_list_t cpulinfolist;
-    int status = sigar_cpu_info_list_get(sigar_, &cpulinfolist);
-    bool success = (status == SIGAR_OK);
-
-    if (success) {
-        infoCPUs_.resize(cpulinfolist.number);
-
-        for (unsigned long i = 0; i < cpulinfolist.number; i++) {
-            sigar_cpu_info_t cpu_info = cpulinfolist.data[i];
-            infoCPUs_[i].vendor = std::string(cpu_info.vendor);
-            infoCPUs_[i].model = std::string(cpu_info.model);
-            infoCPUs_[i].mhz = static_cast<size_t>(cpu_info.mhz);
-        }
-    }
-
-    sigar_cpu_info_list_destroy(sigar_, &cpulinfolist);
-    return success;
-#else
     return false;
-#endif
 }
 
 bool SystemCapabilities::lookupMemoryInfo() {
-#ifdef IVW_USE_SIGAR
-    sigar_mem_t meminfo;
-    if (sigar_mem_get(sigar_, &meminfo) == SIGAR_OK) {
-        infoRAM_.total = util::megabytes_to_bytes(static_cast<size_t>(meminfo.ram));
-        infoRAM_.available = static_cast<size_t>(meminfo.free);
-        return true;
-    } else {
-        return false;
-    }
-#else
     return false;
-#endif
 }
 
 bool SystemCapabilities::lookupDiskInfo() {
     infoDisks_.clear();
-#ifdef IVW_USE_SIGAR
-    sigar_file_system_list_t diskinfolist;
-    sigar_file_system_usage_t diskusageinfo;
-    int status = sigar_file_system_list_get(sigar_, &diskinfolist);
-    bool success = (status == SIGAR_OK);
-
-    if (success) {
-        for (unsigned long i = 0; i < diskinfolist.number; i++) {
-            sigar_file_system_t disk_info = diskinfolist.data[i];
-            status = sigar_file_system_usage_get(sigar_, disk_info.dir_name, &diskusageinfo);
-
-            if (status == SIGAR_OK) {
-                DiskInfo currentDiskInfo;
-                currentDiskInfo.diskType = std::string(disk_info.type_name);
-                currentDiskInfo.diskType[0] =
-                    static_cast<char>(toupper(currentDiskInfo.diskType[0]));
-
-                if (currentDiskInfo.diskType == "Local") {
-                    currentDiskInfo.diskName = std::string(disk_info.dev_name);
-                    currentDiskInfo.total =
-                        util::kilobytes_to_bytes(static_cast<size_t>(diskusageinfo.total));
-                    currentDiskInfo.free =
-                        util::kilobytes_to_bytes(static_cast<size_t>(diskusageinfo.free));
-                    infoDisks_.push_back(currentDiskInfo);
-                }
-            }
-        }
-    }
-
-    sigar_file_system_list_destroy(sigar_, &diskinfolist);
-    return success;
-#else
     return false;
-#endif
 }
 
 bool SystemCapabilities::lookupProcessMemoryInfo() {
-#ifdef IVW_USE_SIGAR
-    sigar_proc_mem_t meminfo;
-
-    if (sigar_proc_mem_get(sigar_, sigar_pid_get(sigar_), &meminfo) == SIGAR_OK) {
-        infoProcRAM_.residentMem = static_cast<size_t>(meminfo.resident);
-        infoProcRAM_.sharedMem = static_cast<size_t>(meminfo.share);
-        infoProcRAM_.virtualMem = static_cast<size_t>(meminfo.size);
-        return true;
-    } else {
-        return false;
-    }
-#else
     return false;
-#endif
 }
 
 void SystemCapabilities::printInfo() {

@@ -35,10 +35,6 @@
 #include <vector>
 #include <string>
 
-#ifdef IVW_USE_SIGAR
-struct sigar_t;
-#endif
-
 namespace inviwo {
 
 class IVW_CORE_API SystemCapabilities : public Capabilities {
@@ -107,10 +103,6 @@ private:
     bool successMemoryInfo_;
     bool successDiskInfo_;
     bool successProcessMemoryInfo_;
-
-#ifdef IVW_USE_SIGAR
-    sigar_t* sigar_;
-#endif
 };
 
 }  // namespace inviwo
