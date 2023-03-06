@@ -155,8 +155,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     }
 
     // remove the "used" points from the event
-    std::erase_if(touchPoints,
-                          [&](const auto& p) { return util::contains(usedPointIds, p.id()); });
+    std::erase_if(touchPoints, [&](const auto& p) { return util::contains(usedPointIds, p.id()); });
     if (touchPoints.empty()) e->markAsUsed();
 }
 

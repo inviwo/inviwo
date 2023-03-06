@@ -51,18 +51,18 @@
 #include <modules/base/algorithm/meshutils.h>                           // for arrow, colorsphere
 #include <modules/base/properties/gaussianproperty.h>                   // for Gaussian1DProperty
 
-#include <algorithm>             // for generate
-#include <cmath>                 // for cos, sin, sqrt, M_PI
-#include <cstddef>               // for size_t
-#include <functional>            // for __base
-#include <limits>                // for numeric_limits
-#include <memory>                // for shared_ptr, make_...
-#include <string_view>           // for string_view
-#include <type_traits>           // for remove_extent_t
-#include <unordered_map>         // for unordered_map
-#include <unordered_set>         // for unordered_set
-#include <utility>               // for pair, make_pair
-#include <vector>                // for vector
+#include <algorithm>      // for generate
+#include <cmath>          // for cos, sin, sqrt, M_PI
+#include <cstddef>        // for size_t
+#include <functional>     // for __base
+#include <limits>         // for numeric_limits
+#include <memory>         // for shared_ptr, make_...
+#include <string_view>    // for string_view
+#include <type_traits>    // for remove_extent_t
+#include <unordered_map>  // for unordered_map
+#include <unordered_set>  // for unordered_set
+#include <utility>        // for pair, make_pair
+#include <vector>         // for vector
 #include <numbers>
 
 #include <glm/detail/setup.hpp>  // for size_t

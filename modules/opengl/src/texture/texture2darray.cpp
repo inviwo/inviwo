@@ -41,7 +41,7 @@
 #include <vector>  // for vector
 
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), vec
-#include <span>  // for span
+#include <span>          // for span
 
 namespace inviwo {
 

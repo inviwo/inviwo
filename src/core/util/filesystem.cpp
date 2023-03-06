@@ -453,9 +453,8 @@ std::vector<std::string> getDirectoryContentsRecursively(const std::string& path
         file = path + "/" + file;
     }
     // Remove . and ..
-    std::erase_if(directories, [](const auto& dir) {
-        return dir.compare(".") == 0 || dir.compare("..") == 0;
-    });
+    std::erase_if(directories,
+                  [](const auto& dir) { return dir.compare(".") == 0 || dir.compare("..") == 0; });
 
     for (auto& dir : directories) {
         dir = path + "/" + dir;

@@ -63,7 +63,6 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
 
     registerPortInspector(PortTraits<DataOutport<Eigen::MatrixXf>>::classIdentifier(),
                           this->getPath(ModulePath::PortInspectors) + "/eigenmatrix.inv");
-
 }
 
 }  // namespace inviwo

@@ -254,7 +254,7 @@ void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
 }
 
 void WebBrowserClient::removeLoadHandler(CefLoadHandler* loadHandler) {
-   std::erase(loadHandlers_, loadHandler);
+    std::erase(loadHandlers_, loadHandler);
 }
 
 void WebBrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,

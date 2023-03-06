@@ -115,9 +115,7 @@ inline std::string fromLocalQString(const QString& str) {
 /**
  * \brief create a QString from a UTF8-encoded std::string
  */
-inline QString toQString(std::string_view str) {
-    return QString::fromUtf8(str.data(), str.size());
-}
+inline QString toQString(std::string_view str) { return QString::fromUtf8(str.data(), str.size()); }
 /**
  * \brief create a QString from a UTF8-encoded std::string
  */

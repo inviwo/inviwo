@@ -41,7 +41,6 @@ VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume")
     registerProcessor<VolumeRegionMapper>();
     registerProcessor<VolumeRegionStatistics>();
     registerProcessor<VolumeVoronoiSegmentation>();
-
 }
 
 }  // namespace inviwo

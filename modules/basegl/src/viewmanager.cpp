@@ -215,8 +215,7 @@ bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator, boo
     }
 
     // remove the "used" points from the event
-    std::erase_if(touchPoints,
-                          [&](const auto& p) { return util::contains(usedPointIds, p.id()); });
+    std::erase_if(touchPoints, [&](const auto& p) { return util::contains(usedPointIds, p.id()); });
 
     if (touchPoints.empty()) {
         te->markAsUsed();
@@ -254,8 +253,7 @@ const ViewManager::ViewList& ViewManager::getViews() const { return views_; }
 void ViewManager::push_back(View view) { views_.push_back(view); }
 
 void ViewManager::erase(View view) {
-    std::erase_if(views_,
-                          [&](const auto& v) { return view.pos == v.pos && view.size == v.size; });
+    std::erase_if(views_, [&](const auto& v) { return view.pos == v.pos && view.size == v.size; });
 }
 
 void ViewManager::erase(ViewId ind) {

@@ -173,7 +173,7 @@ void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string_vi
 
 void LogCentral::logAssertion(std::string_view file, std::string_view function, int line,
                               std::string_view msg) {
-   std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+    std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
         if (auto l = logger.lock()) {
             l->logAssertion(file, function, line, msg);
             return false;

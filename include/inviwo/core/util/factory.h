@@ -240,8 +240,7 @@ bool FactoryRegister<M, Key, K>::registerObject(M* obj) {
 
 template <typename M, typename Key, typename K>
 bool FactoryRegister<M, Key, K>::unRegisterObject(M* obj) {
-    size_t removed =
-        std::erase_if(map_, [obj](const auto& elem) { return elem.second == obj; });
+    size_t removed = std::erase_if(map_, [obj](const auto& elem) { return elem.second == obj; });
     if (removed > 0) {
         this->notifyObserversOnUnRegister(obj);
         return true;

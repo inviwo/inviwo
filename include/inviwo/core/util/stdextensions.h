@@ -139,8 +139,7 @@ template <class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
 
 template <typename T, typename V>
-[[deprecated("use std::erase")]]
-auto erase_remove(T& cont, const V& elem)
+[[deprecated("use std::erase")]] auto erase_remove(T& cont, const V& elem)
     -> decltype(std::distance(std::declval<T>().begin(), std::declval<T>().end())) {
     using std::begin;
     using std::end;
@@ -185,11 +184,8 @@ void reverse_erase_if(T& cont, Pred pred) {
     }
 }
 
-
-
 template <typename T, typename Pred>
-[[deprecated("use std::erase_if")]]
-size_t map_erase_remove_if(T& cont, Pred pred) {
+[[deprecated("use std::erase_if")]] size_t map_erase_remove_if(T& cont, Pred pred) {
     using std::begin;
     using std::end;
     size_t removed{0};

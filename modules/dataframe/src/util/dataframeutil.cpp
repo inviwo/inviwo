@@ -289,10 +289,9 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
             auto valuesLeftIt = catCol1->begin();
             auto valuesRightIt = catCol2->begin();
             for (auto&& [i, rowMatches] : util::enumerate<std::uint32_t>(rows)) {
-                std::erase_if(rowMatches,
-                                      [key = *(valuesLeftIt + i), valuesRightIt](auto row) {
-                                          return key != *(valuesRightIt + row);
-                                      });
+                std::erase_if(rowMatches, [key = *(valuesLeftIt + i), valuesRightIt](auto row) {
+                    return key != *(valuesRightIt + row);
+                });
             }
         } else {
             leftCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(

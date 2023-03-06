@@ -157,11 +157,11 @@ bool PropertyPresetManager::removePreset(const std::string& name, PropertyPreset
         }
         case PropertyPresetType::Workspace: {
             return std::erase_if(workspacePresets_,
-                                         [&](const auto& item) { return item.name == name; }) > 0;
+                                 [&](const auto& item) { return item.name == name; }) > 0;
         }
         case PropertyPresetType::Application: {
-            auto removed = std::erase_if(
-                appPresets_, [&](const auto& item) { return item.name == name; });
+            auto removed =
+                std::erase_if(appPresets_, [&](const auto& item) { return item.name == name; });
             saveApplicationPresets();
             return removed > 0;
         }
