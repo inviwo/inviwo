@@ -56,12 +56,12 @@ struct IniSeparator : std::ctype<char> {
     IniSeparator(std::size_t refs = 0) : ctype(makeTable(), false, refs) {}
 };
 
-BuildInfo getBuildInfo() {
+std::optional<BuildInfo> getBuildInfo() {
     auto dir =
         filesystem::getFileDirectory(filesystem::getExecutablePath()) + "/inviwo_buildinfo.ini";
     auto in = filesystem::ifstream(dir, std::ios::in);
     if (!in.is_open()) {
-        return {};
+        return std::nullopt;
     }
 
     BuildInfo buildInfo;

@@ -34,7 +34,7 @@ namespace inviwo {
 
 namespace util {
 
-BuildInfo getBuildInfo() {
+std::optional<BuildInfo> getBuildInfo() {
     BuildInfo info;
     
     info.year = @YEAR@;

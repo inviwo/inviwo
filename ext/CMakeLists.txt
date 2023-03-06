@@ -241,23 +241,6 @@ ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MO
     FILES ${IVW_EXTENSIONS_DIR}/sml/LICENSE_1_0.txt
 )
 
-# Sigar
-if(APPLE)
-    # Disable by default since SIGAR does not compile on newer versions of OSX 
-    option(IVW_USE_SIGAR "Use sigar to detect system capabilities" OFF)
-else()
-    option(IVW_USE_SIGAR "Use sigar to detect system capabilities" ON)
-endif()
-if(IVW_USE_SIGAR)
-    message(STATUS "add subdirectory: sigar")
-    add_subdirectory(sigar)
-    ivw_register_license_file(NAME "Sigar" TARGET inviwo::sigar MODULE Core EXT
-        URL "http://sigar.hyperic.com"
-        TYPE "Apache License"
-        FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
-    )
-endif()
-
 # CRoaring
 option(IVW_USE_EXTERNAL_ROARING "CRoaring is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_ROARING)

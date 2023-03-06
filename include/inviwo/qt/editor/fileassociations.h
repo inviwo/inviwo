@@ -138,7 +138,7 @@ public:
                           std::vector<FileAssociationCommand> commands = {});
 
     // QAbstractNativeEventFilter overrides
-    bool nativeEventFilter(const QByteArray& eventType, void* message, ResultType* result) override;
+    bool nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result) override;
 
 private:
     /**

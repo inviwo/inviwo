@@ -8,7 +8,7 @@ if(IVW_APP_INVIWO OR IVW_APP_QTBASE)
     endif()
 
     # Create a qt.conf file in the same dir as the executable to help qt find its plugins
-    # http://doc.qt.io/qt-5/qt-conf.html
+    # http://doc.qt.io/qt-6/qt-conf.html
     set(QT_BASE_PATH "${Qt6Core_DIR}/../../..")
     foreach(conf ${CMAKE_CONFIGURATION_TYPES})
         configure_file("${IVW_CMAKE_TEMPLATES}/qt_template.conf" "${EXECUTABLE_OUTPUT_PATH}/${conf}/qt.conf" @ONLY)

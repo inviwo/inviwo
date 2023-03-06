@@ -36,6 +36,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <optional>
 
 namespace inviwo {
 
@@ -94,7 +95,7 @@ struct IVW_CORE_API BuildInfo {
  *
  * @return build information
  */
-BuildInfo IVW_CORE_API getBuildInfo();
+std::optional<BuildInfo> IVW_CORE_API getBuildInfo();
 
 }  // namespace util
 

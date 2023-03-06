@@ -117,7 +117,7 @@ public:
         }
     }
 
-    bool nativeEvent(void* message, FileAssociations::ResultType* result) {
+    bool nativeEvent(void* message, qintptr* result) {
         auto m = static_cast<MSG*>(message);
         switch (m->message) {
             case WM_DDE_INITIATE:
@@ -208,7 +208,7 @@ public:
 
 private:
     // implementation of the WM_DDE_INITIATE windows message
-    bool ddeInitiate(MSG* message, FileAssociations::ResultType* result) {
+    bool ddeInitiate(MSG* message, qintptr* result) {
         if ((0 != LOWORD(message->lParam)) && (0 != HIWORD(message->lParam)) &&
             (LOWORD(message->lParam) == appAtom_) &&
             (HIWORD(message->lParam) == systemTopicAtom_)) {
@@ -228,7 +228,7 @@ private:
         return true;
     }
 
-    bool ddeExecute(MSG* message, FileAssociations::ResultType* result) {
+    bool ddeExecute(MSG* message, qintptr* result) {
         // unpack the DDE message
         [[maybe_unused]] UINT_PTR unused;
         HGLOBAL hData = nullptr;
@@ -261,7 +261,7 @@ private:
         return true;
     }
 
-    bool ddeTerminate(MSG* message, FileAssociations::ResultType*) {
+    bool ddeTerminate(MSG* message, qintptr*) {
         // The client or server application should respond by posting a WM_DDE_TERMINATE message.
         ::PostMessageW((HWND)message->wParam, WM_DDE_TERMINATE, (WPARAM)win_->winId(),
                        message->lParam);
@@ -317,7 +317,7 @@ class FileAssociationData {
 public:
     FileAssociationData(FileAssociations& fa, QMainWindow* win) {}
 
-    bool nativeEvent(void* message, FileAssociations::ResultType* result) { return false; }
+    bool nativeEvent(void* message, qintptr* result) { return false; }
     void registerFileType(const std::string& documentId, const std::string& fileTypeName,
                           const std::string& fileExtension, int appIconIndex,
                           const std::vector<FileAssociationCommand>& commands) {}

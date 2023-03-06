@@ -386,7 +386,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stdfuture.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringlogger.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/templatesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadutil.h
@@ -734,7 +733,6 @@ set(SOURCE_FILES
     util/stdfuture.cpp
     util/stringconversion.cpp
     util/stringlogger.cpp
-    util/systemcapabilities.cpp
     util/threadpool.cpp
     util/threadutil.cpp
     util/timer.cpp
@@ -874,7 +872,6 @@ target_link_libraries(inviwo-core
         inviwo::tracy
         fmt::fmt
         $<$<BOOL:${IVW_USE_OPENMP}>:OpenMP::OpenMP_CXX>
-        $<$<BOOL:${IVW_USE_SIGAR}>:inviwo::sigar>
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>

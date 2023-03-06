@@ -54,7 +54,7 @@ else()
     CHECK_CXX_COMPILER_FLAG("-std=c++20" compiler_supports_cxx20)
 endif()
 if(NOT compiler_supports_cxx20)
-    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. "
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++20 support. "
             "Please use a different C++ compiler.")
 endif()
 

@@ -35,7 +35,6 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/licenseinfo.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/stringconversion.h>

@@ -1,5 +1,12 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-03-06 C++20 and Qt6
+A C++20 compiler is now required, in practice, only features that are supported by MSVC, Clang, GCC, and AppleClang are used, which usually means that everything that is supported by the latest version of XCode can bu used.
+Notably ranges is still missing in AppleClang. All support for Qt5 is not removed and Qt6 is now required. 
+We previously used tcb/span.hpp, that is now replaced with std::span and the dependency has been removed.
+Sigar has also been removed since it has not been updated for over 10 years.
+Unless we find a compelling need for the functionality no replacement will been added.
+
 ## 2023-02-28 ColorScale Legend now shows isovalues
 The legend produced by the `ColorScale Legend` processor now shows the isovalues similar to the transfer function property and TF editor.
 ![ColorScale Legend with isovalues](resources/changelog/colorscalelegend.jpg)

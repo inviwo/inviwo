@@ -62,7 +62,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/util/systemcapabilities.h>
+#include <inviwo/core/util/buildinfo.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/util/filelogger.h>
@@ -156,7 +156,6 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , systemSettings_{std::make_unique<SystemSettings>(this)}
     , resourcemanagerobserver_{std::make_unique<AppResourceManagerObserver>(systemSettings_.get(),
                                                                             resourceManager_.get())}
-    , systemCapabilities_{std::make_unique<SystemCapabilities>()}
     , moduleCallbackActions_{}
     , moduleManager_{this}
     , processorNetwork_{std::make_unique<ProcessorNetwork>(this)}
@@ -297,9 +296,8 @@ CommandLineParser& InviwoApplication::getCommandLineParser() { return *commandLi
 
 void InviwoApplication::printApplicationInfo() {
     LogInfoCustom("InviwoInfo", "Inviwo Version: " << build::version);
-    if (systemCapabilities_->getBuildInfo().year != 0) {
-        LogInfoCustom("InviwoInfo",
-                      "Build Date: " << systemCapabilities_->getBuildInfo().getDate());
+    if (auto buildInfo = util::getBuildInfo()) {
+        LogInfoCustom("InviwoInfo", "Build Date: " << buildInfo->getDate());
     }
     LogInfoCustom("InviwoInfo", "Base Path: " << getBasePath());
     LogInfoCustom("InviwoInfo", "ThreadPool Worker Threads: " << pool_.getSize());
@@ -316,7 +314,6 @@ void InviwoApplication::printApplicationInfo() {
     if (!config.empty()) {
         LogInfoCustom("InviwoInfo", "Config: " << config);
     }
-    systemCapabilities_->printInfo();
 }
 
 void InviwoApplication::postProgress(std::string progress) {
@@ -353,16 +350,13 @@ SystemSettings& InviwoApplication::getSystemSettings() { return *systemSettings_
 
 std::vector<Capabilities*> InviwoApplication::getModuleCapabilities() {
     std::vector<Capabilities*> allModuleCapabilities;
-    allModuleCapabilities.push_back(systemCapabilities_.get());
-    for (auto& module : moduleManager_.getModules()) {
-        auto modCapabilities = module->getCapabilities();
+    for (auto& inviwoModule : moduleManager_.getModules()) {
+        auto modCapabilities = inviwoModule->getCapabilities();
         allModuleCapabilities.insert(allModuleCapabilities.end(), modCapabilities.begin(),
                                      modCapabilities.end());
     }
     return allModuleCapabilities;
 }
-
-SystemCapabilities& InviwoApplication::getSystemCapabilities() { return *systemCapabilities_; }
 
 void InviwoApplication::setPoolResizeWaitCallback(std::function<void(LongWait)> callback) {
     poolResizeCallback_ = callback;
