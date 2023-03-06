@@ -36,16 +36,7 @@
 #include <tuple>
 #include <functional>
 
-#if defined(HAVE_CONFIG_H)
-#define HAVE_CONFIG_H_ENABLED
-#undef HAVE_CONFIG_H
-#endif  // HAVE_CONFIG_H
-
 #include <tclap/CmdLine.h>
-
-#if defined(HAVE_CONFIG_H_ENABLED)
-#define HAVE_CONFIG_H
-#endif
 
 namespace inviwo {
 

@@ -812,9 +812,6 @@ set(cmake_files
 )
 source_group("CMake Files" FILES ${cmake_files})
 
-# Special Core Defines
-remove_definitions(-DHAVE_CONFIG_H)
-
 # Create library
 add_library(inviwo-core 
     ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES}
