@@ -5,7 +5,8 @@
  *  file:  StdOutput.h
  * 
  *  Copyright (c) 2004, Michael E. Smoot
- *  All rights reverved.
+ *  Copyright (c) 2017, Google LLC
+ *  All rights reserved.
  * 
  *  See the file COPYING in the top directory of this distribution for
  *  more information.
@@ -143,7 +144,8 @@ inline void StdOutput::failure( CmdLineInterface& _cmd,
 			_shortUsage( _cmd, std::cerr );	
 
 			std::cerr << std::endl << "For complete USAGE and HELP type: " 
-					  << std::endl << "   " << progName << " --help" 
+					  << std::endl << "   " << progName << " "
+					  << Arg::nameStartString() << "help"
 					  << std::endl << std::endl;
 		}
 	else

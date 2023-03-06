@@ -148,13 +148,26 @@ ivw_register_license_file(NAME "warn" MODULE Core EXT
 )
 
 # tclap
-message(STATUS "add subdirectory: tclap")
-add_subdirectory(tclap)    
-ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core EXT
-    URL http://tclap.sourceforge.net/
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
-)
+option(IVW_USE_EXTERNAL_TCLAP "TCLAP is provided externaly" OFF)
+    if(NOT IVW_USE_EXTERNAL_TCLAP)
+    message(STATUS "add subdirectory: tclap")
+    add_subdirectory(tclap)
+    ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core EXT
+        URL http://tclap.sourceforge.net/
+        TYPE "The MIT License"
+        FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
+    )
+else()
+    # tclap 1.2.5 in vcpkg as of 20230303 does not use CMake
+    # but 1.4.0 does, when that is in vcpkg we should refactor this
+    find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
+    ivw_vcpkg_install(TCLAP MODULE Core EXT)
+
+    add_library(tclap INTERFACE)
+    ivw_register_package(tclap tclap)
+    add_library(inviwo::tclap ALIAS tclap)
+    target_include_directories(tclap INTERFACE ${TCLAP_INCLUDE_DIRS})
+endif()
 
 # tinydir
 option(IVW_USE_EXTERNAL_TINYDIR "Tinydir is provided externaly" OFF)

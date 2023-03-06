@@ -1,3 +1,5 @@
+// -*- Mode: c++; c-basic-offset: 4; tab-width: 4; -*-
+
 
 /****************************************************************************** 
  * 
@@ -5,7 +7,8 @@
  * 
  *  Copyright (c) 2003, Michael E. Smoot .
  *  Copyright (c) 2004, Michael E. Smoot, Daniel Aarno.
- *  All rights reverved.
+ *  Copyright (c) 2017, Google LLC
+ *  All rights reserved.
  *
  *  See the file COPYING in the top directory of this distribution for
  *  more information.
@@ -75,7 +78,7 @@ class CmdLineInterface
 		 * add does not need to be called.
 		 * \param xors - List of Args to be added and xor'd. 
 		 */
-		virtual void xorAdd( std::vector<Arg*>& xors )=0;
+		virtual void xorAdd( const std::vector<Arg*>& xors )=0;
 
 		/**
 		 * Parses the command line.

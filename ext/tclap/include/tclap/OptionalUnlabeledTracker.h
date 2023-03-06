@@ -1,3 +1,5 @@
+// -*- Mode: c++; c-basic-offset: 4; tab-width: 4; -*-
+
 
 
 /****************************************************************************** 
@@ -5,7 +7,7 @@
  *  file:  OptionalUnlabeledTracker.h
  * 
  *  Copyright (c) 2005, Michael E. Smoot .
- *  All rights reverved.
+ *  All rights reserved.
  * 
  *  See the file COPYING in the top directory of this distribution for
  *  more information.
