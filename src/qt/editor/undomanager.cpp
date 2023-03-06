@@ -52,6 +52,8 @@
 #include <vector>
 #include <string>
 
+#include <filesystem>
+
 namespace inviwo {
 
 class AutoSaver {
@@ -89,9 +91,15 @@ public:
                 }
 
                 if (str) {
-                    auto ofstream = filesystem::ofstream(path_ + "/autosave.inv.tmp");
-                    ofstream << *str;
-                    filesystem::copyFile(path_ + "/autosave.inv.tmp", path_ + "/autosave.inv");
+                    {
+                        // make sure we have closed the file _before_ we copy it.
+                        auto ofstream = filesystem::ofstream(path_ + "/autosave.inv.tmp");
+                        ofstream << *str;
+                    }
+
+                    std::filesystem::path base{path_};
+                    std::filesystem::copy(base / "autosave.inv.tmp", base / "autosave.inv",
+                                          std::filesystem::copy_options::overwrite_existing);
                 }
             }
         }} {}

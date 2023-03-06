@@ -330,14 +330,12 @@ public:
      */
     template <typename P, typename DecisionFunc>
     Property& visibilityDependsOn(P& prop, DecisionFunc callback) {
-        static_assert(std::is_invocable_r_v<bool, DecisionFunc, P&>,
-                      "The visibility callback must return a boolean!");
+        static_assert(
+            std::is_invocable_r_v<bool, DecisionFunc, P&>,
+            "The visibility callback must return a boolean and accept a property as argument!");
         static_assert(std::is_base_of_v<Property, P>, "P must be a Property!");
-        this->setVisible(callback(prop));
-        prop.onChange([callback, &prop, this]() {
-            bool visible = callback(prop);
-            this->setVisible(visible);
-        });
+        this->setVisible(std::invoke(callback, prop));
+        prop.onChange([c = callback, &prop, this]() { this->setVisible(std::invoke(c, prop)); });
         return *this;
     }
 
@@ -356,11 +354,8 @@ public:
             std::is_invocable_r_v<bool, DecisionFunc, P&>,
             "The readonly callback must return a boolean and accept a property as argument!");
         static_assert(std::is_base_of_v<Property, P>, "P must be a Property!");
-        this->setReadOnly(callback(prop));
-        prop.onChange([callback, &prop, this]() {
-            bool readonly = callback(prop);
-            this->setReadOnly(readonly);
-        });
+        this->setReadOnly(std::invoke(callback, prop));
+        prop.onChange([c = callback, &prop, this]() { this->setReadOnly(std::invoke(c, prop)); });
         return *this;
     }
 

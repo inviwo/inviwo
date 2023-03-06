@@ -338,6 +338,39 @@ void MeshDrawerGL::DrawObject::drawOnlyInstanced(DrawMode drawMode, size_t insta
     }
 }
 
+void MeshDrawerGL::DrawObject::drawOnly(std::function<bool(const Mesh::MeshInfo&)> filter) {
+    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        // draw mesh using the index buffers
+        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
+            auto& mi = meshGL_->getMeshInfoForIndexBuffer(i);
+            if (filter(mi)) {
+                drawElements(*meshGL_->getIndexBuffer(i), getGLDrawMode(mi));
+            }
+        }
+    } else if (!meshGL_->empty() && filter(arrayMeshInfo_)) {
+        glDrawArrays(getGLDrawMode(arrayMeshInfo_), 0,
+                     static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()));
+    }
+}
+void MeshDrawerGL::DrawObject::drawOnlyInstanced(std::function<bool(const Mesh::MeshInfo&)> filter,
+                                                 size_t instances) {
+    const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        // draw mesh using the index buffers
+        for (std::size_t i = 0; i < numIndexBuffers; ++i) {
+            auto& mi = meshGL_->getMeshInfoForIndexBuffer(i);
+            if (filter(mi)) {
+                drawElements(*meshGL_->getIndexBuffer(i), getGLDrawMode(mi), instances);
+            }
+        }
+    } else if (!meshGL_->empty() && filter(arrayMeshInfo_)) {
+        glDrawArraysInstanced(getGLDrawMode(arrayMeshInfo_), 0,
+                              static_cast<GLsizei>(meshGL_->getBufferGL(0)->getSize()),
+                              static_cast<GLsizei>(instances));
+    }
+}
+
 std::size_t MeshDrawerGL::DrawObject::size() const { return meshGL_->getIndexBufferCount(); }
 
 }  // namespace inviwo

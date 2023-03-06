@@ -36,6 +36,29 @@ namespace inviwo {
 
 namespace util {
 
+std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a, const std::optional<mat4>& b) {
+    if (!a && !b) return std::nullopt;
+    if (a && !b) return a;
+    if (b && !a) return b;
+
+    vec3 worldMin(std::numeric_limits<float>::max());
+    vec3 worldMax(std::numeric_limits<float>::lowest());
+
+    constexpr std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
+                                             vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
+                                             vec3{1, 1, 1}, vec3{0, 1, 1}};
+    for (const auto& bb : {a, b}) {
+        for (const auto& corner : corners) {
+            const auto point = vec3(*bb * vec4(corner, 1.f));
+            worldMin = glm::min(worldMin, point);
+            worldMax = glm::max(worldMax, point);
+        }
+    }
+    auto m = glm::scale(worldMax - worldMin);
+    m[3] = vec4(worldMin, 1.0f);
+    return m;
+}
+
 mat4 boundingBox(const Mesh& mesh) {
     const auto& buffers = mesh.getBuffers();
     auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
