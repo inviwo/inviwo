@@ -96,7 +96,7 @@ public:
                         auto ofstream = filesystem::ofstream(path_ + "/autosave.inv.tmp");
                         ofstream << *str;
                     }
-                    
+
                     std::filesystem::path base{path_};
                     std::filesystem::copy(base / "autosave.inv.tmp", base / "autosave.inv",
                                           std::filesystem::copy_options::overwrite_existing);

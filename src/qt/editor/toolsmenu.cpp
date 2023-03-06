@@ -312,28 +312,28 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
 
         for (auto&& key : factory->getKeyView()) {
             try {
-            auto processor = factory->create(key, app);
+                auto processor = factory->create(key, app);
 
-            size_t indent = 0;
-            LambdaNetworkVisitor visitor{
-                [&](CompositeProperty& p, NetworkVisitorEnter) {
-                    fmt::format_to(std::back_inserter(buffer), "{:{}}{}\n", "", indent,
-                                   p.getIdentifier());
-                    indent += 4;
-                },
-                [&](CompositeProperty&, NetworkVisitorExit) { indent -= 4; },
-                [&](Processor& p, NetworkVisitorEnter) {
-                    fmt::format_to(std::back_inserter(buffer), "{:{}}{}\n", "", indent,
-                                   p.getIdentifier());
-                    indent += 4;
-                },
-                [&](Processor&, NetworkVisitorExit) { indent -= 4; },
+                size_t indent = 0;
+                LambdaNetworkVisitor visitor{
+                    [&](CompositeProperty& p, NetworkVisitorEnter) {
+                        fmt::format_to(std::back_inserter(buffer), "{:{}}{}\n", "", indent,
+                                       p.getIdentifier());
+                        indent += 4;
+                    },
+                    [&](CompositeProperty&, NetworkVisitorExit) { indent -= 4; },
+                    [&](Processor& p, NetworkVisitorEnter) {
+                        fmt::format_to(std::back_inserter(buffer), "{:{}}{}\n", "", indent,
+                                       p.getIdentifier());
+                        indent += 4;
+                    },
+                    [&](Processor&, NetworkVisitorExit) { indent -= 4; },
 
-                [&](Property& p) {
-                    fmt::format_to(std::back_inserter(buffer), "{:{}}{}\n", "", indent,
-                                   p.getIdentifier());
-                }};
-            processor->accept(visitor);
+                    [&](Property& p) {
+                        fmt::format_to(std::back_inserter(buffer), "{:{}}{}\n", "", indent,
+                                       p.getIdentifier());
+                    }};
+                processor->accept(visitor);
             } catch (const Exception& e) {
                 util::log(e.getContext(), e.getMessage());
             }

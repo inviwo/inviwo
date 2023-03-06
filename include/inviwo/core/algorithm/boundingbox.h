@@ -50,7 +50,8 @@ class Volume;
 
 namespace util {
 
-IVW_CORE_API std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a, const std::optional<mat4>& b);
+IVW_CORE_API std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a,
+                                                  const std::optional<mat4>& b);
 
 /**
  * Calculate a bounding box of the position buffer of the mesh in world space. The bounding box is
