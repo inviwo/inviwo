@@ -44,8 +44,10 @@ void exposeDataMapper(py::module& m) {
 
     py::class_<Unit>(m, "Unit")
         .def(py::init([](std::string unit) { return units::unit_from_string(unit); }))
-        .def("to_string", [](const Unit& unit,
-                             std::string_view format = "{}") { return fmt::format(fmt::runtime(format), unit); })
+        .def("to_string",
+             [](const Unit& unit, std::string_view format = "{}") {
+                 return fmt::format(fmt::runtime(format), unit);
+             })
         .def("__repr__", [](const Unit& unit) { return fmt::format("{}", unit); });
 
     py::class_<Axis>(m, "Axis")

@@ -214,8 +214,8 @@ IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string_view
                       LogAudience audience = LogAudience::Developer);
 
 template <typename... Args>
-void log(SourceContext context, LogLevel level, LogAudience audience, fmt::format_string<Args...> format,
-         Args&&... args) {
+void log(SourceContext context, LogLevel level, LogAudience audience,
+         fmt::format_string<Args...> format, Args&&... args) {
     LogCentral::getPtr()->log(context.getCaller(), level, audience, context.getFile(),
                               context.getFunction(), context.getLine(),
                               fmt::format(format, std::forward<Args>(args)...));
