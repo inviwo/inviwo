@@ -88,9 +88,9 @@ struct proxy {
     proxy(Us&&... args) : data{std::forward<Us>(args)...} {}
 
     template <typename... Us>
-    proxy<Ts...>(const proxy<Us...>& rhs) : data(rhs.data) {}
+    proxy(const proxy<Us...>& rhs) : data(rhs.data) {}
     template <typename... Us>
-    proxy<Ts...>(proxy<Us...>&& rhs) : data(std::move(rhs.data)) {}
+    proxy(proxy<Us...>&& rhs) : data(std::move(rhs.data)) {}
 
     template <typename... Us>
     proxy& operator=(const proxy<Us...>& rhs) {
