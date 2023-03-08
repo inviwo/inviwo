@@ -341,7 +341,6 @@ OrdinalPropertyState<T> ordinalCount(const T& value = T{0}, const U& max = U{100
             PropertySemantics::SpinBox};
 }
 
-
 /**
  * A factory function for configuring a OrdinalProperty representing a length. It will have a
  * Immutable min at zero and an upper Ignored max. The invalidation level defaults to InvalidOutput,
