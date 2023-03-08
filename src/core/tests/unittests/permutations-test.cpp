@@ -34,6 +34,9 @@
 
 #include <inviwo/core/algorithm/permutations.h>
 
+#include <array>
+#include <span>
+
 namespace inviwo {
 
 TEST(Permutations, permutations) {

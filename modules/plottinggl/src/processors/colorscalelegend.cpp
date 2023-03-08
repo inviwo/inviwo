@@ -213,7 +213,7 @@ ColorScaleLegend::ColorScaleLegend()
                 break;
             case LabelType::Custom:
                 if (auto volume = volumeInport_.getData()) {
-                    axis_.setCaption(fmt::format(title_.get(),
+                    axis_.setCaption(fmt::format(fmt::runtime(title_.get()),
                                                  fmt::arg("n", volume->dataMap_.valueAxis.name),
                                                  fmt::arg("u", volume->dataMap_.valueAxis.unit)));
                 } else {

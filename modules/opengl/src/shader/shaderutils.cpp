@@ -296,10 +296,10 @@ void setShaderDefines(Shader& shader,
     const std::string_view keyAll = "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
 
     StrBuffer buff;
-    buff.replace(value, fmt::arg("channelDef", channelDef));
+    buff.replace(fmt::runtime(value), fmt::arg("channelDef", channelDef));
     shader.getFragmentShaderObject()->addShaderDefine(key, buff);
 
-    buff.replace(valueChannel, fmt::arg("channel", channel));
+    buff.replace(fmt::runtime(valueChannel), fmt::arg("channel", channel));
     shader.getFragmentShaderObject()->addShaderDefine(keyChannel, buff);
 
     shader.getFragmentShaderObject()->addShaderDefine(keyAll, valueAll);
@@ -406,10 +406,10 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     }
 
     StrBuffer buff;
-    buff.replace(gradientValue, fmt::arg("defaultChannel", defaultChannel));
+    buff.replace(fmt::runtime(gradientValue), fmt::arg("defaultChannel", defaultChannel));
     shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey, buff);
 
-    buff.replace(singleChannelGradientValue, fmt::arg("channel", channel));
+    buff.replace(fmt::runtime(singleChannelGradientValue), fmt::arg("channel", channel));
     shader.getFragmentShaderObject()->addShaderDefine(singleChannelGradientKey, buff);
 
     shader.getFragmentShaderObject()->addShaderDefine(allChannelsGradientKey,

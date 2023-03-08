@@ -141,7 +141,7 @@ void SyntaxHighlighter::addPatternWithFormatStr(QTextCharFormat format,
                                                 std::span<const std::string_view> patterns,
                                                 std::string_view formatStr) {
     for (auto pattern : patterns) {
-        auto str = utilqt::toQString(fmt::format(formatStr, pattern));
+        auto str = utilqt::toQString(fmt::format(fmt::runtime(formatStr), pattern));
         rules_.push_back(Rule{format, QRegularExpression{str}});
     }
 }

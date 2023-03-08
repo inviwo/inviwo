@@ -141,7 +141,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
                 const auto name = filesystem::getFileNameWithoutExtension(path);
 
                 auto ofs = filesystem::ofstream(path);
-                fmt::print(ofs, script, fmt::arg("name", name));
+                fmt::print(ofs, fmt::runtime(script), fmt::arg("name", name));
 
                 QDesktopServices::openUrl(QUrl("file:///" + qpath, QUrl::TolerantMode));
             }

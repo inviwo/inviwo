@@ -77,7 +77,7 @@ static_assert(std::is_trivially_copyable<half_float::half>::value, "");
 static_assert(std::is_default_constructible<half_float::half>::value, "");
 static_assert(std::is_trivially_default_constructible<half_float::half>::value, "");
 static_assert(std::is_trivial<half_float::half>::value, "");
-static_assert(std::is_pod<half_float::half>::value, "");
+static_assert(std::is_standard_layout<half_float::half>::value, "");
 
 using quat = glm::quat;
 
