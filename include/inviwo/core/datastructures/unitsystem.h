@@ -35,7 +35,6 @@
 #include <flags/flags.h>
 #include <fmt/format.h>
 #include <units/units.hpp>
-#include <span>
 
 #include <string_view>
 #include <tuple>
@@ -44,6 +43,7 @@
 #include <iterator>
 #include <vector>
 #include <utility>
+#include <span>
 
 namespace inviwo {
 

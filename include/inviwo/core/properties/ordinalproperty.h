@@ -289,32 +289,32 @@ IVW_CORE_API OrdinalPropertyState<vec3> ordinalLight(
  */
 template <typename T = double, typename U = T>
 OrdinalPropertyState<T> ordinalSymmetricVector(const T& value = {0}, const U& minMax = U{100}) {
-
+    using V = util::value_type_t<T>;
     if constexpr (std::is_floating_point_v<util::value_type_t<T>>) {
         return {value,
-                std::decay_t<decltype(value)>{-minMax},
+                T{-minMax},
                 ConstraintBehavior::Ignore,
-                std::decay_t<decltype(value)>{minMax},
+                T{minMax},
                 ConstraintBehavior::Ignore,
-                std::decay_t<decltype(value)>{0.1},
+                T{static_cast<V>(0.1)},
                 InvalidationLevel::InvalidOutput,
                 PropertySemantics::SpinBox};
     } else if constexpr (std::is_signed_v<util::value_type_t<T>>) {
         return {value,
-                std::decay_t<decltype(value)>{-minMax},
+                T{-minMax},
                 ConstraintBehavior::Ignore,
-                std::decay_t<decltype(value)>{minMax},
+                T{minMax},
                 ConstraintBehavior::Ignore,
-                std::decay_t<decltype(value)>{1},
+                T{static_cast<V>(1)},
                 InvalidationLevel::InvalidOutput,
                 PropertySemantics::SpinBox};
     } else {
         return {value,
-                std::decay_t<decltype(value)>{0},
+                T{static_cast<V>(0)},
                 ConstraintBehavior::Ignore,
-                std::decay_t<decltype(value)>{minMax},
+                T{minMax},
                 ConstraintBehavior::Ignore,
-                std::decay_t<decltype(value)>{1},
+                T{static_cast<V>(1)},
                 InvalidationLevel::InvalidOutput,
                 PropertySemantics::SpinBox};
     }
@@ -330,15 +330,17 @@ OrdinalPropertyState<T> ordinalSymmetricVector(const T& value = {0}, const U& mi
  */
 template <typename T = size_t, typename U = T>
 OrdinalPropertyState<T> ordinalCount(const T& value = T{0}, const U& max = U{100}) {
+    using V = util::value_type_t<T>;
     return {value,
-            std::decay_t<decltype(value)>{0},
+            T{static_cast<V>(0)},
             ConstraintBehavior::Immutable,
-            std::decay_t<decltype(value)>{max},
+            T{max},
             ConstraintBehavior::Ignore,
-            std::decay_t<decltype(value)>{1},
+            T{static_cast<V>(1)},
             InvalidationLevel::InvalidOutput,
             PropertySemantics::SpinBox};
 }
+
 
 /**
  * A factory function for configuring a OrdinalProperty representing a length. It will have a
@@ -349,12 +351,13 @@ OrdinalPropertyState<T> ordinalCount(const T& value = T{0}, const U& max = U{100
  */
 template <typename T = double, typename U = T>
 OrdinalPropertyState<T> ordinalLength(const T& value = T{0}, const U& max = U{100}) {
+    using V = util::value_type_t<T>;
     return {value,
-            std::decay_t<decltype(value)>{0},
+            T{static_cast<V>(0.0)},
             ConstraintBehavior::Immutable,
-            std::decay_t<decltype(value)>{max},
+            T(max),
             ConstraintBehavior::Ignore,
-            std::decay_t<decltype(value)>{0.1},
+            T{static_cast<V>(0.1)},
             InvalidationLevel::InvalidOutput,
             PropertySemantics::SpinBox};
 }
@@ -370,12 +373,13 @@ OrdinalPropertyState<T> ordinalLength(const T& value = T{0}, const U& max = U{10
  */
 template <typename T = double, typename U = T>
 OrdinalPropertyState<T> ordinalScale(const T& value = T{0}, const U& max = U{100}) {
+    using V = util::value_type_t<T>;
     return {value,
-            100 * std::numeric_limits<std::decay_t<decltype(value)>>::epsilon(),
+            T{static_cast<V>(100) * std::numeric_limits<V>::epsilon()},
             ConstraintBehavior::Immutable,
-            std::decay_t<decltype(value)>{max},
+            T{max},
             ConstraintBehavior::Ignore,
-            std::decay_t<decltype(value)>{max / U{256}},
+            T{max / static_cast<U>(256)},
             InvalidationLevel::InvalidOutput,
             PropertySemantics::Default};
 }

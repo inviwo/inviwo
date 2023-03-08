@@ -609,16 +609,18 @@ std::vector<std::uint32_t> selectRows(const Column& col,
                                 [[maybe_unused]] const std::function<bool(std::int64_t)>& func) {
                                 if constexpr (std::is_integral_v<ValueType>) {
                                     return func(static_cast<std::int64_t>(v));
+                                } else {
+                                    (void)v;
+                                    return false;
                                 }
-                                (void)v;
-                                return false;
                             },
                             [v = value]([[maybe_unused]] const std::function<bool(double)>& func) {
                                 if constexpr (std::is_floating_point_v<ValueType>) {
                                     return func(v);
+                                } else {
+                                    (void)v;
+                                    return false;
                                 }
-                                (void)v;
-                                return false;
                             },
                             [](const std::function<bool(std::string_view)>&) { return false; }};
                         auto op = [&](const auto& f) { return std::visit(test, f.filter); };

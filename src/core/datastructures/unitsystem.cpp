@@ -160,7 +160,7 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
         std::vector<std::pair<units::detail::unit_data, int>> match;
         match.reserve(groups.size());
         for (size_t searchGroupSize = 1; searchGroupSize <= groups.size(); ++searchGroupSize) {
-            util::Combinations comb(std::span(bases), searchGroupSize);
+            util::Combinations<units::detail::unit_data> comb{bases, searchGroupSize};
             do {
                 auto test = Unit{}.base_units();
                 match.clear();
