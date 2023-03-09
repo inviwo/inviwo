@@ -31,7 +31,6 @@
 
 # Options for unittests
 option(IVW_TEST_UNIT_TESTS "Enable unittests" ON)
-option(IVW_TEST_UNIT_TESTS_RUN_ON_BUILD "Enable running unittest when building" ON)
 
 # Add unittests
 function(ivw_add_unittest)
@@ -76,11 +75,4 @@ function(ivw_make_unittest_target name target)
     # Define defintions and properties
     ivw_define_standard_definitions(${test_name} ${test_name})
     ivw_define_standard_properties(${test_name})
-
-    # Add run on build command
-    if(IVW_TEST_UNIT_TESTS_RUN_ON_BUILD)
-        add_custom_command(TARGET "${test_name}" POST_BUILD COMMAND "${test_name}" 
-                           COMMENT "Running unittest for: ${test_name}" VERBATIM)
-    endif()
-
 endfunction()
