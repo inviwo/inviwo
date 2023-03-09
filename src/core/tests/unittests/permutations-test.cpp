@@ -42,7 +42,7 @@ namespace inviwo {
 TEST(Permutations, permutations) {
 
     std::array values = {0, 1, 2};
-    util::Permutations perm(std::span(values), 1);
+    util::Permutations<int> perm(values, 1);
 
     EXPECT_EQ(*perm.begin(), 0);
     EXPECT_EQ(++perm.begin(), perm.end());
@@ -57,7 +57,7 @@ TEST(Permutations, permutations) {
 
     EXPECT_FALSE(perm.next());
 
-    perm = util::Permutations(std::span(values), 2);
+    perm = util::Permutations<int>(values, 2);
 
     auto it = perm.begin();
     EXPECT_EQ(*it, 0);
@@ -96,7 +96,7 @@ TEST(Permutations, permutations) {
 
     EXPECT_FALSE(perm.next());
 
-    perm = util::Permutations(std::span(values), 3);
+    perm = util::Permutations<int>(values, 3);
 
     it = perm.begin();
     EXPECT_EQ(*it, 0);
