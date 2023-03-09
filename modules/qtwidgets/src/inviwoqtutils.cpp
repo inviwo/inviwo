@@ -52,7 +52,8 @@
 #include <inviwo/core/util/stringconversion.h>                // for replaceInString, toString
 #include <inviwo/core/util/transformiterator.h>               // for TransformIterator
 #include <inviwo/core/util/zip.h>                             // for enumerate, zipIterator, zipper
-#include <modules/qtwidgets/tf/tfpropertyconcept.h>           // for TFPropertyConcept
+#include <inviwo/core/util/rendercontext.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>  // for TFPropertyConcept
 
 #include <algorithm>      // for clamp, find_if, find
 #include <cmath>          // for pow, round
@@ -453,6 +454,7 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
         oss << name << (visible ? " (Visible)" : "");
         auto copyAction = copy->addAction(oss.str().c_str());
         copyAction->connect(copyAction, &QAction::triggered, [layer]() {
+            rendercontext::activateDefault();
             QApplication::clipboard()->setPixmap(QPixmap::fromImage(utilqt::layerToQImage(*layer)));
         });
 

@@ -455,6 +455,7 @@ void InviwoMainWindow::saveSnapshots(std::string path, std::string fileName) {
         app_->processFront();
     }
 
+    rendercontext::activateDefault();
     util::exportAllFiles(
         *app_->getProcessorNetwork(), path, fileName,
         {FileExtension{"png", ""}, FileExtension{"csv", ""}, FileExtension{"txt", ""}},
