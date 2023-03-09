@@ -92,7 +92,7 @@ TEST(SerialitionContainerTest, ContainerTest1) {
     deserializer.deserialize("Vector", cont);
 
     size_t ind = 0;
-    std::erase_if(vector, [&](int&) { return !visited[ind++]; });
+    std::erase_if(vector, [&](const int&) { return !visited[ind++]; });
 
     ASSERT_EQ(5, vector.size());
     ASSERT_EQ(1, vector[0]);
@@ -148,7 +148,7 @@ TEST(SerialitionContainerTest, ContainerTest2) {
     Deserializer deserializer(ss, "");
     deserializer.deserialize("Vector", cont);
 
-    std::erase_if(vector, [&](Item& i) { return !util::contains(visited, i.id_); });
+    std::erase_if(vector, [&](const Item& i) { return !util::contains(visited, i.id_); });
 
     ASSERT_EQ(3, vector.size());
 
@@ -213,7 +213,7 @@ TEST(SerialitionContainerTest, ContainerTest3) {
     Deserializer deserializer(ss, "");
     deserializer.deserialize("Vector", cont);
 
-    std::erase_if(vector, [&](Item*& i) {
+    std::erase_if(vector, [&](Item* i) {
         if (!util::contains(visited, i->id_)) {
             delete i;
             return true;

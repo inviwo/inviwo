@@ -199,7 +199,8 @@ void PropertyCefSynchronizer::startSynchronize(Property* property, std::string_v
 }
 
 void PropertyCefSynchronizer::stopSynchronize(Property* property) {
-    std::erase_if(widgets_, [property](auto& widget) { return property == widget->getProperty(); });
+    std::erase_if(widgets_,
+                  [property](const auto& widget) { return property == widget->getProperty(); });
 }
 
 }  // namespace inviwo

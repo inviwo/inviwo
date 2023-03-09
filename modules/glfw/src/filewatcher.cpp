@@ -162,7 +162,7 @@ private:
 
         std::vector<std::pair<std::string, Action>> changed;
 
-        std::erase_if(files, [&](auto& item) {
+        std::erase_if(files, [&](const auto& item) {
             if (!filesystem::fileExists(item.first)) {
                 changed.emplace_back(item.first, Action::Removed);
                 return true;

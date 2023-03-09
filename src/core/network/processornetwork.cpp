@@ -483,7 +483,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
         // remove any already existing connections.
         std::unordered_set<PortConnection> save;
-        std::erase_if(connections, [&](auto& c) {
+        std::erase_if(connections, [&](const auto& c) {
             if (connections_.count(c) != 0) {
                 save.insert(c);
                 return true;
@@ -534,7 +534,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
         // remove any already existing links.
         std::unordered_set<PropertyLink> save;
-        std::erase_if(links, [&](auto& l) {
+        std::erase_if(links, [&](const auto& l) {
             if (links_.count(l) != 0) {
                 save.insert(l);
                 return true;
