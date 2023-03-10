@@ -315,8 +315,8 @@ private:
 namespace detail {
 
 template <typename T>
-using isDeserializable = decltype(
-    std::declval<Deserializer>().deserialize(std::declval<std::string_view>(), std::declval<T&>()));
+using isDeserializable = decltype(std::declval<Deserializer>().deserialize(
+    std::declval<std::string_view>(), std::declval<T&>()));
 
 template <typename T>
 using isStreamable = decltype(std::declval<std::istream&>() >> std::declval<T&>());
