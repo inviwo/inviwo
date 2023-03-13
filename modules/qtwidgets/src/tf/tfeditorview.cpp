@@ -154,12 +154,7 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
 
         // off-center zooming
         // relative position within current zoom range
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-        auto zoomCenter = event->posF().x() / width() * zoomExtent + horizontal.x;
-#else
         auto zoomCenter = event->position().x() / width() * zoomExtent + horizontal.x;
-#endif
 
         double lower = zoomCenter + (horizontal.x - zoomCenter) * zoomFactor;
         double upper = zoomCenter + (horizontal.y - zoomCenter) * zoomFactor;

@@ -29,16 +29,16 @@
 
 function(ivw_locateqt retval)
     if(NOT QT_QMAKE_EXECUTABLE)
-        find_program(QT_QMAKE_EXECUTABLE_FINDQT NAMES qmake qmake4 qmake-qt4 qmake5 qmake-qt5
+        find_program(QT_QMAKE_EXECUTABLE_FINDQT NAMES qmake qmake6 qmake-qt6
            PATHS "${QT_SEARCH_PATH}/bin" "$ENV{QTDIR}/bin")
         set(QT_QMAKE_EXECUTABLE ${QT_QMAKE_EXECUTABLE_FINDQT} CACHE PATH "Qt qmake program.")
     endif()
 
     if(QT_QMAKE_EXECUTABLE)
-        execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query "QT_INSTALL_PREFIX" OUTPUT_VARIABLE QT5_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+        execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query "QT_INSTALL_PREFIX" OUTPUT_VARIABLE QT_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
     else()
         if(APPLE) # On OSX look for the usual brew installation. 
-            foreach(path "/usr/local/Cellar/qt" "/usr/local/Cellar/qt5")
+            foreach(path "/usr/local/Cellar/qt" "/usr/local/Cellar/qt6")
                 if(EXISTS ${path})
                     file(GLOB qtversions RELATIVE "${path}/" "${path}/?.*.*")
                     list(LENGTH qtversions len)
@@ -58,5 +58,5 @@ function(ivw_locateqt retval)
             endforeach()
         endif()
     endif()
-    set(${retval} ${QT5_PATH} PARENT_SCOPE)
+    set(${retval} ${QT_PATH} PARENT_SCOPE)
 endfunction()

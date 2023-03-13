@@ -35,15 +35,15 @@
 #include <inviwo/core/datastructures/unitsystem.h>
 
 #include <array>
+#include <span>
 #include <fmt/format.h>
-#include <tcb/span.hpp>
 
 namespace inviwo {
 
 namespace util {
 
 template <size_t N>
-util::span<const std::string_view, N> defaultValues() {
+std::span<const std::string_view, N> defaultValues() {
     static constexpr std::string_view empty = "";
     static constexpr std::array<std::string_view, N> values =
         util::make_array<N>([&](auto) { return empty; });
@@ -58,12 +58,12 @@ template <size_t N>
 class StringsProperty : public CompositeProperty {
 public:
     StringsProperty(std::string_view identifier, std::string_view displayName, Document help,
-                    util::span<const std::string_view, N> values = util::defaultValues<N>(),
+                    std::span<const std::string_view, N> values = util::defaultValues<N>(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
 
     StringsProperty(std::string_view identifier, std::string_view displayName,
-                    util::span<const std::string_view, N> values = util::defaultValues<N>(),
+                    std::span<const std::string_view, N> values = util::defaultValues<N>(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
 
@@ -98,7 +98,7 @@ std::string StringsProperty<N>::getClassIdentifierForWidget() const {
 
 template <size_t N>
 StringsProperty<N>::StringsProperty(std::string_view identifier, std::string_view displayName,
-                                    Document help, util::span<const std::string_view, N> values,
+                                    Document help, std::span<const std::string_view, N> values,
                                     InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
@@ -113,7 +113,7 @@ StringsProperty<N>::StringsProperty(std::string_view identifier, std::string_vie
 
 template <size_t N>
 StringsProperty<N>::StringsProperty(std::string_view identifier, std::string_view displayName,
-                                    util::span<const std::string_view, N> values,
+                                    std::span<const std::string_view, N> values,
                                     InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
     : StringsProperty(identifier, displayName, Document(), values, invalidationLevel, semantics) {}

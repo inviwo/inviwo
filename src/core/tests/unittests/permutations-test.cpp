@@ -34,12 +34,15 @@
 
 #include <inviwo/core/algorithm/permutations.h>
 
+#include <array>
+#include <span>
+
 namespace inviwo {
 
 TEST(Permutations, permutations) {
 
     std::array values = {0, 1, 2};
-    util::Permutations perm(util::make_span(values), 1);
+    util::Permutations<int> perm(values, 1);
 
     EXPECT_EQ(*perm.begin(), 0);
     EXPECT_EQ(++perm.begin(), perm.end());
@@ -54,7 +57,7 @@ TEST(Permutations, permutations) {
 
     EXPECT_FALSE(perm.next());
 
-    perm = util::Permutations(util::make_span(values), 2);
+    perm = util::Permutations<int>(values, 2);
 
     auto it = perm.begin();
     EXPECT_EQ(*it, 0);
@@ -93,7 +96,7 @@ TEST(Permutations, permutations) {
 
     EXPECT_FALSE(perm.next());
 
-    perm = util::Permutations(util::make_span(values), 3);
+    perm = util::Permutations<int>(values, 3);
 
     it = perm.begin();
     EXPECT_EQ(*it, 0);
@@ -142,7 +145,7 @@ TEST(Permutations, permutations) {
 TEST(Permutations, Combinations) {
 
     std::array values = {0, 1, 2};
-    util::Combinations comb(util::make_span(values), 1);
+    util::Combinations<int> comb(values, 1);
 
     EXPECT_EQ(*comb.begin(), 0);
     EXPECT_EQ(++comb.begin(), comb.end());
@@ -157,7 +160,7 @@ TEST(Permutations, Combinations) {
 
     EXPECT_FALSE(comb.next());
 
-    comb = util::Combinations(util::make_span(values), 2);
+    comb = util::Combinations<int>(values, 2);
 
     auto it = comb.begin();
     EXPECT_EQ(*it, 0);
@@ -178,7 +181,7 @@ TEST(Permutations, Combinations) {
 
     EXPECT_FALSE(comb.next());
 
-    comb = util::Combinations(util::make_span(values), 3);
+    comb = util::Combinations<int>(values, 3);
 
     it = comb.begin();
     EXPECT_EQ(*it, 0);
@@ -192,7 +195,7 @@ TEST(Permutations, Combinations) {
 TEST(Permutations, IndexProduct) {
 
     std::array sizes = {3, 2};
-    util::IndexProduct inds(util::make_span(sizes));
+    util::IndexProduct<int> inds{sizes};
 
     auto it = inds.begin();
     EXPECT_EQ(*it, 0);

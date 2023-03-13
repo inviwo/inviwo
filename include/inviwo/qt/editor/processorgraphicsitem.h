@@ -76,7 +76,7 @@ public:
     void snapToGrid();
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ProcessorGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(ProcessorGraphicsType) };
     virtual int type() const override { return Type; }
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* event) override;

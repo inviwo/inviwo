@@ -1,9 +1,7 @@
 # Inviwo PythonQt Module
 ivw_module(Python3Qt)
 
-# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg)
 
 # Add MOC files
 set(MOC_FILES
@@ -22,11 +20,7 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
-else()
-    qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
-endif()
+qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Add source files
@@ -45,14 +39,12 @@ ivw_group("Source Files" ${SOURCE_FILES})
 ivw_create_module(NO_PCH QT ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-python3qt PUBLIC
     inviwo::qtapplicationbase
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::Svg
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Svg
 )
-target_compile_definitions(inviwo-module-python3qt PUBLIC 
-    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
-)
+
 # Add templates directory to packaging
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/templates)
 

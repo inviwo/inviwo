@@ -113,7 +113,7 @@ void LogCentral::log(std::string_view source, LogLevel level, LogAudience audien
 
     if (level >= logVerbosity_) {
         // use remove if here to remove expired weak pointers while calling the loggers.
-        util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+        std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
             if (auto l = logger.lock()) {
                 l->log(source, level, audience, file, function, line, msg);
                 return false;
@@ -145,7 +145,7 @@ void LogCentral::logProcessor(Processor* processor, LogLevel level, LogAudience 
                               std::string_view function, int line) {
     if (level >= logVerbosity_) {
         // use remove if here to remove expired weak pointers while calling the loggers.
-        util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+        std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
             if (auto l = logger.lock()) {
                 l->logProcessor(processor, level, audience, msg, file, function, line);
                 return false;
@@ -160,7 +160,7 @@ void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string_vi
                             std::string_view file, std::string_view function, int line) {
     if (level >= logVerbosity_) {
         // use remove if here to remove expired weak pointers while calling the loggers.
-        util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+        std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
             if (auto l = logger.lock()) {
                 l->logNetwork(level, audience, msg, file, function, line);
                 return false;
@@ -173,7 +173,7 @@ void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string_vi
 
 void LogCentral::logAssertion(std::string_view file, std::string_view function, int line,
                               std::string_view msg) {
-    util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+    std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
         if (auto l = logger.lock()) {
             l->logAssertion(file, function, line, msg);
             return false;

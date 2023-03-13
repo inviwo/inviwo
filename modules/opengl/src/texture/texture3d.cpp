@@ -39,23 +39,23 @@
 
 #include <mutex>   // for scoped_lock
 #include <vector>  // for vector
+#include <span>    // for span
 
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), operator!=
-#include <tcb/span.hpp>  // for span
 
 namespace inviwo {
 
 Texture3D::Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering,
                      const SwizzleMask& swizzleMask, const std::array<GLenum, 3>& wrapping,
                      GLint level)
-    : Texture(GL_TEXTURE_3D, glFormat, filtering, swizzleMask, util::span(wrapping), level)
+    : Texture(GL_TEXTURE_3D, glFormat, filtering, swizzleMask, std::span(wrapping), level)
     , dimensions_(dimensions) {}
 
 Texture3D::Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
                      GLenum filtering, const SwizzleMask& swizzleMask,
                      const std::array<GLenum, 3>& wrapping, GLint level)
     : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, swizzleMask,
-              util::span(wrapping), level)
+              std::span(wrapping), level)
     , dimensions_(dimensions) {}
 
 Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
@@ -147,12 +147,12 @@ void Texture3D::uploadAndResize(const void* data, const size3_t& dim) {
 }
 
 void Texture3D::setWrapping(const std::array<GLenum, 3>& wrapping) {
-    Texture::setWrapping(util::span(wrapping));
+    Texture::setWrapping(std::span(wrapping));
 }
 
 std::array<GLenum, 3> Texture3D::getWrapping() const {
     std::array<GLenum, 3> wrapping{};
-    Texture::getWrapping(util::span(wrapping));
+    Texture::getWrapping(std::span(wrapping));
     return wrapping;
 }
 

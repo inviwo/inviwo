@@ -214,27 +214,27 @@ IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string_view
                       LogAudience audience = LogAudience::Developer);
 
 template <typename... Args>
-void log(SourceContext context, LogLevel level, LogAudience audience, std::string_view format,
-         Args&&... args) {
+void log(SourceContext context, LogLevel level, LogAudience audience,
+         fmt::format_string<Args...> format, Args&&... args) {
     LogCentral::getPtr()->log(context.getCaller(), level, audience, context.getFile(),
                               context.getFunction(), context.getLine(),
                               fmt::format(format, std::forward<Args>(args)...));
 }
 
 template <typename... Args>
-void logInfo(SourceContext context, std::string_view format, Args&&... args) {
+void logInfo(SourceContext context, fmt::format_string<Args...> format, Args&&... args) {
     LogCentral::getPtr()->log(context.getCaller(), LogLevel::Info, LogAudience::Developer,
                               context.getFile(), context.getFunction(), context.getLine(),
                               fmt::format(format, std::forward<Args>(args)...));
 }
 template <typename... Args>
-void logWarn(SourceContext context, std::string_view format, Args&&... args) {
+void logWarn(SourceContext context, fmt::format_string<Args...> format, Args&&... args) {
     LogCentral::getPtr()->log(context.getCaller(), LogLevel::Warn, LogAudience::Developer,
                               context.getFile(), context.getFunction(), context.getLine(),
                               fmt::format(format, std::forward<Args>(args)...));
 }
 template <typename... Args>
-void logError(SourceContext context, std::string_view format, Args&&... args) {
+void logError(SourceContext context, fmt::format_string<Args...> format, Args&&... args) {
     LogCentral::getPtr()->log(context.getCaller(), LogLevel::Error, LogAudience::Developer,
                               context.getFile(), context.getFunction(), context.getLine(),
                               fmt::format(format, std::forward<Args>(args)...));

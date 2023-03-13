@@ -124,11 +124,11 @@ Inport* Processor::removePort(Inport* port) {
     port->isReady_.setNotify([](const bool&) {});
     port->isOptional_.setNotify([](const bool&) {});
     port->setProcessor(nullptr);
-    util::erase_remove(inports_, port);
+    std::erase(inports_, port);
     removePortFromGroups(port);
 
     // This will delete the port if owned
-    util::erase_remove_if(ownedInports_, [&port](const std::unique_ptr<Inport>& p) {
+    std::erase_if(ownedInports_, [&port](const std::unique_ptr<Inport>& p) {
         if (p.get() == port) {
             port = nullptr;
             return true;
@@ -144,11 +144,11 @@ Inport* Processor::removePort(Inport* port) {
 Outport* Processor::removePort(Outport* port) {
     notifyObserversProcessorPortRemoved(this, port);
     port->setProcessor(nullptr);
-    util::erase_remove(outports_, port);
+    std::erase(outports_, port);
     removePortFromGroups(port);
 
     // This will delete the port if owned
-    util::erase_remove_if(ownedOutports_, [&port](const std::unique_ptr<Outport>& p) {
+    std::erase_if(ownedOutports_, [&port](const std::unique_ptr<Outport>& p) {
         if (p.get() == port) {
             port = nullptr;
             return true;
@@ -177,7 +177,7 @@ void Processor::addPortToGroup(Port* port, std::string_view portGroup) {
 
 void Processor::removePortFromGroups(Port* port) {
     auto group = portGroups_[port];
-    util::erase_remove(groupPorts_[group], port);
+    std::erase(groupPorts_[group], port);
     if (groupPorts_[group].empty()) groupPorts_.erase(group);
     portGroups_.erase(port);
 }
@@ -317,7 +317,7 @@ void Processor::addInteractionHandler(InteractionHandler* interactionHandler) {
 }
 
 void Processor::removeInteractionHandler(InteractionHandler* interactionHandler) {
-    util::erase_remove(interactionHandlers_, interactionHandler);
+    std::erase(interactionHandlers_, interactionHandler);
 }
 
 bool Processor::hasInteractionHandler() const { return !interactionHandlers_.empty(); }

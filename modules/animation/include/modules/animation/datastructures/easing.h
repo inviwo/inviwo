@@ -32,7 +32,8 @@
 
 #include <inviwo/core/util/assertion.h>  // for ivwAssert
 
-#include <cmath>   // for pow, sin, exp, sqrt, M_PI, cos, M_PI_2
+#include <cmath>  // for pow, sin, exp, sqrt
+#include <numbers>
 #include <iosfwd>  // for ostream
 
 namespace inviwo {
@@ -117,15 +118,15 @@ inline double inOutPolynomial(const double t, const double Exponent) {
 }
 
 /// Trigonometric In-Easing
-inline double inSine(const double t) { return 1 - sin((1 - t) * M_PI_2); }
+inline double inSine(const double t) { return 1 - sin((1 - t) * 2.0 * std::numbers::pi); }
 
 /// Trigonometric Out-Easing
-inline double outSine(const double t) { return sin(t * M_PI_2); }
+inline double outSine(const double t) { return sin(t * 2.0 * std::numbers::pi); }
 
 /// Trigonometric In-Out-Easing
 inline double inOutSine(const double t) {
     // This could be done in several ways, like the other sine easing as well.
-    // With sin: 0.5 + sin((1.5-t) * M_PI)/2
+    // With sin: 0.5 + sin((1.5-t) * std::numbers::pi)/2
     // We could also use a system similar to the polynomial easing,
     //  where we first call the InSine function and then the OutSine function.
     // However, this is most concise:
@@ -235,11 +236,11 @@ inline double inOutBack(const double t, const double overshootStrength = 2.59239
 }
 
 /// Overshooting Elastic In-Easing
-inline double inElastic(const double t) { return inExp(t) * sin(t * 3.25 * 2 * M_PI); }
+inline double inElastic(const double t) { return inExp(t) * sin(t * 3.25 * 2 * std::numbers::pi); }
 
 /// Overshooting Elastic Out-Easing
 inline double outElastic(const double t) {
-    return 1 - exp(-8 * t) * sin((1 - t) * 3.25 * 2 * M_PI);
+    return 1 - exp(-8 * t) * sin((1 - t) * 3.25 * 2 * std::numbers::pi);
 }
 
 /// Overshooting Elastic In-Out-Easing
@@ -251,7 +252,8 @@ inline double inOutElastic(const double t) {
     if (tstretched < 1.0) {
         return inElastic(tstretched) / 2;
     }
-    return (2 - exp(-8 * (tstretched - 1)) * sin((2 - tstretched) * 3.25 * 2 * M_PI)) / 2;
+    return (2 - exp(-8 * (tstretched - 1)) * sin((2 - tstretched) * 3.25 * 2 * std::numbers::pi)) /
+           2;
 }
 
 inline double outBounce(const double t) {

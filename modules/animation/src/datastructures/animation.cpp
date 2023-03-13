@@ -308,7 +308,7 @@ void Animation::trackAddedInternal(Track* track) {
 }
 
 void Animation::trackRemovedInternal(Track* track) {
-    util::erase_remove(priorityTracks_, track);
+    std::erase(priorityTracks_, track);
     if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
         if (auto owner = propertyTrack->getProperty()->getOwner()) {
             // Only stop observing property owner if no other track needs it

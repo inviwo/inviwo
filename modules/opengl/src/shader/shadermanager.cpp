@@ -82,7 +82,7 @@ void ShaderManager::registerShader(Shader* shader) {
 
 void ShaderManager::unregisterShader(Shader* shader) {
     shaderRemoveCallbacks_.invoke(shader->getID());
-    util::erase_remove(shaders_, shader);
+    std::erase(shaders_, shader);
 }
 
 bool ShaderManager::isRegistered(Shader* shader) const {

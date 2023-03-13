@@ -170,8 +170,8 @@ void PresentationProcessor::process() {
         // i.e. a data reader exists
         fileList_ = imageFilePattern_.getFileList();
         const auto numElems = fileList_.size();
-        util::erase_remove_if(fileList_,
-                              [this](std::string& file) { return !isValidImageFile(file); });
+        std::erase_if(fileList_,
+                      [this](const std::string& file) { return !isValidImageFile(file); });
         if (numElems != fileList_.size()) {
             // number of valid files has changed, need to update properties
             updateProperties();

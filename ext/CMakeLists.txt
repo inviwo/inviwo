@@ -148,13 +148,26 @@ ivw_register_license_file(NAME "warn" MODULE Core EXT
 )
 
 # tclap
-message(STATUS "add subdirectory: tclap")
-add_subdirectory(tclap)    
-ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core EXT
-    URL http://tclap.sourceforge.net/
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
-)
+option(IVW_USE_EXTERNAL_TCLAP "TCLAP is provided externaly" OFF)
+    if(NOT IVW_USE_EXTERNAL_TCLAP)
+    message(STATUS "add subdirectory: tclap")
+    add_subdirectory(tclap)
+    ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core EXT
+        URL http://tclap.sourceforge.net/
+        TYPE "The MIT License"
+        FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
+    )
+else()
+    # tclap 1.2.5 in vcpkg as of 20230303 does not use CMake
+    # but 1.4.0 does, when that is in vcpkg we should refactor this
+    find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
+    ivw_vcpkg_install(TCLAP MODULE Core EXT)
+
+    add_library(tclap INTERFACE)
+    ivw_register_package(tclap tclap)
+    add_library(inviwo::tclap ALIAS tclap)
+    target_include_directories(tclap INTERFACE ${TCLAP_INCLUDE_DIRS})
+endif()
 
 # tinydir
 option(IVW_USE_EXTERNAL_TINYDIR "Tinydir is provided externaly" OFF)
@@ -232,15 +245,6 @@ else()
     ivw_vcpkg_install(fmt MODULE Core EXT)
 endif()
 
-# span
-message(STATUS "add subdirectory: span")
-add_subdirectory(span)
-ivw_register_license_file(NAME "tcbrindle/span" target inviwo::span MODULE Core EXT
-    URL "https://github.com/tcbrindle/span"
-    TYPE " Boost Software License"
-    FILES ${IVW_EXTENSIONS_DIR}/span/span/LICENSE_1_0.txt
-)
-
 # sml
 message(STATUS "add subdirectory: sml")
 add_subdirectory(sml)
@@ -249,23 +253,6 @@ ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MO
     TYPE " Boost Software License"
     FILES ${IVW_EXTENSIONS_DIR}/sml/LICENSE_1_0.txt
 )
-
-# Sigar
-if(APPLE)
-    # Disable by default since SIGAR does not compile on newer versions of OSX 
-    option(IVW_USE_SIGAR "Use sigar to detect system capabilities" OFF)
-else()
-    option(IVW_USE_SIGAR "Use sigar to detect system capabilities" ON)
-endif()
-if(IVW_USE_SIGAR)
-    message(STATUS "add subdirectory: sigar")
-    add_subdirectory(sigar)
-    ivw_register_license_file(NAME "Sigar" TARGET inviwo::sigar MODULE Core EXT
-        URL "http://sigar.hyperic.com"
-        TYPE "Apache License"
-        FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
-    )
-endif()
 
 # CRoaring
 option(IVW_USE_EXTERNAL_ROARING "CRoaring is provided externaly" OFF)

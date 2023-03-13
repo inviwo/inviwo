@@ -35,7 +35,6 @@
 #include <flags/flags.h>
 #include <fmt/format.h>
 #include <units/units.hpp>
-#include <tcb/span.hpp>
 
 #include <string_view>
 #include <tuple>
@@ -44,6 +43,7 @@
 #include <iterator>
 #include <vector>
 #include <utility>
+#include <span>
 
 namespace inviwo {
 
@@ -145,7 +145,7 @@ constexpr std::array<UnitDesc, 1> temperature = {{
 constexpr Unit elementary_charge{1.602176634e-19, units::precise::C};
 
 constexpr std::array<UnitDesc, 4> atomic = {{
-    {units::precise::distance::angstrom,  u8"\u00C5ngstr\u00F6m", u8"\u00C5", UnitFlag::None},
+    {units::precise::distance::angstrom,  "\u00C5ngstr\u00F6m", "\u00C5", UnitFlag::None},
     {units::precise::energy::eV,          "electron volt",      "eV",     UnitFlag::UsesPrefix},
     {units::precise::energy::hartree,     "hartree",            "Ha",     UnitFlag::None},
     {elementary_charge,                   "elementary charge",  "e",      UnitFlag::None}
@@ -165,7 +165,7 @@ constexpr std::array<UnitDesc, 17> prefixes = {{
     {units::precise::femto, "femto", "f", UnitFlag::None},
     {units::precise::pico,  "pico",  "p", UnitFlag::None},
     {units::precise::nano,  "nano",  "n", UnitFlag::None},
-    {units::precise::micro, "micro", u8"\u00B5", UnitFlag::None},
+    {units::precise::micro, "micro", "\u00B5", UnitFlag::None},
     {units::precise::milli, "milli", "m", UnitFlag::None},
     {units::precise::one,   "",      "",  UnitFlag::None},
     {units::precise::kilo,  "kilo",  "k", UnitFlag::None},
@@ -182,7 +182,7 @@ constexpr std::array<UnitDesc, 17> prefixes = {{
 
 struct Group {
     std::string_view name;
-    util::span<const UnitDesc> units;
+    std::span<const UnitDesc> units;
 };
 
 constexpr std::array<Group, 7> groups = {{{"SI", si},

@@ -49,7 +49,7 @@ bool DataReaderFactory::registerObject(DataReader* reader) {
 
 bool DataReaderFactory::unRegisterObject(DataReader* reader) {
     size_t removed =
-        util::map_erase_remove_if(map_, [reader](auto& elem) { return elem.second == reader; });
+        std::erase_if(map_, [reader](const auto& elem) { return elem.second == reader; });
 
     if (removed > 0) {
         notifyObserversOnUnRegister(reader);

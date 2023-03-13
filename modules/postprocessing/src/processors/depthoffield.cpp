@@ -86,6 +86,7 @@
 #include <unordered_map>  // for unordered_map
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for pair, make_pair
+#include <numbers>
 
 #include <glm/detail/setup.hpp>               // for size_t
 #include <glm/fwd.hpp>                        // for vec2, vec3
@@ -320,7 +321,7 @@ vec2 DepthOfField::calculatePeripheralCameraPos(int evalCount, int maxEvalCount)
     if (evalCount == 0) {
         return vec2(0.0f, 0.0f);
     } else {
-        double currAngle = 2.0 * M_PI * (static_cast<double>(evalCount) - 0.5) /
+        double currAngle = 2.0 * std::numbers::pi * (static_cast<double>(evalCount) - 0.5) /
                            static_cast<double>(maxEvalCount - 1);
         return static_cast<vec2>(aperture_.get() / 2.0 *
                                  dvec2(glm::cos(currAngle), glm::sin(currAngle)));
@@ -440,7 +441,7 @@ void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorl
                         VolumeRAM* lightField, VolumeRAM* lightFieldDepth, double fovy,
                         double focusDepth) {
     double radius = aperture_.get() / 2.0 * sqrt(haltonX_[viewIndex]);
-    double angle = double(viewIndex) / double(simViewCountApprox_.get()) * 2.0 * M_PI;
+    double angle = double(viewIndex) / double(simViewCountApprox_.get()) * 2.0 * std::numbers::pi;
     vec2 simCameraPos = radius * vec2(glm::cos(angle), glm::sin(angle));
 
     vec2 disparity = (1.0 / zWorld - 1.0 / focusDepth) * (cameraPos - simCameraPos);
@@ -493,7 +494,7 @@ void DepthOfField::moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount,
         offset = calculatePeripheralCameraPos(evalCount_ + 1, maxEvalCount);
     } else {
         double radius = aperture_.get() / 2.0 * sqrt(haltonX_[evalCount_]);
-        double angle = 2.0 * M_PI * haltonY_[evalCount_];
+        double angle = 2.0 * std::numbers::pi * haltonY_[evalCount_];
         offset = static_cast<vec2>(radius * dvec2(glm::cos(angle), glm::sin(angle)));
     }
     camera->setOffset(offset);

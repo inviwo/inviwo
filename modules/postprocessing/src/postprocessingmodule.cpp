@@ -70,35 +70,6 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     registerProcessor<ImageHueSaturationLuminance>();
     registerProcessor<ImageFilter>();
     registerProcessor<ImageOpacity>();
-
-    // Properties
-    // registerProperty<PostProcessingProperty>();
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<PostProcessingReader>());
-    // registerDataWriter(std::make_unique<PostProcessingWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<PostProcessingDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<PostProcessingOutport>();
-    // registerPort<PostProcessingInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<PostProcessingPropertyWidget, PostProcessingProperty>("Default");
-
-    // Dialogs
-    // registerDialog<PostProcessingDialog>(PostProcessingOutport);
-
-    // Other varius things
-    // registerCapabilities(std::make_unique<PostProcessingCapabilities>());
-    // registerSettings(std::make_unique<PostProcessingSettings>());
-    // registerMetaData(std::make_unique<PostProcessingMetaData>());
-    // registerPortInspector("PostProcessingOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget);
-    // registerDrawer(util::make_unique_ptr<PostProcessingDrawer>());
 }
 
 }  // namespace inviwo

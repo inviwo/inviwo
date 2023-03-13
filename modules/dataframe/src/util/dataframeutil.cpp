@@ -289,10 +289,9 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
             auto valuesLeftIt = catCol1->begin();
             auto valuesRightIt = catCol2->begin();
             for (auto&& [i, rowMatches] : util::enumerate<std::uint32_t>(rows)) {
-                util::erase_remove_if(rowMatches,
-                                      [key = *(valuesLeftIt + i), valuesRightIt](auto row) {
-                                          return key != *(valuesRightIt + row);
-                                      });
+                std::erase_if(rowMatches, [key = *(valuesLeftIt + i), valuesRightIt](auto row) {
+                    return key != *(valuesRightIt + row);
+                });
             }
         } else {
             leftCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
@@ -305,7 +304,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
                                             ->getDataContainer();
 
                     for (auto&& [i, rowMatches] : util::enumerate(rows)) {
-                        util::erase_remove_if(rowMatches, [key = left[i], &right](auto row) {
+                        std::erase_if(rowMatches, [key = left[i], &right](auto row) {
                             return key != right[row];
                         });
                     }
@@ -610,16 +609,18 @@ std::vector<std::uint32_t> selectRows(const Column& col,
                                 [[maybe_unused]] const std::function<bool(std::int64_t)>& func) {
                                 if constexpr (std::is_integral_v<ValueType>) {
                                     return func(static_cast<std::int64_t>(v));
+                                } else {
+                                    (void)v;
+                                    return false;
                                 }
-                                (void)v;
-                                return false;
                             },
                             [v = value]([[maybe_unused]] const std::function<bool(double)>& func) {
                                 if constexpr (std::is_floating_point_v<ValueType>) {
                                     return func(v);
+                                } else {
+                                    (void)v;
+                                    return false;
                                 }
-                                (void)v;
-                                return false;
                             },
                             [](const std::function<bool(std::string_view)>&) { return false; }};
                         auto op = [&](const auto& f) { return std::visit(test, f.filter); };

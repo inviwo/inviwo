@@ -129,7 +129,7 @@ InviwoModule::~InviwoModule() {
 
     // Remove any potential ModuleCallbackAction associated with this module
     auto& callbackActions = app_->getCallbackActions();
-    util::erase_remove_if(callbackActions, [&](auto& a) { return a->getModule() == this; });
+    std::erase_if(callbackActions, [&](const auto& a) { return a->getModule() == this; });
 }
 
 std::string InviwoModule::getIdentifier() const { return identifier_; }

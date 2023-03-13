@@ -77,7 +77,7 @@ struct IVW_CORE_API StrBuffer {
      * @brief Format args using format into a new StrBuffer
      */
     template <typename... Args>
-    explicit StrBuffer(std::string_view format, Args&&... args) {
+    explicit StrBuffer(fmt::format_string<Args...> format, Args&&... args) {
         fmt::format_to(std::back_inserter(buff), format, std::forward<Args>(args)...);
     }
 
@@ -85,7 +85,7 @@ struct IVW_CORE_API StrBuffer {
      * @brief Append new content into buffer using format and args
      */
     template <typename... Args>
-    StrBuffer& append(std::string_view format, Args&&... args) {
+    StrBuffer& append(fmt::format_string<Args...> format, Args&&... args) {
         fmt::format_to(std::back_inserter(buff), format, std::forward<Args>(args)...);
         return *this;
     }
@@ -94,7 +94,7 @@ struct IVW_CORE_API StrBuffer {
      * @brief Clear buffer content and format args using format into buffer.
      */
     template <typename... Args>
-    StrBuffer& replace(std::string_view format, Args&&... args) {
+    StrBuffer& replace(fmt::format_string<Args...> format, Args&&... args) {
         buff.clear();
         fmt::format_to(std::back_inserter(buff), format, std::forward<Args>(args)...);
         return *this;

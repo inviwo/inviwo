@@ -15,7 +15,7 @@ target_include_directories(tclap INTERFACE
 
 #  HACK: have the files showing in the IDE, under the name 'flags'
 add_custom_target(tclap_dummy SOURCES ${HEADER_FILES})
-set_target_properties(tclap_dummy PROPERTIES VERSION 1.2.1 SOVERSION 1.2)
+set_target_properties(tclap_dummy PROPERTIES VERSION 1.2.5 SOVERSION 1.2)
 
 ivw_register_package(tclap tclap)
 # Creates VS folder structure

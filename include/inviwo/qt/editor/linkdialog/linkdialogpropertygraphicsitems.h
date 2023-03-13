@@ -50,7 +50,9 @@ public:
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF& constraint = QSizeF()) const;
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + LinkDialogPropertyGraphicsItemType };
+    enum {
+        Type = static_cast<int>(UserType) + static_cast<int>(LinkDialogPropertyGraphicsItemType)
+    };
     virtual int type() const override { return Type; }
 
     QPointF getConnectionPoint();

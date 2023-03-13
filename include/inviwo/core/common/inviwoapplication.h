@@ -84,7 +84,6 @@ class DataVisualizerManager;
 class Settings;
 class SystemSettings;
 class Capabilities;
-class SystemCapabilities;
 class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
@@ -181,7 +180,7 @@ public:
      * Example if you want to do it earlier:
      * @code
      * auto& callbackActions = app_->getCallbackActions();
-     * util::erase_remove_if(callbackActions, [&](auto& a) { return a->getModule() == this; });
+     * std::erase_if(callbackActions, [&](auto& a) { return a->getModule() == this; });
      * @endcode
      * @see getCallbackActions
      */
@@ -211,7 +210,7 @@ public:
      * @see InviwoModule
      */
     std::vector<Capabilities*> getModuleCapabilities();
-    SystemCapabilities& getSystemCapabilities();
+
     template <class T>
     T* getCapabilitiesByType();
 
@@ -489,7 +488,6 @@ protected:
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
     std::unique_ptr<SystemSettings> systemSettings_;
     std::unique_ptr<AppResourceManagerObserver> resourcemanagerobserver_;
-    std::unique_ptr<SystemCapabilities> systemCapabilities_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moduleCallbackActions_;
     ModuleManager moduleManager_;
     std::unique_ptr<ProcessorNetwork> processorNetwork_;

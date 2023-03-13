@@ -6,7 +6,8 @@
  *
  *  Copyright (c) 2003, Michael E. Smoot .
  *  Copyright (c) 2004, Michael E. Smoot, Daniel Aarno .
- *  All rights reverved.
+ *  Copyright (c) 2017 Google Inc.
+ *  All rights reserved.
  *
  *  See the file COPYING in the top directory of this distribution for
  *  more information.
@@ -25,11 +26,8 @@
 #ifndef TCLAP_ARGUMENT_H
 #define TCLAP_ARGUMENT_H
 
-#undef HAVE_CONFIG_H
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#else
-#define HAVE_SSTREAM
 #endif
 
 #include <string>
@@ -39,15 +37,7 @@
 #include <iomanip>
 #include <cstdio>
 
-#if defined(HAVE_SSTREAM)
-#include <sstream>
-typedef std::istringstream istringstream;
-#elif defined(HAVE_STRSTREAM)
-#include <strstream>
-typedef std::istrstream istringstream;
-#else
-#error "Need a stringstream (sstream or strstream) to compile!"
-#endif
+#include <tclap/sstream.h>
 
 #include <tclap/ArgException.h>
 #include <tclap/Visitor.h>
@@ -99,7 +89,7 @@ class Arg
 		std::string _flag;
 
 		/**
-		 * A single work namd indentifying the argument.
+		 * A single word namd identifying the argument.
 		 * This value (preceded by two dashed {--}) can also be used
 		 * to identify an argument on the command line.  Note that the
 		 * _name does NOT include the two dashes as part of the _name. The
@@ -138,7 +128,7 @@ class Arg
 		bool _alreadySet;
 
 		/**
-		 * A pointer to a vistitor object.
+		 * A pointer to a visitor object.
 		 * The visitor allows special handling to occur as soon as the
 		 * argument is matched.  This defaults to NULL and should not
 		 * be used unless absolutely necessary.
@@ -159,7 +149,7 @@ class Arg
 		bool _acceptsMultipleValues;
 
 		/**
-		 * Performs the special handling described by the Vistitor.
+		 * Performs the special handling described by the Visitor.
 		 */
 		void _checkWithVisitor() const;
 
@@ -394,17 +384,17 @@ class Arg
 /**
  * Typedef of an Arg list iterator.
  */
-typedef std::list<Arg*>::iterator ArgListIterator;
+typedef std::list<Arg*>::const_iterator ArgListIterator;
 
 /**
  * Typedef of an Arg vector iterator.
  */
-typedef std::vector<Arg*>::iterator ArgVectorIterator;
+typedef std::vector<Arg*>::const_iterator ArgVectorIterator;
 
 /**
  * Typedef of a Visitor list iterator.
  */
-typedef std::list<Visitor*>::iterator VisitorListIterator;
+typedef std::list<Visitor*>::const_iterator VisitorListIterator;
 
 /*
  * Extract a value of type T from it's string representation contained
@@ -416,7 +406,7 @@ template<typename T> void
 ExtractValue(T &destVal, const std::string& strVal, ValueLike vl)
 {
     static_cast<void>(vl); // Avoid warning about unused vl
-    std::istringstream is(strVal);
+    istringstream is(strVal.c_str());
 
     int valuesRead = 0;
     while ( is.good() ) {

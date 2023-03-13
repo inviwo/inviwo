@@ -138,7 +138,7 @@ struct IndirectIterator {
     using iterator_category = typename std::iterator_traits<Iter>::iterator_category;
 
     using base_value = typename std::iterator_traits<Iter>::value_type;
-    using value_type = decltype(*std::declval<base_value>());
+    using value_type = std::remove_reference_t<decltype(*std::declval<base_value>())>;
 
     static constexpr bool is_const =
         std::conditional_t<PropagateConst, detail_indirect::is_const_iterator<Iter>,
@@ -157,8 +157,19 @@ struct IndirectIterator {
     template <typename Tag, typename Iterables>
     using require_t = detail_indirect::require_t<Tag, Iter>;
 
-    IndirectIterator() = default;
-    IndirectIterator(Iter iterator) : iterator_(iterator) {}
+    IndirectIterator() noexcept(std::is_nothrow_default_constructible_v<Iter>) = default;
+    IndirectIterator(Iter iterator) noexcept(std::is_nothrow_move_constructible_v<Iter>)
+        : iterator_(std::move(iterator)) {}
+
+    IndirectIterator(const IndirectIterator&) noexcept(std::is_nothrow_copy_constructible_v<Iter>) =
+        default;
+    IndirectIterator& operator=(const IndirectIterator&) noexcept(
+        std::is_nothrow_assignable_v<Iter, Iter>) = default;
+
+    IndirectIterator(IndirectIterator&&) noexcept(std::is_nothrow_move_constructible_v<Iter>) =
+        default;
+    IndirectIterator& operator=(IndirectIterator&&) noexcept(
+        std::is_nothrow_move_assignable_v<Iter>) = default;
 
     IndirectIterator& operator++() {
         ++iterator_;
@@ -246,8 +257,9 @@ private:
  * @see IndirectIterator
  */
 template <bool PropagateConst = true, typename Iter>
-IndirectIterator<Iter, PropagateConst> makeIndirectIterator(Iter&& iter) {
-    return IndirectIterator<Iter, PropagateConst>(std::forward<Iter>(iter));
+IndirectIterator<Iter, PropagateConst> makeIndirectIterator(Iter iter) noexcept(
+    std::is_nothrow_move_constructible_v<Iter>) {
+    return IndirectIterator<Iter, PropagateConst>(std::move(iter));
 }
 
 }  // namespace util

@@ -488,7 +488,7 @@ void LinkDialogGraphicsScene::removePropertyLinkRepresentation(const PropertyLin
         DialogConnectionGraphicsItem* cItem = *it;
 
         cItem->hide();
-        util::erase_remove(connections_, cItem);
+        std::erase(connections_, cItem);
 
         LinkDialogPropertyGraphicsItem* start = cItem->getStartProperty();
         LinkDialogPropertyGraphicsItem* end = cItem->getEndProperty();

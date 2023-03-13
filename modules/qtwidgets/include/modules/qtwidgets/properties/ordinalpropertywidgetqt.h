@@ -50,6 +50,7 @@
 #include <type_traits>  // for remove_reference_t
 #include <utility>      // for swap
 #include <vector>       // for vector
+#include <numbers>
 
 #include <QAction>      // for QAction
 #include <QGridLayout>  // for QGridLayout
@@ -257,9 +258,9 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::updateFromProperty() {
     if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
                   Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
         val = util::spherical(val);
-        min = T{std::numeric_limits<BT>::epsilon(), 0, -M_PI};
-        max = T{3 * glm::length(max), M_PI, M_PI};
-        inc = T{glm::length(inc), M_PI / 100.0, 2 * M_PI / 100.0};
+        min = T{std::numeric_limits<BT>::epsilon(), 0, -std::numbers::pi};
+        max = T{3 * glm::length(max), std::numbers::pi, std::numbers::pi};
+        inc = T{glm::length(inc), std::numbers::pi / 100.0, 2 * std::numbers::pi / 100.0};
 
         mincb[1] = ConstraintBehavior::Immutable;
         mincb[2] = ConstraintBehavior::Immutable;

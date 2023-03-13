@@ -50,9 +50,6 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/keyboardutils.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-
 #include <QScreen>
 #include <QTabWidget>
 #include <QToolBar>
@@ -85,13 +82,6 @@
 #include <QApplication>
 #include <QSplitterHandle>
 #include <QMainWindow>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-#include <QWindow>
-#include <QGuiApplication>
-#endif
-
-#include <warn/pop>
 
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtChangelogResources {
@@ -567,13 +557,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     handle(1)->setAttribute(Qt::WA_Hover);
 
     // hide changelog on screens with less width than 1400
-    auto getScreen = []() {
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-        return QGuiApplication::screenAt(utilqt::getApplicationMainWindow()->pos());
-#else
-        return utilqt::getApplicationMainWindow()->screen();
-#endif
-    };
+    auto getScreen = []() { return utilqt::getApplicationMainWindow()->screen(); };
 
     if (getScreen()->size().width() < 1400) {
         setSizes(QList<int>({1, 0}));

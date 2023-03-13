@@ -370,7 +370,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     } else if (contextMask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) {
         glProfileStr_ = "compatibility";
     } else {
-        constexpr auto err = IVW_UNINDENT(R"(
+        static constexpr auto err = IVW_UNINDENT(R"(
             Error retrieving OpenGL profile, assuming core profile found:
             glVersionStr: {}
             glVersion:    {}

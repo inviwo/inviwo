@@ -58,43 +58,11 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<EigenMix>();
     registerProcessor<EigenNormalize>();
     registerProcessor<TestMatrix>();
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/eigenutils/glsl");
 
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
-    // registerProcessor<EigenUtilsProcessor>());
-
-    // Properties
-    // registerProperty<EigenUtilsProperty>());
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<EigenUtilsReader>());
-    // registerDataWriter(std::make_unique<EigenUtilsWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<EigenUtilsDisk2RAMConverter>());
-
-    // Ports
     registerDefaultsForDataType<Eigen::MatrixXf>();
 
     registerPortInspector(PortTraits<DataOutport<Eigen::MatrixXf>>::classIdentifier(),
                           this->getPath(ModulePath::PortInspectors) + "/eigenmatrix.inv");
-
-    // PropertyWidgets
-    // registerPropertyWidget<EigenUtilsPropertyWidget, EigenUtilsProperty>("Default");
-
-    // Dialogs
-    // registerDialog<EigenUtilsDialog>(EigenUtilsOutport));
-
-    // Other varius things
-    // registerCapabilities(std::make_unique<EigenUtilsCapabilities>()));
-    // registerSettings(std::make_unique<EigenUtilsSettings>());
-    // registerMetaData(std::make_unique<EigenUtilsMetaData>());
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget);
-    // registerDrawer(util::make_unique_ptr<EigenUtilsDrawer>());
 }
 
 }  // namespace inviwo

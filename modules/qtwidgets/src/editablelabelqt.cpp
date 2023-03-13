@@ -165,7 +165,7 @@ bool EditableLabelQt::event(QEvent* event) {
             if (auto menu = propertyWidget_->getContextMenu()) {
                 auto renameAction = menu->addAction(tr("&Rename"));
                 connect(renameAction, &QAction::triggered, this, &EditableLabelQt::edit);
-                menu->exec(mouseEvent->globalPos());
+                menu->exec(mouseEvent->globalPosition().toPoint());
                 mouseEvent->accept();
                 return true;
             }

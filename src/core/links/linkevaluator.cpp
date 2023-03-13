@@ -53,8 +53,8 @@ struct VisitedHelper {
     }
     ~VisitedHelper() {
         for (auto& link : toVisit_) {
-            util::erase_remove(visited_, link.src_);
-            util::erase_remove(visited_, link.dst_);
+            std::erase(visited_, link.src_);
+            std::erase(visited_, link.dst_);
         }
     }
 
@@ -107,13 +107,13 @@ void LinkEvaluator::removeLink(const PropertyLink& propertyLink) {
 
     auto it = processorLinksCache_.find(ProcessorPair(p1, p2));
     if (it != processorLinksCache_.end()) {
-        util::erase_remove(it->second, propertyLink);
+        std::erase(it->second, propertyLink);
         if (it->second.empty()) processorLinksCache_.erase(it);
     }
 
     // Update primary cache
     auto& cachelist = propertyLinkPrimaryCache_[src];
-    util::erase_remove(cachelist, dst);
+    std::erase(cachelist, dst);
 
     if (cachelist.empty()) {
         propertyLinkPrimaryCache_.erase(src);

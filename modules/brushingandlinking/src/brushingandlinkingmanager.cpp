@@ -313,7 +313,7 @@ size_t BrushingAndLinkingManager::getNumberOfHighlighted(BrushingTarget target) 
     return getIndices(BrushingAction::Highlight, target).size();
 }
 
-uint32_t BrushingAndLinkingManager::getMax(util::span<const BrushingAction> actions,
+uint32_t BrushingAndLinkingManager::getMax(std::span<const BrushingAction> actions,
                                            BrushingTarget target) const {
     return std::transform_reduce(
         actions.begin(), actions.end(), std::uint32_t{0},
@@ -321,7 +321,7 @@ uint32_t BrushingAndLinkingManager::getMax(util::span<const BrushingAction> acti
         [&](BrushingAction action) { return getIndices(action, target).max(); });
 }
 
-uint32_t BrushingAndLinkingManager::getMin(util::span<const BrushingAction> actions,
+uint32_t BrushingAndLinkingManager::getMin(std::span<const BrushingAction> actions,
                                            BrushingTarget target) const {
     return std::transform_reduce(
         actions.begin(), actions.end(), std::uint32_t{0},

@@ -88,7 +88,7 @@ void FileSystemObserverQt::registerFileObserver(FileObserver* fileObserver) {
 }
 
 void FileSystemObserverQt::unRegisterFileObserver(FileObserver* fileObserver) {
-    util::erase_remove(fileObservers_, fileObserver);
+    std::erase(fileObservers_, fileObserver);
 }
 
 void FileSystemObserverQt::startFileObservation(const std::string& fileName) {

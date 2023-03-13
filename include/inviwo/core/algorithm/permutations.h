@@ -32,8 +32,8 @@
 
 #include <inviwo/core/util/transformiterator.h>
 #include <inviwo/core/util/exception.h>
-#include <tcb/span.hpp>
 
+#include <span>
 #include <vector>
 #include <algorithm>
 
@@ -59,7 +59,7 @@ std::vector<T> makeVectorRange(ptrdiff_t start, ptrdiff_t end, ptrdiff_t step = 
  * Example:
  * \code
  * std::array values = {0, 1, 2};
- * util::Permutations perm(util::span{values}, 2);
+ * util::Permutations perm(std::span{values}, 2);
  * do {
  *     for (auto v : perm) {
  *         std::cout << v << " ";
@@ -71,7 +71,7 @@ std::vector<T> makeVectorRange(ptrdiff_t start, ptrdiff_t end, ptrdiff_t step = 
 template <typename T>
 class Permutations {
 public:
-    Permutations(util::span<T> values, size_t r)
+    Permutations(std::span<T> values, size_t r)
         : pool{values}
         , r{r}
         , indices{makeVectorRange<size_t>(0, pool.size())}
@@ -109,7 +109,7 @@ private:
         return [this](size_t i) { return pool[i]; };
     }
 
-    util::span<T> pool;
+    std::span<T> pool;
     size_t r;
     std::vector<size_t> indices;
     std::vector<size_t> cycles;
@@ -117,7 +117,7 @@ private:
 };
 
 template <typename T, size_t N>
-Permutations(util::span<T, N>, size_t) -> Permutations<T>;
+Permutations(std::span<T, N>, size_t) -> Permutations<T>;
 
 /**
  * Generate \p r length subsequences of elements from the input \p values.
@@ -126,7 +126,7 @@ Permutations(util::span<T, N>, size_t) -> Permutations<T>;
  * Example:
  * \code
  * std::array values = {0, 1, 2};
- * util::Combinations comb(util::span{values}, 2);
+ * util::Combinations comb(std::span{values}, 2);
  * do {
  *     for (auto v : comb) {
  *         std::cout << v << " ";
@@ -138,7 +138,7 @@ Permutations(util::span<T, N>, size_t) -> Permutations<T>;
 template <typename T>
 class Combinations {
 public:
-    Combinations(util::span<T> values, size_t r)
+    Combinations(std::span<T> values, size_t r)
         : pool{values}, indices{makeVectorRange<ptrdiff_t>(0, r)} {
 
         if (indices.size() > pool.size() || indices.empty()) {
@@ -169,12 +169,12 @@ private:
         return [this](size_t i) { return pool[i]; };
     }
 
-    util::span<T> pool;
+    std::span<T> pool;
     std::vector<ptrdiff_t> indices;
 };
 
 template <typename T, size_t N>
-Combinations(util::span<T, N>, size_t) -> Combinations<T>;
+Combinations(std::span<T, N>, size_t) -> Combinations<T>;
 
 /**
  * Generate \p r length subsequences of elements from the input \p values.
@@ -183,7 +183,7 @@ Combinations(util::span<T, N>, size_t) -> Combinations<T>;
  * Example:
  * \code
  * std::array sizes = {3, 2};
- * util::IndexProduct inds(util::span{sizes}, 2);
+ * util::IndexProduct inds(std::span{sizes}, 2);
  * do {
  *     for (auto v : inds) {
  *         std::cout << v << " ";
@@ -195,7 +195,7 @@ Combinations(util::span<T, N>, size_t) -> Combinations<T>;
 template <typename T>
 class IndexProduct {
 public:
-    IndexProduct(util::span<T> sizes) : sizes{sizes}, indices(sizes.size(), 0) {}
+    IndexProduct(std::span<T> sizes) : sizes{sizes}, indices(sizes.size(), 0) {}
 
     bool next() {
         const ptrdiff_t n = indices.size();
@@ -214,12 +214,12 @@ public:
     auto end() const { return indices.end(); }
 
 private:
-    util::span<T> sizes;
+    std::span<T> sizes;
     std::vector<T> indices;
 };
 
 template <typename T, size_t N>
-IndexProduct(util::span<T, N>) -> IndexProduct<T>;
+IndexProduct(std::span<T, N>) -> IndexProduct<T>;
 
 }  // namespace util
 

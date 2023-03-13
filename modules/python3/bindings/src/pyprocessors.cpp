@@ -300,6 +300,7 @@ void exposeProcessors(pybind11::module& m) {
                  }
 
                  if (auto layer = canvas->getVisibleLayer()) {
+                     rendercontext::activateDefault();
                      writer->writeData(layer, filepath);
                  } else {
                      throw Exception("No image in canvas " + canvas->getIdentifier(),
@@ -324,7 +325,7 @@ void exposeProcessors(pybind11::module& m) {
                  */
                 dispatchPool(
                     [layerClone = std::shared_ptr<Layer>{layer->clone()}, writer, filepath]() {
-                        RenderContext::getPtr()->activateLocalRenderContext();
+                        rendercontext::activateLocal();
                         writer->writeData(layerClone.get(), filepath);
                     });
             } else {

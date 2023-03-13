@@ -50,7 +50,7 @@ public:
      */
     KeyboardEvent(IvwKey key = IvwKey::Unknown, KeyState state = KeyState::Press,
                   KeyModifiers modifiers = KeyModifiers(flags::empty),
-                  uint32_t nativeVirtualKey = 0, const std::string& utfText = u8"");
+                  uint32_t nativeVirtualKey = 0, const std::string& utfText = "");
 
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;

@@ -30,6 +30,8 @@
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
+#include <numbers>
+
 namespace inviwo {
 
 std::shared_ptr<SimpleMesh> SimpleMeshCreator::rectangularPrism(vec3 posLlf, vec3 posUrb,
@@ -164,11 +166,11 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
     unsigned int pointsPerLine = segmentsPerLoop + 1;
     for (unsigned int i = 0; i <= numLoops; ++i) {
         for (unsigned int j = 0; j <= segmentsPerLoop; ++j) {
-            float theta = (i * static_cast<float>(M_PI) / numLoops);
+            float theta = (i * std::numbers::pi_v<float> / numLoops);
 
-            if (i == numLoops) theta = static_cast<float>(M_PI);
+            if (i == numLoops) theta = std::numbers::pi_v<float>;
 
-            float phi = j * 2 * static_cast<float>(M_PI) / segmentsPerLoop;
+            float phi = j * 2 * std::numbers::pi_v<float> / segmentsPerLoop;
             float sinTheta = std::sin(theta);
             float sinPhi = std::sin(phi);
             float cosTheta = std::cos(theta);
@@ -222,12 +224,12 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
     for (unsigned int i = 0; i <= numLoops; ++i) {
         for (unsigned int j = 0; j <= segmentsPerLoop; ++j) {
             float theta =
-                (i * static_cast<float>(M_PI) /
+                (i * std::numbers::pi_v<float> /
                  numLoops);  // + ((static_cast<float>(M_PI) * j) / (segmentsPerLoop * numLoops));
 
-            if (i == numLoops) theta = static_cast<float>(M_PI);
+            if (i == numLoops) theta = std::numbers::pi_v<float>;
 
-            float phi = j * 2 * static_cast<float>(M_PI) / segmentsPerLoop;
+            float phi = j * 2 * std::numbers::pi_v<float> / segmentsPerLoop;
             float sinTheta = std::sin(theta);
             float sinPhi = std::sin(phi);
             float cosTheta = std::cos(theta);

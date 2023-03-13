@@ -569,7 +569,7 @@ void FragmentListRenderer::debugIllustrationBuffer(std::ostream& oss) {
         for (size_t x = 0; x < screenSize_.x; ++x) {
             const size_t start = idxImg[x + screenSize_.x * y];
             const size_t count = countImg[x + screenSize_.x * y];
-            fmt::print(oss, "{: 4}:{: 4} start={: 5}, count={: 5}\n", x, y, start, count);
+            fmt::print(oss, "{: <4}:{: <4} start={: <5}, count={: <5}\n", x, y, start, count);
 
             for (size_t i = 0; i < count; ++i) {
                 auto color = colorBuffer[start + i];

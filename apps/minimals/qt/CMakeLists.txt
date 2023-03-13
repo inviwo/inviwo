@@ -1,10 +1,7 @@
 # Inviwo Qt Application
 project(inviwo_qtminimum)
 
-# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
-
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 # Add source files
 set(SOURCE_FILES
@@ -36,13 +33,11 @@ target_link_libraries(inviwo_qtminimum PUBLIC
     inviwo::core
     inviwo::module::qtwidgets
     inviwo::qtapplicationbase
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
 )
-target_compile_definitions(inviwo_qtminimum PUBLIC 
-    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
-)
+
 ivw_configure_application_module_dependencies(inviwo_qtminimum ${enabled_modules})
 ivw_define_standard_definitions(inviwo_qtminimum inviwo_qtminimum) 
 ivw_define_standard_properties(inviwo_qtminimum)

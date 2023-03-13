@@ -41,8 +41,7 @@
 #include <mutex>    // for mutex
 #include <utility>  // for pair
 #include <vector>   // for vector
-
-#include <tcb/span.hpp>  // for span
+#include <span>     // for span
 
 namespace inviwo {
 class DataFormatBase;
@@ -71,9 +70,9 @@ protected:
 class IVW_MODULE_OPENGL_API Texture : public TextureBase, public Observable<TextureObserver> {
 public:
     Texture(GLenum target, GLFormat glFormat, GLenum filtering, const SwizzleMask& swizzleMask,
-            util::span<const GLenum> wrapping, GLint level);
+            std::span<const GLenum> wrapping, GLint level);
     Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType, GLenum filtering,
-            const SwizzleMask& swizzleMask, util::span<const GLenum> wrapping, GLint level);
+            const SwizzleMask& swizzleMask, std::span<const GLenum> wrapping, GLint level);
     Texture(const Texture& other);
     Texture(Texture&& other);
     Texture& operator=(const Texture& other);
@@ -103,8 +102,8 @@ public:
     void setInterpolation(InterpolationType interpolation);
     InterpolationType getInterpolation() const;
 
-    void setWrapping(util::span<const GLenum> wrapping);
-    void getWrapping(util::span<GLenum> wrapping) const;
+    void setWrapping(std::span<const GLenum> wrapping);
+    void getWrapping(std::span<GLenum> wrapping) const;
 
     void download(void* data) const;
     void downloadToPBO() const;

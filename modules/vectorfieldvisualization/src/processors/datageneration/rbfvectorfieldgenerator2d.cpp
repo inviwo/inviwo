@@ -63,6 +63,7 @@
 #include <type_traits>    // for remove_extent_t
 #include <unordered_map>  // for unordered_map
 #include <unordered_set>  // for unordered_set
+#include <numbers>
 
 #include <glm/geometric.hpp>  // for distance
 #include <glm/mat2x2.hpp>     // for operator*, mat<>:...
@@ -98,7 +99,7 @@ RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
 
     , rd_()
     , mt_(rd_())
-    , theta_(0, 2 * M_PI)
+    , theta_(0, 2 * std::numbers::pi)
     , x_(-1.0, 1.0) {
     addPort(vectorField_);
 

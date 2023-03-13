@@ -34,42 +34,9 @@
 namespace inviwo {
 
 Python3GLModule::Python3GLModule(InviwoApplication* app) : InviwoModule(app, "Python3GL") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
-    // registerProcessor<Python3GLProcessor>();
-
-    // Properties
-    // registerProperty<Python3GLProperty>();
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<Python3GLReader>());
-    // registerDataWriter(std::make_unique<Python3GLWriter>());
-
     // Data converters
     registerRepresentationConverter<VolumeRepresentation>(std::make_unique<VolumeGL2PyConverter>());
     registerRepresentationConverter<VolumeRepresentation>(std::make_unique<VolumePy2GLConverter>());
-
-    // Ports
-    // registerPort<Python3GLOutport>();
-    // registerPort<Python3GLInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<Python3GLPropertyWidget, Python3GLProperty>("Default");
-
-    // Dialogs
-    // registerDialog<Python3GLDialog>(Python3GLOutport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<Python3GLCapabilities>());
-    // registerSettings(std::make_unique<Python3GLSettings>());
-    // registerMetaData(std::make_unique<Python3GLMetaData>());
-    // registerPortInspector("Python3GLOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget); registerDrawer(util::make_unique_ptr<Python3GLDrawer>());
 }
 
 }  // namespace inviwo

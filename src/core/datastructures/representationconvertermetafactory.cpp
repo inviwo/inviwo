@@ -41,8 +41,8 @@ bool RepresentationConverterMetaFactory::registerObject(
 
 bool RepresentationConverterMetaFactory::unRegisterObject(
     BaseRepresentationConverterFactory* factory) {
-    size_t removed = util::map_erase_remove_if(
-        map_, [factory](const auto& elem) { return elem.second == factory; });
+    size_t removed =
+        std::erase_if(map_, [factory](const auto& elem) { return elem.second == factory; });
     return removed > 0;
 }
 

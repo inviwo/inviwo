@@ -49,9 +49,9 @@ public:
 template <class T>
 class Singleton {
 public:
-    Singleton<T>() = default;
-    Singleton<T>(Singleton<T> const&) = delete;
-    void operator=(Singleton<T> const&) = delete;
+    Singleton() = default;
+    Singleton(const Singleton&) = delete;
+    void operator=(const Singleton&) = delete;
 
     static void init() {
         if (T::instance_) {

@@ -177,7 +177,7 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
     switch (role) {
         case Qt::DisplayRole: {
             QVariant val = valueFuncs_[index.column()](index.row());
-            switch (static_cast<QMetaType::Type>(val.type())) {
+            switch (val.typeId()) {
                 case QMetaType::Double:
                     return QString::number(val.toDouble(), 'g', 6);
                 case QMetaType::Float:

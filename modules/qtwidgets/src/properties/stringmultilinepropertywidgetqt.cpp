@@ -48,7 +48,6 @@
 #include <QTextCursor>          // for QTextCursor, QTextCursor::Start
 #include <QTextDocument>        // for QTextDocument
 #include <Qt>                   // for ControlModifier, Key_Enter
-#include <QtGlobal>             // for QT_VERSION, QT_VERSION_CHECK
 #include <glm/common.hpp>       // for clamp
 
 class QContextMenuEvent;
@@ -113,10 +112,10 @@ MultilineTextEdit::MultilineTextEdit(QWidget* parent)
     // enable focus switch by tab (leaving the editor and committing the changes)
     setTabChangesFocus(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+
     // need to enable the scrollbar for adjusting to its contents
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-#endif
+
     // make the text edit show at least n lines of text
     setMinimumHeight(minLineCount_ * lineHeight_);
     setMaximumHeight(maxLineCount_ * lineHeight_);

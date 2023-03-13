@@ -83,14 +83,9 @@ dvec2 normalizePosition(QPointF pos, size2_t dim) {
 
 template <typename QE>
 dvec2 normalizePosition(QE* e, size2_t dim) {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     return normalizePosition(e->position(), dim);
-#else
-    return normalizePosition(e->localPos(), dim);
-#endif
 }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 TouchState mapTouchState(const QEventPoint& point) {
     switch (point.state()) {
         case QEventPoint::Pressed:
@@ -105,48 +100,19 @@ TouchState mapTouchState(const QEventPoint& point) {
             return TouchState::None;
     }
 }
-#else
-TouchState mapTouchState(const QTouchEvent::TouchPoint& point) {
-    switch (point.state()) {
-        case Qt::TouchPointPressed:
-            return TouchState::Started;
-        case Qt::TouchPointMoved:
-            return TouchState::Updated;
-        case Qt::TouchPointStationary:
-            return TouchState::Stationary;
-        case Qt::TouchPointReleased:
-            return TouchState::Finished;
-        default:
-            return TouchState::None;
-    }
-}
-#endif
 
 TouchDevice::DeviceType mapDeviceType(QTouchEvent* touch) {
     switch (touch->device()->type()) {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
         case QPointingDevice::DeviceType::TouchScreen:
             return TouchDevice::DeviceType::TouchScreen;
         case QPointingDevice::DeviceType::TouchPad:
             return TouchDevice::DeviceType::TouchPad;
         default:
             return TouchDevice::DeviceType::TouchScreen;
-#else
-        case QTouchDevice::DeviceType::TouchScreen:
-            return TouchDevice::DeviceType::TouchScreen;
-        case QTouchDevice::DeviceType::TouchPad:
-            return TouchDevice::DeviceType::TouchPad;
-        default:
-            return TouchDevice::DeviceType::TouchScreen;
-#endif
     }
 }
 
 const TouchDevice* mapTouchDevice(QTouchEvent* touch) {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    using QInputDevice = QTouchDevice;
-#endif
-
     //! Links QPointingDevice to inviwo::TouchDevice
     static std::map<const QInputDevice*, TouchDevice> devices_;
 
@@ -290,11 +256,7 @@ bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
         numSteps = utilqt::toGLM(numDegrees);
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     const auto pos = normalizePosition(e->position(), canvasDimensions_());
-#else
-    const auto pos = normalizePosition(e->pos(), canvasDimensions_());
-#endif
 
     WheelEvent wheelEvent(utilqt::getMouseWheelButtons(e), utilqt::getModifiers(e), numSteps, pos,
                           imageDimensions_(), depth_(pos));
@@ -351,13 +313,13 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
 
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
-    touchPoints.reserve(touch->touchPoints().size());
+    touchPoints.reserve(touch->points().size());
     const uvec2 imageSize = imageDimensions_();
 
-    for (const auto& touchPoint : touch->touchPoints()) {
-        const auto pos = normalizePosition(touchPoint.pos(), canvasDimensions_());
-        const auto prevPos = normalizePosition(touchPoint.lastPos(), canvasDimensions_());
-        const auto pressedPos = normalizePosition(touchPoint.startPos(), canvasDimensions_());
+    for (const auto& touchPoint : touch->points()) {
+        const auto pos = normalizePosition(touchPoint.position(), canvasDimensions_());
+        const auto prevPos = normalizePosition(touchPoint.lastPosition(), canvasDimensions_());
+        const auto pressedPos = normalizePosition(touchPoint.pressPosition(), canvasDimensions_());
         const auto pressure = touchPoint.pressure();
         const auto touchState = mapTouchState(touchPoint);
         touchPoints.emplace_back(touchPoint.id(), touchState, pos, prevPos, pressedPos, imageSize,
@@ -385,11 +347,7 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
     TouchEvent touchEvent(touchPoints, device, utilqt::getModifiers(touch));
     touch->accept();
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
-#else
     lastNumFingers_ = static_cast<int>(touch->points().size());
-#endif
     screenPositionNormalized_ = touchEvent.centerPointNormalized();
 
     propagator_->propagateEvent(&touchEvent, nullptr);

@@ -57,7 +57,6 @@
 #include <QSize>         // for QSize
 #include <QSizeF>        // for QSizeF
 #include <QString>       // for QString
-#include <QtGlobal>      // for QT_VERSION, QT_VERSION_CHECK
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*
 #include <glm/vec4.hpp>  // for vec<>::(anonymous), operator*
@@ -98,21 +97,13 @@ IVW_MODULE_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
  * \brief create a QString from a UTF8-encoded std::string
  */
 inline QString toLocalQString(std::string_view str) {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     return QString::fromLocal8Bit(str.data(), str.size());
-#else
-    return QString::fromLocal8Bit(str.data(), static_cast<int>(str.size()));
-#endif
 }
 /**
  * \brief create a QString from a UTF8-encoded std::string
  */
 inline QString toLocalQString(const std::string& str) {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     return QString::fromLocal8Bit(str.data(), str.size());
-#else
-    return QString::fromLocal8Bit(str.data(), static_cast<int>(str.size()));
-#endif
 }
 /**
  * \brief convert a QString to a localized 8bit std::string
@@ -124,22 +115,12 @@ inline std::string fromLocalQString(const QString& str) {
 /**
  * \brief create a QString from a UTF8-encoded std::string
  */
-inline QString toQString(std::string_view str) {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    return QString::fromUtf8(str.data(), str.size());
-#else
-    return QString::fromUtf8(str.data(), static_cast<int>(str.size()));
-#endif
-}
+inline QString toQString(std::string_view str) { return QString::fromUtf8(str.data(), str.size()); }
 /**
  * \brief create a QString from a UTF8-encoded std::string
  */
 inline QString toQString(const std::string& str) {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     return QString::fromUtf8(str.data(), str.size());
-#else
-    return QString::fromUtf8(str.data(), static_cast<int>(str.size()));
-#endif
 }
 /**
  * \brief create a UTF8-encoded std::string from a QString

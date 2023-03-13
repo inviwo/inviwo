@@ -506,15 +506,15 @@ void VolumeAxis::updateCaptions() {
             break;
         case CaptionType::Custom:
             if (auto volume = inport_.getData()) {
-                xAxis_.captionSettings_.title_.set(
-                    fmt::format(customCaption_.get(), fmt::arg("n", volume->axes[0].name),
-                                fmt::arg("u", volume->axes[0].unit)));
-                yAxis_.captionSettings_.title_.set(
-                    fmt::format(customCaption_.get(), fmt::arg("n", volume->axes[1].name),
-                                fmt::arg("u", volume->axes[1].unit)));
-                zAxis_.captionSettings_.title_.set(
-                    fmt::format(customCaption_.get(), fmt::arg("n", volume->axes[2].name),
-                                fmt::arg("u", volume->axes[2].unit)));
+                xAxis_.captionSettings_.title_.set(fmt::format(
+                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[0].name),
+                    fmt::arg("u", volume->axes[0].unit)));
+                yAxis_.captionSettings_.title_.set(fmt::format(
+                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[1].name),
+                    fmt::arg("u", volume->axes[1].unit)));
+                zAxis_.captionSettings_.title_.set(fmt::format(
+                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[2].name),
+                    fmt::arg("u", volume->axes[2].unit)));
             }
             break;
         case CaptionType::String:

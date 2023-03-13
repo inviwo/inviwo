@@ -5,7 +5,8 @@
  *  file:  DocBookOutput.h
  * 
  *  Copyright (c) 2004, Michael E. Smoot
- *  All rights reverved.
+ *  Copyright (c) 2017, Google LLC
+ *  All rights reserved.
  * 
  *  See the file COPYING in the top directory of this distribution for
  *  more information.
@@ -68,6 +69,7 @@ class DocBookOutput : public CmdLineOutput
 		virtual void failure(CmdLineInterface& c, 
 						     ArgException& e );
 
+	    DocBookOutput() : theDelimiter('=') {}
 	protected:
 
 		/**
@@ -99,7 +101,7 @@ inline void DocBookOutput::usage(CmdLineInterface& _cmd )
 	std::string xversion = _cmd.getVersion();
 	theDelimiter = _cmd.getDelimiter();
 	XorHandler xorHandler = _cmd.getXorHandler();
-	std::vector< std::vector<Arg*> > xorList = xorHandler.getXorList();
+	const std::vector< std::vector<Arg*> > xorList = xorHandler.getXorList();
 	basename(progName);
 
 	std::cout << "<?xml version='1.0'?>" << std::endl;
@@ -133,7 +135,7 @@ inline void DocBookOutput::usage(CmdLineInterface& _cmd )
 
 		std::cout << "</group>" << std::endl;
 	}
-	
+
 	// rest of args
 	for (ArgListIterator it = argList.begin(); it != argList.end(); it++)
 		if ( !xorHandler.contains( (*it) ) )
@@ -241,6 +243,7 @@ inline void DocBookOutput::printShortArg(Arg* a)
 		removeChar(arg,']');
 		removeChar(arg,'<');
 		removeChar(arg,'>');
+		removeChar(arg,'.');
 		arg.erase(0, arg.find_last_of(theDelimiter) + 1);
 		std::cout << theDelimiter;
 		std::cout << "<replaceable>" << arg << "</replaceable>";
@@ -279,6 +282,7 @@ inline void DocBookOutput::printLongArg(Arg* a)
 		removeChar(arg,']');
 		removeChar(arg,'<');
 		removeChar(arg,'>');
+		removeChar(arg,'.');
 		arg.erase(0, arg.find_last_of(theDelimiter) + 1);
 		std::cout << theDelimiter;
 		std::cout << "<replaceable>" << arg << "</replaceable>";

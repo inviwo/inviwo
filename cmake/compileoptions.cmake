@@ -159,8 +159,6 @@ macro(ivw_define_standard_definitions project_name target)
             _UNICODE
             _USE_MATH_DEFINES
         )
-    else()
-        target_compile_definitions(${target} PRIVATE HAVE_CONFIG_H)
     endif()
 endmacro()
 

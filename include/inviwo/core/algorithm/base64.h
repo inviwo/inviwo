@@ -33,15 +33,15 @@
 #include <string>
 #include <string_view>
 
-#include <tcb/span.hpp>
+#include <span>
 
 namespace inviwo {
 
 namespace util {
 
-IVW_CORE_API std::string base64_encode(util::span<char> s, bool url = false);
-IVW_CORE_API std::string base64_encode_pem(util::span<char> s);
-IVW_CORE_API std::string base64_encode_mime(util::span<char> s);
+IVW_CORE_API std::string base64_encode(std::span<char> s, bool url = false);
+IVW_CORE_API std::string base64_encode_pem(std::span<char> s);
+IVW_CORE_API std::string base64_encode_mime(std::span<char> s);
 
 IVW_CORE_API std::string base64_decode(std::string_view s, bool remove_linebreaks = false);
 

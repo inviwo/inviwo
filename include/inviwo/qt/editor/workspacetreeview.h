@@ -51,11 +51,6 @@ public:
     explicit WorkspaceTreeView(QAbstractItemModel* model, QWidget* parent = nullptr);
     virtual ~WorkspaceTreeView() = default;
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
-    // QTreeView::expandRecursively() was introduced in Qt 5.13
-    // see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
-    void expandRecursively(const QModelIndex& index);
-#endif
     void collapseRecursively(const QModelIndex& index);
 
 signals:

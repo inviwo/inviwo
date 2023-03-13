@@ -82,8 +82,10 @@ void exposeImage(py::module& m) {
     py::class_<SwizzleMask>(m, "SwizzleMask")
         .def(py::init<>([]() { return swizzlemasks::rgba; }))
         .def(py::init<SwizzleMask>())
-        .def(py::init<ImageChannel, ImageChannel, ImageChannel, ImageChannel>(), py::arg("red"),
-             py::arg("green"), py::arg("blue"), py::arg("alpha"))
+        .def(py::init<>([](ImageChannel r, ImageChannel g, ImageChannel b, ImageChannel a) {
+                 return SwizzleMask{r, g, b, a};
+             }),
+             py::arg("red"), py::arg("green"), py::arg("blue"), py::arg("alpha"))
         // clang-format off
         .def_property_readonly_static("rgb", [](py::object) { return swizzlemasks::rgb; })
         .def_property_readonly_static("rgba", [](py::object) { return swizzlemasks::rgba; })

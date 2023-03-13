@@ -32,7 +32,7 @@
 #include <inviwo/core/inviwocommondefines.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/systemcapabilities.h>
+#include <inviwo/core/util/buildinfo.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/document.h>
@@ -42,8 +42,8 @@
 #include <inviwo/core/inviwocommondefines.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
+#include <chrono>
+
 #include <QFrame>
 #include <QVBoxLayout>
 #include <QString>
@@ -53,7 +53,6 @@
 #include <QImage>
 #include <QUrl>
 #include <QUrlQuery>
-#include <warn/pop>
 
 namespace inviwo {
 
@@ -96,8 +95,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     textdoc->setAcceptRichText(false);
     textdoc->setOpenExternalLinks(true);
 
-    auto& syscap = app->getSystemCapabilities();
-    auto buildYear = syscap.getBuildInfo().year;
+    const std::chrono::time_point now{std::chrono::system_clock::now()};
+    const std::chrono::year_month_day ymd{std::chrono::floor<std::chrono::days>(now)};
 
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
@@ -141,7 +140,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         auto cell = table.append("td");
         cell.append("h1", "Inviwo", {{"style", "color:white;"}});
         cell.append("p", "Interactive Visualization Workshop. Version " + toString(build::version));
-        cell.append("p", "&copy; 2012-" + toString(buildYear) + " The Inviwo Foundation");
+        cell.append("p", "&copy; 2012-" + toString(static_cast<int>(ymd.year())) +
+                             " The Inviwo Foundation");
         cell.append("a", "http://www.inviwo.org", {{"href", "http://www.inviwo.org"}});
         cell.append("p",
                     "Inviwo is a rapid prototyping environment for interactive "
@@ -202,22 +202,20 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         auto bmbf = p.append("a", "", {{"href", "https://www.bmbf.de"}});
         bmbf.append("img", "", makeImg(":images/bmbf-white.svg", 60));
     }
-    {
-        const auto& bi = syscap.getBuildInfo();
-        auto h = body.append("p");
-        h.append("h3", "Build Info: ");
-        utildoc::TableBuilder tb(h, P::end());
-        tb(H("Date"), bi.getDate());
-        tb(H("Configuration"), bi.configuration);
-        tb(H("Generator"), bi.generator);
-        tb(H("Compiler"), bi.compiler + " " + bi.compilerVersion);
-    }
-    {
-        auto h = body.append("p");
-        h.append("h3", "Repos:");
-        utildoc::TableBuilder tb(h, P::end());
-        for (auto item : syscap.getBuildInfo().githashes) {
-            tb(H(item.first), item.second);
+    if (auto bi = util::getBuildInfo()) {
+        auto h1 = body.append("p");
+        h1.append("h3", "Build Info: ");
+        utildoc::TableBuilder tb1(h1, P::end());
+        tb1(H("Date"), bi->getDate());
+        tb1(H("Configuration"), bi->configuration);
+        tb1(H("Generator"), bi->generator);
+        tb1(H("Compiler"), bi->compiler + " " + bi->compilerVersion);
+
+        auto h2 = body.append("p");
+        h2.append("h3", "Repos:");
+        utildoc::TableBuilder tb2(h2, P::end());
+        for (auto item : bi->githashes) {
+            tb2(H(item.first), item.second);
         }
     }
     {

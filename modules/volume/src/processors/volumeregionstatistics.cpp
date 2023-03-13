@@ -39,10 +39,11 @@
 
 #include <numeric>
 #include <algorithm>
+#include <span>
+#include <numbers>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <tcb/span.hpp>
 
 namespace inviwo {
 
@@ -81,8 +82,8 @@ auto addColumns(DataFrame& df, std::string_view name, size_t size, Unit unit,
 }
 
 auto addColumns(DataFrame& df, size_t extent, std::string_view name, size_t size,
-                util::span<const Unit> units, util::span<const std::optional<dvec2>> ranges,
-                util::span<const std::string_view> labels) {
+                std::span<const Unit> units, std::span<const std::optional<dvec2>> ranges,
+                std::span<const std::string_view> labels) {
     IVW_ASSERT(units.size() >= extent, "Size missmatch");
     IVW_ASSERT(ranges.size() >= extent, "Size missmatch");
     IVW_ASSERT(labels.size() >= extent, "Size missmatch");
@@ -100,9 +101,9 @@ auto addColumns(DataFrame& df, size_t extent, std::string_view name, size_t size
 }
 
 auto addColumns(DataFrame& df, size_t extent, size_t comps, std::string_view name, size_t size,
-                util::span<const Unit> units, util::span<const std::optional<dvec2>> ranges,
-                util::span<const std::string_view> majorLabels,
-                util::span<const std::string_view> minorLabels) {
+                std::span<const Unit> units, std::span<const std::optional<dvec2>> ranges,
+                std::span<const std::string_view> majorLabels,
+                std::span<const std::string_view> minorLabels) {
 
     IVW_ASSERT(units.size() >= comps, "Size missmatch");
     IVW_ASSERT(ranges.size() >= comps, "Size missmatch");
@@ -150,7 +151,7 @@ private:
     void addComp(double pos, double weight) {
         auto& acc = std::get<N>(vec);
         if constexpr (wrap == Wrapping::Repeat) {
-            const auto theta = pos / dim[N] * 2.0 * M_PI;
+            const auto theta = pos / dim[N] * 2.0 * std::numbers::pi;
             acc.first += weight * std::cos(theta);
             acc.second += weight * std::sin(theta);
         } else {
@@ -162,8 +163,8 @@ private:
     double getComp(double totalWeight) const {
         auto& acc = std::get<N>(vec);
         if constexpr (wrap == Wrapping::Repeat) {
-            const auto theta = std::atan2(-acc.second, -acc.first) + M_PI;
-            return dim[N] * theta / (2.0 * M_PI);
+            const auto theta = std::atan2(-acc.second, -acc.first) + std::numbers::pi;
+            return dim[N] * theta / (2.0 * std::numbers::pi);
         } else {
             return acc / totalWeight;
         }
@@ -224,7 +225,7 @@ constexpr auto wrappingDispatch(Functor&& func, const Wrapping3D& wrapping, Args
         using XT = decltype(x);
         return build_array<3>([](auto y) constexpr {
             using YT = decltype(y);
-            return build_array<3>([](auto z) constexpr->DispatchFunctor {
+            return build_array<3>([](auto z) constexpr -> DispatchFunctor {
                 using ZT = decltype(z);
                 return [](Functor&& func, Args&&... args) {
                     constexpr auto X = static_cast<Wrapping>(XT::value);
@@ -293,7 +294,7 @@ struct StatsFunctor {
                                                            axes[2].name};
         const std::array<Unit, 3> axesUnits = {axes[0].unit, axes[1].unit, axes[2].unit};
         static constexpr std::array<const std::string_view, 4> indexLabels = {"0", "1", "2", "3"};
-        const auto channelLabels = util::span<const std::string_view>(indexLabels.data(), channels);
+        const auto channelLabels = std::span<const std::string_view>(indexLabels.data(), channels);
 
         const auto valueUnits = util::make_array<4>([&](auto) { return map.valueAxis.unit; });
 
@@ -321,7 +322,7 @@ struct StatsFunctor {
             addColumns(*df, channels, "Max", nRegions, valueUnits, defaultRanges, channelLabels);
         regionCenter = addColumns(*df, 3, "Center", nRegions, axesUnits, sizeRange, axesNames);
         regionCoM = addColumns(*df, channels, 3, "CoM", nRegions, axesUnits, sizeRange,
-                               channelLabels, util::make_span(axesNames));
+                               channelLabels, std::span(axesNames));
     }
 
     size_t getRegion(size_t index) const {

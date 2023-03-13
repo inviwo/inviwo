@@ -31,11 +31,12 @@
 #include <modules/opengl/openglmoduledefine.h>
 
 #include <inviwo/core/util/exception.h>
-#include <tcb/span.hpp>
 
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/buffer/bufferobject.h>
 #include <modules/opengl/texture/texture.h>
+
+#include <span>
 
 namespace inviwo {
 
@@ -55,13 +56,13 @@ public:
         unbind();
     }
 
-    util::span<T> map(GLenum access) {
+    std::span<T> map(GLenum access) {
         storage.bind();
         void* data = glMapBuffer(storage.getTarget(), access);
         if (!data) {
             throw Exception(IVW_CONTEXT, "Unable to map OpenGL buffer '{}'", storage.getId());
         }
-        return util::span<T>{reinterpret_cast<T*>(data), getSize()};
+        return std::span<T>{reinterpret_cast<T*>(data), getSize()};
     }
 
     void unmap() {

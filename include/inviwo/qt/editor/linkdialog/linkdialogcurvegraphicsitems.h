@@ -48,7 +48,7 @@ public:
     virtual ~DialogCurveGraphicsItem();
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + LinkDialogCurveGraphicsItemType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(LinkDialogCurveGraphicsItemType) };
     int type() const override { return Type; }
 
     // Override

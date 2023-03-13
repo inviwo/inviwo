@@ -282,12 +282,12 @@ void utilgl::parseShaderSource(
 }
 
 std::string ShaderObject::InDeclaration::toString() const {
-    return fmt::format(decl, fmt::arg("type", type), fmt::arg("name", name),
+    return fmt::format(fmt::runtime(decl), fmt::arg("type", type), fmt::arg("name", name),
                        fmt::arg("location", location));
 }
 
 std::string ShaderObject::OutDeclaration::toString() const {
-    return fmt::format(decl, fmt::arg("type", type), fmt::arg("name", name),
+    return fmt::format(fmt::runtime(decl), fmt::arg("type", type), fmt::arg("name", name),
                        fmt::arg("location", location));
 }
 

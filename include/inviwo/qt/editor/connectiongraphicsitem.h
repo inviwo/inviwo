@@ -77,7 +77,7 @@ public:
     void resetHoverInfo();
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + CurveGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(CurveGraphicsType) };
     virtual int type() const override { return Type; }
 
     /**
@@ -116,7 +116,7 @@ public:
     ProcessorOutportGraphicsItem* getOutportGraphicsItem() const;
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ConnectionDragGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(ConnectionDragGraphicsType) };
     virtual int type() const override { return Type; }
 
 protected:
@@ -151,7 +151,7 @@ public:
     ProcessorOutportGraphicsItem* getOutportGraphicsItem() const;
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ConnectionGraphicsType };
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(ConnectionGraphicsType) };
     virtual int type() const override { return Type; }
 
     // Override

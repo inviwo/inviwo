@@ -38,6 +38,7 @@
 #include <cmath>        // for exp, M_PI
 #include <string>       // for string
 #include <string_view>  // for string_view
+#include <numbers>
 
 #include <glm/gtx/norm.hpp>  // for distance2
 
@@ -79,8 +80,8 @@ public:
 
     double evaluate(const T& r) const {
         // TODO This definition seems strange, should be verified
-        const double s =
-            0.5 * glm::distance2(r, center_.get()) / (sigma_.get() * sigma_.get()) / M_PI;
+        const double s = 0.5 * glm::distance2(r, center_.get()) / (sigma_.get() * sigma_.get()) /
+                         std::numbers::pi;
         return height_.get() * std::exp(-s);
     }
 

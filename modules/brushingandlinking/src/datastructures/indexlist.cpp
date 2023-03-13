@@ -94,7 +94,7 @@ void IndexList::update() const {
     if (!indicesDirty_) return;
 
     using T = std::unordered_map<std::string, BitSet>::value_type;
-    util::map_erase_remove_if(indicesBySource_, [](const T& p) { return p.second.empty(); });
+    std::erase_if(indicesBySource_, [](const T& p) { return p.second.empty(); });
 
     auto bitsets =
         util::transform(indicesBySource_, [](auto& p) -> const BitSet* { return &p.second; });

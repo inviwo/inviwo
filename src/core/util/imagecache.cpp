@@ -91,7 +91,7 @@ void ImageCache::update(std::vector<size2_t> dimensions) {
             unusedImages.push_back(std::move(it->second));
             it = cache_.erase(it);
         } else {
-            util::erase_remove(dimensions, *dim);
+            std::erase(dimensions, *dim);
             ++it;
         }
     }

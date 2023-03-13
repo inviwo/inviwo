@@ -74,10 +74,6 @@ struct LogTableModelEntry {
         Message
     };
 
-    LogTableModelEntry() = default;
-    LogTableModelEntry(const LogTableModelEntry& other) = default;
-    ~LogTableModelEntry() = default;
-
     std::chrono::system_clock::time_point time;
     std::string source;
     LogLevel level;

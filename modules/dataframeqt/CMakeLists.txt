@@ -1,9 +1,7 @@
 # Inviwo DataFrameQt Module
 ivw_module(DataFrameQt)
 
-# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg)
 
 #-------------------------------------------------------------------- 
 # Add MOC files
@@ -37,23 +35,16 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add moc files
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
-else()
-    qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
-endif()
+qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Create module
 ivw_create_module(NO_PCH QT ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-dataframeqt PUBLIC 
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::Svg
-)
-target_compile_definitions(inviwo-module-dataframeqt PUBLIC 
-    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Svg
 )
 
 ivw_compile_optimize_on_target(inviwo-module-dataframeqt)

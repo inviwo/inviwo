@@ -72,6 +72,7 @@
 #include <type_traits>    // for remove_extent_t
 #include <unordered_map>  // for unordered_map
 #include <unordered_set>  // for unordered_set
+#include <numbers>
 
 #include <fmt/core.h>                 // for format_to, basic_...
 #include <glm/common.hpp>             // for abs
@@ -467,7 +468,8 @@ void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationPa
     secondClosest->permutedLightDirection = secondClosest->axisPermutationLight * tmpLightDir;
 
     // Calculate the blending factor
-    blendingFactor_ = static_cast<float>(1.f - (2.f * std::acos(closestVal) / M_PI));
+    blendingFactor_ =
+        static_cast<float>(1.f - (2.f * std::acos(closestVal) / std::numbers::pi_v<float>));
 
     calculatedOnes_ = true;
 }

@@ -315,8 +315,8 @@ private:
 namespace detail {
 
 template <typename T>
-using isDeserializable = decltype(
-    std::declval<Deserializer>().deserialize(std::declval<std::string_view>(), std::declval<T&>()));
+using isDeserializable = decltype(std::declval<Deserializer>().deserialize(
+    std::declval<std::string_view>(), std::declval<T&>()));
 
 template <typename T>
 using isStreamable = decltype(std::declval<std::istream&>() >> std::declval<T&>());
@@ -506,7 +506,7 @@ public:
         auto toRemove = util::transform(container, [&](const T& x) -> K { return getID_(x); });
         ContainerWrapper<T, K> cont(
             itemKey_, [&](const K& id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
-                util::erase_remove(toRemove, id);
+                std::erase(toRemove, id);
                 auto it = util::find_if(container, [&](T& i) { return getID_(i) == id; });
                 if (it != container.end()) {
                     return {true, *it, [&](T& /*val*/) {}};
@@ -579,7 +579,7 @@ public:
             container, [](const std::pair<const K, T>& item) { return item.first; });
         ContainerWrapper<T, K> cont(
             itemKey_, [&](const K& id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
-                util::erase_remove(toRemove, id);
+                std::erase(toRemove, id);
                 auto it = container.find(id);
                 if (it != container.end()) {
                     return {true, it->second, [&](T& /*val*/) {}};

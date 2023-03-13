@@ -160,7 +160,7 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
         std::vector<std::pair<units::detail::unit_data, int>> match;
         match.reserve(groups.size());
         for (size_t searchGroupSize = 1; searchGroupSize <= groups.size(); ++searchGroupSize) {
-            util::Combinations comb(util::make_span(bases), searchGroupSize);
+            util::Combinations<units::detail::unit_data> comb{bases, searchGroupSize};
             do {
                 auto test = Unit{}.base_units();
                 match.clear();
@@ -253,8 +253,7 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
     // All the unicode superscript digits from 0 to 9 but we let 0,1 ("\u2070", "\u00B9") be
     // empty since they are not needed
     constexpr std::array<std::string_view, 10> powers = {
-        "",         "",         u8"\u00B2", u8"\u00B3", u8"\u2074",
-        u8"\u2075", u8"\u2076", u8"\u2077", u8"\u2078", u8"\u2079"};
+        "", "", "\u00B2", "\u00B3", "\u2074", "\u2075", "\u2076", "\u2077", "\u2078", "\u2079"};
 
     const auto [mult, niceUnits] =
         ::inviwo::util::findBestSetOfNamedUnits(unit, enabledGroups, usesPrefixes);

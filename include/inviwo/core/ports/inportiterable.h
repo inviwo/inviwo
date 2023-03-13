@@ -70,10 +70,10 @@ public:
             return i;
         }
 
-        bool operator==(const self& rhs) const {
-            return pIter_ == rhs.pIter_ && dIter_ == rhs.dIter_;
+        friend bool operator==(const self& lhs, const self& rhs) {
+            return lhs.pIter_ == rhs.pIter_ && lhs.dIter_ == rhs.dIter_;
         }
-        bool operator!=(const self& rhs) const { return !(*this == rhs); }
+        friend bool operator!=(const self& lhs, const self& rhs) { return !(lhs == rhs); }
 
     protected:
         void shouldGetNextPort() {
@@ -210,8 +210,12 @@ public:
         std::shared_ptr<const T> operator->() const {
             return static_cast<DataOutport<T>*>(*pIter_)->getData();
         }
-        bool operator==(const self& rhs) const { return pIter_ == rhs.pIter_; }
-        bool operator!=(const self& rhs) const { return pIter_ != rhs.pIter_; }
+        friend bool operator==(const self& lhs, const self& rhs) {
+            return lhs.pIter_ == rhs.pIter_;
+        }
+        friend bool operator!=(const self& lhs, const self& rhs) {
+            return lhs.pIter_ != rhs.pIter_;
+        }
 
     protected:
         PortIter pIter_;
