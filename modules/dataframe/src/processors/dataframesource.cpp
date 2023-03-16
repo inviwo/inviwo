@@ -61,7 +61,7 @@ DataFrameSource::DataFrameSource(InviwoApplication* app, std::string_view file)
     : DataSource<DataFrame, DataFrameOutport>(util::getDataReaderFactory(app), file, "spreadsheet")
     , columns_("columns", "Column MetaData") {
 
-    DataSource<DataFrame, DataFrameOutport>::file_.setDisplayName("Spreadsheet file");
+    DataSource<DataFrame, DataFrameOutport>::file.setDisplayName("Spreadsheet file");
 }
 
 void DataFrameSource::dataLoaded(std::shared_ptr<DataFrame> data) {
