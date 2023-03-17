@@ -46,13 +46,13 @@ constexpr bool charconv = false;
 SerializeBase::SerializeBase()
     : doc_{std::make_unique<TxDocument>()}, rootElement_{nullptr}, retrieveChild_{true} {}
 
-SerializeBase::SerializeBase(std::string_view fileName)
+SerializeBase::SerializeBase(const std::filesystem::path& fileName)
     : fileName_{fileName}
-    , doc_{std::make_unique<TxDocument>(fileName.data())}
+    , doc_{std::make_unique<TxDocument>(fileName.string())}
     , rootElement_{nullptr}
     , retrieveChild_{true} {}
 
-SerializeBase::SerializeBase(std::istream& stream, std::string_view path)
+SerializeBase::SerializeBase(std::istream& stream, const std::filesystem::path& path)
     : fileName_{path}
     , doc_{std::make_unique<TxDocument>()}
     , rootElement_{nullptr}
@@ -64,7 +64,7 @@ SerializeBase::~SerializeBase() = default;
 SerializeBase::SerializeBase(SerializeBase&&) noexcept = default;
 SerializeBase& SerializeBase::operator=(SerializeBase&&) noexcept = default;
 
-const std::string& SerializeBase::getFileName() const { return fileName_; }
+const std::filesystem::path& SerializeBase::getFileName() const { return fileName_; }
 
 std::string SerializeBase::nodeToString(const TxElement& node) {
     try {

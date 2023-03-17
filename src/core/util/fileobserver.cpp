@@ -67,7 +67,7 @@ FileObserver::~FileObserver() {
     }
 }
 
-bool FileObserver::startFileObservation(const std::string& fileName) {
+bool FileObserver::startFileObservation(const std::filesystem::path& fileName) {
     if (!fileSystemObserver_) return false;
     auto it = observedFiles_.find(fileName);
     if (it == observedFiles_.end()) {
@@ -80,7 +80,7 @@ bool FileObserver::startFileObservation(const std::string& fileName) {
     return false;
 }
 
-bool FileObserver::stopFileObservation(const std::string& fileName) {
+bool FileObserver::stopFileObservation(const std::filesystem::path& fileName) {
     if (!fileSystemObserver_) return false;
 
     auto it = observedFiles_.find(fileName);
@@ -101,10 +101,12 @@ void FileObserver::stopAllObservation() {
     observedFiles_.clear();
 }
 
-bool FileObserver::isObserved(const std::string& fileName) const {
+bool FileObserver::isObserved(const std::filesystem::path& fileName) const {
     return observedFiles_.find(fileName) != observedFiles_.end();
 }
 
-const std::unordered_set<std::string>& FileObserver::getFiles() const { return observedFiles_; }
+const std::unordered_set<std::filesystem::path, PathHash>& FileObserver::getFiles() const {
+    return observedFiles_;
+}
 
 }  // namespace inviwo

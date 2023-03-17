@@ -204,7 +204,8 @@ void FilePatternProperty::updateFileList() {
             const std::string filePath = filesystem::getFileDirectory(item);
             const std::string pattern = filesystem::getFileNameWithExtension(item);
 
-            std::vector<std::string> fileList = filesystem::getDirectoryContents(filePath);
+            std::vector<std::filesystem::path> fileList =
+                filesystem::getDirectoryContents(filePath);
 
             // apply pattern
             bool hasDigits = (pattern.find('#') != std::string::npos);
@@ -232,7 +233,7 @@ void FilePatternProperty::updateFileList() {
                         found = true;
                         // check index
                         if ((index >= indexRange.x) && (index <= indexRange.y)) {
-                            std::string filename = filePath + '/' + file;
+                            auto filename = filePath / file;
                             files_.push_back(std::make_tuple(index, filename));
                         }
                     }
@@ -257,7 +258,7 @@ void FilePatternProperty::updateFileList() {
                 for (auto file : fileList) {
                     if (filesystem::wildcardStringMatch(pattern, file)) {
                         // match found
-                        std::string filename = filePath + '/' + file;
+                        auto filename = filePath / file;
                         files_.push_back(std::make_tuple(-1, filename));
                     }
                 }

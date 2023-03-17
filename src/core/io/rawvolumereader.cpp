@@ -90,11 +90,11 @@ void RawVolumeReader::setParameters(const DataFormatBase* format, ivec3 dimensio
     byteOffset_ = byteOffset;
 }
 
-std::shared_ptr<Volume> RawVolumeReader::readData(std::string_view filePath) {
+std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& filePath) {
     return readData(filePath, nullptr);
 }
 
-std::shared_ptr<Volume> RawVolumeReader::readData(std::string_view filePath,
+std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& filePath,
                                                   MetaDataOwner* metadata) {
     checkExists(filePath);
 

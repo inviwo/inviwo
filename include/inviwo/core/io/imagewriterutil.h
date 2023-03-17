@@ -39,7 +39,7 @@ namespace inviwo {
 
 namespace util {
 
-IVW_CORE_API void saveLayer(const Layer& layer, std::string_view path,
+IVW_CORE_API void saveLayer(const Layer& layer, const std::filesystem::path& path,
                             const FileExtension& extension = FileExtension());
 
 IVW_CORE_API void saveLayer(const Layer& layer);

@@ -34,6 +34,8 @@
 #include <inviwo/core/util/filedialogstate.h>
 #include <inviwo/core/util/fileextension.h>
 
+#include <filesystem>
+
 namespace inviwo {
 
 class IVW_CORE_API FileDialog : public Dialog {
@@ -62,15 +64,15 @@ public:
      * @param filename  path and name of the file (can be either a file name or directory name
      * including the full path)
      */
-    virtual void setCurrentFile(const std::string& filename) = 0;
-    std::string getSelectedFile() const;
-    virtual std::vector<std::string> getSelectedFiles() const = 0;
+    virtual void setCurrentFile(const std::filesystem::path& filename) = 0;
+    std::filesystem::path getSelectedFile() const;
+    virtual std::vector<std::filesystem::path> getSelectedFiles() const = 0;
     /**
      * \brief set the current directory of the file dialog
      *
      * @param path  given path, must not contain a file name
      */
-    virtual void setCurrentDirectory(const std::string& path) = 0;
+    virtual void setCurrentDirectory(const std::filesystem::path& path) = 0;
 
     virtual void setSelectedExtension(const FileExtension& ext) = 0;
     virtual FileExtension getSelectedFileExtension() const = 0;

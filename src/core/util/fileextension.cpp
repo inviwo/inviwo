@@ -90,14 +90,14 @@ bool FileExtension::empty() const { return extension_.empty() && description_.em
 
 bool FileExtension::matchesAll() const { return extension_ == "*"; }
 
-bool FileExtension::matches(std::string_view str) const {
+bool FileExtension::matches(const std::filesystem::path& path) const {
     if (empty()) {
         return false;
     }
     if (extension_.empty()) {
         return true;  // wildcard '*' matches everything
     }
-    return util::iCaseEndsWith(str, extension_);
+    return util::iCaseEndsWith(path.string(), extension_);
 }
 
 void FileExtension::serialize(Serializer& s) const {

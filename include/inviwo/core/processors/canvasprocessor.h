@@ -69,7 +69,7 @@ public:
     size2_t getCustomDimensions() const;
 
     void saveImageLayer();
-    void saveImageLayer(std::string_view filePath,
+    void saveImageLayer(const std::filesystem::path& filePath,
                         const FileExtension& extension = FileExtension());
     const Layer* getVisibleLayer() const;
 

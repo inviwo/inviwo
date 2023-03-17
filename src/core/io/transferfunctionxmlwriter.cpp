@@ -76,7 +76,7 @@ std::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
 }
 
 void TransferFunctionXMLWriter::writeData(const TransferFunction* data,
-                                          std::string_view filePath) const {
+                                          const std::filesystem::path& filePath) const {
     try {
         auto of = open(filePath);
         of << toXML(*data);

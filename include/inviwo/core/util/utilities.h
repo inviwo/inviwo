@@ -33,6 +33,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <string_view>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -79,7 +80,7 @@ IVW_CORE_API std::string cleanIdentifier(std::string_view identifier, std::strin
  * @param  filePath Path to module file
  * @return name of the module
  */
-IVW_CORE_API std::string stripModuleFileNameDecoration(std::string_view filePath);
+IVW_CORE_API std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath);
 
 IVW_CORE_API std::string stripIdentifier(std::string_view identifier);
 

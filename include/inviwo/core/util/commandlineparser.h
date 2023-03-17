@@ -35,6 +35,7 @@
 #include <vector>
 #include <tuple>
 #include <functional>
+#include <filesystem>
 
 #include <tclap/CmdLine.h>
 
@@ -91,9 +92,9 @@ public:
     void setArgc(int argc);
 
     void setArgv(char** argv);
-    const std::string getOutputPath() const;
-    const std::string getWorkspacePath() const;
-    const std::string getLogToFileFileName() const;
+    std::filesystem::path getOutputPath() const;
+    std::filesystem::path getWorkspacePath() const;
+    std::filesystem::path getLogToFileFileName() const;
     bool getQuitApplicationAfterStartup() const;
     bool getLoadWorkspaceFromArg() const;
     bool getShowSplashScreen() const;

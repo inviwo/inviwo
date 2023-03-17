@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-Serializer::Serializer(std::string_view fileName) : SerializeBase(fileName) {
+Serializer::Serializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
     try {
         auto decl =
             std::make_unique<TxDeclaration>(std::string{SerializeConstants::XmlVersion}, "", "");
@@ -52,6 +52,17 @@ Serializer::Serializer(std::string_view fileName) : SerializeBase(fileName) {
 }
 
 Serializer::~Serializer() { delete rootElement_; }
+
+void Serializer::serialize(std::string_view key, const std::filesystem::path& path,
+                           const SerializationTarget& target) {
+
+    if (target == SerializationTarget::Attribute) {
+        setAttribute(rootElement_, key, path.string());
+    } else {
+        auto nodeSwitch = switchToNewNode(key);
+        setAttribute(rootElement_, SerializeConstants::ContentAttribute, path.string());
+    }
+}
 
 void Serializer::serialize(std::string_view key, const Serializable& sObj) {
     auto node = std::make_unique<TxElement>(SafeCStr{key});
@@ -92,7 +103,7 @@ void Serializer::serialize(std::string_view key, const unsigned char& data,
 
 void Serializer::writeFile() {
     try {
-        doc_->SaveFile(getFileName());
+        doc_->SaveFile(getFileName().string());
     } catch (TxException& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
     }

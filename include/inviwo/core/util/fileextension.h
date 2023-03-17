@@ -36,6 +36,7 @@
 #include <string>
 #include <string_view>
 #include <iosfwd>
+#include <filesystem>
 
 #include <fmt/core.h>
 
@@ -79,10 +80,10 @@ public:
      * Extensions are matched case insensitive while an empty FileExtension, i.e. '*', will match
      * all strings.
      *
-     * @param str   string to be tested
+     * @param path   path to be tested
      * @return true if the string is matched by the FileExtension
      */
-    bool matches(std::string_view str) const;
+    bool matches(const std::filesystem::path& path) const;
 
     void serialize(Serializer& s) const;
     void deserialize(Deserializer& d);

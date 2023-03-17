@@ -37,6 +37,8 @@
 #include <locale>
 #include <algorithm>
 
+#include <fmt/std.h>
+
 #if WIN32
 #include <windows.h>
 #include <tchar.h>
@@ -57,7 +59,7 @@
 
 namespace inviwo {
 
-SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) {
+SharedLibrary::SharedLibrary(const std::filesystem::path& filePath) : filePath_(filePath) {
 #if WIN32
 
     // Load library and search for dependencies in
@@ -75,11 +77,7 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
     // temporary directory when loading dlls, which thereby allows the original ones to be
     // overwritten while the application is running.
 
-    // LoadLibrary requires '\'
-    replaceInString(filePath_, "/", "\\");
-
-    handle_ =
-        LoadLibraryExW(util::toWstring(filePath_).c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+    handle_ = LoadLibraryExW(filePath_.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
 
     if (!handle_) {
         auto error = GetLastError();
@@ -107,7 +105,7 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
     // explicitly load its dependent libraries as well.
     handle_ = dlopen(filePath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
     if (!handle_) {
-        throw Exception("Failed to load library: " + filePath, IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Failed to load library: {}", filePath);
     }
 #endif
 }
@@ -158,9 +156,9 @@ void SharedLibrary::release() { handle_ = nullptr; }
 
 namespace util {
 
-std::vector<std::string> getLibrarySearchPaths() {
-    return std::vector<std::string>{filesystem::getInviwoBinDir(),
-                                    filesystem::getPath(inviwo::PathType::Modules)};
+std::vector<std::filesystem::path> getLibrarySearchPaths() {
+    return std::vector<std::filesystem::path>{filesystem::getInviwoBinDir(),
+                                              filesystem::getPath(inviwo::PathType::Modules)};
 }
 
 }  // namespace util

@@ -39,7 +39,8 @@ public:
     TransferFunctionXMLWriter();
     virtual TransferFunctionXMLWriter* clone() const override;
 
-    virtual void writeData(const TransferFunction* data, std::string_view filePath) const override;
+    virtual void writeData(const TransferFunction* data,
+                           const std::filesystem::path& filePath) const override;
 
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const TransferFunction* data, std::string_view fileExtension) const override;

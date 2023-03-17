@@ -72,7 +72,7 @@ public:
      */
     template <typename T>
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(
-        std::string_view filePathOrExtension) const;
+        const std::filesystem::path& filePathOrExtension) const;
 
     template <typename T>
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext) const;
@@ -86,15 +86,15 @@ public:
      */
     template <typename T>
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(
-        const FileExtension& ext, std::string_view fallbackFilePathOrExtension) const;
+        const FileExtension& ext, const std::filesystem::path& fallbackFilePathOrExtension) const;
 
     template <typename T>
-    bool hasWriterForTypeAndExtension(std::string_view filePathOrExtension) const;
+    bool hasWriterForTypeAndExtension(const std::filesystem::path& filePathOrExtension) const;
     template <typename T>
     bool hasWriterForTypeAndExtension(const FileExtension& ext) const;
 
     template <typename T>
-    bool writeDataForTypeAndExtension(const T* data, std::string_view filePath,
+    bool writeDataForTypeAndExtension(const T* data, const std::filesystem::path& filePath,
                                       std::optional<FileExtension> ext = std::nullopt) const {
         if (auto writer = ext ? getWriterForTypeAndExtension<T>(*ext, filePath)
                               : getWriterForTypeAndExtension<T>(filePath)) {
@@ -123,10 +123,10 @@ std::vector<FileExtension> DataWriterFactory::getExtensionsForType() const {
 
 template <typename T>
 std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
-    std::string_view path) const {
+    const std::filesystem::path& path) const {
     std::vector<std::pair<size_t, DataWriterType<T>*>> candidates;
     for (auto& [ext, writer] : map_) {
-        if (util::iCaseEndsWith(path, ext.extension_)) {
+        if (util::iCaseEndsWith(path.string(), ext.extension_)) {
             if (auto r = dynamic_cast<DataWriterType<T>*>(writer)) {
                 candidates.emplace_back(ext.extension_.size(), r);
             }
@@ -157,7 +157,7 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
 
 template <typename T>
 std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
-    const FileExtension& ext, std::string_view fallbackFilePathOrExtension) const {
+    const FileExtension& ext, const std::filesystem::path& fallbackFilePathOrExtension) const {
     if (auto writer = this->getWriterForTypeAndExtension<T>(ext)) {
         return writer;
     }
@@ -165,7 +165,7 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
 }
 
 template <typename T>
-bool DataWriterFactory::hasWriterForTypeAndExtension(std::string_view path) const {
+bool DataWriterFactory::hasWriterForTypeAndExtension(const std::filesystem::path& path) const {
     return getWriterForTypeAndExtension<T>(path) != nullptr;
 }
 

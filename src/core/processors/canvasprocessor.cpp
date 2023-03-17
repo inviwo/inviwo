@@ -303,12 +303,12 @@ size2_t CanvasProcessor::calcScaledSize(size2_t size, float scale) {
 void CanvasProcessor::saveImageLayer() {
     if (saveLayerDirectory_.get().empty()) saveLayerDirectory_.requestFile();
 
-    std::string snapshotPath(saveLayerDirectory_.get() + "/" + toLower(getIdentifier()) + "-" +
-                             currentDateTime() + "." + imageTypeExt_->extension_);
+    const auto snapshotPath(saveLayerDirectory_.get() / (toLower(getIdentifier()) + "-" +
+                             currentDateTime() + "." + imageTypeExt_->extension_));
     saveImageLayer(snapshotPath, imageTypeExt_);
 }
 
-void CanvasProcessor::saveImageLayer(std::string_view snapshotPath,
+void CanvasProcessor::saveImageLayer(const std::filesystem::path& snapshotPath,
                                      const FileExtension& extension) {
     if (auto layer = getVisibleLayer()) {
         util::saveLayer(*layer, snapshotPath, extension);

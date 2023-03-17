@@ -88,7 +88,7 @@ protected:
      * Verify that @p path exists, and throw DataReaderException if not.
      * @throws DataReaderException if the file is not found
      */
-    void checkExists(std::string_view path) const;
+    void checkExists(const std::filesystem::path& path) const;
 
     /**
      * Open @p path in @p mode for reading. If the file is not found or the file can't
@@ -96,7 +96,7 @@ protected:
      * @throws DataReaderException if the file is not found, and FileException if the file can't
      * be opened.
      */
-    std::ifstream open(std::string_view path,
+    std::ifstream open(const std::filesystem::path& path,
                        std::ios_base::openmode mode = std::ios_base::in) const;
 
     std::vector<FileExtension> extensions_;
@@ -118,14 +118,14 @@ public:
     virtual DataReaderType* clone() const override = 0;
     virtual ~DataReaderType() override = default;
 
-    virtual std::shared_ptr<T> readData(std::string_view filePath) = 0;
+    virtual std::shared_ptr<T> readData(const std::filesystem::path& filePath) = 0;
 
     /**
      * Optional overload that passed a MetaDataOwner to facilitate saving/loading state in the data
      * reader the use is optional and the pointer can be null.
      * @see RawVolumeReader
      */
-    virtual std::shared_ptr<T> readData(std::string_view filePath, MetaDataOwner*) {
+    virtual std::shared_ptr<T> readData(const std::filesystem::path& filePath, MetaDataOwner*) {
         return readData(filePath);
     };
 };

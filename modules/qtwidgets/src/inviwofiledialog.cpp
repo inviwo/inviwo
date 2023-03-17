@@ -184,11 +184,9 @@ void InviwoFileDialog::useNativeDialog(const bool& use) {
     QFileDialog::setOption(QFileDialog::DontUseNativeDialog, !use);
 }
 
-void InviwoFileDialog::setCurrentDirectory(const std::string& path) {
-    std::string fileName;
-
+void InviwoFileDialog::setCurrentDirectory(const std::filesystem::path& path) {
     if (!path.empty()) {
-        currentPath_ = utilqt::toQString(path);
+        currentPath_ = utilqt::toQString(path.string());
     } else {
         // use default path based on pathType
         currentPath_ = getPreviousPath(pathType_);
@@ -198,37 +196,35 @@ void InviwoFileDialog::setCurrentDirectory(const std::string& path) {
     QFileDialog::setDirectory(currentPath_);
 
     // if the given path points to a file, select it when the dialog is opened
-    if (!fileName.empty()) {
+    if (path.has_filename()) {
         if (filesystem::fileExists(utilqt::fromQString(currentPath_))) {
             QFileDialog::selectFile(currentPath_);
         }
     }
 }
 
-void InviwoFileDialog::setCurrentFile(const std::string& filename) {
-    std::string path;
-    bool fileExists = false;
+void InviwoFileDialog::setCurrentFile(const std::filesystem::path& filename) {
+    std::filesystem::path path;
     if (!filename.empty()) {
-        if (filesystem::directoryExists(filename)) {
+        if (std::filesystem::is_directory(filename)) {
             // given file name is a path
             path = filename;
         } else {
             // if a file is selected, extract the folder path for the dialog
-            path = filesystem::getFileDirectory(filename);
-            fileExists = filesystem::fileExists(filename);
+            path = filename.parent_path();
         }
     }
 
     setCurrentDirectory(path);
-    if (fileExists) {
-        QFileDialog::selectFile(utilqt::toQString(filename));
+    if (std::filesystem::is_regular_file(filename)) {
+        QFileDialog::selectFile(utilqt::toQString(filename.string()));
     }
 }
 
-std::vector<std::string> InviwoFileDialog::getSelectedFiles() const {
-    std::vector<std::string> filenames;
+std::vector<std::filesystem::path> InviwoFileDialog::getSelectedFiles() const {
+    std::vector<std::filesystem::path> filenames;
     for (auto file : QFileDialog::selectedFiles()) {
-        filenames.push_back(utilqt::fromQString(file));
+        filenames.emplace_back(utilqt::fromQString(file));
     }
     return filenames;
 }

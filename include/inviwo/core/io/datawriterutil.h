@@ -38,6 +38,7 @@
 #include <string_view>
 #include <vector>
 #include <optional>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -52,7 +53,7 @@ namespace util {
  * @throws DataWriterException if no write could be found, or if overwrite was violated.
  */
 template <typename T>
-void saveData(const T& data, std::string_view filePath, const FileExtension& extension,
+void saveData(const T& data, const std::filesystem::path& filePath, const FileExtension& extension,
               Overwrite overwrite) {
     auto factory = util::getDataWriterFactory();
     if (auto writer = factory->getWriterForTypeAndExtension<T>(extension, filePath)) {

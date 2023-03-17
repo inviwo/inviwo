@@ -41,6 +41,7 @@
 #include <string_view>
 #include <vector>
 #include <functional>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -98,7 +99,7 @@ public:
      * \param exceptionHandler A callback for handling errors.
      * \param mode to indicate if we are saving to disk or undo-stack
      */
-    void save(std::ostream& stream, std::string_view refPath,
+    void save(std::ostream& stream, const std::filesystem::path& refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
               WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
@@ -108,7 +109,7 @@ public:
      * \param exceptionHandler A callback for handling errors.
      * \param mode to indicate if we are saving to disk or undo-stack
      */
-    void save(std::string_view path,
+    void save(const std::filesystem::path& path,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
               WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
@@ -120,7 +121,7 @@ public:
      *      path to the saved file.
      * \param exceptionHandler A callback for handling errors.
      */
-    void load(std::istream& stream, std::string_view refPath,
+    void load(std::istream& stream, const std::filesystem::path& refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
 
     /**
@@ -128,7 +129,7 @@ public:
      * \param path the file to read from.
      * \param exceptionHandler A callback for handling errors.
      */
-    void load(std::string_view path,
+    void load(const std::filesystem::path& path,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
 
     /**
@@ -155,7 +156,8 @@ public:
     /**
      *	Create a deserializer for a workspace stream, and apply all needed version updates.
      */
-    Deserializer createWorkspaceDeserializer(std::istream& stream, std::string_view refPath,
+    Deserializer createWorkspaceDeserializer(std::istream& stream,
+                                             const std::filesystem::path& refPath,
                                              Logger* logger = LogCentral::getPtr()) const;
 
 private:

@@ -39,6 +39,7 @@
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -93,12 +94,12 @@ private:
 };
 
 struct ErrorHandle {
-    ErrorHandle(const InviwoSetupInfo& info, std::string_view filename)
+    ErrorHandle(const InviwoSetupInfo& info, const std::filesystem::path& filename)
         : info_(info), filename_(filename) {}
 
     ~ErrorHandle() {
         if (!messages.empty()) {
-            LogNetworkError("There were errors while loading workspace: " + filename_);
+            LogNetworkError("There were errors while loading workspace: " << filename_);
             for (auto& message : messages) {
                 LogNetworkError(message);
             }
@@ -130,7 +131,7 @@ struct ErrorHandle {
 
     std::vector<std::string> messages;
     const InviwoSetupInfo& info_;
-    std::string filename_;
+    std::filesystem::path filename_;
 };
 
 WorkspaceManager::WorkspaceManager(InviwoApplication* app) : app_(app) {}
@@ -142,7 +143,7 @@ void WorkspaceManager::clear() {
     clears_.invoke();
 }
 
-void WorkspaceManager::save(std::ostream& stream, std::string_view refPath,
+void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& refPath,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     Serializer serializer(refPath);
 
@@ -155,7 +156,7 @@ void WorkspaceManager::save(std::ostream& stream, std::string_view refPath,
     serializer.writeFile(stream, true);
 }
 
-void WorkspaceManager::load(std::istream& stream, std::string_view refPath,
+void WorkspaceManager::load(std::istream& stream, const std::filesystem::path& refPath,
                             const ExceptionHandler& exceptionHandler) {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
@@ -169,8 +170,8 @@ void WorkspaceManager::load(std::istream& stream, std::string_view refPath,
     deserializers_.invoke(deserializer, exceptionHandler);
 }
 
-void WorkspaceManager::save(std::string_view path, const ExceptionHandler& exceptionHandler,
-                            WorkspaceSaveMode mode) {
+void WorkspaceManager::save(const std::filesystem::path& path,
+                            const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     auto ostream = filesystem::ofstream(std::string(path));
     if (ostream.is_open()) {
         save(ostream, path, exceptionHandler, mode);
@@ -179,7 +180,8 @@ void WorkspaceManager::save(std::string_view path, const ExceptionHandler& excep
     }
 }
 
-void WorkspaceManager::load(std::string_view path, const ExceptionHandler& exceptionHandler) {
+void WorkspaceManager::load(const std::filesystem::path& path,
+                            const ExceptionHandler& exceptionHandler) {
     auto istream = filesystem::ifstream(std::string(path));
     if (istream.is_open()) {
         load(istream, path, exceptionHandler);
@@ -193,7 +195,7 @@ void WorkspaceManager::registerFactory(FactoryBase* factory) {
 }
 
 Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
-                                                           std::string_view refPath,
+                                                           const std::filesystem::path& refPath,
                                                            Logger* logger) const {
 
     Deserializer deserializer(stream, refPath);

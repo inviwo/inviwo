@@ -108,8 +108,8 @@ public:
      *       deployed and the module does not contain any resources.
      * @return std::string Path to module directory
      */
-    virtual std::string getPath() const;
-    std::string getPath(ModulePath type) const;
+    virtual std::filesystem::path getPath() const;
+    std::filesystem::path getPath(ModulePath type) const;
 
     /**
      * Returns the module version. This is used for converting old processor networks in connection

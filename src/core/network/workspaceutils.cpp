@@ -38,24 +38,25 @@
 #include <inviwo/core/util/logerrorcounter.h>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace inviwo {
 
 namespace util {
 
-void forEachWorkspaceInDirRecusive(std::string_view path,
-                                   std::function<void(std::string_view)> callback) {
+void forEachWorkspaceInDirRecusive(const std::filesystem::path& path,
+                                   std::function<void(const std::filesystem::path&)> callback) {
 
-    for (const auto& file : filesystem::getDirectoryContentsRecursively(
-             std::string(path), filesystem::ListMode::Files)) {
-        if (filesystem::wildcardStringMatch("*.inv", file)) {
+    for (const auto& file :
+         filesystem::getDirectoryContentsRecursively(path, filesystem::ListMode::Files)) {
+        if (filesystem::wildcardStringMatch("*.inv", file.string())) {
             callback(file);
         }
     }
 }
 
-void updateWorkspaces(InviwoApplication* app, std::string_view path, DryRun dryRun) {
-    auto update = [&](std::string_view fileName) {
+void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path, DryRun dryRun) {
+    auto update = [&](const std::filesystem::path& fileName) {
         LogInfoCustom("util::updateWorkspaces", "Updating workspace: " << fileName);
         auto errorCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(errorCounter);
