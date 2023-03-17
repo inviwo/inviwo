@@ -98,7 +98,9 @@ VolumeSource::VolumeSource(InviwoApplication* app, std::string_view filePath)
     addProperties(file_, reader_, reload_, information_, basis_, volumeSequence_);
     volumeSequence_.setVisible(false);
 
-    // ensure that the file name is always serialized by setting the default to ""
+    // The default state of a property is the one provided in the constructor (filePath). The
+    // default state is not serialized. So, to ensure that a custom file path is serialied we set
+    // the default state to ""
     if (!filePath.empty()) {
         Property::setStateAsDefault(file_, std::string{});
     }
