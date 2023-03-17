@@ -61,7 +61,6 @@
 #include <include/cef_load_handler.h>              // for CefLoadHandler, CefL...
 #include <include/cef_process_message.h>           // for CefProcessMessage
 #include <include/cef_request.h>                   // for CefRequest
-#include <include/cef_request_callback.h>          // for CefRequestCallback
 #include <include/cef_request_handler.h>           // for CefRequestHandler::T...
 #include <include/cef_resource_request_handler.h>  // for CefResourceRequestHa...
 #include <include/cef_task.h>                      // for CefCurrentlyOn
@@ -86,7 +85,7 @@ namespace detail {
 void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
     if (!CefCurrentlyOn(TID_IO)) {
         // Execute on the browser IO thread.
-        CefPostTask(TID_IO, base::Bind(setupResourceManager, resource_manager));
+        CefPostTask(TID_IO, base::BindRepeating(setupResourceManager, resource_manager));
         return;
     }
     std::string origin = "inviwo://";
@@ -345,7 +344,7 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
 cef_return_value_t WebBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                                           CefRefPtr<CefFrame> frame,
                                                           CefRefPtr<CefRequest> request,
-                                                          CefRefPtr<CefRequestCallback> callback) {
+                                                          CefRefPtr<CefCallback> callback) {
     CEF_REQUIRE_IO_THREAD();
 
     return resourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
