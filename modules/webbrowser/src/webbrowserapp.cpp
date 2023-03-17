@@ -39,6 +39,8 @@ WebBrowserApp::WebBrowserApp() = default;
 
 void WebBrowserApp::OnBeforeCommandLineProcessing(const CefString&,
                                                   CefRefPtr<CefCommandLine> command_line) {
+    // Enable loading files from other locations than where the .html file is
+    // see https://bitbucket.org/chromiumembedded/cef/commits/f158c34
     command_line->AppendSwitch("allow-file-access-from-files");
     // Avoid pop-up when application starts:
     // "Inviwo wants to use your confidential information stored in
