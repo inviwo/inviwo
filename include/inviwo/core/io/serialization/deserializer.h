@@ -48,6 +48,7 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <filesystem>
 
 #include <fmt/core.h>
 
@@ -65,14 +66,14 @@ public:
      * \brief Deserialize content from a file
      * @param fileName path to file that is to be deserialized.
      */
-    Deserializer(std::string_view fileName);
+    Deserializer(const std::filesystem::path& fileName);
 
     /**
      * \brief Deserialize content from a stream.
      * @param stream Stream with content that is to be deserialized.
      * @param refPath Used to calculate paths relative to the stream source if any.
      */
-    Deserializer(std::istream& stream, std::string_view refPath);
+    Deserializer(std::istream& stream, const std::filesystem::path& refPath);
 
     Deserializer(const Deserializer&) = delete;
     Deserializer(Deserializer&&) = default;
@@ -235,6 +236,9 @@ public:
     template <size_t N>
     void deserialize(std::string_view key, std::bitset<N>& bits);
 
+    // path
+    void deserialize(std::string_view key, std::filesystem::path& path,
+                     const SerializationTarget& target = SerializationTarget::Node);
     /**
      * \brief  Deserialize any Serializable object
      */

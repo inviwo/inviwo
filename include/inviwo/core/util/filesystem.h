@@ -37,6 +37,8 @@
 #include <cstdio>
 #include <ctime>
 #include <optional>
+#include <filesystem>
+#include <span>
 
 namespace inviwo {
 
@@ -61,7 +63,7 @@ namespace filesystem {
  *
  * \see fopen, _wfopen
  */
-IVW_CORE_API FILE* fopen(std::string_view filename, const char* mode);
+IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode);
 
 /**
  * Creates and returns a std::fstream for the given file name (utf-8 encoded). The call
@@ -82,7 +84,7 @@ IVW_CORE_API FILE* fopen(std::string_view filename, const char* mode);
  *
  * \see std::fstream
  */
-IVW_CORE_API std::fstream fstream(std::string_view filename,
+IVW_CORE_API std::fstream fstream(const std::filesystem::path& filename,
                                   std::ios_base::openmode mode = std::ios_base::in |
                                                                  std::ios_base::out);
 
@@ -105,7 +107,7 @@ IVW_CORE_API std::fstream fstream(std::string_view filename,
  *
  * \see std::ifstream
  */
-IVW_CORE_API std::ifstream ifstream(std::string_view filename,
+IVW_CORE_API std::ifstream ifstream(const std::filesystem::path& filename,
                                     std::ios_base::openmode mode = std::ios_base::in);
 
 /**
@@ -127,7 +129,7 @@ IVW_CORE_API std::ifstream ifstream(std::string_view filename,
  *
  * \see std::ofstream
  */
-IVW_CORE_API std::ofstream ofstream(std::string_view filename,
+IVW_CORE_API std::ofstream ofstream(const std::filesystem::path& filename,
                                     std::ios_base::openmode mode = std::ios_base::out);
 
 /**
@@ -147,22 +149,22 @@ IVW_CORE_API bool skipByteOrderMark(std::istream& stream);
  * @see getBasePath
  * @return Full path to working directory.
  */
-IVW_CORE_API std::string getWorkingDirectory();
+IVW_CORE_API std::filesystem::path getWorkingDirectory();
 
 /**
  * Set the working directory of the application.
  */
-IVW_CORE_API void setWorkingDirectory(std::string_view path);
+IVW_CORE_API void setWorkingDirectory(const std::filesystem::path& path);
 
 /**
  * Get full/path/to/executable running the application.
  * @return Full path to the executable if successful, empty string otherwise.
  */
-IVW_CORE_API std::string getExecutablePath();
+IVW_CORE_API std::filesystem::path getExecutablePath();
 
-IVW_CORE_API std::string getInviwoBinDir();
+IVW_CORE_API std::filesystem::path getInviwoBinDir();
 
-IVW_CORE_API std::vector<std::string> getLoadedLibraries();
+IVW_CORE_API std::vector<std::filesystem::path> getLoadedLibraries();
 
 /**
  * Get path to the user settings / data folder for Inviwo,
@@ -174,7 +176,7 @@ IVW_CORE_API std::vector<std::string> getLoadedLibraries();
  *
  * @return Path to user settings folder
  */
-IVW_CORE_API std::string getInviwoUserSettingsPath();
+IVW_CORE_API std::filesystem::path getInviwoUserSettingsPath();
 
 /**
  * \brief Check if a file exists.
@@ -182,7 +184,7 @@ IVW_CORE_API std::string getInviwoUserSettingsPath();
  * @param filePath The path to the file
  * @return true if file exists, false otherwise
  */
-IVW_CORE_API bool fileExists(std::string_view filePath);
+IVW_CORE_API bool fileExists(const std::filesystem::path& filePath);
 
 /**
  * Check if the directory exists
@@ -191,7 +193,7 @@ IVW_CORE_API bool fileExists(std::string_view filePath);
  * @param path Directory path
  * @return True if directory exists, false otherwise
  */
-IVW_CORE_API bool directoryExists(std::string_view path);
+IVW_CORE_API bool directoryExists(const std::filesystem::path& path);
 
 /**
  * \brief Get last time file was modified.
@@ -199,7 +201,7 @@ IVW_CORE_API bool directoryExists(std::string_view path);
  * @param filePath The path to the file
  * @return Time of last modification, or 0 if an error occured (00:00, Jan 1 1970 UTC).
  */
-IVW_CORE_API std::time_t fileModificationTime(std::string_view filePath);
+IVW_CORE_API std::time_t fileModificationTime(const std::filesystem::path& filePath);
 
 /**
  * \brief Copy an existing file to a new file. Overwrites existing file.
@@ -207,7 +209,7 @@ IVW_CORE_API std::time_t fileModificationTime(std::string_view filePath);
  * @param dst Path to the new file
  * @return True if source file exists and the copy is successful, false otherwise
  */
-IVW_CORE_API bool copyFile(std::string_view src, std::string_view dst);
+IVW_CORE_API bool copyFile(const std::filesystem::path& src, const std::filesystem::path& dst);
 
 enum class ListMode {
     Files,
@@ -221,8 +223,8 @@ enum class ListMode {
  * @param mode What types of contents to return see ListMode
  * @return List of files residing in the given path
  */
-IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path,
-                                                           ListMode mode = ListMode::Files);
+IVW_CORE_API std::vector<std::filesystem::path> getDirectoryContents(
+    const std::filesystem::path& path, ListMode mode = ListMode::Files);
 
 /**
  * Recursively searches and returns full path to files/directories in specified directory and its
@@ -231,8 +233,8 @@ IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& pa
  * @param mode What types of contents to return see ListMode
  * @return List of files residing in the given path and its subdirectories
  */
-IVW_CORE_API std::vector<std::string> getDirectoryContentsRecursively(
-    const std::string& path, ListMode mode = ListMode::Files);
+IVW_CORE_API std::vector<std::filesystem::path> getDirectoryContentsRecursively(
+    const std::filesystem::path& path, ListMode mode = ListMode::Files);
 
 /**
  * Checks whether a given string matches a pattern. The pattern
@@ -284,8 +286,8 @@ IVW_CORE_API bool wildcardStringMatchDigits(const std::string& pattern, const st
  * @param childFolders   list of subfolders
  * @return path of parent directory holding all childFolders, otherwise std::nullopt
  */
-IVW_CORE_API std::optional<std::string> getParentFolderWithChildren(
-    std::string_view path, const std::vector<std::string>& childFolders);
+IVW_CORE_API std::optional<std::filesystem::path> getParentFolderWithChildren(
+    const std::filesystem::path& path, std::span<const std::filesystem::path> childFolders);
 
 /**
  * Try to find the Inviwo base path containing subfolders "data/workspaces" and "modules".
@@ -294,7 +296,7 @@ IVW_CORE_API std::optional<std::string> getParentFolderWithChildren(
  *
  * @return Inviwo base path
  */
-IVW_CORE_API std::string findBasePath();
+IVW_CORE_API std::filesystem::path findBasePath();
 
 /**
  * Get basePath +  pathType + suffix.
@@ -304,10 +306,10 @@ IVW_CORE_API std::string findBasePath();
  * @param createFolder if true, will create the folder on disk if it does not exists.
  * @return basePath +  pathType + suffix
  */
-IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix = "",
-                                 const bool createFolder = false);
+IVW_CORE_API std::filesystem::path getPath(PathType pathType, const std::string& suffix = "",
+                                           const bool createFolder = false);
 
-IVW_CORE_API void createDirectoryRecursively(std::string_view path);
+IVW_CORE_API void createDirectoryRecursively(const std::filesystem::path& path);
 
 /**
  * \brief Adds the InviwoApplication base path before the url
@@ -316,11 +318,11 @@ IVW_CORE_API void createDirectoryRecursively(std::string_view path);
  * @param url Relative path
  * @return InviwoApplication base path + url
  */
-IVW_CORE_API std::string addBasePath(std::string_view url);
+IVW_CORE_API std::filesystem::path addBasePath(const std::filesystem::path& url);
 
-IVW_CORE_API std::string getFileDirectory(std::string_view url);
-IVW_CORE_API std::string getFileNameWithExtension(std::string_view url);
-IVW_CORE_API std::string getFileNameWithoutExtension(std::string_view url);
+IVW_CORE_API std::filesystem::path getFileDirectory(const std::filesystem::path& url);
+IVW_CORE_API std::filesystem::path getFileNameWithExtension(const std::filesystem::path& url);
+IVW_CORE_API std::filesystem::path getFileNameWithoutExtension(const std::filesystem::path& url);
 /**
  * \brief Returns the characters after last dot (.).
  *
@@ -335,14 +337,14 @@ IVW_CORE_API std::string getFileNameWithoutExtension(std::string_view url);
  * @param url Path to extract extension from.
  * @return Extension excluding ., empty if no dot or filename are found.
  */
-IVW_CORE_API std::string getFileExtension(std::string_view url);
+IVW_CORE_API std::string getFileExtension(const std::filesystem::path& url);
 
 /**
  * Replace the last file extension to newFileExtension, if no extension exists append
  * newFileExtension. newFileExtension should not contain any leading "."
  */
-IVW_CORE_API std::string replaceFileExtension(std::string_view url,
-                                              std::string_view newFileExtension);
+IVW_CORE_API std::filesystem::path replaceFileExtension(const std::filesystem::path& url,
+                                                        std::string_view newFileExtension);
 
 /**
  * \brief Make a path relative to basePath.
@@ -354,10 +356,11 @@ IVW_CORE_API std::string replaceFileExtension(std::string_view url,
  * absolutePath = "C:/foo/test/file.txt"
  * returns "../test/file.txt"
  */
-IVW_CORE_API std::string getRelativePath(std::string_view basePath, std::string_view absolutePath);
-IVW_CORE_API std::string getCanonicalPath(const std::string& url);
+IVW_CORE_API std::filesystem::path getRelativePath(const std::filesystem::path& basePath,
+                                                   const std::filesystem::path& absolutePath);
+IVW_CORE_API std::filesystem::path getCanonicalPath(const std::filesystem::path& url);
 
-IVW_CORE_API bool isAbsolutePath(const std::string& path);
+IVW_CORE_API bool isAbsolutePath(const std::filesystem::path& path);
 
 /**
  * \brief Checks whether the second path is on the same drive as the first path
@@ -371,7 +374,8 @@ IVW_CORE_API bool isAbsolutePath(const std::string& path);
  * @return true if queryPath and refPath are located on the same drive (on Windows), always true on
  * all other systems
  */
-IVW_CORE_API bool sameDrive(const std::string& refPath, const std::string& queryPath);
+IVW_CORE_API bool sameDrive(const std::filesystem::path& refPath,
+                            const std::filesystem::path& queryPath);
 
 /**
  * \brief clean up path by replacing backslashes with forward slash and removing surrounding quotes
@@ -379,8 +383,16 @@ IVW_CORE_API bool sameDrive(const std::string& refPath, const std::string& query
  * @param path given path to be cleaned up
  * @return non-quoted path containing no backslashes as directory separators
  */
-IVW_CORE_API std::string cleanupPath(std::string_view path);
+IVW_CORE_API std::filesystem::path cleanupPath(std::string_view path);
 
 }  // namespace filesystem
+
+// Apple clang does not include std::hash<std::filesystem::path> as of writing
+// was added first in Clang 15.
+struct PathHash {
+    std::size_t operator()(const std::filesystem::path& p) const noexcept {
+        return std::filesystem::hash_value(p);
+    }
+};
 
 }  // namespace inviwo

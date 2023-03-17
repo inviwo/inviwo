@@ -60,7 +60,8 @@ TransferFunctionLayerReader* TransferFunctionLayerReader::clone() const {
     return new TransferFunctionLayerReader{*this};
 };
 
-std::shared_ptr<TransferFunction> TransferFunctionLayerReader::readData(std::string_view filePath) {
+std::shared_ptr<TransferFunction> TransferFunctionLayerReader::readData(
+    const std::filesystem::path& filePath) {
 
     const auto layer = layerReader_->readData(filePath);
     auto tf = std::make_shared<TransferFunction>();

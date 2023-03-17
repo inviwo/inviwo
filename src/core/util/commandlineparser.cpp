@@ -132,21 +132,21 @@ void CommandLineParser::setArgc(int argc) { argc_ = argc; }
 
 void CommandLineParser::setArgv(char** argv) { argv_ = argv; }
 
-const std::string CommandLineParser::getOutputPath() const {
+std::filesystem::path CommandLineParser::getOutputPath() const {
     if (outputPath_.isSet()) return (outputPath_.getValue());
-    return "";
+    return {};
 }
 
-const std::string CommandLineParser::getWorkspacePath() const {
+std::filesystem::path CommandLineParser::getWorkspacePath() const {
     if (workspace_.isSet()) return (workspace_.getValue());
-    return "";
+    return {};
 }
 
-const std::string CommandLineParser::getLogToFileFileName() const {
+std::filesystem::path CommandLineParser::getLogToFileFileName() const {
     if (logfile_.isSet())
         return (logfile_.getValue());
     else
-        return "";
+        return {};
 }
 
 bool CommandLineParser::getQuitApplicationAfterStartup() const {

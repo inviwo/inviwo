@@ -40,7 +40,8 @@ namespace inviwo {
 
 namespace util {
 
-void saveLayer(const Layer& layer, std::string_view path, const FileExtension& extension) {
+void saveLayer(const Layer& layer, const std::filesystem::path& path,
+               const FileExtension& extension) {
     try {
         util::saveData<Layer>(layer, path, extension, Overwrite::Yes);
         LogInfoCustom("ImageWriterUtil", "Canvas layer exported to disk: " << path);

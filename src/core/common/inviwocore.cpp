@@ -230,7 +230,9 @@ template class OptionProperty<OptionRegEnumUInt>;
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}
-void InviwoCore::Observer::fileChanged(const std::string& dir) { core_.scanDirForComposites(dir); }
+void InviwoCore::Observer::fileChanged(const std::filesystem::path& dir) {
+    core_.scanDirForComposites(dir);
+}
 
 InviwoCore::InviwoCore(InviwoApplication* app)
     : InviwoModule(app, "Core")
@@ -455,9 +457,9 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerSettings(std::make_unique<UnitSettings>());
 }
 
-std::string InviwoCore::getPath() const { return filesystem::findBasePath(); }
+std::filesystem::path InviwoCore::getPath() const { return filesystem::findBasePath(); }
 
-void InviwoCore::scanDirForComposites(const std::string& dir) {
+void InviwoCore::scanDirForComposites(const std::filesystem::path& dir) {
     for (auto&& file :
          filesystem::getDirectoryContentsRecursively(dir, filesystem::ListMode::Files)) {
         if (filesystem::getFileExtension(file) == "inv") {

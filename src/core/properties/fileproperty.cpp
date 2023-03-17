@@ -40,10 +40,10 @@ const std::string FileProperty::classIdentifier = "org.inviwo.FileProperty";
 std::string FileProperty::getClassIdentifier() const { return classIdentifier; }
 
 FileProperty::FileProperty(std::string_view identifier, std::string_view displayName, Document help,
-                           std::string_view value, std::string_view contentType,
+                           const std::filesystem::path& value, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TemplateProperty<std::string>(identifier, displayName, std::move(help), std::string{},
-                                    invalidationLevel, semantics)
+    : TemplateProperty<std::filesystem::path>(identifier, displayName, std::move(help), std::string{},
+                                              invalidationLevel, semantics)
     , acceptMode_(AcceptMode::Open)
     , fileMode_(FileMode::AnyFile)
     , contentType_(contentType) {
@@ -54,20 +54,19 @@ FileProperty::FileProperty(std::string_view identifier, std::string_view display
 }
 
 FileProperty::FileProperty(std::string_view identifier, std::string_view displayName,
-                           std::string_view value, std::string_view contentType,
+                           const std::filesystem::path& value, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : FileProperty(identifier, displayName, Document{}, value, contentType, invalidationLevel,
                    semantics) {}
 
-FileProperty& FileProperty::operator=(std::string_view value) {
-    TemplateProperty<std::string>::operator=(std::string{value});
+FileProperty& FileProperty::operator=(const std::filesystem::path& value) {
+    TemplateProperty<std::filesystem::path>::operator=(value);
     return *this;
 }
 
 FileProperty* FileProperty::clone() const { return new FileProperty(*this); }
 
-void FileProperty::set(const std::string& file) {
-    const auto value = filesystem::cleanupPath(file);
+void FileProperty::set(const std::filesystem::path& value) {
     bool modified = false;
     if (value_ != value) {
         value_ = value;
@@ -95,8 +94,7 @@ void FileProperty::set(const std::string& file) {
     if (modified) propertyModified();
 }
 
-void FileProperty::set(std::string_view file, const FileExtension& selectedExtension) {
-    const auto value = filesystem::cleanupPath(file);
+void FileProperty::set(const std::filesystem::path& value, const FileExtension& selectedExtension) {
     bool modified = false;
     if (value_ != value) {
         value_ = value;
@@ -113,11 +111,11 @@ void FileProperty::set(const Property* property) {
     if (auto prop = dynamic_cast<const FileProperty*>(property)) {
         set(prop->get(), prop->getSelectedExtension());
     } else {
-        TemplateProperty<std::string>::set(property);
+        TemplateProperty<std::filesystem::path>::set(property);
     }
 }
 
-FileProperty::operator std::string_view() const { return this->value_.value; }
+FileProperty::operator const std::filesystem::path&() const { return this->value_.value; }
 
 void FileProperty::serialize(Serializer& s) const {
     /*
@@ -133,9 +131,9 @@ void FileProperty::serialize(Serializer& s) const {
 
     if (this->serializationMode_ == PropertySerializationMode::None) return;
 
-    const std::string absolutePath = get();
-    std::string workspaceRelativePath;
-    std::string ivwdataRelativePath;
+    const std::filesystem::path absolutePath = get();
+    std::filesystem::path workspaceRelativePath;
+    std::filesystem::path ivwdataRelativePath;
 
     if (!absolutePath.empty()) {
         auto workspacePath = filesystem::getFileDirectory(s.getFileName());
@@ -162,10 +160,10 @@ void FileProperty::serialize(Serializer& s) const {
 void FileProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
-    std::string absolutePath;
-    std::string workspaceRelativePath;
-    std::string ivwdataRelativePath;
-    std::string oldWorkspacePath;
+    std::filesystem::path absolutePath;
+    std::filesystem::path workspaceRelativePath;
+    std::filesystem::path ivwdataRelativePath;
+    std::filesystem::path oldWorkspacePath;
 
     d.deserialize("absolutePath", absolutePath);
     d.deserialize("workspaceRelativePath", workspaceRelativePath);
@@ -189,9 +187,8 @@ void FileProperty::deserialize(Deserializer& d) {
     const auto ivwdataPath = filesystem::getPath(PathType::Data);
 
     const auto workspaceBasedPath =
-        filesystem::getCanonicalPath(workspacePath + "/" + workspaceRelativePath);
-    const auto ivwdataBasedPath =
-        filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePath);
+        filesystem::getCanonicalPath(workspacePath / workspaceRelativePath);
+    const auto ivwdataBasedPath = filesystem::getCanonicalPath(ivwdataPath / ivwdataRelativePath);
 
     // Prefer the relative paths to make relocation easier.
     if (!ivwdataRelativePath.empty() && filesystem::fileExists(ivwdataBasedPath)) {
@@ -284,7 +281,7 @@ Document FileProperty::getDescription() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
 
-    Document doc = TemplateProperty<std::string>::getDescription();
+    Document doc = TemplateProperty<std::filesystem::path>::getDescription();
     auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
 
     utildoc::TableBuilder tb(table);

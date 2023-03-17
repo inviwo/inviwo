@@ -34,6 +34,7 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <filesystem>
 
 #if WIN32
 // Forward declare HINSTANCE
@@ -57,7 +58,7 @@ namespace util {
  * /../../lib"
  * @return List of paths to directories
  */
-IVW_CORE_API std::vector<std::string> getLibrarySearchPaths();
+IVW_CORE_API std::vector<std::filesystem::path> getLibrarySearchPaths();
 
 }  // namespace util
 
@@ -70,14 +71,14 @@ IVW_CORE_API std::vector<std::string> getLibrarySearchPaths();
  */
 class IVW_CORE_API SharedLibrary {
 public:
-    SharedLibrary(const std::string& filePath);
+    SharedLibrary(const std::filesystem::path& filePath);
     SharedLibrary(const SharedLibrary& rhs) = delete;
     SharedLibrary& operator=(const SharedLibrary& that) = delete;
     SharedLibrary(SharedLibrary&& rhs) noexcept;
     SharedLibrary& operator=(SharedLibrary&& that) noexcept;
     ~SharedLibrary();
 
-    std::string getFilePath() { return filePath_; }
+    const std::filesystem::path& getFilePath() { return filePath_; }
 
     /**
      * \brief Get function address from library.
@@ -115,7 +116,7 @@ public:
     void release();
 
 private:
-    std::string filePath_;
+    std::filesystem::path filePath_;
 #if WIN32
     HINSTANCE handle_ = nullptr;
 #else

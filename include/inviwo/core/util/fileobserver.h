@@ -30,11 +30,12 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/filesystem.h>
 
-#include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -71,28 +72,28 @@ public:
      * \brief Starts observing file if it exists.
      * @param filePath Full path to file
      */
-    bool startFileObservation(const std::string& filePath);
+    bool startFileObservation(const std::filesystem::path& filePath);
     /**
      * \brief Stops observing the file if being observed.
      * @param filePath Full path to file
      */
-    bool stopFileObservation(const std::string& filePath);
+    bool stopFileObservation(const std::filesystem::path& filePath);
 
     /**
      * Stop observation of all observed files
      */
     void stopAllObservation();
 
-    const std::unordered_set<std::string>& getFiles() const;
-    bool isObserved(const std::string& fileName) const;
+    const std::unordered_set<std::filesystem::path, PathHash>& getFiles() const;
+    bool isObserved(const std::filesystem::path& fileName) const;
 
-    virtual void fileChanged(const std::string& fileName) = 0;
+    virtual void fileChanged(const std::filesystem::path& fileName) = 0;
 
 protected:
     FileSystemObserver* fileSystemObserver_;
 
 private:
-    std::unordered_set<std::string> observedFiles_;
+    std::unordered_set<std::filesystem::path, PathHash> observedFiles_;
 };
 
 }  // namespace inviwo

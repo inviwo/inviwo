@@ -1,6 +1,7 @@
 #pragma once
 // Automatically generated file do not change!
 #include <array>
+#include <filesystem>
 
 namespace inviwo {
 

@@ -35,6 +35,7 @@
 #include <inviwo/core/io/serialization/serializationexception.h>
 
 #include <sstream>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -42,13 +43,13 @@ InviwoModuleLibraryObserver::Observer::Observer(InviwoModuleLibraryObserver& imo
                                                 InviwoApplication* app)
     : FileObserver(app), imo_(imo) {}
 
-void InviwoModuleLibraryObserver::Observer::fileChanged(const std::string& dir) {
+void InviwoModuleLibraryObserver::Observer::fileChanged(const std::filesystem::path& dir) {
     imo_.fileChanged(dir);
 }
 
 InviwoModuleLibraryObserver::InviwoModuleLibraryObserver(InviwoApplication* app) : app_(app) {}
 
-void InviwoModuleLibraryObserver::observe(const std::string& file) {
+void InviwoModuleLibraryObserver::observe(const std::filesystem::path& file) {
     // We cannot create the observer in the constructor since
     // deriving applications will implement observer behavior
     // and they will not have been created when InviwoApplication
@@ -62,10 +63,10 @@ void InviwoModuleLibraryObserver::observe(const std::string& file) {
     observing_[file] = time;
 }
 
-void InviwoModuleLibraryObserver::fileChanged(const std::string& dir) {
+void InviwoModuleLibraryObserver::fileChanged(const std::filesystem::path& dir) {
     bool reload = false;
     for (const auto& f : filesystem::getDirectoryContents(dir)) {
-        const auto file = dir + "/" + f;
+        const auto file = dir / f;
         auto it = observing_.find(file);
         if (it != observing_.end()) {
             auto time = filesystem::fileModificationTime(file);

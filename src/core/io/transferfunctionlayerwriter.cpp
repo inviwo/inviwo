@@ -85,7 +85,7 @@ std::unique_ptr<Layer> toUint8Layer(const TransferFunction* tf) {
 }  // namespace
 
 void TransferFunctionLayerWriter::writeData(const TransferFunction* tf,
-                                            std::string_view filePath) const {
+                                            const std::filesystem::path& filePath) const {
 
     auto uint8Layer = toUint8Layer(tf);
     layerWriter_->setOverwrite(Overwrite::Yes);

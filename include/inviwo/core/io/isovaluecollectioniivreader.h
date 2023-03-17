@@ -39,7 +39,8 @@ public:
     IsoValueCollectionIIVReader();
     virtual IsoValueCollectionIIVReader* clone() const override;
 
-    virtual std::shared_ptr<IsoValueCollection> readData(std::string_view filePath) override;
+    virtual std::shared_ptr<IsoValueCollection> readData(
+        const std::filesystem::path& filePath) override;
 };
 
 }  // namespace inviwo

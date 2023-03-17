@@ -35,7 +35,7 @@ FileDialog::FileDialog() = default;
 
 FileDialog::~FileDialog() = default;
 
-std::string FileDialog::getSelectedFile() const {
+std::filesystem::path FileDialog::getSelectedFile() const {
     auto files = getSelectedFiles();
     if (files.empty()) {
         return {};

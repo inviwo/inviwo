@@ -33,6 +33,7 @@
 
 #include <string_view>
 #include <functional>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -45,7 +46,8 @@ IVW_CORE_API void forEachWorkspaceInDirRecusive(std::string_view path,
 
 enum class DryRun { Yes, No };
 
-IVW_CORE_API void updateWorkspaces(InviwoApplication* app, std::string_view path, DryRun dryRun);
+IVW_CORE_API void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path,
+                                   DryRun dryRun);
 
 IVW_CORE_API void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun);
 

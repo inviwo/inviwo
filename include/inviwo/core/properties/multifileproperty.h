@@ -46,7 +46,7 @@ namespace inviwo {
  *
  * @see TemplateProperty, FileProperty
  */
-class IVW_CORE_API MultiFileProperty : public TemplateProperty<std::vector<std::string>> {
+class IVW_CORE_API MultiFileProperty : public TemplateProperty<std::vector<std::filesystem::path>> {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -65,18 +65,18 @@ public:
      * @param semantics Can be set to Editor
      */
     MultiFileProperty(std::string_view identifier, std::string_view displayName,
-                      const std::vector<std::string>& value = {},
+                      const std::vector<std::filesystem::path>& value = {},
                       std::string_view contentType = "default",
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
 
     MultiFileProperty(const MultiFileProperty& rhs);
-    MultiFileProperty& operator=(const std::vector<std::string>& value);
+    MultiFileProperty& operator=(const std::vector<std::filesystem::path>& value);
     virtual MultiFileProperty* clone() const override;
     virtual ~MultiFileProperty() = default;
 
-    void set(std::string_view value);
-    virtual void set(const std::vector<std::string>& values) override;
+    void set(const std::filesystem::path& value);
+    virtual void set(const std::vector<std::filesystem::path>& values) override;
     virtual void set(const Property* property) override;
 
     virtual void serialize(Serializer& s) const override;

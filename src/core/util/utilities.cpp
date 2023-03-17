@@ -158,8 +158,8 @@ std::string cleanIdentifier(std::string_view identifier, std::string_view extra)
     return str;
 }
 
-std::string stripModuleFileNameDecoration(std::string_view filePath) {
-    auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
+std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath) {
+    auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath).string();
 #if defined(WIN32)
     auto decoration1 = std::string_view("inviwo-module-");
     auto decoration2 = std::string_view("inviwo-");

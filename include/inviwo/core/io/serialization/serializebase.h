@@ -37,6 +37,7 @@
 #include <string>
 #include <array>
 #include <sstream>
+#include <filesystem>
 
 #include <fmt/core.h>
 
@@ -104,7 +105,7 @@ public:
      *
      * @param fileName full path to xml file (for reading or writing).
      */
-    SerializeBase(std::string_view fileName);
+    SerializeBase(const std::filesystem::path& fileName);
 
     /**
      * \brief Base class for Serializer and Deserializer.
@@ -116,7 +117,7 @@ public:
      * @param stream containing all xml data (for reading).
      * @param path A path that will be used to decode the location of data during deserialization.
      */
-    SerializeBase(std::istream& stream, std::string_view path);
+    SerializeBase(std::istream& stream, const std::filesystem::path& path);
 
     SerializeBase(const SerializeBase& rhs) = delete;
     SerializeBase(SerializeBase&& rhs) noexcept;
@@ -128,7 +129,7 @@ public:
     /**
      * \brief gets the xml file name.
      */
-    virtual const std::string& getFileName() const;
+    virtual const std::filesystem::path& getFileName() const;
 
     /**
      * \brief Checks whether the given type is a primitive type.
@@ -156,7 +157,7 @@ public:
 protected:
     friend class NodeSwitch;
 
-    std::string fileName_;
+    std::filesystem::path fileName_;
     std::unique_ptr<TxDocument> doc_;
     TxElement* rootElement_;
     bool retrieveChild_;

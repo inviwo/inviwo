@@ -111,9 +111,9 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
             if (!filesystem::isAbsolutePath(filename)) {
                 auto outputDir = commandLineParser_->getOutputPath();
                 if (!outputDir.empty()) {
-                    filename = outputDir + "/" + filename;
+                    filename = outputDir / filename;
                 } else {
-                    filename = filesystem::getWorkingDirectory() + "/" + filename;
+                    filename = filesystem::getWorkingDirectory() / filename;
                 }
             }
             auto dir = filesystem::getFileDirectory(filename);

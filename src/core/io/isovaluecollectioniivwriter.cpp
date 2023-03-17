@@ -40,7 +40,7 @@ IsoValueCollectionIIVWriter* IsoValueCollectionIIVWriter::clone() const {
 };
 
 void IsoValueCollectionIIVWriter::writeData(const IsoValueCollection* data,
-                                            std::string_view filePath) const {
+                                            const std::filesystem::path& filePath) const {
     Serializer serializer(filePath);
     data->serialize(serializer);
     serializer.writeFile();

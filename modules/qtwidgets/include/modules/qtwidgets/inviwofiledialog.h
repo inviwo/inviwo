@@ -80,15 +80,15 @@ public:
      * @param filename  path and name of the file (can be either a file name or directory name
      * including the full path)
      */
-    virtual void setCurrentFile(const std::string& filename) override;
-    virtual std::vector<std::string> getSelectedFiles() const override;
+    virtual void setCurrentFile(const std::filesystem::path& filename) override;
+    virtual std::vector<std::filesystem::path> getSelectedFiles() const override;
 
     /**
      * \brief set the current directory of the file dialog
      *
      * @param path  given path, must not contain a file name
      */
-    virtual void setCurrentDirectory(const std::string& path) override;
+    virtual void setCurrentDirectory(const std::filesystem::path& path) override;
 
     virtual FileExtension getSelectedFileExtension() const override;
     virtual void setSelectedExtension(const FileExtension& ext) override;
