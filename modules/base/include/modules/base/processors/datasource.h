@@ -44,24 +44,24 @@
 namespace inviwo {
 
 namespace util {
-inline void updateReaderFromFile(const FileProperty& file,
+inline void updateReaderFromFile(const FileProperty& filePath,
                                  OptionProperty<FileExtension>& extReader) {
-    if ((file.getSelectedExtension() == FileExtension::all() &&
-         !extReader.getSelectedValue().matches(file)) ||
-        file.getSelectedExtension().empty()) {
+    if ((filePath.getSelectedExtension() == FileExtension::all() &&
+         !extReader.getSelectedValue().matches(filePath)) ||
+        filePath.getSelectedExtension().empty()) {
         const auto& opts = extReader.getOptions();
         const auto it = std::find_if(opts.begin(), opts.end(),
                                      [&](const OptionPropertyOption<FileExtension>& opt) {
-                                         return opt.value_.matches(file.get());
+                                         return opt.value_.matches(filePath.get());
                                      });
         extReader.setSelectedValue(it != opts.end() ? it->value_ : FileExtension{});
     } else {
-        extReader.setSelectedValue(file.getSelectedExtension());
+        extReader.setSelectedValue(filePath.getSelectedExtension());
     }
 }
 
 template <typename... Types>
-void updateFilenameFilters(const DataReaderFactory& rf, FileProperty& file,
+void updateFilenameFilters(const DataReaderFactory& rf, FileProperty& filePath,
                            OptionProperty<FileExtension>& extReader) {
     std::vector<FileExtension> extensions;
 
@@ -76,9 +76,9 @@ void updateFilenameFilters(const DataReaderFactory& rf, FileProperty& file,
 
     options.emplace_back("noreader", "No available reader", FileExtension{});
 
-    file.clearNameFilters();
-    file.addNameFilter(FileExtension::all());
-    file.addNameFilters(extensions);
+    filePath.clearNameFilters();
+    filePath.addNameFilter(FileExtension::all());
+    filePath.addNameFilters(extensions);
     extReader.replaceOptions(options);
 }
 
@@ -94,19 +94,19 @@ public:
     /**
      * Construct a DataSource
      * @param app An InviwoApplication.
-     * @param file A filename passed into the FileProperty
+     * @param filePath A filename passed into the FileProperty
      * @param contentType A content type passed into the FileProperty, usually 'volume', 'image',
      * 'geometry', etc.
      * @see FileProperty
      */
-    DataSource(DataReaderFactory* rf = util::getDataReaderFactory(), std::string_view filename = "",
+    DataSource(DataReaderFactory* rf = util::getDataReaderFactory(), std::string_view filePath = "",
                std::string_view contentType = FileProperty::defaultContentType);
     virtual ~DataSource() = default;
 
     virtual void process() override;
     virtual void deserialize(Deserializer& d) override;
 
-    FileProperty file;
+    FileProperty filePath;
     OptionProperty<FileExtension> extReader;
     ButtonProperty reload;
 
@@ -128,10 +128,10 @@ private:
 };
 
 template <typename DataType, typename PortType>
-DataSource<DataType, PortType>::DataSource(DataReaderFactory* rf, std::string_view filename,
+DataSource<DataType, PortType>::DataSource(DataReaderFactory* rf, std::string_view filePath,
                                            std::string_view content)
     : Processor()
-    , file{"filename", "File", filename, content}
+    , filePath{"filename", "File", filePath, content}
     , extReader{"reader", "Data Reader"}
     , reload{"reload", "Reload data",
              [this]() {
@@ -142,25 +142,25 @@ DataSource<DataType, PortType>::DataSource(DataReaderFactory* rf, std::string_vi
     , port_{"data"} {
 
     addPort(port_);
-    addProperties(file, extReader, reload);
+    addProperties(this->filePath, extReader, reload);
 
     // ensure that the file name is always serialized by setting the default to ""
-    if (!filename.empty()) {
-        Property::setStateAsDefault(file, std::string{});
+    if (!filePath.empty()) {
+        Property::setStateAsDefault(this->filePath, std::string{});
     }
 
-    util::updateFilenameFilters<DataType>(*rf_, file, extReader);
-    util::updateReaderFromFile(file, extReader);
+    util::updateFilenameFilters<DataType>(*rf_, this->filePath, extReader);
+    util::updateReaderFromFile(this->filePath, extReader);
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() {
-        return !loadingFailed_ && filesystem::fileExists(file.get()) &&
+        return !loadingFailed_ && filesystem::fileExists(this->filePath.get()) &&
                !extReader.getSelectedValue().empty();
     });
-    file.onChange([this]() {
+    this->filePath.onChange([this]() {
         loadingFailed_ = false;
-        util::updateReaderFromFile(file, extReader);
+        util::updateReaderFromFile(this->filePath, extReader);
         isReady_.update();
     });
     extReader.onChange([this]() {
@@ -171,7 +171,7 @@ DataSource<DataType, PortType>::DataSource(DataReaderFactory* rf, std::string_vi
 
 template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::process() {
-    if (file.isModified() || reload.isModified()) {
+    if (filePath.isModified() || reload.isModified()) {
         load(deserialized_);
         deserialized_ = false;
     }
@@ -179,12 +179,12 @@ void DataSource<DataType, PortType>::process() {
 
 template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::load(bool deserialized) {
-    if (file.get().empty()) return;
+    if (filePath.get().empty()) return;
 
     const auto sext = extReader.getSelectedValue();
-    if (auto reader = rf_->template getReaderForTypeAndExtension<DataType>(sext, file.get())) {
+    if (auto reader = rf_->template getReaderForTypeAndExtension<DataType>(sext, filePath.get())) {
         try {
-            auto data = reader->readData(file.get());
+            auto data = reader->readData(filePath.get());
             port_.setData(data);
             loadedData_ = data;
             if (deserialized) {
@@ -196,20 +196,20 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
             loadingFailed_ = true;
             port_.detachData();
             isReady_.update();
-            LogProcessorError("Could not load data: " << file.get() << ", " << e.getMessage());
+            LogProcessorError("Could not load data: " << filePath.get() << ", " << e.getMessage());
         }
     } else {
         loadingFailed_ = true;
         port_.detachData();
         isReady_.update();
-        LogProcessorError("Could not find a data reader for file: " << file.get());
+        LogProcessorError("Could not find a data reader for file: " << filePath.get());
     }
 }
 
 template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    util::updateFilenameFilters<DataType>(*rf_, file, extReader);
+    util::updateFilenameFilters<DataType>(*rf_, filePath, extReader);
     deserialized_ = true;
 }
 

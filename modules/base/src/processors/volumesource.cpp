@@ -82,11 +82,11 @@ const ProcessorInfo VolumeSource::processorInfo_{
 
 const ProcessorInfo VolumeSource::getProcessorInfo() const { return processorInfo_; }
 
-VolumeSource::VolumeSource(InviwoApplication* app, std::string_view file)
+VolumeSource::VolumeSource(InviwoApplication* app, std::string_view filePath)
     : Processor()
     , app_(app)
     , outport_("data", "The loaded volume"_help)
-    , file_("filename", "Volume file", "File to load"_help, file, "volume")
+    , file_("filename", "Volume file", "File to load"_help, filePath, "volume")
     , reader_("reader", "Data Reader", "The selected reader used for loading the Volume"_help)
     , reload_("reload", "Reload data",
               "Reload the date from disk, will not use the resource manager"_help)
@@ -99,7 +99,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, std::string_view file)
     volumeSequence_.setVisible(false);
 
     // ensure that the file name is always serialized by setting the default to ""
-    if (!file.empty()) {
+    if (!filePath.empty()) {
         Property::setStateAsDefault(file_, std::string{});
     }
 

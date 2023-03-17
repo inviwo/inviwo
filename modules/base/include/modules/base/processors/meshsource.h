@@ -57,7 +57,7 @@ class Mesh;
  */
 class IVW_MODULE_BASE_API MeshSource : public DataSource<Mesh, MeshOutport> {
 public:
-    MeshSource(InviwoApplication* app, std::string_view file = "");
+    MeshSource(InviwoApplication* app, std::string_view filePath = "");
     virtual ~MeshSource() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
