@@ -42,11 +42,14 @@ std::string FileProperty::getClassIdentifier() const { return classIdentifier; }
 FileProperty::FileProperty(std::string_view identifier, std::string_view displayName, Document help,
                            std::string_view value, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TemplateProperty<std::string>(identifier, displayName, std::move(help), std::string{value},
+    : TemplateProperty<std::string>(identifier, displayName, std::move(help), std::string{},
                                     invalidationLevel, semantics)
     , acceptMode_(AcceptMode::Open)
     , fileMode_(FileMode::AnyFile)
     , contentType_(contentType) {
+    // Explicitly set the file name here since the TemplateProperty itself is initialized with an
+    // empty string as default value. This ensures that the set file name is always serialized.
+    set(std::string{value});
     addNameFilter(FileExtension::all());
 }
 

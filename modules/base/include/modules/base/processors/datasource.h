@@ -144,11 +144,6 @@ DataSource<DataType, PortType>::DataSource(DataReaderFactory* rf, std::string_vi
     addPort(port_);
     addProperties(this->filePath, extensions, reload);
 
-    // ensure that the file name is always serialized by setting the default to ""
-    if (!filePath.empty()) {
-        Property::setStateAsDefault(this->filePath, std::string{});
-    }
-
     util::updateFilenameFilters<DataType>(*rf_, this->filePath, extensions);
     util::updateReaderFromFile(this->filePath, extensions);
 
