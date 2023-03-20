@@ -460,12 +460,12 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 std::filesystem::path InviwoCore::getPath() const { return filesystem::findBasePath(); }
 
 void InviwoCore::scanDirForComposites(const std::filesystem::path& dir) {
-    for (auto&& file :
-         filesystem::getDirectoryContentsRecursively(dir, filesystem::ListMode::Files)) {
-        if (filesystem::getFileExtension(file) == "inv") {
-            if (addedCompositeFiles_.count(file) == 0) {
-                registerCompositeProcessor(file);
-                addedCompositeFiles_.insert(file);
+
+    for (auto&& item : std::filesystem::recursive_directory_iterator{dir}) {
+        if (item.is_regular_file() && item.path().extension() == ".inv") {
+            if (addedCompositeFiles_.count(item) == 0) {
+                registerCompositeProcessor(item);
+                addedCompositeFiles_.insert(item);
             }
         }
     }

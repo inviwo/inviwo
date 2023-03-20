@@ -66,7 +66,7 @@ public:
     void setReloadFileCallback(std::function<void()> cb);
 
 private:
-    virtual void fileChanged(const std::string& fileName) override;
+    virtual void fileChanged(const std::filesystem::path& fileName) override;
     virtual bool eventFilter(QObject* obj, QEvent* ev) override;
     void queryReloadFile();
     bool widgetIsFocused() const;

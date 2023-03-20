@@ -53,6 +53,8 @@
 #include <glm/gtx/component_wise.hpp>  // for compMul
 #include <units/units.hpp>             // for to_string
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 IvfVolumeWriter::IvfVolumeWriter() : DataWriterType<Volume>() {
@@ -65,21 +67,22 @@ IvfVolumeWriter& IvfVolumeWriter::operator=(const IvfVolumeWriter& that) = defau
 
 IvfVolumeWriter* IvfVolumeWriter::clone() const { return new IvfVolumeWriter(*this); }
 
-void IvfVolumeWriter::writeData(const Volume* volume, std::string_view filePath) const {
+void IvfVolumeWriter::writeData(const Volume* volume, const std::filesystem::path& filePath) const {
     util::writeIvfVolume(*volume, filePath, getOverwrite());
 }
 
 namespace util {
-void writeIvfVolume(const Volume& data, std::string_view filePath, Overwrite overwrite) {
+void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
+                    Overwrite overwrite) {
     const auto rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
     DataWriter::checkOverwrite(filePath, overwrite);
     DataWriter::checkOverwrite(rawPath, overwrite);
 
-    const std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
+    const auto fileName = filesystem::getFileNameWithoutExtension(filePath);
     const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();
     Serializer s(filePath);
-    s.serialize("RawFile", fileName + ".raw");
+    s.serialize("RawFile", fmt::format("{}.raw", fileName));
     s.serialize("Format", vr->getDataFormatString());
     s.serialize("ByteOffset", 0u);
     s.serialize("BasisAndOffset", data.getModelMatrix());
@@ -110,8 +113,8 @@ void writeIvfVolume(const Volume& data, std::string_view filePath, Overwrite ove
         fout.write(static_cast<const char*>(vr->getData()),
                    glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSize());
     } else {
-        throw DataWriterException("Could not write to raw file: " + rawPath,
-                                  IVW_CONTEXT_CUSTOM("util::writeIvfVolume"));
+        throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeIvfVolume"),
+                                  "Could not write to raw file: {}", rawPath );
     }
 }
 }  // namespace util

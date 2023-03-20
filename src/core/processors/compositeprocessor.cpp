@@ -69,7 +69,7 @@ const ProcessorInfo CompositeProcessor::processorInfo_{
 const ProcessorInfo CompositeProcessor::getProcessorInfo() const { return processorInfo_; }
 
 CompositeProcessor::CompositeProcessor(std::string_view identifier, std::string_view displayName,
-                                       InviwoApplication* app, std::string_view file)
+                                       InviwoApplication* app, const std::filesystem::path& file)
     : Processor(identifier, displayName)
     , app_{app}
     , subNetwork_{std::make_unique<ProcessorNetwork>(app)}
@@ -120,7 +120,7 @@ void CompositeProcessor::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-void CompositeProcessor::saveSubNetwork(std::string_view file) {
+void CompositeProcessor::saveSubNetwork(const std::filesystem::path& file) {
     Serializer s(app_->getPath(PathType::Workspaces));
 
     Tags tags;
@@ -134,17 +134,17 @@ void CompositeProcessor::saveSubNetwork(std::string_view file) {
     s.serialize("Tags", tags.getString());
     s.serialize("ProcessorNetwork", *subNetwork_);
 
-    auto ofs = filesystem::ofstream(std::string{file});
+    auto ofs = filesystem::ofstream(file);
     s.writeFile(ofs, true);
 }
 
 ProcessorNetwork& CompositeProcessor::getSubNetwork() { return *subNetwork_; }
 
-void CompositeProcessor::loadSubNetwork(std::string_view file) {
+void CompositeProcessor::loadSubNetwork(const std::filesystem::path& file) {
     if (filesystem::fileExists(file)) {
         subNetwork_->clear();
         auto wm = app_->getWorkspaceManager();
-        auto ifs = filesystem::ifstream(std::string{file});
+        auto ifs = filesystem::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(ifs, app_->getPath(PathType::Workspaces));
         auto name = getDisplayName();
         d.deserialize("DisplayName", name);

@@ -58,12 +58,12 @@ public:
     void onChangeSelection(Offset offset);
     void setFileOptions();
 
-    void setFolder(const std::string& path);
+    void setFolder(const std::filesystem::path& path);
 
     virtual InviwoApplication* getInviwoApplication() override;
 
 protected:
-    void loadWorkspaceApp(const std::string& fileName);
+    void loadWorkspaceApp(const std::filesystem::path& fileName);
 
     InviwoApplication* app_;
     FileProperty demoFolder_;

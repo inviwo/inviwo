@@ -100,8 +100,8 @@ public:
     static std::vector<TFPrimitiveData> simplify(const std::vector<TFPrimitiveData>& points,
                                                  double delta = 0.01);
 
-    static TransferFunction load(std::string_view path);
-    static void save(const TransferFunction& tf, std::string_view path);
+    static TransferFunction load(const std::filesystem::path& path);
+    static void save(const TransferFunction& tf, const std::filesystem::path& path);
 
     friend IVW_CORE_API bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
     friend IVW_CORE_API bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);

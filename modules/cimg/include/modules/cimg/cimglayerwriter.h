@@ -52,7 +52,7 @@ public:
     virtual CImgLayerWriter* clone() const override;
     virtual ~CImgLayerWriter() = default;
 
-    virtual void writeData(const Layer* data, std::string_view filePath) const override;
+    virtual void writeData(const Layer* data, const std::filesystem::path& filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const Layer* data, std::string_view fileExtension) const override;
 };

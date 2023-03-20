@@ -69,6 +69,7 @@
 #include <cerrno>         // for errno
 
 #include <fmt/core.h>            // for format
+#include <fmt/std.h>
 #include <glm/gtc/type_ptr.hpp>  // for value_ptr
 #include <units/units.hpp>       // for unit_from_string
 
@@ -240,7 +241,7 @@ std::any CSVReader::getOption(std::string_view key) {
     return std::any{};
 }
 
-std::shared_ptr<DataFrame> CSVReader::readData(std::string_view fileName) {
+std::shared_ptr<DataFrame> CSVReader::readData(const std::filesystem::path& fileName) {
     auto file = open(fileName);
 
     file.seekg(0, std::ios::end);

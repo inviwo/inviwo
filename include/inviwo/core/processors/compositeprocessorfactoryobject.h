@@ -33,8 +33,8 @@
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 
-#include <string>
 #include <memory>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -45,7 +45,7 @@ class InviwoApplication;
  */
 class IVW_CORE_API CompositeProcessorFactoryObject : public ProcessorFactoryObject {
 public:
-    CompositeProcessorFactoryObject(const std::string& filen);
+    CompositeProcessorFactoryObject(const std::filesystem::path& filen);
     virtual ~CompositeProcessorFactoryObject() = default;
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
@@ -53,8 +53,8 @@ public:
     virtual Document getMetaInformation() const override;
 
 private:
-    static ProcessorInfo makeProcessorInfo(const std::string& file);
-    std::string file_;
+    static ProcessorInfo makeProcessorInfo(const std::filesystem::path& file);
+    std::filesystem::path file_;
 };
 
 }  // namespace inviwo

@@ -249,10 +249,10 @@ void InviwoApplication::registerModules(RuntimeModuleLoading token,
     moduleManager_.registerModules(token, isEnabled);
 }
 
-std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
+std::filesystem::path InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
 
-std::string InviwoApplication::getPath(PathType pathType, const std::string& suffix,
-                                       const bool& createFolder) {
+std::filesystem::path InviwoApplication::getPath(PathType pathType, const std::string& suffix,
+                                                 const bool& createFolder) {
     return filesystem::getPath(pathType, suffix, createFolder);
 }
 

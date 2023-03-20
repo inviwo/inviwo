@@ -97,7 +97,7 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 #endif
 #if defined(__APPLE__)
         // On OSX the path returned by getExecutablePath includes folder-paths inside the app-binary
-        addModulePath(folder + "/../../../");
+        addModulePath(folder / "../../../");
 #endif
 
         try {
@@ -154,7 +154,9 @@ PythonInterpreter::~PythonInterpreter() {
     }
 }
 
-void PythonInterpreter::addModulePath(std::string_view path) { pyutil::addModulePath(path); }
+void PythonInterpreter::addModulePath(const std::filesystem::path& path) {
+    pyutil::addModulePath(path);
+}
 
 void PythonInterpreter::importModule(std::string_view moduleName) {
     namespace py = pybind11;

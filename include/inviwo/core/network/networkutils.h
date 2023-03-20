@@ -166,7 +166,7 @@ IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, ivec
 IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool selected);
 
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
-                                    const std::string& refPath);
+                                    const std::filesystem::path& refPath);
 
 /**
  * Append a PartialProcessorNetwork to the network
@@ -178,14 +178,13 @@ IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
  */
 // return the appended processors.
 
-IVW_CORE_API std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network,
-                                                                   std::istream& is,
-                                                                   const std::string& refPath,
-                                                                   InviwoApplication* app);
+IVW_CORE_API std::vector<Processor*> appendPartialProcessorNetwork(
+    ProcessorNetwork* network, std::istream& is, const std::filesystem::path& refPath,
+    InviwoApplication* app);
 
-IVW_CORE_API std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetwork,
-                                                            std::string_view workspaceFile,
-                                                            InviwoApplication* app);
+IVW_CORE_API std::vector<Processor*> appendProcessorNetwork(
+    ProcessorNetwork* destinationNetwork, const std::filesystem::path& workspaceFile,
+    InviwoApplication* app);
 
 IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork* network,
                                            std::shared_ptr<Processor> processor,

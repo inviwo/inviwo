@@ -48,7 +48,7 @@ public:
     virtual PNGLayerReader* clone() const override;
     virtual ~PNGLayerReader() = default;
 
-    virtual std::shared_ptr<Layer> readData(std::string_view filePath) override;
+    virtual std::shared_ptr<Layer> readData(const std::filesystem::path& filePath) override;
     using DataReaderType<Layer>::readData;
     std::shared_ptr<inviwo::Layer> readData(FILE* fp, std::string_view name = "<FileHandle>");
 };

@@ -331,17 +331,26 @@ std::vector<fs::path> getDirectoryContents(const fs::path& path, ListMode mode) 
         case ListMode::Files:
             std::copy_if(begin, end, std::back_inserter(res),
                          [](const fs::directory_entry& item) { return item.is_regular_file(); });
+            break;
         case ListMode::Directories:
             std::copy_if(begin, end, std::back_inserter(res),
                          [](const fs::directory_entry& item) { return item.is_directory(); });
+            break;
         case ListMode::FilesAndDirectories:
             std::copy_if(begin, end, std::back_inserter(res), [](const fs::directory_entry& item) {
                 return item.is_regular_file() || item.is_directory();
             });
+            break;
         default:
             std::copy_if(begin, end, std::back_inserter(res),
                          [](const fs::directory_entry& item) { return item.is_regular_file(); });
+            break;
     }
+
+    std::transform(res.begin(), res.end(), res.begin(),
+                   [&](const fs::path& child) { return fs::relative(child, path); });
+
+    std::sort(res.begin(), res.end());
 
     return res;
 }
@@ -360,17 +369,26 @@ std::vector<fs::path> getDirectoryContentsRecursively(const fs::path& path, List
         case ListMode::Files:
             std::copy_if(begin, end, std::back_inserter(res),
                          [](const fs::directory_entry& item) { return item.is_regular_file(); });
+            break;
         case ListMode::Directories:
             std::copy_if(begin, end, std::back_inserter(res),
                          [](const fs::directory_entry& item) { return item.is_directory(); });
+            break;
         case ListMode::FilesAndDirectories:
             std::copy_if(begin, end, std::back_inserter(res), [](const fs::directory_entry& item) {
                 return item.is_regular_file() || item.is_directory();
             });
+            break;
         default:
             std::copy_if(begin, end, std::back_inserter(res),
                          [](const fs::directory_entry& item) { return item.is_regular_file(); });
+            break;
     }
+
+    std::transform(res.begin(), res.end(), res.begin(),
+                   [&](const fs::path& child) { return fs::relative(child, path); });
+
+    std::sort(res.begin(), res.end());
 
     return res;
 }
@@ -654,7 +672,14 @@ fs::path getFileNameWithExtension(const fs::path& url) { return url.filename(); 
 
 fs::path getFileNameWithoutExtension(const fs::path& url) { return url.stem(); }
 
-std::string getFileExtension(const fs::path& url) { return url.extension().string(); }
+std::string getFileExtension(const fs::path& url) {
+    auto ext = url.extension().string();
+    if (ext.size() >= 1 && ext[0] == '.') {
+        return ext.substr(1);
+    } else {
+        return ext;
+    }
+}
 
 fs::path replaceFileExtension(const fs::path& url, std::string_view newFileExtension) {
     auto result = url;

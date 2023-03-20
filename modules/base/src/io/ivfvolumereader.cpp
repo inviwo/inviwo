@@ -64,13 +64,13 @@ IvfVolumeReader::IvfVolumeReader() : DataReaderType<Volume>() {
 
 IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*this); }
 
-std::shared_ptr<Volume> IvfVolumeReader::readData(std::string_view filePath) {
+std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& filePath) {
     checkExists(filePath);
-    const std::string fileDirectory = filesystem::getFileDirectory(filePath);
+    const auto fileDirectory = filesystem::getFileDirectory(filePath);
 
     Deserializer d(filePath);
 
-    std::string rawFile;
+    std::filesystem::path rawFile;
     size3_t dimensions{0u};
     size_t byteOffset = 0u;
     const DataFormatBase* format = nullptr;
@@ -78,7 +78,7 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(std::string_view filePath) {
 
     d.registerFactory(util::getMetaDataFactory());
     d.deserialize("RawFile", rawFile);
-    rawFile = fileDirectory + "/" + rawFile;
+    rawFile = fileDirectory / rawFile;
     d.deserialize("ByteOffset", byteOffset);
     std::string formatFlag;
     d.deserialize("Format", formatFlag);

@@ -58,6 +58,8 @@
 #include <glm/fwd.hpp>   // for mat3
 #include <glm/vec3.hpp>  // for operator+, vec<>:...
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 MPVMVolumeReader::MPVMVolumeReader() : DataReaderType<Volume>() {
@@ -66,45 +68,47 @@ MPVMVolumeReader::MPVMVolumeReader() : DataReaderType<Volume>() {
 
 MPVMVolumeReader* MPVMVolumeReader::clone() const { return new MPVMVolumeReader(*this); }
 
-std::shared_ptr<Volume> MPVMVolumeReader::readData(std::string_view filePath) {
+std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& filePath) {
 
-    std::string fileDirectory = filesystem::getFileDirectory(filePath);
+    auto fileDirectory = filesystem::getFileDirectory(filePath);
 
     // Read the mpvm file content
     std::string textLine;
-    std::vector<std::string> files;
+    std::vector<std::filesystem::path> files;
     {
         auto f = open(filePath);
         while (!f.eof()) {
             getline(f, textLine);
             textLine = trim(textLine);
-            files.push_back(textLine);
+            files.emplace_back(textLine);
         };
     }
 
-    if (files.empty())
+    if (files.empty()) {
         throw DataReaderException(IVW_CONTEXT, "Error: No PVM files found in {}", filePath);
-
-    if (files.size() > 4)
+    }
+    if (files.size() > 4) {
         throw DataReaderException(IVW_CONTEXT, "Error: Maximum 4 pvm files are supported, file: {}",
                                   filePath);
+    }
 
     // Read all pvm volumes
     std::vector<std::shared_ptr<Volume>> volumes;
     for (size_t i = 0; i < files.size(); i++) {
-        auto newVol = PVMVolumeReader::readPVMData(fileDirectory + "/" + files[i]);
-        if (newVol)
+        auto newVol = PVMVolumeReader::readPVMData(fileDirectory / files[i]);
+        if (newVol) {
             volumes.push_back(newVol);
-        else
+        } else {
             LogWarn("Could not load " << fileDirectory << "/" << files[i]);
+        }
     }
 
-    if (volumes.empty())
+    if (volumes.empty()) {
         throw DataReaderException(IVW_CONTEXT, "No PVM volumes could be read from file: {}",
                                   filePath);
-
+    }
     if (volumes.size() == 1) {
-        printPVMMeta(*volumes[0], fileDirectory + "/" + files[0]);
+        printPVMMeta(*volumes[0], fileDirectory / files[0]);
         return volumes[0];
     }
 
@@ -114,7 +118,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(std::string_view filePath) {
     for (size_t i = 1; i < volumes.size(); i++) {
         if (format != volumes[i]->getDataFormat() || mdim != volumes[i]->getDimensions()) {
             LogWarn("PVM volumes did not have the same format or dimensions, using first volume.");
-            printPVMMeta(*volumes[0], fileDirectory + "/" + files[0]);
+            printPVMMeta(*volumes[0], fileDirectory / files[0]);
             return volumes[0];
         }
     }
@@ -168,7 +172,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(std::string_view filePath) {
     return volume;
 }
 
-void MPVMVolumeReader::printPVMMeta(const Volume& volume, std::string_view fileName) const {
+void MPVMVolumeReader::printPVMMeta(const Volume& volume,const std::filesystem::path& fileName) const {
     size3_t dim = volume.getDimensions();
     size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSize());
     std::string size = util::formatBytesToString(bytes);

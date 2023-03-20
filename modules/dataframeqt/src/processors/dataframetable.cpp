@@ -176,8 +176,8 @@ void DataFrameTable::setWidgetSize(size2_t dim) {
 
 size2_t DataFrameTable::getWidgetSize() const { return dimensions_; }
 
-std::optional<std::string> DataFrameTable::exportFile(
-    std::string_view path, std::string_view name,
+std::optional<std::filesystem::path> DataFrameTable::exportFile(
+    const std::filesystem::path& path, std::string_view name,
     const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
 
     if (auto data = inport_.getData()) {

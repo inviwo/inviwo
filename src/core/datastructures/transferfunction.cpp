@@ -45,6 +45,8 @@
 #include <cmath>
 #include <streambuf>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 TransferFunction::TransferFunction(size_t textureSize)
@@ -208,7 +210,7 @@ bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs) {
     return !operator==(lhs, rhs);
 }
 
-TransferFunction TransferFunction::load(std::string_view path) {
+TransferFunction TransferFunction::load(const std::filesystem::path& path) {
     auto factory = util::getDataReaderFactory();
 
     if (auto tf = factory->readDataForTypeAndExtension<TransferFunction>(path)) {
@@ -218,7 +220,7 @@ TransferFunction TransferFunction::load(std::string_view path) {
                         "Unable to load TransferFunction from {}", path);
     }
 }
-void TransferFunction::save(const TransferFunction& tf, std::string_view path) {
+void TransferFunction::save(const TransferFunction& tf, const std::filesystem::path& path) {
     auto factory = util::getDataWriterFactory();
 
     if (!factory->writeDataForTypeAndExtension(&tf, path)) {

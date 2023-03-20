@@ -57,6 +57,8 @@
 #include <ostream>      // for operator<<
 #include <type_traits>  // for remove_extent_t
 
+#include <fmt/std.h>
+
 namespace inviwo {
 class Deserializer;
 class Layer;
@@ -114,7 +116,8 @@ void ImageSource::process() {
             outport_.setData(std::make_shared<Image>(outLayer));
             imageDimension_.set(outLayer->getDimensions());
         } catch (DataReaderException const& e) {
-            util::log(e.getContext(), "Could not load data: " + file_.get() + ", " + e.getMessage(),
+            util::log(e.getContext(),
+                      fmt::format("Could not load data: {}, {}", file_.get(), e.getMessage()),
                       LogLevel::Error);
             loadingFailed_ = true;
             outport_.detachData();

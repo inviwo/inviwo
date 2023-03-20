@@ -213,8 +213,8 @@ void utilqt::configureFileSystemObserver(InviwoApplication& app) {
     app.setFileSystemObserver(std::make_unique<FileSystemObserverQt>());
 }
 
-void utilqt::setStyleSheetFile(std::string_view file) {
-    QFile styleSheetFile(QString::fromUtf8(file.data(), file.size()));
+void utilqt::setStyleSheetFile(const std::filesystem::path& file) {
+    QFile styleSheetFile{file};
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
     qApp->setStyleSheet(styleSheet);

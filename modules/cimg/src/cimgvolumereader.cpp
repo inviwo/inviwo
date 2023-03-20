@@ -49,6 +49,8 @@
 #include <ostream>      // for operator<<, basic_os...
 #include <type_traits>  // for remove_extent_t
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 CImgVolumeReader::CImgVolumeReader() : DataReaderType<Volume>() {
@@ -57,10 +59,8 @@ CImgVolumeReader::CImgVolumeReader() : DataReaderType<Volume>() {
 
 CImgVolumeReader* CImgVolumeReader::clone() const { return new CImgVolumeReader(*this); }
 
-std::shared_ptr<Volume> CImgVolumeReader::readData(std::string_view filePath) {
-    if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", filePath);
-    }
+std::shared_ptr<Volume> CImgVolumeReader::readData(const std::filesystem::path& filePath) {
+    checkExists(filePath);
 
     auto volumeDisk = std::make_shared<VolumeDisk>(filePath);
     volumeDisk->setLoader(new CImgVolumeRAMLoader(filePath));
@@ -76,7 +76,7 @@ void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
     }
 }
 
-CImgVolumeRAMLoader::CImgVolumeRAMLoader(std::string_view sourceFile) : sourceFile_{sourceFile} {}
+CImgVolumeRAMLoader::CImgVolumeRAMLoader(const std::filesystem::path& sourceFile) : sourceFile_{sourceFile} {}
 
 CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const { return new CImgVolumeRAMLoader(*this); }
 
@@ -86,7 +86,7 @@ std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
     size3_t dimensions = src.getDimensions();
     DataFormatId formatId = DataFormatId::NotSpecialized;
 
-    std::string fileName = sourceFile_;
+    std::filesystem::path fileName = sourceFile_;
 
     if (!filesystem::fileExists(fileName)) {
         const auto newPath = filesystem::addBasePath(fileName);
@@ -94,7 +94,7 @@ std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
+            throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
         }
     }
 
@@ -113,7 +113,7 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
     size3_t dimensions = src.getDimensions();
     DataFormatId formatId = DataFormatId::NotSpecialized;
 
-    std::string fileName = sourceFile_;
+    std::filesystem::path fileName = sourceFile_;
 
     if (!filesystem::fileExists(fileName)) {
         const auto newPath = filesystem::addBasePath(fileName);
@@ -121,7 +121,7 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
+           throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
         }
     }
 

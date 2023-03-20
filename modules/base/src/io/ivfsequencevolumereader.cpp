@@ -45,7 +45,8 @@ IvfSequenceVolumeReader::IvfSequenceVolumeReader() {
     addExtension({"ivfs", "Sequence of Inviwo ivf volumes"});
 }
 
-std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(std::string_view filePath) {
+std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(
+    const std::filesystem::path& filePath) {
     checkExists(filePath);
 
     auto dir = filesystem::getFileDirectory(filePath);
@@ -55,7 +56,7 @@ std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(std::string_vi
     d.deserialize("volumes", filenames, "volume");
     auto volumes = std::make_shared<VolumeSequence>();
     for (auto filename : filenames) {
-        auto abs = filesystem::cleanupPath(dir + "/" + filename);
+        auto abs = dir / filename;
         volumes->push_back(reader_.readData(abs));
     }
 

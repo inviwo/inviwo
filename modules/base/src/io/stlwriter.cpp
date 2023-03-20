@@ -72,7 +72,7 @@ StlWriter::StlWriter() : DataWriterType<Mesh>() {
 
 StlWriter* StlWriter::clone() const { return new StlWriter(*this); }
 
-void StlWriter::writeData(const Mesh* data, std::string_view filePath) const {
+void StlWriter::writeData(const Mesh* data, const std::filesystem::path& filePath) const {
     auto f = open(filePath);
     writeData(data, f);
 }

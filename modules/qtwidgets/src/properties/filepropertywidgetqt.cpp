@@ -112,7 +112,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
                            : filesystem::getFileDirectory(property_->get());
 
             QDesktopServices::openUrl(
-                QUrl(utilqt::toQString("file:///" + dir), QUrl::TolerantMode));
+                QUrl(utilqt::toQString("file:///" + dir.string()), QUrl::TolerantMode));
         });
     }
 

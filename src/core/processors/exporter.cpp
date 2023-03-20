@@ -37,7 +37,8 @@
 
 namespace inviwo {
 
-std::vector<std::string> util::exportAllFiles(ProcessorNetwork& network, std::string_view path,
+std::vector<std::string> util::exportAllFiles(ProcessorNetwork& network,
+                                              const std::filesystem::path& path,
                                               std::string_view nameTemplate,
                                               const std::vector<FileExtension>& candidateExtensions,
                                               Overwrite overwrite) {

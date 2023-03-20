@@ -53,7 +53,7 @@ public:
     virtual StlWriter* clone() const override;
     virtual ~StlWriter() = default;
 
-    virtual void writeData(const Mesh* data, std::string_view filePath) const override;
+    virtual void writeData(const Mesh* data, const std::filesystem::path& filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const Mesh* data, std::string_view fileExtension) const override;
 

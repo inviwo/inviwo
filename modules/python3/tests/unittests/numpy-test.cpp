@@ -63,7 +63,7 @@ namespace {
 std::string getPath() {
     auto path = util::getInviwoApplication()->getModuleByType<Python3Module>()->getPath(
         ModulePath::UnitTests);
-    return path + "/scripts/";
+    return path / "scripts/";
 }
 }  // namespace
 

@@ -62,7 +62,7 @@ public:
     void setFixInvalidDataFlag(bool enable);
     bool getFixInvalidDataFlag() const;
 
-    virtual std::shared_ptr<Mesh> readData(std::string_view filePath) override;
+    virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
 
     virtual bool setOption(std::string_view key, std::any value) override;
     virtual std::any getOption(std::string_view key) override;

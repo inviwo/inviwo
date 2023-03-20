@@ -39,6 +39,8 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+#include <fmt/std.h>
+
 using namespace inviwo;
 
 // Information about test data can be found at

@@ -69,9 +69,9 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
     auto fonts = font::getAvailableFonts();
 
     for (auto font : fonts) {
-        auto name = filesystem::getFileNameWithoutExtension(font.second);
+        auto name = filesystem::getFileNameWithoutExtension(font.second).string();
         // use the file name w/o extension as identifier
-        addOption(name, font.first, font.second);
+        addOption(name, font.first, font.second.string());
     }
     setSelectedIdentifier(fontFaceName);
     setCurrentStateAsDefault();

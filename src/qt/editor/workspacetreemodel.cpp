@@ -447,7 +447,7 @@ void WorkspaceTreeModel::updateModules(std::string_view category, ModulePath pat
             }
         } else {
             for (auto filePath : filesystem::getDirectoryContents(path)) {
-                addFile(fmt::format("{}/{}", path, filePath), *section);
+                addFile(path / filePath, *section);
             }
         }
         if (section->childCount() > 0) {

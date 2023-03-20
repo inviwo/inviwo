@@ -75,7 +75,7 @@ BinarySTLWriter::BinarySTLWriter() : DataWriterType<Mesh>() {
 
 BinarySTLWriter* BinarySTLWriter::clone() const { return new BinarySTLWriter(*this); }
 
-void BinarySTLWriter::writeData(const Mesh* data, std::string_view filePath) const {
+void BinarySTLWriter::writeData(const Mesh* data, const std::filesystem::path& filePath) const {
     auto f = open(filePath, std::ios_base::out | std::ios_base::binary);
     writeData(data, f);
 }

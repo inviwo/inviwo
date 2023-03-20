@@ -79,7 +79,8 @@ public:
      * @see inviwo::IvfSequenceVolumeWriter::writeData(const VolumeSequence*, std::string ,
      * std::string,std::string)
      */
-    virtual std::shared_ptr<VolumeSequence> readData(std::string_view filePath) override;
+    virtual std::shared_ptr<VolumeSequence> readData(
+        const std::filesystem::path& filePath) override;
 
 private:
     IvfVolumeReader reader_;

@@ -75,10 +75,10 @@ const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const { return proc
 
 namespace {
 
-std::string getFirstFileInFolder(const std::string& folder, const std::string& filter) {
+std::string getFirstFileInFolder(const std::filesystem::path& folder, const std::string& filter) {
     auto files = filesystem::getDirectoryContents(folder);
     for (auto f : files) {
-        auto file = folder + "/" + f;
+        auto file = folder / f;
         if (filesystem::wildcardStringMatch(filter, file)) {
             return file;
         }
@@ -195,7 +195,7 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
 
     auto files = filesystem::getDirectoryContents(folder_.get());
     for (auto f : files) {
-        auto file = folder_.get() + "/" + f;
+        auto file = folder_.get() / f;
         if (filesystem::wildcardStringMatch(filter_, file)) {
             try {
                 if (auto reader1 = rf_->getReaderForTypeAndExtension<Volume>(file)) {

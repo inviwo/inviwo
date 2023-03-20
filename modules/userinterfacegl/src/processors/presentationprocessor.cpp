@@ -255,7 +255,7 @@ void PresentationProcessor::updateFileName() {
     if ((index < 0) || (static_cast<std::size_t>(index) >= fileList_.size())) {
         imageFileName_.set("<no images found>");
     } else {
-        imageFileName_.set(fileList_[index]);
+        imageFileName_.set(fileList_[index].filename().string());
     }
 }
 

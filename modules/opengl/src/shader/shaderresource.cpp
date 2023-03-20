@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-FileShaderResource::FileShaderResource(std::string_view key, std::string_view fileName)
+FileShaderResource::FileShaderResource(std::string_view key, const std::filesystem::path& fileName)
     : FileObserver(util::getInviwoApplication()), key_(key), fileName_(fileName) {
     startFileObservation(fileName_);
 }
@@ -64,9 +64,9 @@ void FileShaderResource::setSource(std::string_view source) {
     file.close();
 }
 
-const std::string& FileShaderResource::file() const { return fileName_; }
+const std::filesystem::path& FileShaderResource::file() const { return fileName_; }
 
-void FileShaderResource::fileChanged(const std::string& /*fileName*/) {
+void FileShaderResource::fileChanged(const std::filesystem::path& /*fileName*/) {
     cache_ = "";
     callbacks_.invoke(this);
 }

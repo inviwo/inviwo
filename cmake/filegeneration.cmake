@@ -33,7 +33,7 @@ function(ivw_generate_module_paths_header)
     list_to_longstringvector(vec ${dirs})
     list(LENGTH IVW_EXTERNAL_MODULES count)
     math(EXPR count "${count}+1")
-    set(paths "const std::array<const std::string, ${count}> inviwoModulePaths_ = {${vec}}")
+    set(paths "inline const std::array<const std::filesystem::path, ${count}> inviwoModulePaths_ = {${vec}}")
     set(IVW_MODULES_PATHS_ARRAY ${paths})
 
     configure_file(${IVW_CMAKE_TEMPLATES}/inviwomodulespaths_template.h 

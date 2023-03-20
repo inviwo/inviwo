@@ -754,12 +754,12 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 const auto filename = util::findUniqueIdentifier(
                     util::stripIdentifier(p->getDisplayName()),
                     [&](std::string_view name) {
-                        StrBuffer path{"{}/{}.inv", compDir, name};
+                        auto path = compDir / fmt::format("{}.inv", name);
                         return !filesystem::fileExists(path);
                     },
                     "");
                 filesystem::createDirectoryRecursively(compDir);
-                const auto path = compDir + "/" + filename + ".inv";
+                const auto path = compDir / (filename + ".inv");
                 p->saveSubNetwork(path);
                 LogInfo("Saved Composite to \"" << path
                                                 << "\". \nComposite is now available in the "

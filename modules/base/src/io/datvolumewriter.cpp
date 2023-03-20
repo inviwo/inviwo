@@ -55,6 +55,8 @@
 #include <fmt/core.h>            // for basic_string_view
 #include <fmt/format.h>          // for join
 #include <fmt/ostream.h>         // for print
+#include <fmt/std.h>
+
 #include <glm/fwd.hpp>           // for mat4, mat3, vec3
 #include <glm/gtc/type_ptr.hpp>  // for value_ptr
 #include <glm/gtx/range.hpp>     // for begin, end
@@ -74,18 +76,19 @@ DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) = defau
 
 DatVolumeWriter* DatVolumeWriter::clone() const { return new DatVolumeWriter(*this); }
 
-void DatVolumeWriter::writeData(const Volume* data, std::string_view filePath) const {
+void DatVolumeWriter::writeData(const Volume* data, const std::filesystem::path& filePath) const {
     util::writeDatVolume(*data, filePath, getOverwrite());
 }
 
 namespace util {
-void writeDatVolume(const Volume& data, std::string_view filePath, Overwrite overwrite) {
+void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
+                    Overwrite overwrite) {
     std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
     DataWriter::checkOverwrite(filePath, overwrite);
     DataWriter::checkOverwrite(rawPath, overwrite);
 
-    std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
+    auto fileName = filesystem::getFileNameWithoutExtension(filePath);
     // Write the .dat file content
     std::stringstream ss;
     const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();
@@ -107,7 +110,7 @@ void writeDatVolume(const Volume& data, std::string_view filePath, Overwrite ove
             fmt::print(ss, "{}: {}\n", key, fmt::join(begin(vec), end(vec), " "));
         }};
 
-    print("RawFile", fileName + ".raw");
+    print("RawFile", fmt::format("{}.raw", fileName));
     print("Resolution", vr->getDimensions());
     print("Format", vr->getDataFormatString());
     print("ByteOffset", std::string("0"));

@@ -79,15 +79,16 @@ void saveData(const T& data, const std::filesystem::path& filePath, const FileEx
  * @throws DataWriterException if overwrite was violated.
  */
 template <typename T>
-std::optional<std::string> saveData(const T& data, std::string_view path, std::string_view name,
-                                    const std::vector<FileExtension>& extensions,
-                                    Overwrite overwrite) {
+std::optional<std::filesystem::path> saveData(const T& data, const std::filesystem::path& path,
+                                              std::string_view name,
+                                              const std::vector<FileExtension>& extensions,
+                                              Overwrite overwrite) {
     auto factory = util::getDataWriterFactory();
 
     for (const auto& extension : extensions) {
         if (auto writer = factory->getWriterForTypeAndExtension<T>(extension.extension_)) {
             writer->setOverwrite(overwrite);
-            const auto file = fmt::format("{}/{}.{}", path, name, extension.extension_);
+            const auto file = path / fmt::format("{}.{}", name, extension.extension_);
             writer->writeData(&data, file);
             return file;
         }

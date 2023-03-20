@@ -55,7 +55,7 @@ CImgLayerWriter::CImgLayerWriter() : DataWriterType<Layer>() {
 
 CImgLayerWriter* CImgLayerWriter::clone() const { return new CImgLayerWriter(*this); }
 
-void CImgLayerWriter::writeData(const Layer* data, std::string_view filePath) const {
+void CImgLayerWriter::writeData(const Layer* data, const std::filesystem::path& filePath) const {
     cimgutil::saveLayer(filePath, data);
 }
 
