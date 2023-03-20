@@ -51,7 +51,7 @@ JSONDataFrameReader::JSONDataFrameReader() {
 
 JSONDataFrameReader* JSONDataFrameReader::clone() const { return new JSONDataFrameReader(*this); }
 
-std::shared_ptr<DataFrame> JSONDataFrameReader::readData(std::string_view fileName) {
+std::shared_ptr<DataFrame> JSONDataFrameReader::readData(const std::filesystem::path& fileName) {
     auto file = open(fileName);
 
     file.seekg(0, std::ios::end);

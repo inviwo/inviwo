@@ -306,9 +306,10 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
             auto modulePath = mod->getPath();
             for (auto& file : license.files) {
 
-                const auto defaultLicensePath = modulePath + "/licenses/" + file;
-                const auto fallbackLicensePath = std::string{build::binaryDirectory} + "/modules/" +
-                                                 toLower(moduleName) + "/licenses/" + file;
+                const auto defaultLicensePath = modulePath / "licenses" / file;
+                const auto fallbackLicensePath = std::filesystem::path{build::binaryDirectory} /
+                                                 "modules" / toLower(moduleName) / "licenses" /
+                                                 file;
 
                 std::stringstream buffer;
                 if (filesystem::fileExists(defaultLicensePath)) {

@@ -188,7 +188,7 @@ void ImageSourceSeries::updateFileName() {
     }
 }
 
-bool ImageSourceSeries::isValidImageFile(std::string fileName) {
+bool ImageSourceSeries::isValidImageFile(const std::filesystem::path& fileName) {
     return util::contains_if(validExtensions_,
                              [&](const FileExtension& f) { return f.matches(fileName); });
 }

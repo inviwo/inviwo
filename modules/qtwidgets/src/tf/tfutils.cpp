@@ -219,10 +219,11 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
     presets->setObjectName("TF");
     presets->setEnabled(!property->getReadOnly());
     const int iconWidth = utilqt::emToPx(presets, 11);
-    // need to set the stylesheet explicitely since Qt _only_ supports 'px' for icon sizes
+    // need to set the stylesheet explicitly since Qt _only_ supports 'px' for icon sizes
     presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 
-    auto addPresetActions = [presets, parent, property, iconWidth](const std::string& basePath) {
+    auto addPresetActions = [presets, parent, property,
+                             iconWidth](const std::filesystem::path& basePath) {
         auto factory = util::getDataReaderFactory();
         auto files = filesystem::getDirectoryContentsRecursively(basePath);
         for (auto file : files) {
@@ -230,8 +231,8 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
                 try {
                     auto tf = reader->readData(file);
                     // remove basepath and trailing directory separator from filename
-                    auto action =
-                        presets->addAction(utilqt::toQString(file.substr(basePath.length() + 1)));
+                    auto action = presets->addAction(
+                        utilqt::toQString(file.string().substr(basePath.string().length() + 1)));
                     action->setIcon(QIcon(utilqt::toQPixmap(*tf, QSize{iconWidth, 20})));
                     QObject::connect(action, &QAction::triggered, parent,
                                      [property, tf = std::move(tf)]() {

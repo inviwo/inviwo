@@ -716,7 +716,7 @@ void InviwoMainWindow::addActions() {
                 auto qFile = QString::fromStdString(file);
                 auto action = menu->addAction(qFile);
                 menuEventFilter_->add(action, qFile);
-                auto path = QString::fromStdString(moduleWorkspacePath + "/" + file);
+                auto path = QString::fromStdString(moduleWorkspacePath / file);
                 connect(action, &QAction::triggered, this, [this, path]() {
                     auto action = util::getModifierAction(QApplication::keyboardModifiers());
                     if (action == ModifierAction::AppendWorkspace) {
@@ -758,7 +758,7 @@ void InviwoMainWindow::addActions() {
             auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
             for (auto test : filesystem::getDirectoryContents(moduleTestPath,
                                                               filesystem::ListMode::Directories)) {
-                std::string testDir = moduleTestPath + "/" + test;
+                std::string testDir = moduleTestPath / test;
                 if (!filesystem::directoryExists(testDir)) continue;
                 for (auto file : filesystem::getDirectoryContents(testDir)) {
                     // only accept inviwo workspace files
@@ -766,7 +766,7 @@ void InviwoMainWindow::addActions() {
                     auto qFile = QString::fromStdString(file);
                     auto action = menu->addAction(qFile);
                     menuEventFilter_->add(action, qFile);
-                    auto path = QString::fromStdString(testDir + "/" + file);
+                    auto path = QString::fromStdString(testDir / file);
                     connect(action, &QAction::triggered, this, [this, path]() {
                         auto action = util::getModifierAction(QApplication::keyboardModifiers());
                         if (action == ModifierAction::AppendWorkspace) {
@@ -810,8 +810,8 @@ void InviwoMainWindow::addActions() {
         connect(reloadStyle, &QAction::triggered, [this](bool /*state*/) {
             // The following code snippet allows to reload the Qt style sheets during
             // runtime, which is handy while we change them.
-            utilqt::setStyleSheetFile(app_->getPath(PathType::Resources) +
-                                      "/stylesheets/inviwo.qss");
+            utilqt::setStyleSheetFile(app_->getPath(PathType::Resources) /
+                                      "stylesheets/inviwo.qss");
         });
     }
 #endif

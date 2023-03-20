@@ -212,7 +212,7 @@ void TextEditorDockWidget::setReadOnly(bool readonly) { editor_->setReadOnly(rea
 void TextEditorDockWidget::updateWindowTitle() {
     auto str = [&]() -> std::string {
         if (fileProperty_) {
-            return "Text Editor - " + fileProperty_->get();
+            return "Text Editor - " + fileProperty_->get().string();
         } else if (stringProperty_) {
             return "Text Editor - " + stringProperty_->getDisplayName();
         }

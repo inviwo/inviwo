@@ -70,7 +70,7 @@ public:
      * @return a DataFrame containing the JSON data
      * @throws FileException if the file cannot be accessed
      */
-    virtual std::shared_ptr<DataFrame> readData(std::string_view fileName) override;
+    virtual std::shared_ptr<DataFrame> readData(const std::filesystem::path& fileName) override;
 
     /**
      * read DataFrame from a JSON-encoded input stream, e.g. a std::ifstream. In case

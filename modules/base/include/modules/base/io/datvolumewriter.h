@@ -48,11 +48,12 @@ public:
     virtual DatVolumeWriter* clone() const override;
     virtual ~DatVolumeWriter() = default;
 
-    virtual void writeData(const Volume* data, std::string_view filePath) const override;
+    virtual void writeData(const Volume* data,
+                           const std::filesystem::path& filePath) const override;
 };
 
 namespace util {
-IVW_MODULE_BASE_API void writeDatVolume(const Volume& data, std::string_view filePath,
+IVW_MODULE_BASE_API void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
                                         Overwrite overwrite = Overwrite::No);
 }
 

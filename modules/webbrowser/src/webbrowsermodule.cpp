@@ -201,14 +201,14 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     // Find CEF framework and helper app in
     // exe.app/Contents/Frameworks directory first
-    auto cefParentDir = filesystem::getCanonicalPath(exeDirectory + std::string("/.."));
-    auto frameworkDirectory = cefParentDir + "/Frameworks/Chromium Embedded Framework.framework";
-    auto frameworkPath = frameworkDirectory + "/Chromium Embedded Framework";
+    auto cefParentDir = filesystem::getCanonicalPath(exeDirectory / "..");
+    auto frameworkDirectory = cefParentDir / "Frameworks/Chromium Embedded Framework.framework";
+    auto frameworkPath = frameworkDirectory / "Chromium Embedded Framework";
     // Load the CEF framework library at runtime instead of linking directly
     // as required by the macOS sandbox implementation.
     if (!cefLib_.LoadInMain()) {
         throw ModuleInitException("Could not find Chromium Embedded Framework.framework: " +
-                                  frameworkPath);
+                                  frameworkPath.string());
     }
 
     CefSettings settings;
@@ -221,8 +221,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     //
     // We still set the variable to potentially avoid other problems such as the one below.
     // Crashes if not set and non-default locale is used
-    CefString(&settings.locales_dir_path)
-        .FromWString(util::toWstring(frameworkDirectory + "/Resources"));
+    CefString(&settings.locales_dir_path).FromWString((frameworkDirectory / "Resources").wstring());
 
     // resources_dir_path specified location of:
     // cef.pak
@@ -241,7 +240,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     //      This file contains non-localized resources required for Chrome Developer
     //      Tools. Without this file Chrome Developer Tools will not function.
     CefString(&settings.resources_dir_path)
-        .FromWString(util::toWstring(frameworkDirectory + "/Resources"));
+        .FromWString((frameworkDirectory / "Resources").wstring());
     // Locale returns "en_US.UFT8" but "en.UTF8" is needed by CEF
     auto startErasePos = locale.find('_');
     if (startErasePos != std::string::npos) {
@@ -252,8 +251,9 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     CefSettings settings;
     // Non-mac systems uses a single helper executable so here we can specify name
     // Linux will have empty extension
-    auto subProcessExecutable = fmt::format("{}/{}{}{}", exeDirectory, "cef_web_helper",
-                                            exeExtension.empty() ? "" : ".", exeExtension);
+    auto subProcessExecutable =
+        exeDirectory /
+        fmt::format("{}{}{}", "cef_web_helper", exeExtension.empty() ? "" : ".", exeExtension);
     if (!filesystem::fileExists(subProcessExecutable)) {
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }

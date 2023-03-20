@@ -68,7 +68,7 @@ PVMVolumeWriter& PVMVolumeWriter::operator=(const PVMVolumeWriter& that) {
 
 PVMVolumeWriter* PVMVolumeWriter::clone() const { return new PVMVolumeWriter(*this); }
 
-void PVMVolumeWriter::writeData(const Volume* data, std::string_view filePath) const {
+void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path& filePath) const {
     checkOverwrite(filePath);
 
     const DataFormatBase* format = data->getDataFormat();
@@ -141,7 +141,7 @@ void PVMVolumeWriter::writeData(const Volume* data, std::string_view filePath) c
         comment[commMetaData->get().size()] = '\0';
     }
 
-    writePVMvolume(SafeCStr{filePath}.c_str(), dataPtr, static_cast<unsigned int>(dim.x),
+    writePVMvolume(filePath.c_str(), dataPtr, static_cast<unsigned int>(dim.x),
                    static_cast<unsigned int>(dim.y), static_cast<unsigned int>(dim.z), components,
                    spacing.x, spacing.y, spacing.z, description, courtesy, parameter, comment);
 

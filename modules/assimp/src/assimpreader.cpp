@@ -139,7 +139,7 @@ void AssimpReader::setFixInvalidDataFlag(bool enable) { fixInvalidData_ = enable
 
 bool AssimpReader::getFixInvalidDataFlag() const { return fixInvalidData_; }
 
-std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
+std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& filePath) {
     Assimp::Importer importer;
 
     std::clock_t start_readmetadata = std::clock();
@@ -152,21 +152,21 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
         Assimp::DefaultLogger::create("AssimpImportLog.txt", logSeverity, 0);
         // if logging is enabled, errors will always be logged
         Assimp::DefaultLogger::get()->attachStream(
-            new InviwoAssimpLogStream(LogLevel::Error, filePath),
+            new InviwoAssimpLogStream(LogLevel::Error, filePath.string()),
             Assimp::Logger::ErrorSeverity::Err);
         if (logLevel_ >= AssimpLogLevel::Warn) {
             Assimp::DefaultLogger::get()->attachStream(
-                new InviwoAssimpLogStream(LogLevel::Warn, filePath),
+                new InviwoAssimpLogStream(LogLevel::Warn, filePath.string()),
                 Assimp::Logger::ErrorSeverity::Warn);
         }
         if (logLevel_ >= AssimpLogLevel::Info) {
             Assimp::DefaultLogger::get()->attachStream(
-                new InviwoAssimpLogStream(LogLevel::Info, filePath),
+                new InviwoAssimpLogStream(LogLevel::Info, filePath.string()),
                 Assimp::Logger::ErrorSeverity::Info);
         }
         if (logLevel_ >= AssimpLogLevel::Debug) {
             Assimp::DefaultLogger::get()->attachStream(
-                new InviwoAssimpLogStream(LogLevel::Info, filePath),
+                new InviwoAssimpLogStream(LogLevel::Info, filePath.string()),
                 Assimp::Logger::ErrorSeverity::Debugging);
         }
     }
@@ -188,7 +188,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
         flags |= aiProcess_FindInvalidData;
     }
 
-    const aiScene* scene = importer.ReadFile(std::string(filePath), flags);
+    const aiScene* scene = importer.ReadFile(filePath.string(), flags);
 
     std::clock_t start_convert = std::clock();
     if (logging) {

@@ -173,7 +173,7 @@ public:
      * Register a workspace file as a CompositeProcessor.
      * The CompositeProcessor will load the file as its sub network on construction.
      */
-    void registerCompositeProcessor(const std::string& file);
+    void registerCompositeProcessor(const std::filesystem::path& file);
 
     void registerProcessorWidget(std::unique_ptr<ProcessorWidgetFactoryObject> widget);
     template <typename T, typename P>

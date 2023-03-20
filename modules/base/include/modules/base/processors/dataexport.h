@@ -52,9 +52,10 @@ namespace inviwo {
 template <typename DataType, typename PortType = DataInport<DataType>>
 class DataExport : public Processor {
 public:
-    DataExport(DataWriterFactory* wf = util::getDataWriterFactory(), std::string_view = "",
+    DataExport(DataWriterFactory* wf = util::getDataWriterFactory(),
+               const std::filesystem::path& file = {},
                std::string_view contentType = FileProperty::defaultContentType);
-    DataExport(InviwoApplication* app, std::string_view = "",
+    DataExport(InviwoApplication* app, const std::filesystem::path& file = {},
                std::string_view contentType = FileProperty::defaultContentType);
 
     virtual ~DataExport() = default;
@@ -78,12 +79,13 @@ protected:
 };
 
 template <typename DataType, typename PortType>
-DataExport<DataType, PortType>::DataExport(InviwoApplication* app, std::string_view filePath,
+DataExport<DataType, PortType>::DataExport(InviwoApplication* app,
+                                           const std::filesystem::path& file,
                                            std::string_view contentType)
     : DataExport{util::getDataWriterFactory(app), filePath, contentType} {}
 
 template <typename DataType, typename PortType>
-DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, std::string_view filePath,
+DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, const std::filesystem::path& file,
                                            std::string_view contentType)
     : Processor()
     , wf_{wf}
@@ -131,7 +133,7 @@ void DataExport<DataType, PortType>::exportData() {
         try {
             writer->setOverwrite(overwrite_ ? Overwrite::Yes : Overwrite::No);
             writer->writeData(data, file_.get());
-            util::log(IVW_CONTEXT, "Data exported to disk: " + file_.get(), LogLevel::Info,
+            util::log(IVW_CONTEXT, "Data exported to disk: " + file_.get().string(), LogLevel::Info,
                       LogAudience::User);
 
             // update widgets as the file might now exist

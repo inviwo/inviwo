@@ -33,6 +33,7 @@
 #include <string>   // for string
 #include <utility>  // for pair
 #include <vector>   // for vector
+#include <filesystem>
 
 namespace inviwo {
 
@@ -51,8 +52,8 @@ enum class FontType { Default, Bold, Caption, Label };
  * @return font list containing pairs for all available fonts. Each pair holds the font name
  *     and the full path. Fonts are sorted alphabetically
  */
-std::vector<std::pair<std::string, std::string>> IVW_MODULE_FONTRENDERING_API
-getAvailableFonts(const std::string& fontPath = std::string());
+std::vector<std::pair<std::string, std::filesystem::path>> IVW_MODULE_FONTRENDERING_API
+getAvailableFonts(const std::filesystem::path& fontPath = std::string());
 
 /**
  * \brief returns the default font directory of Inviwo
@@ -60,7 +61,7 @@ getAvailableFonts(const std::string& fontPath = std::string());
  * @return default path containing fonts shipped with Inviwo. Corresponds to the font directory
  *                 located in the font rendering module directory.
  */
-std::string IVW_MODULE_FONTRENDERING_API getDefaultFontPath();
+std::filesystem::path IVW_MODULE_FONTRENDERING_API getDefaultFontPath();
 
 /**
  * \brief returns the default typeface of Inviwo for \p type along with the default font path and

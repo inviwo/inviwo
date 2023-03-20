@@ -50,7 +50,7 @@ public:
     virtual TIFFLayerReader* clone() const override;
     virtual ~TIFFLayerReader() = default;
 
-    virtual std::shared_ptr<Layer> readData(std::string_view fileName) override;
+    virtual std::shared_ptr<Layer> readData(const std::filesystem::path& fileName) override;
 
     template <typename Result, typename T>
     std::shared_ptr<Layer> operator()(void* data, size2_t dims, SwizzleMask swizzleMask) const {

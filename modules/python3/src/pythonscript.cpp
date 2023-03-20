@@ -241,7 +241,7 @@ void PythonScriptDisk::setFilename(const std::string& filename) {
     readFileAndSetSource();
 }
 
-void PythonScriptDisk::fileChanged(const std::string&) {
+void PythonScriptDisk::fileChanged(const std::filesystem::path&) {
     readFileAndSetSource();
     onChangeCallbacks_.invokeAll();
 }

@@ -49,7 +49,7 @@ public:
     virtual IvfVolumeReader* clone() const override;
     virtual ~IvfVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(std::string_view filePath) override;
+    virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
 };
 
 }  // namespace inviwo

@@ -231,8 +231,8 @@ void CanvasWithPropertiesProcessor::propagateEvent(Event* event, Outport*) {
     inport_.propagateEvent(event);
 }
 
-std::optional<std::string> CanvasWithPropertiesProcessor::exportFile(
-    std::string_view path, std::string_view name,
+std::optional<std::filesystem::path> CanvasWithPropertiesProcessor::exportFile(
+    const std::filesystem::path& path, std::string_view name,
     const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
 
     if (auto data = inport_.getData()) {

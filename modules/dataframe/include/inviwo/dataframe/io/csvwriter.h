@@ -53,7 +53,8 @@ public:
     virtual CSVWriter* clone() const override;
     virtual ~CSVWriter() = default;
 
-    virtual void writeData(const DataFrame* data, std::string_view filePath) const override;
+    virtual void writeData(const DataFrame* data,
+                           const std::filesystem::path& filePath) const override;
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const DataFrame* data, std::string_view fileExtension) const override;
 

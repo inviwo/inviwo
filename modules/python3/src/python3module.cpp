@@ -110,8 +110,8 @@ Python3Module::Python3Module(InviwoApplication* app)
                  },
                  100}
     , pythonLogger_{}
-    , scripts_{getPath() + "/scripts"}
-    , pythonFolderObserver_{app, getPath() + "/processors", *this}
+    , scripts_{getPath() / "scripts"}
+    , pythonFolderObserver_{app, getPath() / "processors", *this}
     , settingsFolderObserver_{app, app->getPath(PathType::Settings, "/python_processors", true),
                               *this} {
 

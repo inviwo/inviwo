@@ -49,7 +49,7 @@ TIFFLayerReader::TIFFLayerReader() : DataReaderType<Layer>() {
 
 TIFFLayerReader* TIFFLayerReader::clone() const { return new TIFFLayerReader(*this); }
 
-std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(std::string_view fileName) {
+std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(const std::filesystem::path& fileName) {
     checkExists(fileName);
 
     auto header = cimgutil::getTIFFHeader(fileName);

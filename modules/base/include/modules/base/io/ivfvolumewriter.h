@@ -49,11 +49,11 @@ public:
     virtual IvfVolumeWriter* clone() const;
     virtual ~IvfVolumeWriter() = default;
 
-    virtual void writeData(const Volume* data, std::string_view filePath) const;
+    virtual void writeData(const Volume* data, const std::filesystem::path& filePath) const;
 };
 
 namespace util {
-IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, std::string_view filePath,
+IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
                                         Overwrite overwrite = Overwrite::No);
 }
 

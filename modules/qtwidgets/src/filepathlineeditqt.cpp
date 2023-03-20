@@ -135,7 +135,7 @@ void FilePathLineEditQt::focusInEvent(QFocusEvent* event) {
         // get current cursor position in line edit
         int pos = this->cursorPositionAt(this->mapFromGlobal(cursor));
         // transform position into position within entire path
-        auto lenFilename = filesystem::getFileNameWithExtension(path_).size();
+        auto lenFilename = filesystem::getFileNameWithExtension(path_).string().size();
         cursorPos_ = static_cast<int>(path_.size() - lenFilename) + pos;
         // the cursor position has to be set again after the mouse click has been processed in
         // mousePressEvent()

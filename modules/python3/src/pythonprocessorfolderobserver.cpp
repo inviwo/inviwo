@@ -47,7 +47,7 @@ namespace inviwo {
 class InviwoApplication;
 
 PythonProcessorFolderObserver::PythonProcessorFolderObserver(InviwoApplication* app,
-                                                             const std::string& directory,
+                                                             const std::filesystem::path& directory,
                                                              InviwoModule& module)
     : FileObserver(app), app_(app), directory_{directory}, module_{module} {
 
@@ -55,8 +55,8 @@ PythonProcessorFolderObserver::PythonProcessorFolderObserver(InviwoApplication* 
         const auto files = filesystem::getDirectoryContents(directory);
         for (const auto& file : files) {
             if (filesystem::getFileExtension(file) == "py") {
-                if (!registerFile(directory + "/" + file)) {
-                    startFileObservation(directory_ + "/" + file);
+                if (!registerFile(directory / file)) {
+                    startFileObservation(directory_ / file);
                 }
             }
         }
@@ -65,8 +65,8 @@ PythonProcessorFolderObserver::PythonProcessorFolderObserver(InviwoApplication* 
     startFileObservation(directory);
 }
 
-bool PythonProcessorFolderObserver::registerFile(const std::string& filename) {
-    const auto isEmpty = [](const std::string& file) {
+bool PythonProcessorFolderObserver::registerFile(const std::filesystem::path& filename) {
+    const auto isEmpty = [](const std::filesystem::path& file) {
         auto ifs = filesystem::ifstream(file);
         ifs.seekg(0, std::ios::end);
         return ifs.tellg() == std::streampos(0);
@@ -90,19 +90,19 @@ bool PythonProcessorFolderObserver::registerFile(const std::string& filename) {
     return false;
 }
 
-void PythonProcessorFolderObserver::fileChanged(const std::string& changed) {
+void PythonProcessorFolderObserver::fileChanged(const std::filesystem::path& changed) {
     if (changed == directory_) {
         if (filesystem::directoryExists(directory_)) {
             auto files = filesystem::getDirectoryContents(directory_);
             for (const auto& file : files) {
-                if (isObserved(directory_ + "/" + file)) continue;
+                if (isObserved(directory_ / file)) continue;
                 if (filesystem::getFileExtension(file) != "py") continue;
 
-                if (registerFile(directory_ + "/" + file)) {
-                    LogInfo("Loaded python processor: " << directory_ + "/" + file);
-                    stopFileObservation(directory_ + "/" + file);
+                if (registerFile(directory_ / file)) {
+                    LogInfo("Loaded python processor: " << directory_ / file);
+                    stopFileObservation(directory_ / file);
                 } else {
-                    startFileObservation(directory_ + "/" + file);
+                    startFileObservation(directory_ / file);
                 }
             }
         }

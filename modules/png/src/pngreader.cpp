@@ -53,6 +53,8 @@
 #include <png.h>      // for png_structp, png_...
 #include <pngconf.h>  // for png_bytep, png_co...
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 PNGLayerReader::PNGLayerReader() : DataReaderType<Layer>() {
@@ -61,8 +63,8 @@ PNGLayerReader::PNGLayerReader() : DataReaderType<Layer>() {
 
 PNGLayerReader* PNGLayerReader::clone() const { return new PNGLayerReader(*this); }
 
-std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(std::string_view filePath) {
-    if (!filesystem::fileExists(filePath)) throw DataReaderException(IVW_CONTEXT, filePath);
+std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(const std::filesystem::path& filePath) {
+    checkExists(filePath);
 
     auto* fp = filesystem::fopen(filePath, "rb");
     if (!fp) {
@@ -70,7 +72,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(std::string_view filePat
     }
     util::OnScopeExit closeFile([fp]() { fclose(fp); });
 
-    return readData(fp, filePath);
+    return readData(fp, filePath.string());
 }
 
 std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_view name) {

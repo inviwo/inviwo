@@ -32,6 +32,8 @@
 #include <modules/python3/python3moduledefine.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
 
+#include <filesystem>
+
 namespace inviwo {
 class Python3Module;
 
@@ -40,7 +42,7 @@ public:
     PythonInterpreter();
     virtual ~PythonInterpreter();
 
-    void addModulePath(std::string_view path);
+    void addModulePath(const std::filesystem::path& path);
     void importModule(std::string_view moduleName);
 
     bool runString(std::string_view code);

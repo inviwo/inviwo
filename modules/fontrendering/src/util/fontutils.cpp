@@ -40,21 +40,24 @@
 #include <iterator>   // for back_insert_iterator, back_inserter
 
 #include <fmt/core.h>  // for format
+#include <fmt/std.h>
 
 namespace inviwo {
 
 namespace font {
 
-std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::string& fontPath) {
+std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
+    const std::filesystem::path& fontPath) {
+
     const std::vector<std::string> supportedExt = {"ttf", "otf", "cff", "pcf"};
 
-    const std::string path = (fontPath.empty() ? getDefaultFontPath() : fontPath);
+    const std::filesystem::path path = (fontPath.empty() ? getDefaultFontPath() : fontPath);
 
     // scan for available fonts in the given path
     auto fonts = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
 
     // remove unsupported files
-    std::erase_if(fonts, [supportedExt](const std::string& str) {
+    std::erase_if(fonts, [supportedExt](const auto& str) {
         return !util::contains(supportedExt, filesystem::getFileExtension(str));
     });
 
@@ -64,8 +67,8 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
 
     // capitalize the first letter and each one following a space.
     // Also replace '-' with space for improved readability
-    auto makeReadable = [](const std::string& str) {
-        std::string dst(str);
+    auto makeReadable = [](const std::filesystem::path& str) {
+        std::string dst(str.string());
         auto it = dst.begin();
         *it = static_cast<char>(std::toupper(*it));
         while (it != dst.end()) {
@@ -80,20 +83,20 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
         return dst;
     };
 
-    std::vector<std::pair<std::string, std::string>> result;
+    std::vector<std::pair<std::string, std::filesystem::path>> result;
     // create readable font names from file names and add full path to each file
     std::transform(
         fonts.begin(), fonts.end(), std::back_inserter(result),
-        [path, makeReadable](const std::string& str) -> std::pair<std::string, std::string> {
-            return {makeReadable(filesystem::getFileNameWithoutExtension(str)), path + '/' + str};
+        [path,
+         makeReadable](const std::string& str) -> std::pair<std::string, std::filesystem::path> {
+            return {makeReadable(filesystem::getFileNameWithoutExtension(str)), path / str};
         });
 
     return result;
 }
 
-std::string getDefaultFontPath() {
-    return InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() +
-           "/fonts";
+std::filesystem::path getDefaultFontPath() {
+    return InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() / "fonts";
 }
 
 std::string getFont(FontType type, FullPath path) {
@@ -113,7 +116,7 @@ std::string getFont(FontType type, FullPath path) {
     }();
 
     if (path == FullPath::Yes) {
-        return fmt::format("{}/{}.{}", getDefaultFontPath(), name, ext);
+        return getDefaultFontPath() / fmt::format("{}.{}", name, ext);
     }
 
     return name;

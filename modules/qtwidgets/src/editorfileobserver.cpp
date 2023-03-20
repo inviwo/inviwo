@@ -36,6 +36,8 @@
 
 #include <algorithm>  // for any_of
 
+#include <fmt/std.h>
+
 #include <QEvent>       // for QEvent, QEvent::FocusIn
 #include <QList>        // for QList
 #include <QMessageBox>  // for QMessageBox, operator|, QMessageBo...
@@ -83,7 +85,7 @@ void EditorFileObserver::setReloadFileCallback(std::function<void()> cb) {
     reloadFileCallback_ = cb;
 }
 
-void EditorFileObserver::fileChanged(const std::string&) {
+void EditorFileObserver::fileChanged(const std::filesystem::path&) {
     if (ignoreNextUpdate_) {
         ignoreNextUpdate_ = false;
         return;
@@ -109,9 +111,10 @@ bool EditorFileObserver::eventFilter(QObject* obj, QEvent* event) {
 void EditorFileObserver::queryReloadFile() {
     if (widgetIsFocused() && fileChangedInBackground_ && !reloadQueryInProgress_) {
         reloadQueryInProgress_ = true;
-        std::string msg =
-            "The file " + filesystem::getFileNameWithExtension(filename_) +
-            " has been modified outside of Inwivo, do you want to reload its contents?";
+        std::string msg = fmt::format(
+            "The file '{}' has been modified outside of Inwivo, do you want to reload its "
+            "contents?",
+            filesystem::getFileNameWithExtension(filename_));
 
         QMessageBox msgBox(QMessageBox::Question, title_, utilqt::toQString(msg),
                            QMessageBox::Yes | QMessageBox::No, parent_);

@@ -72,7 +72,7 @@ std::shared_ptr<ShaderResource::Callback> ShaderResource::onChange(T&& callback)
 
 class IVW_MODULE_OPENGL_API FileShaderResource : public ShaderResource, public FileObserver {
 public:
-    FileShaderResource(std::string_view key, std::string_view fileName);
+    FileShaderResource(std::string_view key, const std::filesystem::path& fileName);
     virtual ~FileShaderResource() = default;
 
     virtual std::unique_ptr<ShaderResource> clone() const override;
@@ -82,13 +82,13 @@ public:
 
     virtual void setSource(std::string_view source) override;
 
-    const std::string& file() const;
+    const std::filesystem::path& file() const;
 
-    virtual void fileChanged(const std::string& fileName) override;
+    virtual void fileChanged(const std::filesystem::path& fileName) override;
 
 private:
     std::string key_;
-    std::string fileName_;
+    std::filesystem::path fileName_;
 
     mutable std::string cache_;
 };

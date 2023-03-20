@@ -140,7 +140,7 @@ public:
 private:
     void readFileAndSetSource();
 
-    virtual void fileChanged(const std::string& fileName) override;
+    virtual void fileChanged(const std::filesystem::path& fileName) override;
 
     CallBackList onChangeCallbacks_;
 };

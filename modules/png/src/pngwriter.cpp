@@ -51,6 +51,8 @@
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for move
 
+#include <fmt/std.h>
+
 #include <glm/common.hpp>              // for max, min, clamp
 #include <glm/fwd.hpp>                 // for uint16
 #include <glm/gtx/component_wise.hpp>  // for compMul
@@ -210,7 +212,7 @@ void PNGLayerWriter::writeData(const Layer* data, FILE* fp) const {
         [&](auto ram) { detail::write(ram, static_cast<png_voidp>(fp)); });
 }
 
-void PNGLayerWriter::writeData(const Layer* data, std::string_view filePath) const {
+void PNGLayerWriter::writeData(const Layer* data, const std::filesystem::path& filePath) const {
     checkOverwrite(filePath);
     FILE* fp = filesystem::fopen(filePath, "wb");
     if (!fp)

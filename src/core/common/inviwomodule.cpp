@@ -333,7 +333,7 @@ void InviwoModule::registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo
     }
 }
 
-void InviwoModule::registerCompositeProcessor(const std::string& file) {
+void InviwoModule::registerCompositeProcessor(const std::filesystem::path& file) {
     auto processor = std::make_unique<CompositeProcessorFactoryObject>(file);
     if (app_->getProcessorFactory()->registerObject(processor.get())) {
         processors_.push_back(std::move(processor));

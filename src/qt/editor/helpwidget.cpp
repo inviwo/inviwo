@@ -44,6 +44,9 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
+
+#include <filesystem>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -83,7 +86,7 @@ protected:
 private:
     InviwoApplication* app_;
     QUrl current_;
-    std::string currentModulePath_;
+    std::filesystem::path currentModulePath_;
 };
 
 HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
@@ -350,7 +353,7 @@ InviwoModule& findModule(InviwoApplication& app, std::string_view processorClass
                     "ProcessorClassIdentifier {} is not registered", processorClassIdentifier);
 }
 
-std::tuple<std::string, std::string> loadIdUrl(const QUrl& url, InviwoApplication* app) {
+std::tuple<std::string, std::filesystem::path> loadIdUrl(const QUrl& url, InviwoApplication* app) {
     auto list = url.path().split('/');
     if (list.front().isEmpty()) list.pop_front();
 
@@ -425,7 +428,12 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
     const QUrl url(utilqt::toQString(s), QUrl::TolerantMode);
     const QUrlQuery query(url);
 
-    auto toFilePath = [&](const QUrl& url) { return utilqt::fromQString(url.toLocalFile()); };
+    auto toFilePath = [&](const QUrl& url) {
+        auto filePath = utilqt::fromQString(url.toLocalFile());
+        replaceInString(filePath, "~modulePath~", currentModulePath_.string());
+        replaceInString(filePath, "~basePath~", app_->getBasePath().string());
+        return std::filesystem::path{filePath};
+    };
 
     if (query.hasQueryItem("type")) {
         const QString requestType = query.queryItemValue("type");
@@ -444,10 +452,10 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
     const auto filePath = toFilePath(url);
 
     if (type == QTextDocument::ImageResource) {
-        auto qFilePath = utilqt::toQString(filePath);
-        if (QFile::exists(qFilePath)) {
+        QFile qFile{filePath};
+        if (qFile.exists()) {
             const auto maxImageWidth = (95 * width()) / 100;
-            auto image = QImage(qFilePath);
+            auto image = QImage(qFile.fileName());
             if (image.width() > maxImageWidth) {
                 return image.scaledToWidth(maxImageWidth);
             } else {

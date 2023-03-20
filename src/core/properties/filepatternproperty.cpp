@@ -42,14 +42,15 @@ const std::string FilePatternProperty::classIdentifier = "org.inviwo.FilePattern
 std::string FilePatternProperty::getClassIdentifier() const { return classIdentifier; }
 
 FilePatternProperty::FilePatternProperty(std::string_view identifier, std::string_view displayName,
-                                         std::string_view pattern, std::string_view contentType,
+                                         const std::filesystem::path& pattern,
+                                         std::string_view contentType,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , helpText_("helpText", "",
                 "A pattern might include '#' as placeholder for digits, where "
                 "multiple '###' indicate leading zeros. Wildcards('*', '?') are supported.")
-    , pattern_("pattern", "Pattern", {std::string{pattern}}, contentType)
+    , pattern_("pattern", "Pattern", {pattern}, contentType)
     , updateBtn_("updateBtn", "Update File List")
     , sort_("sorting", "Sort File Names", true)
     , matchShorterNumbers_("matchShorterNumbers", "Match Numbers with less Digits", true)
@@ -161,17 +162,17 @@ std::string FilePatternProperty::getFilePatternPath() const {
     }
 }
 
-std::vector<std::string> FilePatternProperty::getFileList() const {
-    std::vector<std::string> fileList;
+std::vector<std::filesystem::path> FilePatternProperty::getFileList() const {
+    std::vector<std::filesystem::path> fileList;
     std::transform(files_.begin(), files_.end(), std::back_inserter(fileList),
-                   [](IndexFileTuple elem) { return std::get<1>(elem); });
+                   [](const auto& elem) { return std::get<1>(elem); });
     return fileList;
 }
 
 std::vector<int> FilePatternProperty::getFileIndices() const {
     std::vector<int> indexList;
     std::transform(files_.begin(), files_.end(), std::back_inserter(indexList),
-                   [](IndexFileTuple elem) { return std::get<0>(elem); });
+                   [](const auto& elem) { return std::get<0>(elem); });
     return indexList;
 }
 
@@ -285,14 +286,7 @@ std::string FilePatternProperty::getFormattedFileList() const {
 void FilePatternProperty::sort() {
     if (!sort_.get()) return;
 
-    std::sort(files_.begin(), files_.end(), [](IndexFileTuple a, IndexFileTuple b) {
-        // do a lexical comparison if indices are equal
-        // TODO: consider . in file names as the lowest character to ensure that
-        //    abc.png is listed before abc-01.png
-        return (std::get<0>(a) < std::get<0>(b)
-                    ? true
-                    : (std::get<0>(a) > std::get<0>(b) ? false : std::get<1>(a) < std::get<1>(b)));
-    });
+    std::sort(files_.begin(), files_.end());
 }
 
 std::string FilePatternProperty::guessFilePattern() const {
