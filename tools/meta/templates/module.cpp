@@ -66,7 +66,7 @@ namespace inviwo {
     // registerMetaData(std::make_unique<{{ module/name }}MetaData>());
     // registerPortInspector("{{ module/name }}Outport", "path/workspace.inv");
     // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<{{ module/name }}Drawer>());
+    // registerDrawer(std::make_unique_ptr<{{ module/name }}Drawer>());
 }
 
 }  // namespace inviwo

@@ -78,17 +78,17 @@ protected:
 };
 
 template <typename DataType, typename PortType>
-DataExport<DataType, PortType>::DataExport(InviwoApplication* app, std::string_view file,
+DataExport<DataType, PortType>::DataExport(InviwoApplication* app, std::string_view filePath,
                                            std::string_view contentType)
-    : DataExport{util::getDataWriterFactory(app), file, contentType} {}
+    : DataExport{util::getDataWriterFactory(app), filePath, contentType} {}
 
 template <typename DataType, typename PortType>
-DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, std::string_view file,
+DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, std::string_view filePath,
                                            std::string_view contentType)
     : Processor()
     , wf_{wf}
     , port_{"data", "The data to export"_help}
-    , file_{"file", "File name", "The file path to save data to"_help, file, contentType}
+    , file_{"file", "File name", "The file path to save data to"_help, filePath, contentType}
     , export_{"export", "Export", "Save data to disk"_help}
     , overwrite_{"overwrite", "Overwrite", "Overwrite any existing data in file"_help, false} {
 

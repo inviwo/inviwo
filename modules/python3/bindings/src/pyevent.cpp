@@ -278,7 +278,7 @@ void exposeEvents(pybind11::module& m) {
         .def(py::init<IvwKey, KeyState, KeyModifiers, uint32_t, const std::string&>(),
              py::arg("key") = IvwKey::Unknown, py::arg("state") = KeyState::Press,
              py::arg("modifiers") = KeyModifier::None, py::arg("nativeVirtualKey") = 0,
-             py::arg("utfText") = u8"")
+             py::arg("utfText") = "")
         .def(py::init<KeyboardEvent>())
         .def_property("state", &KeyboardEvent::state, &KeyboardEvent::setState)
         .def_property("key", &KeyboardEvent::key, &KeyboardEvent::setKey)

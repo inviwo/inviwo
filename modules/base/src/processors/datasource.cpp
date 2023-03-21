@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/base/processors/datasource.h>
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
-
-#include <inviwo/core/io/datareader.h>             // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>    // for DataReaderException
-#include <inviwo/core/ports/meshport.h>            // for MeshOutport
-#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
-#include <modules/base/processors/datasource.h>    // for DataSource
-
-#include <map>     // for map, operator!=
-#include <string>  // for string
-
-namespace inviwo {
-class InviwoApplication;
-class Mesh;
-
-/** \docpage{org.inviwo.GeometrySource, Mesh Source}
- * ![](org.inviwo.GeometrySource.png?classIdentifier=org.inviwo.GeometrySource)
- *
- * Loads a mesh
- *
- * ### Outports
- *   * __Outport__ The loaded mesh
- *
- * ### Properties
- *   * __File name__ File to load.
- */
-class IVW_MODULE_BASE_API MeshSource : public DataSource<Mesh, MeshOutport> {
-public:
-    MeshSource(InviwoApplication* app, std::string_view filePath = "");
-    virtual ~MeshSource() = default;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-};
-
-}  // namespace inviwo
+namespace inviwo {}

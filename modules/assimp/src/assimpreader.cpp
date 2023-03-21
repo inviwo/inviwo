@@ -72,6 +72,7 @@
 #include <unordered_map>  // for unordered_map
 #include <unordered_set>  // for unordered_set
 #include <vector>         // for vector
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -94,8 +95,8 @@ public:
         if (strlen(message) == 0) return;
         std::string tmp(message);
         while ('\n' == tmp.back()) tmp.pop_back();
-        if (fileName_.size() > 0) {
-            tmp += " (" + fileName_ + ")";
+        if (!fileName_.empty()) {
+            tmp += fmt::format(" ({})", fileName_);
         }
 
         LogCentral::getPtr()->log("AssimpReader", loglevel_, LogAudience::User, __FILE__,
@@ -170,17 +171,18 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
         }
     }
 
-    //#define AI_CONFIG_PP_SBP_REMOVE "aiPrimitiveType_POINTS | aiPrimitiveType_LINES"
-    //#define AI_CONFIG_PP_FD_REMOVE 1
-
+    // set flags for postprocessing in Assimp
+    // + `aiProcess_PreTransformVertices` considers all potential transformations within scene
+    // graphs
+    // + `aiProcess_ImproveCacheLocality` does not work for non-triangular meshes (n-gons) even when
+    //   a triangulation is enforced
+    // + `aiProcess_OptimizeGraph` is incompatible to aiProcess_PreTransformVertices
+    //
+    // @see aiPrimitiveType (https://github.com/assimp/assimp/blob/master/include/assimp/mesh.h)
     unsigned int flags = aiProcess_JoinIdenticalVertices | aiProcess_Triangulate |
                          aiProcess_GenSmoothNormals | aiProcess_PreTransformVertices |
-                         aiProcess_ValidateDataStructure | aiProcess_ImproveCacheLocality |
-                         aiProcess_RemoveRedundantMaterials | aiProcess_OptimizeMeshes;
-    //      aiProcess_GenUVCoords | aiProcess_CalcTangentSpace | aiProcess_TransformUVCoords |
-    //      aiProcess_FindInstances
-    //      aiProcess_OptimizeGraph | aiProcess_SortByPType | aiProcess_FindDegenerates |
-    // aiProcess_OptimizeGraph is incompatible to aiProcess_PreTransformVertices
+                         aiProcess_ValidateDataStructure | aiProcess_RemoveRedundantMaterials |
+                         aiProcess_OptimizeMeshes | aiProcess_SortByPType;
 
     if (fixInvalidData_) {
         flags |= aiProcess_FindInvalidData;
@@ -190,9 +192,8 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
 
     std::clock_t start_convert = std::clock();
     if (logging) {
-        Assimp::DefaultLogger::get()->debug(
-            "time to load: " +
-            std::to_string(double((std::clock() - start_readmetadata) / CLOCKS_PER_SEC)));
+        Assimp::DefaultLogger::get()->debug(fmt::format(
+            "time to load: {}", double((std::clock() - start_readmetadata) / CLOCKS_PER_SEC)));
     }
 
     if (!scene) {
@@ -201,7 +202,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
 
     // at least one mesh
     if (0 == scene->mNumMeshes) {
-        throw DataReaderException("there are no meshes!", IVW_CONTEXT);
+        throw DataReaderException(IVW_CONTEXT, "no meshes found ({})", filePath);
     }
 
     // because we use aiProcess_PreTransformVertices we can safely ignore the scenegraph,
@@ -218,17 +219,18 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
     bool use_normals = true;
     bool use_materials = scene->HasMaterials();
 
-    // we have at least one mesh, so get its geometry type
-    DrawType dt = DrawType::NotSpecified;
-
-    size_t fst_primitive_type = size_t{scene->mMeshes[0]->mPrimitiveTypes};
-    if (fst_primitive_type == aiPrimitiveType_POINT) {
-        dt = DrawType::Points;
-    } else if (fst_primitive_type == aiPrimitiveType_LINE) {
-        dt = DrawType::Lines;
-    } else if (fst_primitive_type == aiPrimitiveType_TRIANGLE) {
-        dt = DrawType::Triangles;
-    }
+    auto getDrawType = [](unsigned int aiPrimitiveTypes) {
+        // ignore the n-gon flag of the primitive type since we are enforcing triangulation
+        // @see aiPrimitiveType
+        if (aiPrimitiveTypes & aiPrimitiveType_POINT) {
+            return DrawType::Points;
+        } else if (aiPrimitiveTypes & aiPrimitiveType_LINE) {
+            return DrawType::Lines;
+        } else if (aiPrimitiveTypes & aiPrimitiveType_TRIANGLE) {
+            return DrawType::Triangles;
+        }
+        return DrawType::NotSpecified;
+    };
 
     // get the configuration
     for (size_t i = 0; i < size_t{scene->mNumMeshes}; ++i) {
@@ -239,11 +241,6 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
 
         if (false == m->HasNormals()) {
             use_normals = false;
-        }
-
-        // check if all meshes have the same geometry type
-        if (m->mPrimitiveTypes != fst_primitive_type) {
-            dt = DrawType::NotSpecified;
         }
     }
 
@@ -284,9 +281,6 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
         trep[i] = std::make_shared<Vec3BufferRAM>();
         tbuff[i] = std::make_shared<Buffer<vec3>>(trep[i]);
     }
-
-    auto ibuff = std::make_shared<IndexBufferRAM>();
-    auto inds = std::make_shared<IndexBuffer>(ibuff);
 
     // iterate over the meshes and fill the data structures
     for (size_t i = 0; i < size_t{scene->mNumMeshes}; ++i) {
@@ -372,12 +366,15 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
         }
 
         // indices
+        std::vector<uint32_t> indices;
         for (size_t j = 0; j < m->mNumFaces; ++j) {
             aiFace face = m->mFaces[j];
             for (size_t k = 0; k < face.mNumIndices; ++k) {
-                ibuff->add(vertex_offset + face.mIndices[k]);
+                indices.push_back(vertex_offset + face.mIndices[k]);
             }
         }
+        mesh->addIndices(Mesh::MeshInfo(getDrawType(m->mPrimitiveTypes), ConnectivityType::None),
+                         util::makeIndexBuffer(std::move(indices)));
 
         vertex_offset += m->mNumVertices;
     }
@@ -401,8 +398,6 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
         int location = (i == 0 ? static_cast<int>(BufferType::TexCoordAttrib) : auxLocation++);
         mesh->addBuffer(Mesh::BufferInfo(BufferType::TexCoordAttrib, location), tbuff[i]);
     }
-
-    mesh->addIndices(Mesh::MeshInfo(dt, ConnectivityType::None), inds);
 
     std::clock_t now = std::clock();
     if (logging) {

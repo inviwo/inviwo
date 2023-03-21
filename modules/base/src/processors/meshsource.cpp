@@ -56,9 +56,9 @@ const ProcessorInfo MeshSource::processorInfo_{
 };
 const ProcessorInfo MeshSource::getProcessorInfo() const { return processorInfo_; }
 
-MeshSource::MeshSource(InviwoApplication* app, std::string_view file)
-    : DataSource<Mesh, MeshOutport>(util::getDataReaderFactory(app), file, "geometry") {
-    DataSource<Mesh, MeshOutport>::file_.setDisplayName("Geometry file");
+MeshSource::MeshSource(InviwoApplication* app, std::string_view filename)
+    : DataSource<Mesh, MeshOutport>(util::getDataReaderFactory(app), filename, "geometry") {
+    filePath.setDisplayName("Geometry file");
 }
 
 }  // namespace inviwo

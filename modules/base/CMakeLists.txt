@@ -185,6 +185,7 @@ set(SOURCE_FILES
     src/processors/camerafrustum.cpp
     src/processors/convexhull2dprocessor.cpp
     src/processors/cubeproxygeometryprocessor.cpp
+    src/processors/datasource.cpp
     src/processors/diffuselightsourceprocessor.cpp
     src/processors/directionallightsourceprocessor.cpp
     src/processors/distancetransformram.cpp
