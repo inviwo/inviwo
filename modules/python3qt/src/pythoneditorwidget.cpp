@@ -245,13 +245,16 @@ void PythonEditorWidget::closeEvent(QCloseEvent* event) {
     if (pythonCode_->document()->isModified()) {
         QMessageBox msgBox(QMessageBox::Question, "Python Editor",
                            "Do you want to save unsaved changes?",
-                           QMessageBox::Save | QMessageBox::Discard, this);
+                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
 
         int retval = msgBox.exec();
         if (retval == static_cast<int>(QMessageBox::Save)) {
             save();
         } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
+            event->ignore();
             return;
+        } else {
+            pythonCode_->document()->setModified(false);
         }
     }
     InviwoDockWidget::closeEvent(event);
