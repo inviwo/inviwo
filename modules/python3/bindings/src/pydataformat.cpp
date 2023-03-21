@@ -70,7 +70,7 @@ void exposeDataFormat(pybind11::module& m) {
         .def_property_readonly("max", &DataFormatBase::getMax)
         .def_property_readonly("min", &DataFormatBase::getMin)
         .def_property_readonly("lowest", &DataFormatBase::getLowest)
-        .def_property_readonly("__repr__", &DataFormatBase::getString);
+        .def("__repr__", &DataFormatBase::getString);
 
     util::for_each_type<DefaultDataFormats>{}(DataFormatHelper{}, m);
 }
