@@ -171,7 +171,7 @@ namespace cimgutil {
 
 namespace detail {
 
-cimgutil::InterpolationType convertInterpolationType(inviwo::InterpolationType type) {
+cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType type) {
     switch (type) {
         case inviwo::InterpolationType::Linear:
             return cimgutil::InterpolationType::Linear;
@@ -578,7 +578,7 @@ struct CImgRescaleLayerRamToLayerRamDispatcher {
         auto srcData = static_cast<const P*>(source->getData());
         P* dstData = static_cast<P*>(target->getData());
 
-        auto interpolation = detail::convertInterpolationType(source->getInterpolation());
+        auto interpolation = detail::toCImgInterpolationType(source->getInterpolation());
 
         if (rank == 0) {
             cimg_library::CImg<P> src(srcData, sourceDim.x, sourceDim.y, 1, 1, true);
