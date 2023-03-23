@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/python3gl/python3glmodule.h>
+#include <inviwo/python3gl/python3glmoduledefine.h>
 
-#include <inviwo/python3gl/volumepytoglconverter.h>
-#include <inviwo/python3gl/layerpytoglconverter.h>
+#include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+
+#include <modules/python3/layerpy.h>
+#include <modules/opengl/image/layergl.h>
 
 namespace inviwo {
 
-Python3GLModule::Python3GLModule(InviwoApplication* app) : InviwoModule(app, "Python3GL") {
-    // Data converters
-    registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerGL2PyConverter>());
-    registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerPy2GLConverter>());
-    registerRepresentationConverter<VolumeRepresentation>(std::make_unique<VolumeGL2PyConverter>());
-    registerRepresentationConverter<VolumeRepresentation>(std::make_unique<VolumePy2GLConverter>());
-}
+class IVW_MODULE_PYTHON3GL_API LayerPy2GLConverter
+    : public RepresentationConverterType<LayerRepresentation, LayerPy, LayerGL> {
+public:
+    virtual std::shared_ptr<LayerGL> createFrom(
+        std::shared_ptr<const LayerPy> source) const override;
+    virtual void update(std::shared_ptr<const LayerPy> source,
+                        std::shared_ptr<LayerGL> destination) const override;
+};
+
+class IVW_MODULE_PYTHON3GL_API LayerGL2PyConverter
+    : public RepresentationConverterType<LayerRepresentation, LayerGL, LayerPy> {
+public:
+    virtual std::shared_ptr<LayerPy> createFrom(
+        std::shared_ptr<const LayerGL> source) const override;
+    virtual void update(std::shared_ptr<const LayerGL> source,
+                        std::shared_ptr<LayerPy> destination) const override;
+};
 
 }  // namespace inviwo
