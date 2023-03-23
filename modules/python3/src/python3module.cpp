@@ -51,6 +51,7 @@
 #include <modules/python3/pythonlogger.h>                            // for PythonLogger
 #include <modules/python3/pythonscript.h>                            // for PythonScriptDisk
 #include <modules/python3/volumepy.h>                                // for VolumePy, VolumePy2R...
+#include <modules/python3/layerpy.h>
 
 #include <tclap/ArgException.h>  // for ArgParseException
 #include <tclap/ValueArg.h>      // for ValueArg
@@ -76,6 +77,19 @@ public:
             volume->getInterpolation(), volume->getWrapping());
 
         return volumePy;
+    }
+};
+
+class LayerPyFactoryObject
+    : public RepresentationFactoryObjectTemplate<LayerRepresentation, LayerPy> {
+public:
+    virtual std::unique_ptr<LayerRepresentation> create(
+        const typename LayerRepresentation::ReprOwner* layer) {
+        auto layerPy = std::make_unique<LayerPy>(layer->getDimensions(), layer->getLayerType(),
+                                                 layer->getDataFormat(), layer->getSwizzleMask(),
+                                                 layer->getInterpolation(), layer->getWrapping());
+
+        return layerPy;
     }
 };
 }  // namespace
@@ -110,6 +124,11 @@ Python3Module::Python3Module(InviwoApplication* app)
         std::make_unique<VolumeRAM2PyConverter>());
     registerRepresentationConverter<VolumeRepresentation>(
         std::make_unique<VolumePy2RAMConverter>());
+
+    registerRepresentationFactoryObject<LayerRepresentation>(
+        std::make_unique<LayerPyFactoryObject>());
+    registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerRAM2PyConverter>());
+    registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerPy2RAMConverter>());
 
     registerProcessor<NumPyVolume>();
     registerProcessor<NumpyMandelbrot>();

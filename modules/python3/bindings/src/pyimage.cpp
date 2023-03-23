@@ -42,6 +42,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
+#include <modules/python3/layerpy.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -134,16 +135,26 @@ void exposeImage(py::module& m) {
         });
 
     py::class_<Layer>(m, "Layer")
+        .def(py::init<std::shared_ptr<LayerRepresentation>>())
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<size2_t, const DataFormatBase*, LayerType, const SwizzleMask&,
                       InterpolationType, const Wrapping2D&>())
         .def("clone", [](Layer& self) { return self.clone(); })
         .def(py::init([](py::array data) { return pyutil::createLayer(data).release(); }))
         .def("setDimensions", &Layer::setDimensions)
+        .def_property_readonly("layertype", &Layer::getLayerType)
         .def_property_readonly("dimensions", &Layer::getDimensions)
         .def_property("swizzlemask", &Layer::getSwizzleMask, &Layer::setSwizzleMask)
         .def_property("interpolation", &Layer::getInterpolation, &Layer::setInterpolation)
         .def_property("wrapping", &Layer::getWrapping, &Layer::setWrapping)
+        .def(
+            "getLayerPyRepresentation",
+            [](Layer& self) { return self.getRepresentation<LayerPy>(); },
+            pybind11::return_value_policy::reference_internal)
+        .def(
+            "getEditableLayerPyRepresentation",
+            [](Layer& self) { return self.getEditableRepresentation<LayerPy>(); },
+            pybind11::return_value_policy::reference_internal)
         .def("save",
              [](Layer& self, std::string filepath) {
                  auto writer = InviwoApplication::getPtr()
@@ -179,9 +190,57 @@ void exposeImage(py::module& m) {
             })
         .def("__repr__", [](const Layer& self) {
             return fmt::format(
-                "<Layer:\n  type = {}\n  format = {}\n  dimensions = {}\n  swizzlemask = {}>",
+                "<Layer:\n  type = {}\n  format = {}\n  dimensions = {}\n  swizzlemask = {}\n  "
+                "interpolation = {}\n  wrapping = {}\n>",
                 toString(self.getLayerType()), self.getDataFormat()->getString(),
-                toString(self.getDimensions()), toString(self.getSwizzleMask()));
+                toString(self.getDimensions()), toString(self.getSwizzleMask()),
+                toString(self.getInterpolation()), toString(self.getWrapping()));
+        });
+
+    py::class_<LayerRepresentation>(m, "LayerRepresentation")
+        .def_property_readonly("layertype", &LayerRepresentation::getLayerType)
+        .def_property("dimensions", &LayerRepresentation::getDimensions,
+                      &LayerRepresentation::setDimensions)
+        .def_property("swizzleMask", &LayerRepresentation::getSwizzleMask,
+                      &LayerRepresentation::setSwizzleMask)
+        .def_property("interpolation", &LayerRepresentation::getInterpolation,
+                      &LayerRepresentation::setInterpolation)
+        .def_property("wrapping", &LayerRepresentation::getWrapping,
+                      &LayerRepresentation::setWrapping)
+        .def("isValid", &LayerRepresentation::isValid)
+        .def("setValid", &LayerRepresentation::setValid)
+        .def("getOwner", &LayerRepresentation::getOwner)
+        .def_property_readonly("format", &LayerRepresentation::getDataFormat)
+        .def("__repr__", [](const LayerRepresentation& self) {
+            return fmt::format(
+                "<LayerRepresentation:\n  type = {}\n  format = {}\n  dimensions = {}\n  "
+                "swizzlemask = {}\n  interpolation = {}\n  wrapping = {}\n>",
+                toString(self.getLayerType()), self.getDataFormat()->getString(),
+                toString(self.getDimensions()), toString(self.getSwizzleMask()),
+                toString(self.getInterpolation()), toString(self.getWrapping()));
+        });
+
+    py::class_<LayerPy, LayerRepresentation>(m, "LayerPy")
+        .def(py::init<py::array, LayerType, const SwizzleMask&, InterpolationType,
+                      const Wrapping2D&>(),
+             py::arg("data"), py::arg("layerType") = LayerType::Color,
+             py::arg("swizzleMask") = swizzlemasks::rgba,
+             py::arg("interpolation") = InterpolationType::Linear,
+             py::arg("wrapping") = wrapping2d::clampAll)
+        .def(py::init<size2_t, LayerType, const DataFormatBase*, const SwizzleMask&,
+                      InterpolationType, const Wrapping2D&>(),
+             py::arg("size"), py::arg("layerType"), py::arg("format"),
+             py::arg("swizzleMask") = swizzlemasks::rgba,
+             py::arg("interpolation") = InterpolationType::Linear,
+             py::arg("wrapping") = wrapping2d::clampAll)
+        .def_property_readonly("data", static_cast<py::array& (LayerPy::*)()>(&LayerPy::data))
+        .def("__repr__", [](const LayerPy& self) {
+            return fmt::format(
+                "<LayerPy:\n  type = {}\n  format = {}\n  dimensions = {}\n  swizzlemask = {}\n  "
+                "interpolation = {}\n  wrapping = {}\n>",
+                toString(self.getLayerType()), self.getDataFormat()->getString(),
+                toString(self.getDimensions()), toString(self.getSwizzleMask()),
+                toString(self.getInterpolation()), toString(self.getWrapping()));
         });
 
     exposeInport<ImageInport>(m, "Image");
