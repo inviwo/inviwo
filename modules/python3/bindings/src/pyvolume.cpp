@@ -81,10 +81,14 @@ void exposeVolume(pybind11::module& m) {
         .def("removeOtherRepresentations", &Volume::removeOtherRepresentations)
         .def("clearRepresentations", &Volume::clearRepresentations)
         .def("invalidateAllOther", &Volume::invalidateAllOther)
-        .def("getVolumePyRepresentation",
-             [](Volume& self) { return self.getRepresentation<VolumePy>(); })
-        .def("getEditableVolumePyRepresentation",
-             [](Volume& self) { return self.getEditableRepresentation<VolumePy>(); })
+        .def(
+            "getVolumePyRepresentation",
+            [](Volume& self) { return self.getRepresentation<VolumePy>(); },
+            pybind11::return_value_policy::reference_internal)
+        .def(
+            "getEditableVolumePyRepresentation",
+            [](Volume& self) { return self.getEditableRepresentation<VolumePy>(); },
+            pybind11::return_value_policy::reference_internal)
         .def_property(
             "data",
             [&](Volume* volume) -> py::array {
