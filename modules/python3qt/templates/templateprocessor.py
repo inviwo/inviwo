@@ -21,7 +21,8 @@ class {name}(ivw.Processor):
             displayName="{name}",
             category="Python",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags.PY
+            tags=ivw.Tags.PY,
+            help=ivw.md2doc("")
         )
 
     def getProcessorInfo(self):
