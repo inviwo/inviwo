@@ -36,6 +36,7 @@
 #include <inviwo/core/util/zip.h>
 
 #include <QApplication>
+#include <QGuiApplication>
 #include <QFileSystemWatcher>
 #include <QFile>
 #include <QIcon>
@@ -218,6 +219,13 @@ void utilqt::setStyleSheetFile(std::string_view file) {
     QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
     qApp->setStyleSheet(styleSheet);
     styleSheetFile.close();
+}
+
+void utilqt::configurePalette() {
+    QPalette palette(QGuiApplication::palette());
+    palette.setColor(QPalette::Link, QColor("#268BD2"));
+    palette.setColor(QPalette::LinkVisited, QColor("#268BD2"));
+    QGuiApplication::setPalette(palette);
 }
 
 void utilqt::configurePostEnqueueFront(InviwoApplication& app) {

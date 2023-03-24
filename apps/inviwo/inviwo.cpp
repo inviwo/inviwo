@@ -49,7 +49,6 @@
 
 #include <QMessageBox>
 #include <QApplication>
-#include <QGuiApplication>
 
 int main(int argc, char** argv) {
     inviwo::LogCentral logger;
@@ -78,12 +77,8 @@ int main(int argc, char** argv) {
     inviwo::utilqt::configureFileSystemObserver(inviwoApp);
     inviwo::utilqt::configurePostEnqueueFront(inviwoApp);
     inviwo::utilqt::setStyleSheetFile(":/stylesheets/inviwo.qss");
+    inviwo::utilqt::configurePalette();
     inviwoApp.setUILocale(inviwo::utilqt::getCurrentStdLocale());
-
-    QPalette palette(QGuiApplication::palette());
-    palette.setColor(QPalette::Link, QColor("#268BD2"));
-    palette.setColor(QPalette::LinkVisited, QColor("#268BD2"));
-    QGuiApplication::setPalette(palette);
 
     auto& clp = inviwoApp.getCommandLineParser();
 
