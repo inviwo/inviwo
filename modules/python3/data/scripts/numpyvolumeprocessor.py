@@ -1,3 +1,8 @@
+"""
+This script is called by the `NumPyVolume` C++ processor.
+The volume data is accessible as numpy array.
+"""
+
 import math
 
 data = vol.data

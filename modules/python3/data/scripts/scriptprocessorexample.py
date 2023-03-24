@@ -9,6 +9,9 @@ import numpy
 The PythonScriptProcessor will run this script on construction and whenever this
 it changes. Hence one needs to take care not to add ports and properties multiple times.
 The PythonScriptProcessor is exposed as the local variable 'self'.
+
+Note: The `PythonScriptProcessor` has been deprecated. It was replaced by individual 
+      *Python Processors*.
 """
 
 # if not "dim" in self.properties:

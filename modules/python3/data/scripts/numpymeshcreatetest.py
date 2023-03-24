@@ -1,10 +1,13 @@
+"""
+This script is called by the `NumPyMeshCreateTest` C++ processor.
+It demonstrates the use of BasicMesh.
+"""
+
 from inviwopy.data import *
 from inviwopy.glm import *
 
 mesh = BasicMesh()
 
-ind = mesh.addIndexBuffer(DrawType.Triangles, ConnectivityType.Unconnected)
-ind.size = 6 * 3
 
 
 def c(z):
@@ -28,6 +31,9 @@ for z in [-1, 0, 1]:
                 o = -0.3
             mesh.addVertex(vec3(x + 0.5 * z, y + o + 0.3, z * 1.5),
                            vec3(0, 0, 1), vec3(x, y, 0.5), c(z))
+
+ind = mesh.addIndexBuffer(DrawType.Triangles, ConnectivityType.Unconnected)
+ind.size = 6 * 3
 
 idx = 0
 for base in [0, 1, 4, 5, 8, 9]:
