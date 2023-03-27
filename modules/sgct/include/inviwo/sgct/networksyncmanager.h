@@ -81,8 +81,6 @@ class IVW_MODULE_SGCT_API NetworkSyncClient {
 public:
     NetworkSyncClient(ProcessorNetwork& net);
 
-    void applyUpdate(std::istream& is);
-
     void applyCommands(const std::vector<SgctCommand>& commands);
 
     std::function<void(bool)> onStats;

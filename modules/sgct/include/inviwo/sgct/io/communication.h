@@ -98,9 +98,11 @@ inline auto encode(const std::vector<SgctCommand>& commands) -> std::vector<std:
     return bytes;
 };
 
-inline auto decode(const std::vector<std::byte>& bytes, unsigned int pos)
+inline auto decode(const std::vector<std::byte>& bytes)
     -> std::vector<SgctCommand> {
     std::vector<SgctCommand> commands;
+        
+    unsigned int pos = 0;
 
     while (pos < bytes.size()) {
         size_t index = 0;

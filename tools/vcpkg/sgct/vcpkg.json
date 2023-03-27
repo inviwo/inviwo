@@ -1,43 +1,50 @@
 {
-    "name": "sgct",
-    "version" : "3.0.0",
-    "port-version": 0,
-    "homepage" : "https://github.com/sgct/sgct/",
-    "description": [
-        "SGCT is a free cross-platform C++ library for developing OpenGL applications that are ",
-        "synchronized across a cluster of image generating computers (IGs).  SGCT is designed ",
-        "to be as simple as possible to use for the developer and targets the use in immersive ",
-        "real-time applications.  SGCT supports a number of output formats, such as virtual ",
-        "reality (VR), planetarium/dome geometries, fisheye projections, and other types of ",
-        "projections."
-    ],
-    "license": "BSD-3-Clause",
-    "dependencies" : 
-    [
-        {
-            "name": "vcpkg-cmake",
-            "host": true
-        },
-        {
-            "name": "vcpkg-cmake-config",
-            "host": true
-        },
-        "fmt",
-        "freetype",
-        "glfw3",
-        "glm",
-        "libpng",
-        "nlohmann-json",
-        "minizip",
-        "openvr",
-        "scnlib",
-        "stb",
-        "tinyxml2",
-        "tracy",
-        "zlib",
-        {
-             "name": "glad",
-             "features" : ["wgl", "loader", "extensions"]
-        }
-    ]
+  "name": "sgct",
+  "version-string" : "3.0.0",
+  "homepage" : "https://github.com/sgct/sgct/",
+  "license": "BSD-3-Clause",
+  "dependencies" : 
+  [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "catch2",
+    "fmt",
+    "glfw3",
+    "glm",
+    "libpng",
+    "minizip",
+    "nlohmann-json",
+    "scnlib",
+    "stb",
+    "tinyxml2",
+    "zlib",
+    {
+       "name": "glad",
+       "features" : ["wgl", "loader", "extensions"]
+    }
+  ],
+  "features" : {
+    "freetype" : {
+      "description": "Build SGCT with Freetype support", 
+      "dependencies": ["freetype"]
+    },
+     "openvr" : {
+      "description": "Build SGCT with OpenVR support", 
+      "dependencies": ["openvr"]
+    },
+     "spout2" : {
+      "description": "Build SGCT with Spout2 support", 
+      "dependencies": ["spout2"]
+    },
+    "tracy": { 
+      "description": "Enable Tracy profiling support", 
+      "dependencies": ["tracy"]
+    }
+  }
 }
