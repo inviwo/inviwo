@@ -39,7 +39,14 @@
 
 namespace inviwo {
 
-NetworkSyncServer::NetworkSyncServer(ProcessorNetwork& net) : net_{net} { net_.addObserver(this); }
+NetworkSyncServer::NetworkSyncServer(ProcessorNetwork& net) : net_{net} {
+    if (!net_.isEmpty()) {
+        throw Exception{IVW_CONTEXT,
+                        "We expect the network to be empty when the server is created"};
+    }
+
+    net_.addObserver(this);
+}
 
 const std::vector<SgctCommand>& NetworkSyncServer::getCommands() {
     std::scoped_lock lock{commandsMutex_};
@@ -116,8 +123,6 @@ void NetworkSyncServer::onAboutPropertyChange(Property* property) {
     if (property) {
         std::scoped_lock lock{modifiedMutex_};
         modified_.push_back(property);
-    } else {
-        1 + 1;
     }
 }
 
@@ -212,63 +217,61 @@ void NetworkSyncClient::applyCommands(const std::vector<SgctCommand>& commands) 
 
     for (const auto& command : commands) {
         try {
-            std::visit(
-                util::overloaded{
-                    [](const command::Nop&) {},
-                    [&](const command::AddProcessor& update) {
-                        std::stringstream is{update.data};
-                        auto d = wm_.createWorkspaceDeserializer(is, "");
-                        std::unique_ptr<Processor> processor;
-                        d.deserialize("processor", processor);
-                        net_.addProcessor(std::move(processor));
-                    },
-                    [&](const command::RemoveProcessor& update) {
-                        net_.removeProcessor(update.data);
-                    },
-                    [&](const command::AddConnection& update) {
-                        std::stringstream is{update.data};
-                        auto d = wm_.createWorkspaceDeserializer(is, "");
-                        NetworkEdge edge;
-                        d.deserialize("edge", edge);
-                        net_.addConnection(edge.toConnection(net_));
-                    },
-                    [&](const command::RemoveConnection& update) {
-                        std::stringstream is{update.data};
-                        auto d = wm_.createWorkspaceDeserializer(is, "");
-                        NetworkEdge edge;
-                        d.deserialize("edge", edge);
-                        net_.removeConnection(edge.toConnection(net_));
-                    },
-                    [&](const command::AddLink& update) {
-                        std::stringstream is{update.data};
-                        auto d = wm_.createWorkspaceDeserializer(is, "");
-                        NetworkEdge edge;
-                        d.deserialize("edge", edge);
-                        net_.addLink(edge.toLink(net_));
-                    },
-                    [&](const command::RemoveLink& update) {
-                        std::stringstream is{update.data};
-                        auto d = wm_.createWorkspaceDeserializer(is, "");
-                        NetworkEdge edge;
-                        d.deserialize("edge", edge);
-                        net_.removeLink(edge.toLink(net_));
-                    },
+            std::visit(util::overloaded{[](const command::Nop&) {},
+                                        [&](const command::AddProcessor& update) {
+                                            std::stringstream is{update.data};
+                                            auto d = wm_.createWorkspaceDeserializer(is, "");
+                                            std::unique_ptr<Processor> processor;
+                                            d.deserialize("processor", processor);
+                                            net_.addProcessor(std::move(processor));
+                                        },
+                                        [&](const command::RemoveProcessor& update) {
+                                            net_.removeProcessor(update.data);
+                                        },
+                                        [&](const command::AddConnection& update) {
+                                            std::stringstream is{update.data};
+                                            auto d = wm_.createWorkspaceDeserializer(is, "");
+                                            NetworkEdge edge;
+                                            d.deserialize("edge", edge);
+                                            net_.addConnection(edge.toConnection(net_));
+                                        },
+                                        [&](const command::RemoveConnection& update) {
+                                            std::stringstream is{update.data};
+                                            auto d = wm_.createWorkspaceDeserializer(is, "");
+                                            NetworkEdge edge;
+                                            d.deserialize("edge", edge);
+                                            net_.removeConnection(edge.toConnection(net_));
+                                        },
+                                        [&](const command::AddLink& update) {
+                                            std::stringstream is{update.data};
+                                            auto d = wm_.createWorkspaceDeserializer(is, "");
+                                            NetworkEdge edge;
+                                            d.deserialize("edge", edge);
+                                            net_.addLink(edge.toLink(net_));
+                                        },
+                                        [&](const command::RemoveLink& update) {
+                                            std::stringstream is{update.data};
+                                            auto d = wm_.createWorkspaceDeserializer(is, "");
+                                            NetworkEdge edge;
+                                            d.deserialize("edge", edge);
+                                            net_.removeLink(edge.toLink(net_));
+                                        },
 
-                    [&](const command::Update& update) {
-                        std::stringstream is{update.data};
-                        auto d = wm_.createWorkspaceDeserializer(is, "");
-                        std::vector<std::string> paths;
-                        std::vector<Property*> modifiedProps;
+                                        [&](const command::Update& update) {
+                                            std::stringstream is{update.data};
+                                            auto d = wm_.createWorkspaceDeserializer(is, "");
+                                            std::vector<std::string> paths;
+                                            std::vector<Property*> modifiedProps;
 
-                        d.deserialize("paths", paths);
-                        for (auto& path : paths) {
-                            modifiedProps.push_back(net_.getProperty(path));
-                        }
-                        d.deserialize("modified", modifiedProps);
-                    },
-                    [&](const command::Stats& stats) { onStats(stats.show); }},
+                                            d.deserialize("paths", paths);
+                                            for (auto& path : paths) {
+                                                modifiedProps.push_back(net_.getProperty(path));
+                                            }
+                                            d.deserialize("modified", modifiedProps);
+                                        },
+                                        [&](const command::Stats& stats) { onStats(stats.show); }},
 
-                command);
+                       command);
         } catch (const Exception& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error);
         }
