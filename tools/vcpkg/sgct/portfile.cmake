@@ -2,9 +2,17 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO inviwo/sgct
-    REF adbd60f5a37554aff2810b09bbaf94d80121235f  
-    SHA512 72de9a03d8d344b894bf5ce796a36a5007c912178f9255ba4316b0ffa09eb2c38dff9e082c522cfc808a531b67096b0b16609a289720a02f76b7e3f41d74870f
-    HEAD_REF feature/vcpkg
+    REF 7fddb51d8f43dba70016006de6e92aa4d898047b  
+    SHA512 1de278330bc917dd3ea0bdb801a2a51fdb57165ceed47c600c8f9ba73026b3c4b86e4bd98c2fc84c2efe1acfa19364e93cc93abf7ee385afad0531d7f876ce7e
+    HEAD_REF feature/dependency-refactoring
+)
+
+vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
+    FEATURES
+        freetype       SGCT_FREETYPE_SUPPORT
+        openvr         SGCT_OPENVR_SUPPORT
+        spout2         SGCT_SPOUT_SUPPORT
+        tracy          SGCT_TRACY_SUPPORT
 )
 
 vcpkg_cmake_configure(
@@ -12,13 +20,12 @@ vcpkg_cmake_configure(
     OPTIONS
         -DSGCT_INSTALL=ON
         -DSGCT_BUILD_TESTS=OFF
-        -DSGCT_DEP_ENABLE_TRACY=ON
         -DSGCT_EXAMPLES=OFF
-        -DSGCT_FREETYPE_SUPPORT=ON
-        -DSGCT_OPENVR_SUPPORT=OFF
-        -DSGCT_SPOUT_SUPPORT=OFF
         -DSGCT_VRPN_SUPPORT=OFF
+        -DSGCT_ENABLE_EDIT_CONTINUE=OFF
+        -DSGCT_MEMORY_PROFILING=OFF
 
+        -DSGCT_DEP_INCLUDE_CATCH2=OFF
         -DSGCT_DEP_INCLUDE_FMT=OFF
         -DSGCT_DEP_INCLUDE_FREETYPE=OFF
         -DSGCT_DEP_INCLUDE_GLAD=OFF
@@ -33,11 +40,13 @@ vcpkg_cmake_configure(
         -DSGCT_DEP_INCLUDE_TRACY=OFF
         -DSGCT_DEP_INCLUDE_VRPN=OFF
         -DSGCT_DEP_INCLUDE_ZLIB=OFF
+
+        ${FEATURE_OPTIONS}
 )
 
 vcpkg_cmake_install()
 vcpkg_copy_pdbs()
-vcpkg_cmake_config_fixup(CONFIG_PATH lib/cmake/sgct) 
+vcpkg_cmake_config_fixup(CONFIG_PATH share/sgct) 
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
 file(

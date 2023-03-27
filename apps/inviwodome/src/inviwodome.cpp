@@ -151,6 +151,13 @@ public:
             app.getWorkspaceManager()->load(
                 app.getPath(inviwo::PathType::Workspaces, "/boron.inv"));
             setCamerasToSgct(*app.getProcessorNetwork());
+        } else {
+            // Only the master node needs to have any widgets.
+            auto* wf = app.getProcessorWidgetFactory();
+            auto wfKeys = wf->getKeys();
+            for (auto& key : wfKeys) {
+                wf->unRegisterObject(wf->getFactoryObject(key));
+            }
         }
     };
 
@@ -163,8 +170,8 @@ public:
 
     auto encode() -> std::vector<std::byte> { return syncServer->getEncodedCommandsAndClear(); }
 
-    void decode(const std::vector<std::byte>& bytes, unsigned int pos) {
-        auto tmp = inviwo::util::decode(bytes, pos);
+    void decode(const std::vector<std::byte>& bytes) {
+        auto tmp = inviwo::util::decode(bytes);
         std::scoped_lock lock{commandsMutex};
         commands.insert(commands.end(), tmp.begin(), tmp.end());
     }
@@ -273,8 +280,7 @@ public:
         callbacks.initOpenGL = tryWrapper([this](GLFWwindow* shared) { initOpenGL(shared); });
         callbacks.preSync = tryWrapper([this]() { preSync(); });
         callbacks.encode = tryWrapperRet([this]() -> std::vector<std::byte> { return encode(); });
-        callbacks.decode = tryWrapper(
-            [this](const std::vector<std::byte>& data, unsigned int pos) { decode(data, pos); });
+        callbacks.decode = tryWrapper([this](const std::vector<std::byte>& data) { decode(data); });
         callbacks.postSyncPreDraw = tryWrapper([this]() { postSyncPreDraw(); });
         callbacks.draw =
             tryWrapper([this](const sgct::RenderData& renderData) { draw(renderData); });
@@ -337,7 +343,7 @@ int main(int argc, char** argv) {
         LogInfoCustom("Dome", "Start Engine");
 
         sgct::Engine::create(cluster, callbacks, config);
-        sgct::Engine::instance().render();
+        sgct::Engine::instance().exec();
 
     } catch (const inviwo::Exception& e) {
         inviwo::util::log(e.getContext(), e.getMessage(), inviwo::LogLevel::Error);
