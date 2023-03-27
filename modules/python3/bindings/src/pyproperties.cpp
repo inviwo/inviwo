@@ -203,7 +203,7 @@ struct MinMaxHelper {
                      return new P(identifier, name, std::move(help), valueMin, valueMax, rangeMin,
                                   rangeMax, increment, minSeparation, invalidationLevel, semantics);
                  }),
-                 py::arg("identifier"), py::arg("name"), py::arg("help") = Document{},
+                 py::arg("identifier"), py::arg("name"), py::arg("help"),
                  py::arg("valueMin") = Defaultvalues<T>::getMin(),
                  py::arg("valueMax") = Defaultvalues<T>::getMax(),
                  py::arg("rangeMin") = Defaultvalues<T>::getMin(),
