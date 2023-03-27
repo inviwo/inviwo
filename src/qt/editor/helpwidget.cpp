@@ -50,7 +50,6 @@
 #include <QFrame>
 #include <QVBoxLayout>
 #include <QTextBrowser>
-#include <QHelpEngineCore>
 #include <QEvent>
 #include <QMap>
 #include <QString>
