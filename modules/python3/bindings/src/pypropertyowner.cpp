@@ -70,6 +70,14 @@ void exposePropertyOwner(pybind11::module& m) {
             [](PropertyOwner& po, Property* prop, bool owner) { po.addProperty(prop, owner); },
             py::arg("prop"), py::arg("owner") = false, py::keep_alive<1, 2>{})
         .def(
+            "addProperties",
+            [](PropertyOwner& po, std::vector<Property*> props, bool owner) {
+                for (auto p : props) {
+                    po.addProperty(p, owner);
+                }
+            },
+            py::arg("props"), py::arg("owner") = false, py::keep_alive<1, 2>{})
+        .def(
             "insertProperty",
             [](PropertyOwner& po, size_t index, Property* prop, bool owner) {
                 po.insertProperty(index, prop, owner);
