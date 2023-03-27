@@ -192,9 +192,8 @@ void exposeImage(py::module& m) {
             return fmt::format(
                 "<Layer:\n  type = {}\n  format = {}\n  dimensions = {}\n  swizzlemask = {}\n  "
                 "interpolation = {}\n  wrapping = {}\n>",
-                toString(self.getLayerType()), self.getDataFormat()->getString(),
-                toString(self.getDimensions()), toString(self.getSwizzleMask()),
-                toString(self.getInterpolation()), toString(self.getWrapping()));
+                self.getLayerType(), self.getDataFormat()->getString(), self.getDimensions(),
+                self.getSwizzleMask(), self.getInterpolation(), self.getWrapping());
         });
 
     py::class_<LayerRepresentation>(m, "LayerRepresentation")
@@ -215,9 +214,8 @@ void exposeImage(py::module& m) {
             return fmt::format(
                 "<LayerRepresentation:\n  type = {}\n  format = {}\n  dimensions = {}\n  "
                 "swizzlemask = {}\n  interpolation = {}\n  wrapping = {}\n>",
-                toString(self.getLayerType()), self.getDataFormat()->getString(),
-                toString(self.getDimensions()), toString(self.getSwizzleMask()),
-                toString(self.getInterpolation()), toString(self.getWrapping()));
+                self.getLayerType(), self.getDataFormat()->getString(), self.getDimensions(),
+                self.getSwizzleMask(), self.getInterpolation(), self.getWrapping());
         });
 
     py::class_<LayerPy, LayerRepresentation>(m, "LayerPy")
@@ -238,9 +236,8 @@ void exposeImage(py::module& m) {
             return fmt::format(
                 "<LayerPy:\n  type = {}\n  format = {}\n  dimensions = {}\n  swizzlemask = {}\n  "
                 "interpolation = {}\n  wrapping = {}\n>",
-                toString(self.getLayerType()), self.getDataFormat()->getString(),
-                toString(self.getDimensions()), toString(self.getSwizzleMask()),
-                toString(self.getInterpolation()), toString(self.getWrapping()));
+                self.getLayerType(), self.getDataFormat()->getString(), self.getDimensions(),
+                self.getSwizzleMask(), self.getInterpolation(), self.getWrapping());
         });
 
     exposeInport<ImageInport>(m, "Image");

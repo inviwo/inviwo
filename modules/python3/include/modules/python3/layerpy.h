@@ -53,7 +53,7 @@ public:
             InterpolationType interpolation = InterpolationType::Linear,
             const Wrapping2D& wrapping = wrapping2d::clampAll);
 
-    LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* format, 
+    LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* format,
             const SwizzleMask& swizzleMask = swizzlemasks::rgba,
             InterpolationType interpolation = InterpolationType::Linear,
             const Wrapping2D& wrapping = wrapping2d::clampAll);

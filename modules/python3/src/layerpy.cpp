@@ -103,7 +103,7 @@ void LayerPy::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 
 SwizzleMask LayerPy::getSwizzleMask() const { return swizzleMask_; }
 
-void LayerPy::setInterpolation(InterpolationType interpolation) { interpolation = interpolation; }
+void LayerPy::setInterpolation(InterpolationType interpolation) { interpolation_ = interpolation; }
 
 InterpolationType LayerPy::getInterpolation() const { return interpolation_; }
 
