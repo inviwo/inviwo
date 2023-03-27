@@ -219,7 +219,7 @@ void SgctManager::copy() {  // Copy inviwo output
 
     if (!copyShader) createShader();
 
-    if (auto canvas = getCanvas()) {
+    if (auto* canvas = getCanvas()) {
         if (auto img = canvas->inport_.getData()) {
             TextureUnit colorUnit;
             TextureUnit depthUnit;

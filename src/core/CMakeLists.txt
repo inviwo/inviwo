@@ -875,6 +875,7 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
+        $<$<BOOL:${IVW_USE_TRACY}>:inviwo::tracy>
         inviwo::tinydir
         units::units
     PRIVATE

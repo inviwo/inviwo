@@ -87,7 +87,7 @@ private:
                 win->setVisible(false);
             }
 
-            sgct::Engine::instance().render();
+            sgct::Engine::instance().exec();
         } catch (const std::runtime_error& e) {
             sgct::Log::Error(e.what());
         }

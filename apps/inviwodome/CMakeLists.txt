@@ -81,17 +81,17 @@ if (!(Test-Path $config)) {
 }
 
 Write-Host "Nodes: $nodes, Config: $config, Tracy: $tracy"
-Write-Host "Run: $<TARGET_FILE:inviwo-dome> --config $config &"
-$<TARGET_FILE:inviwo-dome> --config $config &
+Write-Host "Run: $<TARGET_FILE:inviwo-dome> --config $config"
+Start-Process -FilePath $<TARGET_FILE:inviwo-dome> -ArgumentList "--config $config" 
 for ( $i = 1; $i -lt $nodes; $i++ ) {
-    Write-Host "Run: $<TARGET_FILE:inviwo-dome> --config $config --local $i --client &"
-    $<TARGET_FILE:inviwo-dome> --config $config --local $i --client &
+    Write-Host "Run: $<TARGET_FILE:inviwo-dome> --config $config --local $i --client"
+    Start-Process -FilePath $<TARGET_FILE:inviwo-dome> -ArgumentList "--config $config --local $i --client"
 }
 if ($tracy) {
     for( $i = 0; $i -lt $nodes; $i++ ) {
         $port = $i + 8086
         Write-Host "Run: $<TARGET_PROPERTY:inviwo-dome,TRACY_EXE> -a localhost -p $port"
-        $<TARGET_PROPERTY:inviwo-dome,TRACY_EXE> -a localhost -p $port &
+        Start-Process -FilePath $<TARGET_PROPERTY:inviwo-dome,TRACY_EXE> -ArgumentList "-a localhost -p $port" 
     }
 }
 ]=]
