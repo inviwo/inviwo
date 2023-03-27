@@ -169,6 +169,21 @@ namespace inviwo {
 
 namespace cimgutil {
 
+namespace detail {
+
+cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType type) {
+    switch (type) {
+        case inviwo::InterpolationType::Linear:
+            return cimgutil::InterpolationType::Linear;
+        case inviwo::InterpolationType::Nearest:
+            return cimgutil::InterpolationType::Nearest;
+        default:
+            return cimgutil::InterpolationType::Linear;
+    }
+}
+
+}  // namespace detail
+
 std::unordered_map<std::string, DataFormatId> extToBaseTypeMap_ = {{"jpg", DataFormatId::UInt8},
                                                                    {"jpeg", DataFormatId::UInt8},
                                                                    {"bmp", DataFormatId::UInt8},
@@ -563,10 +578,12 @@ struct CImgRescaleLayerRamToLayerRamDispatcher {
         auto srcData = static_cast<const P*>(source->getData());
         P* dstData = static_cast<P*>(target->getData());
 
+        auto interpolation = detail::toCImgInterpolationType(source->getInterpolation());
+
         if (rank == 0) {
             cimg_library::CImg<P> src(srcData, sourceDim.x, sourceDim.y, 1, 1, true);
             auto resized = src.get_resize(resizeDim.x, resizeDim.y, -100, -100,
-                                          static_cast<int>(InterpolationType::Linear));
+                                          static_cast<int>(interpolation));
 
             cimg_library::CImg<P> dst(dstData, targetDim.x, targetDim.y, 1, 1, true);
             dst.fill(P{0});
@@ -583,8 +600,7 @@ struct CImgRescaleLayerRamToLayerRamDispatcher {
             cimg_library::CImg<P> src(srcData, comp, sourceDim.x, sourceDim.y, 1, true);
             auto temp = src.get_permute_axes("yzcx");  // put first index last
 
-            temp.resize(resizeDim.x, resizeDim.y, -100, -100,
-                        static_cast<int>(InterpolationType::Linear));
+            temp.resize(resizeDim.x, resizeDim.y, -100, -100, static_cast<int>(interpolation));
 
             cimg_library::CImg<P> dst(dstData, targetDim.x, targetDim.y, 1, comp, true);
             dst.fill(P{0});

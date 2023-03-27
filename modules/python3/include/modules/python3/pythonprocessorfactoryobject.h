@@ -69,7 +69,7 @@ public:
 
     virtual Document getMetaInformation() const override {
         Document doc;
-        doc.append("a", "", {{"href", "file://" + file_}}).append("b", file_);
+        doc.append("a", "", {{"href", "file:///" + file_}}).append("b", file_);
         return doc;
     }
 

@@ -79,7 +79,7 @@ public:
     void setCurrent(std::string_view processorClassIdentifier);
 
 protected:
-    QVariant loadResource(int type, const QUrl& name);
+    virtual QVariant loadResource(int type, const QUrl& name) override;
 
 private:
     InviwoApplication* app_;
@@ -369,10 +369,10 @@ std::tuple<std::string, std::string> loadIdUrl(const QUrl& url, InviwoApplicatio
                 return {helpText, module.getPath()};
             }
         } else {
-            return {fmt::format("Could not crate help for: {}", processorClassIdentifier), ""};
+            return {fmt::format("Could not create help for: {}", processorClassIdentifier), ""};
         }
     } catch (const Exception& e) {
-        return {fmt::format("Could not crate help for: {}, {}", processorClassIdentifier,
+        return {fmt::format("Could not create help for: {}, {}", processorClassIdentifier,
                             e.getMessage()),
                 ""};
     }
@@ -407,7 +407,7 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
     const QUrlQuery query(url);
 
     auto toFilePath = [&](const QUrl& url) {
-        auto filePath = utilqt::fromQString(url.path());
+        auto filePath = utilqt::fromQString(url.toLocalFile());
         replaceInString(filePath, "~modulePath~", currentModulePath_);
         replaceInString(filePath, "~basePath~", app_->getBasePath());
         return filePath;
@@ -456,6 +456,8 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
             return {"Workspace loaded"};
         } else {
             QDesktopServices::openUrl(url);
+            QTimer::singleShot(0, this, [this]() { backward(); });
+            return {"File opened"};
         }
     }
 

@@ -198,7 +198,7 @@ public:
         LONG lResult =
             ::RegQueryValue(HKEY_CLASSES_ROOT, (const wchar_t*)ext.utf16(), szTempBuffer, &lSize);
 
-        QString temp = QString::fromUtf16((unsigned short*)szTempBuffer);
+        QString temp = QString::fromUtf16((const char16_t*)szTempBuffer);
 
         if (lResult != ERROR_SUCCESS || temp.isEmpty() || temp == dId) {
             // no association for that suffix
@@ -293,7 +293,7 @@ private:
         } else {
             wchar_t buffer[4096];
             ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, 0, lRetVal, 0, buffer, 4096, 0);
-            QString szText = QString::fromUtf16((const ushort*)buffer);
+            QString szText = QString::fromUtf16((const char16_t*)buffer);
             LogError("Error in setting Registry value: " << utilqt::fromQString(szText));
         }
         return false;

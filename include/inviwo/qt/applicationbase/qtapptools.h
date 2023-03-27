@@ -87,6 +87,11 @@ IVW_QTAPPLICATIONBASE_API void configurePoolResizeWait(InviwoApplication& app, Q
  */
 IVW_QTAPPLICATIONBASE_API void setStyleSheetFile(std::string_view file);
 
+/**
+ * Configure the global palette to use the same link colors as in the help widget and stylesheet
+ */
+IVW_QTAPPLICATIONBASE_API void configurePalette();
+
 namespace detail {
 class IVW_QTAPPLICATIONBASE_API QtProcessFrontHelper : public QObject {
     Q_OBJECT

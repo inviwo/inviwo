@@ -1517,10 +1517,15 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     }
     settings.endGroup();
 
-    // pass a close event to all children to let the same state etc.
+    // loop over all children and trigger close events _before_ the main window is closed and
+    // destroyed. This way, the main window can stay open if a child widget does not close, i.e.
+    // calls event->ignore().
+    // @see QWidget::closeEvent()
     for (auto& child : children()) {
-        QCloseEvent closeEvent;
-        QApplication::sendEvent(child, &closeEvent);
+        QApplication::sendEvent(child, event);
+        if (!event->isAccepted()) {
+            return;
+        }
     }
 
     QMainWindow::closeEvent(event);

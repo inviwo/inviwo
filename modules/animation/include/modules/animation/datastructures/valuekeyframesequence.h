@@ -49,6 +49,7 @@
 #include <type_traits>  // for is_base_of
 #include <utility>      // for move
 #include <vector>       // for vector
+#include <concepts>
 
 #include <glm/fwd.hpp>  // IWYU pragma: keep
 
@@ -66,6 +67,16 @@ template <typename Key>
 struct DefaultInterpolationCreator {
     static std::unique_ptr<InterpolationTyped<Key>> create() {
         return std::make_unique<ConstantInterpolation<Key>>();
+    }
+};
+
+template <typename T>
+concept Scalar = std::is_floating_point_v<T> || (std::is_integral_v<T> && !std::is_same_v<T, bool>);
+
+template <Scalar T>
+struct DefaultInterpolationCreator<ValueKeyframe<T>> {
+    static std::unique_ptr<InterpolationTyped<ValueKeyframe<T>>> create() {
+        return std::make_unique<LinearInterpolation<ValueKeyframe<T>>>();
     }
 };
 

@@ -122,7 +122,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         auto html = doc.append("html");
         html.append("head").append(
             "style",
-            "a { color: #c8ccd0; font-weight: normal; text-decoration:none;}\n"
+            "a { color: #268BD2; font-weight: normal; text-decoration:none;}\n"
             "body, table, div, p, dl "
             "{color: #9d9995; background-color: #323235; font: 400 14px/18px"
             "Calibra, sans-serif;}\n "

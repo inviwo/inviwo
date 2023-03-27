@@ -164,7 +164,7 @@ Texture::Texture(const Texture& other)
     glBindTexture(target_, id_);
     glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
     glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &minfiltering);
-    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &minfiltering);
+    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &magfiltering);
     for (size_t i = 0; i < dims; ++i) {
         glTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
     }

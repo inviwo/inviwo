@@ -32,6 +32,8 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <fmt/core.h>
+
 namespace inviwo {
 
 struct DataFormatHelper {
@@ -70,7 +72,8 @@ void exposeDataFormat(pybind11::module& m) {
         .def_property_readonly("max", &DataFormatBase::getMax)
         .def_property_readonly("min", &DataFormatBase::getMin)
         .def_property_readonly("lowest", &DataFormatBase::getLowest)
-        .def_property_readonly("__repr__", &DataFormatBase::getString);
+        .def("__repr__",
+             [](DataFormatBase& d) { return fmt::format("DataFormat({})", d.getString()); });
 
     util::for_each_type<DefaultDataFormats>{}(DataFormatHelper{}, m);
 }

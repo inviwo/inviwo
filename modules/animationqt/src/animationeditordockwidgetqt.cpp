@@ -379,6 +379,8 @@ void AnimationEditorDockWidgetQt::importAnimation() {
     }
 }
 
+void AnimationEditorDockWidgetQt::closeEvent(QCloseEvent*) { controller_.pause(); }
+
 void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, AnimationState,
                                                  AnimationState newState) {
     if (newState == AnimationState::Playing) {
