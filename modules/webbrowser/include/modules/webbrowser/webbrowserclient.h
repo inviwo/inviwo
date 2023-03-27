@@ -223,7 +223,7 @@ public:
     virtual ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                              CefRefPtr<CefFrame> frame,
                                              CefRefPtr<CefRequest> request,
-                                             CefRefPtr<CefRequestCallback> callback) override;
+                                             CefRefPtr<CefCallback> callback) override;
     ///
     // Called on the IO thread before a resource is loaded. The |browser| and
     // |frame| values represent the source of the request, and may be NULL for

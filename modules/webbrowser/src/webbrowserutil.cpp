@@ -48,9 +48,6 @@ std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings() {
 
     CefBrowserSettings browserSettings;
 
-    // Enable loading files from other locations than where the .html file is
-    browserSettings.file_access_from_file_urls = STATE_ENABLED;
-
     return std::tuple<CefWindowInfo, CefBrowserSettings>{windowInfo, browserSettings};
 }
 
