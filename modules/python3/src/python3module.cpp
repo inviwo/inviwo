@@ -37,20 +37,21 @@
 #include <inviwo/core/datastructures/representationconverter.h>      // for RepresentationConver...
 #include <inviwo/core/datastructures/representationfactoryobject.h>  // for RepresentationFactor...
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
-#include <inviwo/core/util/commandlineparser.h>                      // for CommandLineParser
-#include <inviwo/core/util/exception.h>                              // for ModuleInitException
-#include <inviwo/core/util/filesystem.h>                             // for fileExists
-#include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogWarn
-#include <inviwo/core/util/pathtype.h>                               // for PathType, PathType::...
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
-#include <modules/python3/processors/numpymandelbrot.h>              // for NumpyMandelbrot
-#include <modules/python3/processors/numpymeshcreatetest.h>          // for NumPyMeshCreateTest
-#include <modules/python3/processors/numpyvolume.h>                  // for NumPyVolume
-#include <modules/python3/processors/pythonscriptprocessor.h>        // for PythonScriptProcessor
-#include <modules/python3/pythoninterpreter.h>                       // for PythonInterpreter
-#include <modules/python3/pythonlogger.h>                            // for PythonLogger
-#include <modules/python3/pythonscript.h>                            // for PythonScriptDisk
-#include <modules/python3/volumepy.h>                                // for VolumePy, VolumePy2R...
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/util/commandlineparser.h>                // for CommandLineParser
+#include <inviwo/core/util/exception.h>                        // for ModuleInitException
+#include <inviwo/core/util/filesystem.h>                       // for fileExists
+#include <inviwo/core/util/logcentral.h>                       // for LogCentral, LogWarn
+#include <inviwo/core/util/pathtype.h>                         // for PathType, PathType::...
+#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT
+#include <modules/python3/processors/numpymeshcreatetest.h>    // for NumPyMeshCreateTest
+#include <modules/python3/processors/numpyvolume.h>            // for NumPyVolume
+#include <modules/python3/processors/pythonscriptprocessor.h>  // for PythonScriptProcessor
+#include <modules/python3/pythoninterpreter.h>                 // for PythonInterpreter
+#include <modules/python3/pythonlogger.h>                      // for PythonLogger
+#include <modules/python3/pythonscript.h>                      // for PythonScriptDisk
+#include <modules/python3/volumepy.h>                          // for VolumePy, VolumePy2R...
 #include <modules/python3/layerpy.h>
 
 #include <tclap/ArgException.h>  // for ArgParseException
@@ -131,7 +132,6 @@ Python3Module::Python3Module(InviwoApplication* app)
     registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerPy2RAMConverter>());
 
     registerProcessor<NumPyVolume>();
-    registerProcessor<NumpyMandelbrot>();
     registerProcessor<NumPyMeshCreateTest>();
     registerProcessor<PythonScriptProcessor>();
 
