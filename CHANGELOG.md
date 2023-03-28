@@ -1,5 +1,11 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-03-28 Removed deprecated PythonScript processor
+The `PythonScriptProcessor` -- deprecated for more than 4 years -- has been removed entirely. Three Python processors replicating previously existing Python scripts have been added instead.
+- **python3/processors/MandebrotNumpy.py**
+- **python3/processors/MeshCreationTest.py**
+- **python3/processors/VolumeCreationTest.py**
+
 ## 2023-03-24 Python Layer representation and Python processor examples
 `LayerPy` is a Python representation of a `Layer` based directly on a numpy array similar to `VolumePy`. The array needs to be c-contiguous where the shape is either `(xdim, ydim)` or `(xdim, ydim, numchannels)` in case of more than one image channel. The Python representation of a layer is accessible with either `getLayerPyRepresentation()` or `getEditableLayerPyRepresentation()`.
 The `LayerPy` represention comes with converters to `LayerRAM` and also includes converters from Python directly to GL and back without the necessity of a RAM representation.
