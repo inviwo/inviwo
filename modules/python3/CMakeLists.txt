@@ -5,7 +5,6 @@ find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
 
 set(HEADER_FILES
     include/modules/python3/layerpy.h
-    include/modules/python3/processors/numpyvolume.h
     include/modules/python3/processors/pythonscriptprocessor.h
     include/modules/python3/processortrampoline.h
     include/modules/python3/pybindflags.h
@@ -28,7 +27,6 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/layerpy.cpp
-    src/processors/numpyvolume.cpp
     src/processors/pythonscriptprocessor.cpp
     src/processortrampoline.cpp
     src/pybindflags.cpp
@@ -58,7 +56,6 @@ set(SCRIPT_FILES
     scripts/ivw/regression.py
     scripts/ivw/utils.py
 
-    data/scripts/numpyvolumeprocessor.py
     data/scripts/scriptprocessorexample.py
 )
 ivw_group("Script Files" ${SCRIPT_FILES})

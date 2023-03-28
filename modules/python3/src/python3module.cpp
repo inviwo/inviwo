@@ -36,6 +36,7 @@
 #include <inviwo/core/datastructures/datarepresentation.h>           // for DataRepresentation<>...
 #include <inviwo/core/datastructures/representationconverter.h>      // for RepresentationConver...
 #include <inviwo/core/datastructures/representationfactoryobject.h>  // for RepresentationFactor...
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
@@ -45,7 +46,6 @@
 #include <inviwo/core/util/logcentral.h>                       // for LogCentral, LogWarn
 #include <inviwo/core/util/pathtype.h>                         // for PathType, PathType::...
 #include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT
-#include <modules/python3/processors/numpyvolume.h>            // for NumPyVolume
 #include <modules/python3/processors/pythonscriptprocessor.h>  // for PythonScriptProcessor
 #include <modules/python3/pythoninterpreter.h>                 // for PythonInterpreter
 #include <modules/python3/pythonlogger.h>                      // for PythonLogger
@@ -130,7 +130,6 @@ Python3Module::Python3Module(InviwoApplication* app)
     registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerRAM2PyConverter>());
     registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerPy2RAMConverter>());
 
-    registerProcessor<NumPyVolume>();
     registerProcessor<PythonScriptProcessor>();
 
     // We need to import inviwopy to trigger the initialization code in inviwopy.cpp, this is needed
