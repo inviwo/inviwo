@@ -45,7 +45,6 @@
 #include <inviwo/core/util/logcentral.h>                       // for LogCentral, LogWarn
 #include <inviwo/core/util/pathtype.h>                         // for PathType, PathType::...
 #include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT
-#include <modules/python3/processors/numpymeshcreatetest.h>    // for NumPyMeshCreateTest
 #include <modules/python3/processors/numpyvolume.h>            // for NumPyVolume
 #include <modules/python3/processors/pythonscriptprocessor.h>  // for PythonScriptProcessor
 #include <modules/python3/pythoninterpreter.h>                 // for PythonInterpreter
@@ -132,7 +131,6 @@ Python3Module::Python3Module(InviwoApplication* app)
     registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerPy2RAMConverter>());
 
     registerProcessor<NumPyVolume>();
-    registerProcessor<NumPyMeshCreateTest>();
     registerProcessor<PythonScriptProcessor>();
 
     // We need to import inviwopy to trigger the initialization code in inviwopy.cpp, this is needed
