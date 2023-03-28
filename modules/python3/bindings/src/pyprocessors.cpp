@@ -46,7 +46,6 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <modules/python3/processors/pythonscriptprocessor.h>
 #include <modules/python3/processortrampoline.h>
 
 #include <warn/push>
@@ -333,9 +332,6 @@ void exposeProcessors(pybind11::module& m) {
                                 IVW_CONTEXT_CUSTOM("exposeProcessors"));
             }
         });
-
-    py::class_<PythonScriptProcessor, Processor>(m, "PythonScriptProcessor", py::dynamic_attr{})
-        .def("setInitializeResources", &PythonScriptProcessor::setInitializeResources)
-        .def("setProcess", &PythonScriptProcessor::setProcess);
 }
+
 }  // namespace inviwo
