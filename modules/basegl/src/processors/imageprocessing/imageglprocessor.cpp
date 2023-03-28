@@ -61,7 +61,7 @@ ImageGLProcessor::ImageGLProcessor(const std::string& fragmentShader, bool build
 ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
                                    bool buildShader)
     : Processor()
-    , inport_("inputImage", true)
+    , inport_("inputImage", "The input image"_help, OutportDeterminesSize::Yes)
     , outport_("outputImage", false)
     , dataFormat_(nullptr)
     , swizzleMask_(swizzlemasks::rgba)
@@ -71,6 +71,7 @@ ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmen
 
     addPort(inport_);
     addPort(outport_);
+    outport_.setHelp("The output image"_help);
 
     inport_.onChange([this]() {
         markInvalid();
@@ -138,6 +139,9 @@ void ImageGLProcessor::createCustomImage(const size2_t& dim, const DataFormatBas
         Image* img = new Image(dim, dataFormat);
         img->copyMetaDataFrom(*inport.getData());
         img->getColorLayer()->setSwizzleMask(swizzleMask);
+        img->getColorLayer()->setWrapping(inport.getData()->getColorLayer()->getWrapping());
+        img->getColorLayer()->setInterpolation(
+            inport.getData()->getColorLayer()->getInterpolation());
         outport.setData(img);
     } else if (outport.hasEditableData() &&
                outport.getData()->getColorLayer()->getSwizzleMask() != swizzleMask) {
@@ -149,15 +153,22 @@ void ImageGLProcessor::createDefaultImage(const size2_t& dim, ImageInport& inpor
                                           ImageOutport& outport) {
     const DataFormatBase* format = inport.getData()->getDataFormat();
 
-    const auto swizzleMask = inport.getData()->getColorLayer()->getSwizzleMask();
+    const Layer* colorLayer = inport.getData()->getColorLayer();
+    const auto swizzleMask = colorLayer->getSwizzleMask();
+    const auto wrapping = colorLayer->getWrapping();
+    const auto interpolation = colorLayer->getInterpolation();
 
     if (!outport.hasEditableData() || format != outport.getData()->getDataFormat() ||
         dim != outport.getData()->getDimensions() ||
-        swizzleMask != outport.getData()->getColorLayer()->getSwizzleMask()) {
+        swizzleMask != outport.getData()->getColorLayer()->getSwizzleMask() ||
+        wrapping != outport.getData()->getColorLayer()->getWrapping() ||
+        interpolation != outport.getData()->getColorLayer()->getInterpolation()) {
         Image* img = new Image(dim, format);
         img->copyMetaDataFrom(*inport.getData());
         // forward swizzle mask of the input
         img->getColorLayer()->setSwizzleMask(swizzleMask);
+        img->getColorLayer()->setWrapping(wrapping);
+        img->getColorLayer()->setInterpolation(interpolation);
 
         outport.setData(img);
     }

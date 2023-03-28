@@ -40,23 +40,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageNormalization, Image Normalization}
- * ![](org.inviwo.ImageNormalization.png?classIdentifier=org.inviwo.ImageNormalization)
- * Normalizes the rgb channels of an input image given a specific range.
- *
- * ### Inports
- *   * __inputImage__ Input image
- *
- * ### Outports
- *   * __outputImage__ Filtered input image
- *
- * ### Properties
- *   * __Normalize Channels Separately__ If true, each channel will be normalized on its own.
- * Otherwise the global min/max values are used for all channels.
- *   * __Centered at Zero__ Toggles normalization centered at zero to range [-max, max]
- *   * __Min value__ Min value of the input image (read-only)
- *   * __Max Value__ Max value of the input image (read-only)
- *
+/**
+ * \brief Normalizes the rgb channels of an input image given a specific range.
  */
 class IVW_MODULE_BASEGL_API ImageNormalizationProcessor : public ImageGLProcessor {
 public:
@@ -68,7 +53,6 @@ public:
 
 protected:
     virtual void preProcess(TextureUnitContainer& cont) override;
-    virtual void postProcess() override;
     void updateMinMax();
 
 private:

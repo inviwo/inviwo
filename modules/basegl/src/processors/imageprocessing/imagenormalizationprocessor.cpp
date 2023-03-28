@@ -72,15 +72,20 @@ const ProcessorInfo ImageNormalizationProcessor::processorInfo_{
     "Image Operation",                // Category
     CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
-};
+    R"(
+Normalizes the RGB channels of the input image given a specific range.
+)"_unindentHelp};
 const ProcessorInfo ImageNormalizationProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ImageNormalizationProcessor::ImageNormalizationProcessor()
     : ImageGLProcessor("img_normalize.frag")
-    , normalizeSeparately_("normalizeSeparately", "Normalize Channels Separately")
-    , zeroCentered_("zeroCentered", "Centered at Zero", false)
-    , minS_("min", "Min Value", "")
-    , maxS_("max", "Max Value", "")
+    , normalizeSeparately_("normalizeSeparately", "Normalize Channels Separately",
+                           "If true, each channel will be normalized on its own. "
+                           "Otherwise the global min/max values are used for all channels."_help)
+    , zeroCentered_("zeroCentered", "Centered at Zero",
+                    "Toggles normalization centered at zero to range [-max, max]"_help, false)
+    , minS_("min", "Min Value", "Min value of the input image (read-only)"_help, "")
+    , maxS_("max", "Max Value", "Max value of the input image (read-only)"_help, "")
     , min_(0.0)
     , max_(1.0) {
     minS_.setInvalidationLevel(InvalidationLevel::Valid);
@@ -133,10 +138,6 @@ void ImageNormalizationProcessor::preProcess(TextureUnitContainer&) {
     }
 }
 
-void ImageNormalizationProcessor::postProcess() {
-    outport_.getEditableData()->getColorLayer()->setSwizzleMask(
-        inport_.getData()->getColorLayer()->getSwizzleMask());
-}
 void ImageNormalizationProcessor::updateMinMax() {
     if (!inport_.hasData()) return;
 
