@@ -65,7 +65,7 @@ Example processor in python demonstrating the use of `inviwopy.data.Image`,
             im = im.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
 
             # create numpy representation and reshape image from (y, x, channels) to (x, y, channels)
-            npImgData = np.array(im).reshape((im.size[0], im.size[1], channels))            
+            npImgData = np.array(im).reshape((im.size[0], im.size[1], channels))
 
             # create a LayerPy representation
             layerpy = ivw.data.LayerPy(npImgData)
@@ -74,7 +74,7 @@ Example processor in python demonstrating the use of `inviwopy.data.Image`,
             # create a Layer from the representation
             layer = ivw.data.Layer(layerpy)
 
-            swizzleDict = { 
+            swizzleDict = {
                 1 : ivw.data.SwizzleMask.luminance, 
                 2 : ivw.data.SwizzleMask.luminanceAlpha,
                 3 : ivw.data.SwizzleMask.rgb,
