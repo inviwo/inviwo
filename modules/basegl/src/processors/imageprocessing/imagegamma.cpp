@@ -48,13 +48,13 @@ const ProcessorInfo ImageGamma::processorInfo_{"org.inviwo.ImageGamma",  // Clas
                                                CodeState::Stable,        // Code state
                                                Tags::GL,                 // Tags
                                                R"(
- Applies a gamma correction utilizing the `ImageGLProcessor` as follows
- ```
+Applies a gamma correction utilizing the `ImageGLProcessor` as follows
+```
     out.rgb = pow(in.rgb, gamma)
     out.a = in.a
 ```
 
- The input range is assumed to be normalized, that is [0, 1].
+The input range is assumed to be normalized, that is [0, 1].
     )"_unindentHelp};
 const ProcessorInfo ImageGamma::getProcessorInfo() const { return processorInfo_; }
 
