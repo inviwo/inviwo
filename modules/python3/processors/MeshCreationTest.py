@@ -42,8 +42,8 @@ See also [python3/processors/PythonMeshExample.py](file:///~modulePath~/processo
                 offset = -1
             elif(z > 0):
                 offset = -0.3
-            mesh.addVertex(vec3(x + 0.5 * z, y + offset + 0.3, z * 1.5),
-                           vec3(0, 0, 1), vec3(x, y, 0.5), self.color(z))
+            mesh.addVertex(ivw.glm.vec3(x + 0.5 * z, y + offset + 0.3, z * 1.5),
+                           ivw.glm.vec3(0, 0, 1), ivw.glm.vec3(x, y, 0.5), self.color(z))
 
         # generate indices for 3 quads
         index = 0
@@ -61,8 +61,8 @@ See also [python3/processors/PythonMeshExample.py](file:///~modulePath~/processo
         a = 0.75
         b = 0.1
         if depth < 0:
-            return vec4(1, b, b, 1)
+            return ivw.glm.vec4(1, b, b, 1)
         elif depth > 0:
-            return vec4(b, b, 1, a)
+            return ivw.glm.vec4(b, b, 1, a)
         else:
-            return vec4(b, 1, b, a)
+            return ivw.glm.vec4(b, 1, b, a)

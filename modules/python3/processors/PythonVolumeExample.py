@@ -10,7 +10,8 @@ class PythonVolumeExample(ivw.Processor):
         self.outport = ivw.data.VolumeOutport("outport")
         self.addOutport(self.outport, owner=False)
 
-        self.addProperty(ivw.properties.IntVec3Property("dim", "Dimensions", ivec3(5), ivec3(1), ivec3(20)))
+        self.addProperty(ivw.properties.IntVec3Property("dim", "Dimensions", 
+            ivw.glm.ivec3(5), ivw.glm.ivec3(1), ivw.glm.ivec3(20)))
 
         self.addProperty(ivw.properties.IntProperty("seed", "Random Seed", 546465,
             min=(0, ivw.properties.ConstraintBehavior.Immutable),

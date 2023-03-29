@@ -73,7 +73,7 @@ See also [python3/processors/PythonVolumeExample.py](file:///~modulePath~/proces
         volume.basis = ivw.glm.mat3(1)
         volume.offset = ivw.glm.vec3(-0.5, -0.5, -0.5)
 
-        volume.dataMap.dataRange = dvec2(0.0, npData.max())
-        volume.dataMap.valueRange = dvec2(0.0, npData.max())
+        volume.dataMap.dataRange = ivw.glm.dvec2(0.0, npData.max())
+        volume.dataMap.valueRange = ivw.glm.dvec2(0.0, npData.max())
 
         self.outport.setData(volume)
