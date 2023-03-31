@@ -88,7 +88,7 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     DataWriter::checkOverwrite(filePath, overwrite);
     DataWriter::checkOverwrite(rawPath, overwrite);
 
-    auto fileName = filesystem::getFileNameWithoutExtension(filePath);
+    auto fileName = filePath.stem().string();
     // Write the .dat file content
     std::stringstream ss;
     const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();

@@ -61,8 +61,8 @@ public:
     AutoSaver()
         : path_{filesystem::getPath(PathType::Settings)}
         , restored_{[this]() -> std::optional<std::string> {
-            if (filesystem::fileExists(path_ + "/autosave.inv")) {
-                auto ifstream = filesystem::ifstream(path_ + "/autosave.inv");
+            if (std::filesystem::is_regular_file(path_ / "autosave.inv")) {
+                auto ifstream = filesystem::ifstream(path_ / "autosave.inv");
                 std::stringstream buffer;
                 buffer << ifstream.rdbuf();
                 return std::move(buffer).str();
@@ -93,12 +93,11 @@ public:
                 if (str) {
                     {
                         // make sure we have closed the file _before_ we copy it.
-                        auto ofstream = filesystem::ofstream(path_ + "/autosave.inv.tmp");
+                        auto ofstream = filesystem::ofstream(path_ / "autosave.inv.tmp");
                         ofstream << *str;
                     }
 
-                    std::filesystem::path base{path_};
-                    std::filesystem::copy(base / "autosave.inv.tmp", base / "autosave.inv",
+                    std::filesystem::copy(path_ / "autosave.inv.tmp", path_ / "autosave.inv",
                                           std::filesystem::copy_options::overwrite_existing);
                 }
             }
@@ -121,7 +120,7 @@ public:
     }
 
 private:
-    std::string path_;
+    std::filesystem::path path_;
     std::optional<std::string> restored_;
     std::atomic<bool> quit_;
     std::condition_variable condition_;

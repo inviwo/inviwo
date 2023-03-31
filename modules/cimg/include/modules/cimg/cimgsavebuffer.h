@@ -107,41 +107,41 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
 
     auto safeExt = SafeCStr(extension);
     const char* ext = safeExt.c_str();
-    if (!cimg_library::cimg::strcasecmp(ext, "cpp") ||
-        !cimg_library::cimg::strcasecmp(ext, "hpp") || !cimg_library::cimg::strcasecmp(ext, "h") ||
-        !cimg_library::cimg::strcasecmp(ext, "c"))
+    if (!cimg_library::cimg::strcasecmp(ext, ".cpp") ||
+        !cimg_library::cimg::strcasecmp(ext, ".hpp") ||
+        !cimg_library::cimg::strcasecmp(ext, ".h") || !cimg_library::cimg::strcasecmp(ext, ".c"))
         return img.save_cpp(handle);
 
     // 2d binary formats
-    else if (!cimg_library::cimg::strcasecmp(ext, "bmp"))
+    else if (!cimg_library::cimg::strcasecmp(ext, ".bmp"))
         return img.save_bmp(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, "jpg") ||
-             !cimg_library::cimg::strcasecmp(ext, "jpeg") ||
-             !cimg_library::cimg::strcasecmp(ext, "jpe") ||
-             !cimg_library::cimg::strcasecmp(ext, "jfif") ||
-             !cimg_library::cimg::strcasecmp(ext, "jif"))
+    else if (!cimg_library::cimg::strcasecmp(ext, ".jpg") ||
+             !cimg_library::cimg::strcasecmp(ext, ".jpeg") ||
+             !cimg_library::cimg::strcasecmp(ext, ".jpe") ||
+             !cimg_library::cimg::strcasecmp(ext, ".jfif") ||
+             !cimg_library::cimg::strcasecmp(ext, ".jif"))
         return img.save_jpeg(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, "rgb"))
+    else if (!cimg_library::cimg::strcasecmp(ext, ".rgb"))
         return img.save_rgb(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, "rgba"))
+    else if (!cimg_library::cimg::strcasecmp(ext, ".rgba"))
         return img.save_rgba(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, "pgm") ||
-             !cimg_library::cimg::strcasecmp(ext, "ppm") ||
-             !cimg_library::cimg::strcasecmp(ext, "pnm"))
+    else if (!cimg_library::cimg::strcasecmp(ext, ".pgm") ||
+             !cimg_library::cimg::strcasecmp(ext, ".ppm") ||
+             !cimg_library::cimg::strcasecmp(ext, ".pnm"))
         return img.save_pnm(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, "pnk"))
+    else if (!cimg_library::cimg::strcasecmp(ext, ".pnk"))
         return img.save_pnk(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, "pfm"))
+    else if (!cimg_library::cimg::strcasecmp(ext, ".pfm"))
         return img.save_pfm(handle);
     // these do not provide a FILE* stream interface:
-    // else if (!cimg_library::cimg::strcasecmp(ext, "exr"))
+    // else if (!cimg_library::cimg::strcasecmp(ext, ".exr"))
     //    return img.save_exr(handle);
-    // else if (!cimg_library::cimg::strcasecmp(ext, "tif") || !cimg_library::cimg::strcasecmp(ext,
-    // "tiff"))
+    // else if (!cimg_library::cimg::strcasecmp(ext, ".tif") || !cimg_library::cimg::strcasecmp(ext,
+    // ".tiff"))
     //    return img.save_tiff(handle);
 
     // 3d binary formats
-    else if (!cimg_library::cimg::strcasecmp(ext, "raw"))
+    else if (!cimg_library::cimg::strcasecmp(ext, ".raw"))
         return img.save_raw(handle);
     else
         throw cimg_library::CImgIOException("unsupported format");

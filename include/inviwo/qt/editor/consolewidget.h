@@ -45,6 +45,7 @@
 #include <warn/pop>
 
 #include <chrono>
+#include <filesystem>
 
 class QLabel;
 class QKeyEvent;
@@ -60,7 +61,8 @@ namespace inviwo {
 class MenuItem;
 class InviwoMainWindow;
 
-struct LogTableModelEntry {
+class LogTableModelEntry {
+public:
     enum class ColumnID {
         Date = 0,
         Time,
@@ -74,19 +76,33 @@ struct LogTableModelEntry {
         Message
     };
 
-    std::chrono::system_clock::time_point time;
-    std::string source;
-    LogLevel level;
-    LogAudience audience;
-    std::string fileName;
-    int lineNumber;
-    std::string functionName;
-    std::string message;
+    LogTableModelEntry(std::chrono::system_clock::time_point time, std::string_view source,
+                       LogLevel level, LogAudience audience, const std::filesystem::path& file,
+                       int line, std::string_view function, std::string_view msg);
 
-    std::string getDate() const;
-    std::string getTime() const;
     static constexpr size_t size() { return 10; }
-    QStandardItem* get(ColumnID ind) const;
+    QList<QStandardItem*> items();
+    QStandardItem* header();
+    LogLevel level;
+
+private:
+    QStandardItem* header_;
+    QStandardItem* date_;
+    QStandardItem* time_;
+    QStandardItem* source_;
+    QStandardItem* level_;
+    QStandardItem* audience_;
+    QStandardItem* path_;
+    QStandardItem* file_;
+    QStandardItem* line_;
+    QStandardItem* function_;
+    QStandardItem* message_;
+
+    static std::string getDate(std::chrono::system_clock::time_point time);
+    static std::string getTime(std::chrono::system_clock::time_point time);
+
+    static const QFont& logFont();
+    static const std::pair<int, int>& lineHeightAndMargin();
 };
 
 class IVW_QTEDITOR_API TextSelectionDelegate : public QItemDelegate {
@@ -121,14 +137,7 @@ public:
     void log(LogTableModelEntry entry);
 
 private:
-    QColor infoTextColor_ = {153, 153, 153};
-    QColor warnTextColor_ = {221, 165, 8};
-    QColor errorTextColor_ = {255, 107, 107};
-
     LogModel model_;
-    QFont logFont_;
-    int lineHeight_;
-    int margin_;
 };
 
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {

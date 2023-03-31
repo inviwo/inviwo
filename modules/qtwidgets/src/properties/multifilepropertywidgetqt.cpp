@@ -107,9 +107,9 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, this, [&]() {
-        auto fileName = (!property_->get().empty() ? property_->get().front() : "");
-        auto dir = filesystem::directoryExists(fileName) ? fileName
-                                                         : filesystem::getFileDirectory(fileName);
+        const auto fileName = (!property_->get().empty() ? property_->get().front() : "");
+        const auto dir =
+            std::filesystem::is_directory(fileName) ? fileName : fileName.parent_path();
 
         QDesktopServices::openUrl(
             QUrl(QString::fromStdString("file:///" + dir.string()), QUrl::TolerantMode));
@@ -197,7 +197,7 @@ void MultiFilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
 
                             case FileMode::Directory:
                             case FileMode::DirectoryOnly: {
-                                if (filesystem::directoryExists(file)) {
+                                if (std::filesystem::is_directory(file)) {
                                     event->accept();
                                     return;
                                 }

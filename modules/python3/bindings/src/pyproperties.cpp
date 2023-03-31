@@ -54,6 +54,7 @@
 #include <inviwo/core/datastructures/tfprimitive.h>
 
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 #include <pybind11/functional.h>
 #include <fmt/format.h>
 

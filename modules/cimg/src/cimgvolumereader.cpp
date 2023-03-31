@@ -88,10 +88,10 @@ std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
 
     std::filesystem::path fileName = sourceFile_;
 
-    if (!filesystem::fileExists(fileName)) {
+    if (!std::filesystem::is_regular_file(fileName)) {
         const auto newPath = filesystem::addBasePath(fileName);
 
-        if (filesystem::fileExists(newPath)) {
+        if (std::filesystem::is_regular_file(newPath)) {
             fileName = newPath;
         } else {
             throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
@@ -115,10 +115,10 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
 
     std::filesystem::path fileName = sourceFile_;
 
-    if (!filesystem::fileExists(fileName)) {
+    if (!std::filesystem::is_regular_file(fileName)) {
         const auto newPath = filesystem::addBasePath(fileName);
 
-        if (filesystem::fileExists(newPath)) {
+        if (std::filesystem::is_regular_file(newPath)) {
             fileName = newPath;
         } else {
            throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);

@@ -99,7 +99,8 @@ public:
      * 'geometry', etc.
      * @see FileProperty
      */
-    DataSource(DataReaderFactory* rf = util::getDataReaderFactory(), std::string_view filePath = "",
+    DataSource(DataReaderFactory* rf = util::getDataReaderFactory(),
+               const std::filesystem::path& filePath = {},
                std::string_view contentType = FileProperty::defaultContentType);
     virtual ~DataSource() = default;
 
@@ -128,10 +129,11 @@ private:
 };
 
 template <typename DataType, typename PortType>
-DataSource<DataType, PortType>::DataSource(DataReaderFactory* rf, std::string_view filePath,
+DataSource<DataType, PortType>::DataSource(DataReaderFactory* rf,
+                                           const std::filesystem::path& aFilePath,
                                            std::string_view content)
     : Processor()
-    , filePath{"filename", "File", filePath, content}
+    , filePath{"filename", "File", aFilePath, content}
     , extensions{"reader", "Data Reader"}
     , reload{"reload", "Reload data",
              [this]() {
@@ -142,20 +144,20 @@ DataSource<DataType, PortType>::DataSource(DataReaderFactory* rf, std::string_vi
     , port_{"data"} {
 
     addPort(port_);
-    addProperties(this->filePath, extensions, reload);
+    addProperties(filePath, extensions, reload);
 
-    util::updateFilenameFilters<DataType>(*rf_, this->filePath, extensions);
-    util::updateReaderFromFile(this->filePath, extensions);
+    util::updateFilenameFilters<DataType>(*rf_, filePath, extensions);
+    util::updateReaderFromFile(filePath, extensions);
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() {
-        return !loadingFailed_ && filesystem::fileExists(this->filePath.get()) &&
+        return !loadingFailed_ && std::filesystem::is_regular_file(filePath.get()) &&
                !extensions.getSelectedValue().empty();
     });
-    this->filePath.onChange([this]() {
+    filePath.onChange([this]() {
         loadingFailed_ = false;
-        util::updateReaderFromFile(this->filePath, extensions);
+        util::updateReaderFromFile(filePath, extensions);
         isReady_.update();
     });
     extensions.onChange([this]() {

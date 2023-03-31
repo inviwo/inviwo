@@ -49,7 +49,7 @@ std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(
     const std::filesystem::path& filePath) {
     checkExists(filePath);
 
-    auto dir = filesystem::getFileDirectory(filePath);
+    auto dir = filePath.parent_path();
 
     std::vector<std::string> filenames;
     Deserializer d(filePath);

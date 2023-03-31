@@ -37,6 +37,8 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/isovaluecollection.h>
 
+#include <pybind11/stl/filesystem.h>
+
 namespace inviwo {
 
 // Allow overriding virtual functions from Python

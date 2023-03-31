@@ -128,11 +128,11 @@ VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() {
         if (inputType_ == InputType::SingleFile) {
-            return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+            return !loadingFailed_ && std::filesystem::is_regular_file(file_.get()) &&
                    !reader_.getSelectedValue().empty();
         } else {
             return !loadingFailed_ &&
-                   filesystem::fileExists(getFirstFileInFolder(folder_, filter_));
+                   std::filesystem::is_regular_file(getFirstFileInFolder(folder_, filter_));
         }
     });
 

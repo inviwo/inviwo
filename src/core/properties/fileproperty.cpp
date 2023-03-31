@@ -136,13 +136,13 @@ void FileProperty::serialize(Serializer& s) const {
     std::filesystem::path ivwdataRelativePath;
 
     if (!absolutePath.empty()) {
-        auto workspacePath = filesystem::getFileDirectory(s.getFileName());
-        if (!workspacePath.empty() && filesystem::sameDrive(workspacePath, absolutePath)) {
-            workspaceRelativePath = filesystem::getRelativePath(workspacePath, absolutePath);
+        auto workspacePath = s.getFileName().parent_path();
+        if (!workspacePath.empty() && workspacePath.root_name() == absolutePath.root_name()) {
+            workspaceRelativePath = std::filesystem::relative(absolutePath, workspacePath);
         }
         auto ivwdataPath = filesystem::getPath(PathType::Data);
-        if (!ivwdataPath.empty() && filesystem::sameDrive(ivwdataPath, absolutePath)) {
-            ivwdataRelativePath = filesystem::getRelativePath(ivwdataPath, absolutePath);
+        if (!ivwdataPath.empty() && ivwdataPath.root_name() == absolutePath.root_name()) {
+            ivwdataRelativePath = std::filesystem::relative(absolutePath, ivwdataPath);
         }
     }
 
@@ -171,7 +171,7 @@ void FileProperty::deserialize(Deserializer& d) {
     d.deserialize("url", oldWorkspacePath);
 
     if (!oldWorkspacePath.empty()) {  // fallback if the old value "url" is used
-        if (filesystem::isAbsolutePath(oldWorkspacePath)) {
+        if (oldWorkspacePath.is_absolute()) {
             if (absolutePath.empty()) {  // on use url if "absolutePath" is not set
                 absolutePath = oldWorkspacePath;
             }
@@ -183,17 +183,19 @@ void FileProperty::deserialize(Deserializer& d) {
         }
     }
 
-    const auto workspacePath = filesystem::getFileDirectory(d.getFileName());
+    const auto workspacePath = d.getFileName().parent_path();
     const auto ivwdataPath = filesystem::getPath(PathType::Data);
 
     const auto workspaceBasedPath =
-        filesystem::getCanonicalPath(workspacePath / workspaceRelativePath);
-    const auto ivwdataBasedPath = filesystem::getCanonicalPath(ivwdataPath / ivwdataRelativePath);
+        std::filesystem::weakly_canonical(workspacePath / workspaceRelativePath);
+    const auto ivwdataBasedPath =
+        std::filesystem::weakly_canonical(ivwdataPath / ivwdataRelativePath);
 
     // Prefer the relative paths to make relocation easier.
-    if (!ivwdataRelativePath.empty() && filesystem::fileExists(ivwdataBasedPath)) {
+    if (!ivwdataRelativePath.empty() && std::filesystem::is_regular_file(ivwdataBasedPath)) {
         set(ivwdataBasedPath);
-    } else if (!workspaceRelativePath.empty() && filesystem::fileExists(workspaceBasedPath)) {
+    } else if (!workspaceRelativePath.empty() &&
+               std::filesystem::is_regular_file(workspaceBasedPath)) {
         set(workspaceBasedPath);
     } else {
         set(absolutePath);

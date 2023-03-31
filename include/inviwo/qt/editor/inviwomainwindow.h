@@ -83,23 +83,23 @@ public:
      *
      * @return true if the example was opened, otherwise false.
      */
-    bool openExample(QString exampleFileName);
+    bool openExample(const std::filesystem::path& exampleFileName);
 
-    void openLastWorkspace(std::string workspace = "");
+    void openLastWorkspace(const std::filesystem::path& workspace = {});
     /**
      * loads the given workspace.
      *
      * @return true if the workspace was opened, otherwise false.
      */
-    bool openWorkspace(QString workspaceFileName);
+    bool openWorkspace(const std::filesystem::path& workspaceFileName);
 
     /**
      * loads the given workspace. In case there are unsaved changes, the user will be asked to save
      * or discard them, or cancel the loading.
      * @return true if the workspace was opened, otherwise false.
      */
-    bool openWorkspaceAskToSave(QString workspaceFileName);
-    std::string getCurrentWorkspace();
+    bool openWorkspaceAskToSave(const std::filesystem::path& workspaceFileName);
+    const std::filesystem::path& getCurrentWorkspace();
 
     NetworkEditor* getNetworkEditor() const;
     NetworkEditorView& getNetworkEditorView() const;
@@ -200,16 +200,16 @@ private:
      * @return true if the workspace was opened, otherwise false.
      * @see askToSaveWorkspaceChanges
      */
-    bool openWorkspace(QString workspaceFileName, bool isExample);
+    bool openWorkspace(const std::filesystem::path& workspaceFileName, bool isExample);
 
     /**
      * saves the current workspace to the given \p workspaceFileName.
      * @return true if the workspace was saved, otherwise false.
      */
-    bool saveWorkspace(QString workspaceFileName);
-    void appendWorkspace(const QString& workspaceFileName);
+    bool saveWorkspace(const std::filesystem::path& workspaceFileName);
+    void appendWorkspace(const std::filesystem::path& workspaceFileName);
 
-    std::optional<QString> askForWorkspaceToOpen();
+    std::optional<std::filesystem::path> askForWorkspaceToOpen();
 
     void addActions();
 
@@ -218,16 +218,16 @@ private:
     void saveWindowState();
     void loadWindowState();
 
-    void saveSnapshots(std::string path, std::string fileName);
-    void getScreenGrab(std::string path, std::string fileName);
+    void saveSnapshots(const std::filesystem::path& path, std::string_view fileName);
+    void getScreenGrab(const std::filesystem::path& path, std::string_view fileName);
 
-    void addToRecentWorkspaces(QString workspaceFileName);
+    void addToRecentWorkspaces(const std::filesystem::path& workspaceFileName);
 
     /**
      * \brief update Qt settings for recent workspaces with internal status
      */
     void saveRecentWorkspaceList(const QStringList& list);
-    void setCurrentWorkspace(QString workspaceFileName);
+    void setCurrentWorkspace(const std::filesystem::path& workspaceFileName);
 
     void updateWindowTitle();
 
@@ -247,8 +247,9 @@ private:
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
-    WelcomeWidget* welcomeWidget_ =
-        nullptr;  ///< Use delayed initialization as it can be expensive.
+
+    ///< Use delayed initialization as it can be expensive.
+    WelcomeWidget* welcomeWidget_ = nullptr;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
 
@@ -265,11 +266,10 @@ private:
     bool maximized_;
 
     // paths
-    const QString untitledWorkspaceName_;
-    QString rootDir_;
-    QString workspaceFileDir_;
-    QString currentWorkspaceFileName_;
-    QString workspaceOnLastSuccessfulExit_;
+    std::filesystem::path untitledWorkspaceName_;
+    std::filesystem::path workspaceFileDir_;
+    std::filesystem::path currentWorkspaceFileName_;
+    std::filesystem::path workspaceOnLastSuccessfulExit_;
 
     // command line switches
     TCLAP::ValueArg<std::string> snapshotArg_;

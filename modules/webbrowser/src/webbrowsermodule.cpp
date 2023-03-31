@@ -71,10 +71,6 @@
 #include <type_traits>  // for make_unsigned_t
 #include <utility>      // for move
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include "include/cef_app.h"
-#include "include/cef_parser.h"
 #include <glm/fwd.hpp>                 // for dquat, fquat
 #include <glm/gtc/type_precision.hpp>  // for i64
 #include <glm/mat2x2.hpp>              // for operator+
@@ -83,8 +79,14 @@
 #include <glm/vec2.hpp>                // for operator+
 #include <glm/vec3.hpp>                // for operator+
 #include <glm/vec4.hpp>                // for operator+
-#include <include/cef_base.h>          // for CefSettings
 
+#include <fmt/std.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include "include/cef_app.h"
+#include "include/cef_parser.h"
+#include <include/cef_base.h>  // for CefSettings
 #include <warn/pop>
 
 namespace inviwo {
@@ -185,9 +187,9 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     }
     // CEF initialization
     // Specify the path for the sub-process executable.
-    auto exeExtension = filesystem::getFileExtension(filesystem::getExecutablePath());
+    auto exeExtension = filesystem::getExecutablePath().extension();
     // Assume that inviwo_web_helper is next to the main executable
-    auto exeDirectory = filesystem::getFileDirectory(filesystem::getExecutablePath());
+    auto exeDirectory = filesystem::getExecutablePath().parent_path();
 
     auto locale = app->getUILocale().name();
     if (locale == "C") {
@@ -201,7 +203,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     // Find CEF framework and helper app in
     // exe.app/Contents/Frameworks directory first
-    auto cefParentDir = filesystem::getCanonicalPath(exeDirectory / "..");
+    auto cefParentDir = std::filesystem::weakly_canonical(exeDirectory / "..");
     auto frameworkDirectory = cefParentDir / "Frameworks/Chromium Embedded Framework.framework";
     auto frameworkPath = frameworkDirectory / "Chromium Embedded Framework";
     // Load the CEF framework library at runtime instead of linking directly
@@ -251,9 +253,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     CefSettings settings;
     // Non-mac systems uses a single helper executable so here we can specify name
     // Linux will have empty extension
-    auto subProcessExecutable =
-        exeDirectory /
-        fmt::format("{}{}{}", "cef_web_helper", exeExtension.empty() ? "" : ".", exeExtension);
+    auto subProcessExecutable = exeDirectory / fmt::format("{}{}", "cef_web_helper", exeExtension);
     if (!filesystem::fileExists(subProcessExecutable)) {
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }

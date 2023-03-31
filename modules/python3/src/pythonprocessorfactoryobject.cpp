@@ -128,7 +128,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
             const auto endl = script.find_first_of('\n');
             return trim(script.substr(nameLabel.size(), endl - nameLabel.size()));
         } else {
-            return filesystem::getFileNameWithoutExtension(file).string();
+            return file.stem().string();
         }
     }();
 
@@ -139,7 +139,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
             const auto missingModule = e.value().attr("name").cast<std::string>();
             throw Exception(
                 IVW_CONTEXT_CUSTOM("Python"),
-                "Failed to load python processor: '{}' due to missing module: '{}'. File: '{}'",
+                "Failed to load python processor: '{}' due to missing module: '{}'. File: {}",
                 name, missingModule, file);
         } else if (e.matches(PyExc_SyntaxError)) {
             const auto filename = e.value().attr("filename").cast<std::string>();
@@ -160,12 +160,12 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
 
         } else {
             throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                            "Failed to load python processor: '{}'. File: '{}'\n{}", name, file,
+                            "Failed to load python processor: '{}'. File: {}\n{}", name, file,
                             e.what());
         }
     } catch (const std::exception& e) {
         throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                        "Failed to load python processor: '{}'. File: '{}'\n{}", name, file,
+                        "Failed to load python processor: '{}'. File: {}\n{}", name, file,
                         e.what());
     }
 
@@ -180,7 +180,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
         return {p, name, file};
     } catch (const std::exception& e) {
         throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                        "Failed to get ProcessorInfo for python processor: '{}'. File: '{}'\n{}",
+                        "Failed to get ProcessorInfo for python processor: '{}'. File: {}\n{}",
                         name, file, e.what());
     }
 }

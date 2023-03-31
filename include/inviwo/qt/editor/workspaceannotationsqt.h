@@ -39,6 +39,7 @@
 #include <warn/pop>
 
 #include <vector>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -48,7 +49,7 @@ public:
     WorkspaceAnnotationsQt(const QImage& network,
                            const std::vector<std::pair<std::string, QImage>>& canvasImages,
                            InviwoApplication* app = util::getInviwoApplication());
-    WorkspaceAnnotationsQt(std::string_view path,
+    WorkspaceAnnotationsQt(const std::filesystem::path& path,
                            InviwoApplication* app = util::getInviwoApplication());
 
     virtual ~WorkspaceAnnotationsQt() = default;
@@ -65,7 +66,7 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    static QStringList workspaceProcessors(std::string_view path,
+    static QStringList workspaceProcessors(const std::filesystem::path& path,
                                            InviwoApplication* app = util::getInviwoApplication());
 
 private:

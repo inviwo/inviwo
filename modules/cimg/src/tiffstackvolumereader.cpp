@@ -97,10 +97,10 @@ std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresenta
     const VolumeRepresentation& src) const {
     auto fileName = sourceFile_;
 
-    if (!filesystem::fileExists(fileName)) {
+    if (!std::filesystem::is_regular_file(fileName)) {
         const auto newPath = filesystem::addBasePath(fileName);
 
-        if (filesystem::fileExists(newPath)) {
+        if (std::filesystem::is_regular_file(newPath)) {
             fileName = newPath;
         } else {
             throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
@@ -123,10 +123,10 @@ void TIFFStackVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepres
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     std::string fileName = sourceFile_;
-    if (!filesystem::fileExists(fileName)) {
+    if (!std::filesystem::is_regular_file(fileName)) {
         const auto newPath = filesystem::addBasePath(fileName);
 
-        if (filesystem::fileExists(newPath)) {
+        if (std::filesystem::is_regular_file(newPath)) {
             fileName = newPath;
         } else {
             throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);

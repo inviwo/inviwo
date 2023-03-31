@@ -253,7 +253,7 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
         [presets, addPresetActions]() {
             for (const auto& im : InviwoApplication::getPtr()->getModules()) {
                 auto moduleTFPath = im->getPath(ModulePath::TransferFunctions);
-                if (!filesystem::directoryExists(moduleTFPath)) continue;
+                if (!std::filesystem::is_directory(moduleTFPath)) continue;
                 addPresetActions(moduleTFPath);
             }
 

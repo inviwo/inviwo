@@ -92,7 +92,7 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& filePath)
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() {
-        return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+        return !loadingFailed_ && std::filesystem::is_regular_file(file_.get()) &&
                !reader_.getSelectedValue().empty();
     });
     file_.onChange([this]() {

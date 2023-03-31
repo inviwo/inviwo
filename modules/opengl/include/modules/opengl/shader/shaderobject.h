@@ -49,6 +49,7 @@
 #include <unordered_map>  // for unordered_map
 #include <utility>        // for move, pair, forward
 #include <vector>         // for vector
+#include <filesystem>
 
 namespace inviwo {
 
@@ -105,9 +106,9 @@ public:
 
     ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource);
     ShaderObject(std::shared_ptr<const ShaderResource> resource);
-    ShaderObject(ShaderType shaderType, std::string fileName);
-    ShaderObject(std::string fileName);
-    ShaderObject(GLenum shaderType, std::string fileName);
+    ShaderObject(ShaderType shaderType, std::string_view fileName);
+    ShaderObject(std::string_view fileName);
+    ShaderObject(GLenum shaderType, std::string_view fileName);
 
     ShaderObject(const ShaderObject& rhs) = delete;
     ShaderObject(ShaderObject&& rhs) noexcept;
@@ -247,7 +248,7 @@ public:
     std::shared_ptr<Callback> onChange(T&& callback);
 
 private:
-    static std::shared_ptr<const ShaderResource> loadResource(std::string fileName);
+    static std::shared_ptr<const ShaderResource> loadResource(std::string_view fileName);
     void addDefines(std::ostringstream& source);
     void parseSource(std::ostringstream& output);
     std::string resolveLog(std::string_view compileLog) const;

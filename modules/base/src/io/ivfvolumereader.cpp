@@ -66,7 +66,7 @@ IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*th
 
 std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& filePath) {
     checkExists(filePath);
-    const auto fileDirectory = filesystem::getFileDirectory(filePath);
+    const auto fileDirectory = filePath.parent_path();
 
     Deserializer d(filePath);
 

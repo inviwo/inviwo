@@ -38,6 +38,7 @@
 #include <unordered_map>
 #include <ctime>
 #include <filesystem>
+#include <chrono>
 
 namespace inviwo {
 
@@ -71,7 +72,7 @@ private:
     InviwoApplication* app_;
     // Need to be pointer since we cannot initialize the observer before the application.
     std::unique_ptr<Observer> observer_;
-    std::unordered_map<std::filesystem::path, std::time_t, PathHash> observing_;
+    std::unordered_map<std::filesystem::path, std::filesystem::file_time_type, PathHash> observing_;
 };
 
 }  // namespace inviwo

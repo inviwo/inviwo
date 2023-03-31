@@ -160,7 +160,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                     if (auto module = app->getModuleByIdentifier(modulename)) {
                         const auto regressiondir = module->getPath(ModulePath::RegressionTests);
                         const auto testdir = regressiondir / lname;
-                        if (filesystem::directoryExists(testdir)) {
+                        if (std::filesystem::is_directory(testdir)) {
                             LogErrorCustom(
                                 "ToolMenu",
                                 "Dir: \"" << testdir << "\" already exits. use a different name");

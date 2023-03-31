@@ -82,8 +82,6 @@
 #include <inviwo/qt/editor/linkdraghelper.h>
 #include <inviwo/qt/editor/subpropertyselectiondialog.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QApplication>
 #include <QClipboard>
 #include <QGraphicsItem>
@@ -95,7 +93,8 @@
 #include <QMimeData>
 #include <QMargins>
 #include <QGraphicsView>
-#include <warn/pop>
+
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -109,7 +108,6 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     , processorItem_(nullptr)
     , mainwindow_(mainwindow)
     , network_(mainwindow->getInviwoApplication()->getProcessorNetwork())
-    , filename_("")
     , modified_(false)
     , backgroundVisible_(true)
     , adjustSceneToChange_(true) {
@@ -138,8 +136,6 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
         }
     });
 }
-
-const std::string& NetworkEditor::getCurrentFilename() const { return filename_; }
 
 ProcessorNetwork* NetworkEditor::getNetwork() const { return network_; }
 InviwoMainWindow* NetworkEditor::getMainWindow() const { return mainwindow_; }
@@ -755,7 +751,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     util::stripIdentifier(p->getDisplayName()),
                     [&](std::string_view name) {
                         auto path = compDir / fmt::format("{}.inv", name);
-                        return !filesystem::fileExists(path);
+                        return !std::filesystem::is_regular_file(path);
                     },
                     "");
                 filesystem::createDirectoryRecursively(compDir);
@@ -968,7 +964,7 @@ void NetworkEditor::paste(QByteArray mimeData) {
     }
 }
 
-void NetworkEditor::append(std::string_view workspace) {
+void NetworkEditor::append(const std::filesystem::path& workspace) {
     NetworkLock lock(network_);
     try {
         const auto added =
@@ -990,9 +986,8 @@ void NetworkEditor::append(std::string_view workspace) {
         }
 
     } catch (const Exception& e) {
-        util::log(e.getContext(),
-                  fmt::format("Unable to append network {} due to {}", workspace, e.getMessage()),
-                  LogLevel::Error);
+        util::logError(e.getContext(), "Unable to append network {} due to {}", workspace,
+                       e.getMessage());
     }
 
 }  // namespace inviwo
@@ -1001,9 +996,6 @@ void NetworkEditor::selectAll() {
     for (auto i : items()) i->setSelected(true);
 }
 
-////////////////////////
-//   HELPER METHODS   //
-////////////////////////
 QPointF NetworkEditor::snapToGrid(QPointF pos) {
     QPointF result;
 

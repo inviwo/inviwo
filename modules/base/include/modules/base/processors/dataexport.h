@@ -82,7 +82,7 @@ template <typename DataType, typename PortType>
 DataExport<DataType, PortType>::DataExport(InviwoApplication* app,
                                            const std::filesystem::path& file,
                                            std::string_view contentType)
-    : DataExport{util::getDataWriterFactory(app), filePath, contentType} {}
+    : DataExport{util::getDataWriterFactory(app), file, contentType} {}
 
 template <typename DataType, typename PortType>
 DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, const std::filesystem::path& file,
@@ -90,7 +90,7 @@ DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, const std::fil
     : Processor()
     , wf_{wf}
     , port_{"data", "The data to export"_help}
-    , file_{"file", "File name", "The file path to save data to"_help, filePath, contentType}
+    , file_{"file", "File name", "The file path to save data to"_help, file, contentType}
     , export_{"export", "Export", "Save data to disk"_help}
     , overwrite_{"overwrite", "Overwrite", "Overwrite any existing data in file"_help, false} {
 
@@ -133,8 +133,8 @@ void DataExport<DataType, PortType>::exportData() {
         try {
             writer->setOverwrite(overwrite_ ? Overwrite::Yes : Overwrite::No);
             writer->writeData(data, file_.get());
-            util::log(IVW_CONTEXT, "Data exported to disk: " + file_.get().string(), LogLevel::Info,
-                      LogAudience::User);
+            util::log(IVW_CONTEXT, "Data exported to disk: {}" + file_.get().string(),
+                      LogLevel::Info, LogAudience::User);
 
             // update widgets as the file might now exist
             file_.clearInitiatingWidget();
