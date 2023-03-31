@@ -402,7 +402,6 @@ HelpBrowser::HelpBrowser(HelpWidget* parent, InviwoApplication* app)
     : QTextBrowser(parent), app_(app) {
     setReadOnly(true);
     setUndoRedoEnabled(false);
-    setContextMenuPolicy(Qt::NoContextMenu);
     setAcceptRichText(false);
     setOpenExternalLinks(true);
 
@@ -464,8 +463,8 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
         }
     }
 
-    if (filesystem::fileExists(filePath)) {
-        if (filesystem::getFileExtension(filePath) == "inv") {
+    if (std::filesystem::is_regular_file(filePath)) {
+        if (filePath.extension() == ".inv") {
             try {
                 util::appendProcessorNetwork(app_->getProcessorNetwork(), filePath, app_);
             } catch (const Exception& e) {

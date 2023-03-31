@@ -146,9 +146,9 @@ void* SharedLibrary::findSymbol(const std::string& name) {
 
 std::set<std::string> SharedLibrary::libraryFileExtensions() {
 #if WIN32
-    return {"dll"};
+    return {".dll"};
 #else
-    return {"so", "dylib", "bundle"};
+    return {".so", ".dylib", "bundle"};
 #endif
 }
 

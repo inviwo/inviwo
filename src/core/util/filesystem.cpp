@@ -145,7 +145,7 @@ fs::path getWorkingDirectory() {
     if (!getcwd(workingDir.data(), workingDir.size()))
         throw Exception("Error querying current directory",
                         IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
-    return cleanupPath(std::string(workingDir.data()));
+    return fs::path(workingDir.data());
 #endif
 }
 
@@ -241,7 +241,7 @@ fs::path getInviwoBinDir() {
     });
 
     if (it != allLibs.end()) {
-        return getFileDirectory(*it);
+        return it->parent_path();
     } else {
         throw Exception("Error retrieving inviwo-core path",
                         IVW_CONTEXT_CUSTOM("filesystem::getInviwoBinDir"));
@@ -538,14 +538,14 @@ fs::path findBasePath() {
     if (appUrlRef) {
         CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
         const char* filePath = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
-        std::string macPath(filePath);
+        fs::path macPath(filePath);
         // Release references
         CFRelease(filePathRef);
         CFRelease(appUrlRef);
 
-        if (directoryExists(macPath)) {
+        if (fs::is_directory(macPath)) {
             // remove "data"
-            return macPath.substr(0, macPath.rfind("/data"));
+            return macPath.parent_path();
         }
     }
 #endif

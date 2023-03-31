@@ -108,7 +108,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , filelogger_{[&]() {
         if (commandLineParser_->getLogToFile()) {
             auto filename = commandLineParser_->getLogToFileFileName();
-            if (!filesystem::isAbsolutePath(filename)) {
+            if (!filename.is_absolute()) {
                 auto outputDir = commandLineParser_->getOutputPath();
                 if (!outputDir.empty()) {
                     filename = outputDir / filename;
@@ -116,9 +116,9 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
                     filename = filesystem::getWorkingDirectory() / filename;
                 }
             }
-            auto dir = filesystem::getFileDirectory(filename);
-            if (!filesystem::directoryExists(dir)) {
-                filesystem::createDirectoryRecursively(dir);
+            auto dir = filename.parent_path();
+            if (!std::filesystem::is_directory(dir)) {
+                std::filesystem::create_directories(dir);
             }
             auto flog = std::make_shared<FileLogger>(filename);
             LogCentral::getPtr()->registerLogger(flog);

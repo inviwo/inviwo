@@ -47,8 +47,8 @@ namespace inviwo {
 
 void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data,
                                         const std::filesystem::path& filePath) const {
-    auto name = filesystem::getFileNameWithoutExtension(filePath).string();
-    auto path = filesystem::getFileDirectory(filePath);
+    auto name = filePath.stem().string();
+    auto path = filePath.parent_path();
     return writeData(data, name, path);
 }
 

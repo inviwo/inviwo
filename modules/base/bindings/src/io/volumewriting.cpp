@@ -37,6 +37,7 @@
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -45,16 +46,17 @@ void exposeVolumeWriteMethods(pybind11::module& m) {
     m.def("saveDatVolume", &util::writeDatVolume);
     m.def("saveIvfVolume", &util::writeIvfVolume);
     m.def("saveIvfVolumeSequence", &util::writeIvfVolumeSequence);
-    m.def("saveIvfVolumeSequence", [](pybind11::list list, std::string name, std::string path,
-                                      std::string relativePathToTimeSteps, bool overwrite) {
-        VolumeSequence seq;
-        for (auto&& v : list) {
-            seq.push_back(v.cast<std::shared_ptr<Volume>>());
-        }
+    m.def("saveIvfVolumeSequence",
+          [](pybind11::list list, const std::string_view name, const std::filesystem::path& path,
+             std::string relativePathToTimeSteps, bool overwrite) {
+              VolumeSequence seq;
+              for (auto&& v : list) {
+                  seq.push_back(v.cast<std::shared_ptr<Volume>>());
+              }
 
-        return util::writeIvfVolumeSequence(seq, name, path, relativePathToTimeSteps,
-                                            overwrite ? Overwrite::Yes : Overwrite::No);
-    });
+              return util::writeIvfVolumeSequence(seq, name, path, relativePathToTimeSteps,
+                                                  overwrite ? Overwrite::Yes : Overwrite::No);
+          });
 }
 
 }  // namespace inviwo

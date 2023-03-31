@@ -49,7 +49,7 @@ namespace inviwo {
 namespace utilqt {
 
 EditorFileObserver::EditorFileObserver(QWidget* parent, const QString& title,
-                                       const std::string filename)
+                                       const std::filesystem::path& filename)
     : QObject(parent), FileObserver(util::getInviwoApplication()), parent_(parent), title_(title) {
     if (parent_) {
         parent_->installEventFilter(this);
@@ -67,7 +67,7 @@ void EditorFileObserver::suspendObservingFile() { stopAllObservation(); }
 
 void EditorFileObserver::ignoreNextUpdate() { ignoreNextUpdate_ = true; }
 
-void EditorFileObserver::setFileName(const std::string& filename) {
+void EditorFileObserver::setFileName(const std::filesystem::path& filename) {
     if (filename_ == filename) {
         return;
     }
@@ -76,7 +76,7 @@ void EditorFileObserver::setFileName(const std::string& filename) {
     startFileObservation(filename_);
 }
 
-const std::string& EditorFileObserver::getFileName() const { return filename_; }
+const std::filesystem::path& EditorFileObserver::getFileName() const { return filename_; }
 
 void EditorFileObserver::setModifiedCallback(std::function<void(bool)> cb) {
     modifiedCallback_ = cb;
@@ -112,9 +112,9 @@ void EditorFileObserver::queryReloadFile() {
     if (widgetIsFocused() && fileChangedInBackground_ && !reloadQueryInProgress_) {
         reloadQueryInProgress_ = true;
         std::string msg = fmt::format(
-            "The file '{}' has been modified outside of Inwivo, do you want to reload its "
+            "The file {} has been modified outside of Inwivo, do you want to reload its "
             "contents?",
-            filesystem::getFileNameWithExtension(filename_));
+            filename_.stem());
 
         QMessageBox msgBox(QMessageBox::Question, title_, utilqt::toQString(msg),
                            QMessageBox::Yes | QMessageBox::No, parent_);

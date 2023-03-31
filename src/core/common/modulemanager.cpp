@@ -119,8 +119,8 @@ std::function<bool(std::string_view)> ModuleManager::getEnabledFilter() {
     // Load enabled modules if file "application_name-enabled-modules.txt" exists,
     // otherwise load all modules
 
-    const auto exeName = filesystem::getFileNameWithoutExtension(filesystem::getExecutablePath());
-    const auto exepath = filesystem::getFileDirectory(filesystem::getExecutablePath());
+    const auto exeName = filesystem::getExecutablePath().stem();
+    const auto exepath = filesystem::getExecutablePath().parent_path();
 
     const auto enabledModuleFileName = exeName.string() + "-enabled-modules.txt";
 
@@ -130,7 +130,7 @@ std::function<bool(std::string_view)> ModuleManager::getEnabledFilter() {
 #else
     std::filesystem::path enabledModulesFilePath(exepath / enabledModuleFileName);
 #endif
-    if (!filesystem::fileExists(enabledModulesFilePath)) {
+    if (!std::filesystem::is_regular_file(enabledModulesFilePath)) {
         return [](std::string_view) { return true; };
     }
 
@@ -180,8 +180,8 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
 
     auto libraryTypes = SharedLibrary::libraryFileExtensions();
     // Remove unsupported files and files belonging to already loaded modules.
-    std::erase_if(libraryFiles, [&](const auto& file) {
-        return libraryTypes.count(filesystem::getFileExtension(file)) == 0 ||
+    std::erase_if(libraryFiles, [&](const std::filesystem::path& file) {
+        return !libraryTypes.contains(file.extension()) ||
                (file.string().find("inviwo-module") == std::string::npos &&
                 file.string().find("inviwo-core") == std::string::npos) ||
                isModuleLibraryLoaded(file) || !isEnabled(util::stripModuleFileNameDecoration(file));
@@ -190,7 +190,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
     const auto tmpDir = [&]() -> std::string {
         if (isRuntimeModuleReloadingEnabled()) {
             const auto tmp = filesystem::getInviwoUserSettingsPath() / "temporary-module-libraries";
-            if (!filesystem::directoryExists(tmp)) {
+            if (!std::filesystem::is_directory(tmp)) {
                 filesystem::createDirectoryRecursively(tmp);
             }
             return tmp;
@@ -201,15 +201,16 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
 
     std::vector<std::pair<std::filesystem::path, std::filesystem::path>> tmpLibraryFiles;
     std::transform(libraryFiles.begin(), libraryFiles.end(), std::back_inserter(tmpLibraryFiles),
-                   [&](const std::string& filePath)
+                   [&](const std::filesystem::path& filePath)
                        -> std::pair<std::filesystem::path, std::filesystem::path> {
                        if (isRuntimeModuleReloadingEnabled()) {
-                           auto dstPath = tmpDir / filesystem::getFileNameWithExtension(filePath);
-                           if (filesystem::fileModificationTime(filePath) !=
-                               filesystem::fileModificationTime(dstPath)) {
+                           auto dstPath = tmpDir / filePath.stem();
+                           if (std::filesystem::last_write_time(filePath) !=
+                               std::filesystem::last_write_time(dstPath)) {
                                // Load a copy of the file to make sure that we can overwrite the
                                // file.
-                               if (!filesystem::copyFile(filePath, dstPath)) {
+                               std::error_code ec;
+                               if (!std::filesystem::copy_file(filePath, dstPath, ec)) {
                                    LogWarn("Unable to write temporary file " << dstPath);
                                    return {filePath, filePath};
                                }

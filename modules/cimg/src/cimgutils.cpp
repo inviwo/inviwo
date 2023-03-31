@@ -171,6 +171,11 @@ namespace inviwo {
 
 namespace cimgutil {
 
+std::unordered_map<std::string, DataFormatId> extToBaseTypeMap_ = {{".jpg", DataFormatId::UInt8},
+                                                                   {".jpeg", DataFormatId::UInt8},
+                                                                   {".bmp", DataFormatId::UInt8},
+                                                                   {".exr", DataFormatId::Float32},
+                                                                   {".hdr", DataFormatId::Float32}};
 namespace detail {
 
 cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType type) {
@@ -186,11 +191,6 @@ cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType ty
 
 }  // namespace detail
 
-std::unordered_map<std::string, DataFormatId> extToBaseTypeMap_ = {{"jpg", DataFormatId::UInt8},
-                                                                   {"jpeg", DataFormatId::UInt8},
-                                                                   {"bmp", DataFormatId::UInt8},
-                                                                   {"exr", DataFormatId::Float32},
-                                                                   {"hdr", DataFormatId::Float32}};
 
 ////////////////////// Templates ///////////////////////////////////////////////////
 
@@ -324,8 +324,8 @@ struct CImgSaveLayerDispatcher {
     using type = void;
     template <typename Result, typename T>
     void operator()(const std::filesystem::path& filePath, const LayerRAM* inputLayer) {
-        const std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
-        const bool isJpeg = (fileExtension == "jpg") || (fileExtension == "jpeg");
+        const auto fileExtension = toLower(filePath.extension().string());
+        const bool isJpeg = (fileExtension == ".jpg") || (fileExtension == ".jpeg");
         const bool skipAlpha = isJpeg && ((T::comp == 2) || (T::comp == 4));
         auto img = LayerToCImg<typename T::type>::convert(inputLayer, true, skipAlpha);
 
@@ -334,7 +334,7 @@ struct CImgSaveLayerDispatcher {
         const DataFormatBase* outFormat = DataFloat32::get();
         if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
             outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
-        } else if ((fileExtension == "tif") || (fileExtension == "tiff")) {
+        } else if ((fileExtension == ".tif") || (fileExtension == ".tiff")) {
             // use the same data format as the input. TIFF supports 8 and 16 bit integer formats as
             // well as 32 bit floating point
             const size_t maxPrecision =
@@ -389,7 +389,7 @@ struct CImgSaveLayerToBufferDispatcher {
     template <typename Result, typename T>
     type operator()(const LayerRAM* inputLayer, std::string_view extension) {
         const std::string fileExtension = toLower(extension);
-        const bool isJpeg = (fileExtension == "jpg") || (fileExtension == "jpeg");
+        const bool isJpeg = (fileExtension == ".jpg") || (fileExtension == ".jpeg");
         const bool skipAlpha = isJpeg && ((T::comp == 2) || (T::comp == 4));
         auto img = LayerToCImg<typename T::type>::convert(inputLayer, true, skipAlpha);
 
@@ -483,7 +483,7 @@ struct CImgLoadVolumeDispatcher {
 
 void* loadLayerData(void* dst, const std::filesystem::path& filePath, uvec2& dimensions,
                     DataFormatId& formatId, bool rescaleToDim) {
-    std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
+    std::string fileExtension = toLower(filePath.extension().string());
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
     } else {
@@ -497,7 +497,7 @@ void* loadLayerData(void* dst, const std::filesystem::path& filePath, uvec2& dim
 
 void* loadVolumeData(void* dst, const std::filesystem::path& filePath, size3_t& dimensions,
                      DataFormatId& formatId) {
-    std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
+    std::string fileExtension = toLower(filePath.extension().string());
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
     } else {

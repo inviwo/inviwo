@@ -79,7 +79,7 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     DataWriter::checkOverwrite(filePath, overwrite);
     DataWriter::checkOverwrite(rawPath, overwrite);
 
-    const auto fileName = filesystem::getFileNameWithoutExtension(filePath);
+    const auto fileName = filePath.stem().string();
     const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();
     Serializer s(filePath);
     s.serialize("RawFile", fmt::format("{}.raw", fileName));
@@ -114,7 +114,7 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
                    glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSize());
     } else {
         throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeIvfVolume"),
-                                  "Could not write to raw file: {}", rawPath );
+                                  "Could not write to raw file: {}", rawPath);
     }
 }
 }  // namespace util

@@ -101,7 +101,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     , argHolder_{app, pythonScriptArg_,
                  [this]() {
                      auto filename = pythonScriptArg_.getValue();
-                     if (!filesystem::fileExists(filename)) {
+                     if (!std::filesystem::is_regular_file(filename)) {
                          LogWarn("Could not run script, file does not exist: " << filename);
                          return;
                      }

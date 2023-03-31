@@ -37,6 +37,7 @@
 
 #include <memory>  // for unique_ptr
 #include <string>  // for string
+#include <filesystem>
 #include <fmt/std.h>
 
 namespace inviwo {
@@ -70,7 +71,7 @@ public:
 
     virtual Document getMetaInformation() const override {
         Document doc;
-        doc.append("a", "", {{"href", fmt::format("file:///{}", file_)}})
+        doc.append("a", "", {{"href", fmt::format("file:///{}", file_.string())}})
             .append("b", file_.string());
         return doc;
     }

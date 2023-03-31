@@ -67,7 +67,7 @@ void Settings::load() {
     util::KeepTrueWhileInScope guard{&isDeserializing_};
     auto filename = getFileName();
 
-    if (filesystem::fileExists(filename)) {
+    if (std::filesystem::is_regular_file(filename)) {
         // An error is not critical as the default setting will be used.
         try {
             Deserializer d(filename);

@@ -272,16 +272,17 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         {  // left column: workspace filter, list of recently used workspaces, and examples
             auto loadFile = [this](const QString& filename, bool isExample) {
                 auto action = util::getModifierAction(QApplication::keyboardModifiers());
+                std::filesystem::path file{utilqt::fromQString(filename)};
                 switch (action) {
                     case ModifierAction::AppendWorkspace:
-                        emit appendWorkspace(filename);
+                        emit appendWorkspace(file);
                         break;
                     case ModifierAction::OpenWithPath:
-                        emit loadWorkspace(filename, false);
+                        emit loadWorkspace(file, false);
                         break;
                     case ModifierAction::None:
                     default:
-                        emit loadWorkspace(filename, isExample);
+                        emit loadWorkspace(file, isExample);
                         break;
                 }
             };
@@ -293,12 +294,13 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 if (index.isValid()) {
                     const auto filename = utilqt::getData(index, Role::FilePath).toString();
                     const auto isExample = utilqt::getData(index, Role::isExample).toBool();
+                    std::filesystem::path file{utilqt::fromQString(filename)};
 
                     QObject::connect(
                         loadWorkspaceBtn_, &QToolButton::clicked, this,
-                        [this, filename, isExample]() { emit loadWorkspace(filename, isExample); });
+                        [this, file, isExample]() { emit loadWorkspace(file, isExample); });
                     QObject::connect(appendWorkspaceBtn_, &QToolButton::clicked, this,
-                                     [this, filename]() { emit appendWorkspace(filename); });
+                                     [this, file]() { emit appendWorkspace(file); });
                 }
             };
 
@@ -649,7 +651,7 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
             if (auto wsIndex = filterModel_->index(number, 0, selIndex); wsIndex.isValid()) {
                 const auto filename = utilqt::getData(wsIndex, Role::FilePath).toString();
                 const auto isExample = utilqt::getData(wsIndex, Role::isExample).toBool();
-                emit loadWorkspace(filename, isExample);
+                emit loadWorkspace(std::filesystem::path{utilqt::fromQString(filename)}, isExample);
             }
             event->accept();
         }

@@ -77,10 +77,10 @@ void DemoController::setFileOptions() {
     int invNum = 0;
     for (size_t elIdx = 0; elIdx < elements.size(); ++elIdx) {
         auto& elem = elements[elIdx];
-        std::string ext = filesystem::getFileExtension(elem);
+        std::string ext = elem.extension();
         ext = toLower(ext);
-        if (ext.compare("inv") == 0) {  // Found a workspace
-            auto cleanName = filesystem::getFileNameWithoutExtension(elem);
+        if (ext.compare(".inv") == 0) {  // Found a workspace
+            auto cleanName = elem.stem();
             auto cleanNameExt = util::stripIdentifier(elem.string());
             demoFile_.addOption(cleanNameExt, cleanName.string(), invNum++);
         }

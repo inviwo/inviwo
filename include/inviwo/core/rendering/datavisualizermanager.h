@@ -75,7 +75,8 @@ public:
      * \brief Get a list of Data Visualizers supporting the file extension of the supplied string.
      * @param pathOrExtension Path to file, or simply the extension.
      */
-    std::vector<DataVisualizer*> getDataVisualizersForFile(std::string_view pathOrExtension) const;
+    std::vector<DataVisualizer*> getDataVisualizersForFile(
+        const std::filesystem::path& pathOrExtension) const;
 
     /**
      * Get a list of Data Visualizers supporting the supplied outport.

@@ -92,7 +92,7 @@ DatVolumeSequenceReader* DatVolumeSequenceReader::clone() const {
 std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader::readData(
     const std::filesystem::path& filePath) {
 
-    const auto fileDirectory = filesystem::getFileDirectory(filePath);
+    const auto fileDirectory = filePath.parent_path();
 
     // Read the dat file content
     auto f = open(filePath);
@@ -311,7 +311,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         for (size_t t = 0; t < state.datFiles.size(); ++t) {
             auto datVolReader = std::make_unique<DatVolumeSequenceReader>();
             datVolReader->enableLogOutput_ = false;
-            auto path = filesystem::isAbsolutePath(state.datFiles[t])
+            auto path = state.datFiles[t].is_absolute()
                             ? state.datFiles[t]
                             : fileDirectory / state.datFiles[t];
             auto v = datVolReader->readData(path);

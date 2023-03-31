@@ -141,7 +141,7 @@ void CompositeProcessor::saveSubNetwork(const std::filesystem::path& file) {
 ProcessorNetwork& CompositeProcessor::getSubNetwork() { return *subNetwork_; }
 
 void CompositeProcessor::loadSubNetwork(const std::filesystem::path& file) {
-    if (filesystem::fileExists(file)) {
+    if (std::filesystem::is_regular_file(file)) {
         subNetwork_->clear();
         auto wm = app_->getWorkspaceManager();
         auto ifs = filesystem::ifstream(file);

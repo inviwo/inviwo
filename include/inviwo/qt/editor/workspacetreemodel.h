@@ -73,7 +73,7 @@ class IVW_QTEDITOR_API WorkspaceInfoLoader
 #include <warn/pop>
 public:
     WorkspaceInfoLoader() = default;
-    WorkspaceInfoLoader(std::string_view filename, InviwoApplication* app)
+    WorkspaceInfoLoader(const std::filesystem::path& filename, InviwoApplication* app)
         : filename_{filename}, app_{app} {}
 
     void operator()();
@@ -83,7 +83,7 @@ signals:
     void workspaceInfoLoaded(WorkspaceInfo info);
 
 private:
-    std::string filename_;
+    std::filesystem::path filename_;
     InviwoApplication* app_;
     std::once_flag flag_;
 };

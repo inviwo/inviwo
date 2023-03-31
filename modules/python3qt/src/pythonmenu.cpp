@@ -130,7 +130,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
 
             if (saveFileDialog.exec()) {
                 QString qpath = saveFileDialog.selectedFiles().at(0);
-                const auto path = utilqt::fromQString(qpath);
+                const std::filesystem::path path = utilqt::fromQString(qpath);
 
                 const auto templatePath = pymodule->getPath() / "templates/templateprocessor.py";
 
@@ -139,7 +139,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
                 ss << ifs.rdbuf();
                 const auto script = std::move(ss).str();
 
-                const auto name = filesystem::getFileNameWithoutExtension(path);
+                const auto name = path.stem();
 
                 auto ofs = filesystem::ofstream(path);
                 fmt::print(ofs, fmt::runtime(script), fmt::arg("name", name));

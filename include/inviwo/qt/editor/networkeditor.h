@@ -49,6 +49,8 @@
 #include <QMimeData>
 #include <warn/pop>
 
+#include <filesystem>
+
 namespace inviwo {
 
 class Inport;
@@ -94,11 +96,10 @@ public:
     QByteArray copy() const;
     QByteArray cut();
     void paste(QByteArray data);
-    void append(std::string_view workspace);
+    void append(const std::filesystem::path& workspace);
     void selectAll();
     void deleteSelection();
 
-    const std::string& getCurrentFilename() const;
     ProcessorNetwork* getNetwork() const;
     InviwoMainWindow* getMainWindow() const;
     TextLabelOverlay& getOverlay() const;
@@ -242,7 +243,6 @@ private:
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;
     static const int gridSpacing_;
-    std::string filename_;
     bool modified_;
     bool backgroundVisible_;
 

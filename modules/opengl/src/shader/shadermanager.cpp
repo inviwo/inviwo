@@ -94,9 +94,11 @@ int ShaderManager::getGlobalGLSLVersion() {
     return glCaps->getCurrentShaderVersion().getVersion();
 }
 
-const std::vector<std::string>& ShaderManager::getShaderSearchPaths() { return shaderSearchPaths_; }
+const std::vector<std::filesystem::path>& ShaderManager::getShaderSearchPaths() {
+    return shaderSearchPaths_;
+}
 
-void ShaderManager::addShaderSearchPath(std::string shaderSearchPath) {
+void ShaderManager::addShaderSearchPath(const std::filesystem::path& shaderSearchPath) {
     if (!addShaderSearchPathImpl(shaderSearchPath)) {
         LogWarn("Failed to add shader search path: " << shaderSearchPath);
     }
@@ -142,19 +144,17 @@ std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string_vie
         }
     }
 
-    if (filesystem::fileExists(key)) {
+    if (std::filesystem::is_regular_file(key)) {
         auto resource = std::make_shared<FileShaderResource>(key, key);
         shaderResources_.emplace(key, resource);
         return resource;
     }
 
-    auto it2 = util::find_if(shaderSearchPaths_, [&](const std::string& path) {
-        return filesystem::fileExists(fmt::format("{}/{}", path, key));
+    auto it2 = util::find_if(shaderSearchPaths_, [&](const std::filesystem::path& path) {
+        return std::filesystem::is_regular_file(path / key);
     });
     if (it2 != shaderSearchPaths_.end()) {
-        const std::string file = fmt::format("{}/{}", *it2, key);
-
-        auto resource = std::make_shared<FileShaderResource>(key, file);
+        auto resource = std::make_shared<FileShaderResource>(key, *it2 / key);
         shaderResources_.emplace(key, resource);
         return resource;
     }
@@ -179,8 +179,8 @@ void ShaderManager::rebuildAllShaders() {
     LogInfo("Rebuild of all shaders completed");
 }
 
-bool ShaderManager::addShaderSearchPathImpl(const std::string& shaderSearchPath) {
-    if (filesystem::directoryExists(shaderSearchPath)) {
+bool ShaderManager::addShaderSearchPathImpl(const std::filesystem::path& shaderSearchPath) {
+    if (std::filesystem::is_directory(shaderSearchPath)) {
         shaderSearchPaths_.push_back(shaderSearchPath);
         return true;
     }

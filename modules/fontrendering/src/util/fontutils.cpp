@@ -49,7 +49,7 @@ namespace font {
 std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
     const std::filesystem::path& fontPath) {
 
-    const std::vector<std::string> supportedExt = {"ttf", "otf", "cff", "pcf"};
+    const std::vector<std::string> supportedExt = {".ttf", ".otf", ".cff", ".pcf"};
 
     const std::filesystem::path path = (fontPath.empty() ? getDefaultFontPath() : fontPath);
 
@@ -57,8 +57,8 @@ std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
     auto fonts = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
 
     // remove unsupported files
-    std::erase_if(fonts, [supportedExt](const auto& str) {
-        return !util::contains(supportedExt, filesystem::getFileExtension(str));
+    std::erase_if(fonts, [supportedExt](const std::filesystem::path& font) {
+        return !util::contains(supportedExt, font.extension().string());
     });
 
     // sort file names case insensitive
@@ -85,12 +85,11 @@ std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
 
     std::vector<std::pair<std::string, std::filesystem::path>> result;
     // create readable font names from file names and add full path to each file
-    std::transform(
-        fonts.begin(), fonts.end(), std::back_inserter(result),
-        [path,
-         makeReadable](const std::string& str) -> std::pair<std::string, std::filesystem::path> {
-            return {makeReadable(filesystem::getFileNameWithoutExtension(str)), path / str};
-        });
+    std::transform(fonts.begin(), fonts.end(), std::back_inserter(result),
+                   [path, makeReadable](const std::filesystem::path& str)
+                       -> std::pair<std::string, std::filesystem::path> {
+                       return {makeReadable(str.stem()), path / str};
+                   });
 
     return result;
 }

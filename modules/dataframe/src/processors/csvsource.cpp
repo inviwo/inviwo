@@ -123,7 +123,7 @@ CSVSource::CSVSource(const std::string& file)
     excludeFilters_.setCollapsed(true);
 
     isReady_.setUpdate(
-        [this]() { return !loadingFailed_ && filesystem::fileExists(inputFile_.get()); });
+        [this]() { return !loadingFailed_ && std::filesystem::is_regular_file(inputFile_.get()); });
     for (auto&& item :
          util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_,
                              firstColumnIsIndices_, unitsInHeaders_, unitRegexp_, doublePrecision_,
