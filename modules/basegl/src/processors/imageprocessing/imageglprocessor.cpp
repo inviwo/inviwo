@@ -55,6 +55,42 @@ namespace inviwo {
 class DataFormatBase;
 class ShaderResource;
 
+namespace detail {
+
+void syncMetaDataAndColorLayerState(ImageInport& inport, Image* dstImage,
+                                    std::optional<SwizzleMask> swizzleMask = std::nullopt) {
+    const auto srcImage = inport.getData();
+    const auto srcColorLayer = srcImage->getColorLayer();
+    auto dstColorLayer = dstImage->getColorLayer();
+
+    dstImage->copyMetaDataFrom(*srcImage);
+
+    dstColorLayer->setSwizzleMask(swizzleMask.value_or(srcColorLayer->getSwizzleMask()));
+    dstColorLayer->setWrapping(inport.getData()->getColorLayer()->getWrapping());
+    dstColorLayer->setInterpolation(inport.getData()->getColorLayer()->getInterpolation());
+}
+
+bool equalColorLayerState(ImageInport& inport, ImageOutport& outport,
+                          std::optional<SwizzleMask> swizzleMask = std::nullopt) {
+    const auto source = inport.getData()->getColorLayer();
+    auto dest = outport.getData()->getColorLayer();
+
+    return swizzleMask.value_or(source->getSwizzleMask()) == dest->getSwizzleMask() &&
+           source->getWrapping() == dest->getWrapping() &&
+           source->getInterpolation() == dest->getInterpolation();
+}
+
+bool needsNewImage(ImageInport& inport, ImageOutport& outport, const size2_t& dstDim,
+                   const DataFormatBase* dstDataFormat,
+                   std::optional<SwizzleMask> swizzleMask = std::nullopt) {
+
+    return dstDataFormat != outport.getData()->getDataFormat() ||
+           dstDim != outport.getData()->getDimensions() ||
+           !equalColorLayerState(inport, outport, swizzleMask);
+}
+
+}  // namespace detail
+
 ImageGLProcessor::ImageGLProcessor(const std::string& fragmentShader, bool buildShader)
     : ImageGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
 
@@ -93,10 +129,15 @@ void ImageGLProcessor::process() {
         internalInvalid_ = false;
 
         const size2_t dim(calcOutputDimensions());
-        if (dataFormat_) {
-            createCustomImage(dim, dataFormat_, swizzleMask_, inport_, outport_);
-        } else {
-            createDefaultImage(dim, inport_, outport_);
+        auto dataformat = getDestinationDataFormat();
+        auto swizzlemask = getDestinationSwizzleMask();
+
+        if (!outport_.hasEditableData() ||
+            detail::needsNewImage(inport_, outport_, dim, dataformat, swizzlemask)) {
+            Image* img = new Image(dim, dataformat);
+            detail::syncMetaDataAndColorLayerState(inport_, img, swizzlemask);
+
+            outport_.setData(img);
         }
     }
 
@@ -130,50 +171,6 @@ void ImageGLProcessor::postProcess() {}
 
 void ImageGLProcessor::afterInportChanged() {}
 
-void ImageGLProcessor::createCustomImage(const size2_t& dim, const DataFormatBase* dataFormat,
-                                         const SwizzleMask& swizzleMask, ImageInport& inport,
-                                         ImageOutport& outport) {
-
-    if (!outport.hasEditableData() || dataFormat != outport.getData()->getDataFormat() ||
-        dim != outport.getData()->getDimensions()) {
-        Image* img = new Image(dim, dataFormat);
-        img->copyMetaDataFrom(*inport.getData());
-        img->getColorLayer()->setSwizzleMask(swizzleMask);
-        img->getColorLayer()->setWrapping(inport.getData()->getColorLayer()->getWrapping());
-        img->getColorLayer()->setInterpolation(
-            inport.getData()->getColorLayer()->getInterpolation());
-        outport.setData(img);
-    } else if (outport.hasEditableData() &&
-               outport.getData()->getColorLayer()->getSwizzleMask() != swizzleMask) {
-        outport.getEditableData()->getColorLayer()->setSwizzleMask(swizzleMask);
-    }
-}
-
-void ImageGLProcessor::createDefaultImage(const size2_t& dim, ImageInport& inport,
-                                          ImageOutport& outport) {
-    const DataFormatBase* format = inport.getData()->getDataFormat();
-
-    const Layer* colorLayer = inport.getData()->getColorLayer();
-    const auto swizzleMask = colorLayer->getSwizzleMask();
-    const auto wrapping = colorLayer->getWrapping();
-    const auto interpolation = colorLayer->getInterpolation();
-
-    if (!outport.hasEditableData() || format != outport.getData()->getDataFormat() ||
-        dim != outport.getData()->getDimensions() ||
-        swizzleMask != outport.getData()->getColorLayer()->getSwizzleMask() ||
-        wrapping != outport.getData()->getColorLayer()->getWrapping() ||
-        interpolation != outport.getData()->getColorLayer()->getInterpolation()) {
-        Image* img = new Image(dim, format);
-        img->copyMetaDataFrom(*inport.getData());
-        // forward swizzle mask of the input
-        img->getColorLayer()->setSwizzleMask(swizzleMask);
-        img->getColorLayer()->setWrapping(wrapping);
-        img->getColorLayer()->setInterpolation(interpolation);
-
-        outport.setData(img);
-    }
-}
-
 size2_t ImageGLProcessor::calcOutputDimensions() const {
     size2_t dimensions;
     if (outport_.isHandlingResizeEvents() || !inport_.isOutportDeterminingSize()) {
@@ -182,6 +179,24 @@ size2_t ImageGLProcessor::calcOutputDimensions() const {
         dimensions = inport_.getData()->getDimensions();
     }
     return dimensions;
+}
+
+const DataFormatBase* ImageGLProcessor::getDestinationDataFormat() const {
+    if (dataFormat_) {
+        return dataFormat_;
+    } else if (inport_.hasData()) {
+        return inport_.getData()->getDataFormat();
+    }
+    return DataVec4UInt8::get();
+}
+
+SwizzleMask ImageGLProcessor::getDestinationSwizzleMask() const {
+    if (dataFormat_) {
+        return swizzleMask_;
+    } else if (inport_.hasData()) {
+        return inport_.getData()->getColorLayer()->getSwizzleMask();
+    }
+    return swizzlemasks::rgba;
 }
 
 }  // namespace inviwo

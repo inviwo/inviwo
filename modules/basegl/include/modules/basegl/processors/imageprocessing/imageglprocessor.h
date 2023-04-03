@@ -89,13 +89,9 @@ protected:
      */
     virtual void afterInportChanged();
 
-    static void createCustomImage(const size2_t& dim, const DataFormatBase* dataFormat,
-                                  const SwizzleMask& swizzleMask, ImageInport& inport,
-                                  ImageOutport& outport);
-
-    static void createDefaultImage(const size2_t& dim, ImageInport& inport, ImageOutport& outport);
-
     size2_t calcOutputDimensions() const;
+    const DataFormatBase* getDestinationDataFormat() const;
+    SwizzleMask getDestinationSwizzleMask() const;
 
     ImageInport inport_;
     ImageOutport outport_;
