@@ -297,6 +297,7 @@ private:
     };
     VisibleWidgets visibleWidgetState_;  //!< holds all processor and dock widgets that were visible
                                          //!< before showing the welcome widget
+    WorkspaceManager::ClearHandle visibleWidgetsClearHandle_;
 };
 
 }  // namespace inviwo
