@@ -270,7 +270,7 @@ void AnimationViewQt::wheelEvent(QWheelEvent* e) {
 }
 
 void AnimationViewQt::setTimelinePos(double x) {
-    const auto time = mapToScene(x, 0).x() / static_cast<double>(widthPerSecond);
+    const auto time = mapToScene(static_cast<int>(x), 0).x() / static_cast<double>(widthPerSecond);
     controller_.eval(controller_.getCurrentTime(), Seconds(time));
 }
 

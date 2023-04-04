@@ -124,7 +124,7 @@ OrientationIndicator::OrientationIndicator()
 }
 
 void OrientationIndicator::process() {
-    if (!mesh_ || axisScale_.isModified(), radius_.isModified()) {
+    if (!mesh_ || axisScale_.isModified() || radius_.isModified()) {
         updateMesh();
     }
 

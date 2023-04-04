@@ -114,6 +114,7 @@ void DemoController::onChangeSelection(Offset offset) {
             break;
         case Offset::Last:
             nextFileIndex = numFiles - 1;
+            break;
         default:
             return;
     }

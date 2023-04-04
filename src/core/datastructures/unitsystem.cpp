@@ -132,7 +132,7 @@ std::unordered_map<units::detail::unit_data, std::vector<UnitDesc>> util::getUni
     Unit unit, const unitgroups::EnabledGroups& enabledGroups) {
 
     std::unordered_map<units::detail::unit_data, std::vector<UnitDesc>> groups;
-    for (const auto& [enabled, group] : util::zip(enabledGroups, unitgroups::groups)) {
+    for (auto&& [enabled, group] : util::zip(enabledGroups, unitgroups::groups)) {
         if (!enabled) continue;
         for (const auto& desc : group.units) {
             if (isSubset(desc.unit.base_units(), unit.base_units()) &&
