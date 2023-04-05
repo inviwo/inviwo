@@ -59,8 +59,8 @@ See [python3/pythonvolume.inv](file:~modulePath~/data/workspaces/pythonvolume.in
         volume.basis = ivw.glm.mat3(1)
         volume.offset = ivw.glm.vec3(-0.5, -0.5, -0.5)
 
-        volume.dataMap.dataRange = dvec2(0.0, 1.0)
-        volume.dataMap.valueRange = dvec2(0.0, 1.0)
+        volume.dataMap.dataRange = ivw.glm.dvec2(0.0, 1.0)
+        volume.dataMap.valueRange = ivw.glm.dvec2(0.0, 1.0)
 
         self.outport.setData(volume)
 
