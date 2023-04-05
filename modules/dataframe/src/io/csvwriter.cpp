@@ -70,7 +70,7 @@ std::unique_ptr<std::vector<unsigned char>> CSVWriter::writeDataToBuffer(
     const DataFrame* data, std::string_view /*fileExtension*/) const {
     std::stringstream ss;
     writeData(data, ss);
-    auto stringData = move(ss).str();
+    auto stringData = std::move(ss).str();
     return std::make_unique<std::vector<unsigned char>>(stringData.begin(), stringData.end());
 }
 

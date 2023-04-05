@@ -39,14 +39,14 @@
 #include <modules/glfw/glfwuserdata.h>                     // for GLFWUserData, GLFWUserDataId
 
 #include <cctype>   // for toupper
-#include <codecvt>  // for codecvt_utf8
-#include <locale>   // for wstring_convert
 #include <utility>  // for move
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>   // for glfwGetWindowSize, GLFWwindow
 #include <flags/flags.h>  // for none
 #include <glm/vec2.hpp>   // for vec<>::(anonymous), operator/
+#include <utf8/core.h>
+#include <utf8/checked.h>
 
 namespace inviwo {
 
@@ -120,14 +120,9 @@ void GLFWWindowEventManager::keyboard(GLFWwindow* window, int key, int scancode,
 void GLFWWindowEventManager::character(GLFWwindow* window, unsigned int character) {
     auto self = GLFWUserData::get<GLFWWindowEventManager>(window, GLFWUserDataId::Interaction);
 
-    // Convert UTF32 character
-#if _MSC_VER
-    // Linker error when using char16_t in visual studio
-    // https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
-    auto text = std::wstring_convert<std::codecvt_utf8<uint32_t>, uint32_t>{}.to_bytes(character);
-#else
-    auto text = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(character);
-#endif
+    // Convert event character from utf-32 to utf-8
+    std::u32string input = {character};
+    auto text = utf8::utf32to8(input);
 
     KeyboardEvent keyEvent(IvwKey::Unknown, KeyState::Press, self->modifiers_, character, text);
     self->propagateEvent(&keyEvent);
