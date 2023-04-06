@@ -88,8 +88,8 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     addProperties(visible_, color_, width_, scalingFactor_, mirrored_, orientation_);
 
     // change default fonts, make axis labels slightly less pronounced
-    captionSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Caption));
-    labelSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Label));
+    captionSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Caption).string());
+    labelSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Label).string());
 
     captionSettings_.title_.set("Axis Title");
 

@@ -32,7 +32,7 @@
 
 #include <inviwo/core/util/glmvec.h>
 
-#include <string>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -41,14 +41,16 @@ public:
     FontSettings() = default;
     virtual ~FontSettings() = default;
 
-    virtual std::string getFontFace() const = 0;
+    virtual const std::filesystem::path& getFontFace() const = 0;
     virtual int getFontSize() const = 0;
     virtual float getLineSpacing() const = 0;
     virtual vec2 getAnchorPos() const = 0;
+
+    IVW_MODULE_FONTRENDERING_API friend bool operator==(const FontSettings& a,
+                                                        const FontSettings& b);
+
+    IVW_MODULE_FONTRENDERING_API friend bool operator!=(const FontSettings& a,
+                                                        const FontSettings& b);
 };
-
-IVW_MODULE_FONTRENDERING_API bool operator==(const FontSettings& a, const FontSettings& b);
-
-IVW_MODULE_FONTRENDERING_API bool operator!=(const FontSettings& a, const FontSettings& b);
 
 }  // namespace inviwo

@@ -187,7 +187,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
                isModuleLibraryLoaded(file) || !isEnabled(util::stripModuleFileNameDecoration(file));
     });
 
-    const auto tmpDir = [&]() -> std::string {
+    const auto tmpDir = [&]() -> std::filesystem::path {
         if (isRuntimeModuleReloadingEnabled()) {
             const auto tmp = filesystem::getInviwoUserSettingsPath() / "temporary-module-libraries";
             if (!std::filesystem::is_directory(tmp)) {
@@ -195,7 +195,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
             }
             return tmp;
         } else {
-            return "";
+            return {};
         }
     }();
 

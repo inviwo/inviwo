@@ -77,7 +77,7 @@ void DemoController::setFileOptions() {
     int invNum = 0;
     for (size_t elIdx = 0; elIdx < elements.size(); ++elIdx) {
         auto& elem = elements[elIdx];
-        std::string ext = elem.extension();
+        std::string ext = elem.extension().string();
         ext = toLower(ext);
         if (ext.compare(".inv") == 0) {  // Found a workspace
             auto cleanName = elem.stem();

@@ -59,7 +59,7 @@ public:
 
     virtual bool show() override;
 
-    virtual void setFile(std::string fileName) override;
+    virtual void setFile(const std::filesystem::path& fileName) override;
 
     virtual const DataFormatBase* getFormat() const override;
     virtual uvec3 getDimensions() const override;

@@ -43,10 +43,11 @@ const std::string FontProperty::classIdentifier = "org.inviwo.FontProperty";
 std::string FontProperty::getClassIdentifier() const { return classIdentifier; }
 
 FontProperty::FontProperty(std::string_view identifier, std::string_view displayName,
-                           std::string_view fontFace, int size, float lineSpacing, vec2 anchorPos,
-                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+                           std::string_view fontFaceName, int size, float lineSpacing,
+                           vec2 anchorPos, InvalidationLevel invalidationLevel,
+                           PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , fontFace_("fontFace", "Font Face", fontFace)
+    , fontFace_("fontFace", "Font Face", fontFaceName)
     , fontSize_("fontSize", "Font Size", size, 0, 144, 1)
     , lineSpacing_("lineSpacing", "Line Spacing", lineSpacing, -1.0f, 2.0f)
     , anchorPos_("anchor", "Anchor", anchorPos, vec2(-1.5f), vec2(1.5f), vec2(0.01f)) {
@@ -61,8 +62,14 @@ FontProperty::FontProperty(std::string_view identifier, std::string_view display
 
 FontProperty::FontProperty(std::string_view identifier, std::string_view displayName,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : FontProperty(identifier, displayName, font::getFont(font::FontType::Default), 14, 0.0f,
-                   vec2{-1.0f}, invalidationLevel, semantics) {}
+    : FontProperty(identifier, displayName, font::getFont(font::FontType::Default).string(), 14,
+                   0.0f, vec2{-1.0f}, invalidationLevel, semantics) {}
+
+FontProperty::FontProperty(std::string_view identifier, std::string_view displayName,
+                           font::FontType fontType, int size, float lineSpacing, vec2 anchorPos,
+                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : FontProperty(identifier, displayName, font::getFont(fontType).string(), size, lineSpacing,
+                   anchorPos, invalidationLevel, semantics) {}
 
 FontProperty::FontProperty(const FontProperty& rhs)
     : CompositeProperty(rhs)
@@ -78,7 +85,9 @@ FontProperty::FontProperty(const FontProperty& rhs)
 
 FontProperty* FontProperty::clone() const { return new FontProperty(*this); }
 
-std::string FontProperty::getFontFace() const { return fontFace_.getSelectedValue(); }
+const std::filesystem::path& FontProperty::getFontFace() const {
+    return fontFace_.getSelectedValue();
+}
 
 int FontProperty::getFontSize() const { return fontSize_.get(); }
 

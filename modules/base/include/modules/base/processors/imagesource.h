@@ -65,7 +65,7 @@ class InviwoApplication;
  */
 class IVW_MODULE_BASE_API ImageSource : public Processor {
 public:
-    ImageSource(InviwoApplication* app, const std::string& filePath = "");
+    ImageSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
     virtual ~ImageSource() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;

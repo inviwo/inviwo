@@ -48,7 +48,7 @@ class Processor;
 struct IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectData {
     ProcessorInfo info;
     std::string name;
-    std::string file;
+    std::filesystem::path file;
 };
 
 class IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectBase : public ProcessorFactoryObject {

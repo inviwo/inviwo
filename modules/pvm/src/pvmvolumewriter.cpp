@@ -141,7 +141,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
         comment[commMetaData->get().size()] = '\0';
     }
 
-    writePVMvolume(filePath.c_str(), dataPtr, static_cast<unsigned int>(dim.x),
+    writePVMvolume(filePath.string().c_str(), dataPtr, static_cast<unsigned int>(dim.x),
                    static_cast<unsigned int>(dim.y), static_cast<unsigned int>(dim.z), components,
                    spacing.x, spacing.y, spacing.z, description, courtesy, parameter, comment);
 

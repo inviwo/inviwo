@@ -49,12 +49,12 @@ public:
     virtual ~FontData() = default;
 
     // Inherited via FontSettings
-    virtual std::string getFontFace() const override;
+    virtual const std::filesystem::path& getFontFace() const override;
     virtual int getFontSize() const override;
     virtual float getLineSpacing() const override;
     virtual vec2 getAnchorPos() const override;
 
-    std::string fontFace = font::getFont(font::FontType::Default);
+    std::filesystem::path fontFace = font::getFont(font::FontType::Default);
     int fontSize = 14;
     float lineSpacing = 0.0f;
     vec2 anchorPos = vec2(-1.0f);

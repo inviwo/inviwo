@@ -179,7 +179,8 @@ public:
     template <typename T, typename P>
     void registerProcessorWidget();
 
-    void registerPortInspector(std::string portClassIdentifier, std::string inspectorPath);
+    void registerPortInspector(std::string portClassIdentifier,
+                               const std::filesystem::path& inspectorPath);
 
     void registerDataVisualizer(std::unique_ptr<DataVisualizer> visualizer);
 

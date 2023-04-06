@@ -72,7 +72,7 @@ const ProcessorInfo ImageSource::processorInfo_{
 };
 const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo_; }
 
-ImageSource::ImageSource(InviwoApplication* app, const std::string& filePath)
+ImageSource::ImageSource(InviwoApplication* app, const std::filesystem::path& filePath)
     : Processor()
     , rf_(util::getDataReaderFactory(app))
     , outport_("image", DataVec4UInt8::get(), false)

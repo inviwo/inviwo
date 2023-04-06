@@ -53,7 +53,7 @@ void Settings::addProperty(Property& property) { addProperty(&property, false); 
 
 const std::string& Settings::getIdentifier() const { return identifier_; }
 
-std::string Settings::getFileName() const {
+std::filesystem::path Settings::getFileName() const {
     auto settingname = identifier_;
     replaceInString(settingname, " ", "_");
     const auto appname = util::stripIdentifier(app_->getDisplayName());

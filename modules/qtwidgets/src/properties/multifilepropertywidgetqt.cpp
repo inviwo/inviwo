@@ -129,7 +129,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
 }
 
 void MultiFilePropertyWidgetQt::setPropertyValue() {
-    std::string fileName = (!property_->get().empty() ? property_->get().front() : "");
+    auto fileName = (!property_->get().empty() ? property_->get().front() : "");
 
     // Setup Extensions
     std::vector<FileExtension> filters = property_->getNameFilters();
@@ -147,7 +147,7 @@ void MultiFilePropertyWidgetQt::setPropertyValue() {
     if (importFileDialog.exec()) {
         std::vector<std::filesystem::path> filenames;
         for (auto item : importFileDialog.selectedFiles()) {
-            filenames.emplace_back(utilqt::fromQString(item));
+            filenames.emplace_back(utilqt::toPath(item));
         }
         property_->set(filenames);
         property_->setSelectedExtension(importFileDialog.getSelectedFileExtension());

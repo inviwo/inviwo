@@ -68,8 +68,8 @@ public:
         size_t stride;
     };
 
-    Handle(std::string filename);
-    Handle(std::string filename, Path path);
+    Handle(const std::filesystem::path& filename);
+    Handle(const std::filesystem::path& filename, Path path);
     Handle(const Handle& rhs);
     Handle& operator=(const Handle& that);
     Handle(Handle&& rhs);
@@ -101,7 +101,7 @@ private:
     double getMin(const DataFormatBase* type) const;
     double getMax(const DataFormatBase* type) const;
 
-    std::string filename_;
+    std::filesystem::path filename_;
     Path path_;
     H5::Group data_;
 };

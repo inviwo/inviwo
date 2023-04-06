@@ -101,8 +101,8 @@ public:
      * @return The added source processor and the outport in the source processor
      *         containing data from the given file.
      */
-    virtual std::pair<Processor*, Outport*> addSourceProcessor(const std::string& filename,
-                                                               ProcessorNetwork* network) const = 0;
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::filesystem::path& filename, ProcessorNetwork* network) const = 0;
     /**
      * Adds a set of processors visualizing the data in the given outport.
      * Nothing will be added to the network if outport is not supported (isOutportSupported returns
@@ -125,7 +125,7 @@ public:
      * @return A list of added processors.
      */
     virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
-        const std::string& filename, ProcessorNetwork* network) const = 0;
+        const std::filesystem::path& filename, ProcessorNetwork* network) const = 0;
 };
 
 }  // namespace inviwo

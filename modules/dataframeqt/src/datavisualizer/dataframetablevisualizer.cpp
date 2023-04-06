@@ -75,7 +75,7 @@ bool DataFrameTableVisualizer::hasSourceProcessor() const { return true; }
 bool DataFrameTableVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> DataFrameTableVisualizer::addSourceProcessor(
-    const std::string& filename, ProcessorNetwork* network) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network) const {
 
     auto source = network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0}, filename));
     auto outport = source->getOutports().front();
@@ -92,7 +92,7 @@ std::vector<Processor*> DataFrameTableVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> DataFrameTableVisualizer::addSourceAndVisualizerNetwork(
-    const std::string& filename, ProcessorNetwork* network) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network) const {
 
     auto sourceAndOutport = addSourceProcessor(filename, network);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, network);

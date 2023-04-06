@@ -83,7 +83,8 @@ void DatVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
 namespace util {
 void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
                     Overwrite overwrite) {
-    std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
+    auto rawPath = filePath;
+    rawPath.replace_extension("raw");
 
     DataWriter::checkOverwrite(filePath, overwrite);
     DataWriter::checkOverwrite(rawPath, overwrite);

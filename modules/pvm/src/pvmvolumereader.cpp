@@ -99,7 +99,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     unsigned char* parameter = nullptr;
     unsigned char* comment = nullptr;
 
-    unsigned char* pvmdata = readPVMvolume(filePath.c_str(), &udim.x, &udim.y, &udim.z,
+    unsigned char* pvmdata = readPVMvolume(filePath.string().c_str(), &udim.x, &udim.y, &udim.z,
                                            &bytesPerVoxel, &spacing.x, &spacing.y, &spacing.z,
                                            &description, &courtesy, &parameter, &comment);
 

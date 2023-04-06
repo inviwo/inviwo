@@ -79,7 +79,7 @@ bool VolumeSliceVisualizer::hasSourceProcessor() const { return true; }
 bool VolumeSliceVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> VolumeSliceVisualizer::addSourceProcessor(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net) const {
 
     auto source = net->addProcessor(util::makeProcessor<VolumeSource>(GP{0, 0}, app_, filename));
     auto outport = source->getOutports().front();
@@ -98,7 +98,7 @@ std::vector<Processor*> VolumeSliceVisualizer::addVisualizerNetwork(Outport* out
 }
 
 std::vector<Processor*> VolumeSliceVisualizer::addSourceAndVisualizerNetwork(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net) const {
 
     auto sourceAndOutport = addSourceProcessor(filename, net);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);

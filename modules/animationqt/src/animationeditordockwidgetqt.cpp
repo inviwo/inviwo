@@ -357,7 +357,7 @@ void AnimationEditorDockWidgetQt::importAnimation() {
 
     if (openFileDialog.exec()) {
         QString path = openFileDialog.selectedFiles().at(0);
-        std::filesystem::path fileName{utilqt::fromQString(path)};
+        std::filesystem::path fileName{utilqt::toPath(path)};
         if (!std::filesystem::is_regular_file(fileName)) {
             LogError("Could not find file: " << fileName);
             return;

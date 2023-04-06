@@ -109,20 +109,20 @@ RangeSlider::RangeSlider(const std::string& label, const ivec2& value, int minVa
 
     const auto texSourcePath = util::getModulePath("UserInterfaceGL", ModulePath::Images);
 
-    const std::vector<std::string> sliderFiles = {
+    const std::vector<std::filesystem::path> sliderFiles = {
         "rangesliderhandle-normal.png", "rangesliderhandle-pressed.png",
         "rangesliderhandle-checked.png", "rangesliderhandle-halo.png",
         "rangesliderhandle-border.png"};
     uiTextures_ = uiRenderer_->createUITextures("RangeSlider", sliderFiles, texSourcePath);
 
-    const std::vector<std::string> centerFiles = {
+    const std::vector<std::filesystem::path> centerFiles = {
         "rangeslidercenter-normal.png", "rangeslidercenter-pressed.png",
         "rangeslidercenter-checked.png", "rangeslidercenter-halo.png",
         "rangeslidercenter-border.png"};
     centerTextures_ =
         uiRenderer_->createUITextures("RangeSliderConnector", centerFiles, texSourcePath);
 
-    const std::vector<std::string> sliderGrooveFiles = {
+    const std::vector<std::filesystem::path> sliderGrooveFiles = {
         "slidergroove-normal.png", "slidergroove-pressed.png", "slidergroove-checked.png",
         "slidergroove-halo.png", "slidergroove-border.png"};
     grooveTextures_ =

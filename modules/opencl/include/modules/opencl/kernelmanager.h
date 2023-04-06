@@ -36,6 +36,7 @@
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/kernelowner.h>
 #include <map>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -55,7 +56,7 @@ public:
         std::string header;
         std::string defines;
     };
-    typedef std::multimap<std::string, ProgramIdentifier>
+    typedef std::multimap<std::filesystem::path, ProgramIdentifier>
         ProgramMap;  ///< File name and unique identifier for program
     typedef std::multimap<cl::Program*, cl::Kernel*>
         KernelMap;  ///< All kernels belonging to a program
@@ -80,9 +81,9 @@ public:
      * @param defines Compiler defines, i.e #define FOO 1
      * @return Pointer to a program no matter if it was successfully built or not. Do not delete it.
      */
-    cl::Program* buildProgram(const std::string& fileName, const std::string& header,
+    cl::Program* buildProgram(const std::filesystem::path& fileName, const std::string& header,
                               const std::string& defines, bool& wasBuilt);
-    cl::Program* buildProgram(const std::string& fileName, const std::string& header = "",
+    cl::Program* buildProgram(const std::filesystem::path& fileName, const std::string& header = "",
                               const std::string& defines = "") {
         bool wasBuilt;
         return buildProgram(fileName, header, defines, wasBuilt);
@@ -107,7 +108,7 @@ public:
      * Reloads programs from file and notifies processors.
      *
      */
-    virtual void fileChanged(const std::string& fileName) override;
+    virtual void fileChanged(const std::filesystem::path& fileName) override;
 
     /**
      * Remove all kernels and stop observing the files.

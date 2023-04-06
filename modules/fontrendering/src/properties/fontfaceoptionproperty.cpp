@@ -48,7 +48,7 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                font::FontType fontType,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : FontFaceOptionProperty(identifier, displayName, help, font::getFont(fontType),
+    : FontFaceOptionProperty(identifier, displayName, help, font::getFont(fontType).string(),
                              invalidationLevel, semantics) {}
 
 FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
@@ -56,7 +56,7 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                font::FontType fontType,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : FontFaceOptionProperty(identifier, displayName, {}, font::getFont(fontType),
+    : FontFaceOptionProperty(identifier, displayName, {}, font::getFont(fontType).string(),
                              invalidationLevel, semantics) {}
 
 FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
@@ -64,14 +64,14 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                std::string_view fontFaceName,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : OptionPropertyString(identifier, displayName, invalidationLevel, semantics) {
+    : OptionProperty<std::filesystem::path>(identifier, displayName, invalidationLevel, semantics) {
 
     auto fonts = font::getAvailableFonts();
 
     for (auto font : fonts) {
         auto name = font.second.stem().string();
         // use the file name w/o extension as identifier
-        addOption(name, font.first, font.second.string());
+        addOption(name, font.first, font.second);
     }
     setSelectedIdentifier(fontFaceName);
     setCurrentStateAsDefault();
@@ -86,7 +86,7 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                              semantics) {}
 
 FontFaceOptionProperty::FontFaceOptionProperty(const FontFaceOptionProperty& rhs)
-    : OptionPropertyString(rhs) {}
+    : OptionProperty<std::filesystem::path>(rhs) {}
 
 FontFaceOptionProperty* FontFaceOptionProperty::clone() const {
     return new FontFaceOptionProperty(*this);

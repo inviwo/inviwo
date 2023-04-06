@@ -81,7 +81,7 @@ bool ImageBackgroundVisualizer::hasSourceProcessor() const { return true; }
 bool ImageBackgroundVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> ImageBackgroundVisualizer::addSourceProcessor(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net) const {
 
     auto source = net->addProcessor(util::makeProcessor<ImageSource>(GP{0, 0}, app_, filename));
     auto outport = source->getOutports().front();
@@ -104,7 +104,7 @@ std::vector<Processor*> ImageBackgroundVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> ImageBackgroundVisualizer::addSourceAndVisualizerNetwork(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net) const {
 
     auto sourceAndOutport = addSourceProcessor(filename, net);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);

@@ -347,7 +347,7 @@ void InviwoModule::registerProcessorWidget(std::unique_ptr<ProcessorWidgetFactor
 }
 
 void InviwoModule::registerPortInspector(std::string portClassIdentifier,
-                                         std::string inspectorPath) {
+                                         const std::filesystem::path& inspectorPath) {
     auto portInspector =
         std::make_unique<PortInspectorFactoryObject>(portClassIdentifier, inspectorPath);
 

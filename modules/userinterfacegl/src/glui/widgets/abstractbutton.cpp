@@ -53,9 +53,9 @@ AbstractButton::AbstractButton(const std::string& label, Processor& processor, R
     widgetExtent_ = extent;
     setLabelBold(true);
 
-    std::vector<std::string> btnFiles = {"button-normal.png", "button-pressed.png",
-                                         "button-checked.png", "button-halo.png",
-                                         "button-border.png"};
+    std::vector<std::filesystem::path> btnFiles = {"button-normal.png", "button-pressed.png",
+                                                   "button-checked.png", "button-halo.png",
+                                                   "button-border.png"};
     // normal, pressed, checked, corresponding halo (3x) and border (3x)
     uiTextureMap_ = {{0, 1, 2, 3, 3, 3, 4, 4, 4}};
     uiTextures_ = uiRenderer_->createUITextures(

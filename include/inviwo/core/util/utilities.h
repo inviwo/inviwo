@@ -46,7 +46,7 @@ namespace util {
 
 IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string_view filename);
 
-IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string_view dir,
+IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir,
                                   std::string_view name = "UPN", std::string_view ext = ".png",
                                   bool onlyActiveCanvases = false);
 

@@ -38,12 +38,14 @@
 #include <inviwo/core/network/networkedge.h>
 #include <inviwo/core/util/rendercontext.h>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 PortInspector::PortInspector() = default;
 
 PortInspector::PortInspector(std::string_view portClassIdentifier,
-                             std::string_view inspectorWorkspaceFileName)
+                             const std::filesystem::path& inspectorWorkspaceFileName)
     : inspectorNetworkFileName_(inspectorWorkspaceFileName)
     , portClassIdentifier_(portClassIdentifier) {
 
@@ -90,20 +92,19 @@ PortInspector::PortInspector(std::string_view portClassIdentifier,
         propertyLinks_ = network.getLinks();
 
         if (!canvasProcessor_) {
-            throw Exception(
-                "Could not find canvas for port inspector: " + inspectorNetworkFileName_,
-                IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT, "Could not find canvas for port inspector: {}",
+                            inspectorNetworkFileName_);
         }
 
     } else {
-        throw Exception("Could not open port inspector file: " + inspectorNetworkFileName_,
-                        IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Could not open port inspector file: {}",
+                        inspectorNetworkFileName_);
     }
 }
 
 PortInspector::~PortInspector() { RenderContext::getPtr()->activateDefaultRenderContext(); }
 
-const std::string& PortInspector::getInspectorNetworkFileName() const {
+const std::filesystem::path& PortInspector::getInspectorNetworkFileName() const {
     return inspectorNetworkFileName_;
 }
 const std::string& PortInspector::getPortClassName() const { return portClassIdentifier_; }

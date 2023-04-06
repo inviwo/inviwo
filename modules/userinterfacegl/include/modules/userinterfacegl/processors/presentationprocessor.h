@@ -87,7 +87,7 @@ public:
 private:
     void updateSlideImage();
     void onFindFiles();
-    bool isValidImageFile(std::string);
+    bool isValidImageFile(const std::filesystem::path& file);
     void updateProperties();
     void updateFileName();
 

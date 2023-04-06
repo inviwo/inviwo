@@ -178,7 +178,7 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
 }
 
 void OpenCL::printBuildError(const std::vector<cl::Device>& devices, const cl::Program& program,
-                             const std::string& filename) {
+                             const std::filesystem::path& filename) {
     for (::size_t i = 0; i < devices.size(); ++i) {
         cl_build_status status = program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(devices[i]);
 
@@ -190,7 +190,7 @@ void OpenCL::printBuildError(const std::vector<cl::Device>& devices, const cl::P
     }
 }
 void OpenCL::printBuildError(const cl::Device& device, const cl::Program& program,
-                             const std::string& filename) {
+                             const std::filesystem::path& filename) {
     printBuildError(std::vector<cl::Device>(1, device), program, filename);
 }
 
@@ -264,12 +264,12 @@ std::vector<cl::Device> OpenCL::getAllDevices() {
     return allDevices;
 }
 
-cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string& header,
+cl::Program OpenCL::buildProgram(const std::filesystem::path& fileName, const std::string& header,
                                  const std::string& defines, const cl::CommandQueue& queue) {
     cl::Context context = queue.getInfo<CL_QUEUE_CONTEXT>();
     cl::Device device = queue.getInfo<CL_QUEUE_DEVICE>();
     // build the program from the source in the file
-    std::ifstream file(fileName.c_str());
+
     TextFileReader fileReader(fileName);
     std::string prog;
 
@@ -323,18 +323,18 @@ cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string&
     return program;
 }
 
-cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string& header /*= ""*/,
+cl::Program OpenCL::buildProgram(const std::filesystem::path& fileName,
+                                 const std::string& header /*= ""*/,
                                  const std::string& defines /*= ""*/) {
     return OpenCL::buildProgram(fileName, header, defines, OpenCL::getPtr()->getQueue());
 }
 
-void OpenCL::addCommonIncludeDirectory(const std::string& directoryPath) {
-    if (filesystem::directoryExists(directoryPath)) includeDirectories_.push_back(directoryPath);
+void OpenCL::addCommonIncludeDirectory(const std::filesystem::path& directoryPath) {
+    if (std::filesystem::is_directory(directoryPath)) includeDirectories_.push_back(directoryPath);
 }
 
-void OpenCL::removeCommonIncludeDirectory(const std::string& directoryPath) {
-    std::vector<std::string>::iterator it =
-        std::find(includeDirectories_.begin(), includeDirectories_.end(), directoryPath);
+void OpenCL::removeCommonIncludeDirectory(const std::filesystem::path& directoryPath) {
+    auto it = std::find(includeDirectories_.begin(), includeDirectories_.end(), directoryPath);
 
     if (it != includeDirectories_.end()) {
         includeDirectories_.erase(it);
@@ -344,9 +344,8 @@ void OpenCL::removeCommonIncludeDirectory(const std::string& directoryPath) {
 std::string OpenCL::getIncludeDefine() const {
     std::string result;
 
-    for (std::vector<std::string>::const_iterator it = includeDirectories_.begin();
-         it != includeDirectories_.end(); ++it) {
-        result += " -I " + *it;
+    for (auto it = includeDirectories_.begin(); it != includeDirectories_.end(); ++it) {
+        result += " -I " + it->generic_string();
     }
 
     return result;

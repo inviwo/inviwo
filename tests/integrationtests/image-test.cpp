@@ -131,7 +131,7 @@ TEST(ImageTests, ImageLoadRange) {
 
     ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    std::string ext = imgFile.extension();
+    std::string ext = imgFile.extension().string();
     EXPECT_EQ(ext, ".bmp");
 
     auto reader =
@@ -160,7 +160,7 @@ TEST(ImageTests, ImageResize) {
     auto imgFile = TestImgs::rgb();
     ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    std::string ext = imgFile.extension();
+    std::string ext = imgFile.extension().string();
     EXPECT_EQ(ext, ".bmp");
 
     auto reader =

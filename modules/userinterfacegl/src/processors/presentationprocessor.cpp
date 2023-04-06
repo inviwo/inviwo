@@ -171,7 +171,7 @@ void PresentationProcessor::process() {
         fileList_ = imageFilePattern_.getFileList();
         const auto numElems = fileList_.size();
         std::erase_if(fileList_,
-                      [this](const std::string& file) { return !isValidImageFile(file); });
+                      [this](const std::filesystem::path& file) { return !isValidImageFile(file); });
         if (numElems != fileList_.size()) {
             // number of valid files has changed, need to update properties
             updateProperties();
@@ -202,7 +202,7 @@ void PresentationProcessor::updateSlideImage() {
         return;
     }
 
-    const std::string currentFileName = fileList_[index];
+    const auto currentFileName = fileList_[index];
 
     auto factory = getInviwoApplication()->getDataReaderFactory();
     auto reader = factory->getReaderForTypeAndExtension<Layer>(currentFileName);
@@ -259,7 +259,7 @@ void PresentationProcessor::updateFileName() {
     }
 }
 
-bool PresentationProcessor::isValidImageFile(std::string fileName) {
+bool PresentationProcessor::isValidImageFile(const std::filesystem::path& fileName) {
     return util::contains_if(validExtensions_,
                              [&](const FileExtension& f) { return f.matches(fileName); });
 }

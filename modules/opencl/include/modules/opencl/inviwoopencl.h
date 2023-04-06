@@ -37,6 +37,9 @@
 #include <modules/opencl/glmcl.h>
 #include <modules/opencl/openclmoduledefine.h>
 
+#include <filesystem>
+#include <string>
+
 #if defined(CL_VERSION_1_2)
 // using Image2DGL cl::Image2D;
 // using Image3DGL cl::Image3D;
@@ -145,9 +148,9 @@ public:
      */
     void setDevice(cl::Device device, bool glSharing);
 
-    static cl::Program buildProgram(const std::string& fileName, const std::string& header = "",
+    static cl::Program buildProgram(const std::filesystem::path& fileName, const std::string& header = "",
                                     const std::string& defines = "");
-    static cl::Program buildProgram(const std::string& fileName, const std::string& header,
+    static cl::Program buildProgram(const std::filesystem::path& fileName, const std::string& header,
                                     const std::string& defines, const cl::CommandQueue& queue);
 
     /**
@@ -171,10 +174,10 @@ public:
      * @return (void)
      */
     static void printBuildError(const std::vector<cl::Device>& devices, const cl::Program& program,
-                                const std::string& filename = "");
+                                const std::filesystem::path& filename = "");
 
     static void printBuildError(const cl::Device& device, const cl::Program& program,
-                                const std::string& filename = "");
+                                const std::filesystem::path& filename = "");
 
     /**
      * Get OpenGL sharing properties depending on operating system.
@@ -191,16 +194,16 @@ public:
      *
      * @param directoryPath Directory path to include
      */
-    void addCommonIncludeDirectory(const std::string& directoryPath);
+    void addCommonIncludeDirectory(const std::filesystem::path& directoryPath);
 
     /**
      * Remove common include path.
      *
      * @param directoryPath Directory path to remove
      */
-    void removeCommonIncludeDirectory(const std::string& directoryPath);
+    void removeCommonIncludeDirectory(const std::filesystem::path& directoryPath);
 
-    const std::vector<std::string>& getCommonIncludeDirectories() const {
+    const std::vector<std::filesystem::path>& getCommonIncludeDirectories() const {
         return includeDirectories_;
     }
 
@@ -240,7 +243,7 @@ private:
     /// Default device associated with queues and device
     cl::Device gpuDevice_;
     // Include directories define
-    std::vector<std::string> includeDirectories_;
+    std::vector<std::filesystem::path> includeDirectories_;
 
     friend Singleton<OpenCL>;
     static OpenCL* instance_;

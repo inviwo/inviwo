@@ -148,7 +148,7 @@ FilePatternProperty::~FilePatternProperty() = default;
 
 std::string FilePatternProperty::getFilePattern() const {
     if (!pattern_.get().empty()) {
-        return filesystem::getFileNameWithExtension(pattern_.get().front());
+        return pattern_.get().front().filename().string();
     } else {
         return std::string();
     }
@@ -156,7 +156,7 @@ std::string FilePatternProperty::getFilePattern() const {
 
 std::string FilePatternProperty::getFilePatternPath() const {
     if (!pattern_.get().empty()) {
-        return filesystem::getFileDirectory(pattern_.get().front());
+        return pattern_.get().front().parent_path().generic_string();
     } else {
         return std::string();
     }
@@ -202,15 +202,16 @@ void FilePatternProperty::updateFileList() {
 
     for (auto item : pattern_.get()) {
         try {
-            const std::string filePath = filesystem::getFileDirectory(item);
-            const std::string pattern = filesystem::getFileNameWithExtension(item);
+            const std::filesystem::path filePath = item.parent_path();
+            const std::filesystem::path pattern = item.filename();
+            const std::string strPattern = pattern.generic_string();
 
-            std::vector<std::filesystem::path> fileList =
-                filesystem::getDirectoryContents(filePath);
+            auto fileList = filesystem::getDirectoryContents(filePath);
 
             // apply pattern
-            bool hasDigits = (pattern.find('#') != std::string::npos);
-            bool hasWildcard = hasDigits || (pattern.find_first_of("*?", 0) != std::string::npos);
+            bool hasDigits = (strPattern.find('#') != std::string::npos);
+            bool hasWildcard =
+                hasDigits || (strPattern.find_first_of("*?", 0) != std::string::npos);
 
             if (!hasWildcard) {
                 // look for exact match
@@ -228,14 +229,14 @@ void FilePatternProperty::updateFileList() {
                 bool found = false;
                 for (auto file : fileList) {
                     int index = -1;
-                    if (filesystem::wildcardStringMatchDigits(
-                            pattern, file, index, matchShorterNumbers, matchLongerNumbers)) {
+                    if (filesystem::wildcardStringMatchDigits(strPattern, file.generic_string(),
+                                                              index, matchShorterNumbers,
+                                                              matchLongerNumbers)) {
                         // match found
                         found = true;
                         // check index
                         if ((index >= indexRange.x) && (index <= indexRange.y)) {
-                            auto filename = filePath / file;
-                            files_.push_back(std::make_tuple(index, filename));
+                            files_.push_back(std::make_tuple(index, filePath / file));
                         }
                     }
                 }
@@ -257,10 +258,9 @@ void FilePatternProperty::updateFileList() {
                     }
                 }
                 for (auto file : fileList) {
-                    if (filesystem::wildcardStringMatch(pattern, file)) {
+                    if (filesystem::wildcardStringMatch(strPattern, file.generic_string())) {
                         // match found
-                        auto filename = filePath / file;
-                        files_.push_back(std::make_tuple(-1, filename));
+                        files_.push_back(std::make_tuple(-1, filePath / file));
                     }
                 }
             }

@@ -30,7 +30,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <string>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -66,13 +66,13 @@ private:
      * when changes are detected.
      * This function is only called by the FileObserver
      */
-    virtual void startFileObservation(const std::string& fileName) = 0;
+    virtual void startFileObservation(const std::filesystem::path& fileName) = 0;
 
     /**
      * Stop observing changes to a file or directory.
      * This function is only called by the FileObserver
      */
-    virtual void stopFileObservation(const std::string& fileName) = 0;
+    virtual void stopFileObservation(const std::filesystem::path& fileName) = 0;
 };
 
 }  // namespace inviwo

@@ -40,6 +40,7 @@
 #include <memory>  // for shared_ptr
 #include <string>  // for string, operator<
 #include <vector>  // for vector
+#include <filesystem>
 
 namespace inviwo {
 
@@ -75,8 +76,9 @@ public:
      * @return pointer to texture array
      * @throws Exception if not successful.
      */
-    Texture2DArray* createUITextures(const std::string& name, const std::vector<std::string>& files,
-                                     const std::string& sourcePath);
+    Texture2DArray* createUITextures(const std::string& name,
+                                     const std::vector<std::filesystem::path>& files,
+                                     const std::filesystem::path& sourcePath);
 
     Shader& getShader();
     const Shader& getShader() const;
@@ -115,7 +117,8 @@ protected:
     void setupRectangleMesh();
 
     std::shared_ptr<Texture2DArray> createUITextureObject(
-        const std::vector<std::string>& textureFiles, const std::string& sourcePath) const;
+        const std::vector<std::filesystem::path>& textureFiles,
+        const std::filesystem::path& sourcePath) const;
 
     const int defaultFontSize_ = 13;
 

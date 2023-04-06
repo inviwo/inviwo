@@ -44,16 +44,16 @@ namespace inviwo {
 namespace hdf5 {
 
 namespace {
-H5::Group load(const std::string& filename, const std::string& path) {
-    H5::H5File hdfFile(filename, H5F_ACC_RDONLY);
+H5::Group load(const std::filesystem::path& filename, const std::string& path) {
+    H5::H5File hdfFile(filename.generic_string(), H5F_ACC_RDONLY);
     return hdfFile.openGroup(path);
 }
 }  // namespace
 
-Handle::Handle(std::string filename)
+Handle::Handle(const std::filesystem::path& filename)
     : filename_(filename), path_("/"), data_{load(filename_, path_)} {}
 
-Handle::Handle(std::string filename, Path path)
+Handle::Handle(const std::filesystem::path& filename, Path path)
     : filename_(filename), path_(path), data_{load(filename_, path_)} {}
 
 Handle::Handle(const Handle& rhs)
@@ -67,7 +67,7 @@ Handle& Handle::operator=(Handle&& that) {
         filename_ = that.filename_;
         path_ = that.path_;
         data_.close();
-        H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
+        H5::H5File hdfFile(filename_.generic_string(), H5F_ACC_RDONLY);
         data_ = hdfFile.openGroup(path_);
     }
     return *this;
@@ -78,7 +78,7 @@ Handle& Handle::operator=(const Handle& that) {
         filename_ = that.filename_;
         path_ = that.path_;
         data_.close();
-        H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
+        H5::H5File hdfFile(filename_.generic_string(), H5F_ACC_RDONLY);
         data_ = hdfFile.openGroup(path_);
     }
     return *this;
@@ -92,7 +92,7 @@ Handle* Handle::getHandleForPath(const std::string& path) const {
 
 Document Handle::getInfo() const {
     Document doc;
-    doc.append("p", "File: " + filename_ + path_.toString());
+    doc.append("p", "File: " + filename_.generic_string() + path_.toString());
     return doc;
 }
 

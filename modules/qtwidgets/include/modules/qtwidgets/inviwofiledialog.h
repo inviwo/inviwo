@@ -39,6 +39,7 @@
 #include <string>         // for string, hash, operator==
 #include <unordered_map>  // for unordered_map
 #include <vector>         // for vector
+#include <filesystem>
 
 #include <QFileDialog>  // for QFileDialog
 #include <QList>        // for QList
@@ -55,7 +56,8 @@ class IVW_MODULE_QTWIDGETS_API InviwoFileDialog : public QFileDialog, public Fil
     Q_OBJECT
 public:
     InviwoFileDialog(QWidget* parent = nullptr, const std::string& title = "",
-                     const std::string& pathType = "default", const std::string& path = "");
+                     const std::string& pathType = "default",
+                     const std::filesystem::path& path = {});
 
     virtual bool show() override;
 
@@ -99,7 +101,7 @@ public:
     virtual void addExtensions(const std::vector<FileExtension>& extensions) override;
 
     void addSidebarPath(const PathType& path);
-    void addSidebarPath(const std::string& path);
+    void addSidebarPath(const std::filesystem::path& path);
     void addSidebarPath(const QString& path);
 
     void useNativeDialog(const bool& use = true);
