@@ -224,7 +224,7 @@ std::vector<std::string> PropertyPresetManager::getAvailablePresets(
 }
 
 void PropertyPresetManager::loadApplicationPresets() {
-    std::string filename = filesystem::getPath(PathType::Settings, "/PropertyPresets.ivs");
+    auto filename = filesystem::getPath(PathType::Settings) / "PropertyPresets.ivs";
     if (std::filesystem::is_regular_file(filename)) {
         try {
             Deserializer d(filename);

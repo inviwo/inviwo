@@ -72,8 +72,8 @@ public:
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
 
 private:
-    virtual void startFileObservation(const std::string& fileName) override;
-    virtual void stopFileObservation(const std::string& fileName) override;
+    virtual void startFileObservation(const std::filesystem::path& fileName) override;
+    virtual void stopFileObservation(const std::filesystem::path& fileName) override;
 
     void fileChanged(QString fileName);
 
@@ -92,18 +92,23 @@ void FileSystemObserverQt::unRegisterFileObserver(FileObserver* fileObserver) {
     std::erase(fileObservers_, fileObserver);
 }
 
-void FileSystemObserverQt::startFileObservation(const std::string& fileName) {
-    QString qFileName = QString::fromStdString(fileName);
+void FileSystemObserverQt::startFileObservation(const std::filesystem::path& fileName) {
+    auto str = fileName.generic_string();
+    QString qFileName = QString::fromUtf8(str.data(), str.size());
     // Will add the path if file exists and is not already being watched.
     fileWatcher_->addPath(qFileName);
 }
 
-void FileSystemObserverQt::stopFileObservation(const std::string& fileName) {
+void FileSystemObserverQt::stopFileObservation(const std::filesystem::path& fileName) {
     auto it =
         std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
                      [fileName](const auto observer) { return observer->isObserved(fileName); });
     // Make sure that no observer is observing the file
-    if (it == std::end(fileObservers_)) fileWatcher_->removePath(QString::fromStdString(fileName));
+    if (it == std::end(fileObservers_)) {
+        auto str = fileName.generic_string();
+        QString qFileName = QString::fromUtf8(str.data(), str.size());
+        fileWatcher_->removePath(qFileName);
+    }
 }
 
 void FileSystemObserverQt::fileChanged(QString fileName) {

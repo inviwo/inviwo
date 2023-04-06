@@ -107,7 +107,7 @@ public:
     template <typename T>
     T findSymbolTyped(const std::string& name);
 
-    static std::set<std::string> libraryFileExtensions();
+    static std::set<std::filesystem::path> libraryFileExtensions();
 
     /**
      * Reset the handle and effectively leak the lib.

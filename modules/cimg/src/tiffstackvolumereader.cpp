@@ -122,7 +122,7 @@ void TIFFStackVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepres
                                                     const VolumeRepresentation& src) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    std::string fileName = sourceFile_;
+    auto fileName = sourceFile_;
     if (!std::filesystem::is_regular_file(fileName)) {
         const auto newPath = filesystem::addBasePath(fileName);
 

@@ -271,8 +271,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
         {  // left column: workspace filter, list of recently used workspaces, and examples
             auto loadFile = [this](const QString& filename, bool isExample) {
-                auto action = util::getModifierAction(QApplication::keyboardModifiers());
-                std::filesystem::path file{utilqt::fromQString(filename)};
+                const auto action = util::getModifierAction(QApplication::keyboardModifiers());
+                const auto file = utilqt::toPath(filename);
                 switch (action) {
                     case ModifierAction::AppendWorkspace:
                         emit appendWorkspace(file);
@@ -294,7 +294,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 if (index.isValid()) {
                     const auto filename = utilqt::getData(index, Role::FilePath).toString();
                     const auto isExample = utilqt::getData(index, Role::isExample).toBool();
-                    std::filesystem::path file{utilqt::fromQString(filename)};
+                    const auto file = utilqt::toPath(filename);
 
                     QObject::connect(
                         loadWorkspaceBtn_, &QToolButton::clicked, this,
@@ -651,7 +651,7 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
             if (auto wsIndex = filterModel_->index(number, 0, selIndex); wsIndex.isValid()) {
                 const auto filename = utilqt::getData(wsIndex, Role::FilePath).toString();
                 const auto isExample = utilqt::getData(wsIndex, Role::isExample).toBool();
-                emit loadWorkspace(std::filesystem::path{utilqt::fromQString(filename)}, isExample);
+                emit loadWorkspace(utilqt::toPath(filename), isExample);
             }
             event->accept();
         }
@@ -697,7 +697,7 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     // extract annotations including network screenshot and canvas images from workspace
     std::optional<WorkspaceAnnotationsQt> annotations;
     try {
-        annotations.emplace(utilqt::fromQString(filename), app_);
+        annotations.emplace(utilqt::toPath(filename), app_);
     } catch (Exception&) {
     }
 

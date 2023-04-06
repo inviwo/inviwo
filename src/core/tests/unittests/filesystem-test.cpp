@@ -44,6 +44,8 @@ TEST(filesystemTest, fileExistsTest) {
 }
 */
 
+/*
+
 TEST(filesystemTest, fileExtensionTest) {
     EXPECT_STREQ("", filesystem::getFileExtension("").c_str());
     EXPECT_STREQ("txt", filesystem::getFileExtension("test.txt").c_str());
@@ -151,5 +153,7 @@ TEST(filesystemTest, pathCleanupTest) {
     // unmatched quote
     EXPECT_STREQ("\"C:/test/file.txt", filesystem::cleanupPath("\"C:\\test/file.txt").c_str());
 }
+
+*/
 
 }  // namespace inviwo

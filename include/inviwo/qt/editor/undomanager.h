@@ -92,7 +92,7 @@ private:
 
     InviwoMainWindow* mainWindow_;
     WorkspaceManager* manager_;
-    std::string refPath_;
+    std::filesystem::path refPath_;
 
     bool dirty_ = true;
     bool isRestoring = false;

@@ -76,8 +76,8 @@ bool MeshVisualizer::isOutportSupported(const Outport* port) const {
 bool MeshVisualizer::hasSourceProcessor() const { return true; }
 bool MeshVisualizer::hasVisualizerNetwork() const { return true; }
 
-std::pair<Processor*, Outport*> MeshVisualizer::addSourceProcessor(const std::string& filename,
-                                                                   ProcessorNetwork* net) const {
+std::pair<Processor*, Outport*> MeshVisualizer::addSourceProcessor(
+    const std::filesystem::path& filename, ProcessorNetwork* net) const {
 
     auto source = net->addProcessor(util::makeProcessor<MeshSource>(GP{0, 0}, app_, filename));
     auto outport = source->getOutports().front();
@@ -99,8 +99,8 @@ std::vector<Processor*> MeshVisualizer::addVisualizerNetwork(Outport* outport,
     return {bak, mrp, cvs};
 }
 
-std::vector<Processor*> MeshVisualizer::addSourceAndVisualizerNetwork(const std::string& filename,
-                                                                      ProcessorNetwork* net) const {
+std::vector<Processor*> MeshVisualizer::addSourceAndVisualizerNetwork(
+    const std::filesystem::path& filename, ProcessorNetwork* net) const {
 
     auto sourceAndOutport = addSourceProcessor(filename, net);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);

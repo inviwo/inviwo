@@ -43,6 +43,7 @@
 #include <string_view>  // for string_view
 #include <utility>      // for pair
 #include <vector>       // for vector
+#include <filesystem>
 
 #include <QByteArray>    // for QByteArray
 #include <QColor>        // for QColor
@@ -122,10 +123,20 @@ inline QString toQString(std::string_view str) { return QString::fromUtf8(str.da
 inline QString toQString(const std::string& str) {
     return QString::fromUtf8(str.data(), str.size());
 }
+inline QString toQString(const std::filesystem::path& path) {
+    auto str = path.generic_string();
+    return QString::fromUtf8(str.data(), str.size());
+}
 /**
  * \brief create a UTF8-encoded std::string from a QString
  */
 inline std::string fromQString(const QString& str) { return std::string(str.toUtf8().constData()); }
+
+inline std::filesystem::path toPath(const QString& str) { 
+    auto buffer = str.toUtf8();
+    std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()), static_cast<size_t>(buffer.size())};
+    return std::filesystem::path{u8str}; 
+}
 
 constexpr QPointF toQPoint(dvec2 v) { return QPointF(v.x, v.y); }
 constexpr QPoint toQPoint(ivec2 v) { return QPoint(v.x, v.y); }

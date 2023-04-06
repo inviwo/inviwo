@@ -292,7 +292,7 @@ struct CImgLoadLayerDispatcher {
         const DataFormatBase* dataFormat = DF::get();
 
         try {
-            cimg_library::CImg<P> img(filePath.c_str());
+            cimg_library::CImg<P> img(filePath.string().c_str());
             size_t components = static_cast<size_t>(img.spectrum());
 
             if (rescaleToDim) {
@@ -375,7 +375,7 @@ struct CImgSaveLayerDispatcher {
             }
         }
         try {
-            img->save(filePath.c_str());
+            img->save(filePath.string().c_str());
         } catch (cimg_library::CImgIOException& e) {
             throw DataWriterException(
                 fmt::format("Failed to save image to: {} Reason: {}", filePath, e.what()),
@@ -459,7 +459,7 @@ struct CImgLoadVolumeDispatcher {
     void* operator()(void* dst, const std::filesystem::path& filePath, size3_t& dimensions,
                      DataFormatId& formatId) {
         const DataFormatBase* dataFormat = DF::get();
-        cimg_library::CImg<typename DF::primitive> img(filePath.c_str());
+        cimg_library::CImg<typename DF::primitive> img(filePath.string().c_str());
 
         size_t components = static_cast<size_t>(img.spectrum());
         dimensions = size3_t(img.width(), img.height(), img.depth());
@@ -649,7 +649,7 @@ std::string getOpenEXRVersion() {
 
 TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
 #ifdef cimg_use_tiff
-    TIFF* tif = TIFFOpen(filename.c_str(), "r");
+    TIFF* tif = TIFFOpen(filename.string().c_str(), "r");
     util::OnScopeExit closeFile([tif]() {
         if (tif) TIFFClose(tif);
     });

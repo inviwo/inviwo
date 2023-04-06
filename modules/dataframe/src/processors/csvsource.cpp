@@ -78,7 +78,7 @@ const ProcessorInfo CSVSource::processorInfo_{
 };
 const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
 
-CSVSource::CSVSource(const std::string& file)
+CSVSource::CSVSource(const std::filesystem::path& file)
     : Processor{}
     , data_{"data"}
     , inputFile_{"inputFile_", "CSV File", file, "dataframe"}

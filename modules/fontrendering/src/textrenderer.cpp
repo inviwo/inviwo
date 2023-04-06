@@ -72,9 +72,11 @@
 #include <utf8/checked.h>                // for iterator
 #include <utf8/core.h>                   // for find_invalid
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
-TextRenderer::TextRenderer(std::string_view fontPath)
+TextRenderer::TextRenderer(const std::filesystem::path& fontPath)
     : fontface_(nullptr), fontSize_(10), lineSpacing_(0.2), shader_{getShader()} {
 
     if (FT_Init_FreeType(&fontlib_)) {
@@ -128,18 +130,18 @@ TextRenderer::~TextRenderer() {
     }
 }
 
-void TextRenderer::setFont(std::string_view fontPath) {
+void TextRenderer::setFont(const std::filesystem::path& fontPath) {
     // free previous font face
     if (fontface_) {
         FT_Done_Face(fontface_);
     }
     fontface_ = nullptr;
 
-    int error = FT_New_Face(fontlib_, SafeCStr{fontPath}.c_str(), 0, &fontface_);
+    int error = FT_New_Face(fontlib_, fontPath.string().c_str(), 0, &fontface_);
     if (error == FT_Err_Unknown_File_Format) {
-        throw Exception(IVW_CONTEXT, "Unsupported font format: \"{}\"", fontPath);
+        throw Exception(IVW_CONTEXT, "Unsupported font format: {}", fontPath);
     } else if (error) {
-        throw FileException(IVW_CONTEXT, "Could not open font file: \"{}\"", fontPath);
+        throw FileException(IVW_CONTEXT, "Could not open font file: {}", fontPath);
     }
 
     FT_Select_Charmap(fontface_, ft_encoding_unicode);

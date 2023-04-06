@@ -82,6 +82,8 @@
 #include <glm/vec3.hpp>                       // for operator*
 #include <half/half.hpp>                      // for operator-, operator/
 
+#include <fmt/std.h>
+
 namespace inviwo {
 class Deserializer;
 template <typename T>
@@ -168,12 +170,12 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
         return nullptr;
     }
 
-    std::vector<std::pair<std::string, std::unique_ptr<DataReaderType<Layer>>>> slices;
+    std::vector<std::pair<std::filesystem::path, std::unique_ptr<DataReaderType<Layer>>>> slices;
     slices.reserve(files.size());
 
     std::transform(
         files.begin(), files.end(), std::back_inserter(slices),
-        [&](const auto& file) -> std::pair<std::string, std::unique_ptr<DataReaderType<Layer>>> {
+        [&](const auto& file) -> std::pair<std::filesystem::path, std::unique_ptr<DataReaderType<Layer>>> {
             return {file, std::move(readerFactory_->getReaderForTypeAndExtension<Layer>(
                               filePattern_.getSelectedExtension(), file))};
         });
@@ -200,7 +202,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     const auto referenceRAM = referenceLayer->getRepresentation<LayerRAM>();
     if (glm::compMul(referenceRAM->getDimensions()) == 0) {
         throw Exception(
-            fmt::format("Could not extract valid image dimensions from '{}'", first->first),
+            fmt::format("Could not extract valid image dimensions from {}", first->first),
             IVW_CONTEXT);
     }
 
@@ -265,7 +267,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
 
                 if (layerRAM->getDimensions() != layerDims) {
                     LogProcessorWarn(
-                        fmt::format("Unexpected dimensions: {} , expected: {}, for image: {}",
+                        fmt::format("Unexpected dimensions: {}, expected: {}, for image: {}",
                                     layer->getDimensions(), layerDims, file));
                     fill(slice);
                     continue;

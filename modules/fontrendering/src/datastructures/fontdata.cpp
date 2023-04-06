@@ -40,7 +40,7 @@ FontData::FontData(const FontSettings& s)
     , fontSize{s.getFontSize()}
     , lineSpacing{s.getLineSpacing()}
     , anchorPos{s.getAnchorPos()} {}
-std::string FontData::getFontFace() const { return fontFace; }
+const std::filesystem::path& FontData::getFontFace() const { return fontFace; }
 int FontData::getFontSize() const { return fontSize; }
 float FontData::getLineSpacing() const { return lineSpacing; }
 vec2 FontData::getAnchorPos() const { return anchorPos; }

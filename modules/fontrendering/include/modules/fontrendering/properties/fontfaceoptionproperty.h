@@ -44,7 +44,7 @@ namespace inviwo {
  * \ingroup properties
  * This option property lists all available font faces which can be used for font rendering.
  */
-class IVW_MODULE_FONTRENDERING_API FontFaceOptionProperty : public OptionPropertyString {
+class IVW_MODULE_FONTRENDERING_API FontFaceOptionProperty : public OptionProperty<std::filesystem::path> {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;

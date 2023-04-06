@@ -49,7 +49,7 @@ FileProperty::FileProperty(std::string_view identifier, std::string_view display
     , contentType_(contentType) {
     // Explicitly set the file name here since the TemplateProperty itself is initialized with an
     // empty string as default value. This ensures that the set file name is always serialized.
-    set(std::string{value});
+    set(value);
     addNameFilter(FileExtension::all());
 }
 

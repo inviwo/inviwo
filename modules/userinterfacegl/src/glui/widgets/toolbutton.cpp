@@ -59,6 +59,8 @@
 #include <glm/vec2.hpp>  // for operator+, operator-
 #include <glm/vec4.hpp>  // for vec<>::(anonymous)
 
+#include <fmt/std.h>
+
 namespace inviwo {
 class Layer;
 class Processor;
@@ -84,7 +86,9 @@ ToolButton::ToolButton(std::shared_ptr<Texture2D> labelImage, Processor& process
     setLabelVisible(false);
 }
 
-void ToolButton::setImage(const std::string& filename) { labelImage_ = loadImage(filename); }
+void ToolButton::setImage(const std::filesystem::path& filename) {
+    labelImage_ = loadImage(filename);
+}
 
 void ToolButton::setImage(std::shared_ptr<Texture2D> texture) { labelImage_ = texture; }
 
@@ -132,7 +136,7 @@ void ToolButton::renderWidget(const ivec2& origin, const size2_t& canvasDim) {
     }
 }
 
-std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string& filename) {
+std::shared_ptr<Texture2D> ToolButton::loadImage(const std::filesystem::path& filename) {
     auto factory = util::getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(filename)) {
         try {
@@ -140,9 +144,8 @@ std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string& filename) {
             auto layer = reader->readData(filename);
             return layer->getRepresentation<LayerGL>()->getTexture();
         } catch (DataReaderException const& e) {
-            util::log(e.getContext(),
-                      "Could not load texture data: " + filename + ", " + e.getMessage(),
-                      LogLevel::Error);
+            util::logError(e.getContext(), "Could not load texture data: {}, {}", filename,
+                           e.getMessage());
             return nullptr;
         }
     } else {

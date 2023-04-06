@@ -107,7 +107,7 @@ public:
     /**
      * \brief set font face of labels and caption to \p fontFace
      */
-    AxisProperty& setFontFace(std::string_view fontFace);
+    AxisProperty& setFontFace(const std::filesystem::path& fontFace);
 
     /**
      * \brief set font size for caption and labels

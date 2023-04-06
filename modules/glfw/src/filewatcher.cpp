@@ -59,7 +59,8 @@ public:
     enum class Action { Added, Removed, Modified };
 
     WatcherThread(
-        std::function<void(const std::string&, const std::string&, Action)> changeCallback)
+        std::function<void(const std::filesystem::path&, const std::filesystem::path&, Action)>
+            changeCallback)
         : changeCallback_{std::move(changeCallback)} {}
 
     ~WatcherThread() {
@@ -67,7 +68,7 @@ public:
         thread_.join();
     }
 
-    bool addObservation(const std::string& path) {
+    bool addObservation(const std::filesystem::path& path) {
         std::scoped_lock lock{mutex_};
         if (active_ + toAdd_.size() - toRemove_.size() + 1 < MAXIMUM_WAIT_OBJECTS) {
             toAdd_.push_back(path);
@@ -76,13 +77,13 @@ public:
             return false;
         }
     }
-    void removeObservation(const std::string& path) {
+    void removeObservation(const std::filesystem::path& path) {
         std::scoped_lock lock{mutex_};
         toRemove_.push_back(path);
     }
 
 private:
-    void remove(const std::vector<std::string>& toRemove) {
+    void remove(const std::vector<std::filesystem::path>& toRemove) {
         auto range = util::zip(handles_, observed_);
         auto it = std::remove_if(range.begin(), range.end(), [&](auto&& elem) {
             return std::find(toRemove.begin(), toRemove.end(), elem.second().first) !=
@@ -96,10 +97,9 @@ private:
         }
     }
 
-    void add(const std::vector<std::string>& toAdd) {
+    void add(const std::vector<std::filesystem::path>& toAdd) {
         for (auto& path : toAdd) {
-            auto wpath = util::toWstring(path);
-            const auto handle = FindFirstChangeNotification(wpath.c_str(), TRUE, filter);
+            const auto handle = FindFirstChangeNotification(path.c_str(), TRUE, filter);
 
             if (handle == INVALID_HANDLE_VALUE || handle == nullptr) {
                 LogError("FindFirstChangeNotification function failed.");
@@ -108,8 +108,7 @@ private:
 
             handles_[active_] = handle;
             observed_[active_].first = path;
-            for (auto& elem : filesystem::getDirectoryContentsRecursively(
-                     path, filesystem::ListMode::FilesAndDirectories)) {
+            for (auto&& elem : std::filesystem::recursive_directory_iterator{path}) {
                 observed_[active_].second[elem] = filesystem::fileModificationTime(elem);
             }
 
@@ -157,10 +156,11 @@ private:
     }
 
     // Update the time stamps on all files and return the changed ones.
-    std::vector<std::pair<std::string, Action>> getChangedAndUpdateFiles(
-        const std::string& path, std::unordered_map<std::string, time_t>& files) {
+    std::vector<std::pair<std::filesystem::path, Action>> getChangedAndUpdateFiles(
+        const std::filesystem::path& path,
+        std::unordered_map<std::filesystem::path, time_t>& files) {
 
-        std::vector<std::pair<std::string, Action>> changed;
+        std::vector<std::pair<std::filesystem::path, Action>> changed;
 
         std::erase_if(files, [&](const auto& item) {
             if (!filesystem::fileExists(item.first)) {
@@ -171,9 +171,7 @@ private:
             }
         });
 
-        for (auto& elem : filesystem::getDirectoryContentsRecursively(
-                 path, filesystem::ListMode::FilesAndDirectories)) {
-
+        for (auto&& elem : std::filesystem::recursive_directory_iterator{path}) {
             auto it = files.find(elem);
             if (it == files.end()) {
                 changed.emplace_back(elem, Action::Removed);
@@ -194,15 +192,16 @@ private:
         FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE;
 
     std::array<HANDLE, MAXIMUM_WAIT_OBJECTS> handles_{};
-    std::array<std::pair<std::string, std::unordered_map<std::string, time_t>>,
+    std::array<std::pair<std::filesystem::path, std::unordered_map<std::filesystem::path, time_t>>,
                MAXIMUM_WAIT_OBJECTS>
         observed_{};
     std::atomic<size_t> active_ = 0;
 
-    std::function<void(const std::string&, const std::string&, Action)> changeCallback_;
+    std::function<void(const std::filesystem::path&, const std::filesystem::path&, Action)>
+        changeCallback_;
     std::mutex mutex_;
-    std::vector<std::string> toAdd_;
-    std::vector<std::string> toRemove_;
+    std::vector<std::filesystem::path> toAdd_;
+    std::vector<std::filesystem::path> toRemove_;
     std::atomic<bool> stop_{false};
     std::chrono::milliseconds timeout_{1000};
     std::thread thread_{[this]() {
@@ -214,9 +213,9 @@ private:
 FileWatcher::FileWatcher(InviwoApplication* app)
     : app_{app}
     , watcher_{std::make_unique<WatcherThread>(
-          [this](const std::string& dir, const std::string& path, WatcherThread::Action) {
+          [this](const std::filesystem::path& dir, const std::filesystem::path& path, WatcherThread::Action) {
               auto notifyAboutChanges = [this, dir, path]() {
-                  if (filesystem::fileExists(path)) {
+                  if (std::filesystem::is_regular_file(path)) {
                       // don't use iterators here, they might be invalidated.
                       const auto orgSize = fileObservers_.size();
                       for (size_t i = 0; i < orgSize && i < fileObservers_.size(); ++i) {
@@ -225,7 +224,7 @@ FileWatcher::FileWatcher(InviwoApplication* app)
                           }
                       }
                   }
-                  if (filesystem::directoryExists(dir)) {
+                  if (std::filesystem::is_directory(dir)) {
                       // don't use iterators here, they might be invalidated.
                       const auto orgSize = fileObservers_.size();
                       for (size_t i = 0; i < orgSize && i < fileObservers_.size(); ++i) {
@@ -259,7 +258,7 @@ void FileWatcher::unRegisterFileObserver(FileObserver* fileObserver) {
     }
 }
 
-void FileWatcher::startFileObservation(const std::string& fileName) {
+void FileWatcher::startFileObservation(const std::filesystem::path& fileName) {
     const bool isDirectory = filesystem::directoryExists(fileName);
     const auto dir = isDirectory ? fileName : filesystem::getFileDirectory(fileName);
 
@@ -274,7 +273,7 @@ void FileWatcher::startFileObservation(const std::string& fileName) {
     }
 }
 
-void FileWatcher::stopFileObservation(const std::string& fileName) {
+void FileWatcher::stopFileObservation(const std::filesystem::path& fileName) {
     auto observerit =
         std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
                      [fileName](const auto observer) { return observer->isObserved(fileName); });
@@ -319,8 +318,8 @@ void FileWatcher::unRegisterFileObserver(FileObserver* fileObserver) {
     std::erase(fileObservers_, fileObserver);
 }
 
-void FileWatcher::stopFileObservation(const std::string& fileName) {}
-void FileWatcher::startFileObservation(const std::string& fileName) {}
+void FileWatcher::stopFileObservation(const std::filesystem::path& fileName) {}
+void FileWatcher::startFileObservation(const std::filesystem::path& fileName) {}
 
 #endif
 

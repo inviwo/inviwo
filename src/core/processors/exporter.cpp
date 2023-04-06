@@ -37,13 +37,11 @@
 
 namespace inviwo {
 
-std::vector<std::string> util::exportAllFiles(ProcessorNetwork& network,
-                                              const std::filesystem::path& path,
-                                              std::string_view nameTemplate,
-                                              const std::vector<FileExtension>& candidateExtensions,
-                                              Overwrite overwrite) {
+std::vector<std::filesystem::path> util::exportAllFiles(
+    ProcessorNetwork& network, const std::filesystem::path& path, std::string_view nameTemplate,
+    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) {
 
-    std::vector<std::string> exportedFiles;
+    std::vector<std::filesystem::path> exportedFiles;
     network.forEachProcessor([&](Processor* p) {
         if (auto exporter = dynamic_cast<const Exporter*>(p)) {
             if (!p->isValid()) {

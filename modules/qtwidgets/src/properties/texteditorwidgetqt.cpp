@@ -250,7 +250,7 @@ void TextEditorDockWidget::save() {
     editor_->document()->setModified(false);
 }
 
-void TextEditorDockWidget::saveToFile(const std::string& filename) {
+void TextEditorDockWidget::saveToFile(const std::filesystem::path& filename) {
     if (auto f = filesystem::ofstream(filename)) {
         f << utilqt::fromQString(editor_->toPlainText());
     }

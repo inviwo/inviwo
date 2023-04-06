@@ -61,10 +61,6 @@ std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
         return !util::contains(supportedExt, font.extension().string());
     });
 
-    // sort file names case insensitive
-    std::sort(fonts.begin(), fonts.end(),
-              [](std::string a, std::string b) { return toLower(a) < toLower(b); });
-
     // capitalize the first letter and each one following a space.
     // Also replace '-' with space for improved readability
     auto makeReadable = [](const std::filesystem::path& str) {
@@ -91,6 +87,11 @@ std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
                        return {makeReadable(str.stem()), path / str};
                    });
 
+    // sort file names case insensitive
+    std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
+        return iCaseCmp(a.first, b.first);
+    });
+
     return result;
 }
 
@@ -98,24 +99,25 @@ std::filesystem::path getDefaultFontPath() {
     return InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() / "fonts";
 }
 
-std::string getFont(FontType type, FullPath path) {
-    const auto& [name, ext] = [type]() -> std::pair<std::string, std::string> {
+std::filesystem::path getFont(FontType type, FullPath path) {
+    auto [name, ext] = [type]() -> std::pair<std::filesystem::path, std::string> {
         switch (type) {
             case FontType::Default:
-                return {"OpenSans-Semibold", "ttf"};
+                return {"OpenSans-Semibold", ".ttf"};
             case FontType::Bold:
-                return {"OpenSans-Bold", "ttf"};
+                return {"OpenSans-Bold", ".ttf"};
             case FontType::Caption:
-                return {"OpenSans-Semibold", "ttf"};
+                return {"OpenSans-Semibold", ".ttf"};
             case FontType::Label:
-                return {"OpenSans-Regular", "ttf"};
+                return {"OpenSans-Regular", ".ttf"};
             default:
-                return {"OpenSans-Semibold", "ttf"};
+                return {"OpenSans-Semibold", ".ttf"};
         }
     }();
 
     if (path == FullPath::Yes) {
-        return getDefaultFontPath() / fmt::format("{}.{}", name, ext);
+        name = getDefaultFontPath() / name;
+        name += ext;
     }
 
     return name;

@@ -153,8 +153,8 @@ ParallelCoordinates::ParallelCoordinates()
     , filterAlpha_("filterAlpha", "Filter Alpha", 0.75f)
     , filterIntensity_("filterIntensity", "Filter Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
 
-    , captionSettings_("captions", "Caption Settings", font::getFont(font::FontType::Caption), 24,
-                       0.0f, vec2{0.0f, -1.0f})
+    , captionSettings_("captions", "Caption Settings", font::FontType::Caption, 24, 0.0f,
+                       vec2{0.0f, -1.0f})
     , captionPosition_("position", "Position",
                        {{"none", "None", LabelPosition::None},
                         {"above", "Above", LabelPosition::Above},
@@ -164,7 +164,7 @@ ParallelCoordinates::ParallelCoordinates()
     , captionColor_("color", "Color", vec4(.0, .0f, .0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                     InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
-    , labelSettings_("labels", "Label Settings", font::getFont(font::FontType::Label), 20, 0.0f,
+    , labelSettings_("labels", "Label Settings", font::FontType::Label, 20, 0.0f,
                      vec2{-1.0f, 0.0f})
     , showLabels_("show", "Display min/max", true)
     , labelOffset_("offset", "Offset", 15.0f, -50.0, 50.0f)

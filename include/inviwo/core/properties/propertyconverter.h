@@ -143,7 +143,7 @@ protected:
 class FileToStringConverter : public TemplatePropertyConverter<FileProperty, StringProperty> {
 protected:
     virtual void convertimpl(const FileProperty* src, StringProperty* dst) const override {
-        dst->set(src->get());
+        dst->set(src->get().generic_string());
     }
 };
 
@@ -158,7 +158,7 @@ class DirectoryToStringConverter
     : public TemplatePropertyConverter<DirectoryProperty, StringProperty> {
 protected:
     virtual void convertimpl(const DirectoryProperty* src, StringProperty* dst) const override {
-        dst->set(src->get());
+        dst->set(src->get().generic_string());
     }
 };
 

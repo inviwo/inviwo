@@ -50,7 +50,7 @@ ProcessorInfo CompositeProcessorFactoryObject::makeProcessorInfo(
     const std::filesystem::path& file) {
 
     auto pi = ProcessorTraits<CompositeProcessor>::getProcessorInfo();
-    auto name = file.stem();
+    auto name = file.stem().string();
     auto id = pi.classIdentifier + util::stripIdentifier(file.string());
 
     Deserializer d{file};

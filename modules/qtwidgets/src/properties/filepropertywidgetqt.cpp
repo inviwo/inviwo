@@ -147,7 +147,7 @@ void FilePropertyWidgetQt::addEditor() {
 }
 
 void FilePropertyWidgetQt::setPropertyValue() {
-    const std::string filename{property_->get()};
+    const auto filename{property_->get()};
 
     InviwoFileDialog fileDialog(this, property_->getDisplayName(), property_->getContentType(),
                                 filename);

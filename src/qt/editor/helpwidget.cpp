@@ -422,8 +422,8 @@ void HelpBrowser::setCurrent(std::string_view processorClassIdentifier) {
 
 QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
     std::string s = utilqt::fromQString(resourceUrl.toString(QUrl::None));
-    replaceInString(s, "~modulePath~", currentModulePath_);
-    replaceInString(s, "~basePath~", app_->getBasePath());
+    replaceInString(s, "~modulePath~", currentModulePath_.generic_string());
+    replaceInString(s, "~basePath~", app_->getBasePath().generic_string());
     const QUrl url(utilqt::toQString(s), QUrl::TolerantMode);
     const QUrlQuery query(url);
 

@@ -69,7 +69,7 @@ void testVolumeLoad(Volume* volume) {
 
 template <typename T>
 void testDatVolumeLoad(std::string_view filename) {
-    std::string file = filesystem::getPath(PathType::Tests) / "volumes" /  filename;
+    auto file = filesystem::getPath(PathType::Tests) / "volumes" /  filename;
 
     auto reader = InviwoApplication::getPtr()
                       ->getDataReaderFactory()
@@ -85,7 +85,7 @@ void testDatVolumeLoad(std::string_view filename) {
 
 template <typename T>
 void testIvfVolumeLoad(std::string_view filename) {
-    std::string file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
+    auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(
             file);
@@ -166,7 +166,7 @@ void testVolumeClone(Volume* volume) {
 
 template <typename T>
 void testDatVolumeClone(std::string_view filename) {
-    std::string file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
+    auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader = InviwoApplication::getPtr()
                       ->getDataReaderFactory()
                       ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(file);
@@ -181,7 +181,7 @@ void testDatVolumeClone(std::string_view filename) {
 
 template <typename T>
 void testIvfVolumeClone(std::string_view filename) {
-    std::string file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
+    auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(
             file);

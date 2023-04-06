@@ -42,19 +42,19 @@ KernelManager::KernelManager() : FileObserver{InviwoApplication::getPtr()} {}
 
 KernelManager::~KernelManager() { clear(); }
 
-cl::Program* KernelManager::buildProgram(const std::string& fileName,
+cl::Program* KernelManager::buildProgram(const std::filesystem::path& fileName,
                                          const std::string& header /*= ""*/,
                                          const std::string& defines /*= ""*/, bool& wasBuilt) {
     wasBuilt = false;
-    std::string absoluteFileName = fileName;
-    if (!filesystem::fileExists(absoluteFileName)) {
+    std::filesystem::path absoluteFileName = fileName;
+    if (!std::filesystem::is_regular_file(absoluteFileName)) {
         // Search in include directories added by modules
-        const std::vector<std::string> openclSearchPaths =
+        const std::vector<std::filesystem::path> openclSearchPaths =
             OpenCL::getPtr()->getCommonIncludeDirectories();
 
         for (size_t i = 0; i < openclSearchPaths.size(); i++) {
-            if (filesystem::fileExists(openclSearchPaths[i] + "/" + fileName)) {
-                absoluteFileName = openclSearchPaths[i] + "/" + fileName;
+            if (std::filesystem::is_regular_file(openclSearchPaths[i] / fileName)) {
+                absoluteFileName = openclSearchPaths[i] / fileName;
                 break;
             }
         }
@@ -92,7 +92,7 @@ cl::Program* KernelManager::buildProgram(const std::string& fileName,
     }
 
     ProgramIdentifier uniqueProgram{program, header, defines};
-    programs_.insert(std::pair<std::string, ProgramIdentifier>(absoluteFileName, uniqueProgram));
+    programs_.emplace(absoluteFileName, uniqueProgram);
     startFileObservation(absoluteFileName);
     wasBuilt = true;
     return program;
@@ -118,7 +118,7 @@ cl::Kernel* KernelManager::getKernel(cl::Program* program, const std::string& ke
     return nullptr;
 }
 
-void KernelManager::fileChanged(const std::string& fileName) {
+void KernelManager::fileChanged(const std::filesystem::path& fileName) {
     std::pair<ProgramMap::iterator, ProgramMap::iterator> programRange =
         programs_.equal_range(fileName);
 
@@ -143,14 +143,14 @@ void KernelManager::fileChanged(const std::string& fileName) {
         }
 
         try {
-            LogInfo(fileName + " building program with defines: " + programIt->second.defines);
+            LogInfo(fileName.string() + " building program with defines: " + programIt->second.defines);
             *program =
                 OpenCL::buildProgram(fileName, programIt->second.header, programIt->second.defines);
-            LogInfo(fileName + " finished building program");
+            LogInfo(fileName.string() + " finished building program");
             std::vector<cl::Kernel> newKernels;
 
             try {
-                LogInfo(fileName + " creating kernels");
+                LogInfo(fileName.string() + " creating kernels");
                 program->createKernels(&newKernels);
             } catch (cl::Error& err) {
                 LogError(fileName << " Failed to create kernels, error:" << err.what() << "("

@@ -62,9 +62,9 @@ CheckBox::CheckBox(const std::string& label, Processor& processor, Renderer& uiR
     widgetExtent_ = extent;
     action_ = [&]() { LogInfo("UI checkbox " << getLabel() << " toggled: " << getValue()); };
 
-    std::vector<std::string> textureFiles = {"checkbox-fill.png", "checkbox-unchecked.png",
-                                             "checkbox-checked.png", "checkbox-unchecked-halo.png",
-                                             "checkbox-checked-halo.png"};
+    std::vector<std::filesystem::path> textureFiles = {
+        "checkbox-fill.png", "checkbox-unchecked.png", "checkbox-checked.png",
+        "checkbox-unchecked-halo.png", "checkbox-checked-halo.png"};
     uiTextures_ = uiRenderer_->createUITextures(
         "checkbox", textureFiles, util::getModulePath("UserInterfaceGL", ModulePath::Images));
 

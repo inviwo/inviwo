@@ -62,7 +62,7 @@ public:
     virtual InviwoApplication* getInviwoApplication() override;
 
 protected:
-    std::string getFileName() const;
+    std::filesystem::path getFileName() const;
     std::string identifier_;
     bool isDeserializing_;
     InviwoApplication* app_;

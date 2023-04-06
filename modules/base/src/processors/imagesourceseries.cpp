@@ -114,7 +114,7 @@ void ImageSourceSeries::process() {
         fileList_ = imageFilePattern_.getFileList();
         const auto numElems = fileList_.size();
         std::erase_if(fileList_,
-                      [this](const std::string& file) { return !isValidImageFile(file); });
+                      [this](const auto& file) { return !isValidImageFile(file); });
         if (numElems != fileList_.size()) {
             // number of valid files has changed, need to update properties
             updateProperties();
@@ -184,7 +184,7 @@ void ImageSourceSeries::updateFileName() {
     if ((index < 0) || (static_cast<std::size_t>(index) >= fileList_.size())) {
         imageFileName_.set("<no images found>");
     } else {
-        imageFileName_.set(fileList_[index]);
+        imageFileName_.set(fileList_[index].string());
     }
 }
 

@@ -82,7 +82,7 @@ bool ScatterPlotDataFrameVisualizer::hasSourceProcessor() const { return true; }
 bool ScatterPlotDataFrameVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> ScatterPlotDataFrameVisualizer::addSourceProcessor(
-    const std::string& filename, ProcessorNetwork* network) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network) const {
 
     auto source = network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0}, filename));
     auto outport = source->getOutports().front();
@@ -111,7 +111,7 @@ std::vector<Processor*> ScatterPlotDataFrameVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> ScatterPlotDataFrameVisualizer::addSourceAndVisualizerNetwork(
-    const std::string& filename, ProcessorNetwork* network) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network) const {
 
     auto sourceAndOutport = addSourceProcessor(filename, network);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, network);

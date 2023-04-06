@@ -60,15 +60,15 @@
 namespace inviwo {
 
 namespace {
-std::string getPath() {
+std::filesystem::path getPath() {
     auto path = util::getInviwoApplication()->getModuleByType<Python3Module>()->getPath(
         ModulePath::UnitTests);
-    return path / "scripts/";
+    return path / "scripts";
 }
 }  // namespace
 
 TEST(Python3Scripts, SimpleBufferTest) {
-    PythonScriptDisk script(getPath() + "simple_buffer_test.py");
+    PythonScriptDisk script(getPath() / "simple_buffer_test.py");
 
     const static size_t bufferSize = 10;
     // Test 3: buffer test

@@ -190,7 +190,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::fi
     checkExists(filePath);
 
     /* read input dataset, but not data */
-    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.c_str(), 0),
+    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.string().c_str(), 0),
                                             nifti_image_free);
     if (!niftiImage) {
         throw DataReaderException(IVW_CONTEXT_CUSTOM("NiftiReader"),

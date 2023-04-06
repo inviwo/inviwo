@@ -33,7 +33,7 @@
 #include <inviwo/core/util/dialog.h>
 #include <inviwo/core/datastructures/datamapper.h>
 
-#include <string>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -43,7 +43,7 @@ public:
     virtual ~VolumeDataReaderDialog() = default;
 
     virtual bool show() = 0;
-    virtual void setFile(std::string fileName) = 0;
+    virtual void setFile(const std::filesystem::path& fileName) = 0;
 
     virtual const DataFormatBase* getFormat() const = 0;
     virtual uvec3 getDimensions() const = 0;

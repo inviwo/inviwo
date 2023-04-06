@@ -61,13 +61,13 @@ public:
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
 
 private:
-    virtual void startFileObservation(const std::string& fileName) override;
-    virtual void stopFileObservation(const std::string& fileName) override;
+    virtual void startFileObservation(const std::filesystem::path& fileName) override;
+    virtual void stopFileObservation(const std::filesystem::path& fileName) override;
 
     InviwoApplication* app_;
     std::unique_ptr<WatcherThread> watcher_;
     std::vector<FileObserver*> fileObservers_;
-    std::unordered_map<std::string, std::unordered_set<std::string>> observed_;
+    std::unordered_map<std::filesystem::path, std::unordered_set<std::filesystem::path>> observed_;
 };
 
 }  // namespace inviwo

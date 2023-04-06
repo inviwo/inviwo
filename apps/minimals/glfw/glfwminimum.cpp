@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     cmdparser.add(
         &snapshotArg,
         [&]() {
-            std::string path = cmdparser.getOutputPath();
+            auto path = cmdparser.getOutputPath();
             if (path.empty()) path = inviwoApp.getPath(PathType::Images);
             util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
         },

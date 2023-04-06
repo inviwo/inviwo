@@ -114,7 +114,7 @@ struct TextTextureObject {
  */
 class IVW_MODULE_FONTRENDERING_API TextRenderer {
 public:
-    TextRenderer(std::string_view fontPath = font::getFont(font::FontType::Default,
+    TextRenderer(const std::filesystem::path& fontPath = font::getFont(font::FontType::Default,
                                                            font::FullPath::Yes));
     TextRenderer(const TextRenderer& rhs) = delete;
     TextRenderer(TextRenderer&& rhs) noexcept;
@@ -129,7 +129,7 @@ public:
      * @throws Exception      if the font file could not be opened
      * @throws FileException  if the font format is unsupported
      */
-    void setFont(std::string_view fontPath);
+    void setFont(const std::filesystem::path& fontPath);
 
     std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState,
                utilgl::ActivateFBO>
