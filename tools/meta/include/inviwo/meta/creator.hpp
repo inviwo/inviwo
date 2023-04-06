@@ -84,9 +84,9 @@ private:
     void log(std::string_view message) const;
     void log(std::string_view key, std::string_view message) const;
 
-    template <typename S, typename... Args>
-    void logf(S&& s, Args&&... args) const {
-        log(fmt::format(std::forward<S>(s), std::forward<Args>(args)...));
+    template <typename... Args>
+    void logf(fmt::format_string<Args...> format, Args&&... args) const {
+        log(fmt::format(format, std::forward<Args>(args)...));
     }
 
     json::json createSettings(const InviwoModule& module, std::string_view fileName) const;

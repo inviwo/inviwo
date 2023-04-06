@@ -46,6 +46,8 @@
 #include <warn/ignore/all>
 #include <nlohmann/json.hpp>
 
+#include <fmt/std.h>
+
 #ifdef WIN32
 #include <ciso646>  // required for logical operators 'not', 'and', ... used by inja.hpp
 #endif
@@ -111,7 +113,7 @@ void Creator::generate(const std::filesystem::path& filePath, std::string_view t
     std::string type{tag};
     type[0] = static_cast<char>(::toupper(type[0]));
 
-    logf("Creating {} '{}' at '{}'", type, name, path.generic_string());
+    logf("Creating {} '{}' at {}", type, name, path);
     log(" * Settings");
     log("Module", im.name());
     log("Module Include", im.moduleInclude());
@@ -143,8 +145,8 @@ void Creator::generate(InviwoModule& im, const std::filesystem::path& filePath,
     auto cmake = [&](const std::optional<std::string>& cmakeGroup,
                      const std::filesystem::path& cmakepath) {
         if (!opts.dryrun && cmakeGroup) {
-            logf("    - Register {} as '{}' in {} : {}", name, cmakepath.generic_string(),
-                 im.cmakelistsFile().generic_string(), *cmakeGroup);
+            logf("    - Register {} as {} in {} : {}", name, cmakepath, im.cmakelistsFile(),
+                 *cmakeGroup);
             im.addFileToGroup(*cmakeGroup, cmakepath);
         }
     };
@@ -153,12 +155,11 @@ void Creator::generate(InviwoModule& im, const std::filesystem::path& filePath,
         log(dst.generic_string(), file.description);
 
         if (!opts.force && fs::exists(im.path() / dst)) {
-            throw util::makeError("Error: file '{}' already exits, use --force to overwrite",
-                                  dst.generic_string());
+            throw util::makeError("Error: file '{}' already exits, use --force to overwrite", dst);
         }
         if (!opts.dryrun) {
             if (!fs::exists(im.path() / dst.parent_path())) {
-                logf("    - Create folder {}", dst.parent_path().generic_string());
+                logf("    - Create folder {}", dst.parent_path());
                 fs::create_directories(im.path() / dst.parent_path());
             }
             env.write(env.parse_template(file.templateFile), settings, dst.generic_string());
@@ -176,8 +177,7 @@ void Creator::generate(InviwoModule& im, const std::filesystem::path& filePath,
         write(*other, im.getOtherPath(path / (lname + "." + other->extension)));
     }
     if (files.registration && !opts.dryrun) {
-        logf("    - Register {} '{}' in {}", *files.registration, name,
-             im.registrationFile().generic_string());
+        logf("    - Register {} '{}' in {}", *files.registration, name, im.registrationFile());
         im.registerProcessor(name, incpath);
     }
 }
@@ -188,7 +188,7 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
         fs::weakly_canonical(modulePath.parent_path().empty() ? fs::current_path()
                                                               : modulePath.parent_path()) /
         util::toLower(name);
-    logf("Creating module '{}' at '{}'", name, path.generic_string());
+    logf("Creating module '{}' at {}", name, path);
     if (fs::exists(path) && !opts.force) {
         throw util::makeError("Error: Module folder for \"{}\" already exits", name);
     }
@@ -234,7 +234,7 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
 void Creator::updateModule(const fs::path& modulePath, std::string_view org,
                            const std::vector<std::string>& filters) const {
     if (fs::exists(modulePath / "src") || fs::exists(modulePath / "include")) {
-        logf("Module at '{}' already updated", modulePath.generic_string());
+        logf("Module at {} already updated", modulePath);
         return;
     }
 
@@ -242,7 +242,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
     oldIm.setDryrun(true);  // Don't save
     InviwoModule im{oldIm.path(), ModuleConf{oldIm.name(), org}};
 
-    logf("Updating module '{}' at '{}'", im.name(), im.path().generic_string());
+    logf("Updating module '{}' at {}", im.name(), im.path());
 
     log(" * Settings");
     log("Name", im.name());
@@ -303,8 +303,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
             }
 
         } else if (item.path().extension() == ".h") {
-            logf("  - {}\n    -> {}", relpath.generic_string(),
-                 (im.incPath() / relpath).generic_string());
+            logf("  - {}\n    -> {}", relpath, (im.incPath() / relpath));
             const auto dst = im.path() / im.incPath() / relpath;
             fs::create_directories(dst.parent_path());
             fs::copy_file(item.path(), dst);
@@ -320,7 +319,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
         while (!item.empty()) {
             if (fs::exists(oldIm.path() / item) && fs::is_directory(oldIm.path() / item) &&
                 fs::is_empty(oldIm.path() / item)) {
-                logf("  - {}", item.generic_string());
+                logf("  - {}", item);
                 fs::remove(oldIm.path() / item);
             }
             item = item.parent_path();

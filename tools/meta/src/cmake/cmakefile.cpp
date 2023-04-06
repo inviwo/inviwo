@@ -116,7 +116,7 @@ void convert(CMakeFile& cmakefile, const p::parse_tree::node& n) {
             cmakefile.items.emplace_back(std::move(cmd));
         } else {
             throw util::makeError("Error: Unhandled node '{}' while parsing CMakeLists: '{}'",
-                                    child->type, n.source);
+                                  child->type, n.source);
         }
     }
 }
@@ -131,8 +131,8 @@ void parse(CMakeFile& file, Input&& input) {
         convert(file, *(root->children[0]));
     } catch (const p::parse_error& e) {
         auto& pos0 = e.positions().front();
-        throw util::makeError("Error: Parsing CMakeFile: '{}' at line: {} col: {}",
-                              pos0.source, pos0.line, pos0.column);
+        throw util::makeError("Error: Parsing CMakeFile: '{}' at line: {} col: {}", pos0.source,
+                              pos0.line, pos0.column);
     }
 }
 
@@ -141,12 +141,12 @@ struct overloaded : Ts... {
     using Ts::operator()...;
 };
 template <class... Ts>
-overloaded(Ts...)->overloaded<Ts...>;
+overloaded(Ts...) -> overloaded<Ts...>;
 
 }  // namespace
 
 CMakeFile::CMakeFile(const std::filesystem::path& path) {
-    tao::pegtl::file_input<> in(path.string());
+    tao::pegtl::file_input<> in(path);
     parse(*this, in);
 }
 
