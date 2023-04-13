@@ -1,6 +1,10 @@
 # Create python module
 set(HEADER_FILES
     include/inviwopy/inviwopy.h
+    include/inviwopy/properties/pyminmaxproperties.h
+    include/inviwopy/properties/pyoptionproperties.h
+    include/inviwopy/properties/pyordinalproperties.h
+    include/inviwopy/properties/pyordinalrefproperties.h
     include/inviwopy/pybitset.h
     include/inviwopy/pybuffer.h
     include/inviwopy/pycamera.h
@@ -39,12 +43,17 @@ set(HEADER_FILES
     include/inviwopy/pytfprimitiveset.h
     include/inviwopy/pyvolume.h
     include/inviwopy/util/pyglmhelper.h
+    include/inviwopy/util/pypropertyhelper.h
     include/inviwopy/vectoridentifierwrapper.h
 )
 ivw_group("Header Files" BASE ${CMAKE_CURRENT_SOURCE_DIR}/include/inviwopy ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/inviwopy.cpp
+    src/properties/pyminmaxproperties.cpp
+    src/properties/pyoptionproperties.cpp
+    src/properties/pyordinalproperties.cpp
+    src/properties/pyordinalrefproperties.cpp
     src/pybitset.cpp
     src/pybuffer.cpp
     src/pycamera.cpp
@@ -83,6 +92,7 @@ set(SOURCE_FILES
     src/pytfprimitiveset.cpp
     src/pyvolume.cpp
     src/util/pyglmhelper.cpp
+    src/util/pypropertyhelper.cpp
     src/vectoridentifierwrapper.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

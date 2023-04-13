@@ -30,6 +30,12 @@
 #include <inviwopy/pyproperties.h>
 #include <inviwopy/pyflags.h>
 #include <inviwopy/pypropertytypehook.h>
+#include <inviwopy/util/pypropertyhelper.h>
+
+#include <inviwopy/properties/pyordinalproperties.h>
+#include <inviwopy/properties/pyordinalrefproperties.h>
+#include <inviwopy/properties/pyoptionproperties.h>
+#include <inviwopy/properties/pyminmaxproperties.h>
 
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/constraintbehavior.h>
@@ -42,10 +48,6 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/propertyeditorwidget.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/ordinalrefproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/colorconversion.h>
@@ -58,259 +60,6 @@
 namespace py = pybind11;
 
 namespace inviwo {
-
-template <typename T, typename P, typename C>
-void pyTemplateProperty(C& prop) {
-    prop.def_property(
-            "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
-        .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
-}
-
-struct OrdinalPropertyHelper {
-    template <typename T>
-    auto operator()(pybind11::module& m) {
-        namespace py = pybind11;
-        using P = OrdinalProperty<T>;
-
-        auto classname = Defaultvalues<T>::getName() + "Property";
-
-        py::class_<P, Property> prop(m, classname.c_str());
-        prop.def(py::init([](std::string_view identifier, std::string_view name, const T& value,
-                             const T& min, const T& max, const T& increment,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                     return new P(identifier, name, value, min, max, increment, invalidationLevel,
-                                  semantics);
-                 }),
-                 py::arg("identifier"), py::arg("name"),
-                 py::arg("value") = Defaultvalues<T>::getVal(),
-                 py::arg("min") = Defaultvalues<T>::getMin(),
-                 py::arg("max") = Defaultvalues<T>::getMax(),
-                 py::arg("increment") = Defaultvalues<T>::getInc(),
-                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                 py::arg("semantics") = PropertySemantics::Default)
-            .def(py::init([](std::string_view identifier, std::string_view name, Document help,
-                             const T& value, const std::pair<T, ConstraintBehavior>& min,
-                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                     return new P(identifier, name, std::move(help), value, min, max, increment,
-                                  invalidationLevel, semantics);
-                 }),
-                 py::arg("identifier"), py::arg("name"), py::arg("help") = Document{},
-                 py::arg("value") = Defaultvalues<T>::getVal(),
-                 py::arg("min") =
-                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
-                 py::arg("max") =
-                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
-                 py::arg("increment") = Defaultvalues<T>::getInc(),
-                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                 py::arg("semantics") = PropertySemantics::Default)
-            .def(py::init([](std::string_view identifier, std::string_view name, const T& value,
-                             const std::pair<T, ConstraintBehavior>& min,
-                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                     return new P(identifier, name, value, min, max, increment, invalidationLevel,
-                                  semantics);
-                 }),
-                 py::arg("identifier"), py::arg("name"),
-                 py::arg("value") = Defaultvalues<T>::getVal(),
-                 py::arg("min") =
-                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
-                 py::arg("max") =
-                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
-                 py::arg("increment") = Defaultvalues<T>::getInc(),
-                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                 py::arg("semantics") = PropertySemantics::Default)
-            .def_property(
-                "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
-            .def_property("minValue", &P::getMinValue, &P::setMinValue)
-            .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
-            .def_property("increment", &P::getIncrement, &P::setIncrement)
-            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
-
-        return prop;
-    }
-};
-
-struct OrdinalRefPropertyHelper {
-    template <typename T>
-    auto operator()(pybind11::module& m) {
-        namespace py = pybind11;
-        using P = OrdinalRefProperty<T>;
-
-        auto classname = Defaultvalues<T>::getName() + "RefProperty";
-
-        py::class_<P, Property> prop(m, classname.c_str());
-        prop.def(py::init([](std::string_view identifier, std::string_view name,
-                             std::function<T()> get, std::function<void(const T&)> set,
-                             const std::pair<T, ConstraintBehavior>& min,
-                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                     return new P(identifier, name, std::move(get), std::move(set), min, max,
-                                  increment, invalidationLevel, semantics);
-                 }),
-                 py::arg("identifier"), py::arg("name"), py::arg("get"), py::arg("set"),
-                 py::arg("min") =
-                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
-                 py::arg("max") =
-                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
-                 py::arg("increment") = Defaultvalues<T>::getInc(),
-                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                 py::arg("semantics") = PropertySemantics::Default)
-            .def(py::init([](std::string_view identifier, std::string_view name, Document help,
-                             std::function<T()> get, std::function<void(const T&)> set,
-                             const std::pair<T, ConstraintBehavior>& min,
-                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                     return new P(identifier, name, std::move(help), std::move(get), std::move(set),
-                                  min, max, increment, invalidationLevel, semantics);
-                 }),
-                 py::arg("identifier"), py::arg("name"), py::arg("help"), py::arg("get"),
-                 py::arg("set"),
-                 py::arg("min") =
-                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
-                 py::arg("max") =
-                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
-                 py::arg("increment") = Defaultvalues<T>::getInc(),
-                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                 py::arg("semantics") = PropertySemantics::Default)
-
-            .def_property(
-                "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
-            .def_property("minValue", &P::getMinValue, &P::setMinValue)
-            .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
-            .def_property("increment", &P::getIncrement, &P::setIncrement)
-            .def("setGetAndSet", &P::setGetAndSet)
-            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
-
-        return prop;
-    }
-};
-
-struct MinMaxHelper {
-    template <typename T>
-    auto operator()(pybind11::module& m) {
-        namespace py = pybind11;
-        using P = MinMaxProperty<T>;
-        using range_type = glm::tvec2<T, glm::defaultp>;
-
-        auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
-
-        py::class_<P, Property> prop(m, classname.c_str());
-        prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,
-                             const T& valueMin, const T& valueMax, const T& rangeMin,
-                             const T& rangeMax, const T& increment, const T& minSeparation,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                     return new P(identifier, name, std::move(help), valueMin, valueMax, rangeMin,
-                                  rangeMax, increment, minSeparation, invalidationLevel, semantics);
-                 }),
-                 py::arg("identifier"), py::arg("name"), py::arg("help"),
-                 py::arg("valueMin") = Defaultvalues<T>::getMin(),
-                 py::arg("valueMax") = Defaultvalues<T>::getMax(),
-                 py::arg("rangeMin") = Defaultvalues<T>::getMin(),
-                 py::arg("rangeMax") = Defaultvalues<T>::getMax(),
-                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeparation") = 0,
-                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                 py::arg("semantics") = PropertySemantics::Default)
-            .def(py::init([](std::string_view identifier, std::string_view name, const T& valueMin,
-                             const T& valueMax, const T& rangeMin, const T& rangeMax,
-                             const T& increment, const T& minSeparation,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                     return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
-                                  increment, minSeparation, invalidationLevel, semantics);
-                 }),
-                 py::arg("identifier"), py::arg("name"),
-                 py::arg("valueMin") = Defaultvalues<T>::getMin(),
-                 py::arg("valueMax") = Defaultvalues<T>::getMax(),
-                 py::arg("rangeMin") = Defaultvalues<T>::getMin(),
-                 py::arg("rangeMax") = Defaultvalues<T>::getMax(),
-                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeparation") = 0,
-                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                 py::arg("semantics") = PropertySemantics::Default)
-            .def_property("rangeMin", &P::getRangeMin, &P::setRangeMin)
-            .def_property("rangeMax", &P::getRangeMax, &P::setRangeMax)
-            .def_property("increment", &P::getIncrement, &P::setIncrement)
-            .def_property("minSeparation", &P::getMinSeparation, &P::setMinSeparation)
-            .def_property("range", &P::getRange, &P::setRange)
-            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
-
-        pyTemplateProperty<range_type, P>(prop);
-
-        return prop;
-    }
-};
-
-struct OptionPropertyHelper {
-    template <typename T>
-    auto operator()(pybind11::module& m) {
-        namespace py = pybind11;
-        using P = OptionProperty<T>;
-        using O = OptionPropertyOption<T>;
-
-        auto classname = "OptionProperty" + Defaultvalues<T>::getName();
-        auto optionclassname = Defaultvalues<T>::getName() + "Option";
-
-        py::class_<O>(m, optionclassname.c_str())
-            .def(py::init<>())
-            .def(py::init<std::string_view, std::string_view, const T&>())
-            .def_readwrite("id", &O::id_)
-            .def_readwrite("name", &O::name_)
-            .def_readwrite("value", &O::value_);
-
-        py::class_<P, BaseOptionProperty> prop(m, classname.c_str());
-        prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,
-                             std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                     return new P(identifier, name, std::move(help), options, selectedIndex,
-                                  invalidationLevel, semantics);
-                 }),
-                 py::arg("identifier"), py::arg("name"), py::arg("help") = Document{},
-                 py::arg("options") = std::vector<OptionPropertyOption<T>>{},
-                 py::arg("selectedIndex") = 0,
-                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                 py::arg("semantics") = PropertySemantics::Default)
-
-            .def(py::init([](std::string_view identifier, std::string_view name,
-                             std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                     return new P(identifier, name, options, selectedIndex, invalidationLevel,
-                                  semantics);
-                 }),
-                 py::arg("identifier"), py::arg("name"),
-                 py::arg("options") = std::vector<OptionPropertyOption<T>>{},
-                 py::arg("selectedIndex") = 0,
-                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-                 py::arg("semantics") = PropertySemantics::Default)
-
-            .def("addOption", [](P* p, std::string_view id, std::string_view displayName,
-                                 const T& t) { p->addOption(id, displayName, t); })
-
-            .def_property_readonly("values", &P::getValues)
-            .def("removeOption", py::overload_cast<size_t>(&P::removeOption))
-            .def("removeOption", py::overload_cast<std::string_view>(&P::removeOption))
-
-            .def_property(
-                "value", [](P* p) { return p->get(); }, [](P* p, T& t) { p->set(t); })
-            .def_property("selectedValue", &P::getSelectedValue,
-                          [](P* p, const T& val) { p->setSelectedValue(val); })
-            .def_property("selectedIdentifier", &P::getSelectedIdentifier,
-                          &P::setSelectedIdentifier)
-            .def_property("selectedDisplayName", &P::getSelectedDisplayName,
-                          &P::setSelectedDisplayName)
-
-            .def("replaceOptions",
-                 [](P* p, const std::vector<std::string>& ids,
-                    const std::vector<std::string>& displayNames,
-                    const std::vector<T>& values) { p->replaceOptions(ids, displayNames, values); })
-
-            .def("replaceOptions",
-                 [](P* p, std::vector<OptionPropertyOption<T>> options) {
-                     p->replaceOptions(options);
-                 })
-            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
-
-        return prop;
-    }
-};
 
 void exposeProperties(py::module& m) {
 
@@ -408,35 +157,6 @@ void exposeProperties(py::module& m) {
              })
         .def("getHelp", static_cast<Document& (Property::*)()>(&Property::getHelp))
         .def("getDescription", &Property::getDescription);
-
-    py::class_<BaseOptionProperty, Property>(m, "BaseOptionProperty")
-        .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
-        .def_property_readonly("size", &BaseOptionProperty::size)
-
-        .def_property("selectedIndex", &BaseOptionProperty::getSelectedIndex,
-                      &BaseOptionProperty::setSelectedIndex)
-        .def_property("selectedIdentifier", &BaseOptionProperty::getSelectedIdentifier,
-                      &BaseOptionProperty::setSelectedIdentifier)
-        .def_property("selectedDisplayName", &BaseOptionProperty::getSelectedDisplayName,
-                      &BaseOptionProperty::setSelectedDisplayName)
-
-        .def("isSelectedIndex", &BaseOptionProperty::isSelectedIndex)
-        .def("isSelectedIdentifier", &BaseOptionProperty::isSelectedIdentifier)
-        .def("isSelectedDisplayName", &BaseOptionProperty::isSelectedDisplayName)
-
-        .def_property_readonly("identifiers", &BaseOptionProperty::getIdentifiers)
-        .def_property_readonly("displayNames", &BaseOptionProperty::getDisplayNames);
-
-    using OptionPropertyTypes = std::tuple<double, float, int, std::string>;
-    using MinMaxPropertyTypes = std::tuple<float, double, size_t, glm::i64, int>;
-    using OrdinalPropetyTypes = std::tuple<float, int, size_t, glm::i64, double, vec2, vec3, vec4,
-                                           dvec2, dvec3, dvec4, ivec2, ivec3, ivec4, size2_t,
-                                           size3_t, size4_t, mat2, mat3, mat4, dmat2, dmat3, dmat4>;
-
-    util::for_each_type<OrdinalPropetyTypes>{}(OrdinalPropertyHelper{}, m);
-    util::for_each_type<OrdinalPropetyTypes>{}(OrdinalRefPropertyHelper{}, m);
-    util::for_each_type<OptionPropertyTypes>{}(OptionPropertyHelper{}, m);
-    util::for_each_type<MinMaxPropertyTypes>{}(MinMaxHelper{}, m);
 
     py::class_<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
@@ -736,6 +456,11 @@ void exposeProperties(py::module& m) {
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
         .def("press", &ButtonGroupProperty::pressButton);
+
+    exposeOrdinalProperties(m);
+    exposeOrdinalRefProperties(m);
+    exposeOptionProperties(m);
+    exposeMinMaxProperties(m);
 }
 
 }  // namespace inviwo
