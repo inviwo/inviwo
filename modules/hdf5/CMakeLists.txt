@@ -112,14 +112,15 @@ else()
     if(NOT BUILD_SHARED_LIBS)
         set(HDF5_USE_STATIC_LIBRARIES ON)
     endif()
-    find_package(HDF5 REQUIRED)
+    find_package(HDF5 REQUIRED COMPONENTS C CXX)
     target_link_libraries(inviwo-module-hdf5
         PUBLIC
         ${HDF5_LIBRARIES}
-        ${HDF5_HL_LIBRARIES}
         ${HDF5_CXX_LIBRARIES}
-        ${HDF5_HL_CXX_LIBRARIES}
-    )
+        )
+    target_include_directories(inviwo-module-hdf5
+        PUBLIC
+        ${HDF5_INCLUDE_DIRS})
     ivw_vcpkg_install(hdf5 MODULE HDF5)
     set(version ${HDF5_VERSION_STRING})
 endif()
