@@ -27,78 +27,19 @@
  *
  *********************************************************************************/
 
-#include <inviwopy/pyglmtypes.h>
-#include <inviwo/core/util/assertion.h>
-
-#include <inviwo/core/util/glm.h>
-
-#include <modules/python3/pyportutils.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/stl_bind.h>
-#include <pybind11/numpy.h>
-#include <warn/pop>
-
-#include <vector>
-
-namespace py = pybind11;
+#include <inviwopy/pyglmports.h>
+#include <inviwopy/pyglmportsdouble.h>
+#include <inviwopy/pyglmportsfloat.h>
+#include <inviwopy/pyglmportsint.h>
+#include <inviwopy/pyglmportsuint.h>
 
 namespace inviwo {
 
-namespace {
-
-template <typename T>
-constexpr bool alwaysFalse() {
-    return false;
-}
-
-struct ExposePortsFunctor {
-    template <typename T>
-    void operator()(pybind11::module& m) {
-        using V = typename util::value_type<T>::type;
-        constexpr auto N = util::extent<T>::value;
-
-        if constexpr (N == 1) {
-            constexpr auto name = []() {
-                if constexpr (std::is_same_v<T, float>) {
-                    return "float";
-                } else if constexpr (std::is_same_v<T, double>) {
-                    return "double";
-                } else if constexpr (std::is_same_v<T, int>) {
-                    return "int";
-                } else if constexpr (std::is_same_v<T, unsigned int>) {
-                    return "uint";
-                } else {
-                    static_assert(alwaysFalse<T>(), "Missing name for T");
-                }
-            }();
-            const auto vectorName = fmt::format("{}Vector", name);
-            py::bind_vector<std::vector<T>>(m, vectorName);
-            exposeStandardDataPorts<std::vector<T>>(m, vectorName);
-
-        } else {
-            const auto prefix = glm::detail::prefix<V>::value();
-            const auto vectorName = fmt::format("{}vec{}Vector", prefix, N);
-            py::bind_vector<std::vector<T>>(m, vectorName, py::buffer_protocol{});
-            exposeStandardDataPorts<std::vector<T>>(m, vectorName);
-        }
-    }
-};
-
-}  // namespace
-
 void exposeGLMPorts(pybind11::module& m) {
-
-    // clang-format off
-    using types = std::tuple<
-        float, vec2, vec3, vec4,
-        double, dvec2, dvec3, dvec4,
-        int, ivec2, ivec3, ivec4,
-        unsigned int, uvec2, uvec3, uvec4
-    >;
-    // clang-format on
-    util::for_each_type<types>{}(ExposePortsFunctor{}, m);
+    exposeGLMPortsDouble(m);
+    exposeGLMPortsFloat(m);
+    exposeGLMPortsInt(m);
+    exposeGLMPortsUint(m);
 }
 
 }  // namespace inviwo

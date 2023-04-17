@@ -84,7 +84,7 @@ std::unique_ptr<std::vector<unsigned char>> BinarySTLWriter::writeDataToBuffer(
     const Mesh* data, std::string_view /*fileExtension*/) const {
     std::stringstream ss(std::ios_base::binary);
     writeData(data, ss);
-    auto stringdata = move(ss).str();
+    auto stringdata = std::move(ss).str();
     return std::make_unique<std::vector<unsigned char>>(stringdata.begin(), stringdata.end());
 }
 

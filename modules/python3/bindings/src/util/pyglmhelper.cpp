@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwopy/pyglmmattypes.h>
+#include <inviwopy/util/pyglmhelper.h>
 
-#include <inviwopy/pyglmmattypesfloat.h>
-#include <inviwopy/pyglmmattypesdouble.h>
-#include <inviwopy/pyglmmattypesint.h>
-#include <inviwopy/pyglmmattypesuint.h>
-
-namespace inviwo {
-
-namespace py = pybind11;
-
-void exposeGLMMatTypes(py::module& m) {
-    exposeGLMMatTypesFloat(m);
-    exposeGLMMatTypesDouble(m);
-    exposeGLMMatTypesInt(m);
-    exposeGLMMatTypesUint(m);
-}
-
-}  // namespace inviwo
+namespace inviwo {}

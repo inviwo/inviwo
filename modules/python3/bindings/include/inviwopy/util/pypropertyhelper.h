@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,17 @@
  *
  *********************************************************************************/
 
-#include <inviwopy/pyglmmattypes.h>
+#pragma once
 
-#include <inviwopy/pyglmmattypesfloat.h>
-#include <inviwopy/pyglmmattypesdouble.h>
-#include <inviwopy/pyglmmattypesint.h>
-#include <inviwopy/pyglmmattypesuint.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
-namespace py = pybind11;
-
-void exposeGLMMatTypes(py::module& m) {
-    exposeGLMMatTypesFloat(m);
-    exposeGLMMatTypesDouble(m);
-    exposeGLMMatTypesInt(m);
-    exposeGLMMatTypesUint(m);
+template <typename T, typename P, typename C>
+void pyTemplateProperty(C& prop) {
+    prop.def_property(
+            "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
+        .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
 }
 
 }  // namespace inviwo

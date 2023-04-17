@@ -172,6 +172,11 @@ ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/data/js)
 
+find_package(utf8cpp CONFIG REQUIRED)
+target_link_libraries(inviwo-module-webbrowser PRIVATE
+    utf8cpp
+)
+
 # Inviwo: CEF only provides release/debug configurations. Set RelWithDebInfo and MinSizeRel to use release 
 set(CEF_BINARY_DIR "${_CEF_ROOT}/$<$<CONFIG:RelWithDebInfo>:Release>$<$<CONFIG:MinSizeRel>:Release>$<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>")
 

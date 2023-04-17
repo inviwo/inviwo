@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,16 @@
  *
  *********************************************************************************/
 
-#include <inviwopy/pyglmmattypes.h>
+#include <inviwopy/pyglmportsint.h>
+#include <inviwopy/util/pyglmhelper.h>
 
-#include <inviwopy/pyglmmattypesfloat.h>
-#include <inviwopy/pyglmmattypesdouble.h>
-#include <inviwopy/pyglmmattypesint.h>
-#include <inviwopy/pyglmmattypesuint.h>
+#include <inviwo/core/util/foreacharg.h>
 
 namespace inviwo {
 
-namespace py = pybind11;
-
-void exposeGLMMatTypes(py::module& m) {
-    exposeGLMMatTypesFloat(m);
-    exposeGLMMatTypesDouble(m);
-    exposeGLMMatTypesInt(m);
-    exposeGLMMatTypesUint(m);
+void exposeGLMPortsInt(pybind11::module& m) {
+    using types = std::tuple<int, ivec2, ivec3, ivec4>;
+    util::for_each_type<types>{}(ExposePortsFunctor{}, m);
 }
 
 }  // namespace inviwo

@@ -27,22 +27,11 @@
  *
  *********************************************************************************/
 
-#include <inviwopy/pyglmmattypes.h>
-
-#include <inviwopy/pyglmmattypesfloat.h>
-#include <inviwopy/pyglmmattypesdouble.h>
-#include <inviwopy/pyglmmattypesint.h>
 #include <inviwopy/pyglmmattypesuint.h>
+#include <inviwopy/util/pyglmhelper.h>
 
 namespace inviwo {
 
-namespace py = pybind11;
-
-void exposeGLMMatTypes(py::module& m) {
-    exposeGLMMatTypesFloat(m);
-    exposeGLMMatTypesDouble(m);
-    exposeGLMMatTypesInt(m);
-    exposeGLMMatTypesUint(m);
-}
+void exposeGLMMatTypesUint(pybind11::module& m) { mat<unsigned int>(m, "u"); }
 
 }  // namespace inviwo
