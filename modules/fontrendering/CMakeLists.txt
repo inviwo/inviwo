@@ -50,6 +50,8 @@ ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 # Add font directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/fonts)
 
+find_package(utf8cpp CONFIG REQUIRED)
+
 option(IVW_USE_EXTERNAL_FREETYPE "Freetype is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_FREETYPE)
     add_subdirectory(ext/freetype)
@@ -60,17 +62,33 @@ if(NOT IVW_USE_EXTERNAL_FREETYPE)
     )
     ivw_default_install_targets(freetype)
     ivw_make_package(freetype freetype)
-else()
-    find_package(freetype CONFIG REQUIRED)
-    ivw_vcpkg_install(freetype MODULE FontRendering)
-endif()
 
-find_package(utf8cpp CONFIG REQUIRED)
-target_link_libraries(inviwo-module-fontrendering 
-    PUBLIC 
-        freetype
-    PRIVATE
-        utf8cpp
-)
+    target_link_libraries(inviwo-module-fontrendering
+        PUBLIC
+            freetype
+        PRIVATE
+            utf8cpp
+    )
+
+else()
+    find_package(freetype CONFIG)
+    if(FREETYPE_FOUND)
+        ivw_vcpkg_install(freetype MODULE FontRendering)
+        target_link_libraries(inviwo-module-fontrendering
+            PUBLIC
+            freetype
+            PRIVATE
+            utf8cpp
+        )
+    else()
+      find_package(Freetype REQUIRED)
+      target_link_libraries(inviwo-module-fontrendering
+        PUBLIC
+            Freetype::Freetype
+        PRIVATE
+            utf8cpp
+        )
+    endif()
+endif()
 
 ivw_make_package(InviwoFontRenderingModule inviwo-module-fontrendering)
