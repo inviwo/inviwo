@@ -252,7 +252,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
                               false,
                               "",
                               "path"}
-    , undoManager_(this) {
+    , undoManager_(this)
+    , visibleWidgetsClearHandle_{
+          app->getWorkspaceManager()->onClear([&]() { visibleWidgetState_.processors.clear(); })} {
 
     setObjectName("InviwoMainWindow");
 

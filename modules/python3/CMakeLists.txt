@@ -4,10 +4,7 @@ ivw_module(Python3)
 find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
 
 set(HEADER_FILES
-    include/modules/python3/processors/numpymandelbrot.h
-    include/modules/python3/processors/numpymeshcreatetest.h
-    include/modules/python3/processors/numpyvolume.h
-    include/modules/python3/processors/pythonscriptprocessor.h
+    include/modules/python3/layerpy.h
     include/modules/python3/processortrampoline.h
     include/modules/python3/pybindflags.h
     include/modules/python3/pybindutils.h
@@ -28,10 +25,7 @@ set(HEADER_FILES
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
-    src/processors/numpymandelbrot.cpp
-    src/processors/numpymeshcreatetest.cpp
-    src/processors/numpyvolume.cpp
-    src/processors/pythonscriptprocessor.cpp
+    src/layerpy.cpp
     src/processortrampoline.cpp
     src/pybindflags.cpp
     src/pybindutils.cpp
@@ -59,11 +53,6 @@ set(SCRIPT_FILES
     scripts/ivw/camera.py
     scripts/ivw/regression.py
     scripts/ivw/utils.py
-
-    data/scripts/mandelbrot.py
-    data/scripts/numpymeshcreatetest.py
-    data/scripts/numpyvolumeprocessor.py
-    data/scripts/scriptprocessorexample.py
 )
 ivw_group("Script Files" ${SCRIPT_FILES})
 
@@ -99,6 +88,7 @@ endif()
 
 # Add Python to package
 option(IVW_PACKAGE_EMBED_PYTHON "Embed a python dist in the installer.\ 
+
  Otherwise a existing python installation is needed to run inviwo" ON)
 if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
     if(WIN32)

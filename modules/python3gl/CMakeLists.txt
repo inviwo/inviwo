@@ -1,6 +1,7 @@
 ivw_module(Python3GL)
 
 set(HEADER_FILES
+    include/inviwo/python3gl/layerpytoglconverter.h
     include/inviwo/python3gl/python3glmodule.h
     include/inviwo/python3gl/python3glmoduledefine.h
     include/inviwo/python3gl/volumepytoglconverter.h
@@ -8,6 +9,7 @@ set(HEADER_FILES
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
+    src/layerpytoglconverter.cpp
     src/python3glmodule.cpp
     src/volumepytoglconverter.cpp
 )

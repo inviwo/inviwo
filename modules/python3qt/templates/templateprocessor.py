@@ -4,6 +4,9 @@ import inviwopy as ivw
 
 
 class {name}(ivw.Processor):
+    """
+    Documentation of {name}
+    """
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
         self.inport = ivw.data.ImageInport("inport")
@@ -21,7 +24,8 @@ class {name}(ivw.Processor):
             displayName="{name}",
             category="Python",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags.PY
+            tags=ivw.Tags.PY,
+            help=ivw.md2doc({name}.__doc__)
         )
 
     def getProcessorInfo(self):

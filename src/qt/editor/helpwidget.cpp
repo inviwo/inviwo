@@ -163,7 +163,7 @@ constexpr std::string_view css = R"(
         margin: 7px 0px 0px -10px;
     }
     a {
-        text-decoration: underline
+        text-decoration: underline;
     }
     a:link {
         color: #268BD2;
@@ -174,7 +174,7 @@ constexpr std::string_view css = R"(
     }
     span.id {
         font-style: italic;
-        font-weight: 300;
+        font-weight: 600;
     }
     div.help {
         margin: 5px 0px 5px 0px;
@@ -204,6 +204,8 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
     auto inportFactory = app.getInportFactory();
     auto outportFactory = app.getOutportFactory();
 
+    auto spaced = [](auto str) { return fmt::format(" {}", str); };
+
     Document doc;
 
     auto html = doc.append("html");
@@ -216,7 +218,7 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
                                                 processor.classIdentifier)}});
     auto td = tr.append("td");
     link(processorFactory, processor.classIdentifier, td);
-    td.append("i", processor.classIdentifier);
+    td.append("i", spaced(processor.classIdentifier));
 
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
@@ -233,10 +235,13 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
         auto inports = body.append("ol", "", {{"class", "list"}});
         for (const auto& inport : processor.inports) {
             auto li = inports.append("li", "", {{"class", "item"}});
-            li.append("span", inport.displayName, {{"class", "name"}});
+            li += " ";
+            li.append("span", spaced(inport.displayName), {{"class", "name"}});
+            li += " ";
             link(inportFactory, inport.classIdentifier, li);
-            li.append("span", inport.classIdentifier, {{"class", "id"}});
+            li.append("span", spaced(inport.classIdentifier), {{"class", "id"}});
             if (!inport.help.empty()) {
+                li += " ";
                 li.append("div", "", {{"class", "help"}}).append(inport.help);
             }
         }
@@ -247,10 +252,13 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
         auto outports = body.append("ol", "", {{"class", "list"}});
         for (const auto& outport : processor.outports) {
             auto li = outports.append("li", "", {{"class", "item"}});
+            li += " ";
             li.append("span", outport.displayName, {{"class", "name"}});
+            li += " ";
             link(outportFactory, outport.classIdentifier, li);
-            li.append("span", outport.classIdentifier, {{"class", "id"}});
+            li.append("span", spaced(outport.classIdentifier), {{"class", "id"}});
             if (!outport.help.empty()) {
+                li += " ";
                 li.append("div", "", {{"class", "help"}}).append(outport.help);
             }
         }
@@ -261,18 +269,21 @@ Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo&
         auto properties = body.append("ul", "", {{"class", "list"}});
         for (auto&& [idx, property] : util::enumerate(processor.properties)) {
             auto li = properties.append("li", "", {{"class", "item"}});
+            li += " ";
             if (!property.properties.empty()) {
                 li.append("a", "",
                           {{"href", fmt::format("file:///{}/{}?type=processor",
                                                 processor.classIdentifier, idx)}})
-                    .append("span", property.displayName, {{"class", "name"}});
+                    .append("span", spaced(property.displayName), {{"class", "name"}});
             } else {
                 li.append("span", property.displayName, {{"class", "name"}});
             }
+            li += " ";
             link(propertyFactory, property.classIdentifier, li);
-            li.append("span", property.classIdentifier, {{"class", "id"}});
+            li.append("span", spaced(property.classIdentifier), {{"class", "id"}});
 
             if (!property.help.empty()) {
+                li += " ";
                 li.append("div", "", {{"class", "help"}}).append(property.help);
             }
         }
@@ -293,6 +304,8 @@ Document makePropertyHelp(const help::HelpProperty& property, std::string_view p
                           PropertyFactory* propertyFactory) {
     Document doc;
 
+    auto spaced = [](auto str) { return fmt::format(" {}", str); };
+
     auto html = doc.append("html");
     auto body = html.append("body");
     body.append("h3", property.displayName);
@@ -307,14 +320,17 @@ Document makePropertyHelp(const help::HelpProperty& property, std::string_view p
             auto li = properties.append("li", "", {{"class", "item"}});
             if (!subProperty.properties.empty()) {
                 li.append("a", "",
-                          {{"href", fmt::format("file://{}/{}?type=processor", path, idx)}})
-                    .append("span", subProperty.displayName, {{"class", "name"}});
+                          {{"href", fmt::format("file://{}/{}?type=processor", path, idx)}});
+                li += " ";
+                li.append("span", spaced(subProperty.displayName), {{"class", "name"}});
             } else {
-                li.append("span", subProperty.displayName, {{"class", "name"}});
+                li.append("span", spaced(subProperty.displayName), {{"class", "name"}});
             }
+            li += " ";
             link(propertyFactory, subProperty.classIdentifier, li);
-            li.append("span", subProperty.classIdentifier, {{"class", "id"}});
+            li.append("span", spaced(subProperty.classIdentifier), {{"class", "id"}});
             if (!subProperty.help.empty()) {
+                li += " ";
                 li.append("div", "", {{"class", "help"}}).append(subProperty.help);
             }
         }
@@ -403,15 +419,14 @@ void HelpBrowser::setCurrent(std::string_view processorClassIdentifier) {
     setSource(url);
 }
 
-QVariant HelpBrowser::loadResource(int type, const QUrl& url) {
+QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
+    std::string s = utilqt::fromQString(resourceUrl.toString(QUrl::None));
+    replaceInString(s, "~modulePath~", currentModulePath_);
+    replaceInString(s, "~basePath~", app_->getBasePath());
+    const QUrl url(utilqt::toQString(s), QUrl::TolerantMode);
     const QUrlQuery query(url);
 
-    auto toFilePath = [&](const QUrl& url) {
-        auto filePath = utilqt::fromQString(url.toLocalFile());
-        replaceInString(filePath, "~modulePath~", currentModulePath_);
-        replaceInString(filePath, "~basePath~", app_->getBasePath());
-        return filePath;
-    };
+    auto toFilePath = [&](const QUrl& url) { return utilqt::fromQString(url.toLocalFile()); };
 
     if (query.hasQueryItem("type")) {
         const QString requestType = query.queryItemValue("type");

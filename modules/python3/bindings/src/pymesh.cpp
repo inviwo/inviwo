@@ -53,7 +53,7 @@ void exposeMesh(pybind11::module& m) {
 
     py::class_<Mesh::MeshInfo>(m, "MeshInfo")
         .def(py::init<>())
-        .def(py::init<DrawType, ConnectivityType>())
+        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt"), py::arg("ct"))
         .def("__repr__",
              [](Mesh::MeshInfo& mi) {
                  std::ostringstream oss;
@@ -116,7 +116,7 @@ void exposeMesh(pybind11::module& m) {
                 mesh->addIndexBuffer(dt, ct);
                 return mesh->getIndexBuffers().back().second.get();
             },
-            py::return_value_policy::reference)
+            py::arg("dt"), py::arg("ct"), py::return_value_policy::reference)
         .def("addIndices", [](Mesh* m, Mesh::MeshInfo info,
                               std::shared_ptr<IndexBuffer> ind) { m->addIndices(info, ind); })
         .def("addIndicies",

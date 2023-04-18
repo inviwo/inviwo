@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,51 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
+#include <inviwo/python3gl/python3glmoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>            // for VolumeOutport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/properties/ordinalproperty.h>  // for IntSize3Property
-#include <modules/python3/pythonscript.h>            // for PythonScriptDisk
+#include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+
+#include <modules/python3/layerpy.h>
+#include <modules/opengl/image/layergl.h>
 
 namespace inviwo {
-class InviwoApplication;
 
-/** \docpage{org.inviwo.NumPyVolume, NumPy Volume}
- * ![](org.inviwo.NumPyVolume.png?classIdentifier=org.inviwo.NumPyVolume)
- *
- * En example processor illustrating how Python can be used to create volumes.
- * Processor creates an "empty" volume and passes it along to a python script. The script calculates
- * for a signed distance value for each voxel which can be visualized with any iso surface
- * visualization method.
- * See the Example workspace in File/Python3/volume.inv
- *
- * ### Outports
- *   * __outport__ The final signed distance volume
- *
- * ### Properties
- *   * __Size__ Size of the created volume.
- *
- */
-class IVW_MODULE_PYTHON3_API NumPyVolume : public Processor {
+class IVW_MODULE_PYTHON3GL_API LayerPy2GLConverter
+    : public RepresentationConverterType<LayerRepresentation, LayerPy, LayerGL> {
 public:
-    NumPyVolume(InviwoApplication* app);
-    virtual ~NumPyVolume() = default;
+    virtual std::shared_ptr<LayerGL> createFrom(
+        std::shared_ptr<const LayerPy> source) const override;
+    virtual void update(std::shared_ptr<const LayerPy> source,
+                        std::shared_ptr<LayerGL> destination) const override;
+};
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    VolumeOutport outport_;
-
-    IntSize3Property size_;
-    PythonScriptDisk script_;
+class IVW_MODULE_PYTHON3GL_API LayerGL2PyConverter
+    : public RepresentationConverterType<LayerRepresentation, LayerGL, LayerPy> {
+public:
+    virtual std::shared_ptr<LayerPy> createFrom(
+        std::shared_ptr<const LayerGL> source) const override;
+    virtual void update(std::shared_ptr<const LayerGL> source,
+                        std::shared_ptr<LayerPy> destination) const override;
 };
 
 }  // namespace inviwo

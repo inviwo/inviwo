@@ -1,5 +1,22 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-03-28 Removed deprecated PythonScript processor
+The `PythonScriptProcessor` -- deprecated for more than 4 years -- has been removed entirely. Three Python processors replicating previously existing Python scripts have been added instead.
+- **python3/processors/MandebrotNumpy.py**
+- **python3/processors/MeshCreationTest.py**
+- **python3/processors/VolumeCreationTest.py**
+
+## 2023-03-24 Python Layer representation and Python processor examples
+`LayerPy` is a Python representation of a `Layer` based directly on a numpy array similar to `VolumePy`. The array needs to be c-contiguous where the shape is either `(xdim, ydim)` or `(xdim, ydim, numchannels)` in case of more than one image channel. The Python representation of a layer is accessible with either `getLayerPyRepresentation()` or `getEditableLayerPyRepresentation()`.
+The `LayerPy` represention comes with converters to `LayerRAM` and also includes converters from Python directly to GL and back without the necessity of a RAM representation.
+A number of example Python processors have been added and can be found under `modules/python3/processors`:
+- `PythonImageExample.py` uses the Pillow library for loading an image. Demonstrates handling of images with `inviwopy.data.Image` and `inviwopy.data.Layer`
+- `PythonVolumeExample.py` creates a random volume with numpy, `inviwopy.data.Volume`, and `inviwopy.data.VolumePy`
+- `PythonMeshExample.py` generates an n-gon in the form of a line loop and a triangle fan using `inviwopy.data.Mesh` and `inviwopy.data.BasicMesh`
+
+See also the example workspaces of the `Python3` module (
+[python3/pythonmeshes.inv](file:~modulePath~/data/workspaces/pythonmeshes.inv), [python3/pythonvolume.inv](file:~modulePath~/data/workspaces/pythonvolume.inv)).
+
 ## 2023-03-06 C++20 and Qt6
 A C++20 compiler is now required, in practice, only features that are supported by MSVC, Clang, GCC, and AppleClang are used, which usually means that everything that is supported by the latest version of XCode can bu used.
 Notably ranges is still missing in AppleClang. Qt6 is now required and all support for Qt5 is now removed. 

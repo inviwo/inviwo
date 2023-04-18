@@ -331,33 +331,20 @@ void Document::deserialize(Deserializer& d) { d.deserialize("root", root_); }
 std::ostream& operator<<(std::ostream& ss, const Document& doc) {
     using Element = Document::Element;
     doc.visit(
-        [&](Element* elem, std::vector<Element*>& stack) {
+        [&](Element* elem, std::vector<Element*>&) {
             if (elem->isNode()) {
-                ss << std::setw(static_cast<int>(stack.size() * 4)) << ' ' << '<' << elem->name();
+                ss << '<' << elem->name();
                 for (const auto& item : elem->attributes()) {
                     ss << ' ' << item.first << "='" << item.second << '\'';
                 }
                 ss << '>';
-                if (!elem->noIndent()) ss << '\n';
             } else if (elem->isText() && !elem->content().empty()) {
-                if (!stack.empty() && !stack.back()->noIndent()) {
-                    ss << std::setw(static_cast<int>(stack.size() * 4)) << ' ' << elem->content()
-                       << '\n';
-                } else if (!stack.empty() && stack.back()->noIndent()) {
-                    ss << elem->content();
-                } else {
-                    ss << elem->content() << '\n';
-                }
+                ss << elem->content();
             }
         },
-        [&](Element* elem, std::vector<Element*>& stack) {
+        [&](Element* elem, std::vector<Element*>&) {
             if (elem->isNode() && !elem->emptyTag()) {
-                if (!elem->noIndent()) {
-                    ss << std::setw(static_cast<int>(stack.size() * 4)) << ' ' << "</"
-                       << elem->name() << ">\n";
-                } else {
-                    ss << "</" << elem->name() << ">\n";
-                }
+                ss << "</" << elem->name() << ">";
             }
         });
 

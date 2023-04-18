@@ -42,13 +42,20 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-const ProcessorInfo ImageGamma::processorInfo_{
-    "org.inviwo.ImageGamma",  // Class identifier
-    "Image Gamma",            // Display name
-    "Image Operation",        // Category
-    CodeState::Stable,        // Code state
-    Tags::GL,                 // Tags
-};
+const ProcessorInfo ImageGamma::processorInfo_{"org.inviwo.ImageGamma",  // Class identifier
+                                               "Image Gamma",            // Display name
+                                               "Image Operation",        // Category
+                                               CodeState::Stable,        // Code state
+                                               Tags::GL,                 // Tags
+                                               R"(
+Applies a gamma correction utilizing the `ImageGLProcessor` as follows
+```
+    out.rgb = pow(in.rgb, gamma)
+    out.a = in.a
+```
+
+The input range is assumed to be normalized, that is [0, 1].
+    )"_unindentHelp};
 const ProcessorInfo ImageGamma::getProcessorInfo() const { return processorInfo_; }
 
 ImageGamma::ImageGamma()

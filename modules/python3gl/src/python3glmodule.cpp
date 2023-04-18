@@ -30,11 +30,14 @@
 #include <inviwo/python3gl/python3glmodule.h>
 
 #include <inviwo/python3gl/volumepytoglconverter.h>
+#include <inviwo/python3gl/layerpytoglconverter.h>
 
 namespace inviwo {
 
 Python3GLModule::Python3GLModule(InviwoApplication* app) : InviwoModule(app, "Python3GL") {
     // Data converters
+    registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerGL2PyConverter>());
+    registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerPy2GLConverter>());
     registerRepresentationConverter<VolumeRepresentation>(std::make_unique<VolumeGL2PyConverter>());
     registerRepresentationConverter<VolumeRepresentation>(std::make_unique<VolumePy2GLConverter>());
 }

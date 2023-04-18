@@ -166,7 +166,9 @@ void exposeProperties(py::module& m) {
                                                      value, volumeInport, invalidationLevel,
                                                      semantics);
              }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value"),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help"),
+             py::arg("value") = TransferFunction(
+                 {{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
@@ -176,7 +178,9 @@ void exposeProperties(py::module& m) {
                  return new TransferFunctionProperty(identifier, displayName, value, volumeInport,
                                                      invalidationLevel, semantics);
              }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("value"),
+             py::arg("identifier"), py::arg("displayName"),
+             py::arg("value") = TransferFunction(
+                 {{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)

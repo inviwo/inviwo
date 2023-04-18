@@ -148,7 +148,7 @@ void exposeBuffer(pybind11::module& m) {
             })
         .def("__repr__", [](const BufferBase& self) {
             return fmt::format("<Buffer: target = {} usage = {} format = {} size = {}>",
-                               toString(self.getBufferTarget()), toString(self.getBufferUsage()),
+                               self.getBufferTarget(), self.getBufferUsage(),
                                self.getDataFormat()->getString(), self.getSize());
         });
 

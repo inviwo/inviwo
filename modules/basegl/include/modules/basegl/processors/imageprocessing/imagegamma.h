@@ -38,26 +38,7 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageGamma, Image Gamma}
- * Apply gamma correction to an input image. The alpha channel is not touched.
- * ![](org.inviwo.ImageGamma.png?classIdentifier=org.inviwo.ImageGamma)
- * This processor applies a gamma correction as follows
- *
- *     out.rgb = pow(in.rgb, gamma)
- *     out.a = in.a
- *
- * ### Inports
- *   * __ImageInport__ The input image.
- *
- * ### Outports
- *   * __ImageOutport__ The output image.
- *
- * ### Properties
- *   * __Gamma Correction__ Gamma factor.
- */
-
-/*! \class ImageGamma
- *
+/**
  * \brief Apply gamma correction to an image. Alpha channel is not touched.
  *
  * This processor applies a gamma correction pow(input.rgb, gamma) utilizing

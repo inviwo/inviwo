@@ -55,18 +55,22 @@
 
 namespace inviwo {
 
-const ProcessorInfo ImageMapping::processorInfo_{
-    "org.inviwo.ImageMapping",  // Class identifier
-    "Image Mapping",            // Display name
-    "Image Operation",          // Category
-    CodeState::Stable,          // Code state
-    Tags::GL,                   // Tags
-};
+const ProcessorInfo ImageMapping::processorInfo_{"org.inviwo.ImageMapping",  // Class identifier
+                                                 "Image Mapping",            // Display name
+                                                 "Image Operation",          // Category
+                                                 CodeState::Stable,          // Code state
+                                                 Tags::GL,                   // Tags
+                                                 R"(
+Maps the input image to an output image with the help of a transfer function.
+)"_unindentHelp};
 const ProcessorInfo ImageMapping::getProcessorInfo() const { return processorInfo_; }
 
 ImageMapping::ImageMapping()
     : ImageGLProcessor("img_mapping.frag")
-    , transferFunction_("transferFunction", "Transfer Function") {
+    , transferFunction_(
+          "transferFunction", "Transfer Function",
+          "The transfer function used for mapping input to output values including the "
+          "alpha channel."_help) {
     addProperty(transferFunction_);
 }
 
