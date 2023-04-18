@@ -281,15 +281,16 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
     } else if (obj == widget(1) && event->type() == QEvent::MouseButtonPress && isEnabled()) {
         QMouseEvent* me = static_cast<QMouseEvent*>(event);
         if (me->button() == Qt::LeftButton) {
-            lastPos_ = orientation() == Qt::Horizontal ? me->globalPosition().x()
-                                                       : me->globalPosition().y();
+            lastPos_ = static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
+                                                                        : me->globalPosition().y());
             return true;
         }
     } else if (obj == widget(1) && event->type() == QEvent::MouseMove && isEnabled()) {
         QMouseEvent* me = static_cast<QMouseEvent*>(event);
         if (me->buttons().testFlag(Qt::LeftButton)) {
-            const int newPos = orientation() == Qt::Horizontal ? me->globalPosition().x()
-                                                               : me->globalPosition().y();
+            const int newPos =
+                static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
+                                                                 : me->globalPosition().y());
             const int delta = newPos - lastPos_;
             lastPos_ = newPos;
             if (delta != 0) {

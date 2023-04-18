@@ -70,7 +70,7 @@ void exposeBitset(pybind11::module& m) {
         .def(py::init<const std::vector<bool>&>())
         .def(py::init([](py::list list) {
             BitSet s{};
-            for (auto& i : list) {
+            for (auto&& i : list) {
                 s.add(i.cast<uint32_t>());
             }
             return s;

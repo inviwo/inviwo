@@ -70,7 +70,7 @@ pybind11::dtype toNumPyFormat(const DataFormatBase* df) {
     return pybind11::dtype(format);
 }
 
-const DataFormatBase* getDataFormat(size_t components, pybind11::array& arr) {
+const DataFormatBase* getDataFormat(pybind11::ssize_t components, pybind11::array& arr) {
     auto k = arr.dtype().kind();
     auto numType = [&]() {
         if (k == 'f')
@@ -81,7 +81,8 @@ const DataFormatBase* getDataFormat(size_t components, pybind11::array& arr) {
             return NumericType::UnsignedInteger;
         return NumericType::NotSpecialized;
     }();
-    auto format = DataFormatBase::get(numType, components, arr.itemsize() * 8);
+    auto format = DataFormatBase::get(numType, static_cast<size_t>(components),
+                                      static_cast<size_t>(arr.itemsize() * 8));
     if (!format) {
         throw pybind11::value_error(
             "Could not map the type of the given array to an inviwo format");

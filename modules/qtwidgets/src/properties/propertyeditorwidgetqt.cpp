@@ -166,8 +166,8 @@ void PropertyEditorWidgetQt::loadState() {
 
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         if (property_->hasMetaData<IntMetaData>(dockareaKey)) {
-            auto dockarea = static_cast<Qt::DockWidgetArea>(
-                property_->getMetaData<IntMetaData>(dockareaKey), Qt::NoDockWidgetArea);
+            auto dockarea = static_cast<Qt::DockWidgetArea>(property_->getMetaData<IntMetaData>(
+                dockareaKey, static_cast<int>(Qt::NoDockWidgetArea)));
             mainWindow->addDockWidget(dockarea, this);
         } else if (settings.contains("dockarea")) {
             auto dockarea = static_cast<Qt::DockWidgetArea>(settings.value("dockarea").toInt());

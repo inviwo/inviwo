@@ -320,7 +320,8 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
         while (!item.empty()) {
             if (fs::exists(oldIm.path() / item) && fs::is_directory(oldIm.path() / item) &&
                 fs::is_empty(oldIm.path() / item)) {
-                logf("  - {}", item.generic_string()), fs::remove(oldIm.path() / item);
+                logf("  - {}", item.generic_string());
+                fs::remove(oldIm.path() / item);
             }
             item = item.parent_path();
         }

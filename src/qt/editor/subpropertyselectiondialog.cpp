@@ -231,6 +231,7 @@ public:
                     } else if (auto proc = toProcessor(index)) {
                         return name(proc);
                     }
+                    break;
                 }
                 case Qt::EditRole: {
                     if (auto prop = toProperty(index)) {
@@ -238,6 +239,7 @@ public:
                     } else if (auto proc = toProcessor(index)) {
                         return name(proc);
                     }
+                    break;
                 }
                 case Qt::ToolTipRole: {
                     if (auto prop = toProperty(index)) {

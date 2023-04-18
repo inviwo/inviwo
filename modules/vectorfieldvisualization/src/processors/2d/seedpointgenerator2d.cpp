@@ -116,6 +116,7 @@ void SeedPointGenerator2D::process() {
             for (auto&& it : util::zip(x, y)) {
                 seeds->emplace_back(get<0>(it), get<1>(it));
             }
+            break;
         }
 
         default:
