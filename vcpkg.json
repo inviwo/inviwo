@@ -46,6 +46,7 @@
     "utfcpp",
     "zlib",
     "pegtl",
-    "inja"
+    "inja",
+    "ffmpeg"
   ]
 }
