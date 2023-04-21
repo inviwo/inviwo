@@ -32,6 +32,7 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <modules/qtwidgets/lineeditqt.h>  // for LineEditQt
+#include <inviwo/core/util/filedialogstate.h>
 
 #include <filesystem>
 
@@ -63,6 +64,9 @@ public:
     void setEditing(bool editing);
     bool isEditingEnabled() const;
 
+    void setAcceptMode(AcceptMode mode);
+    void setFileMode(FileMode mode);
+
 protected:
     virtual void resizeEvent(QResizeEvent* event) override;
     virtual void focusInEvent(QFocusEvent* event) override;
@@ -74,10 +78,14 @@ protected:
 private:
     QLabel* warningLabel_;        //!< warning icon which is visible if the path is invalid
     std::filesystem::path path_;  //!< full path including file name
+    AcceptMode acceptMode_;
+    FileMode fileMode_;
+    
     bool editingEnabled_;  //!< if this flag is set, the full path is shown. Otherwise only the file
                            //!< name is shown
     int cursorPos_;
     bool cursorPosDirty_;
+    
 };
 
 }  // namespace inviwo

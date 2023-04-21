@@ -36,16 +36,30 @@
 
 namespace inviwo {
 
+namespace {
+
+constexpr auto update = [](auto& dst, const auto& src) {
+    if (dst != src) {
+        dst = src;
+        return true;
+    } else {
+        return false;
+    }
+};
+
+}
+
 const std::string FileProperty::classIdentifier = "org.inviwo.FileProperty";
 std::string FileProperty::getClassIdentifier() const { return classIdentifier; }
 
 FileProperty::FileProperty(std::string_view identifier, std::string_view displayName, Document help,
-                           const std::filesystem::path& value, std::string_view contentType,
+                           const std::filesystem::path& value, AcceptMode acceptMode,
+                           FileMode fileMode, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TemplateProperty<std::filesystem::path>(identifier, displayName, std::move(help),
-                                              std::string{}, invalidationLevel, semantics)
-    , acceptMode_(AcceptMode::Open)
-    , fileMode_(FileMode::AnyFile)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    , file_("value", {})
+    , acceptMode_(acceptMode)
+    , fileMode_(fileMode)
     , contentType_(contentType) {
     // Explicitly set the file name here since the TemplateProperty itself is initialized with an
     // empty string as default value. This ensures that the set file name is always serialized.
@@ -53,29 +67,31 @@ FileProperty::FileProperty(std::string_view identifier, std::string_view display
     addNameFilter(FileExtension::all());
 }
 
+FileProperty::FileProperty(std::string_view identifier, std::string_view displayName, Document help,
+                           const std::filesystem::path& value, std::string_view contentType,
+                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : FileProperty(identifier, displayName, std::move(help), value, AcceptMode::Open,
+                   FileMode::AnyFile, contentType, invalidationLevel, semantics) {}
+
 FileProperty::FileProperty(std::string_view identifier, std::string_view displayName,
                            const std::filesystem::path& value, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : FileProperty(identifier, displayName, Document{}, value, contentType, invalidationLevel,
-                   semantics) {}
+    : FileProperty(identifier, displayName, Document{}, value, AcceptMode::Open, FileMode::AnyFile,
+                   contentType, invalidationLevel, semantics) {}
 
-FileProperty& FileProperty::operator=(const std::filesystem::path& value) {
-    TemplateProperty<std::filesystem::path>::operator=(value);
+FileProperty& FileProperty::operator=(const std::filesystem::path& file) {
+    set(file);
     return *this;
 }
 
 FileProperty* FileProperty::clone() const { return new FileProperty(*this); }
 
-void FileProperty::set(const std::filesystem::path& value) {
-    bool modified = false;
-    if (value_ != value) {
-        value_ = value;
-        modified |= true;
-    }
+void FileProperty::set(const std::filesystem::path& file) {
+    bool modified = file_.update(file);
 
-    if (!selectedExtension_.matches(value_.value)) {
+    if (!selectedExtension_.matches(file_.value)) {
         const auto it = std::find_if(nameFilters_.begin(), nameFilters_.end(), [&](const auto& f) {
-            return !f.matchesAll() && f.matches(value_.value);
+            return !f.matchesAll() && f.matches(file_.value);
         });
         if (it != nameFilters_.end() && selectedExtension_ != *it) {
             selectedExtension_ = *it;
@@ -94,28 +110,28 @@ void FileProperty::set(const std::filesystem::path& value) {
     if (modified) propertyModified();
 }
 
-void FileProperty::set(const std::filesystem::path& value, const FileExtension& selectedExtension) {
-    bool modified = false;
-    if (value_ != value) {
-        value_ = value;
-        modified |= true;
-    }
-    if (selectedExtension_ != selectedExtension) {
-        selectedExtension_ = selectedExtension;
-        modified |= true;
-    }
+void FileProperty::set(const std::filesystem::path& file, const FileExtension& selectedExtension) {
+    bool modified = file_.update(file);
+    modified |= update(selectedExtension_, selectedExtension);
+    if (modified) propertyModified();
+}
+
+void FileProperty::set(const FileProperty* property) {
+    if (!property) return;
+
+    bool modified = file_.update(property->file_);
+
+    modified |= update(selectedExtension_, property->selectedExtension_);
+    modified |= update(acceptMode_, property->acceptMode_);
+    modified |= update(fileMode_, property->fileMode_);
+    modified |= update(contentType_, property->contentType_);
+
     if (modified) propertyModified();
 }
 
 void FileProperty::set(const Property* property) {
-    if (auto prop = dynamic_cast<const FileProperty*>(property)) {
-        set(prop->get(), prop->getSelectedExtension());
-    } else {
-        TemplateProperty<std::filesystem::path>::set(property);
-    }
+    set(dynamic_cast<const FileProperty*>(property));
 }
-
-FileProperty::operator const std::filesystem::path&() const { return this->value_.value; }
 
 void FileProperty::serialize(Serializer& s) const {
     /*
@@ -155,6 +171,7 @@ void FileProperty::serialize(Serializer& s) const {
     s.serialize("selectedExtension", selectedExtension_);
     s.serialize("acceptMode", acceptMode_);
     s.serialize("fileMode", fileMode_);
+    s.serialize("contentType", contentType_);
 }
 
 void FileProperty::deserialize(Deserializer& d) {
@@ -162,12 +179,12 @@ void FileProperty::deserialize(Deserializer& d) {
 
     std::filesystem::path absolutePath;
     std::filesystem::path workspaceRelativePath;
-    std::filesystem::path ivwdataRelativePath;
+    std::filesystem::path ivwDataRelativePath;
     std::filesystem::path oldWorkspacePath;
 
     d.deserialize("absolutePath", absolutePath);
     d.deserialize("workspaceRelativePath", workspaceRelativePath);
-    d.deserialize("ivwdataRelativePath", ivwdataRelativePath);
+    d.deserialize("ivwdataRelativePath", ivwDataRelativePath);
     d.deserialize("url", oldWorkspacePath);
 
     if (!oldWorkspacePath.empty()) {  // fallback if the old value "url" is used
@@ -184,34 +201,44 @@ void FileProperty::deserialize(Deserializer& d) {
     }
 
     const auto workspacePath = d.getFileName().parent_path();
-    const auto ivwdataPath = filesystem::getPath(PathType::Data);
+    const auto ivwDataPath = filesystem::getPath(PathType::Data);
 
     const auto workspaceBasedPath =
         std::filesystem::weakly_canonical(workspacePath / workspaceRelativePath);
     const auto ivwdataBasedPath =
-        std::filesystem::weakly_canonical(ivwdataPath / ivwdataRelativePath);
+        std::filesystem::weakly_canonical(ivwDataPath / ivwDataRelativePath);
+
+    bool modified = false;
 
     // Prefer the relative paths to make relocation easier.
-    if (!ivwdataRelativePath.empty() && std::filesystem::is_regular_file(ivwdataBasedPath)) {
-        set(ivwdataBasedPath);
+    if (!ivwDataRelativePath.empty() && std::filesystem::is_regular_file(ivwdataBasedPath)) {
+        modified = file_.update(ivwdataBasedPath);
     } else if (!workspaceRelativePath.empty() &&
                std::filesystem::is_regular_file(workspaceBasedPath)) {
-        set(workspaceBasedPath);
+        modified |= file_.update(workspaceBasedPath);
     } else {
-        set(absolutePath);
+        modified |= file_.update(absolutePath);
     }
 
     try {
         d.deserialize("selectedExtension", selectedExtension_);
         int acceptMode = static_cast<int>(acceptMode_);
         d.deserialize("acceptMode", acceptMode);
-        acceptMode_ = static_cast<AcceptMode>(acceptMode);
+        modified |= update(acceptMode_, static_cast<AcceptMode>(acceptMode));
+
         int fileMode = static_cast<int>(fileMode_);
         d.deserialize("fileMode", fileMode);
-        fileMode_ = static_cast<FileMode>(fileMode);
+        modified |= update(fileMode_, static_cast<FileMode>(fileMode));
+
+        std::string contentType = contentType_;
+        d.deserialize("contentType", contentType);
+        modified |= update(contentType_, contentType);
+
     } catch (SerializationException& e) {
         LogInfo("Problem deserializing file Property: " << e.getMessage());
     }
+
+    if (modified) propertyModified();
 }
 
 void FileProperty::addNameFilter(std::string_view filter) {
@@ -228,15 +255,30 @@ void FileProperty::clearNameFilters() { nameFilters_.clear(); }
 
 const std::vector<FileExtension>& FileProperty::getNameFilters() const { return nameFilters_; }
 
-void FileProperty::setAcceptMode(AcceptMode mode) { acceptMode_ = mode; }
+void FileProperty::setAcceptMode(AcceptMode acceptMode) {
+    if (acceptMode_ != acceptMode) {
+        acceptMode_ = acceptMode;
+        propertyModified();
+    }
+}
 
 AcceptMode FileProperty::getAcceptMode() const { return acceptMode_; }
 
-void FileProperty::setFileMode(FileMode mode) { fileMode_ = mode; }
+void FileProperty::setFileMode(FileMode fileMode) {
+    if (fileMode_ != fileMode) {
+        fileMode_ = fileMode;
+        propertyModified();
+    }
+}
 
 FileMode FileProperty::getFileMode() const { return fileMode_; }
 
-void FileProperty::setContentType(std::string_view contentType) { contentType_ = contentType; }
+void FileProperty::setContentType(std::string_view contentType) {
+    if (contentType_ != contentType) {
+        contentType_ = contentType;
+        propertyModified();
+    }
+}
 
 const std::string& FileProperty::getContentType() const { return contentType_; }
 
@@ -279,11 +321,30 @@ void FileProperty::setSelectedExtension(const FileExtension& ext) {
     }
 }
 
+FileProperty& FileProperty::setCurrentStateAsDefault() {
+    Property::setCurrentStateAsDefault();
+    file_.setAsDefault();
+    return *this;
+}
+FileProperty& FileProperty::setDefault(const std::filesystem::path& value) {
+    file_.defaultValue = value;
+    return *this;
+}
+FileProperty& FileProperty::resetToDefaultState() {
+    if (file_.reset()) propertyModified();
+    return *this;
+}
+
+bool FileProperty::isDefaultState() const {
+    // the file property does not have a default state.
+    return false;
+}
+
 Document FileProperty::getDescription() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
 
-    Document doc = TemplateProperty<std::filesystem::path>::getDescription();
+    Document doc = Property::getDescription();
     auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
 
     utildoc::TableBuilder tb(table);
@@ -291,13 +352,13 @@ Document FileProperty::getDescription() const {
         case FileMode::AnyFile:
         case FileMode::ExistingFile:
         case FileMode::ExistingFiles: {
-            tb(H("File"), value_.value);
+            tb(H("File"), file_.value);
             break;
         }
 
         case FileMode::Directory:
         case FileMode::DirectoryOnly: {
-            tb(H("Directory"), value_.value);
+            tb(H("Directory"), file_.value);
             break;
         }
     }

@@ -51,9 +51,15 @@ class QWidget;
 namespace inviwo {
 
 FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
-    : LineEditQt(parent), editingEnabled_(false), cursorPos_(-1), cursorPosDirty_(false) {
-    // warning icon at the right side of the line edit for indication of "file not found"
-    warningLabel_ = new QLabel(this);
+    : LineEditQt{parent}
+    , warningLabel_{new QLabel(this)}
+    , path_{}
+    , acceptMode_{AcceptMode::Open}
+    , fileMode_{FileMode::AnyFile}
+    , editingEnabled_{false}
+    , cursorPos_{-1}
+    , cursorPosDirty_{false} {
+
     int width = this->sizeHint().height();
     QSize labelSize(width, width);
     warningLabel_->setScaledContents(true);
@@ -76,7 +82,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
         if (editingEnabled_) {
             cursorPos_ = -1;
             trimFilename();
-            path_ = utilqt::fromQString(text().trimmed());
+            path_ = utilqt::toPath(text().trimmed());
             setEditing(false);
         }
     });
@@ -97,6 +103,19 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
             setEditing(false);
         }
     });
+}
+
+void FilePathLineEditQt::setAcceptMode(AcceptMode acceptMode) {
+    if (acceptMode_ != acceptMode) {
+        acceptMode_ = acceptMode;
+        updateIcon();
+    }
+}
+void FilePathLineEditQt::setFileMode(FileMode fileMode) {
+    if (fileMode_ != fileMode) {
+        fileMode_ = fileMode;
+        updateIcon();
+    }
 }
 
 void FilePathLineEditQt::setPath(const std::filesystem::path& path) {
