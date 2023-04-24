@@ -268,7 +268,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         "the workspaces. Loads all workspace found in the folder recursively.");
     connect(loadWorkspaces, &QAction::triggered, [win]() {
         InviwoFileDialog dialog(nullptr, "workspace", "Workspace Directory");
-        dialog.setFileMode(FileMode::DirectoryOnly);
+        dialog.setFileMode(FileMode::Directory);
         dialog.setAcceptMode(AcceptMode::Open);
 
         if (dialog.exec()) {
@@ -289,7 +289,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
 
     connect(updateWorkspaces, &QAction::triggered, [win]() {
         InviwoFileDialog dialog(nullptr, "workspace", "Workspace Directory");
-        dialog.setFileMode(FileMode::DirectoryOnly);
+        dialog.setFileMode(FileMode::Directory);
         dialog.setAcceptMode(AcceptMode::Open);
 
         if (dialog.exec()) {

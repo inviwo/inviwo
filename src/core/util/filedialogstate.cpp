@@ -54,8 +54,6 @@ std::string_view enumToStr(FileMode mode) {
             return "Directory";
         case FileMode::ExistingFiles:
             return "Existing Files";
-        case FileMode::DirectoryOnly:
-            return "Directory Only";
     }
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid FileMode enum value '{}'",
                     static_cast<int>(mode));

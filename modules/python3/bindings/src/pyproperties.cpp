@@ -307,8 +307,7 @@ void exposeProperties(py::module& m) {
         .value("AnyFile", FileMode::AnyFile)
         .value("ExistingFile", FileMode::ExistingFile)
         .value("Directory", FileMode::Directory)
-        .value("ExistingFiles", FileMode::ExistingFiles)
-        .value("DirectoryOnly", FileMode::DirectoryOnly);
+        .value("ExistingFiles", FileMode::ExistingFiles);
 
     py::class_<FileExtension>(m, "FileExtension")
         .def(py::init<>())

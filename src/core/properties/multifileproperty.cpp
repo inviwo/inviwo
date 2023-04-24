@@ -314,9 +314,7 @@ Document MultiFileProperty::getDescription() const {
             tb(H("Files"), buff.view());
             break;
         }
-
-        case FileMode::Directory:
-        case FileMode::DirectoryOnly: {
+        case FileMode::Directory: {
             tb(H("Directories"), buff.view());
             break;
         }

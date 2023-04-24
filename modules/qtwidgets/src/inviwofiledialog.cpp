@@ -145,10 +145,6 @@ void InviwoFileDialog::setFileMode(inviwo::FileMode mode) {
         case inviwo::FileMode::ExistingFiles:
             QFileDialog::setFileMode(QFileDialog::ExistingFiles);
             break;
-        case inviwo::FileMode::DirectoryOnly:
-            QFileDialog::setFileMode(QFileDialog::Directory);
-            QFileDialog::setOption(QFileDialog::ShowDirsOnly, true);
-            break;
         default:
             QFileDialog::setFileMode(QFileDialog::AnyFile);
             break;
@@ -161,13 +157,8 @@ FileMode InviwoFileDialog::getFileMode() const {
             return inviwo::FileMode::AnyFile;
         case FileMode::ExistingFile:
             return inviwo::FileMode::ExistingFile;
-        case FileMode::Directory: {
-            if (testOption(ShowDirsOnly)) {
-                return inviwo::FileMode::DirectoryOnly;
-            } else {
-                return inviwo::FileMode::Directory;
-            }
-        }
+        case FileMode::Directory:
+            return inviwo::FileMode::Directory;
         case FileMode::ExistingFiles:
             return inviwo::FileMode::ExistingFiles;
         default:

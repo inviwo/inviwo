@@ -43,7 +43,7 @@ DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_vi
     : FileProperty(identifier, displayName, std::move(help), value, contentType, invalidationLevel,
                    semantics) {
     setAcceptMode(AcceptMode::Open);
-    setFileMode(FileMode::DirectoryOnly);
+    setFileMode(FileMode::Directory);
 }
 
 DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_view displayName,
