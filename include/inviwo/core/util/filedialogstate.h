@@ -36,7 +36,7 @@
 namespace inviwo {
 
 enum class AcceptMode { Open, Save };
-enum class FileMode { AnyFile, ExistingFile, Directory, ExistingFiles, DirectoryOnly };
+enum class FileMode { AnyFile, ExistingFile, Directory, ExistingFiles };
 
 IVW_CORE_API std::string_view enumToStr(AcceptMode mode);
 IVW_CORE_API std::string_view enumToStr(FileMode mode);

@@ -356,8 +356,7 @@ Document FileProperty::getDescription() const {
             break;
         }
 
-        case FileMode::Directory:
-        case FileMode::DirectoryOnly: {
+        case FileMode::Directory: {
             tb(H("Directory"), file_.value);
             break;
         }

@@ -55,7 +55,7 @@ namespace animation {
 DemoController::DemoController(InviwoApplication* app)
     : app_(app), demoFolder_("demoFolder", "Folder", ""), demoFile_("demoFile", "File") {
 
-    demoFolder_.setFileMode(FileMode::DirectoryOnly);
+    demoFolder_.setFileMode(FileMode::Directory);
     addProperty(demoFolder_);
     addProperty(demoFile_);
     demoFolder_.onChange([this]() { setFileOptions(); });
