@@ -82,9 +82,8 @@ protected:
     ValueWrapper<T> value_;
 };
 
-template <typename CTy, typename CTr, typename T>
-std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
-                                         const TemplateProperty<T>& prop) {
+template <typename T, typename = std::enable_if_t<util::is_stream_insertable<T>::value>>
+std::ostream& operator<<(std::ostream& os, const TemplateProperty<T>& prop) {
     return os << prop.get();
 }
 

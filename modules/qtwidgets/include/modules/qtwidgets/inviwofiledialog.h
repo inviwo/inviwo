@@ -104,8 +104,6 @@ public:
     void addSidebarPath(const std::filesystem::path& path);
     void addSidebarPath(const QString& path);
 
-    void useNativeDialog(const bool& use = true);
-
     static QString getPreviousPath(const QString& pathType);
     static void setPreviousPath(const QString& pathType, const QString& path);
 
