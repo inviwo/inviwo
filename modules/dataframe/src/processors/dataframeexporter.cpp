@@ -129,8 +129,8 @@ void DataFrameExporter::exportData() {
         exportAsCSV();
     } else {
         // use CSV format as fallback
-        LogWarn("Could not determine export format from file '"
-                << exportFile_ << "', exporting as comma-separated values (csv).");
+        LogWarn("Could not determine export format from file "
+                << exportFile_ << ", exporting as comma-separated values (csv).");
         exportAsCSV();
     }
 

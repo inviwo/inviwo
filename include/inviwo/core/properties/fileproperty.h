@@ -59,6 +59,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
     static constexpr std::string_view defaultContentType = "default";
+    using value_type = std::filesystem::path;
 
     /**
      * \brief Constructor for the FileProperty
@@ -77,7 +78,7 @@ public:
      * @param semantics Can be set to Editor
      */
     FileProperty(std::string_view identifier, std::string_view displayName, Document help,
-                 const std::filesystem::path& value = {}, AcceptMode acceptMode = AcceptMode::Open,
+                 const std::filesystem::path& value, AcceptMode acceptMode = AcceptMode::Open,
                  FileMode fileMode = FileMode::AnyFile,
                  std::string_view contentType = defaultContentType,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -136,7 +137,7 @@ public:
      * Set the file name and the selected extension.
      */
     virtual void set(const std::filesystem::path& file, const FileExtension& selectedExtension);
-    
+
     virtual void set(const Property* property) override;
     virtual void set(const FileProperty* property);
 
@@ -172,11 +173,15 @@ public:
     virtual void requestFile();
 
     virtual Document getDescription() const override;
-    
+
     virtual FileProperty& setCurrentStateAsDefault() override;
     FileProperty& setDefault(const std::filesystem::path& value);
     virtual FileProperty& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
+
+    friend std::ostream& operator<<(std::ostream& os, const FileProperty& prop) {
+        return os << prop.file_.value;
+    }
 
 private:
     ValueWrapper<std::filesystem::path> file_;

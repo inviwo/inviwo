@@ -61,8 +61,8 @@ InviwoFileDialog::InviwoFileDialog(QWidget* parent, const std::string& title,
     sidebarURLs_ << QUrl::fromLocalFile(
         QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
 
-    useNativeDialog();
-    QFileDialog::setOption(QFileDialog::DontUseCustomDirectoryIcons);
+    QFileDialog::setOption(QFileDialog::DontUseNativeDialog, false);
+    QFileDialog::setOption(QFileDialog::DontResolveSymlinks, true);
     QObject::connect(this, SIGNAL(filterSelected(const QString&)), this,
                      SLOT(filterSelectionChanged(const QString&)));
 }
@@ -170,10 +170,6 @@ void InviwoFileDialog::setContentType(const std::string& contentType) {
 }
 
 std::string InviwoFileDialog::getContentType() const { return utilqt::fromQString(pathType_); }
-
-void InviwoFileDialog::useNativeDialog(const bool& use) {
-    QFileDialog::setOption(QFileDialog::DontUseNativeDialog, !use);
-}
 
 void InviwoFileDialog::setCurrentDirectory(const std::filesystem::path& path) {
     if (!path.empty()) {
