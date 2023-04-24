@@ -35,7 +35,6 @@
 #include <inviwo/core/network/processornetwork.h>                // for ProcessorNetwork
 #include <inviwo/core/network/workspacemanager.h>                // for WorkspaceManager, Worksp...
 #include <inviwo/core/util/exception.h>                          // for Exception
-#include <inviwo/core/util/indirectiterator.h>                   // for IndirectIterator
 #include <inviwo/core/util/typetraits.h>                         // for alwaysTrue, identity
 #include <modules/animation/datastructures/animation.h>          // for Animation
 #include <modules/animation/datastructures/animationobserver.h>  // for AnimationObservable
@@ -60,8 +59,12 @@ class AnimationManager;
 WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManager& animationManager,
                                          AnimationModule& module)
     : animationManager_{animationManager}
-    , animations_{{Animation(&animationManager_, "Animation 1")}}
-    , mainAnimation_(app, animations_.front(), module)
+    , animations_{[&]() {
+        std::vector<std::unique_ptr<Animation>> res;
+        res.push_back(std::make_unique<Animation>(&animationManager_, "Animation 1"));
+        return res;
+    }()}
+    , mainAnimation_(app, *animations_.front(), module)
     , app_{app} {
 
     animationClearHandle_ = app->getWorkspaceManager()->onClear([&]() { clear(); });
@@ -73,22 +76,22 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
         size_t mainAnimation = 0;
         d.deserialize("MainAnimationIndex", mainAnimation);
 
-        util::IndexedDeserializer<Animation>("Animations", "Animation")
+        util::IndexedDeserializer<std::unique_ptr<Animation>>("Animations", "Animation")
             .setMakeNew([&]() {
                 // Must pass AnimationManager to Animation constructor
-                return Animation(&animationManager_);
+                return std::make_unique<Animation>(&animationManager_);
             })
-            .onNew([&](Animation& anim) { addInternal(size() - 1, anim); })
-            .onRemove([&](Animation& anim) {
+            .onNew([&](std::unique_ptr<Animation>& anim) { addInternal(size() - 1, *anim); })
+            .onRemove([&](std::unique_ptr<Animation>& anim) {
                 // Previously last element was removed
-                onChanged_.invoke(size(), anim);
+                onChanged_.invoke(size(), *anim);
             })(d, animations_);
 
         // Failsafe in case no animation was found
         if (animations_.empty()) {
             add("Animation 1");
         }
-        setMainAnimation(animations_[std::min(mainAnimation, size() - 1)]);
+        setMainAnimation(*animations_[std::min(mainAnimation, size() - 1)]);
     });
 
     onChanged_.add([app = app_](size_t, Animation&) {
@@ -97,28 +100,28 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
     });
 }
 
-Animation& animation::WorkspaceAnimations::get(size_t index) { return animations_.at(index); }
+Animation& animation::WorkspaceAnimations::get(size_t index) { return *animations_.at(index); }
 
 std::vector<Animation*> WorkspaceAnimations::get(std::string_view name) {
     std::vector<Animation*> animations;
     for (auto& elem : animations_) {
-        if (elem.getName() == name) {
-            animations.push_back(&elem);
+        if (elem->getName() == name) {
+            animations.push_back(elem.get());
         }
     }
     return animations;
 }
 
-Animation& WorkspaceAnimations::operator[](size_t i) { return animations_[i]; }
+Animation& WorkspaceAnimations::operator[](size_t i) { return *animations_[i]; }
 
-const Animation& WorkspaceAnimations::operator[](size_t i) const { return animations_[i]; }
+const Animation& WorkspaceAnimations::operator[](size_t i) const { return *animations_[i]; }
 
-std::vector<Animation>::const_iterator WorkspaceAnimations::begin() const {
-    return animations_.begin();
+WorkspaceAnimations::iterator WorkspaceAnimations::begin() const {
+    return util::makeIndirectIterator(animations_.begin());
 }
 
-std::vector<Animation>::const_iterator WorkspaceAnimations::end() const {
-    return animations_.end();
+WorkspaceAnimations::iterator WorkspaceAnimations::end() const {
+    return util::makeIndirectIterator(animations_.end());
 }
 
 Animation& WorkspaceAnimations::add(std::string_view name) {
@@ -126,9 +129,9 @@ Animation& WorkspaceAnimations::add(std::string_view name) {
 }
 
 Animation& WorkspaceAnimations::add(Animation anim) {
-    animations_.emplace_back(std::move(anim));
-    addInternal(size() - 1, animations_.back());
-    return animations_.back();
+    animations_.emplace_back(std::make_unique<Animation>(std::move(anim)));
+    addInternal(size() - 1, *animations_.back());
+    return *animations_.back();
 }
 
 void WorkspaceAnimations::addInternal(size_t index, Animation& anim) {
@@ -147,28 +150,29 @@ void WorkspaceAnimations::addInternal(size_t index, Animation& anim) {
 }
 
 Animation& WorkspaceAnimations::insert(size_t index, std::string_view name) {
-    animations_.insert(animations_.begin() + index, Animation(&animationManager_, name));
-    addInternal(index, animations_[index]);
-    return animations_[index];
+    animations_.insert(animations_.begin() + index,
+                       std::make_unique<Animation>(&animationManager_, name));
+    addInternal(index, *animations_[index]);
+    return *animations_[index];
 }
 
 void WorkspaceAnimations::erase(size_t index) {
     // First ensure that the MainAnimation is valid
     if (size() == 1) {
-        animations_[0].clear();
-        animations_[0].setName("Animation 1");
-        onChanged_.invoke(0, animations_[0]);
+        animations_[0]->clear();
+        animations_[0]->setName("Animation 1");
+        onChanged_.invoke(0, *animations_[0]);
         return;
     }
     if (size() > 1 && getMainAnimationIndex() == index) {
         // The selected one will be removed, select next after
         auto indexBeforeRemoval = index + 1 == animations_.size() ? index - 1 : index + 1;
-        mainAnimation_.set(animations_[indexBeforeRemoval]);
+        mainAnimation_.set(*animations_[indexBeforeRemoval]);
     }
-    Animation anim(std::move(animations_[index]));
+    auto anim = std::move(animations_[index]);
     animations_.erase(animations_.begin() + index);
 
-    onChanged_.invoke(index, anim);
+    onChanged_.invoke(index, *anim);
 }
 
 void WorkspaceAnimations::clear() {
@@ -183,14 +187,12 @@ void WorkspaceAnimations::setMainAnimation(Animation& anim) {
         mainAnimation_.set(anim);
     } else {
         add(anim);
-        mainAnimation_.set(animations_.back());
+        mainAnimation_.set(*animations_.back());
     }
 }
 
 size_t WorkspaceAnimations::getMainAnimationIndex() const {
-    // Note: cannot use WorkspaceAnimations::find here due to const, simply do the same.
-    auto it = std::find_if(animations_.begin(), animations_.end(),
-                           [anim = &getMainAnimation().get()](auto& a) { return anim == &a; });
+    auto it = find(&mainAnimation_.get());
     return std::distance(begin(), it);
 }
 
@@ -207,7 +209,7 @@ void WorkspaceAnimations::onAnimationChanged(AnimationController*, Animation*, A
     app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
 }
 
-std::vector<Animation>::const_iterator WorkspaceAnimations::find(const Animation* anim) {
+WorkspaceAnimations::iterator WorkspaceAnimations::find(const Animation* anim) const {
     return std::find_if(begin(), end(), [anim](const auto& a) { return anim == &a; });
 }
 

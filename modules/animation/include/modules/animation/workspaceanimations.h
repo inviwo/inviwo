@@ -32,6 +32,7 @@
 
 #include <inviwo/core/network/workspacemanager.h>                       // for WorkspaceManager
 #include <inviwo/core/util/dispatcher.h>                                // for Dispatcher
+#include <inviwo/core/util/indirectiterator.h>
 #include <modules/animation/animationcontrollerobserver.h>              // for AnimationControll...
 #include <modules/animation/datastructures/animation.h>                 // for Animation
 #include <modules/animation/datastructures/animationobserver.h>         // for AnimationObserver
@@ -96,8 +97,10 @@ public:
     Animation& operator[](size_t i);
     const Animation& operator[](size_t i) const;
 
-    std::vector<Animation>::const_iterator begin() const;
-    std::vector<Animation>::const_iterator end() const;
+
+    using iterator = util::IndirectIterator<std::vector<std::unique_ptr<Animation>>::const_iterator>;
+    iterator begin() const;
+    iterator end() const;
 
     /**
      * Add an empty Animation with specified name.
@@ -129,7 +132,7 @@ public:
     MainAnimation& getMainAnimation();
     const MainAnimation& getMainAnimation() const;
 
-    std::vector<Animation>::const_iterator find(const Animation* anim);
+    iterator find(const Animation* anim) const;
 
     OnChangedDispatcher onChanged_;  // Fired when animations are added/removed
 
@@ -167,7 +170,7 @@ private:
 
     AnimationManager& animationManager_;
 
-    std::vector<Animation> animations_;
+    std::vector<std::unique_ptr<Animation>> animations_;
     MainAnimation mainAnimation_;
 
     InviwoApplication* app_;

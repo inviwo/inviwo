@@ -88,9 +88,10 @@ private:
      */
     void addKeyframeSequenceCallback(Property* property);
 
-    // create this lazy so we have all the factories ready when we create it
     Animation* animation_;
     InviwoApplication* app_;
+    
+    // create this lazy so we have all the factories ready when we create it
     mutable std::optional<AnimationController> controller_;
 
     WorkspaceManager::ClearHandle animationControllerClearHandle_;
