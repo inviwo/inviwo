@@ -437,14 +437,18 @@ public:
     template <typename C>
     void operator()(Deserializer& d, C& container) {
         size_t count = 0;
+        T tmp{};
         ContainerWrapper<T> cont(
             itemKey_, [&](std::string_view, size_t ind) -> typename ContainerWrapper<T>::Item {
-                ++count;
                 if (ind < container.size()) {
-                    return {true, container[ind], [&](T&) {}};
+                    return {true, container[ind], [&](T&) { ++count; }};
                 } else {
-                    container.emplace_back(makeNewItem_());
-                    return {true, container.back(), [&](T&) { onNewItem_(container.back()); }};
+                    tmp = makeNewItem_();
+                    return {true, tmp, [&](T& value) {
+                                container.emplace_back(std::move(value));
+                                ++count;
+                                onNewItem_(container.back());
+                            }};
                 }
             });
 
