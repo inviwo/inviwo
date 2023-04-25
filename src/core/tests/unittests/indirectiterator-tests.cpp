@@ -103,36 +103,51 @@ TEST(IndirectIteratorTest, Pair) {
 
     {
         auto b = util::makeIndirectIterator(vec.begin());
-        static_assert(std::is_assignable<decltype(*b), int>::value, "");
+        static_assert(std::is_assignable<decltype(*b), int>::value);
     }
     {
         auto b = util::makeIndirectIterator(cvec.begin());
-        static_assert(!std::is_assignable<decltype(*b), int>::value, "");
+        static_assert(!std::is_assignable<decltype(*b), int>::value);
     }
     {
         auto b = util::makeIndirectIterator(vec.cbegin());
-        static_assert(!std::is_assignable<decltype(*b), int>::value, "");
+        static_assert(!std::is_assignable<decltype(*b), int>::value);
     }
     {
         auto b = util::makeIndirectIterator(cvec.cbegin());
-        static_assert(!std::is_assignable<decltype(*b), int>::value, "");
+        static_assert(!std::is_assignable<decltype(*b), int>::value);
     }
     {
         auto b = util::makeIndirectIterator<false>(vec.begin());
-        static_assert(std::is_assignable<decltype(*b), int>::value, "");
+        static_assert(std::is_assignable<decltype(*b), int>::value);
     }
     {
         auto b = util::makeIndirectIterator<false>(cvec.begin());
-        static_assert(std::is_assignable<decltype(*b), int>::value, "");
+        static_assert(std::is_assignable<decltype(*b), int>::value);
     }
     {
         auto b = util::makeIndirectIterator<false>(vec.cbegin());
-        static_assert(std::is_assignable<decltype(*b), int>::value, "");
+        static_assert(std::is_assignable<decltype(*b), int>::value);
     }
     {
         auto b = util::makeIndirectIterator<false>(cvec.cbegin());
-        static_assert(std::is_assignable<decltype(*b), int>::value, "");
+        static_assert(std::is_assignable<decltype(*b), int>::value);
     }
+}
+
+using iterator = util::IndirectIterator<std::vector<std::unique_ptr<int>>::iterator>;
+using const_iterator = util::IndirectIterator<std::vector<std::unique_ptr<int>>::const_iterator>;
+int constFun(const_iterator iter) { return *iter; }
+
+TEST(IndirectIteratorTest, Conversion) {
+    std::vector<std::unique_ptr<int>> vec;
+    for (int i = 0; i < 5; ++i) {
+        vec.push_back(std::make_unique<int>(i));
+    }
+
+    iterator it = util::makeIndirectIterator(vec.begin());
+
+    EXPECT_EQ(constFun(it), 0);
 }
 
 }  // namespace inviwo

@@ -157,94 +157,105 @@ struct IndirectIterator {
     template <typename Tag, typename Iterables>
     using require_t = detail_indirect::require_t<Tag, Iter>;
 
-    IndirectIterator() noexcept(std::is_nothrow_default_constructible_v<Iter>) = default;
-    IndirectIterator(Iter iterator) noexcept(std::is_nothrow_move_constructible_v<Iter>)
+    constexpr IndirectIterator() noexcept(std::is_nothrow_default_constructible_v<Iter>) = default;
+    constexpr IndirectIterator(Iter iterator) noexcept(std::is_nothrow_move_constructible_v<Iter>)
         : iterator_(std::move(iterator)) {}
 
-    IndirectIterator(const IndirectIterator&) noexcept(std::is_nothrow_copy_constructible_v<Iter>) =
-        default;
-    IndirectIterator& operator=(const IndirectIterator&) noexcept(
+    template <typename OtherIter,
+              typename = std::enable_if_t<std::is_convertible_v<OtherIter, Iter>>>
+    constexpr IndirectIterator(IndirectIterator<OtherIter> iterator) noexcept(
+        std::is_nothrow_move_constructible_v<Iter>)
+        : iterator_(std::move(iterator.base())) {}
+
+    constexpr IndirectIterator(const IndirectIterator&) noexcept(
+        std::is_nothrow_copy_constructible_v<Iter>) = default;
+    constexpr IndirectIterator& operator=(const IndirectIterator&) noexcept(
         std::is_nothrow_assignable_v<Iter, Iter>) = default;
 
-    IndirectIterator(IndirectIterator&&) noexcept(std::is_nothrow_move_constructible_v<Iter>) =
-        default;
-    IndirectIterator& operator=(IndirectIterator&&) noexcept(
+    constexpr IndirectIterator(IndirectIterator&&) noexcept(
+        std::is_nothrow_move_constructible_v<Iter>) = default;
+    constexpr IndirectIterator& operator=(IndirectIterator&&) noexcept(
         std::is_nothrow_move_assignable_v<Iter>) = default;
 
-    IndirectIterator& operator++() {
+    constexpr IndirectIterator& operator++() {
         ++iterator_;
         return *this;
     }
-    IndirectIterator operator++(int) { return {iterator_++}; }
+    constexpr IndirectIterator operator++(int) { return {iterator_++}; }
 
     template <typename I = Iter, typename = require_t<std::bidirectional_iterator_tag, I>>
-    IndirectIterator& operator--() {
+    constexpr IndirectIterator& operator--() {
         --iterator_;
         return *this;
     }
     template <typename I = Iter, typename = require_t<std::bidirectional_iterator_tag, I>>
-    IndirectIterator operator--(int) {
+    constexpr IndirectIterator operator--(int) {
         return {iterator_--};
     }
 
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    IndirectIterator& operator+=(difference_type rhs) {
+    constexpr IndirectIterator& operator+=(difference_type rhs) {
         iterator_ += rhs;
         return *this;
     }
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    IndirectIterator& operator-=(difference_type rhs) {
+    constexpr IndirectIterator& operator-=(difference_type rhs) {
         iterator_ -= rhs;
         return *this;
     }
 
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    difference_type operator-(const IndirectIterator& rhs) const {
+    constexpr difference_type operator-(const IndirectIterator& rhs) const {
         return iterator_ - rhs.iterator_;
     }
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    IndirectIterator operator+(difference_type i) const {
+    constexpr IndirectIterator operator+(difference_type i) const {
         auto iter = *this;
         return iter += i;
     }
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    IndirectIterator operator-(difference_type i) const {
+    constexpr IndirectIterator operator-(difference_type i) const {
         auto iter = *this;
         return iter -= i;
     }
 
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    reference operator[](difference_type i) const {
+    constexpr reference operator[](difference_type i) const {
         return *iterator_[i];
     }
 
-    reference operator*() const { return **iterator_; }
+    constexpr reference operator*() const { return **iterator_; }
 
-    pointer operator->() const {
+    constexpr pointer operator->() const {
         return detail_indirect::asPointer<is_const>::get(*(iterator_.operator->()));
     }
 
-    const Iter& base() const { return iterator_; }
-    Iter& base() { return iterator_; }
+    constexpr const Iter& base() const& { return iterator_; }
+    constexpr Iter& base() & { return iterator_; }
+    constexpr Iter base() && { return std::move(iterator_); }
 
-    bool operator==(const IndirectIterator& rhs) const { return iterator_ == rhs.iterator_; }
+    constexpr bool operator==(const IndirectIterator& rhs) const {
+        return iterator_ == rhs.iterator_;
+    }
 
-    bool operator!=(const IndirectIterator& rhs) const { return iterator_ != rhs.iterator_; }
+    constexpr bool operator!=(const IndirectIterator& rhs) const {
+        return iterator_ != rhs.iterator_;
+    }
 
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    bool operator>(const IndirectIterator& rhs) const {
+    constexpr bool operator>(const IndirectIterator& rhs) const {
         return iterator_ > rhs.iterator_;
     }
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    bool operator<(const IndirectIterator& rhs) const {
+    constexpr bool operator<(const IndirectIterator& rhs) const {
         return iterator_ < rhs.iterator_;
     }
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    bool operator>=(const IndirectIterator& rhs) const {
+    constexpr bool operator>=(const IndirectIterator& rhs) const {
         return iterator_ >= rhs.iterator_;
     }
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    bool operator<=(const IndirectIterator& rhs) const {
+    constexpr bool operator<=(const IndirectIterator& rhs) const {
         return iterator_ <= rhs.iterator_;
     }
 

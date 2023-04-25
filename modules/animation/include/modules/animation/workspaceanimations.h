@@ -30,8 +30,8 @@
 
 #include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMAT...
 
-#include <inviwo/core/network/workspacemanager.h>                       // for WorkspaceManager
-#include <inviwo/core/util/dispatcher.h>                                // for Dispatcher
+#include <inviwo/core/network/workspacemanager.h>  // for WorkspaceManager
+#include <inviwo/core/util/dispatcher.h>           // for Dispatcher
 #include <inviwo/core/util/indirectiterator.h>
 #include <modules/animation/animationcontrollerobserver.h>              // for AnimationControll...
 #include <modules/animation/datastructures/animation.h>                 // for Animation
@@ -86,7 +86,7 @@ public:
      */
     using OnChangedDispatcher = Dispatcher<void(size_t, Animation&)>;
     WorkspaceAnimations(InviwoApplication* app, AnimationManager& manager, AnimationModule& module);
-    virtual ~WorkspaceAnimations() = default;
+    virtual ~WorkspaceAnimations();
 
     Animation& get(size_t index);
     /**
@@ -97,10 +97,14 @@ public:
     Animation& operator[](size_t i);
     const Animation& operator[](size_t i) const;
 
+    using const_iterator =
+        util::IndirectIterator<std::vector<std::unique_ptr<Animation>>::const_iterator>;
+    using iterator = util::IndirectIterator<std::vector<std::unique_ptr<Animation>>::iterator>;
 
-    using iterator = util::IndirectIterator<std::vector<std::unique_ptr<Animation>>::const_iterator>;
-    iterator begin() const;
-    iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
+    iterator begin();
+    iterator end();
 
     /**
      * Add an empty Animation with specified name.
@@ -109,12 +113,14 @@ public:
     Animation& add(Animation anim);
 
     Animation& insert(size_t index, std::string_view name);
+    Animation& insert(const_iterator position, std::string_view name);
     /**
      * Removes  the animation and adjusts the main animation to the next available
      * index if needed.
      * An empty animation will be added if all animations are erased.
      */
     void erase(size_t index);
+    void erase(const_iterator position);
     /**
      * Removes all animations leaving an empty Animation, which is set to be the MainAnimation.
      * The size() will be 1 after clearing.
@@ -132,7 +138,8 @@ public:
     MainAnimation& getMainAnimation();
     const MainAnimation& getMainAnimation() const;
 
-    iterator find(const Animation* anim) const;
+    const_iterator find(const Animation* anim) const;
+    iterator find(const Animation* anim);
 
     OnChangedDispatcher onChanged_;  // Fired when animations are added/removed
 
@@ -143,7 +150,7 @@ private:
                                     Animation* newAnim) override;
 
     // Add observers and fire onChanged_
-    void addInternal(size_t index, Animation& anim);
+    void addInternal(typename std::vector<std::unique_ptr<Animation>>::iterator animation);
 
     // AnimationObserver overloads
     virtual void onTrackAdded(Track*) override;
