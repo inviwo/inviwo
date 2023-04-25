@@ -425,15 +425,8 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
     replaceInString(s, "~modulePath~", currentModulePath_.generic_string());
     replaceInString(s, "~basePath~", app_->getBasePath().generic_string());
     const QUrl url(utilqt::toQString(s), QUrl::TolerantMode);
+
     const QUrlQuery query(url);
-
-    auto toFilePath = [&](const QUrl& url) {
-        auto filePath = utilqt::fromQString(url.toLocalFile());
-        replaceInString(filePath, "~modulePath~", currentModulePath_.string());
-        replaceInString(filePath, "~basePath~", app_->getBasePath().string());
-        return std::filesystem::path{filePath};
-    };
-
     if (query.hasQueryItem("type")) {
         const QString requestType = query.queryItemValue("type");
 
@@ -448,23 +441,17 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
         }
     }
 
-    const auto filePath = toFilePath(url);
-
-    if (type == QTextDocument::ImageResource) {
-        QFile qFile{filePath};
-        if (qFile.exists()) {
+    const auto filePath = utilqt::toPath(url.toLocalFile());
+    if (std::filesystem::is_regular_file(filePath)) {
+        if (type == QTextDocument::ImageResource) {
             const auto maxImageWidth = (95 * width()) / 100;
-            auto image = QImage(qFile.fileName());
+            auto image = QImage(url.toLocalFile());
             if (image.width() > maxImageWidth) {
                 return image.scaledToWidth(maxImageWidth);
             } else {
                 return image;
             }
-        }
-    }
-
-    if (std::filesystem::is_regular_file(filePath)) {
-        if (filePath.extension() == ".inv") {
+        } else if (filePath.extension() == ".inv") {
             try {
                 util::appendProcessorNetwork(app_->getProcessorNetwork(), filePath, app_);
             } catch (const Exception& e) {
