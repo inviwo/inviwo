@@ -90,7 +90,7 @@ private:
 
     Animation* animation_;
     InviwoApplication* app_;
-    
+
     // create this lazy so we have all the factories ready when we create it
     mutable std::optional<AnimationController> controller_;
 
