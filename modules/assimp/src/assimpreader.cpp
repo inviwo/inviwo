@@ -85,10 +85,10 @@ namespace inviwo {
 class InviwoAssimpLogStream : public Assimp::LogStream {
 private:
     LogLevel loglevel_;
-    const std::string fileName_;
+    const std::filesystem::path fileName_;
 
 public:
-    InviwoAssimpLogStream(LogLevel ploglevel, std::string_view filename = "")
+    InviwoAssimpLogStream(LogLevel ploglevel, const std::filesystem::path& filename)
         : loglevel_{ploglevel}, fileName_{filename} {}
     virtual ~InviwoAssimpLogStream() = default;
 
@@ -153,21 +153,21 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& filePa
         Assimp::DefaultLogger::create("AssimpImportLog.txt", logSeverity, 0);
         // if logging is enabled, errors will always be logged
         Assimp::DefaultLogger::get()->attachStream(
-            new InviwoAssimpLogStream(LogLevel::Error, filePath.string()),
+            new InviwoAssimpLogStream(LogLevel::Error, filePath),
             Assimp::Logger::ErrorSeverity::Err);
         if (logLevel_ >= AssimpLogLevel::Warn) {
             Assimp::DefaultLogger::get()->attachStream(
-                new InviwoAssimpLogStream(LogLevel::Warn, filePath.string()),
+                new InviwoAssimpLogStream(LogLevel::Warn, filePath),
                 Assimp::Logger::ErrorSeverity::Warn);
         }
         if (logLevel_ >= AssimpLogLevel::Info) {
             Assimp::DefaultLogger::get()->attachStream(
-                new InviwoAssimpLogStream(LogLevel::Info, filePath.string()),
+                new InviwoAssimpLogStream(LogLevel::Info, filePath),
                 Assimp::Logger::ErrorSeverity::Info);
         }
         if (logLevel_ >= AssimpLogLevel::Debug) {
             Assimp::DefaultLogger::get()->attachStream(
-                new InviwoAssimpLogStream(LogLevel::Info, filePath.string()),
+                new InviwoAssimpLogStream(LogLevel::Info, filePath),
                 Assimp::Logger::ErrorSeverity::Debugging);
         }
     }
