@@ -86,6 +86,10 @@ public:
      */
     using OnChangedDispatcher = Dispatcher<void(size_t, Animation&)>;
     WorkspaceAnimations(InviwoApplication* app, AnimationManager& manager, AnimationModule& module);
+    WorkspaceAnimations(const WorkspaceAnimations&) = delete;
+    WorkspaceAnimations(WorkspaceAnimations&&) = delete;
+    WorkspaceAnimations& operator=(const WorkspaceAnimations&) = delete;
+    WorkspaceAnimations& operator=(WorkspaceAnimations&&) = delete;
     virtual ~WorkspaceAnimations();
 
     Animation& get(size_t index);
@@ -98,8 +102,9 @@ public:
     const Animation& operator[](size_t i) const;
 
     using const_iterator =
-        util::IndirectIterator<std::vector<std::unique_ptr<Animation>>::const_iterator>;
-    using iterator = util::IndirectIterator<std::vector<std::unique_ptr<Animation>>::iterator>;
+        util::IndirectIterator<typename std::vector<std::unique_ptr<Animation>>::const_iterator>;
+    using iterator =
+        util::IndirectIterator<typename std::vector<std::unique_ptr<Animation>>::iterator>;
 
     const_iterator begin() const;
     const_iterator end() const;
