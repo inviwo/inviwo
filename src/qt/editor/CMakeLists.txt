@@ -120,7 +120,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 qt_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
 source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/changelog.qrc ${QRC_FILE})
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SvgWidgets Help )
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SvgWidgets)
 qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 
 source_group("MOC Files" FILES ${MOCED_FILES})
@@ -133,7 +133,6 @@ target_link_libraries(inviwo-qteditor PUBLIC
     Qt6::Core 
     Qt6::Gui 
     Qt6::Widgets 
-    Qt6::Help
     Qt6::Svg
     Qt6::SvgWidgets
 )
