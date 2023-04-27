@@ -1,5 +1,20 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-04-26 Python: consistent indexing in Numpy and Inviwo
+Inviwo's Python bindings responsible for converting to and from Numpy arrays have been revised. The conversion now maintains a consistent indexing and memory order between Python lists/Numpy arrays and C++.
+
+This change potentially breaks existing Python processors handling either image layers and/or volumes. To fix these, ensure that the shape of Numpy arrays is in the form of `(z, y, x)` or `(z, y, x, c)` for volumes and `(y, x)`/`(y, x, c)` for layers, respectively. Reordering of axes should no longer be necessary.
+
+*Note:* Numpy arrays must be C-contiguous in order to be used by Inviwo. If they are not, the conversion from Numpy to Inviwo will fail and throw an exception (`Buffer`, `LayerPy`, `VolumePy`, etc.). Bear in mind that in Python the right-most index is the fastest.
+```python
+l = [ [ 0, 1, 2 ], [ 3, 4, 5 ] ]
+print(l[0][2]) # [2] refers to the fastest running index
+
+n = numpy.array(l)
+print(n.flatten()) # -> [ 0, 1, 2, 3, 4, 5 ]
+print(n[0, 2])     # -> 2
+```
+
 ## 2023-03-28 Removed deprecated PythonScript processor
 The `PythonScriptProcessor` -- deprecated for more than 4 years -- has been removed entirely. Three Python processors replicating previously existing Python scripts have been added instead.
 - **python3/processors/MandebrotNumpy.py**
@@ -7,7 +22,7 @@ The `PythonScriptProcessor` -- deprecated for more than 4 years -- has been remo
 - **python3/processors/VolumeCreationTest.py**
 
 ## 2023-03-24 Python Layer representation and Python processor examples
-`LayerPy` is a Python representation of a `Layer` based directly on a numpy array similar to `VolumePy`. The array needs to be c-contiguous where the shape is either `(xdim, ydim)` or `(xdim, ydim, numchannels)` in case of more than one image channel. The Python representation of a layer is accessible with either `getLayerPyRepresentation()` or `getEditableLayerPyRepresentation()`.
+`LayerPy` is a Python representation of a `Layer` based directly on a numpy array similar to `VolumePy`. The array needs to be C-contiguous where the shape is either `(ydim, xdim)` or `(ydim, xdim, numchannels)` in case of more than one image channel. The Python representation of a layer is accessible with either `getLayerPyRepresentation()` or `getEditableLayerPyRepresentation()`.
 The `LayerPy` represention comes with converters to `LayerRAM` and also includes converters from Python directly to GL and back without the necessity of a RAM representation.
 A number of example Python processors have been added and can be found under `modules/python3/processors`:
 - `PythonImageExample.py` uses the Pillow library for loading an image. Demonstrates handling of images with `inviwopy.data.Image` and `inviwopy.data.Layer`

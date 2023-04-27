@@ -26,6 +26,16 @@
 </style>
 </head>
 <body>
+<h2>2023-04-26 Python: consistent indexing in Numpy and Inviwo</h2>
+<p>Inviwo's Python bindings responsible for converting to and from Numpy arrays have been revised. The conversion now maintains a consistent indexing and memory order between Python lists/Numpy arrays and C++.</p>
+<p>This change potentially breaks existing Python processors handling either image layers and/or volumes. To fix these, ensure that the shape of Numpy arrays is in the form of <code class="notranslate">(z, y, x)</code> or <code class="notranslate">(z, y, x, c)</code> for volumes and <code class="notranslate">(y, x)</code>/<code class="notranslate">(y, x, c)</code> for layers, respectively. Reordering of axes should no longer be necessary.</p>
+<p><em>Note:</em> Numpy arrays must be C-contiguous in order to be used by Inviwo. If they are not, the conversion from Numpy to Inviwo will fail and throw an exception (<code class="notranslate">Buffer</code>, <code class="notranslate">LayerPy</code>, <code class="notranslate">VolumePy</code>, etc.). Bear in mind that in Python the right-most index is the fastest.</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-s1">l</span> <span class="pl-c1">=</span> [ [ <span class="pl-c1">0</span>, <span class="pl-c1">1</span>, <span class="pl-c1">2</span> ], [ <span class="pl-c1">3</span>, <span class="pl-c1">4</span>, <span class="pl-c1">5</span> ] ]
+<span class="pl-en">print</span>(<span class="pl-s1">l</span>[<span class="pl-c1">0</span>][<span class="pl-c1">2</span>]) <span class="pl-c"># [2] refers to the fastest running index</span>
+
+<span class="pl-s1">n</span> <span class="pl-c1">=</span> <span class="pl-s1">numpy</span>.<span class="pl-en">array</span>(<span class="pl-s1">l</span>)
+<span class="pl-en">print</span>(<span class="pl-s1">n</span>.<span class="pl-en">flatten</span>()) <span class="pl-c"># -&gt; [ 0, 1, 2, 3, 4, 5 ]</span>
+<span class="pl-en">print</span>(<span class="pl-s1">n</span>[<span class="pl-c1">0</span>, <span class="pl-c1">2</span>])     <span class="pl-c"># -&gt; 2</span></pre></div>
 <h2>2023-03-28 Removed deprecated PythonScript processor</h2>
 <p>The <code class="notranslate">PythonScriptProcessor</code> -- deprecated for more than 4 years -- has been removed entirely. Three Python processors replicating previously existing Python scripts have been added instead.</p>
 <ul>
@@ -34,7 +44,7 @@
 <li><strong>python3/processors/VolumeCreationTest.py</strong></li>
 </ul>
 <h2>2023-03-24 Python Layer representation and Python processor examples</h2>
-<p><code class="notranslate">LayerPy</code> is a Python representation of a <code class="notranslate">Layer</code> based directly on a numpy array similar to <code class="notranslate">VolumePy</code>. The array needs to be c-contiguous where the shape is either <code class="notranslate">(xdim, ydim)</code> or <code class="notranslate">(xdim, ydim, numchannels)</code> in case of more than one image channel. The Python representation of a layer is accessible with either <code class="notranslate">getLayerPyRepresentation()</code> or <code class="notranslate">getEditableLayerPyRepresentation()</code>.<br>
+<p><code class="notranslate">LayerPy</code> is a Python representation of a <code class="notranslate">Layer</code> based directly on a numpy array similar to <code class="notranslate">VolumePy</code>. The array needs to be C-contiguous where the shape is either <code class="notranslate">(ydim, xdim)</code> or <code class="notranslate">(ydim, xdim, numchannels)</code> in case of more than one image channel. The Python representation of a layer is accessible with either <code class="notranslate">getLayerPyRepresentation()</code> or <code class="notranslate">getEditableLayerPyRepresentation()</code>.<br>
 The <code class="notranslate">LayerPy</code> represention comes with converters to <code class="notranslate">LayerRAM</code> and also includes converters from Python directly to GL and back without the necessity of a RAM representation.<br>
 A number of example Python processors have been added and can be found under <code class="notranslate">modules/python3/processors</code>:</p>
 <ul>
