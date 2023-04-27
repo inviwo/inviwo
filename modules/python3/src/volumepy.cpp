@@ -67,7 +67,7 @@ VolumePy::VolumePy(pybind11::array data, const SwizzleMask& swizzleMask,
     , interpolation_{interpolation}
     , wrapping_{wrapping}
     , data_{data}
-    , dims_{data_.shape(0), data_.shape(1), data_.shape(2)} {}
+    , dims_{data_.shape(2), data_.shape(1), data_.shape(0)} {}
 
 VolumePy::VolumePy(size3_t dimensions, const DataFormatBase* format, const SwizzleMask& swizzleMask,
                    InterpolationType interpolation, const Wrapping3D& wrapping)
@@ -77,7 +77,7 @@ VolumePy::VolumePy(size3_t dimensions, const DataFormatBase* format, const Swizz
     , wrapping_{wrapping}
     , data_{pybind11::array(
           pyutil::toNumPyFormat(format),
-          pybind11::array::ShapeContainer{dimensions.x, dimensions.y, dimensions.z,
+          pybind11::array::ShapeContainer{dimensions.z, dimensions.y, dimensions.x,
                                           getDataFormat()->getComponents()})}
     , dims_{dimensions} {}
 
@@ -88,7 +88,7 @@ std::type_index VolumePy::getTypeIndex() const { return std::type_index(typeid(V
 void VolumePy::setDimensions(size3_t dimensions) {
     if (dimensions != dims_) {
         data_ = pybind11::array(
-            data_.dtype(), pybind11::array::ShapeContainer{dimensions.x, dimensions.y, dimensions.z,
+            data_.dtype(), pybind11::array::ShapeContainer{dimensions.z, dimensions.y, dimensions.x,
                                                            getDataFormat()->getComponents()});
         dims_ = dimensions;
     }
@@ -115,8 +115,8 @@ std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
 
         const auto dims = vr->getDimensions();
 
-        auto shape = extent == 1 ? pybind11::array::ShapeContainer{dims.x, dims.y, dims.z}
-                                 : pybind11::array::ShapeContainer{dims.x, dims.y, dims.z, extent};
+        auto shape = extent == 1 ? pybind11::array::ShapeContainer{dims.z, dims.y, dims.x}
+                                 : pybind11::array::ShapeContainer{dims.z, dims.y, dims.x, extent};
         pybind11::array_t<CompType> data{shape};
 
         if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {

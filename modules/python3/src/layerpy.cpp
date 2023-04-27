@@ -68,7 +68,7 @@ LayerPy::LayerPy(pybind11::array data, LayerType type, const SwizzleMask& swizzl
     , interpolation_{interpolation}
     , wrapping_{wrapping}
     , data_{data}
-    , dims_{data_.shape(0), data_.shape(1)} {}
+    , dims_{data_.shape(1), data_.shape(0)} {}
 
 LayerPy::LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* format,
                  const SwizzleMask& swizzleMask, InterpolationType interpolation,
@@ -78,7 +78,7 @@ LayerPy::LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* forma
     , interpolation_{interpolation}
     , wrapping_{wrapping}
     , data_{pybind11::array(pyutil::toNumPyFormat(format),
-                            pybind11::array::ShapeContainer{dimensions.x, dimensions.y,
+                            pybind11::array::ShapeContainer{dimensions.y, dimensions.x,
                                                             getDataFormat()->getComponents()})}
     , dims_{dimensions} {}
 
@@ -91,7 +91,7 @@ std::type_index LayerPy::getTypeIndex() const { return std::type_index(typeid(La
 void LayerPy::setDimensions(size2_t dimensions) {
     if (dimensions != dims_) {
         data_ = pybind11::array(data_.dtype(),
-                                pybind11::array::ShapeContainer{dimensions.x, dimensions.y,
+                                pybind11::array::ShapeContainer{dimensions.y, dimensions.x,
                                                                 getDataFormat()->getComponents()});
         dims_ = dimensions;
     }
@@ -123,8 +123,8 @@ std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
 
         const auto dims = lr->getDimensions();
 
-        auto shape = extent == 1 ? pybind11::array::ShapeContainer{dims.x, dims.y}
-                                 : pybind11::array::ShapeContainer{dims.x, dims.y, extent};
+        auto shape = extent == 1 ? pybind11::array::ShapeContainer{dims.y, dims.x}
+                                 : pybind11::array::ShapeContainer{dims.y, dims.x, extent};
         pybind11::array_t<CompType> data{shape};
 
         if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
