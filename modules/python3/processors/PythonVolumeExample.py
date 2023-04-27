@@ -50,7 +50,7 @@ See [python3/pythonvolume.inv](file:~modulePath~/data/workspaces/pythonvolume.in
         dim = self.properties.dim.value
 
         # create a VolumePy representation
-        volumerep = ivw.data.VolumePy(self.rng.random((dim[0], dim[1], dim[2]), dtype=numpy.float32))
+        volumerep = ivw.data.VolumePy(self.rng.random((dim[2], dim[1], dim[0]), dtype=numpy.float32))
         # directly access volume data as numpy array via `volumerep.data`
 
         # create a Volume from the representation

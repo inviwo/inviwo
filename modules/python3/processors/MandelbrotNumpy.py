@@ -73,8 +73,6 @@ See [python3/mandelbrot.inv](file:~modulePath~/data/workspaces/mandelbrot.inv) w
                     break
                 Z = np.power(Z, power) + C
 
-        npData = npData.reshape((npData.shape[1], npData.shape[0]))
-
         layerpy = ivw.data.LayerPy(npData)
         layerpy.interpolation = ivw.data.InterpolationType.Nearest
 
