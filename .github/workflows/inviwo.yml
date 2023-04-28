@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-22.04]
+        os: [windows-latest, macos-13, ubuntu-22.04]
         include:
           - os: 'windows-latest'
             triplet: 'x64-windows'
