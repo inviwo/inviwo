@@ -59,13 +59,14 @@ ivw_group("Script Files" ${SCRIPT_FILES})
 # Add Unittests
 set(TEST_FILES
     tests/unittests/python3-unittest-main.cpp
+    tests/unittests/numpy-test.cpp
+    tests/unittests/python-representations.cpp
     tests/unittests/scripts-test.cpp
+    tests/unittests/scripts/glm.py
     tests/unittests/scripts/grabreturnvalue.py
+    tests/unittests/scripts/option_property.py
     tests/unittests/scripts/passvalues.py
     tests/unittests/scripts/simple_buffer_test.py
-    tests/unittests/scripts/glm.py
-    tests/unittests/scripts/option_property.py
-    tests/unittests/numpy-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

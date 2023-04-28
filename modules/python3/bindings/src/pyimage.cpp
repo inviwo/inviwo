@@ -38,6 +38,7 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/exception.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/python3/pybindutils.h>
@@ -171,8 +172,8 @@ void exposeImage(py::module& m) {
                 auto df = layer->getDataFormat();
                 auto dims = layer->getDimensions();
 
-                std::vector<size_t> shape = {dims.x, dims.y};
-                std::vector<size_t> strides = {df->getSize(), df->getSize() * dims.x};
+                std::vector<size_t> shape = {dims.y, dims.x};
+                std::vector<size_t> strides = {df->getSize() * dims.x, df->getSize()};
 
                 if (df->getComponents() > 1) {
                     shape.push_back(df->getComponents());
@@ -186,7 +187,12 @@ void exposeImage(py::module& m) {
                 auto rep = layer->getEditableRepresentation<LayerRAM>();
                 pyutil::checkDataFormat<2>(rep->getDataFormat(), rep->getDimensions(), data);
 
-                memcpy(rep->getData(), data.data(0), data.nbytes());
+                if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
+                    memcpy(rep->getData(), data.data(0), data.nbytes());
+                } else {
+                    throw Exception("Unable to convert from array to LayerRAM",
+                                    IVW_CONTEXT_CUSTOM("PyImage"));
+                }
             })
         .def("__repr__", [](const Layer& self) {
             return fmt::format(

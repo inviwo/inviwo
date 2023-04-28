@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/util/exception.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/volumepy.h>
@@ -95,9 +96,9 @@ void exposeVolume(pybind11::module& m) {
                 auto df = volume->getDataFormat();
                 auto dims = volume->getDimensions();
 
-                std::vector<size_t> shape = {dims.x, dims.y, dims.z};
-                std::vector<size_t> strides = {df->getSize(), df->getSize() * dims.x,
-                                               df->getSize() * dims.x * dims.y};
+                std::vector<size_t> shape = {dims.z, dims.y, dims.x};
+                std::vector<size_t> strides = {df->getSize() * dims.x * dims.y,
+                                               df->getSize() * dims.x, df->getSize()};
 
                 if (df->getComponents() > 1) {
                     shape.push_back(df->getComponents());
@@ -111,7 +112,12 @@ void exposeVolume(pybind11::module& m) {
                 auto rep = volume->getEditableRepresentation<VolumeRAM>();
                 pyutil::checkDataFormat<3>(rep->getDataFormat(), rep->getDimensions(), data);
 
-                memcpy(rep->getData(), data.data(0), data.nbytes());
+                if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
+                    memcpy(rep->getData(), data.data(0), data.nbytes());
+                } else {
+                    throw Exception("Unable to convert from array to VolumeRAM",
+                                    IVW_CONTEXT_CUSTOM("PyVolume"));
+                }
             })
         .def("__repr__", [](const Volume& volume) {
             return fmt::format(

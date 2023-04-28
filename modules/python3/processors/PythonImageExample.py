@@ -64,8 +64,8 @@ Example processor in python demonstrating the use of `inviwopy.data.Image`,
             # flip image upside down since Inviwo assumes OpenGL coordinates (origin at lower-left)
             im = im.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
 
-            # create numpy representation and reshape image from (y, x, channels) to (x, y, channels)
-            npImgData = np.array(im).reshape((im.size[0], im.size[1], channels))
+            # create numpy representation
+            npImgData = np.array(im)
 
             # create a LayerPy representation
             layerpy = ivw.data.LayerPy(npImgData)

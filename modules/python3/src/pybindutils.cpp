@@ -39,6 +39,7 @@
 #include <inviwo/core/util/formatdispatching.h>                         // for dispatch, All
 #include <inviwo/core/util/formats.h>                                   // for NumericType, Data...
 #include <inviwo/core/util/glmvec.h>                                    // for size2_t, size3_t
+#include <inviwo/core/util/exception.h>                                 // for Exception
 
 #include <cstring>        // for memcpy
 #include <unordered_map>  // for unordered_map
@@ -108,7 +109,7 @@ struct LayerFromArrayDispatcher {
     template <typename Result, typename T>
     std::unique_ptr<Layer> operator()(pybind11::array& arr) {
         using Type = typename T::type;
-        size2_t dims(arr.shape(0), arr.shape(1));
+        size2_t dims(arr.shape(1), arr.shape(0));
         auto layerRAM = std::make_shared<LayerRAMPrecision<Type>>(dims);
         memcpy(layerRAM->getData(), arr.data(0), arr.nbytes());
         return std::make_unique<Layer>(layerRAM);
@@ -121,7 +122,7 @@ struct VolumeFromArrayDispatcher {
     template <typename Result, typename T>
     std::unique_ptr<Volume> operator()(pybind11::array& arr) {
         using Type = typename T::type;
-        size3_t dims(arr.shape(0), arr.shape(1), arr.shape(2));
+        size3_t dims(arr.shape(2), arr.shape(1), arr.shape(0));
         auto volumeRAM = std::make_shared<VolumeRAMPrecision<Type>>(dims);
         memcpy(volumeRAM->getData(), arr.data(0), arr.nbytes());
         return std::make_unique<Volume>(volumeRAM);
@@ -132,28 +133,53 @@ std::unique_ptr<BufferBase> createBuffer(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
     auto df = pyutil::getDataFormat(ndim == 1 ? 1 : arr.shape(1), arr);
-    BufferFromArrayDispatcher dispatcher;
-    return dispatching::dispatch<std::unique_ptr<BufferBase>, dispatching::filter::All>(
-        df->getId(), dispatcher, arr);
+
+    if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
+        BufferFromArrayDispatcher dispatcher;
+        return dispatching::dispatch<std::unique_ptr<BufferBase>, dispatching::filter::All>(
+            df->getId(), dispatcher, arr);
+    } else {
+        throw Exception(
+            "Unable to create a Buffer from array: The array is not in contiguous C order. Use "
+            "numpy.ascontiguousarray() or similar to ensure this.",
+            IVW_CONTEXT_CUSTOM("pybindutils"));
+    }
 }
 
 std::unique_ptr<Layer> createLayer(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 2 || ndim == 3, "Ndims must be either 2 or 3");
     auto df = pyutil::getDataFormat(ndim == 2 ? 1 : arr.shape(2), arr);
-    LayerFromArrayDispatcher dispatcher;
-    return dispatching::dispatch<std::unique_ptr<Layer>, dispatching::filter::All>(df->getId(),
-                                                                                   dispatcher, arr);
+
+    if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
+        LayerFromArrayDispatcher dispatcher;
+        return dispatching::dispatch<std::unique_ptr<Layer>, dispatching::filter::All>(
+            df->getId(), dispatcher, arr);
+    } else {
+        throw Exception(
+            "Unable to create a Layer from array: The array is not in contiguous C order. Use "
+            "numpy.ascontiguousarray() or similar to ensure this.",
+            IVW_CONTEXT_CUSTOM("pybindutils"));
+    }
 }
 
 std::unique_ptr<Volume> createVolume(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 3 || ndim == 4, "Ndims must be either 3 or 4");
     auto df = pyutil::getDataFormat(ndim == 3 ? 1 : arr.shape(3), arr);
-    VolumeFromArrayDispatcher dispatcher;
-    return dispatching::dispatch<std::unique_ptr<Volume>, dispatching::filter::All>(
-        df->getId(), dispatcher, arr);
+
+    if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
+        VolumeFromArrayDispatcher dispatcher;
+        return dispatching::dispatch<std::unique_ptr<Volume>, dispatching::filter::All>(
+            df->getId(), dispatcher, arr);
+    } else {
+        throw Exception(
+            "Unable to create a Volume from array: The array is not in contiguous C order. Use "
+            "numpy.ascontiguousarray() or similar to ensure this.",
+            IVW_CONTEXT_CUSTOM("pybindutils"));
+    }
 }
 
 }  // namespace pyutil
+
 }  // namespace inviwo

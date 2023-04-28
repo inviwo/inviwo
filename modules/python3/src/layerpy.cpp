@@ -68,7 +68,7 @@ LayerPy::LayerPy(pybind11::array data, LayerType type, const SwizzleMask& swizzl
     , interpolation_{interpolation}
     , wrapping_{wrapping}
     , data_{data}
-    , dims_{data_.shape(0), data_.shape(1)} {}
+    , dims_{data_.shape(1), data_.shape(0)} {}
 
 LayerPy::LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* format,
                  const SwizzleMask& swizzleMask, InterpolationType interpolation,
@@ -78,7 +78,7 @@ LayerPy::LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* forma
     , interpolation_{interpolation}
     , wrapping_{wrapping}
     , data_{pybind11::array(pyutil::toNumPyFormat(format),
-                            pybind11::array::ShapeContainer{dimensions.x, dimensions.y,
+                            pybind11::array::ShapeContainer{dimensions.y, dimensions.x,
                                                             getDataFormat()->getComponents()})}
     , dims_{dimensions} {}
 
@@ -91,7 +91,7 @@ std::type_index LayerPy::getTypeIndex() const { return std::type_index(typeid(La
 void LayerPy::setDimensions(size2_t dimensions) {
     if (dimensions != dims_) {
         data_ = pybind11::array(data_.dtype(),
-                                pybind11::array::ShapeContainer{dimensions.x, dimensions.y,
+                                pybind11::array::ShapeContainer{dimensions.y, dimensions.x,
                                                                 getDataFormat()->getComponents()});
         dims_ = dimensions;
     }
@@ -123,15 +123,16 @@ std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
 
         const auto dims = lr->getDimensions();
 
-        auto shape = extent == 1 ? pybind11::array::ShapeContainer{dims.x, dims.y}
-                                 : pybind11::array::ShapeContainer{dims.x, dims.y, extent};
+        auto shape = extent == 1 ? pybind11::array::ShapeContainer{dims.y, dims.x}
+                                 : pybind11::array::ShapeContainer{dims.y, dims.x, extent};
         pybind11::array_t<CompType> data{shape};
 
         if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
             std::memcpy(data.mutable_data(0), lr->getData(), data.nbytes());
         } else {
-            throw Exception("Unable to convert from LayerPy to LayerRAM",
-                            IVW_CONTEXT_CUSTOM("LayerRAM2PyConverter"));
+            throw Exception(
+                "Unable to convert from LayerRM to LayerPy: numpy array is not C-contiguous.",
+                IVW_CONTEXT_CUSTOM("LayerRAM2PyConverter"));
         }
 
         return data;
@@ -154,7 +155,9 @@ void LayerRAM2PyConverter::update(std::shared_ptr<const LayerRAM> source,
         std::memcpy(destination->data().mutable_data(0), source->getData(),
                     destination->data().nbytes());
     } else {
-        throw Exception("Unable to convert from LayerPy to LayerRAM", IVW_CONTEXT);
+        throw Exception(
+            "Unable to convert from LayerRAM to LayerPy: numpy array is not C-contiguous.",
+            IVW_CONTEXT);
     }
 }
 
@@ -172,7 +175,9 @@ std::shared_ptr<LayerRAM> LayerPy2RAMConverter::createFrom(
     if (pybind11::array::c_style == (source->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);
     } else {
-        throw Exception("Unable to convert from LayerPy to LayerRAM", IVW_CONTEXT);
+        throw Exception(
+            "Unable to convert from LayerPy to LayerRAM: numpy array is not C-contiguous.",
+            IVW_CONTEXT);
     }
 
     return destination;
@@ -192,7 +197,9 @@ void LayerPy2RAMConverter::update(std::shared_ptr<const LayerPy> source,
     if (pybind11::array::c_style == (source->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);
     } else {
-        throw Exception("Unable to convert from LayerPy to LayerRAM", IVW_CONTEXT);
+        throw Exception(
+            "Unable to convert from LayerPy to LayerRAM: numpy array is not C-contiguous.",
+            IVW_CONTEXT);
     }
 }
 

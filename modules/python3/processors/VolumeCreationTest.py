@@ -60,10 +60,15 @@ See also [python3/processors/PythonVolumeExample.py](file:///~modulePath~/proces
                         len3(coord) * 0.2)))
             return 1.0 - d
 
-        for z, y, x in itertools.product(range(0, dim[2]), range(0, dim[1]), range(0, dim[0])):
+        # initialize each voxel by applying the distance function to its voxel index
+        for x, y, z in itertools.product(range(0, dim[0]), range(0, dim[1]), range(0, dim[2])):
             npData[z, y, x] = dist(normalizeDeviceCoords((x, y, z)))
-
-        npData = npData.reshape((np.flip(npData.shape)))
+        
+        # the same with numpy's array iterator
+        with np.nditer(npData, flags=['multi_index'], op_flags=['writeonly']) as it:
+            for elem in it:
+                # flip multi_index to obtain (x,y,z)
+                elem = dist(np.flip(it.multi_index))
 
         # create a VolumePy representation
         volumerep = ivw.data.VolumePy(npData)
