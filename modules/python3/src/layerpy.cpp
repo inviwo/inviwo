@@ -130,8 +130,9 @@ std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
         if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
             std::memcpy(data.mutable_data(0), lr->getData(), data.nbytes());
         } else {
-            throw Exception("Unable to convert from LayerPy to LayerRAM",
-                            IVW_CONTEXT_CUSTOM("LayerRAM2PyConverter"));
+            throw Exception(
+                "Unable to convert from LayerRM to LayerPy: numpy array is not C-contiguous.",
+                IVW_CONTEXT_CUSTOM("LayerRAM2PyConverter"));
         }
 
         return data;
@@ -154,7 +155,9 @@ void LayerRAM2PyConverter::update(std::shared_ptr<const LayerRAM> source,
         std::memcpy(destination->data().mutable_data(0), source->getData(),
                     destination->data().nbytes());
     } else {
-        throw Exception("Unable to convert from LayerPy to LayerRAM", IVW_CONTEXT);
+        throw Exception(
+            "Unable to convert from LayerRAM to LayerPy: numpy array is not C-contiguous.",
+            IVW_CONTEXT);
     }
 }
 
@@ -172,7 +175,9 @@ std::shared_ptr<LayerRAM> LayerPy2RAMConverter::createFrom(
     if (pybind11::array::c_style == (source->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);
     } else {
-        throw Exception("Unable to convert from LayerPy to LayerRAM", IVW_CONTEXT);
+        throw Exception(
+            "Unable to convert from LayerPy to LayerRAM: numpy array is not C-contiguous.",
+            IVW_CONTEXT);
     }
 
     return destination;
@@ -192,7 +197,9 @@ void LayerPy2RAMConverter::update(std::shared_ptr<const LayerPy> source,
     if (pybind11::array::c_style == (source->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);
     } else {
-        throw Exception("Unable to convert from LayerPy to LayerRAM", IVW_CONTEXT);
+        throw Exception(
+            "Unable to convert from LayerPy to LayerRAM: numpy array is not C-contiguous.",
+            IVW_CONTEXT);
     }
 }
 

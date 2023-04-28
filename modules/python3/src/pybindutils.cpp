@@ -139,7 +139,10 @@ std::unique_ptr<BufferBase> createBuffer(pybind11::array& arr) {
         return dispatching::dispatch<std::unique_ptr<BufferBase>, dispatching::filter::All>(
             df->getId(), dispatcher, arr);
     } else {
-        throw Exception("Unable to create a Buffer from array", IVW_CONTEXT_CUSTOM("pybindutils"));
+        throw Exception(
+            "Unable to create a Buffer from array: The array is not in contiguous C order. Use "
+            "numpy.ascontiguousarray() or similar to ensure this.",
+            IVW_CONTEXT_CUSTOM("pybindutils"));
     }
 }
 
@@ -153,7 +156,10 @@ std::unique_ptr<Layer> createLayer(pybind11::array& arr) {
         return dispatching::dispatch<std::unique_ptr<Layer>, dispatching::filter::All>(
             df->getId(), dispatcher, arr);
     } else {
-        throw Exception("Unable to create a Layer from array", IVW_CONTEXT_CUSTOM("pybindutils"));
+        throw Exception(
+            "Unable to create a Layer from array: The array is not in contiguous C order. Use "
+            "numpy.ascontiguousarray() or similar to ensure this.",
+            IVW_CONTEXT_CUSTOM("pybindutils"));
     }
 }
 
@@ -167,7 +173,10 @@ std::unique_ptr<Volume> createVolume(pybind11::array& arr) {
         return dispatching::dispatch<std::unique_ptr<Volume>, dispatching::filter::All>(
             df->getId(), dispatcher, arr);
     } else {
-        throw Exception("Unable to create a Volume from array", IVW_CONTEXT_CUSTOM("pybindutils"));
+        throw Exception(
+            "Unable to create a Volume from array: The array is not in contiguous C order. Use "
+            "numpy.ascontiguousarray() or similar to ensure this.",
+            IVW_CONTEXT_CUSTOM("pybindutils"));
     }
 }
 

@@ -53,18 +53,9 @@
 #include <glm/gtc/epsilon.hpp>
 
 #include <array>
-#include <functional>
 #include <algorithm>
 
 namespace inviwo {
-
-namespace {
-std::string getPath() {
-    auto path = util::getInviwoApplication()->getModuleByType<Python3Module>()->getPath(
-        ModulePath::UnitTests);
-    return path + "/scripts/";
-}
-}  // namespace
 
 TEST(Python3Representations, LayerPy2RAM) {
     // create a 4 x 3 layer with two identical channels
@@ -134,9 +125,8 @@ TEST(Python3Representations, LayerRAM2Py) {
     // check correct, consecutive ordering of the pybind array
     const pybind11::array_t<int> d = layerpy->data();
     std::span<const int> s{d.data(0), 24};
-    bool identical = std::inner_product(data.begin(), data.end(), s.begin(), true,
-                                        std::logical_and(), std::equal_to());
-    EXPECT_TRUE(identical) << "difference between input and LayerPy data";
+    EXPECT_TRUE(std::equal(data.begin(), data.end(), s.begin()))
+        << "difference between input and LayerPy data";
 
     // check correct, consecutive ordering of the pybind array within python
     PythonScript script;
@@ -223,9 +213,8 @@ TEST(Python3Representations, VolumeRAM2Py) {
     // check correct, consecutive ordering of the pybind array
     const pybind11::array_t<int> d = volumepy->data();
     std::span<const int> s{d.data(0), 24};
-    bool identical = std::inner_product(data.begin(), data.end(), s.begin(), true,
-                                        std::logical_and(), std::equal_to());
-    EXPECT_TRUE(identical) << "difference between input and VolumePy data";
+    EXPECT_TRUE(std::equal(data.begin(), data.end(), s.begin()))
+        << "difference between input and VolumePy data";
 
     // check correct, consecutive ordering of the pybind array within python
     PythonScript script;

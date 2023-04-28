@@ -122,8 +122,9 @@ std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
         if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
             std::memcpy(data.mutable_data(0), vr->getData(), data.nbytes());
         } else {
-            throw Exception("Unable to convert from VolumePy to VolumeRAM",
-                            IVW_CONTEXT_CUSTOM("VolumeRAM2PyConverter"));
+            throw Exception(
+                "Unable to convert from VolumeRAM to VolumePy: numpy array is not C-contiguous.",
+                IVW_CONTEXT_CUSTOM("VolumeRAM2PyConverter"));
         }
 
         return data;
@@ -145,7 +146,9 @@ void VolumeRAM2PyConverter::update(std::shared_ptr<const VolumeRAM> volumeSrc,
         std::memcpy(volumeDst->data().mutable_data(0), volumeSrc->getData(),
                     volumeDst->data().nbytes());
     } else {
-        throw Exception("Unable to convert from VolumePy to VolumeRAM", IVW_CONTEXT);
+        throw Exception(
+            "Unable to convert from VolumeRAM to VolumePy: numpy array is not C-contiguous.",
+            IVW_CONTEXT);
     }
 }
 
@@ -163,7 +166,9 @@ std::shared_ptr<VolumeRAM> VolumePy2RAMConverter::createFrom(
     if (pybind11::array::c_style == (volumeSrc->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);
     } else {
-        throw Exception("Unable to convert from VolumePy to VolumeRAM", IVW_CONTEXT);
+        throw Exception(
+            "Unable to convert from VolumePy to VolumeRAM: numpy array is not C-contiguous.",
+            IVW_CONTEXT);
     }
 
     return volumeDst;
@@ -183,7 +188,9 @@ void VolumePy2RAMConverter::update(std::shared_ptr<const VolumePy> volumeSrc,
     if (pybind11::array::c_style == (volumeSrc->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);
     } else {
-        throw Exception("Unable to convert from VolumePy to VolumeRAM", IVW_CONTEXT);
+        throw Exception(
+            "Unable to convert from VolumePy to VolumeRAM: numpy array is not C-contiguous.",
+            IVW_CONTEXT);
     }
 }
 
