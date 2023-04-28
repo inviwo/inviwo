@@ -82,6 +82,9 @@ vec3 {0}GradientPrev = vec3(0);
 vec3 {0}Gradient = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz :
     normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
                                            samplePosition, channel));
+if (!useSurfaceNormals) {{
+    {0}Gradient *= sign({0}Voxel[channel] / (1.0 - {0}Parameters.formatScaling) - {0}Parameters.formatOffset);
+}}
 #endif
 )");
 
@@ -90,6 +93,7 @@ constexpr std::string_view gradient = util::trim(R"(
 {0}GradientPrev = {0}Gradient;
 {0}Gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
                                                      samplePosition, channel));
+{0}Gradient *= sign({0}Voxel[channel] / (1.0 - {0}Parameters.formatScaling) - {0}Parameters.formatOffset);
 #endif
 )");
 
