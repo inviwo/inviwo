@@ -23,7 +23,7 @@ jobs:
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
-          - os: 'macos-latest'
+          - os: 'macos-13'
             triplet: 'x64-osx'
             mono: 'mono'
             cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF'
