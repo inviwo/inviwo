@@ -9,8 +9,7 @@
       "baseline": "b619a233fbf7b2c9765fb4458f3ecb05bd3166e3"
     },
     "overlay-ports": [
-      "./tools/vcpkg",
-      "../modules/tools/vcpkg"
+      "./tools/vcpkg"
     ]
   },
   "dependencies": [
