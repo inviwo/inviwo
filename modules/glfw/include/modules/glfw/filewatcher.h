@@ -67,7 +67,9 @@ private:
     InviwoApplication* app_;
     std::unique_ptr<WatcherThread> watcher_;
     std::vector<FileObserver*> fileObservers_;
+#ifdef WIN32
     std::unordered_map<std::filesystem::path, std::unordered_set<std::filesystem::path>> observed_;
+#endif
 };
 
 }  // namespace inviwo
