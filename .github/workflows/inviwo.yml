@@ -67,7 +67,7 @@ jobs:
       shell: bash
       if: runner.os == 'macOS'
       run: |
-        brew install ninja mono
+        brew install ninja mono pkg-config
 
     - name: Apt Install, switch to gcc-12
       shell: bash
