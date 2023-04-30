@@ -68,7 +68,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew install ninja mono pkg-config
-        xcode-select --switch /Applications/Xcode_14.3.app/Contents/Developer
+        sudo xcode-select --switch /Applications/Xcode_14.3.app/Contents/Developer
 
     - name: Apt Install, switch to gcc-12
       shell: bash
