@@ -77,6 +77,11 @@ void AnimationSupplier::unRegisterAll() {
         manager_.getInterpolationFactory().unRegisterObject(elem.get());
     }
     interpolations_.clear();
+
+    for (auto& elem : recorders_) {
+        manager_.getRecorderFactories().unRegisterObject(elem.get());
+    }
+    recorders_.clear();
 }
 
 void AnimationSupplier::registerTrackObject(std::unique_ptr<TrackFactoryObject> obj) {
@@ -90,6 +95,12 @@ void AnimationSupplier::registerInterpolationObject(
 
     if (manager_.getInterpolationFactory().registerObject(obj.get())) {
         interpolations_.push_back(std::move(obj));
+    }
+}
+
+void AnimationSupplier::registerRecorderFactory(std::unique_ptr<RecorderFactory> recorderFactory) {
+    if (manager_.getRecorderFactories().registerObject(recorderFactory.get())) {
+        recorders_.push_back(std::move(recorderFactory));
     }
 }
 

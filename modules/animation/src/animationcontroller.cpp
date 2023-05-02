@@ -37,12 +37,13 @@
 #include <inviwo/core/io/serialization/serializationexception.h>  // for SerializationException
 #include <inviwo/core/io/serialization/serializer.h>              // for Serializer
 #include <inviwo/core/io/datawriterutil.h>
-#include <inviwo/core/network/networklock.h>            // for NetworkLock
-#include <inviwo/core/network/processornetwork.h>       // for ProcessorNetwork
-#include <inviwo/core/processors/canvasprocessor.h>     // for CanvasProcessor
-#include <inviwo/core/processors/processor.h>           // for Processor
-#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>      // for ButtonProperty
+#include <inviwo/core/network/networklock.h>         // for NetworkLock
+#include <inviwo/core/network/processornetwork.h>    // for ProcessorNetwork
+#include <inviwo/core/processors/canvasprocessor.h>  // for CanvasProcessor
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/properties/boolproperty.h>     // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>   // for ButtonProperty
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>   // for CompositeProperty
 #include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, Con...
 #include <inviwo/core/properties/directoryproperty.h>   // for DirectoryProperty
@@ -70,6 +71,9 @@
 #include <modules/animation/datastructures/controltrack.h>       // for ControlTrack
 #include <modules/animation/datastructures/invalidationtrack.h>  // for InvalidationTrack
 #include <modules/animation/datastructures/track.h>              // for Track
+#include <modules/animation/animationmanager.h>
+#include <modules/animation/factories/recorderfactory.h>
+#include <modules/animation/factories/recorderfactories.h>
 
 #include <algorithm>      // for max, copy_if, find_if, min
 #include <chrono>         // for milliseconds, duration
@@ -92,7 +96,8 @@ class Layer;
 
 namespace animation {
 
-AnimationController::AnimationController(Animation& animation, InviwoApplication* app)
+AnimationController::AnimationController(Animation& animation, AnimationManager& manager,
+                                         InviwoApplication* app)
     : playOptions("PlayOptions", "Play Settings")
     , playWindowMode("PlayFirstLastTimeOption", "Play",
                      {{"FullTimeWindow", "All", 0}, {"UserTimeWindow", "Window", 1}}, 0)
@@ -112,30 +117,36 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
                        {{"FullTimeWindow", "All", 0}, {"UserTimeWindow", "Window", 1}}, 0)
     , renderWindow("RenderFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
                    InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , renderLocation("RenderLocationDir", "Directory")
-    , renderBaseName("RenderLocationBaseName", "Base Name",
-                     "The final name will be '[base name][zero padded number].[file extension]'."
-                     " For example: 'frame0001.png'"_help,
-                     "frame")
-    , writer("writer", "Type",
-             [&]() {
-                 OptionPropertyState<FileExtension> state;
-                 const auto exts = util::getDataWriterFactory(app)->getExtensionsForType<Layer>();
-                 std::transform(
-                     exts.begin(), exts.end(), std::back_inserter(state.options),
-                     [](const auto& ext) -> OptionPropertyOption<FileExtension> { return ext; });
-                 auto it = std::find_if(exts.begin(), exts.end(),
-                                        [&](auto& e) { return e.extension_ == "png"; });
-                 if (it != exts.end()) {
-                     state.selectedIndex = std::distance(exts.begin(), it);
-                 }
-                 return state;
-             }())
+
     , renderFPS("renderFPS", "Frames per Second", 24.0, {0.001, ConstraintBehavior::Immutable},
                 {1000.0, ConstraintBehavior::Immutable}, 1.0, InvalidationLevel::InvalidOutput,
                 PropertySemantics::Text)
     , renderAction("renderAction", "Render")
     , renderActionStop("renderActionStop", "Stop")
+
+    , exportOptions_{"exporter", "Exporter"}
+    , exportOutputDirectory_{"outputDirectory", "Output Directory"}
+    , exportBaseName_{"baseName", "Base Name",
+                      "The final name will be '[base name][zero padded number].[file extension]'."
+                      " For example: 'frame0001.png'"_help,
+                      "frame"}
+    , exportWriter_{"writer", "Type",
+                    [&]() {
+                        OptionPropertyState<FileExtension> state;
+                        const auto exts =
+                            util::getDataWriterFactory(app)->getExtensionsForType<Layer>();
+                        std::transform(exts.begin(), exts.end(), std::back_inserter(state.options),
+                                       [](const auto& ext) -> OptionPropertyOption<FileExtension> {
+                                           return ext;
+                                       });
+                        auto it = std::find_if(exts.begin(), exts.end(),
+                                               [&](auto& e) { return e.extension_ == "png"; });
+                        if (it != exts.end()) {
+                            state.selectedIndex = std::distance(exts.begin(), it);
+                        }
+                        return state;
+                    }()}
+
     , controlOptions("controlOptions", "Special Tracks")
     , insertControlTrack("insertControlTrack", "Add Control Track",
                          [this]() { animation_->add(std::make_unique<ControlTrack>()); })
@@ -145,6 +156,7 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
               animation_->add(std::make_unique<InvalidationTrack>(app_->getProcessorNetwork()));
           })
     , animation_(&animation)
+    , manager_{&manager}
     , app_(app)
     , state_(AnimationState::Paused)
     , currentTime_(0)
@@ -174,9 +186,21 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     renderAction.setReadOnly(state_ == AnimationState::Rendering);
     renderActionStop.setReadOnly(state_ != AnimationState::Rendering);
 
-    renderOptions.addProperties(renderWindowMode, renderWindow, renderFPS, renderLocation,
-                                renderBaseName, writer, renderAction, renderActionStop);
+    renderOptions.addProperties(renderWindowMode, renderWindow, renderFPS, renderAction,
+                                renderActionStop);
     renderOptions.setCollapsed(true);
+
+    const auto& recorders = manager.getRecorderFactories();
+
+    for (auto& key : recorders.getKeyView()) {
+        auto* recorderFactory = recorders.getFactoryObject(key);
+
+        renderOptions.addProperty(recorderFactory->options(), false);
+    }
+
+    exportOptions_.addProperties(exportOutputDirectory_, exportBaseName_, exportWriter_);
+
+    renderOptions.addProperty(exportOptions_);
 
     controlOptions.addProperties(insertControlTrack, insertInvalidationTrack);
     controlOptions.setCollapsed(true);
@@ -323,32 +347,46 @@ void AnimationController::render() {
     const int numFrames =
         std::max(2, static_cast<int>((lastTime - firstTime) / Seconds{1.0 / renderFPS.get()}));
 
-    // digits of the frame counter
-    const int digits = [&]() {
-        int d = 0;
-        int number(numFrames - 1);
-        while (number) {
-            number /= 10;
-            d++;
-        }
-        // use at least 4 digits, so we nicely overwrite the files from a previous test rendering
-        // with less frames
-        return std::max(d, 4);
-    }();
+    std::vector<std::function<void()>> recordingFunctors;
 
-    // Get all active canvases
-    std::vector<std::pair<std::variant<Exporter*, CanvasProcessor*>, std::string>> exporters;
+    const auto& recorderFactories = manager_->getRecorderFactories();
+
     network->forEachProcessor([&](Processor* p) {
         if (p->isSink()) {
-            if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(p)) {
-                auto base = renderBaseName.get();
-                replaceInString(base, "UPN", p->getIdentifier());
-                exporters.emplace_back(canvasProcessor, base);
 
+            if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(p)) {
+                for (auto& key : recorderFactories.getKeyView()) {
+                    auto* recorderFactory = recorderFactories.getFactoryObject(key);
+                    if (recorderFactory->options()->isChecked()) {
+                        std::shared_ptr<Recorder> recorder = recorderFactory->create(
+                            {.dimensions = canvasProcessor->getImage()->getDimensions(),
+                             .frameRate = static_cast<int>(framesPerSecond.get()),
+                             .expectedNumberOfFrames = numFrames,
+                             .sourceName = canvasProcessor->getIdentifier()});
+
+                        recordingFunctors.emplace_back(
+                            [recorder = std::move(recorder), canvasProcessor]() {
+                                // Hackish: Make sure LayerRAM is the last valid rep, so
+                                // that it is the one that will be cloned. This also
+                                // forces the download to happen on the main thread
+                                // instead of in the background.
+                                auto layer = canvasProcessor->getImage()
+                                                 ->getColorLayer()
+                                                 ->getRepresentation<LayerRAM>();
+                                recorder->record(*layer);
+                            });
+                    }
+                }
             } else if (auto exporter = dynamic_cast<Exporter*>(p)) {
-                auto base = renderBaseName.get();
-                replaceInString(base, "UPN", p->getIdentifier());
-                exporters.emplace_back(exporter, base);
+                if (exportOptions_.isChecked()) {
+
+                    auto base = exportBaseName_.get();
+                    replaceInString(base, "UPN", p->getIdentifier());
+
+                    recordingFunctors.emplace_back(
+                        [exporter, writer = exportWriter_.get(), dir = exportOutputDirectory_.get(),
+                         base]() { exporter->exportFile(dir, base, {writer}, Overwrite::Yes); });
+                }
             }
         }
     });
@@ -378,27 +416,8 @@ void AnimationController::render() {
         }
         app_->processEvents();
 
-        for (auto&& [exporterKinds, base] : exporters) {
-            const auto file = fmt::format("{}{:0{}}", base, currentFrame, digits);
-            std::visit(util::overloaded{
-                           [&](Exporter* exporter) {
-                               exporter->exportFile(renderLocation.get(), file, {writer.get()},
-                                                    Overwrite::Yes);
-                           },
-                           [&](CanvasProcessor* cp) {
-                               // Hackish: Make sure LayerRAM is the last valid rep, so that it
-                               // is the one that will be cloned. This also forces the
-                               // download to happen on the main thread instead of in the
-                               // background.
-                               cp->getImage()->getColorLayer()->getRepresentation<LayerRAM>();
-                               auto layer =
-                                   std::shared_ptr<Layer>(cp->getImage()->getColorLayer()->clone());
-                               app_->dispatchPool([ext = writer.get(), layer = std::move(layer),
-                                                   location = renderLocation.get(), file]() {
-                                   util::saveData(*layer, location, file, {ext}, Overwrite::Yes);
-                               });
-                           }},
-                       exporterKinds);
+        for (auto& recorder : recordingFunctors) {
+            recorder();
         }
 
         lock.emplace(network);

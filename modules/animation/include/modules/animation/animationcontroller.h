@@ -31,6 +31,7 @@
 #include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
 #include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>            // for ButtonProperty
 #include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
 #include <inviwo/core/properties/directoryproperty.h>         // for DirectoryProperty
@@ -59,7 +60,7 @@ class Serializer;
 
 namespace animation {
 class Animation;
-
+class AnimationManager;
 /** The AnimationController is responsible for steering the animation.
  *
  *   It keeps track of the animation time and state.
@@ -71,7 +72,7 @@ class Animation;
 class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable,
                                                      public PropertyOwner {
 public:
-    AnimationController(Animation& animation,
+    AnimationController(Animation& animation, AnimationManager& manager,
                         InviwoApplication* app = util::getInviwoApplication());
     virtual ~AnimationController();
 
@@ -123,12 +124,15 @@ public:
     CompositeProperty renderOptions;
     OptionPropertyInt renderWindowMode;
     DoubleMinMaxProperty renderWindow;
-    DirectoryProperty renderLocation;
-    StringProperty renderBaseName;
-    OptionProperty<FileExtension> writer;
+
     DoubleProperty renderFPS;
     ButtonProperty renderAction;
     ButtonProperty renderActionStop;
+
+    BoolCompositeProperty exportOptions_;
+    DirectoryProperty exportOutputDirectory_;
+    StringProperty exportBaseName_;
+    OptionProperty<FileExtension> exportWriter_;
 
     CompositeProperty controlOptions;
     ButtonProperty insertControlTrack;
@@ -140,6 +144,8 @@ protected:
 
     /// The animation to control, non-owning reference.
     Animation* animation_;
+    
+    AnimationManager* manager_;
 
     /// Host application
     InviwoApplication* app_;

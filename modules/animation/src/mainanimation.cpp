@@ -46,19 +46,23 @@ class Property;
 
 namespace animation {
 
-MainAnimation::MainAnimation(InviwoApplication* app, Animation& animation, AnimationModule& module)
-    : animation_{&animation}, app_{app}, controller_{} {
+MainAnimation::MainAnimation(InviwoApplication* app, Animation& animation,
+                             AnimationModule& animationModule)
+    : animation_{&animation}
+    , app_{app}
+    , manager_{animationModule.getAnimationManager()}
+    , controller_{} {
 
     {
-        auto callbackAction =
-            new ModuleCallbackAction("Add Key Frame", &module, ModuleCallBackActionState::Enabled);
+        auto callbackAction = new ModuleCallbackAction("Add Key Frame", &animationModule,
+                                                       ModuleCallBackActionState::Enabled);
 
         callbackAction->getCallBack().addMemberFunction(this, &MainAnimation::addKeyframeCallback);
         app->addCallbackAction(callbackAction);
     }
     {
-        auto callbackAction =
-            new ModuleCallbackAction("Add Sequence", &module, ModuleCallBackActionState::Enabled);
+        auto callbackAction = new ModuleCallbackAction("Add Sequence", &animationModule,
+                                                       ModuleCallBackActionState::Enabled);
         callbackAction->getCallBack().addMemberFunction(
             this, &MainAnimation::addKeyframeSequenceCallback);
         app->addCallbackAction(callbackAction);
@@ -80,14 +84,14 @@ const Animation& MainAnimation::get() const { return getController().getAnimatio
 
 AnimationController& MainAnimation::getController() {
     if (!controller_) {
-        controller_.emplace(*animation_, app_);
+        controller_.emplace(*animation_, manager_, app_);
     }
     return *controller_;
 }
 
 const AnimationController& MainAnimation::getController() const {
     if (!controller_) {
-        controller_.emplace(*animation_, app_);
+        controller_.emplace(*animation_, manager_, app_);
     }
     return *controller_;
 }
