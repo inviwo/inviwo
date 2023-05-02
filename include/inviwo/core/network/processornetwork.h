@@ -431,7 +431,7 @@ public:
      * @return whether the network is empty, that is the network contains no processors
      */
     bool empty() const;
-    
+
     /*
      * @return the number of processors in the network
      */
