@@ -70,6 +70,9 @@
 #include <modules/animation/datastructures/controltrack.h>       // for ControlTrack
 #include <modules/animation/datastructures/invalidationtrack.h>  // for InvalidationTrack
 #include <modules/animation/datastructures/track.h>              // for Track
+#include <modules/animation/animationmanager.h>
+#include <modules/animation/factories/recorderfactory.h>
+#include <modules/animation/factories/recorderfactories.h>
 
 #include <algorithm>      // for max, copy_if, find_if, min
 #include <chrono>         // for milliseconds, duration
@@ -92,7 +95,8 @@ class Layer;
 
 namespace animation {
 
-AnimationController::AnimationController(Animation& animation, InviwoApplication* app)
+AnimationController::AnimationController(Animation& animation, AnimationManager& manager,
+                                         InviwoApplication* app)
     : playOptions("PlayOptions", "Play Settings")
     , playWindowMode("PlayFirstLastTimeOption", "Play",
                      {{"FullTimeWindow", "All", 0}, {"UserTimeWindow", "Window", 1}}, 0)
@@ -177,6 +181,14 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     renderOptions.addProperties(renderWindowMode, renderWindow, renderFPS, renderLocation,
                                 renderBaseName, writer, renderAction, renderActionStop);
     renderOptions.setCollapsed(true);
+
+    const auto& recorders = manager.getRecorderFactories();
+    
+    for(auto& key : recorders.getKeyView()) {
+        auto* recorderFactory = recorders.getFactoryObject(key);
+        
+        renderOptions.addProperty(recorderFactory->options(), false);
+    }
 
     controlOptions.addProperties(insertControlTrack, insertInvalidationTrack);
     controlOptions.setCollapsed(true);

@@ -32,6 +32,7 @@
 
 #include <modules/animation/factories/interpolationfactory.h>  // for InterpolationFactory
 #include <modules/animation/factories/trackfactory.h>          // for TrackFactory
+#include <modules/animation/factories/recorderfactories.h>
 
 #include <string_view>  // for string_view
 #include <vector>       // for vector
@@ -66,6 +67,9 @@ public:
     InterpolationFactory& getInterpolationFactory();
     const InterpolationFactory& getInterpolationFactory() const;
 
+    RecorderFactories& getRecorderFactories();
+    const RecorderFactories& getRecorderFactories() const;
+
     /**
      * Register connection between a property and a track.
      * Used to create typed tracks for a property.
@@ -90,6 +94,7 @@ private:
 
     TrackFactory trackFactory_;
     InterpolationFactory interpolationFactory_;
+    RecorderFactories recorders_;
 };
 
 }  // namespace animation

@@ -32,6 +32,7 @@
 
 #include <inviwo/core/network/workspacemanager.h>   // for WorkspaceManager, WorkspaceManager:...
 #include <modules/animation/animationcontroller.h>  // for AnimationController
+#include <modules/animation/animationmanager.h>
 
 #include <optional>
 
@@ -65,7 +66,7 @@ class Animation;
  */
 class IVW_MODULE_ANIMATION_API MainAnimation {
 public:
-    MainAnimation(InviwoApplication* app, Animation& animation, AnimationModule& module);
+    MainAnimation(InviwoApplication* app, Animation& animation, AnimationModule& animationModule);
     ~MainAnimation() = default;
 
     Animation& get();
@@ -90,6 +91,7 @@ private:
 
     Animation* animation_;
     InviwoApplication* app_;
+    AnimationManager& manager_;
 
     // create this lazy so we have all the factories ready when we create it
     mutable std::optional<AnimationController> controller_;

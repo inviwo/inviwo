@@ -31,6 +31,7 @@
 #include <modules/animation/animationmoduledefine.h>                 // for IVW_MODULE_ANIMATION_API
 #include <modules/animation/factories/interpolationfactoryobject.h>  // IWYU pragma: keep
 #include <modules/animation/factories/trackfactoryobject.h>          // IWYU pragma: keep
+#include <modules/animation/factories/recorderfactory.h>
 
 #include <memory>  // for unique_ptr, make_unique
 #include <string>  // for string
@@ -77,6 +78,10 @@ public:
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
 
+    
+    void registerRecorderFactory(std::unique_ptr<RecorderFactory> recorderFactory);
+
+
     void unRegisterAll();
 
 private:
@@ -86,6 +91,7 @@ private:
     AnimationManager& manager_;
     std::vector<std::unique_ptr<TrackFactoryObject>> tracks_;
     std::vector<std::unique_ptr<InterpolationFactoryObject>> interpolations_;
+    std::vector<std::unique_ptr<RecorderFactory>> recorders_;
 };
 
 template <typename T>

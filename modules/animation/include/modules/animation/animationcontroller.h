@@ -59,7 +59,7 @@ class Serializer;
 
 namespace animation {
 class Animation;
-
+class AnimationManager;
 /** The AnimationController is responsible for steering the animation.
  *
  *   It keeps track of the animation time and state.
@@ -71,7 +71,7 @@ class Animation;
 class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable,
                                                      public PropertyOwner {
 public:
-    AnimationController(Animation& animation,
+    AnimationController(Animation& animation, AnimationManager& manager,
                         InviwoApplication* app = util::getInviwoApplication());
     virtual ~AnimationController();
 

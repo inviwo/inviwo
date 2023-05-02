@@ -60,6 +60,10 @@ const InterpolationFactory& AnimationManager::getInterpolationFactory() const {
     return interpolationFactory_;
 }
 
+RecorderFactories& AnimationManager::getRecorderFactories() { return recorders_; }
+
+const RecorderFactories& AnimationManager::getRecorderFactories() const { return recorders_; }
+
 void AnimationManager::registerPropertyTrackConnection(std::string_view propertyClassID,
                                                        std::string_view trackClassID) {
     trackFactory_.registerPropertyTrackConnection(propertyClassID, trackClassID);
