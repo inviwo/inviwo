@@ -427,6 +427,16 @@ public:
      */
     void clear();
 
+    /*
+     * @return is the network empty i.e. does it have any processors
+     */
+    bool empty() const;
+    
+    /*
+     * @return the number of processors in the network;
+     */
+    size_t size() const;
+
     /**
      * @brief Accept a NetworkVisitor, the visitor will visit each Processor of the Network in an
      * undefined order. The Visitor will then visit each processors Properties and so on.

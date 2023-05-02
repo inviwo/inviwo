@@ -320,6 +320,10 @@ void ProcessorNetwork::clear() {
     }
 }
 
+bool ProcessorNetwork::empty() const { return processors_.empty(); }
+
+size_t ProcessorNetwork::size() const { return processors_.size(); }
+
 void ProcessorNetwork::accept(NetworkVisitor& visitor) {
     for (auto& p : processors_) {
         p.second->accept(visitor);
