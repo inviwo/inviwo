@@ -428,12 +428,12 @@ public:
     void clear();
 
     /*
-     * @return is the network empty i.e. does it have any processors
+     * @return whether the network is empty, that is the network contains no processors
      */
     bool empty() const;
     
     /*
-     * @return the number of processors in the network;
+     * @return the number of processors in the network
      */
     size_t size() const;
 
