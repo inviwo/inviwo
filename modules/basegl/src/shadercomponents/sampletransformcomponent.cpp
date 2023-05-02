@@ -81,7 +81,7 @@ uniform ivec3 {repeat};
 
 constexpr std::string_view first = util::trim(R"(
 samplePosition *= {repeat};
-samplePosition += {shift};
+samplePosition -= {shift};
 )");
 
 }  // namespace
