@@ -45,6 +45,8 @@ namespace util {
 
 IVW_CORE_API void setThreadDescription(const std::string& desc);
 
+IVW_CORE_API int getPid();
+
 IVW_CORE_API ThreadPool& getThreadPool();
 IVW_CORE_API ThreadPool& getThreadPool(InviwoApplication* app);
 IVW_CORE_API void waitForPool();
