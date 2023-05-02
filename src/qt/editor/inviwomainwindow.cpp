@@ -61,6 +61,7 @@
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/keyboardutils.h>
+#include <modules/qtwidgets/editorsettings.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/network/workspaceutils.h>
@@ -408,7 +409,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
 
     annotationClearHandle_ = app_->getWorkspaceManager()->onClear([&]() {
         annotationsWidget_->getAnnotations().resetAllPoperties();
-        annotationsWidget_->getAnnotations().setAuthor(app_->getSystemSettings().workspaceAuthor_);
+        annotationsWidget_->getAnnotations().setAuthor(
+            app_->getSettingsByType<EditorSettings>()->workspaceAuthor);
     });
 
     // load settings and restore window state
@@ -630,62 +632,75 @@ void InviwoMainWindow::addActions() {
     {
         fileMenuItem->addSeparator();
         auto recentWorkspaceMenu = fileMenuItem->addMenu(tr("&Recent Workspaces"));
-        // create placeholders for recent workspaces
-        workspaceActionRecent_.resize(app_->getSystemSettings().maxNumRecentFiles_);
-        for (auto& action : workspaceActionRecent_) {
-            action = new QAction(this);
-            action->setVisible(false);
-            recentWorkspaceMenu->addAction(action);
-            connect(action, &QAction::triggered, this, [this, action]() {
-                if (qApp->keyboardModifiers() == Qt::ControlModifier) {
-                    appendWorkspace(utilqt::toPath(action->data().toString()));
-                    hideWelcomeScreen();
-                } else if (askToSaveWorkspaceChanges()) {
-                    if (openWorkspace(utilqt::toPath(action->data().toString()))) {
-                        hideWelcomeScreen();
-                    }
-                }
-            });
-        }
+
         // action for clearing the recent file menu
-        clearRecentWorkspaces_ = recentWorkspaceMenu->addAction("Clear Recent Workspace List");
-        clearRecentWorkspaces_->setEnabled(false);
-        connect(clearRecentWorkspaces_, &QAction::triggered, this, [this]() {
-            for (auto elem : workspaceActionRecent_) {
-                elem->setVisible(false);
-            }
-            // save empty list
-            saveRecentWorkspaceList(QStringList());
-            clearRecentWorkspaces_->setEnabled(false);
-        });
+        auto clearRecentWorkspaces = recentWorkspaceMenu->addAction("Clear Recent Workspace List");
+        clearRecentWorkspaces->setEnabled(false);
+        connect(clearRecentWorkspaces, &QAction::triggered, this,
+                [this, recentWorkspaceMenu, clearRecentWorkspaces]() {
+                    auto actions = recentWorkspaceMenu->actions();
+                    actions.pop_back();  // ignore the clear Item.
+                    for (auto elem : actions) {
+                        elem->setVisible(false);
+                    }
+                    // save empty list
+                    saveRecentWorkspaceList(QStringList());
+                    clearRecentWorkspaces->setEnabled(false);
+                });
 
-        connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [recentWorkspaceMenu, this]() {
-            qApp->installEventFilter(menuEventFilter_);
-            menuEventFilter_->add(recentWorkspaceMenu);
+        connect(recentWorkspaceMenu, &QMenu::aboutToShow, this,
+                [recentWorkspaceMenu, clearRecentWorkspaces, this]() {
+                    qApp->installEventFilter(menuEventFilter_);
+                    menuEventFilter_->add(recentWorkspaceMenu);
 
-            for (auto elem : workspaceActionRecent_) {
-                elem->setVisible(false);
-            }
+                    auto size = app_->getSettingsByType<EditorSettings>()->numRecentFiles;
 
-            auto recentFiles = getRecentWorkspaceList();
-            const int maxRecentFiles = std::min(static_cast<int>(recentFiles.size()),
-                                                static_cast<int>(workspaceActionRecent_.size()));
-            for (int i = 0; i < maxRecentFiles; ++i) {
-                if (!recentFiles[i].isEmpty()) {
-                    const bool exists = QFileInfo(recentFiles[i]).exists();
-                    const auto menuEntry = QString("&%1 %2%3")
-                                               .arg(i + 1)
-                                               .arg(recentFiles[i])
-                                               .arg(exists ? "" : " (missing)");
-                    workspaceActionRecent_[i]->setVisible(true);
-                    workspaceActionRecent_[i]->setText(menuEntry);
-                    workspaceActionRecent_[i]->setEnabled(exists);
-                    workspaceActionRecent_[i]->setData(recentFiles[i]);
-                    menuEventFilter_->add(workspaceActionRecent_[i], menuEntry);
-                }
-            }
-            clearRecentWorkspaces_->setEnabled(!recentFiles.isEmpty());
-        });
+                    while (recentWorkspaceMenu->actions().size() < size + 1) {
+                        auto action = new QAction(this);
+                        action->setVisible(false);
+                        recentWorkspaceMenu->insertAction(recentWorkspaceMenu->actions().front(),
+                                                          action);
+                        connect(action, &QAction::triggered, this, [this, action]() {
+                            if (qApp->keyboardModifiers() == Qt::ControlModifier) {
+                                appendWorkspace(utilqt::toPath(action->data().toString()));
+                                hideWelcomeScreen();
+                            } else if (askToSaveWorkspaceChanges()) {
+                                if (openWorkspace(utilqt::toPath(action->data().toString()))) {
+                                    hideWelcomeScreen();
+                                }
+                            }
+                        });
+                    }
+                    while (recentWorkspaceMenu->actions().size() > size + 1) {
+                        recentWorkspaceMenu->removeAction(recentWorkspaceMenu->actions().front());
+                    }
+
+                    auto actions = recentWorkspaceMenu->actions();
+                    actions.pop_back();  // ignore the clear Item.
+
+                    for (auto elem : actions) {
+                        elem->setVisible(false);
+                    }
+
+                    auto recentFiles = getRecentWorkspaceList();
+                    const int maxRecentFiles = std::min(static_cast<int>(recentFiles.size()),
+                                                        static_cast<int>(actions.size()));
+                    for (int i = 0; i < maxRecentFiles; ++i) {
+                        if (!recentFiles[i].isEmpty()) {
+                            const bool exists = QFileInfo(recentFiles[i]).exists();
+                            const auto menuEntry = QString("&%1 %2%3")
+                                                       .arg(i + 1)
+                                                       .arg(recentFiles[i])
+                                                       .arg(exists ? "" : " (missing)");
+                            actions[i]->setVisible(true);
+                            actions[i]->setText(menuEntry);
+                            actions[i]->setEnabled(exists);
+                            actions[i]->setData(recentFiles[i]);
+                            menuEventFilter_->add(actions[i], menuEntry);
+                        }
+                    }
+                    clearRecentWorkspaces->setEnabled(!recentFiles.isEmpty());
+                });
         connect(recentWorkspaceMenu, &QMenu::aboutToHide, this, [this]() {
             qApp->removeEventFilter(menuEventFilter_);
             menuEventFilter_->clear();
@@ -1103,7 +1118,9 @@ void InviwoMainWindow::addToRecentWorkspaces(const std::filesystem::path& worksp
     recentFiles.removeAll(utilqt::toQString(workspaceFileName));
     recentFiles.prepend(utilqt::toQString(workspaceFileName));
 
-    if (recentFiles.size() > app_->getSystemSettings().maxNumRecentFiles_) recentFiles.removeLast();
+    if (recentFiles.size() > app_->getSettingsByType<EditorSettings>()->numRecentFiles) {
+        recentFiles.removeLast();
+    }
     saveRecentWorkspaceList(recentFiles);
 }
 

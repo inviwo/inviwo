@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+
 #include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 namespace inviwo {
 
-class InviwoApplication;
-class LogStream;
-
-/**
- * System settings, owned by the application, loaded before all the factories so we can't use any
- * dynamic properties here
- */
-class IVW_CORE_API SystemSettings : public Settings {
+class IVW_MODULE_QTWIDGETS_API EditorSettings : public Settings {
 public:
-    SystemSettings(InviwoApplication* app);
-    virtual ~SystemSettings();
-    IntSizeTProperty poolSize_;
-    BoolProperty enablePortInspectors_;
-    IntProperty portInspectorSize_;
-    BoolProperty enableTouchProperty_;
-    BoolProperty enableGesturesProperty_;
-    BoolProperty enablePickingProperty_;
-    BoolProperty enableSoundProperty_;
-    BoolProperty logStackTraceProperty_;
-    BoolProperty runtimeModuleReloading_;
-    BoolProperty enableResourceManager_;
-    OptionProperty<MessageBreakLevel> breakOnMessage_;
-    BoolProperty breakOnException_;
-    BoolProperty stackTraceInException_;
-
-    BoolProperty redirectCout_;
-    BoolProperty redirectCerr_;
-
-    static size_t defaultPoolSize();
-
-    std::unique_ptr<LogStream> cout_;
-    std::unique_ptr<LogStream> cerr_;
+    EditorSettings(InviwoApplication* app);
+    virtual ~EditorSettings() = default;
+    
+    StringProperty workspaceAuthor;
+    IntProperty numRecentFiles;
+    IntProperty numRestoreFiles;
+    IntProperty restoreFrequency;
+    ListProperty workspaceDirectories;
+     
 };
 
 }  // namespace inviwo

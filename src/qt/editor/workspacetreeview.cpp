@@ -141,6 +141,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         // enlarge and emphasize font of section headers
         option.font.setBold(true);
         option.font.setPointSizeF(option.font.pointSizeF() * 1.2);
+        option.textElideMode = Qt::ElideMiddle;
 
         QStyledItemDelegate::paint(painter, option, index);
     }

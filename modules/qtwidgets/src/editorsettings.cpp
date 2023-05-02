@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,30 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <modules/qtwidgets/editorsettings.h>
 
 namespace inviwo {
 
-class InviwoApplication;
-class LogStream;
+EditorSettings::EditorSettings(InviwoApplication* app)
+    : Settings("Editor Settings", app)
+    , workspaceAuthor("workspaceAuthor", "Default Workspace Author", "")
+    , numRecentFiles("numRecentFiles", "Number of Recent Files", 12,
+                     {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
+    , numRestoreFiles(
+          "numRestoreFiles", "Number of Restore Files",
+          "The maximum number of backup files to store, the oldest will be removed frist"_help, 24,
+          {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
+    , restoreFrequency("restoreFrequency", "Restore Frequency",
+                       "Minutes between new backup files"_help, 10,
+                       {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
 
-/**
- * System settings, owned by the application, loaded before all the factories so we can't use any
- * dynamic properties here
- */
-class IVW_CORE_API SystemSettings : public Settings {
-public:
-    SystemSettings(InviwoApplication* app);
-    virtual ~SystemSettings();
-    IntSizeTProperty poolSize_;
-    BoolProperty enablePortInspectors_;
-    IntProperty portInspectorSize_;
-    BoolProperty enableTouchProperty_;
-    BoolProperty enableGesturesProperty_;
-    BoolProperty enablePickingProperty_;
-    BoolProperty enableSoundProperty_;
-    BoolProperty logStackTraceProperty_;
-    BoolProperty runtimeModuleReloading_;
-    BoolProperty enableResourceManager_;
-    OptionProperty<MessageBreakLevel> breakOnMessage_;
-    BoolProperty breakOnException_;
-    BoolProperty stackTraceInException_;
+    , workspaceDirectories("workspaceDirectories", "Workspace Directories",
+                           std::make_unique<FileProperty>("directory", "Directory")) {
 
-    BoolProperty redirectCout_;
-    BoolProperty redirectCerr_;
+    addProperties(workspaceAuthor, numRecentFiles, numRestoreFiles, restoreFrequency,
+                  workspaceDirectories);
 
-    static size_t defaultPoolSize();
-
-    std::unique_ptr<LogStream> cout_;
-    std::unique_ptr<LogStream> cerr_;
-};
+    load();
+}
 
 }  // namespace inviwo
