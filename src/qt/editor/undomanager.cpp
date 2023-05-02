@@ -34,6 +34,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/threadutil.h>
+#include <modules/qtwidgets/editorsettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -51,15 +52,20 @@
 #include <atomic>
 #include <vector>
 #include <string>
-
 #include <filesystem>
+
+#include <fmt/format.h>
+#include <fmt/chrono.h>
 
 namespace inviwo {
 
 class AutoSaver {
 public:
-    AutoSaver()
+    using clock_t = std::chrono::system_clock;
+
+    AutoSaver(InviwoApplication* app)
         : path_{filesystem::getPath(PathType::Settings)}
+        , sessionStart_{clock_t::now()}
         , restored_{[this]() -> std::optional<std::string> {
             if (std::filesystem::is_regular_file(path_ / "autosave.inv")) {
                 auto ifstream = filesystem::ifstream(path_ / "autosave.inv");
@@ -71,7 +77,7 @@ public:
             return std::nullopt;
         }()}
         , quit_{false}
-        , saver_{[this]() {
+        , saver_{[this, app]() {
             util::setThreadDescription("Inviwo AutoSave");
             for (;;) {
 
@@ -91,6 +97,14 @@ public:
                 }
 
                 if (str) {
+                    int numRestoreFiles = 100000;
+                    int restoreFrequency = 1440;
+                    if (auto* settings = app->getSettingsByType<EditorSettings>()) {
+                        numRestoreFiles = settings->numRestoreFiles.get();
+                        restoreFrequency = settings->restoreFrequency.get();
+                    }
+
+                    std::filesystem::create_directories(path_ / "autosaves");
                     {
                         // make sure we have closed the file _before_ we copy it.
                         auto ofstream = filesystem::ofstream(path_ / "autosave.inv.tmp");
@@ -99,6 +113,15 @@ public:
 
                     std::filesystem::copy(path_ / "autosave.inv.tmp", path_ / "autosave.inv",
                                           std::filesystem::copy_options::overwrite_existing);
+
+                    if (clock_t::now() - sessionStart_ > std::chrono::minutes(restoreFrequency)) {
+                        sessionStart_ = clock_t::now();
+                    }
+                    std::filesystem::copy(path_ / "autosave.inv.tmp",
+                                          path_ / "autosaves" / sessionName(sessionStart_),
+                                          std::filesystem::copy_options::overwrite_existing);
+
+                    clearOldSaves(path_ / "autosaves", numRestoreFiles);
                 }
             }
         }} {}
@@ -120,7 +143,28 @@ public:
     }
 
 private:
+    static std::filesystem::path sessionName(clock_t::time_point now) {
+        return fmt::format("autosave-{}-{:%Y-%m-%d-%H-%M}.inv", util::getPid(), now);
+    }
+
+    static void clearOldSaves(const std::filesystem::path& path, size_t maxSaves) {
+        std::filesystem::directory_iterator it(path);
+
+        std::vector<std::filesystem::path> files{it, end(it)};
+
+        std::sort(files.begin(), files.end(),
+                  [](const std::filesystem::path& a, const std::filesystem::path& b) {
+                      return std::filesystem::last_write_time(a) >
+                             std::filesystem::last_write_time(b);
+                  });
+
+        std::for_each(files.begin() + std::min(files.size(), size_t{maxSaves}), files.end(),
+                      [](const std::filesystem::path& a) { std::filesystem::remove(a); });
+    }
+
     std::filesystem::path path_;
+    clock_t::time_point sessionStart_;
+
     std::optional<std::string> restored_;
     std::atomic<bool> quit_;
     std::condition_variable condition_;
@@ -134,7 +178,9 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow)
     : mainWindow_(mainWindow)
     , manager_{mainWindow_->getInviwoApplication()->getWorkspaceManager()}
     , refPath_{filesystem::findBasePath()}
-    , autoSaver_{std::make_unique<AutoSaver>()} {
+    , autoSaver_{std::make_unique<AutoSaver>(mainWindow_->getInviwoApplication())}
+
+{
 
     QApplication::instance()->installEventFilter(this);
 
@@ -190,7 +236,9 @@ void UndoManager::pushState() {
     undoBuffer_.erase(undoBuffer_.begin() + offset, undoBuffer_.end());
     undoBuffer_.push_back(str);
 
-    autoSaver_->save(str);
+    if (!mainWindow_->getInviwoApplication()->getProcessorNetwork()->empty()) {
+        autoSaver_->save(str);
+    }
 
     updateActions();
 }

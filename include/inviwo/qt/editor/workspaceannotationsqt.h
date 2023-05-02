@@ -40,6 +40,7 @@
 
 #include <vector>
 #include <filesystem>
+#include <map>
 
 namespace inviwo {
 
@@ -68,6 +69,9 @@ public:
 
     static QStringList workspaceProcessors(const std::filesystem::path& path,
                                            InviwoApplication* app = util::getInviwoApplication());
+
+    static std::map<std::string, int> workspaceProcessorsCounts(
+        const std::filesystem::path& path, InviwoApplication* app = util::getInviwoApplication());
 
 private:
     Base64Image network_;

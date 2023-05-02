@@ -252,10 +252,6 @@ private:
     WelcomeWidget* welcomeWidget_ = nullptr;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
-
-    std::vector<QAction*> workspaceActionRecent_;
-    QAction* clearRecentWorkspaces_;
-
     std::unique_ptr<FileAssociations> fileAssociations_;
 
     WorkspaceManager::SerializationHandle annotationSerializationHandle_;
