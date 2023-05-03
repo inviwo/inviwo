@@ -39,7 +39,7 @@
 #include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
 #include <inviwo/core/properties/property.h>               // for Property
 #include <inviwo/core/util/formats.h>                      // for DataFormatBase, NumericType
-#include <inviwo/core/util/logcentral.h>                   // for LogCentral, LogWarn
+#include <inviwo/core/util/exception.h>                    // for Exception
 #include <modules/basegl/algorithm/volumenormalization.h>  // for VolumeNormalization
 
 #include <cstddef>      // for size_t
@@ -68,68 +68,50 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
     : Processor()
     , volumeInport_("volumeInport")
     , volumeOutport_("volumeOutport")
+    , inputChannels_(
+          "inputChannels", "Input Channels",
+          util::ordinalCount(4).set(PropertySemantics::Text).set(InvalidationLevel::Valid))
     , channels_("channels", "Channels")
-    , normalizeChannel0_("normalizeChannel0", "Channel 1", true)
-    , normalizeChannel1_("normalizeChannel1", "Channel 2", false)
-    , normalizeChannel2_("normalizeChannel2", "Channel 3", false)
-    , normalizeChannel3_("normalizeChannel3", "Channel 4", false)
+    , normalizeChannels_{{{"normalizeChannel0", "Channel 1", true},
+                          {"normalizeChannel1", "Channel 2", true},
+                          {"normalizeChannel2", "Channel 3", true},
+                          {"normalizeChannel3", "Channel 4", true}}}
     , volumeNormalization_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
 
     addPorts(volumeInport_, volumeOutport_);
 
-    normalizeChannel1_.setVisible(false);
-    normalizeChannel2_.setVisible(false);
-    normalizeChannel3_.setVisible(false);
+    for (auto& p : normalizeChannels_) {
+        channels_.addProperty(p);
+    }
 
-    channels_.addProperties(normalizeChannel0_, normalizeChannel1_, normalizeChannel2_,
-                            normalizeChannel3_);
-
-    addProperties(channels_);
+    inputChannels_.setReadOnly(true);
+    addProperties(inputChannels_, channels_);
 
     volumeInport_.onChange([this]() {
         if (volumeInport_.hasData()) {
-            auto volume = volumeInport_.getData();
-
-            const auto channels = static_cast<int>(volume->getDataFormat()->getComponents());
-            if (channels == static_cast<int>(channels_.getProperties().size())) return;
-
-            auto properties = channels_.getProperties();
-
-            dynamic_cast<BoolProperty*>(properties[0])->set(true);
-
-            for (int i = 1; i < 4; i++) {
-                auto boolProp = dynamic_cast<BoolProperty*>(properties[i]);
-                boolProp->set(i < channels);
-                boolProp->setVisible(i < channels);
-            }
-
-            volumeNormalization_.reset();
+            const auto channels =
+                static_cast<int>(volumeInport_.getData()->getDataFormat()->getComponents());
+            inputChannels_.set(channels);
         }
     });
 }
 
 void VolumeNormalizationProcessor::process() {
     auto inputVolume = volumeInport_.getData();
-    auto channelProperties = channels_.getProperties();
 
-    bool apply = false;
-    for (size_t i{0}; i < channelProperties.size(); ++i) {
-        apply = apply || dynamic_cast<BoolProperty*>(channelProperties[i])->get();
-    }
     if (inputVolume->getDataFormat()->getNumericType() != NumericType::Float) {
-        LogWarn("Numeric type of input volume is not floating point, omitting normalization.");
-        apply = false;
+        throw Exception("Input volume is not in a floating point format", IVW_CONTEXT);
     }
 
-    if (!apply) {
-        volumeOutport_.setData(inputVolume);
-    } else {
-        for (size_t i{0}; i < channelProperties.size(); ++i) {
-            volumeNormalization_.setNormalizeChannel(
-                i, dynamic_cast<BoolProperty*>(channelProperties[i])->get());
-        }
+    const bvec4 normalize{normalizeChannels_[0], normalizeChannels_[1], normalizeChannels_[2],
+                          normalizeChannels_[3]};
+    const bool apply = glm::any(normalize);
 
+    if (glm::any(normalize)) {
+        volumeNormalization_.setNormalizeChannels(normalize);
         volumeOutport_.setData(volumeNormalization_.normalize(*inputVolume));
+    } else {
+        volumeOutport_.setData(inputVolume);
     }
 }
 

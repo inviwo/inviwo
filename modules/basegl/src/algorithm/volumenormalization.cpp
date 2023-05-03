@@ -36,16 +36,17 @@
 #include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for bvec4, size3_t
-#include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
-#include <modules/opengl/inviwoopengl.h>                                // for glViewport, GLsizei
-#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
-#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
-#include <modules/opengl/shader/shaderutils.h>                          // for findShaderResource
-#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>                        // for multiDrawImagePla...
-#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
-#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+#include <inviwo/core/util/exception.h>
+#include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
+#include <modules/opengl/inviwoopengl.h>              // for glViewport, GLsizei
+#include <modules/opengl/shader/shader.h>             // for Shader, Shader::B...
+#include <modules/opengl/shader/shaderobject.h>       // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>         // for ShaderType, Shade...
+#include <modules/opengl/shader/shaderutils.h>        // for findShaderResource
+#include <modules/opengl/texture/textureunit.h>       // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>      // for multiDrawImagePla...
+#include <modules/opengl/volume/volumegl.h>           // for VolumeGL
+#include <modules/opengl/volume/volumeutils.h>        // for bindAndSetUniforms
 
 #include <type_traits>    // for remove_extent_t
 #include <unordered_map>  // for unordered_map
@@ -60,31 +61,20 @@ VolumeNormalization::VolumeNormalization()
     : shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
                {ShaderType::Fragment, utilgl::findShaderResource("volumenormalization.frag")}},
-              Shader::Build::No)
+              Shader::Build::Yes)
     , fbo_()
-    , needsCompilation_(false) {
-    shader_.getFragmentShaderObject()->addShaderDefine("NORMALIZE_CHANNEL_0");
-    shader_.build();
-}
+    , normalizeChannel_(true) {}
 
 void VolumeNormalization::setNormalizeChannel(const size_t channel, const bool normalize) {
-    needsCompilation_ = true;
-
-    if (normalize) {
-        shader_.getFragmentShaderObject()->addShaderDefine(defines_[channel]);
-    } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine(defines_[channel]);
+    if (channel >= 4) {
+        throw RangeException(IVW_CONTEXT, "channel out of bounds ({})", channel);
     }
+    normalizeChannel_[channel] = normalize;
 }
 
-void VolumeNormalization::setNormalizeChannels(bvec4 normalize) {
-    setNormalizeChannel(0, normalize[0]);
-    setNormalizeChannel(1, normalize[1]);
-    setNormalizeChannel(2, normalize[2]);
-    setNormalizeChannel(3, normalize[3]);
-}
+void VolumeNormalization::setNormalizeChannels(bvec4 normalize) { normalizeChannel_ = normalize; }
 
-void VolumeNormalization::reset() { setNormalizeChannels({true, false, false, false}); }
+void VolumeNormalization::reset() { normalizeChannel_ = bvec4{true}; }
 
 std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
     std::shared_ptr<Volume> outVolume;
@@ -93,15 +83,11 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
     outVolume->setDataFormat(
         DataFormatBase::get(NumericType::Float, volume.getDataFormat()->getComponents(), 32));
 
-    if (needsCompilation_) {
-        needsCompilation_ = false;
-        shader_.build();
-    }
-
     shader_.activate();
 
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(shader_, cont, volume, "volume");
+    shader_.setUniform("normalizeChannel", normalizeChannel_);
 
     const size3_t dim{volume.getDimensions()};
     fbo_.activate();
