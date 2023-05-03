@@ -93,31 +93,18 @@ void exposeVolume(pybind11::module& m) {
         .def_property(
             "data",
             [&](Volume* volume) -> py::array {
-                auto df = volume->getDataFormat();
-                auto dims = volume->getDimensions();
-
-                std::vector<size_t> shape = {dims.z, dims.y, dims.x};
-                std::vector<size_t> strides = {df->getSize() * dims.x * dims.y,
-                                               df->getSize() * dims.x, df->getSize()};
-
-                if (df->getComponents() > 1) {
-                    shape.push_back(df->getComponents());
-                    strides.push_back(df->getSize() / df->getComponents());
-                }
-
-                auto data = volume->getEditableRepresentation<VolumeRAM>()->getData();
-                return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
+                auto rep = volume->getRepresentation<VolumePy>();
+                return rep->data();
             },
             [](Volume* volume, py::array data) {
-                auto rep = volume->getEditableRepresentation<VolumeRAM>();
-                pyutil::checkDataFormat<3>(rep->getDataFormat(), rep->getDimensions(), data);
-
-                if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
-                    memcpy(rep->getData(), data.data(0), data.nbytes());
-                } else {
-                    throw Exception("Unable to convert from array to VolumeRAM",
-                                    IVW_CONTEXT_CUSTOM("PyVolume"));
+                if (volume->hasRepresentation<VolumePy>()) {
+                    volume->removeRepresentation(volume->getRepresentation<VolumePy>());
                 }
+                auto rep =
+                    std::make_shared<VolumePy>(data, volume->getSwizzleMask(),
+                                               volume->getInterpolation(), volume->getWrapping());
+                volume->addRepresentation(rep);
+                volume->invalidateAllOther(rep.get());
             })
         .def("__repr__", [](const Volume& volume) {
             return fmt::format(
@@ -154,7 +141,8 @@ void exposeVolume(pybind11::module& m) {
              py::arg("size"), py::arg("format"), py::arg("swizzleMask") = swizzlemasks::rgba,
              py::arg("interpolation") = InterpolationType::Linear,
              py::arg("wrapping") = wrapping3d::clampAll)
-        .def_property_readonly("data", static_cast<py::array& (VolumePy::*)()>(&VolumePy::data));
+        .def_property_readonly(
+            "data", static_cast<const py::array& (VolumePy::*)() const>(&VolumePy::data));
 
     py::bind_vector<VolumeSequence>(m, "VolumeSequence", py::module_local(false));
 
