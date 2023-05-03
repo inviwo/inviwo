@@ -56,6 +56,10 @@ const DataFormatBase* format(pybind11::array data) {
         throw Exception("Ndims must be either 3 or 4, with 1 <= size[3] <= 4",
                         IVW_CONTEXT_CUSTOM("VolumePy"));
     }
+    if ((data.flags() & pybind11::array::c_style) == 0) {
+        throw Exception("Numpy array must be C-contiguous.", IVW_CONTEXT_CUSTOM("VolumePy"));
+    }
+
     return pyutil::getDataFormat(ndim == 3 ? 1 : data.shape(3), data);
 }
 }  // namespace
