@@ -33,8 +33,10 @@
 
 #ifdef WIN32
 #include <windows.h>
+#include <process.h>
 #else
 #include <pthread.h>
+#include <unistd.h>
 #endif
 
 namespace inviwo {
@@ -60,6 +62,14 @@ void util::setThreadDescription(const std::string& desc) {
     pthread_setname_np(desc.c_str());
 #else
     pthread_setname_np(pthread_self(), desc.c_str());
+#endif
+}
+
+int util::getPid() {
+#ifdef WIN32
+    return _getpid();
+#else
+    return getpid();
 #endif
 }
 
