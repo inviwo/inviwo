@@ -205,15 +205,15 @@ std::shared_ptr<Volume> voronoiSegmentation(
                                  const std::vector<float>&, VolumeRAMPrecision<unsigned short>&);
 
         constexpr auto table = detail::build_array<3>([&](auto x) constexpr {
-            using XT = decltype(x);
             return detail::build_array<3>([&](auto y) constexpr {
-                using YT = decltype(y);
-                return detail::build_array<3>([&](auto z) constexpr->Functor {
-                    using ZT = decltype(z);
+                return detail::build_array<3>([&](auto z) constexpr -> Functor {
                     return [](const size3_t dim, const mat4& i2d, const mat4& d2m,
                               const std::vector<std::pair<unsigned short, vec3>>& sp,
                               const std::vector<float>& w,
                               VolumeRAMPrecision<unsigned short>& volRep) {
+                        using XT = decltype(x);
+                        using YT = decltype(y);
+                        using ZT = decltype(z);
                         constexpr auto X = static_cast<Wrapping>(XT::value);
                         constexpr auto Y = static_cast<Wrapping>(YT::value);
                         constexpr auto Z = static_cast<Wrapping>(ZT::value);
@@ -234,14 +234,14 @@ std::shared_ptr<Volume> voronoiSegmentation(
                                  VolumeRAMPrecision<unsigned short>&);
 
         constexpr auto table = detail::build_array<3>([&](auto x) constexpr {
-            using XT = decltype(x);
             return detail::build_array<3>([&](auto y) constexpr {
-                using YT = decltype(y);
-                return detail::build_array<3>([&](auto z) constexpr->Functor {
-                    using ZT = decltype(z);
+                return detail::build_array<3>([&](auto z) constexpr -> Functor {
                     return [](const size3_t dim, const mat4& i2d, const mat4& d2m,
                               const std::vector<std::pair<unsigned short, vec3>>& sp,
                               VolumeRAMPrecision<unsigned short>& volRep) {
+                        using XT = decltype(x);
+                        using YT = decltype(y);
+                        using ZT = decltype(z);
                         constexpr auto X = static_cast<Wrapping>(XT::value);
                         constexpr auto Y = static_cast<Wrapping>(YT::value);
                         constexpr auto Z = static_cast<Wrapping>(ZT::value);
