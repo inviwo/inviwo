@@ -30,7 +30,7 @@
 # ********************************************************************************
 
 import inviwopy as ivw
-import numpya as np
+import numpy as np
 import itertools
 
 
