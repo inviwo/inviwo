@@ -2,15 +2,15 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copybottom (c) 2020 Inviwo Foundation
- * All bottoms reserved.
+ * Copyright (c) 2020-2023 Inviwo Foundation
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 1. Redistributions of source code must retain the above copybottom notice, this
+ * 1. Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copybottom notice,
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
  *

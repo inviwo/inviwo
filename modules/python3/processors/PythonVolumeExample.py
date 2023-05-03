@@ -1,7 +1,38 @@
 # Name: PythonVolumeExample
 
+# ********************************************************************************
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2023 Inviwo Foundation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# ********************************************************************************
+
 import inviwopy as ivw
-import numpy
+from inviwopy.properties import ConstraintBehavior as cb
+import numpy as np
+
 
 class PythonVolumeExample(ivw.Processor):
     def __init__(self, id, name):
@@ -10,18 +41,21 @@ class PythonVolumeExample(ivw.Processor):
         self.outport = ivw.data.VolumeOutport("outport")
         self.addOutport(self.outport, owner=False)
 
-        self.addProperty(ivw.properties.IntVec3Property("dim", "Dimensions", 
-            ivw.glm.ivec3(5), ivw.glm.ivec3(1), ivw.glm.ivec3(20)))
+        self.addProperty(ivw.properties.IntVec3Property("dim", "Dimensions",
+                                                        ivw.glm.ivec3(5),
+                                                        ivw.glm.ivec3(1),
+                                                        ivw.glm.ivec3(20)))
 
         self.addProperty(ivw.properties.IntProperty("seed", "Random Seed", 546465,
-            min=(0, ivw.properties.ConstraintBehavior.Immutable),
-            max=(1000000, ivw.properties.ConstraintBehavior.Ignore)))
+                                                    min=(0, cb.Immutable),
+                                                    max=(1000000, cb.Ignore)))
         self.properties.seed.semantics = ivw.properties.PropertySemantics("Text")
 
         self.addProperty(ivw.properties.ButtonProperty("randomize", "Randomize Seed",
-            self.randomSeed, ivw.properties.InvalidationLevel.Valid))
+                                                       self.randomSeed,
+                                                       ivw.properties.InvalidationLevel.Valid))
 
-        self.rng = numpy.random.default_rng(self.properties.seed.value)
+        self.rng = np.random.default_rng(self.properties.seed.value)
 
     @staticmethod
     def processorInfo():
@@ -35,7 +69,8 @@ class PythonVolumeExample(ivw.Processor):
 Example processor in python demonstrating the use of `inviwopy.data.Volume`
 and `inviwopy.data.VolumePy`.
 
-See [python3/pythonvolume.inv](file:~modulePath~/data/workspaces/pythonvolume.inv) workspace for example usage.
+See [python3/pythonvolume.inv](file:~modulePath~/data/workspaces/pythonvolume.inv)
+workspace for example usage.
 ''')
         )
 
@@ -50,7 +85,8 @@ See [python3/pythonvolume.inv](file:~modulePath~/data/workspaces/pythonvolume.in
         dim = self.properties.dim.value
 
         # create a VolumePy representation
-        volumerep = ivw.data.VolumePy(self.rng.random((dim[2], dim[1], dim[0]), dtype=numpy.float32))
+        volumerep = ivw.data.VolumePy(self.rng.random(
+            (dim[2], dim[1], dim[0]), dtype=np.float32))
         # directly access volume data as numpy array via `volumerep.data`
 
         # create a Volume from the representation
@@ -66,4 +102,4 @@ See [python3/pythonvolume.inv](file:~modulePath~/data/workspaces/pythonvolume.in
 
     def randomSeed(self):
         self.properties.seed.value = self.rng.integers(2**31 - 1)
-        self.rng = numpy.random.default_rng(seed=self.properties.seed.value)
+        self.rng = np.random.default_rng(seed=self.properties.seed.value)
