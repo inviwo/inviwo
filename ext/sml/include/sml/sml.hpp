@@ -4,17 +4,23 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
+// inviwo: see
+// https://github.com/boost-ext/sml/issues/249
+// https://github.com/boost-ext/sml/issues/519
+#define BOOST_SML_CFG_DISABLE_MIN_SIZE
+// end inviwo
+
 #ifndef BOOST_SML_HPP
 #define BOOST_SML_HPP
 #if (__cplusplus < 201305L && _MSC_VER < 1900)
 #error "[Boost::ext].SML requires C++14 support (Clang-3.4+, GCC-5.1+, MSVC-2015+)"
 #else
-#define BOOST_SML_VERSION 1'1'5
+#define BOOST_SML_VERSION 1'1'6
 #define BOOST_SML_NAMESPACE_BEGIN \
   namespace boost {               \
   inline namespace ext {          \
   namespace sml {                 \
-  inline namespace v1_1_5 {
+  inline namespace v1_1_6 {
 #define BOOST_SML_NAMESPACE_END \
   }                             \
   }                             \
@@ -25,7 +31,7 @@
 #define __BOOST_SML_VT_INIT \
   {}
 #if !defined(BOOST_SML_CFG_DISABLE_MIN_SIZE)
-#define __BOOST_SML_ZERO_SIZE_ARRAY(...) __VA_ARGS__ _[0]
+#define __BOOST_SML_ZERO_SIZE_ARRAY(...) __VA_ARGS__ _[0];
 #else
 #define __BOOST_SML_ZERO_SIZE_ARRAY(...)
 #endif
@@ -43,7 +49,7 @@
 #define __BOOST_SML_VT_INIT \
   {}
 #if !defined(BOOST_SML_CFG_DISABLE_MIN_SIZE)
-#define __BOOST_SML_ZERO_SIZE_ARRAY(...) __VA_ARGS__ _[0]
+#define __BOOST_SML_ZERO_SIZE_ARRAY(...) __VA_ARGS__ _[0];
 #else
 #define __BOOST_SML_ZERO_SIZE_ARRAY(...)
 #endif
@@ -186,7 +192,7 @@ template <class R, class T, class... TArgs>
 struct function_traits<R (T::*)(TArgs...) const> {
   using args = type_list<TArgs...>;
 };
-#if __cplusplus > 201402L && __cpp_noexcept_function_type >= 201510
+#if defined(__cpp_noexcept_function_type)
 template <class R, class... TArgs>
 struct function_traits<R (*)(TArgs...) noexcept> {
   using args = type_list<TArgs...>;
@@ -334,7 +340,7 @@ struct tuple_impl<index_sequence<Ns...>, Ts...> : tuple_type<Ns, Ts>... {
 };
 template <>
 struct tuple_impl<index_sequence<0>> {
-  __BOOST_SML_ZERO_SIZE_ARRAY(byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(byte)
 };
 template <class... Ts>
 using tuple = tuple_impl<make_index_sequence<sizeof...(Ts)>, Ts...>;
@@ -344,7 +350,7 @@ T &get_by_id(tuple_type<N, T> *object) {
 }
 struct init {};
 struct pool_type_base {
-  __BOOST_SML_ZERO_SIZE_ARRAY(byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(byte)
 };
 template <class T, class = void>
 struct pool_type_impl : pool_type_base {
@@ -425,7 +431,7 @@ struct pool<> {
   pool() = default;
   template <class... Ts>
   explicit pool(Ts &&...) {}
-  __BOOST_SML_ZERO_SIZE_ARRAY(byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(byte)
 };
 template <int, class>
 struct type_id_type {};
@@ -516,7 +522,7 @@ struct zero_wrapper_impl;
 template <class TExpr, class... TArgs>
 struct zero_wrapper_impl<TExpr, type_list<TArgs...>> {
   auto operator()(TArgs... args) const { return reinterpret_cast<const TExpr &>(*this)(args...); }
-  __BOOST_SML_ZERO_SIZE_ARRAY(byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(byte)
 };
 template <class TExpr>
 struct zero_wrapper<TExpr, void_t<decltype(+declval<TExpr>())>>
@@ -545,13 +551,14 @@ const char *get_type_name() {
   return detail::get_type_name<T, 68>(__PRETTY_FUNCTION__, make_index_sequence<sizeof(__PRETTY_FUNCTION__) - 68 - 2>{});
 #endif
 }
-#if defined(__cpp_nontype_template_parameter_class)
+#if defined(__cpp_nontype_template_parameter_class) || \
+    defined(__cpp_nontype_template_args) && __cpp_nontype_template_args >= 201911L
 template <auto N>
 struct fixed_string {
   static constexpr auto size = N;
   char data[N + 1]{};
   constexpr fixed_string(char const *str) {
-    for (auto i = 0; i < N; ++i) {
+    for (decltype(N) i = 0; i < N; ++i) {
       data[i] = str[i];
     }
   }
@@ -1260,7 +1267,7 @@ namespace back {
 namespace policies {
 struct thread_safety_policy__ {
   auto create_lock() { return *this; }
-  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte)
 };
 template <class TLock>
 struct thread_safe : aux::pair<thread_safety_policy__, thread_safe<TLock>> {
@@ -1286,7 +1293,7 @@ struct no_policy : policies::thread_safety_policy__ {
   using defer = no_policy;
   using const_iterator = no_policy;
   using flag = no_policy;
-  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte)
 };
 template <class TDefault, class>
 TDefault get_policy(...);
@@ -1395,6 +1402,8 @@ struct sm_impl : aux::conditional_t<aux::is_empty<typename TSM::sm>::value, aux:
   }
   template <class TEvent, class TDeps, class TSubs>
   bool process_event(const TEvent &event, TDeps &deps, TSubs &subs) {
+    const auto lock = thread_safety_.create_lock();
+    (void)lock;
     bool handled = process_internal_events(event, deps, subs);
     do {
       do {
@@ -1426,7 +1435,7 @@ struct sm_impl : aux::conditional_t<aux::is_empty<typename TSM::sm>::value, aux:
             __BOOST_SML_REQUIRES(!aux::is_base_of<get_generic_t<TEvent>, events_ids_t>::value &&
                                  !aux::is_base_of<get_mapped_t<TEvent>, events_ids_t>::value &&
                                  !aux::is_same<get_event_t<TEvent>, initial>::value)>
-  bool process_internal_events(const TEvent&, TDeps &, TSubs &, Ts &&...) {
+  bool process_internal_events(const TEvent &, TDeps &, TSubs &, Ts &&...) {
     return false;
   }
   template <class TEvent, class TDeps, class TSubs, class... Ts,
@@ -1509,15 +1518,11 @@ struct sm_impl : aux::conditional_t<aux::is_empty<typename TSM::sm>::value, aux:
   template <class TMappings, class TEvent, class TDeps, class TSubs, class... TStates>
   bool process_event_impl(const TEvent &event, TDeps &deps, TSubs &subs, const aux::type_list<TStates...> &states,
                           aux::index_sequence<0>) {
-    const auto lock = thread_safety_.create_lock();
-    (void)lock;
     return dispatch_t::template dispatch<0, TMappings>(*this, current_state_[0], event, deps, subs, states);
   }
   template <class TMappings, class TEvent, class TDeps, class TSubs, class... TStates, int... Ns>
   bool process_event_impl(const TEvent &event, TDeps &deps, TSubs &subs, const aux::type_list<TStates...> &states,
                           aux::index_sequence<Ns...>) {
-    const auto lock = thread_safety_.create_lock();
-    (void)lock;
     auto handled = false;
 #if defined(__cpp_fold_expressions)
     ((handled |= dispatch_t::template dispatch<0, TMappings>(*this, current_state_[Ns], event, deps, subs, states)), ...);
@@ -1531,8 +1536,6 @@ struct sm_impl : aux::conditional_t<aux::is_empty<typename TSM::sm>::value, aux:
   template <class TMappings, class TEvent, class TDeps, class TSubs, class... TStates>
   bool process_event_impl(const TEvent &event, TDeps &deps, TSubs &subs, const aux::type_list<TStates...> &states,
                           state_t &current_state) {
-    const auto lock = thread_safety_.create_lock();
-    (void)lock;
     return dispatch_t::template dispatch<0, TMappings>(*this, current_state, event, deps, subs, states);
   }
 #if !BOOST_SML_DISABLE_EXCEPTIONS
@@ -1720,7 +1723,7 @@ class sm {
     aux::get<sm_impl<TSM>>(sub_sms_).start(deps_, sub_sms_);
   }
   template <class... TDeps, __BOOST_SML_REQUIRES((sizeof...(TDeps) > 1) && aux::is_unique_t<TDeps...>::value)>
-  explicit sm(TDeps &&...deps) : deps_{aux::init{}, aux::pool<TDeps...>{deps...}}, sub_sms_{aux::pool<TDeps...>{deps...}} {
+  explicit sm(TDeps &&... deps) : deps_{aux::init{}, aux::pool<TDeps...>{deps...}}, sub_sms_{aux::pool<TDeps...>{deps...}} {
     aux::get<sm_impl<TSM>>(sub_sms_).start(deps_, sub_sms_);
   }
   sm(aux::init, deps_t &deps) : deps_{deps}, sub_sms_{deps} { aux::get<sm_impl<TSM>>(sub_sms_).start(deps_, sub_sms_); }
@@ -1750,7 +1753,13 @@ class sm {
     using sm_impl_t = sm_impl<typename TSM::template rebind<type>>;
     using state_t = typename sm_impl_t::state_t;
     using states_ids_t = typename sm_impl_t::states_ids_t;
-    return aux::get_id<state_t, typename TState::type>((states_ids_t *)0) == aux::cget<sm_impl_t>(sub_sms_).current_state_[0];
+    auto result = false;
+    visit_current_states<T>([&](auto state) {
+      (void)state;
+      result |= (aux::get_id<state_t, typename TState::type>((states_ids_t *)0) ==
+                 aux::get_id<state_t, typename decltype(state)::type>((states_ids_t *)0));
+    });
+    return result;
   }
   template <class T = aux::identity<sm_t>, template <class...> class TState>
   bool is(const TState<terminate_state> &) const {
@@ -2270,12 +2279,12 @@ struct get_deps<T<Ts...>, E, aux::enable_if_t<aux::is_base_of<operator_base, T<T
 struct always {
   using type = always;
   bool operator()() const { return true; }
-  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte)
 };
 struct none {
   using type = none;
   void operator()() {}
-  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte)
 };
 template <class...>
 struct transition;
@@ -2662,7 +2671,7 @@ struct transition<state<S1>, state<S2>, front::event<E>, always, none> {
                          state<dst_state>{});
     return true;
   }
-  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte)
 };
 template <class S2, class E>
 struct transition<state<internal>, state<S2>, front::event<E>, always, none> {
@@ -2679,7 +2688,7 @@ struct transition<state<internal>, state<S2>, front::event<E>, always, none> {
   bool execute(const TEvent &, SM &, TDeps &, TSubs &, typename SM::state_t &, Ts &&...) {
     return true;
   }
-  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte);
+  __BOOST_SML_ZERO_SIZE_ARRAY(aux::byte)
 };
 }  // namespace front
 using _ = back::_;
@@ -2708,7 +2717,8 @@ template <class T>
 typename front::state_sm<T>::type state __BOOST_SML_VT_INIT;
 #endif
 inline namespace literals {
-#if defined(__cpp_nontype_template_parameter_class)
+#if defined(__cpp_nontype_template_parameter_class) || \
+    defined(__cpp_nontype_template_args) && __cpp_nontype_template_args >= 201911L
 template <aux::fixed_string Str>
 constexpr auto operator""_s() {
   return []<auto... Ns>(aux::index_sequence<Ns...>) { return front::state<aux::string<char, Str.data[Ns]...>>{}; }
@@ -2748,8 +2758,10 @@ BOOST_SML_NAMESPACE_END
 #undef __BOOST_SML_TEMPLATE_KEYWORD
 #if defined(__clang__)
 #pragma clang diagnostic pop
-#elif defined(__GNUC__) && defined(__BOOST_SML_DEFINED_HAS_BUILTIN)
+#elif defined(__GNUC__)
+#if defined(__BOOST_SML_DEFINED_HAS_BUILTIN)
 #undef __has_builtin
+#endif
 #pragma GCC diagnostic pop
 #elif defined(_MSC_VER) && !defined(__clang__) && defined(__BOOST_SML_DEFINED_HAS_BUILTIN)
 #undef __has_builtin
