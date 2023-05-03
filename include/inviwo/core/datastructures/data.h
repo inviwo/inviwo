@@ -388,6 +388,7 @@ void Data<Self, Repr>::removeRepresentation(const Repr* representation) {
         for (auto& elem : representations_) {
             if (elem.second->isValid()) {
                 lastValidRepresentation_ = elem.second;
+                break;
             }
         }
     }
