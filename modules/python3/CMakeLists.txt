@@ -47,7 +47,6 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add script files
 set(SCRIPT_FILES
-    scripts/documentgenerator.py
     scripts/ivw/__init__.py
     scripts/ivw/animation.py
     scripts/ivw/camera.py
