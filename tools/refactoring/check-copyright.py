@@ -1,21 +1,8 @@
 import sys
 import re
+import datetime
 from enum import Enum
 import refactoring  # Note: refactoring.py need to be in the current working directory
-
-# NOTE: update copyright year here
-currentYear = 2022
-
-excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking2/*",
-                    "*/genetree/*", "*.DS_Store", "*DS_mapp", ".md", "*.suo", "*.h5", "*.gz",
-                    "*.jpg", "*.JPG", "*.jpeg", "*.lib", "*.dll", "*.inv", "*.dat", "*.ivf",
-                    "*.tiff", "*.png", "*.ttf", "*.tif", "*.pyc", "*.raw", "*.bmp", "*.wav",
-                    "*.xcf", "*.ico", "*.icns", "*.qch", "*.qhc", "*.exr", "*.pwm", "*.pvm",
-                    "*.pdf", "*.otf", "*.exe", "*.fbx", "*.svg", "*.itf", "*.qrc", "*.md",
-                    "*/.git*", "*/.clang-format", "*/LICENSE", ".git", "Jenkinsfile",
-                    ".gitattributes", "*/AUTHORS", "" "*/tools/meta/templates/*", "*.natvis",
-                    "*/depends.cmake", "*moduledefine.h", "*moduledefine.hpp", "*/config.json",
-                    "*.js", "*/CMakeLists.txt", "*.monopic"]
 
 try:
     import colorama
@@ -35,40 +22,11 @@ except ImportError:
     def print_warn(mess, **kwargs):
         print(mess, **kwargs)
 
-paths = sys.argv[1:]
-
-files = refactoring.find_files(paths, ['*'], excludes=excludespatterns)
-
-
-def replace(pattern, replacement):
-    matches = refactoring.find_matches(files, pattern)
-    print(matches.size())
-
-
-def createYearRegExp():
-    if (currentYear <= 2000):
-        print_error("Invalid current year: " + str(currentYear))
-        sys.exit(-1)
-    # regular expression should match any year up to current year
-    # the copy right year might consist of a single year, e.g. "2017"
-    # or a range of years "2010-2018"
-    #
-    # The resulting expression for currentYear = 2018 will have the form of:
-    #    r"^((?:20[0-1]\d-)?20[0-1][0-7]$)"
-    years = (currentYear - 1) % 10
-    decades = int((currentYear - 1) / 10) % 10
-    decadesStr = "[0-" + str(decades) + "]" if decades > 0 else "0"
-    yearsStr = "[0-" + str(years) + "]" if years > 0 else "0"
-
-    return re.compile(r"^((?:20" + decadesStr + r"\d-)?20" + decadesStr + yearsStr + r"$)")
-
 
 # match Inviwo Foundation copyright line
 copyrightLine_regex = re.compile(r"\s*[*#]\s+Copyright \(c\) (.*?) Inviwo Foundation\s*")
-# matches single year or range of years, i.e. '2018' and '2010-2018'
-copyrightYear_regex = re.compile(r"^((?:\d\d\d\d-)?\d\d\d\d)$")
-# matches only if right-most year is outdated, i.e. < currentYear
-copyrightOutdated_regex = createYearRegExp()
+copyrightSingleYear_regex = re.compile(r"^(\d\d\d\d)$")
+copyrightRangeYear_regex = re.compile(r"^(\d\d\d\d)-(\d\d\d\d)$")
 
 
 class CopyrightState(Enum):
@@ -78,66 +36,130 @@ class CopyrightState(Enum):
     Missing = 3  # or malformed
 
 
-def checkline(line):
-    linematch = copyrightLine_regex.search(line)
-    if linematch:
-        yearmatch = copyrightYear_regex.search(linematch.group(1))
-        if yearmatch:
-            outdated = copyrightOutdated_regex.search(yearmatch.group(1))
-            if outdated:
-                # copyright is not up to date
-                return CopyrightState.Outdated
-            else:
-                # copyright is correctly formatted and up to date
-                return CopyrightState.Correct
-        else:
-            # malformed year
-            return CopyrightState.MalformedYear
-    else:
-        # no copyright info / entirely malformed
-        return CopyrightState.Missing
-
-
-def checkfile(filehandle, filename):
+def findCopyrightYears(filehandle):
     for (i, line) in enumerate(filehandle):
-        result = checkline(line)
-        if result == CopyrightState.Outdated:
-            print_warn("Copyright outdated in " + str(filename))
+        if linematch := copyrightLine_regex.search(line):
+            return i, line, linematch.group(1)
+    return None
+
+
+def checkYear(yearStr, currentYear):
+    if rangeMatch := copyrightRangeYear_regex.match(yearStr):
+        startYear = int(rangeMatch.group(1))
+        endYear = int(rangeMatch.group(2))
+
+        if endYear != currentYear:
+            return CopyrightState.Outdated
+        elif startYear > endYear:
+            return CopyrightState.Malformed
+        else:
+            return CopyrightState.Correct
+
+    elif sigleYearMatch := copyrightSingleYear_regex.match(yearStr):
+        year = int(sigleYearMatch.group(1))
+
+        if year != currentYear:
+            return CopyrightState.Outdated
+        else:
+            return CopyrightState.Correct
+
+    else:
+        return CopyrightState.MalformedYear
+
+
+def checkfile(filehandle, filename, currentYear):
+    if res := findCopyrightYears(filehandle):
+        i, line, yearStr = res
+        state = checkYear(yearStr, currentYear)
+        if state == CopyrightState.Outdated:
+            print_error("Copyright outdated in " + str(filename))
             print(str(i) + ": " + line.rstrip())
             return 1  # flag copyright error
-        elif result == CopyrightState.MalformedYear:
-            print_warn("Copyright year malformed in " + str(filename))
+        elif state == CopyrightState.MalformedYear:
+            print_error("Copyright year malformed in " + str(filename))
             print(str(i) + ": " + line.rstrip())
             print("Expecting either '201x' or '201x-201y'")
             return 1  # flag copyright error
-        elif result == CopyrightState.Correct:
+        elif state == CopyrightState.Correct:
             return 0
-    # did not find a valid copyright line
-    print_warn("Copyright information missing in " + str(filename))
-    return 0  # TODO: flag copyright error
+
+    else:
+        print_warn("Copyright information missing in " + str(filename))
+        return 0  # TODO: flag copyright error
 
 
-def test(file):
+def test(file, currentYear):
     with open(file, 'r', encoding="UTF-8") as f:
         try:
-            return checkfile(f, file)
+            return checkfile(f, file, currentYear)
         except UnicodeDecodeError:
             print_warn(file + ": File not utf-8 encoded, "
                        "fall-back to Western encoding (Windows 1252)")
             with open(file, 'r', encoding="cp1252") as f:
                 try:
-                    return checkfile(f)
+                    return checkfile(f, file, currentYear)
                 except UnicodeDecodeError:
                     print_error("Encoding error: " + file)
     return 0
 
 
-matches = 0
+excludespatterns = ["*.DS_Store", "*DS_mapp", ".md", "*.suo", "*.h5", "*.gz",
+                    "*.jpg", "*.JPG", "*.jpeg", "*.lib", "*.dll", "*.inv", "*.dat", "*.ivf",
+                    "*.tiff", "*.png", "*.ttf", "*.tif", "*.pyc", "*.raw", "*.bmp", "*.wav",
+                    "*.xcf", "*.ico", "*.icns", "*.qch", "*.qhc", "*.exr", "*.pwm", "*.pvm",
+                    "*.pdf", "*.otf", "*.exe", "*.fbx", "*.svg", "*.itf", "*.qrc", "*.md",
+                    "*.css", "*.obj", "*.mpvm", "*.csv", "*.html", "*.rc", "*.pro", "*.plist",
+                    "*.off", "*.js", "*.monopic", "*.natvis", "*.json", "*.manifest",
+
+                    "*/LICENSE", "*license.txt", "*LICENSE.txt", "*License.txt", "*.LICENSE",
+                    "*/AUTHORS", "*/CITATION.cff", "*.README",
+
+                    "*/depends.cmake", "*moduledefine.h", "*moduledefine.hpp", "*/meta.cmake",
+                    "*/inviwometadefine.hpp",
+
+                    "*/.git*", ".gitattributes", "*/.clang-format", "*/CMakeLists.txt",
+                    "*/.cache/*", "*/compile_commands.json", "*/CMakeUserPresets.json",
+                    "*/CMakePresets.json", "*/vcpkg.json", "*/Jenkinsfile", "*/.issuetracker",
+                    "*/compile_commands.json",
+
+                    "*/__init__.py",
+                    "*/requirements.txt",
+                    "*/modules/python3qt/templates/templateprocessor.py",
+                    "*/regression/*.py",
+                    "*/data/scripts/*.py",
+
+                    "*/tools/tracy/include/inviwo/tracy/*",
+                    "*/tools/meta/templates/*",
+                    "*/tools/converters/*",
+                    "*/tools/codegen/*",
+                    "*/tools/refactoring/*",
+                    "*/tools/jenkins/*",
+                    "*/tools/iwyu/*",
+                    "*/tools/vcpkg/*",
+                    "*/tools/docker/*",
+                    "*/tools/tracy/include/inviwo/tracy/*",
+
+                    "*/ext/*",
+                    "*/docs/*",
+                    "*/cmake/*",
+                    "*/resources/*",
+
+                    "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*",
+                    ]
+
+
+paths = sys.argv[1:]
+files = refactoring.find_files(paths, ['*'], excludes=excludespatterns)
+currentYear = datetime.date.today().year
 
 print("Checking copyright for year " + str(currentYear))
 print("Looking in " + str(len(files)) + " files")
 
+errors = 0
 for file in files:
-    matches = matches + test(file)
+    errors = errors + test(file, currentYear)
 
-sys.exit(matches)
+if errors > 0:
+    print_error("\nFound " + str(errors) + " copyright errors")
+
+sys.exit(errors)

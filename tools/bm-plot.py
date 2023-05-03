@@ -1,4 +1,34 @@
 #!/usr/bin/env python
+
+# ********************************************************************************
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2023 Inviwo Foundation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# ********************************************************************************
+
 """Script to visualize google-benchmark output"""
 import argparse
 import sys
@@ -9,7 +39,7 @@ import matplotlib.pyplot as plt
 logging.basicConfig(format='[%(levelname)s] %(message)s')
 
 METRICS = ['real_time', 'cpu_time', 'bytes_per_second', 'items_per_second']
-TRANSFORMS = {'' : lambda x: x, 'inverse': lambda x: 1.0 / x }
+TRANSFORMS = {'': lambda x: x, 'inverse': lambda x: 1.0 / x}
 
 
 def get_default_ylabel(args):
@@ -22,6 +52,7 @@ def get_default_ylabel(args):
     if args.relative_to is not None:
         label += ' relative to %s' % args.relative_to
     return label
+
 
 def parse_args():
     """Parse commandline arguments"""
@@ -76,14 +107,14 @@ def read_data(args):
         exit(1)
 
     if args.extra:
-    	try:   
+        try:
             extra = [pd.read_csv(e, usecols=['name', args.metric], skiprows=8) for e in args.extra]
             data = pd.concat([data, *extra], ignore_index=True)
-            
-    	except ValueError:
-        	msg = 'Could not parse the extra benchmark data. Did you forget "--benchmark_format=csv"?'
-        	logging.error(msg)
-        	exit(1)
+
+        except ValueError:
+            msg = 'Could not parse the extra benchmark data. Did you forget "--benchmark_format=csv"?'
+            logging.error(msg)
+            exit(1)
 
     data['label'] = data['name'].apply(lambda x: x.split('/')[0])
     data['input'] = data['name'].apply(parse_input_size)

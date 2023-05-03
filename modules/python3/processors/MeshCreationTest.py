@@ -1,7 +1,36 @@
 # Name: MeshCreationTest
 
+# ********************************************************************************
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2023 Inviwo Foundation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# ********************************************************************************
+
 import inviwopy as ivw
-import numpy
+import numpy as np
 import itertools
 
 
@@ -33,8 +62,8 @@ See also [python3/processors/PythonMeshExample.py](file:///~modulePath~/processo
         pass
 
     def process(self):
-        mesh = ivw.data.BasicMesh(dt=ivw.data.DrawType.Triangles, 
-            ct=ivw.data.ConnectivityType.Unconnected)
+        mesh = ivw.data.BasicMesh(dt=ivw.data.DrawType.Triangles,
+                                  ct=ivw.data.ConnectivityType.Unconnected)
 
         for z, y, x in itertools.product([-1, 0, 1], [-1, 1], [-1, 1]):
             offset = 0
@@ -49,12 +78,13 @@ See also [python3/processors/PythonMeshExample.py](file:///~modulePath~/processo
         index = 0
         indices = []
         for _ in range(3):
-            indices.extend([ index, index + 1, index + 2, index + 2, index + 1, index + 3 ])
+            indices.extend([index, index + 1, index + 2, index + 2, index + 1, index + 3])
             index += 4
 
-        mesh.addIndices(ivw.data.MeshInfo(dt=ivw.data.DrawType.Triangles, ct=ivw.data.ConnectivityType.Unconnected),
-            ivw.data.IndexBufferUINT32(numpy.array(indices, dtype=np.uint32)))
-        
+        mesh.addIndices(ivw.data.MeshInfo(dt=ivw.data.DrawType.Triangles,
+                                          ct=ivw.data.ConnectivityType.Unconnected),
+                        ivw.data.IndexBufferUINT32(np.array(indices, dtype=np.uint32)))
+
         self.outport.setData(mesh)
 
     def color(self, depth):

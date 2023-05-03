@@ -1,9 +1,40 @@
 # Name: PythonImageExample
 
+# ********************************************************************************
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2023 Inviwo Foundation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# ********************************************************************************
+
 import inviwopy as ivw
+from inviwopy.properties import ConstraintBehavior as cb
 
 import PIL.Image
 import numpy as np
+
 
 class PythonImageExample(ivw.Processor):
     def __init__(self, id, name):
@@ -14,17 +45,17 @@ class PythonImageExample(ivw.Processor):
         self.filepath = ivw.properties.FileProperty("filepath", "File", "", "image")
         self.addProperty(self.filepath)
 
-        self.imgdims = ivw.properties.IntVec2Property("imgDims", "Image Dimensions", 
-            ivw.glm.ivec2(0), 
-            min=(ivw.glm.ivec2(0), ivw.properties.ConstraintBehavior.Immutable),
-            max=(ivw.glm.ivec2(1024), ivw.properties.ConstraintBehavior.Ignore))
+        self.imgdims = ivw.properties.IntVec2Property("imgDims", "Image Dimensions",
+                                                      ivw.glm.ivec2(0),
+                                                      min=(ivw.glm.ivec2(0), cb.Immutable),
+                                                      max=(ivw.glm.ivec2(1024), cb.Ignore))
         self.imgdims.semantics = ivw.properties.PropertySemantics("Text")
         self.imgdims.readOnly = True
         self.addProperty(self.imgdims)
 
-        self.channels = ivw.properties.IntProperty("channels", "Channels", 0, 
-            min=(0, ivw.properties.ConstraintBehavior.Immutable),
-            max=(4, ivw.properties.ConstraintBehavior.Ignore))
+        self.channels = ivw.properties.IntProperty("channels", "Channels", 0,
+                                                   min=(0, cb.Immutable),
+                                                   max=(4, cb.Ignore))
         self.channels.semantics = ivw.properties.PropertySemantics("Text")
         self.channels.readOnly = True
         self.addProperty(self.channels)
@@ -75,10 +106,10 @@ Example processor in python demonstrating the use of `inviwopy.data.Image`,
             layer = ivw.data.Layer(layerpy)
 
             swizzleDict = {
-                1 : ivw.data.SwizzleMask.luminance, 
-                2 : ivw.data.SwizzleMask.luminanceAlpha,
-                3 : ivw.data.SwizzleMask.rgb,
-                4 : ivw.data.SwizzleMask.rgba
+                1: ivw.data.SwizzleMask.luminance,
+                2: ivw.data.SwizzleMask.luminanceAlpha,
+                3: ivw.data.SwizzleMask.rgb,
+                4: ivw.data.SwizzleMask.rgba
             }
             # set swizzle mask depending on the number of channels
             layer.swizzlemask = swizzleDict[channels]

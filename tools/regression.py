@@ -46,8 +46,10 @@ description = """
 Run Inviwo regression tests.
 
 Tests can have a local configuration ('config.json') in the same directory.
-The "image_test" tag supports the boolean values 'invertDifferenceImage' and 'logscaleDifferenceImage'.
+The "image_test" tag supports the boolean values 'invertDifferenceImage'
+and 'logscaleDifferenceImage'.
 """
+
 
 def makeCmdParser():
     parser = argparse.ArgumentParser(
