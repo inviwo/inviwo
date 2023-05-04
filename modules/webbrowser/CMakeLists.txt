@@ -39,9 +39,14 @@ if(NOT PROJECT_ARCH)
     set(PROJECT_ARCH ${CMAKE_SYSTEM_PROCESSOR}) # CEF Wants this on OS X.
 endif()
 
+# Save the original value of CMAKE_OSX_DEPLOYMENT_TARGET since FindCEF sets it to a very old 10.13
+set(ORG_CMAKE_OSX_DEPLOYMENT_TARGET ${CMAKE_OSX_DEPLOYMENT_TARGET})
+
 # Load the CEF configuration.
 # Execute FindCEF.cmake which must exist in CMAKE_MODULE_PATH.
 find_package(CEF REQUIRED)
+
+set(CMAKE_OSX_DEPLOYMENT_TARGET ${ORG_CMAKE_OSX_DEPLOYMENT_TARGET})
 
 # Inviwo: libcef_dll_wrapper must use same compiler settings to be able to link.
 set(CEF_COMPILER_FLAGS ${CMAKE_CXX_FLAGS})
