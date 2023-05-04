@@ -105,8 +105,6 @@ void VolumeNormalizationProcessor::process() {
 
     const bvec4 normalize{normalizeChannels_[0], normalizeChannels_[1], normalizeChannels_[2],
                           normalizeChannels_[3]};
-    const bool apply = glm::any(normalize);
-
     if (glm::any(normalize)) {
         volumeNormalization_.setNormalizeChannels(normalize);
         volumeOutport_.setData(volumeNormalization_.normalize(*inputVolume));
