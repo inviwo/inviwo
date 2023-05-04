@@ -42,8 +42,9 @@ function(DownloadCEF platform version download_dir)
     # Extract the binary distribution.
     message(STATUS "Extracting ${CEF_DOWNLOAD_PATH}...")
     execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xzf "${CEF_DOWNLOAD_DIR}/${CEF_DOWNLOAD_FILENAME}"
+      COMMAND ${CMAKE_COMMAND} -E tar xzf "${CEF_DOWNLOAD_PATH}"
       WORKING_DIRECTORY ${CEF_DOWNLOAD_DIR}
       )
+    file(REMOVE "${CEF_DOWNLOAD_PATH}" "${CEF_DOWNLOAD_PATH}.sha1")
   endif()
 endfunction()
