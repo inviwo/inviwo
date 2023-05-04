@@ -72,6 +72,9 @@ DataFrameFloat32Converter::DataFrameFloat32Converter()
 
 void DataFrameFloat32Converter::process() {
     auto dataframe = std::make_shared<DataFrame>();
+
+    *dataframe->getIndexColumn() = *inport_.getData()->getIndexColumn();
+
     for (auto srcCol : *inport_.getData()) {
         if (srcCol == inport_.getData()->getIndexColumn()) continue;
         const auto df = srcCol->getBuffer()->getDataFormat();
@@ -93,7 +96,7 @@ void DataFrameFloat32Converter::process() {
             dataframe->addColumn(std::shared_ptr<Column>(srcCol->clone()));
         }
     }
-    dataframe->updateIndexBuffer();
+    
 
     outport_.setData(dataframe);
 }
