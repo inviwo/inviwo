@@ -96,10 +96,7 @@ protected:
     FrameBufferObject fbo_;
 
 private:
-    const std::array<std::string_view, 4> defines_{
-        "NORMALIZE_CHANNEL_0", "NORMALIZE_CHANNEL_1", "NORMALIZE_CHANNEL_2",
-        "NORMALIZE_CHANNEL_3"};  ///< Some string_view indirection.
-    bool needsCompilation_;
+    bvec4 normalizeChannel_;
 };
 
 }  // namespace inviwo

@@ -280,10 +280,12 @@ void setShaderDefines(Shader& shader,
             valueAll = "gradientAllCentralDiffH(voxel, volume, volumeParams, samplePos)";
             break;
         case RaycastingProperty::GradientComputation::PrecomputedXYZ:
-            value = valueChannel = valueAll = "gradientPrecomputedXYZ(voxel, volumeParams)";
+            value = valueChannel = valueAll =
+                "gradientPrecomputedXYZ(volume, volumeParams, samplePos)";
             break;
         case RaycastingProperty::GradientComputation::PrecomputedYZW:
-            value = valueChannel = valueAll = "gradientPrecomputedYZW(voxel, volumeParams)";
+            value = valueChannel = valueAll =
+                "gradientPrecomputedYZW(volume, volumeParams, samplePos)";
             break;
     }
 

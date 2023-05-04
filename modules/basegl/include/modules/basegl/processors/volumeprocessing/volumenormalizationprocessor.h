@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>              // for Processor
 #include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
 #include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>        // for IntProperty
 #include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
 #include <modules/basegl/algorithm/volumenormalization.h>  // for VolumeNormalization
 
@@ -79,11 +80,9 @@ private:
     VolumeInport volumeInport_;
     VolumeOutport volumeOutport_;
 
+    IntProperty inputChannels_;
     CompositeProperty channels_;
-    BoolProperty normalizeChannel0_;
-    BoolProperty normalizeChannel1_;
-    BoolProperty normalizeChannel2_;
-    BoolProperty normalizeChannel3_;
+    std::array<BoolProperty, 4> normalizeChannels_;
 
     VolumeNormalization volumeNormalization_;
 };
