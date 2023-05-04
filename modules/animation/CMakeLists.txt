@@ -43,6 +43,7 @@ set(HEADER_FILES
     include/modules/animation/datastructures/valuekeyframesequence.h
     include/modules/animation/demo/democontroller.h
     include/modules/animation/demo/democontrollerobserver.h
+    include/modules/animation/factories/imagerecorderfactory.h
     include/modules/animation/factories/interpolationfactory.h
     include/modules/animation/factories/interpolationfactoryobject.h
     include/modules/animation/factories/recorderfactories.h
@@ -99,6 +100,7 @@ set(SOURCE_FILES
     src/datastructures/valuekeyframesequence.cpp
     src/demo/democontroller.cpp
     src/demo/democontrollerobserver.cpp
+    src/factories/imagerecorderfactory.cpp
     src/factories/interpolationfactory.cpp
     src/factories/interpolationfactoryobject.cpp
     src/factories/recorderfactories.cpp
