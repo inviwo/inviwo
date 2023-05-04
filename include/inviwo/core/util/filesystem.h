@@ -184,8 +184,7 @@ IVW_CORE_API std::filesystem::path getInviwoUserSettingsPath();
  * @param filePath The path to the file
  * @return true if file exists, false otherwise
  */
-[[deprecated]]
-IVW_CORE_API bool fileExists(const std::filesystem::path& filePath);
+[[deprecated]] IVW_CORE_API bool fileExists(const std::filesystem::path& filePath);
 
 /**
  * Check if the directory exists
@@ -194,8 +193,7 @@ IVW_CORE_API bool fileExists(const std::filesystem::path& filePath);
  * @param path Directory path
  * @return True if directory exists, false otherwise
  */
-[[deprecated]]
-IVW_CORE_API bool directoryExists(const std::filesystem::path& path);
+[[deprecated]] IVW_CORE_API bool directoryExists(const std::filesystem::path& path);
 
 /**
  * \brief Get last time file was modified.
@@ -203,8 +201,7 @@ IVW_CORE_API bool directoryExists(const std::filesystem::path& path);
  * @param filePath The path to the file
  * @return Time of last modification, or 0 if an error occured (00:00, Jan 1 1970 UTC).
  */
-[[deprecated]]
-IVW_CORE_API std::time_t fileModificationTime(const std::filesystem::path& filePath);
+[[deprecated]] IVW_CORE_API std::time_t fileModificationTime(const std::filesystem::path& filePath);
 
 /**
  * \brief Copy an existing file to a new file. Overwrites existing file.
@@ -212,8 +209,8 @@ IVW_CORE_API std::time_t fileModificationTime(const std::filesystem::path& fileP
  * @param dst Path to the new file
  * @return True if source file exists and the copy is successful, false otherwise
  */
-[[deprecated]]
-IVW_CORE_API bool copyFile(const std::filesystem::path& src, const std::filesystem::path& dst);
+[[deprecated]] IVW_CORE_API bool copyFile(const std::filesystem::path& src,
+                                          const std::filesystem::path& dst);
 
 enum class ListMode {
     Files,
@@ -324,12 +321,12 @@ IVW_CORE_API void createDirectoryRecursively(const std::filesystem::path& path);
  */
 IVW_CORE_API std::filesystem::path addBasePath(const std::filesystem::path& url);
 
-[[deprecated]]
-IVW_CORE_API std::filesystem::path getFileDirectory(const std::filesystem::path& url);
-[[deprecated]]
-IVW_CORE_API std::filesystem::path getFileNameWithExtension(const std::filesystem::path& url);
-[[deprecated]]
-IVW_CORE_API std::filesystem::path getFileNameWithoutExtension(const std::filesystem::path& url);
+[[deprecated]] IVW_CORE_API std::filesystem::path getFileDirectory(
+    const std::filesystem::path& url);
+[[deprecated]] IVW_CORE_API std::filesystem::path getFileNameWithExtension(
+    const std::filesystem::path& url);
+[[deprecated]] IVW_CORE_API std::filesystem::path getFileNameWithoutExtension(
+    const std::filesystem::path& url);
 /**
  * \brief Returns the characters after last dot (.).
  *
@@ -344,8 +341,7 @@ IVW_CORE_API std::filesystem::path getFileNameWithoutExtension(const std::filesy
  * @param url Path to extract extension from.
  * @return Extension excluding ., empty if no dot or filename are found.
  */
-[[deprecated]]
-IVW_CORE_API std::string getFileExtension(const std::filesystem::path& url);
+[[deprecated]] IVW_CORE_API std::string getFileExtension(const std::filesystem::path& url);
 
 /**
  * Replace the last file extension to newFileExtension, if no extension exists append
@@ -364,14 +360,12 @@ IVW_CORE_API std::filesystem::path replaceFileExtension(const std::filesystem::p
  * absolutePath = "C:/foo/test/file.txt"
  * returns "../test/file.txt"
  */
-[[deprecated]]
-IVW_CORE_API std::filesystem::path getRelativePath(const std::filesystem::path& basePath,
-                                                   const std::filesystem::path& absolutePath);
-[[deprecated]]
-IVW_CORE_API std::filesystem::path getCanonicalPath(const std::filesystem::path& url);
+[[deprecated]] IVW_CORE_API std::filesystem::path getRelativePath(
+    const std::filesystem::path& basePath, const std::filesystem::path& absolutePath);
+[[deprecated]] IVW_CORE_API std::filesystem::path getCanonicalPath(
+    const std::filesystem::path& url);
 
-[[deprecated]]
-IVW_CORE_API bool isAbsolutePath(const std::filesystem::path& path);
+[[deprecated]] IVW_CORE_API bool isAbsolutePath(const std::filesystem::path& path);
 
 /**
  * \brief Checks whether the second path is on the same drive as the first path
@@ -385,9 +379,8 @@ IVW_CORE_API bool isAbsolutePath(const std::filesystem::path& path);
  * @return true if queryPath and refPath are located on the same drive (on Windows), always true on
  * all other systems
  */
-[[deprecated]]
-IVW_CORE_API bool sameDrive(const std::filesystem::path& refPath,
-                            const std::filesystem::path& queryPath);
+[[deprecated]] IVW_CORE_API bool sameDrive(const std::filesystem::path& refPath,
+                                           const std::filesystem::path& queryPath);
 
 /**
  * \brief clean up path by replacing backslashes with forward slash and removing surrounding quotes
@@ -395,8 +388,7 @@ IVW_CORE_API bool sameDrive(const std::filesystem::path& refPath,
  * @param path given path to be cleaned up
  * @return non-quoted path containing no backslashes as directory separators
  */
-[[deprecated]]
-IVW_CORE_API std::filesystem::path cleanupPath(std::string_view path);
+[[deprecated]] IVW_CORE_API std::filesystem::path cleanupPath(std::string_view path);
 
 }  // namespace filesystem
 

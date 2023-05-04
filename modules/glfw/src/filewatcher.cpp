@@ -212,35 +212,36 @@ private:
 
 FileWatcher::FileWatcher(InviwoApplication* app)
     : app_{app}
-    , watcher_{std::make_unique<WatcherThread>(
-          [this](const std::filesystem::path& dir, const std::filesystem::path& path, WatcherThread::Action) {
-              auto notifyAboutChanges = [this, dir, path]() {
-                  if (std::filesystem::is_regular_file(path)) {
-                      // don't use iterators here, they might be invalidated.
-                      const auto orgSize = fileObservers_.size();
-                      for (size_t i = 0; i < orgSize && i < fileObservers_.size(); ++i) {
-                          if (fileObservers_[i]->isObserved(path)) {
-                              fileObservers_[i]->fileChanged(path);
-                          }
-                      }
-                  }
-                  if (std::filesystem::is_directory(dir)) {
-                      // don't use iterators here, they might be invalidated.
-                      const auto orgSize = fileObservers_.size();
-                      for (size_t i = 0; i < orgSize && i < fileObservers_.size(); ++i) {
-                          if (fileObservers_[i]->isObserved(dir)) {
-                              fileObservers_[i]->fileChanged(dir);
-                          }
-                      }
-                  }
-              };
+    , watcher_{std::make_unique<WatcherThread>([this](const std::filesystem::path& dir,
+                                                      const std::filesystem::path& path,
+                                                      WatcherThread::Action) {
+        auto notifyAboutChanges = [this, dir, path]() {
+            if (std::filesystem::is_regular_file(path)) {
+                // don't use iterators here, they might be invalidated.
+                const auto orgSize = fileObservers_.size();
+                for (size_t i = 0; i < orgSize && i < fileObservers_.size(); ++i) {
+                    if (fileObservers_[i]->isObserved(path)) {
+                        fileObservers_[i]->fileChanged(path);
+                    }
+                }
+            }
+            if (std::filesystem::is_directory(dir)) {
+                // don't use iterators here, they might be invalidated.
+                const auto orgSize = fileObservers_.size();
+                for (size_t i = 0; i < orgSize && i < fileObservers_.size(); ++i) {
+                    if (fileObservers_[i]->isObserved(dir)) {
+                        fileObservers_[i]->fileChanged(dir);
+                    }
+                }
+            }
+        };
 
-              if (app_) {
-                  app_->dispatchFront(notifyAboutChanges);
-              } else {
-                  notifyAboutChanges();
-              }
-          })} {}
+        if (app_) {
+            app_->dispatchFront(notifyAboutChanges);
+        } else {
+            notifyAboutChanges();
+        }
+    })} {}
 
 FileWatcher::~FileWatcher() = default;
 

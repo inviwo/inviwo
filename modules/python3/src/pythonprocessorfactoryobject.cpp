@@ -78,7 +78,8 @@ std::unique_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplicatio
 
     } catch (std::exception& e) {
         throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                        "Failed to create processor {} from script: {}\n{}", name_, file_, e.what());
+                        "Failed to create processor {} from script: {}\n{}", name_, file_,
+                        e.what());
     }
 }
 
@@ -139,8 +140,8 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
             const auto missingModule = e.value().attr("name").cast<std::string>();
             throw Exception(
                 IVW_CONTEXT_CUSTOM("Python"),
-                "Failed to load python processor: '{}' due to missing module: '{}'. File: {}",
-                name, missingModule, file);
+                "Failed to load python processor: '{}' due to missing module: '{}'. File: {}", name,
+                missingModule, file);
         } else if (e.matches(PyExc_SyntaxError)) {
             const auto filename = e.value().attr("filename").cast<std::string>();
             auto lineno = e.value().attr("lineno").cast<int>();

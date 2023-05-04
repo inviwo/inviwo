@@ -69,7 +69,7 @@ void testVolumeLoad(Volume* volume) {
 
 template <typename T>
 void testDatVolumeLoad(std::string_view filename) {
-    auto file = filesystem::getPath(PathType::Tests) / "volumes" /  filename;
+    auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
 
     auto reader = InviwoApplication::getPtr()
                       ->getDataReaderFactory()

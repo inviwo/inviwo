@@ -143,7 +143,8 @@ void KernelManager::fileChanged(const std::filesystem::path& fileName) {
         }
 
         try {
-            LogInfo(fileName.string() + " building program with defines: " + programIt->second.defines);
+            LogInfo(fileName.string() +
+                    " building program with defines: " + programIt->second.defines);
             *program =
                 OpenCL::buildProgram(fileName, programIt->second.header, programIt->second.defines);
             LogInfo(fileName.string() + " finished building program");

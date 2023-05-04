@@ -191,7 +191,6 @@ cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType ty
 
 }  // namespace detail
 
-
 ////////////////////// Templates ///////////////////////////////////////////////////
 
 // Single channel images

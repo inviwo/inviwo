@@ -52,9 +52,9 @@
 #include <unordered_set>  // for unordered_set
 #include <vector>         // for vector
 
-#include <fmt/core.h>            // for basic_string_view
-#include <fmt/format.h>          // for join
-#include <fmt/ostream.h>         // for print
+#include <fmt/core.h>     // for basic_string_view
+#include <fmt/format.h>   // for join
+#include <fmt/ostream.h>  // for print
 #include <fmt/std.h>
 
 #include <glm/fwd.hpp>           // for mat4, mat3, vec3

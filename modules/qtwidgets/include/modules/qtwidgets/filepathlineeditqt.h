@@ -72,8 +72,8 @@ protected:
     void updateIcon();
 
 private:
-    QLabel* warningLabel_;  //!< warning icon which is visible if the path is invalid
-    std::filesystem::path path_;      //!< full path including file name
+    QLabel* warningLabel_;        //!< warning icon which is visible if the path is invalid
+    std::filesystem::path path_;  //!< full path including file name
     bool editingEnabled_;  //!< if this flag is set, the full path is shown. Otherwise only the file
                            //!< name is shown
     int cursorPos_;

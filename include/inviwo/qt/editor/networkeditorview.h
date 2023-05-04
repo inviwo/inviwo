@@ -58,7 +58,8 @@ public:
     void fitNetwork();
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
-    void exportViewToFile(const std::filesystem::path& filename, bool entireScene, bool backgroundVisible);
+    void exportViewToFile(const std::filesystem::path& filename, bool entireScene,
+                          bool backgroundVisible);
     QImage exportViewToImage(bool entireScene, bool backgroundVisible, QSize size = QSize());
 
     TextLabelOverlay& getOverlay() const;

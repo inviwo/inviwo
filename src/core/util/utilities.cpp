@@ -54,8 +54,8 @@ void saveNetwork(ProcessorNetwork* network, std::string_view filename) {
     }
 }
 
-void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir, std::string_view name,
-                     std::string_view ext, bool onlyActiveCanvases) {
+void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir,
+                     std::string_view name, std::string_view ext, bool onlyActiveCanvases) {
 
     // Get all canvases, possibly only the active ones. We need their count below.
     auto allCanvases = network->getProcessorsByType<inviwo::CanvasProcessor>();

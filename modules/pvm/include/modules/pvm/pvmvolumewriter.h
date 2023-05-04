@@ -50,7 +50,8 @@ public:
     virtual PVMVolumeWriter* clone() const override;
     virtual ~PVMVolumeWriter() override = default;
 
-    virtual void writeData(const Volume* data, const std::filesystem::path& filePath) const override;
+    virtual void writeData(const Volume* data,
+                           const std::filesystem::path& filePath) const override;
 };
 
 }  // namespace inviwo

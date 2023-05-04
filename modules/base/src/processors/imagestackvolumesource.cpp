@@ -173,12 +173,12 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<DataReaderType<Layer>>>> slices;
     slices.reserve(files.size());
 
-    std::transform(
-        files.begin(), files.end(), std::back_inserter(slices),
-        [&](const auto& file) -> std::pair<std::filesystem::path, std::unique_ptr<DataReaderType<Layer>>> {
-            return {file, std::move(readerFactory_->getReaderForTypeAndExtension<Layer>(
-                              filePattern_.getSelectedExtension(), file))};
-        });
+    std::transform(files.begin(), files.end(), std::back_inserter(slices),
+                   [&](const auto& file)
+                       -> std::pair<std::filesystem::path, std::unique_ptr<DataReaderType<Layer>>> {
+                       return {file, std::move(readerFactory_->getReaderForTypeAndExtension<Layer>(
+                                         filePattern_.getSelectedExtension(), file))};
+                   });
     if (skipUnsupportedFiles_) {
         slices.erase(std::remove_if(slices.begin(), slices.end(),
                                     [](auto& elem) { return elem.second == nullptr; }),
