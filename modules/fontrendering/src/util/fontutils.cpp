@@ -88,9 +88,8 @@ std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
                    });
 
     // sort file names case insensitive
-    std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
-        return iCaseLess(a.first, b.first);
-    });
+    std::sort(result.begin(), result.end(),
+              [](const auto& a, const auto& b) { return iCaseLess(a.first, b.first); });
 
     return result;
 }

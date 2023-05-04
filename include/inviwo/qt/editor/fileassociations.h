@@ -81,7 +81,6 @@
 #include <vector>
 #include <filesystem>
 
-
 class QMainWindow;
 
 namespace inviwo {

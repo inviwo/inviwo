@@ -164,8 +164,7 @@ ParallelCoordinates::ParallelCoordinates()
     , captionColor_("color", "Color", vec4(.0, .0f, .0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                     InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
-    , labelSettings_("labels", "Label Settings", font::FontType::Label, 20, 0.0f,
-                     vec2{-1.0f, 0.0f})
+    , labelSettings_("labels", "Label Settings", font::FontType::Label, 20, 0.0f, vec2{-1.0f, 0.0f})
     , showLabels_("show", "Display min/max", true)
     , labelOffset_("offset", "Offset", 15.0f, -50.0, 50.0f)
     , labelFormat_("format", "Format", "%.4f")

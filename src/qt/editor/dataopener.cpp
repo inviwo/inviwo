@@ -59,7 +59,8 @@ namespace {
 
 class SelectVisualizerDialog : public QDialog {
 public:
-    SelectVisualizerDialog(const std::filesystem::path& file, const std::vector<DataVisualizer*>& visualizers,
+    SelectVisualizerDialog(const std::filesystem::path& file,
+                           const std::vector<DataVisualizer*>& visualizers,
                            QWidget* parent = nullptr)
         : QDialog{parent} {
 

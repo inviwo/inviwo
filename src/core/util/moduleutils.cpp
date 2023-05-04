@@ -73,7 +73,7 @@ std::filesystem::path getModulePath(std::string_view identifier) {
     return getModulePath(InviwoApplication::getPtr(), identifier);
 }
 std::filesystem::path getModulePath(InviwoApplication* app, std::string_view identifier,
-                          ModulePath pathType) {
+                                    ModulePath pathType) {
     std::filesystem::path path;
     if (auto m = getModuleByIdentifier(app, identifier)) {
         path = m->getPath(pathType);

@@ -418,8 +418,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     settings.beginGroup(objectName());
     QString firstWorkspace =
         utilqt::toQString(filesystem::getPath(PathType::Workspaces) / "boron.inv");
-    workspaceOnLastSuccessfulExit_ = utilqt::toPath(
-        settings.value("workspaceOnLastSuccessfulExit", firstWorkspace).toString());
+    workspaceOnLastSuccessfulExit_ =
+        utilqt::toPath(settings.value("workspaceOnLastSuccessfulExit", firstWorkspace).toString());
     settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
 

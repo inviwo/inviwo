@@ -172,7 +172,8 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
     return volume;
 }
 
-void MPVMVolumeReader::printPVMMeta(const Volume& volume,const std::filesystem::path& fileName) const {
+void MPVMVolumeReader::printPVMMeta(const Volume& volume,
+                                    const std::filesystem::path& fileName) const {
     size3_t dim = volume.getDimensions();
     size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSize());
     std::string size = util::formatBytesToString(bytes);

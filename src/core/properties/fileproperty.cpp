@@ -42,8 +42,8 @@ std::string FileProperty::getClassIdentifier() const { return classIdentifier; }
 FileProperty::FileProperty(std::string_view identifier, std::string_view displayName, Document help,
                            const std::filesystem::path& value, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TemplateProperty<std::filesystem::path>(identifier, displayName, std::move(help), std::string{},
-                                              invalidationLevel, semantics)
+    : TemplateProperty<std::filesystem::path>(identifier, displayName, std::move(help),
+                                              std::string{}, invalidationLevel, semantics)
     , acceptMode_(AcceptMode::Open)
     , fileMode_(FileMode::AnyFile)
     , contentType_(contentType) {

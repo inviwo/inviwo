@@ -132,10 +132,11 @@ inline QString toQString(const std::filesystem::path& path) {
  */
 inline std::string fromQString(const QString& str) { return std::string(str.toUtf8().constData()); }
 
-inline std::filesystem::path toPath(const QString& str) { 
+inline std::filesystem::path toPath(const QString& str) {
     auto buffer = str.toUtf8();
-    std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()), static_cast<size_t>(buffer.size())};
-    return std::filesystem::path{u8str}; 
+    std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
+                             static_cast<size_t>(buffer.size())};
+    return std::filesystem::path{u8str};
 }
 
 constexpr QPointF toQPoint(dvec2 v) { return QPointF(v.x, v.y); }

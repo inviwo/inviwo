@@ -64,9 +64,8 @@ public:
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
-    FontProperty(std::string_view identifier, std::string_view displayName,
-                 font::FontType fontType, int size = 14, float lineSpacing = 0.0f,
-                 vec2 anchorPos = vec2{-1.0f},
+    FontProperty(std::string_view identifier, std::string_view displayName, font::FontType fontType,
+                 int size = 14, float lineSpacing = 0.0f, vec2 anchorPos = vec2{-1.0f},
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 

@@ -76,7 +76,8 @@ void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
     }
 }
 
-CImgVolumeRAMLoader::CImgVolumeRAMLoader(const std::filesystem::path& sourceFile) : sourceFile_{sourceFile} {}
+CImgVolumeRAMLoader::CImgVolumeRAMLoader(const std::filesystem::path& sourceFile)
+    : sourceFile_{sourceFile} {}
 
 CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const { return new CImgVolumeRAMLoader(*this); }
 
@@ -121,7 +122,7 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
         if (std::filesystem::is_regular_file(newPath)) {
             fileName = newPath;
         } else {
-           throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
+            throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
         }
     }
 
