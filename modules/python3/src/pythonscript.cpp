@@ -227,7 +227,7 @@ void PythonScriptDisk::removeOnChange(const BaseCallBack* callback) {
 }
 
 void PythonScriptDisk::readFileAndSetSource() {
-    auto inFile = filesystem::ifstream(getFilename());
+    auto inFile = std::ifstream(getFilename());
     std::string src((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     setSource(src);
 }

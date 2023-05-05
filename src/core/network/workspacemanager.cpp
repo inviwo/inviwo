@@ -172,7 +172,7 @@ void WorkspaceManager::load(std::istream& stream, const std::filesystem::path& r
 
 void WorkspaceManager::save(const std::filesystem::path& path,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
-    auto ostream = filesystem::ofstream(path);
+    auto ostream = std::ofstream(path);
     if (ostream.is_open()) {
         save(ostream, path, exceptionHandler, mode);
     } else {
@@ -182,7 +182,7 @@ void WorkspaceManager::save(const std::filesystem::path& path,
 
 void WorkspaceManager::load(const std::filesystem::path& path,
                             const ExceptionHandler& exceptionHandler) {
-    auto istream = filesystem::ifstream(path);
+    auto istream = std::ifstream(path);
     if (istream.is_open()) {
         load(istream, path, exceptionHandler);
     } else {

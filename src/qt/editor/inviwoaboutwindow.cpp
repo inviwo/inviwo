@@ -313,10 +313,10 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
                 std::stringstream buffer;
                 if (std::filesystem::is_regular_file(defaultLicensePath)) {
-                    auto f = filesystem::ifstream(defaultLicensePath);
+                    auto f = std::ifstream(defaultLicensePath);
                     buffer << f.rdbuf();
                 } else if (std::filesystem::is_regular_file(fallbackLicensePath)) {
-                    auto f = filesystem::ifstream(fallbackLicensePath);
+                    auto f = std::ifstream(fallbackLicensePath);
                     buffer << f.rdbuf();
                 } else {
                     buffer << "License file not found.";

@@ -62,7 +62,7 @@ public:
         : path_{filesystem::getPath(PathType::Settings)}
         , restored_{[this]() -> std::optional<std::string> {
             if (std::filesystem::is_regular_file(path_ / "autosave.inv")) {
-                auto ifstream = filesystem::ifstream(path_ / "autosave.inv");
+                auto ifstream = std::ifstream(path_ / "autosave.inv");
                 std::stringstream buffer;
                 buffer << ifstream.rdbuf();
                 return std::move(buffer).str();
@@ -93,7 +93,7 @@ public:
                 if (str) {
                     {
                         // make sure we have closed the file _before_ we copy it.
-                        auto ofstream = filesystem::ofstream(path_ / "autosave.inv.tmp");
+                        auto ofstream = std::ofstream(path_ / "autosave.inv.tmp");
                         ofstream << *str;
                     }
 

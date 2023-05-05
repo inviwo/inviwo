@@ -109,7 +109,7 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     data.getMetaDataMap()->serialize(s);
     s.writeFile();
 
-    if (auto fout = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
+    if (auto fout = std::ofstream(rawPath, std::ios::out | std::ios::binary)) {
         fout.write(static_cast<const char*>(vr->getData()),
                    glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSize());
     } else {

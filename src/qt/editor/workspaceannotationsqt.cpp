@@ -54,7 +54,7 @@ WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const std::filesystem::path& path
 
     // Can't delegate to the WorkspaceAnnotations since the virtual call to deserialize will not
     // work in the base constructor.
-    if (auto f = filesystem::ifstream(path)) {
+    if (auto f = std::ifstream(path)) {
         LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
         auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
         d.deserialize("WorkspaceAnnotations", *this);
@@ -143,7 +143,7 @@ struct DummyNetwork : Serializable {
 QStringList WorkspaceAnnotationsQt::workspaceProcessors(const std::filesystem::path& path,
                                                         InviwoApplication* app) {
 
-    if (auto f = filesystem::ifstream(path)) {
+    if (auto f = std::ifstream(path)) {
         LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
         auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
 

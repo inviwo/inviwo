@@ -66,7 +66,7 @@ void DataWriter::checkOverwrite(const std::filesystem::path& path, Overwrite ove
 std::ofstream DataWriter::open(const std::filesystem::path& path,
                                std::ios_base::openmode mode) const {
     checkOverwrite(path);
-    auto f = filesystem::ofstream(path, mode);
+    auto f = std::ofstream(path, mode);
     if (!f) {
         throw FileException(IVW_CONTEXT, "Could not open file '{}'", path);
     }

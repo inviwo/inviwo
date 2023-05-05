@@ -209,7 +209,7 @@ void PresentationProcessor::updateSlideImage() {
     auto reader = factory->getReaderForTypeAndExtension<Layer>(currentFileName);
 
     // there should always be a reader since we asked the reader for valid extensions
-    ivwAssert(reader != nullptr, "Could not find reader for \"" << currentFileName << "\"");
+    IVW_ASSERT(reader != nullptr, "Could not find reader for " << currentFileName);
 
     try {
         auto layer = reader->readData(currentFileName);

@@ -145,14 +145,14 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
         if (auto sm = dynamic_cast<const StringMetaData*>(m)) print(key, sm->get());
     }
 
-    if (auto f = filesystem::ofstream(filePath)) {
+    if (auto f = std::ofstream(filePath)) {
         f << ss.str();
     } else {
         throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeDatVolume"),
                                   "Could not write to dat file: {}", filePath);
     }
 
-    if (auto f = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
+    if (auto f = std::ofstream(rawPath, std::ios::out | std::ios::binary)) {
         f.write(static_cast<const char*>(vr->getData()), vr->getNumberOfBytes());
     } else {
         throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeDatVolume"),

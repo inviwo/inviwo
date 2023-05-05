@@ -78,7 +78,7 @@ WorkspaceAnnotations::WorkspaceAnnotations(const std::vector<Base64Image>& canva
 
 WorkspaceAnnotations::WorkspaceAnnotations(std::string_view path, InviwoApplication* app)
     : WorkspaceAnnotations{std::vector<Base64Image>{}, app} {
-    if (auto f = filesystem::ifstream(path)) {
+    if (auto f = std::ifstream(path)) {
         LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
         auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
         d.deserialize("WorkspaceAnnotations", *this);

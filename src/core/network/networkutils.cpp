@@ -539,7 +539,7 @@ std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetw
                                                const std::filesystem::path& workspaceFile,
                                                InviwoApplication* app) {
 
-    auto fs = filesystem::ifstream(workspaceFile);
+    auto fs = std::ifstream(workspaceFile);
     if (!fs) {
         throw Exception(IVW_CONTEXT_CUSTOM("util::appendProcessorNetwork"),
                         "Could not open workspace file: {}", workspaceFile);

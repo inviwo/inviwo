@@ -363,7 +363,7 @@ void AnimationEditorDockWidgetQt::importAnimation() {
             return;
         }
         try {
-            auto anim = filesystem::ifstream(fileName);
+            auto anim = std::ifstream(fileName);
             auto app = InviwoApplication::getPtr();
             auto deserializer =
                 app->getWorkspaceManager()->createWorkspaceDeserializer(anim, fileName);

@@ -82,6 +82,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <chrono>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace fs = std::filesystem;
 

@@ -44,6 +44,8 @@
 #include <QSettings>
 #include <QPlainTextEdit>
 
+#include <filesystem>
+
 class QPlainTextEdit;
 class QFocusEvent;
 class QMainWindow;
@@ -62,7 +64,7 @@ public:
     virtual ~PythonEditorWidget();
 
     void appendToOutput(const std::string& msg, bool error = false);
-    void loadFile(std::string fileName, bool askForSave = true);
+    void loadFile(const std::filesystem::path& fileName, bool askForSave = true);
 
     virtual void onPyhonExecutionOutput(const std::string& msg,
                                         PythonOutputType outputType) override;
@@ -85,7 +87,7 @@ protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
 private:
-    void setFileName(const std::string& filename);
+    void setFileName(const std::filesystem::path& filename);
     void updateWindowTitle();
     void readFile();
     bool askSaveChanges();
@@ -104,7 +106,7 @@ private:
     QAction* runAction_;
 
     PythonScript script_;
-    std::string scriptFileName_;
+    std::filesystem::path scriptFileName_;
 
     std::shared_ptr<std::function<void()>> syntaxCallback_;
 

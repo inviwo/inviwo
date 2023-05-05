@@ -50,7 +50,7 @@ PortInspector::PortInspector(std::string_view portClassIdentifier,
     , portClassIdentifier_(portClassIdentifier) {
 
     // Deserialize the network
-    if (auto istream = filesystem::ifstream(inspectorNetworkFileName_)) {
+    if (auto istream = std::ifstream(inspectorNetworkFileName_)) {
         auto app = InviwoApplication::getPtr();
         auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(
             istream, inspectorNetworkFileName_);

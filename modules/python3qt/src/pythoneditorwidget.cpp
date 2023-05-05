@@ -78,6 +78,9 @@
 #include <QVariant>         // for QVariant
 #include <Qt>               // for operator|, WidgetWithChildr...
 
+#include <fmt/format.h>
+#include <fmt/std.h>
+
 class QCloseEvent;
 class QWidget;
 
@@ -264,7 +267,7 @@ void PythonEditorWidget::appendToOutput(const std::string& msg, bool) {
     pythonOutput_->appendPlainText(utilqt::toQString(msg));
 }
 
-void PythonEditorWidget::loadFile(std::string fileName, bool askForSave) {
+void PythonEditorWidget::loadFile(const std::filesystem::path& fileName, bool askForSave) {
     if (askForSave && pythonCode_->document()->isModified()) {
         QMessageBox msgBox(QMessageBox::Question, "Python Editor",
                            "Do you want to save unsaved changes?",
@@ -295,17 +298,18 @@ void PythonEditorWidget::save() {
     } else if (pythonCode_->document()->isModified()) {
         fileObserver_.ignoreNextUpdate();
 
-        auto file = filesystem::ofstream(scriptFileName_);
+        auto file = std::ofstream(scriptFileName_);
         file << utilqt::fromQString(pythonCode_->toPlainText());
         file.close();
 
         pythonCode_->document()->setModified(false);
-        mainWindow_->statusBar()->showMessage(utilqt::toQString("Saved " + scriptFileName_));
+        mainWindow_->statusBar()->showMessage(
+            utilqt::toQString(fmt::format("Saved {}", scriptFileName_)));
     }
 }
 
 void PythonEditorWidget::readFile() {
-    auto file = filesystem::ifstream(scriptFileName_);
+    auto file = std::ifstream(scriptFileName_);
     std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
     replaceInString(text, "\t", "    ");
@@ -412,7 +416,7 @@ void PythonEditorWidget::onTextChange() {
     script_.setSource(source);
 }
 
-void PythonEditorWidget::setFileName(const std::string& filename) {
+void PythonEditorWidget::setFileName(const std::filesystem::path& filename) {
     scriptFileName_ = filename;
     script_.setFilename(filename);
     fileObserver_.setFileName(filename);

@@ -73,7 +73,7 @@ public:
     virtual ~FilePatternProperty();
 
     std::string getFilePattern() const;
-    std::string getFilePatternPath() const;
+    std::filesystem::path getFilePatternPath() const;
 
     std::vector<std::filesystem::path> getFileList() const;
 

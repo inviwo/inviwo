@@ -123,7 +123,7 @@ void MultiFileProperty::serialize(Serializer& s) const {
     std::vector<std::filesystem::path>
         workspaceRelativePaths;  // paths relative to workspace directory
     std::vector<std::filesystem::path> ivwdataRelativePaths;  // paths relative to Inviwo data
-    for (auto item : this->get()) {
+    for (const auto& item : this->get()) {
         const auto basePath = item.parent_path();
 
         std::filesystem::path workspaceRelative;
@@ -155,20 +155,21 @@ void MultiFileProperty::serialize(Serializer& s) const {
 }
 
 void MultiFileProperty::deserialize(Deserializer& d) {
+    namespace fs = std::filesystem;
+
     Property::deserialize(d);
     bool modified = value_.deserialize(d, this->serializationMode_);
 
-    std::vector<std::filesystem::path> absolutePaths = this->get();
-    std::vector<std::filesystem::path>
-        workspaceRelativePaths;  // paths relative to workspace directory
-    std::vector<std::filesystem::path> ivwdataRelativePaths;  // paths relative to Inviwo data
+    std::vector<fs::path> absolutePaths = this->get();
+    std::vector<fs::path> workspaceRelativePaths;  // relative to workspace directory
+    std::vector<fs::path> ivwDataRelativePaths;    // relative to Inviwo data
 
     d.deserialize("workspaceRelativePath", workspaceRelativePaths, "files");
-    d.deserialize("ivwdataRelativePath", ivwdataRelativePaths, "files");
+    d.deserialize("ivwdataRelativePath", ivwDataRelativePaths, "files");
 
     // check whether all path lists have the same number of entries
     if ((absolutePaths.size() == workspaceRelativePaths.size()) &&
-        (absolutePaths.size() == ivwdataRelativePaths.size())) {
+        (absolutePaths.size() == ivwDataRelativePaths.size())) {
 
         const auto workspacePath = d.getFileName().parent_path();
         const auto ivwdataPath = filesystem::getPath(PathType::Data);
@@ -179,18 +180,17 @@ void MultiFileProperty::deserialize(Deserializer& d) {
             const auto pattern = absolutePaths[i].filename();
 
             const auto workspaceBasedPath =
-                std::filesystem::weakly_canonical(workspacePath / workspaceRelativePaths[i]);
+                fs::weakly_canonical(workspacePath / workspaceRelativePaths[i]);
             const auto ivwdataBasedPath =
-                std::filesystem::weakly_canonical(ivwdataPath / ivwdataRelativePaths[i]);
+                fs::weakly_canonical(ivwdataPath / ivwDataRelativePaths[i]);
 
-            if (!basePath.empty() && std::filesystem::is_directory(basePath)) {
+            if (!basePath.empty() && fs::is_directory(basePath)) {
                 continue;
-            } else if (!ivwdataRelativePaths[i].empty() &&
-                       std::filesystem::is_regular_file(ivwdataBasedPath)) {
+            } else if (!ivwDataRelativePaths[i].empty() && fs::is_directory(ivwdataBasedPath)) {
                 absolutePaths[i] = ivwdataBasedPath / pattern;
                 modifiedPath = true;
             } else if (!workspaceRelativePaths[i].empty() &&
-                       std::filesystem::is_regular_file(workspaceBasedPath)) {
+                       std::filesystem::is_directory(workspaceBasedPath)) {
                 absolutePaths[i] = workspaceBasedPath / pattern;
                 modifiedPath = true;
             }

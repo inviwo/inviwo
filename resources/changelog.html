@@ -26,6 +26,27 @@
 </style>
 </head>
 <body>
+<h2>2023-05-05 <code class="notranslate">std::filesystem</code> adoption</h2>
+<p>Inviwo has been updated to use <code class="notranslate">std::filesystem</code> instead of our own custom functions.<br>
+This change is not backwards compatible any will require code changes.<br>
+The change is motivated by the fact that <code class="notranslate">std::filesystem</code> is now part of the C++17 standard<br>
+and is supported by all major compilers. The change also makes it easier to use the same code<br>
+in Inviwo and other projects that use <code class="notranslate">std::filesystem</code>, and removes the burden of maintaining<br>
+a lot of platform specific code.<br>
+Migration guide: All path-related functions that used to take a <code class="notranslate">const std::string&amp;</code> or<br>
+<code class="notranslate">std::string_view</code> argument now uses <code class="notranslate">const std::filesystem::path&amp;</code>. For the most part simply<br>
+switching the argument type in all places where it fails to compile will be sufficient.<br>
+But it might be good to review the code to avoid any unnecessary conversions between <code class="notranslate">std::string</code><br>
+and <code class="notranslate">std::filesystem::path</code> since the conversion is implicit it can be hard to spot.<br>
+It should also be noted that the type of the implicit conversion is platform dependent, on windows<br>
+a <code class="notranslate">std::filesystem::path</code> will be converted to a <code class="notranslate">std::wstring</code> while on linux and mac it will be<br>
+converted to a <code class="notranslate">std::string</code>.</p>
+<p>Many of the functions in <code class="notranslate">inviwo/core/util/filesystem.h</code> have been deprecated since they are now<br>
+replaced by the ones in std::filesystem.</p>
+<p>The fmt lib also supports formatting <code class="notranslate">std::filesystem::path</code>s by including the <code class="notranslate">fmt/std.h</code> header.<br>
+While formatting a path fmt will automatically surround the path with quotes. If you have code that<br>
+does something like <code class="notranslate">fmt::format("{}/{}", path, file)</code> you will have to change it to <code class="notranslate">path / file</code>.<br>
+Since the extra quotes inserted while formatting will make the path ill formed.</p>
 <h2>2023-04-26 Python: consistent indexing in Numpy and Inviwo</h2>
 <p>Inviwo's Python bindings responsible for converting to and from Numpy arrays have been revised. The conversion now maintains a consistent indexing and memory order between Python lists/Numpy arrays and C++.</p>
 <p>This change potentially breaks existing Python processors handling either image layers and/or volumes. To fix these, ensure that the shape of Numpy arrays is in the form of <code class="notranslate">(z, y, x)</code> or <code class="notranslate">(z, y, x, c)</code> for volumes and <code class="notranslate">(y, x)</code>/<code class="notranslate">(y, x, c)</code> for layers, respectively. Reordering of axes should no longer be necessary.</p>

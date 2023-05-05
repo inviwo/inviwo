@@ -39,7 +39,7 @@ namespace inviwo {
 
 void util::readBytesIntoBuffer(const std::filesystem::path& file, size_t offset, size_t bytes,
                                bool littleEndian, size_t elementSize, void* dest) {
-    auto fin = filesystem::ifstream(file, std::ios::in | std::ios::binary);
+    auto fin = std::ifstream(file, std::ios::in | std::ios::binary);
     OnScopeExit close([&fin]() { fin.close(); });
 
     if (fin.good()) {

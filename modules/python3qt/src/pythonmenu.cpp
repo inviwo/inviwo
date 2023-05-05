@@ -130,18 +130,18 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
 
             if (saveFileDialog.exec()) {
                 QString qpath = saveFileDialog.selectedFiles().at(0);
-                const std::filesystem::path path = utilqt::toPath(qpath);
+                const auto path = utilqt::toPath(qpath);
 
                 const auto templatePath = pymodule->getPath() / "templates/templateprocessor.py";
 
-                auto ifs = filesystem::ifstream(templatePath);
+                auto ifs = std::ifstream(templatePath);
                 std::stringstream ss;
                 ss << ifs.rdbuf();
                 const auto script = std::move(ss).str();
 
                 const auto name = path.stem();
 
-                auto ofs = filesystem::ofstream(path);
+                auto ofs = std::ofstream(path);
                 fmt::print(ofs, fmt::runtime(script), fmt::arg("name", name));
 
                 QDesktopServices::openUrl(QUrl("file:///" + qpath, QUrl::TolerantMode));

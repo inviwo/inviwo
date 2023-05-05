@@ -134,7 +134,7 @@ void CompositeProcessor::saveSubNetwork(const std::filesystem::path& file) {
     s.serialize("Tags", tags.getString());
     s.serialize("ProcessorNetwork", *subNetwork_);
 
-    auto ofs = filesystem::ofstream(file);
+    auto ofs = std::ofstream(file);
     s.writeFile(ofs, true);
 }
 
@@ -144,7 +144,7 @@ void CompositeProcessor::loadSubNetwork(const std::filesystem::path& file) {
     if (std::filesystem::is_regular_file(file)) {
         subNetwork_->clear();
         auto wm = app_->getWorkspaceManager();
-        auto ifs = filesystem::ifstream(file);
+        auto ifs = std::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(ifs, app_->getPath(PathType::Workspaces));
         auto name = getDisplayName();
         d.deserialize("DisplayName", name);

@@ -154,11 +154,11 @@ std::string FilePatternProperty::getFilePattern() const {
     }
 }
 
-std::string FilePatternProperty::getFilePatternPath() const {
+std::filesystem::path FilePatternProperty::getFilePatternPath() const {
     if (!pattern_.get().empty()) {
-        return pattern_.get().front().parent_path().generic_string();
+        return pattern_.get().front().parent_path();
     } else {
-        return std::string();
+        return {};
     }
 }
 
@@ -200,7 +200,7 @@ void FilePatternProperty::updateFileList() {
         return;
     }
 
-    for (auto item : pattern_.get()) {
+    for (const auto& item : pattern_.get()) {
         try {
             const std::filesystem::path filePath = item.parent_path();
             const std::filesystem::path pattern = item.filename();
@@ -257,7 +257,7 @@ void FilePatternProperty::updateFileList() {
                             fileList.begin() + static_cast<std::size_t>(indexRange.y + 1));
                     }
                 }
-                for (auto file : fileList) {
+                for (const auto& file : fileList) {
                     if (filesystem::wildcardStringMatch(strPattern, file.generic_string())) {
                         // match found
                         files_.push_back(std::make_tuple(-1, filePath / file));
@@ -277,7 +277,7 @@ void FilePatternProperty::updateFileList() {
 
 std::string FilePatternProperty::getFormattedFileList() const {
     std::ostringstream oss;
-    for (auto elem : files_) {
+    for (const auto& elem : files_) {
         oss << std::setw(6) << std::get<0>(elem) << ": " << std::get<1>(elem) << "\n";
     }
     return oss.str();

@@ -51,7 +51,7 @@ const std::string& FileShaderResource::key() const { return key_; }
 
 const std::string& FileShaderResource::source() const {
     if (!cache_.empty()) return cache_;
-    auto stream = filesystem::ifstream(fileName_);
+    auto stream = std::ifstream(fileName_);
     std::stringstream buffer;
     buffer << stream.rdbuf();
     cache_ = buffer.str();
@@ -59,7 +59,7 @@ const std::string& FileShaderResource::source() const {
 }
 
 void FileShaderResource::setSource(std::string_view source) {
-    auto file = filesystem::ofstream(fileName_);
+    auto file = std::ofstream(fileName_);
     file << source;
     file.close();
 }

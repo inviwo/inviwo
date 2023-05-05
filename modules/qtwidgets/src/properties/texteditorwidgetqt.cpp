@@ -175,7 +175,7 @@ TextEditorDockWidget::~TextEditorDockWidget() = default;
 void TextEditorDockWidget::updateFromProperty() {
     if (fileProperty_) {
         fileObserver_.setFileName(fileProperty_->get());
-        if (auto f = filesystem::ifstream(fileProperty_->get())) {
+        if (auto f = std::ifstream(fileProperty_->get())) {
             std::stringstream ss;
             ss << f.rdbuf();
             editor_->setPlainText(utilqt::toQString(ss.str()));
@@ -251,7 +251,7 @@ void TextEditorDockWidget::save() {
 }
 
 void TextEditorDockWidget::saveToFile(const std::filesystem::path& filename) {
-    if (auto f = filesystem::ofstream(filename)) {
+    if (auto f = std::ofstream(filename)) {
         f << utilqt::fromQString(editor_->toPlainText());
     }
 }

@@ -48,7 +48,7 @@ void DataReader::checkExists(const std::filesystem::path& path) const {
 std::ifstream DataReader::open(const std::filesystem::path& path,
                                std::ios_base::openmode mode) const {
     checkExists(path);
-    if (auto file = filesystem::ifstream(path, mode)) {
+    if (auto file = std::ifstream(path, mode)) {
         return file;
     } else {
         throw FileException(IVW_CONTEXT, "Could not open file: {}", path);

@@ -47,7 +47,7 @@ std::string TextFileReader::read(const std::filesystem::path& filePath) {
 std::string TextFileReader::read() {
     using iter = std::istreambuf_iterator<char>;
 
-    auto file = filesystem::ifstream(filePath_);
+    auto file = std::ifstream(filePath_);
     if (!file.is_open()) {
         throw FileException(IVW_CONTEXT, "Could not open file: {}", filePath_);
     }

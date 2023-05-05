@@ -66,7 +66,7 @@ PythonProcessorFolderObserver::PythonProcessorFolderObserver(InviwoApplication* 
 
 bool PythonProcessorFolderObserver::registerFile(const std::filesystem::path& filename) {
     const auto isEmpty = [](const std::filesystem::path& file) {
-        auto ifs = filesystem::ifstream(file);
+        auto ifs = std::ifstream(file);
         ifs.seekg(0, std::ios::end);
         return ifs.tellg() == std::streampos(0);
     };

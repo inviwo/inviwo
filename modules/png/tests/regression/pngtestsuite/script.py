@@ -27,15 +27,15 @@ PILNotWorking = ["tbgn2c16.png",
                  "tbwn3p08.png",
                  "tbyn3p08.png",
                  "tm3n3p02.png",
-                 "tp1n3p08.png",]
+                 "tp1n3p08.png"]
 
-path = inviwopy.app.getModuleByIdentifier("png").path + "/tests/pngtestimages/"
+path = inviwopy.app.getModuleByIdentifier("png").path / "tests/pngtestimages"
 for filename in os.listdir(path):
     if filename in PILNotWorking:
         continue
     if filename.endswith(".png"):
         start = time.perf_counter()
-        imgsrc.imageFileName.value = path + filename
+        imgsrc.imageFileName.value = path / filename
 
         size = imgsrc.imageDimension_.value
 
@@ -53,7 +53,7 @@ for filename in os.listdir(path):
 m.save()
 
 # make sure the last image is always the same (independent on os.listdir order)
-imgsrc.imageFileName.value = path + "basi0g02.png"
+imgsrc.imageFileName.value = path / "basi0g02.png"
 size = imgsrc.imageDimension_.value
 
 canvas.inputSize.dimensions.minValue = size

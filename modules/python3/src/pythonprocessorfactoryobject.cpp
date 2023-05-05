@@ -117,7 +117,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     const std::filesystem::path& file) {
     namespace py = pybind11;
 
-    auto ifs = filesystem::ifstream(file);
+    auto ifs = std::ifstream(file);
     std::stringstream ss;
     ss << ifs.rdbuf();
     const auto script = std::move(ss).str();

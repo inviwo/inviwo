@@ -62,5 +62,5 @@ class Measurements:
         self.add(name, "fraction", "%", value)
 
     def save(self):
-        with open(inviwopy.app.getOutputPath() + "/stats.json", 'w') as f:
+        with open(inviwopy.app.getOutputPath() / "stats.json", 'w') as f:
             json.dump(self.m, f, indent=4, separators=(',', ': '))

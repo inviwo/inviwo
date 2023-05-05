@@ -61,7 +61,7 @@ FileLogger::FileLogger(const std::filesystem::path& logPath) : Logger() {
     if (!std::filesystem::is_directory(dir)) {
         std::filesystem::create_directories(dir);
     }
-    fileStream_ = filesystem::ofstream(logPath);
+    fileStream_ = std::ofstream(logPath);
 
     if (logPath.extension().string() == ".html") {
         fileStream_ << header;
