@@ -116,10 +116,6 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
                     filename = filesystem::getWorkingDirectory() / filename;
                 }
             }
-            auto dir = filename.parent_path();
-            if (!std::filesystem::is_directory(dir)) {
-                std::filesystem::create_directories(dir);
-            }
             auto flog = std::make_shared<FileLogger>(filename);
             LogCentral::getPtr()->registerLogger(flog);
             return flog;

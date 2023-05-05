@@ -34,11 +34,9 @@
 
 namespace inviwo {
 
-FileLogger::FileLogger(const std::filesystem::path& logPath) : Logger() {
-    if (std::filesystem::is_regular_file(logPath)) {
-        fileStream_ = filesystem::ofstream(logPath);
-    } else {
-        std::string_view header = R"(<style>
+namespace {
+
+constexpr std::string_view header = R"(<style>
 .warn {
     color: orange;
 }
@@ -55,7 +53,17 @@ FileLogger::FileLogger(const std::filesystem::path& logPath) : Logger() {
 </style>
 )";
 
-        fileStream_ = filesystem::ofstream(logPath / "inviwo-log.html");
+}
+
+FileLogger::FileLogger(const std::filesystem::path& logPath) : Logger() {
+
+    auto dir = logPath.parent_path();
+    if (!std::filesystem::is_directory(dir)) {
+        std::filesystem::create_directories(dir);
+    }
+    fileStream_ = filesystem::ofstream(logPath);
+
+    if (logPath.extension().string() == ".html") {
         fileStream_ << header;
     }
 
