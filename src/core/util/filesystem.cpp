@@ -29,7 +29,6 @@
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/tinydirinterface.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/logcentral.h>
