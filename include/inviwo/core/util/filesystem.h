@@ -85,8 +85,8 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  * \see std::fstream
  */
 [[deprecated]] IVW_CORE_API std::fstream fstream(const std::filesystem::path& filename,
-                                  std::ios_base::openmode mode = std::ios_base::in |
-                                                                 std::ios_base::out);
+                                                 std::ios_base::openmode mode = std::ios_base::in |
+                                                                                std::ios_base::out);
 
 /**
  * Creates and returns a std::ifstream for the given file name (utf-8 encoded). The call
@@ -107,8 +107,8 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  *
  * \see std::ifstream
  */
-[[deprecated]] IVW_CORE_API std::ifstream ifstream(const std::filesystem::path& filename,
-                                    std::ios_base::openmode mode = std::ios_base::in);
+[[deprecated]] IVW_CORE_API std::ifstream ifstream(
+    const std::filesystem::path& filename, std::ios_base::openmode mode = std::ios_base::in);
 
 /**
  * Creates and returns a std::ofstream for the given file name (utf-8 encoded). The call
@@ -129,8 +129,8 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  *
  * \see std::ofstream
  */
-[[deprecated]] IVW_CORE_API std::ofstream ofstream(const std::filesystem::path& filename,
-                                    std::ios_base::openmode mode = std::ios_base::out);
+[[deprecated]] IVW_CORE_API std::ofstream ofstream(
+    const std::filesystem::path& filename, std::ios_base::openmode mode = std::ios_base::out);
 
 /**
  * Detects the UTF-8 byte order mark (BOM) and skips it if it exists.
