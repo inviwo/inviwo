@@ -68,7 +68,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
         throw Exception("could not create temporary file name", IVW_CONTEXT);
     }
 
-    filename_ = util::fromWstring(std::wstring(tempFile.data()));
+    filename_ = std::wstring(tempFile.data());
     filename_ += suffix;
 
     if (!suffix.empty()) {
@@ -131,7 +131,7 @@ TempFileHandle& TempFileHandle::operator=(TempFileHandle&& rhs) {
     return *this;
 }
 
-const std::string& TempFileHandle::getFileName() const { return filename_; }
+const std::filesystem::path& TempFileHandle::getFileName() const { return filename_; }
 
 FILE* TempFileHandle::getHandle() { return handle_; }
 
@@ -142,8 +142,7 @@ void TempFileHandle::cleanup() {
 
     if (!filename_.empty()) {
 #ifdef WIN32
-        std::wstring fileW(filename_.begin(), filename_.end());
-        DeleteFile(fileW.c_str());
+        DeleteFile(filename_.c_str());
 #else
         remove(filename_.c_str());
 #endif
