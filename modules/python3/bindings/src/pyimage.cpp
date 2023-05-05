@@ -164,7 +164,7 @@ void exposeImage(py::module& m) {
                                    ->getDataWriterFactory()
                                    ->getWriterForTypeAndExtension<Layer>(filepath);
                  if (!writer) {
-                     throw Exception(IVW_CONTEXT_CUSTOM("exposeImage"), "No write for {}",
+                     throw Exception(IVW_CONTEXT_CUSTOM("exposeImage"), "No writer for {}",
                                      filepath);
                  }
                  writer->writeData(&self, filepath);

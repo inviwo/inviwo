@@ -138,7 +138,7 @@ fs::path getWorkingDirectory() {
     if (!GetCurrentDirectoryW(static_cast<DWORD>(buff.size()), buff.data()))
         throw Exception("Error querying current directory",
                         IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
-    return cleanupPath(util::fromWstring(buff));
+    return fs::path{buff};
 #else
     std::array<char, FILENAME_MAX> workingDir;
     if (!getcwd(workingDir.data(), workingDir.size()))
@@ -152,12 +152,15 @@ void setWorkingDirectory(const fs::path& path) {
 #ifdef WIN32
     SetCurrentDirectoryW(path.c_str());
 #else
-    chdir(path.c_str());
+    if (chdir(path.c_str()) != 0) {
+        throw Exception(IVW_CONTEXT_CUSTOM("filesystem::setWorkingDirectory"),
+                        "Error setting working directory path: (}", path);
+    }
 #endif
 }
 
 #ifdef WIN32
-std::string getModuleFileName(HMODULE handle, std::string_view name) {
+fs::path getModuleFileName(HMODULE handle, std::string_view name) {
     const DWORD maxBufSize = 1 << 20;  // corresponds to 1MiB
     std::wstring buffer(FILENAME_MAX, 0);
 
@@ -181,7 +184,7 @@ std::string getModuleFileName(HMODULE handle, std::string_view name) {
         }
     }
     buffer.resize(size);
-    return util::fromWstring(buffer);
+    return fs::path{buffer};
 }
 #endif
 
@@ -230,8 +233,8 @@ fs::path getInviwoBinDir() {
                         IVW_CONTEXT_CUSTOM("filesystem::getInviwoBinDir"));
     }
 
-    return getFileDirectory(
-        getModuleFileName(handle, "inviwo-core"));  // nullptr will lookup the exe module.
+    // nullptr will lookup the exe module.
+    return getModuleFileName(handle, "inviwo-core").parent_path();
 
 #else
     auto allLibs = getLoadedLibraries();

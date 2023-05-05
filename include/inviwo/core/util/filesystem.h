@@ -84,7 +84,7 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  *
  * \see std::fstream
  */
-IVW_CORE_API std::fstream fstream(const std::filesystem::path& filename,
+[[deprecated]] IVW_CORE_API std::fstream fstream(const std::filesystem::path& filename,
                                   std::ios_base::openmode mode = std::ios_base::in |
                                                                  std::ios_base::out);
 
@@ -107,7 +107,7 @@ IVW_CORE_API std::fstream fstream(const std::filesystem::path& filename,
  *
  * \see std::ifstream
  */
-IVW_CORE_API std::ifstream ifstream(const std::filesystem::path& filename,
+[[deprecated]] IVW_CORE_API std::ifstream ifstream(const std::filesystem::path& filename,
                                     std::ios_base::openmode mode = std::ios_base::in);
 
 /**
@@ -129,7 +129,7 @@ IVW_CORE_API std::ifstream ifstream(const std::filesystem::path& filename,
  *
  * \see std::ofstream
  */
-IVW_CORE_API std::ofstream ofstream(const std::filesystem::path& filename,
+[[deprecated]] IVW_CORE_API std::ofstream ofstream(const std::filesystem::path& filename,
                                     std::ios_base::openmode mode = std::ios_base::out);
 
 /**
