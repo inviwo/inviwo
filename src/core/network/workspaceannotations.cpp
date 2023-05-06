@@ -29,9 +29,10 @@
 
 #include <inviwo/core/network/workspaceannotations.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/filesystem.h>
 
 #include <inviwo/core/util/glm.h>
+
+#include <fstream>
 
 namespace inviwo {
 
