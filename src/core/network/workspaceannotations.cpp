@@ -33,6 +33,7 @@
 #include <inviwo/core/util/glm.h>
 
 #include <fstream>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -77,7 +78,8 @@ WorkspaceAnnotations::WorkspaceAnnotations(const std::vector<Base64Image>& canva
     addProperties(title_, author_, tags_, categories_, description_, primaryCanvasId_);
 }
 
-WorkspaceAnnotations::WorkspaceAnnotations(std::string_view path, InviwoApplication* app)
+WorkspaceAnnotations::WorkspaceAnnotations(const std::filesystem::path& path,
+                                           InviwoApplication* app)
     : WorkspaceAnnotations{std::vector<Base64Image>{}, app} {
     if (auto f = std::ifstream(path)) {
         LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
