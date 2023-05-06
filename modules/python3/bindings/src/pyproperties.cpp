@@ -57,6 +57,7 @@
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/functional.h>
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace py = pybind11;
 
@@ -291,8 +292,12 @@ void exposeProperties(py::module& m) {
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-             py::arg("semantics") = PropertySemantics::Default);
-    pyTemplateProperty<std::string, StringProperty>(strProperty);
+             py::arg("semantics") = PropertySemantics::Default)
+        .def_property(
+            "value", [](StringProperty& p) { return p.get(); },
+            [](StringProperty& p, const std::string& str) { p.set(str); })
+        .def("__repr__",
+             [](StringProperty& p) { return fmt::format("StringProperty({})", p.get()); });
 
     py::enum_<AcceptMode>(m, "AcceptMode")
         .value("Open", AcceptMode::Open)
@@ -338,6 +343,9 @@ void exposeProperties(py::module& m) {
              py::arg("contentType") = "default",
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
+        .def_property(
+            "value", [](FileProperty& p) { return p.get(); },
+            [](FileProperty& p, const std::filesystem::path& path) { p.set(path); })
         .def("requestFile", &FileProperty::requestFile)
         .def("addNameFilter",
              static_cast<void (FileProperty::*)(std::string_view)>(&FileProperty::addNameFilter))
@@ -350,8 +358,8 @@ void exposeProperties(py::module& m) {
         .def_property("fileMode", &FileProperty::getFileMode, &FileProperty::setFileMode)
         .def_property("contentType", &FileProperty::getContentType, &FileProperty::setContentType)
         .def_property("selectedExtension", &FileProperty::getSelectedExtension,
-                      &FileProperty::setSelectedExtension);
-    pyTemplateProperty<std::string, FileProperty>(fileProperty);
+                      &FileProperty::setSelectedExtension)
+        .def("__repr__", [](FileProperty& p) { return fmt::format("FileProperty({})", p.get()); });
 
     py::class_<DirectoryProperty, FileProperty> dirProperty(m, "DirectoryProperty");
     dirProperty
@@ -374,8 +382,9 @@ void exposeProperties(py::module& m) {
              py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
              py::arg("contentType") = "default",
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-             py::arg("semantics") = PropertySemantics::Default);
-    pyTemplateProperty<std::string, DirectoryProperty>(dirProperty);
+             py::arg("semantics") = PropertySemantics::Default)
+        .def("__repr__",
+             [](DirectoryProperty& p) { return fmt::format("DirectoryProperty({})", p.get()); });
 
     py::class_<BoolProperty, Property> boolProperty(m, "BoolProperty");
     boolProperty
@@ -397,9 +406,11 @@ void exposeProperties(py::module& m) {
              py::arg("identifier"), py::arg("displayName"), py::arg("value") = false,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
-        .def("__bool__", &BoolProperty::get);
-
-    pyTemplateProperty<bool, BoolProperty>(boolProperty);
+        .def_property(
+            "value", [](BoolProperty& p) { return p.get(); },
+            [](BoolProperty& p, bool value) { p.set(value); })
+        .def("__bool__", &BoolProperty::get)
+        .def("__repr__", [](BoolProperty& p) { return fmt::format("BoolProperty({})", p.get()); });
 
     py::class_<ButtonProperty, Property>(m, "ButtonProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
