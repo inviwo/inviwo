@@ -428,7 +428,7 @@ void PythonEditorWidget::updateWindowTitle() {
     if (scriptFileName_.empty()) {
         str = "(unnamed file)";
     } else {
-        str = QString::fromStdString(scriptFileName_);
+        str = utilqt::toQString(scriptFileName_);
     }
 
     setWindowTitle(QString("Python Editor - %1[*]").arg(str));

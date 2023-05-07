@@ -109,7 +109,7 @@ private:
             handles_[active_] = handle;
             observed_[active_].first = path;
             for (auto&& elem : std::filesystem::recursive_directory_iterator{path}) {
-                observed_[active_].second[elem] = filesystem::fileModificationTime(elem);
+                observed_[active_].second[elem] = std::filesystem::last_write_time(elem);
             }
 
             ++active_;
@@ -158,7 +158,7 @@ private:
     // Update the time stamps on all files and return the changed ones.
     std::vector<std::pair<std::filesystem::path, Action>> getChangedAndUpdateFiles(
         const std::filesystem::path& path,
-        std::unordered_map<std::filesystem::path, time_t>& files) {
+        std::unordered_map<std::filesystem::path, std::filesystem::file_time_type>& files) {
 
         std::vector<std::pair<std::filesystem::path, Action>> changed;
 
@@ -175,9 +175,9 @@ private:
             auto it = files.find(elem);
             if (it == files.end()) {
                 changed.emplace_back(elem, Action::Removed);
-                files[elem] = filesystem::fileModificationTime(elem);
+                files[elem] = std::filesystem::last_write_time(elem);
             } else {
-                auto newTime = filesystem::fileModificationTime(elem);
+                auto newTime = std::filesystem::last_write_time(elem);
                 if (newTime > it->second) {
                     changed.emplace_back(elem, Action::Modified);
                     it->second = newTime;
@@ -192,8 +192,10 @@ private:
         FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE;
 
     std::array<HANDLE, MAXIMUM_WAIT_OBJECTS> handles_{};
-    std::array<std::pair<std::filesystem::path, std::unordered_map<std::filesystem::path, time_t>>,
-               MAXIMUM_WAIT_OBJECTS>
+    std::array<
+        std::pair<std::filesystem::path,
+                  std::unordered_map<std::filesystem::path, std::filesystem::file_time_type>>,
+        MAXIMUM_WAIT_OBJECTS>
         observed_{};
     std::atomic<size_t> active_ = 0;
 
@@ -260,8 +262,8 @@ void FileWatcher::unRegisterFileObserver(FileObserver* fileObserver) {
 }
 
 void FileWatcher::startFileObservation(const std::filesystem::path& fileName) {
-    const bool isDirectory = filesystem::directoryExists(fileName);
-    const auto dir = isDirectory ? fileName : filesystem::getFileDirectory(fileName);
+    const bool isDirectory = std::filesystem::is_directory(fileName);
+    const auto dir = isDirectory ? fileName : fileName.parent_path();
 
     const auto it = observed_.find(dir);
     if (it == observed_.end()) {
@@ -280,8 +282,8 @@ void FileWatcher::stopFileObservation(const std::filesystem::path& fileName) {
                      [fileName](const auto observer) { return observer->isObserved(fileName); });
     // Make sure that no observer is observing the file
     if (observerit == std::end(fileObservers_)) {
-        const bool isDirectory = filesystem::directoryExists(fileName);
-        const auto dir = isDirectory ? fileName : filesystem::getFileDirectory(fileName);
+        const bool isDirectory = std::filesystem::is_directory(fileName);
+        const auto dir = isDirectory ? fileName : fileName.parent_path();
 
         const auto it = observed_.find(dir);
         if (it != observed_.end()) {
