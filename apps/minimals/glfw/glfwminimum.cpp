@@ -46,6 +46,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/util/localetools.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/consolelogger.h>
@@ -61,6 +62,8 @@
 using namespace inviwo;
 
 int main(int argc, char** argv) {
+    inviwo::util::configureCodePage();
+
     inviwo::LogCentral logger;
     inviwo::LogCentral::init(&logger);
     auto consoleLogger = std::make_shared<inviwo::ConsoleLogger>();

@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/localetools.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/logerrorcounter.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -51,18 +52,14 @@
 #include <QApplication>
 
 int main(int argc, char** argv) {
+
+    inviwo::util::configureCodePage();
+
     inviwo::LogCentral logger;
     inviwo::LogCentral::init(&logger);
     auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
     logger.registerLogger(logCounter);
-#ifdef __linux__
-    /*
-     * Suppress warning "QApplication: invalid style override passed, ignoring it." when starting
-     * Inviwo on Linux. See
-     * https://forum.qt.io/topic/75398/qt-5-8-0-qapplication-invalid-style-override-passed-ignoring-it/2
-     */
-    qputenv("QT_STYLE_OVERRIDE", "");
-#endif
+
     // Must be set before constructing QApplication
     inviwo::utilqt::configureInviwoQtApp();
 

@@ -353,6 +353,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/iterrange.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/licenseinfo.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/localetools.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logfilter.h
@@ -704,6 +705,7 @@ set(SOURCE_FILES
     util/inviwosetupinfo.cpp
     util/iterrange.cpp
     util/licenseinfo.cpp
+    util/localetools.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
     util/logfilter.cpp
