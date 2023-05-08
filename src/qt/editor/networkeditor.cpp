@@ -754,7 +754,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                         return !std::filesystem::is_regular_file(path);
                     },
                     "");
-                filesystem::createDirectoryRecursively(compDir);
+                std::filesystem::create_directories(compDir);
                 const auto path = compDir / (filename + ".inv");
                 p->saveSubNetwork(path);
                 LogInfo("Saved Composite to \"" << path

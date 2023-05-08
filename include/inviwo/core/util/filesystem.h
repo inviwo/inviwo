@@ -84,9 +84,9 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  *
  * \see std::fstream
  */
-[[deprecated]] IVW_CORE_API std::fstream fstream(const std::filesystem::path& filename,
-                                                 std::ios_base::openmode mode = std::ios_base::in |
-                                                                                std::ios_base::out);
+[[deprecated("use std::fstream")]] IVW_CORE_API std::fstream fstream(
+    const std::filesystem::path& filename,
+    std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
 /**
  * Creates and returns a std::ifstream for the given file name (utf-8 encoded). The call
@@ -107,7 +107,7 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  *
  * \see std::ifstream
  */
-[[deprecated]] IVW_CORE_API std::ifstream ifstream(
+[[deprecated("use std::ifstream")]] IVW_CORE_API std::ifstream ifstream(
     const std::filesystem::path& filename, std::ios_base::openmode mode = std::ios_base::in);
 
 /**
@@ -129,7 +129,7 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  *
  * \see std::ofstream
  */
-[[deprecated]] IVW_CORE_API std::ofstream ofstream(
+[[deprecated("use std::ofstream")]] IVW_CORE_API std::ofstream ofstream(
     const std::filesystem::path& filename, std::ios_base::openmode mode = std::ios_base::out);
 
 /**
@@ -184,7 +184,8 @@ IVW_CORE_API std::filesystem::path getInviwoUserSettingsPath();
  * @param filePath The path to the file
  * @return true if file exists, false otherwise
  */
-[[deprecated]] IVW_CORE_API bool fileExists(const std::filesystem::path& filePath);
+[[deprecated("use std::filesystem::is_regular_file")]] IVW_CORE_API bool fileExists(
+    const std::filesystem::path& filePath);
 
 /**
  * Check if the directory exists
@@ -193,7 +194,8 @@ IVW_CORE_API std::filesystem::path getInviwoUserSettingsPath();
  * @param path Directory path
  * @return True if directory exists, false otherwise
  */
-[[deprecated]] IVW_CORE_API bool directoryExists(const std::filesystem::path& path);
+[[deprecated("use std::filesystem::is_directory")]] IVW_CORE_API bool directoryExists(
+    const std::filesystem::path& path);
 
 /**
  * \brief Get last time file was modified.
@@ -201,7 +203,8 @@ IVW_CORE_API std::filesystem::path getInviwoUserSettingsPath();
  * @param filePath The path to the file
  * @return Time of last modification, or 0 if an error occured (00:00, Jan 1 1970 UTC).
  */
-[[deprecated]] IVW_CORE_API std::time_t fileModificationTime(const std::filesystem::path& filePath);
+[[deprecated("use std::filesystem::last_write_time")]] IVW_CORE_API std::time_t
+fileModificationTime(const std::filesystem::path& filePath);
 
 /**
  * \brief Copy an existing file to a new file. Overwrites existing file.
@@ -209,8 +212,8 @@ IVW_CORE_API std::filesystem::path getInviwoUserSettingsPath();
  * @param dst Path to the new file
  * @return True if source file exists and the copy is successful, false otherwise
  */
-[[deprecated]] IVW_CORE_API bool copyFile(const std::filesystem::path& src,
-                                          const std::filesystem::path& dst);
+[[deprecated("use std::filesystem::copy")]] IVW_CORE_API bool copyFile(
+    const std::filesystem::path& src, const std::filesystem::path& dst);
 
 enum class ListMode {
     Files,
@@ -310,7 +313,8 @@ IVW_CORE_API std::filesystem::path findBasePath();
 IVW_CORE_API std::filesystem::path getPath(PathType pathType, const std::string& suffix = "",
                                            const bool createFolder = false);
 
-IVW_CORE_API void createDirectoryRecursively(const std::filesystem::path& path);
+[[deprecated("use std::filesystem::create_directories")]] IVW_CORE_API void
+createDirectoryRecursively(const std::filesystem::path& path);
 
 /**
  * \brief Adds the InviwoApplication base path before the url
@@ -321,12 +325,12 @@ IVW_CORE_API void createDirectoryRecursively(const std::filesystem::path& path);
  */
 IVW_CORE_API std::filesystem::path addBasePath(const std::filesystem::path& url);
 
-[[deprecated]] IVW_CORE_API std::filesystem::path getFileDirectory(
-    const std::filesystem::path& url);
-[[deprecated]] IVW_CORE_API std::filesystem::path getFileNameWithExtension(
-    const std::filesystem::path& url);
-[[deprecated]] IVW_CORE_API std::filesystem::path getFileNameWithoutExtension(
-    const std::filesystem::path& url);
+[[deprecated("use std::filesystem::path::parent_path")]] IVW_CORE_API std::filesystem::path
+getFileDirectory(const std::filesystem::path& url);
+[[deprecated("use std::filesystem::path::filename")]] IVW_CORE_API std::filesystem::path
+getFileNameWithExtension(const std::filesystem::path& url);
+[[deprecated("use std::filesystem::path::stem")]] IVW_CORE_API std::filesystem::path
+getFileNameWithoutExtension(const std::filesystem::path& url);
 /**
  * \brief Returns the characters after last dot (.).
  *
@@ -341,7 +345,9 @@ IVW_CORE_API std::filesystem::path addBasePath(const std::filesystem::path& url)
  * @param url Path to extract extension from.
  * @return Extension excluding ., empty if no dot or filename are found.
  */
-[[deprecated]] IVW_CORE_API std::string getFileExtension(const std::filesystem::path& url);
+[[deprecated("use std::filesystem::path::extension note: this will include the dot")]] IVW_CORE_API
+    std::string
+    getFileExtension(const std::filesystem::path& url);
 
 /**
  * Replace the last file extension to newFileExtension, if no extension exists append
@@ -360,12 +366,13 @@ IVW_CORE_API std::filesystem::path replaceFileExtension(const std::filesystem::p
  * absolutePath = "C:/foo/test/file.txt"
  * returns "../test/file.txt"
  */
-[[deprecated]] IVW_CORE_API std::filesystem::path getRelativePath(
+[[deprecated("use std::filesystem::relative")]] IVW_CORE_API std::filesystem::path getRelativePath(
     const std::filesystem::path& basePath, const std::filesystem::path& absolutePath);
-[[deprecated]] IVW_CORE_API std::filesystem::path getCanonicalPath(
-    const std::filesystem::path& url);
+[[deprecated("use std::filesystem::canonical")]] IVW_CORE_API std::filesystem::path
+getCanonicalPath(const std::filesystem::path& url);
 
-[[deprecated]] IVW_CORE_API bool isAbsolutePath(const std::filesystem::path& path);
+[[deprecated("use std::filesystem::path::is_absolute")]] IVW_CORE_API bool isAbsolutePath(
+    const std::filesystem::path& path);
 
 /**
  * \brief Checks whether the second path is on the same drive as the first path
@@ -379,8 +386,8 @@ IVW_CORE_API std::filesystem::path replaceFileExtension(const std::filesystem::p
  * @return true if queryPath and refPath are located on the same drive (on Windows), always true on
  * all other systems
  */
-[[deprecated]] IVW_CORE_API bool sameDrive(const std::filesystem::path& refPath,
-                                           const std::filesystem::path& queryPath);
+[[deprecated("use std::filesystem::path::root_name")]] IVW_CORE_API bool sameDrive(
+    const std::filesystem::path& refPath, const std::filesystem::path& queryPath);
 
 /**
  * \brief clean up path by replacing backslashes with forward slash and removing surrounding quotes
@@ -388,7 +395,10 @@ IVW_CORE_API std::filesystem::path replaceFileExtension(const std::filesystem::p
  * @param path given path to be cleaned up
  * @return non-quoted path containing no backslashes as directory separators
  */
-[[deprecated]] IVW_CORE_API std::filesystem::path cleanupPath(std::string_view path);
+[[deprecated(
+    "use std::filesystem::canonical/weakly_canonical or "
+    "std::filesystem::path::lexically_normal")]] IVW_CORE_API std::filesystem::path
+cleanupPath(std::string_view path);
 
 }  // namespace filesystem
 

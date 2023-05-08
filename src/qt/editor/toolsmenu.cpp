@@ -167,7 +167,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                             return;
                         }
                         try {
-                            filesystem::createDirectoryRecursively(testdir);
+                            std::filesystem::create_directories(testdir);
 
                             const auto workspaceName = testdir / (lname + ".inv");
                             LogInfoCustom("ToolMenu",

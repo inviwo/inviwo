@@ -190,9 +190,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
     const auto tmpDir = [&]() -> std::filesystem::path {
         if (isRuntimeModuleReloadingEnabled()) {
             const auto tmp = filesystem::getInviwoUserSettingsPath() / "temporary-module-libraries";
-            if (!std::filesystem::is_directory(tmp)) {
-                filesystem::createDirectoryRecursively(tmp);
-            }
+            std::filesystem::create_directories(tmp);
             return tmp;
         } else {
             return {};

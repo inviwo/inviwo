@@ -73,7 +73,7 @@ std::filesystem::path writeIvfVolumeSequence(const VolumeSequence& volumes, std:
 
     auto fillLength = static_cast<int>(log10(volumes.size())) + 1;
 
-    filesystem::createDirectoryRecursively(path / relativePathToTimeSteps);
+    std::filesystem::create_directories(path / relativePathToTimeSteps);
     IvfVolumeWriter writer;
     writer.setOverwrite(overwrite);
     std::vector<std::filesystem::path> filenames;

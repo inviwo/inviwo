@@ -125,7 +125,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
             saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
             saveFileDialog.addExtension("py", "Python file");
             const auto dir = app->getPath(PathType::Settings) / "python_processors";
-            filesystem::createDirectoryRecursively(dir);
+            std::filesystem::create_directories(dir);
             saveFileDialog.setCurrentDirectory(dir);
 
             if (saveFileDialog.exec()) {
