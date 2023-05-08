@@ -60,9 +60,9 @@ INVIWO_META_API std::string removePrefix(std::string_view prefix, std::string_vi
 INVIWO_META_API std::optional<std::filesystem::path> findShortestRelativePath(
     const std::filesystem::path& path, std::vector<std::filesystem::path> bases);
 
-template <typename S, typename... Args>
-std::runtime_error makeError(S&& s, Args&&... args) {
-    return std::runtime_error{fmt::format(std::forward<S>(s), std::forward<Args>(args)...)};
+template <typename... Args>
+std::runtime_error makeError(fmt::format_string<Args...> format, Args&&... args) {
+    return std::runtime_error{fmt::format(format, std::forward<Args>(args)...)};
 }
 
 }  // namespace inviwo::meta::util

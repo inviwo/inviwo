@@ -57,8 +57,8 @@ ivw_group("Source Files" BASE src ${sources})
 add_library(inviwo-meta ${sources} ${headers})
 add_library(inviwo::meta ALIAS inviwo-meta)
 target_include_directories(inviwo-meta PUBLIC include)
-target_compile_features(inviwo-meta PUBLIC cxx_std_17)
-set_target_properties(inviwo-meta PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF FOLDER tools)
+target_compile_features(inviwo-meta PUBLIC cxx_std_20)
+set_target_properties(inviwo-meta PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF FOLDER tools)
 ivw_define_standard_properties(inviwo-meta)
 ivw_define_standard_definitions(${PROJECT_NAME} inviwo-meta)
 
@@ -78,16 +78,16 @@ if(NOT IVW_USE_EXTERNAL_PEGTL)
     option(PEGTL_BUILD_TESTS "Build test programs" OFF)
     option(PEGTL_BUILD_EXAMPLES "Build example programs" OFF)
     add_subdirectory(ext/pegtl)
-    ivw_make_package(pegtl-2 pegtl)
+    ivw_make_package(pegtl pegtl)
     ivw_move_targets_in_dir_to_folder(ext/pegtl ext/pegtl)
-    ivw_register_license_file(NAME "PEGTL" VERSION 2.8.3 target taocpp::pegtl MODULE Core EXT
+    ivw_register_license_file(NAME "PEGTL" VERSION 3.2.7 target taocpp::pegtl MODULE Core EXT
         URL "https://github.com/taocpp/PEGTL"
         TYPE "The MIT License"
         FILES ${IVW_TOOLS_DIR}/meta/ext/pegtl/LICENSE
     )
 else()
-    find_package(pegtl-2 CONFIG REQUIRED)
-    ivw_vcpkg_install(pegtl-2 MODULE Core EXT)
+    find_package(pegtl CONFIG REQUIRED)
+    ivw_vcpkg_install(pegtl MODULE Core EXT)
 endif()
 target_link_libraries(inviwo-meta PUBLIC taocpp::pegtl)
 
@@ -125,7 +125,7 @@ endif()
 
 # Add testing
 option(IVW_TEST_META_BUILD_TESTS "Build meta tests" ON)
-if(IVW_TESTS_META_BUILD_TESTS) 
+if(IVW_TEST_META_BUILD_TESTS) 
     add_subdirectory(tests)
 endif()
 

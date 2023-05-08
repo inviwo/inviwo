@@ -136,12 +136,12 @@ void print_node(const p::parse_tree::node& n, const std::string& s = "") {
         std::cout << "ROOT" << std::endl;
     } else {
         if (n.has_content()) {
-            auto content = n.content();
+            auto content = n.string();
             std::transform(content.begin(), content.end(), content.begin(),
                            [](char c) { return c == '\n' ? '~' : c; });
-            std::cout << s << n.name() << " \"" << content << "\"" << std::endl;
+            std::cout << s << n.type << " \"" << content << "\"" << std::endl;
         } else {
-            std::cout << s << n.name() << std::endl;
+            std::cout << s << n.type << std::endl;
         }
     }
     // print all child nodes
@@ -155,7 +155,7 @@ void print_node(const p::parse_tree::node& n, const std::string& s = "") {
 
 std::ostream& print(std::ostream& os, const p::parse_tree::node& n) {
 
-    if (n.children.empty() && n.has_content()) os << n.content();
+    if (n.children.empty() && n.has_content()) os << n.string_view();
     for (auto& up : n.children) {
         print(os, *up);
     }
