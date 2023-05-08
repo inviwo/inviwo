@@ -31,9 +31,9 @@
 
 namespace inviwo {
 
-WorkspaceWatcher::WorkspaceWatcher(InviwoApplication* app, std::string& path)
+WorkspaceWatcher::WorkspaceWatcher(InviwoApplication* app, std::filesystem::path& path)
     : FileObserver(app), path(path) {}
 
-void WorkspaceWatcher::fileChanged(const std::string& filename) { path = filename; }
+void WorkspaceWatcher::fileChanged(const std::filesystem::path& filename) { path = filename; }
 
 }  // namespace inviwo

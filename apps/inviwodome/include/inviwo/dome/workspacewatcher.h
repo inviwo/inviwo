@@ -30,13 +30,13 @@
 #pragma once
 
 #include <inviwo/core/util/fileobserver.h>
-#include <string>
+#include <filesystem>
 
 namespace inviwo {
 struct WorkspaceWatcher : FileObserver {
-    WorkspaceWatcher(InviwoApplication* app, std::string& path);
-    virtual void fileChanged(const std::string& filename) override;
-    std::string& path;
+    WorkspaceWatcher(InviwoApplication* app, std::filesystem::path& path);
+    virtual void fileChanged(const std::filesystem::path& filename) override;
+    std::filesystem::path& path;
 };
 
 }  // namespace inviwo
