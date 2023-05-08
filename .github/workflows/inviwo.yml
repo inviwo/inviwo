@@ -24,6 +24,7 @@ jobs:
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
+            cache: 'sccache'
           - os: 'macos-13'
             triplet: 'x64-osx'
             mono: 'mono'
@@ -31,6 +32,7 @@ jobs:
             targets: 'all package'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
+            cache: 'ccache'
           - os: 'ubuntu-22.04'
             triplet: 'x64-linux'
             mono: 'mono'
@@ -40,6 +42,7 @@ jobs:
             targets: 'all package'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
+            cache: 'ccache'
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
@@ -141,12 +144,22 @@ jobs:
         echo "${{ steps.build_changelog.outputs.changelog }}"
         echo "-- End --"
 
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        variant: ${{ matrix.cache }}
+        max-size: "500M"
+        key: ${{ matrix.os }}
+        verbose: 1
+
     - name: Configure CMake
       shell: bash
       run: >
         cmake -S inviwo -B build
         -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
         -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        -DCMAKE_C_COMPILER_LAUNCHER=${{ matrix.cache }}
+        -DCMAKE_CXX_COMPILER_LAUNCHER=${{ matrix.cache }}
         ${{ matrix.cmake }}
 
     - name: Setup C++ Log matchers
