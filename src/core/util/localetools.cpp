@@ -33,7 +33,6 @@
 
 namespace inviwo::util {
 
-
 void configureCodePage() {
 
 #ifdef _WIN32
@@ -42,8 +41,6 @@ void configureCodePage() {
     // https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/setlocale-wsetlocale?view=msvc-170#utf-8-support
     setlocale(LC_ALL, ".UTF8");
 #endif
-
 }
 
-
-}  // namespace inviwo
+}  // namespace inviwo::util

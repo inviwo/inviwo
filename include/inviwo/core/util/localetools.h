@@ -32,8 +32,6 @@
 
 namespace inviwo::util {
 
-
 void IVW_CORE_API configureCodePage();
 
-
-}  // namespace inviwo
+}  // namespace inviwo::util
