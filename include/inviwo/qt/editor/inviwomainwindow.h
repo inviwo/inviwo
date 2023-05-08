@@ -248,7 +248,7 @@ private:
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
 
-    ///< Use delayed initialization as it can be expensive.
+    /// Use delayed initialization as it can be expensive.
     WelcomeWidget* welcomeWidget_ = nullptr;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;

@@ -615,7 +615,7 @@ void InviwoMainWindow::addActions() {
                         utilqt::toPath(saveFileDialog.selectedFiles().at(0));
                     networkEditorView_->exportViewToFile(path, entireScene,
                                                          backgroundVisibleAction->isChecked());
-                    LogInfo("Exported network to \"" << path << "\"");
+                    LogInfo("Exported network to " << path);
                 }
             };
         };

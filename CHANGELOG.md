@@ -2,26 +2,28 @@ Here we document changes that affect the public API or changes that needs to be 
 
 ## 2023-05-05 `std::filesystem` adoption
 Inviwo has been updated to use `std::filesystem` instead of our own custom functions.
-This change is not backwards compatible any will require code changes. 
-The change is motivated by the fact that `std::filesystem` is now part of the C++17 standard
-and is supported by all major compilers. The change also makes it easier to use the same code
+This change is not backwards compatible and will require code changes. 
+The change is motivated by the fact that `std::filesystem` is now part of the C++ standard since C++17
+and is supported by all major compilers. This also makes it easier to use the same code
 in Inviwo and other projects that use `std::filesystem`, and removes the burden of maintaining 
 a lot of platform specific code.
-Migration guide: All path-related functions that used to take a `const std::string&` or
-`std::string_view` argument now uses `const std::filesystem::path&`. For the most part simply 
+
+### Migration guide
+All path-related functions that used to take a `const std::string&` or
+`std::string_view` argument now use `const std::filesystem::path&`. For the most part simply 
 switching the argument type in all places where it fails to compile will be sufficient.
 But it might be good to review the code to avoid any unnecessary conversions between `std::string` 
-and `std::filesystem::path` since the conversion is implicit it can be hard to spot.
-It should also be noted that the type of the implicit conversion is platform dependent, on windows 
-a `std::filesystem::path` will be converted to a `std::wstring` while on linux and mac it will be
+and `std::filesystem::path` since the conversion is implicit and can be hard to spot.
+It should also be noted that the type of the implicit conversion is platform dependent, on Windows 
+a `std::filesystem::path` will be converted to a `std::wstring` while on Linux and Mac it will be
 converted to a `std::string`.
 
 Many of the functions in `inviwo/core/util/filesystem.h` have been deprecated since they are now 
 replaced by the ones in std::filesystem.
 
 The fmt lib also supports formatting `std::filesystem::path`s by including the `fmt/std.h` header.
-While formatting a path fmt will automatically surround the path with quotes. If you have code that 
-does something like `fmt::format("{}/{}", path, file)` you will have to change it to `path / file`.
+While formatting a path, fmt will automatically surround the path with quotes. If you have code that 
+does something like `fmt::format("{}/{}", path, file)` to generate a file path, you will have to change it to `path / file` without using fmt instead.
 Since the extra quotes inserted while formatting will make the path ill formed. 
 
 ## 2023-04-26 Python: consistent indexing in Numpy and Inviwo
