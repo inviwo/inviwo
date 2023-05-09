@@ -96,7 +96,6 @@ void DataFrameFloat32Converter::process() {
             dataframe->addColumn(std::shared_ptr<Column>(srcCol->clone()));
         }
     }
-    
 
     outport_.setData(dataframe);
 }
