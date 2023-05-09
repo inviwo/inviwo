@@ -149,8 +149,12 @@ jobs:
       with:
         variant: ${{ matrix.cache }}
         max-size: "500M"
-        key: ${{ matrix.os }}
         verbose: 1
+        key: inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-${{ github.ref }}
+        restore-keys: |
+          inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-${{ github.ref }}
+          inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-refs/heads/master
+          inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-
 
     - name: Configure CMake
       shell: bash
@@ -168,7 +172,9 @@ jobs:
     - name: Build
       timeout-minutes: 360
       shell: bash
-      run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel --target ${{ matrix.targets }}
+      run: > 
+        cmake --build build --config ${{ env.BUILD_TYPE }} 
+        --parallel --target ${{ matrix.targets }}
 
     - name: Upload installer
       uses: actions/upload-artifact@v3
