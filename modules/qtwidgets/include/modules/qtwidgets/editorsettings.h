@@ -43,13 +43,12 @@ class IVW_MODULE_QTWIDGETS_API EditorSettings : public Settings {
 public:
     EditorSettings(InviwoApplication* app);
     virtual ~EditorSettings() = default;
-    
+
     StringProperty workspaceAuthor;
     IntProperty numRecentFiles;
     IntProperty numRestoreFiles;
     IntProperty restoreFrequency;
     ListProperty workspaceDirectories;
-     
 };
 
 }  // namespace inviwo

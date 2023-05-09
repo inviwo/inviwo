@@ -80,12 +80,11 @@ private:
     std::filesystem::path path_;  //!< full path including file name
     AcceptMode acceptMode_;
     FileMode fileMode_;
-    
+
     bool editingEnabled_;  //!< if this flag is set, the full path is shown. Otherwise only the file
                            //!< name is shown
     int cursorPos_;
     bool cursorPosDirty_;
-    
 };
 
 }  // namespace inviwo

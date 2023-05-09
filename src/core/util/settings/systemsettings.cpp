@@ -60,11 +60,11 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , redirectCout_{"redirectCout", "Redirect cout to LogCentral", false}
     , redirectCerr_{"redirectCerr", "Redirect cerr to LogCentral", false} {
 
-    addProperties(poolSize_, enablePortInspectors_,
-                  portInspectorSize_, enableTouchProperty_, enableGesturesProperty_,
-                  enablePickingProperty_, enableSoundProperty_, logStackTraceProperty_,
-                  runtimeModuleReloading_, enableResourceManager_, breakOnMessage_,
-                  breakOnException_, stackTraceInException_, redirectCout_, redirectCerr_);
+    addProperties(poolSize_, enablePortInspectors_, portInspectorSize_, enableTouchProperty_,
+                  enableGesturesProperty_, enablePickingProperty_, enableSoundProperty_,
+                  logStackTraceProperty_, runtimeModuleReloading_, enableResourceManager_,
+                  breakOnMessage_, breakOnException_, stackTraceInException_, redirectCout_,
+                  redirectCerr_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });

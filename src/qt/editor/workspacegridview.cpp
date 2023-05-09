@@ -165,14 +165,14 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         painter->drawImage(imgRect, img, img.rect());
 
         auto nameRect = option.rect;
-        
+
         auto cols = view_->header()->count();
         auto width = nameRect.width();
         for (int i = 1; i < cols; ++i) {
             width += view_->columnWidth(i);
         }
         nameRect.setWidth(width);
-        
+
         nameRect.adjust(level * indent + rect.height(), 0, 0, 0);
 
         painter->setFont(option.font);

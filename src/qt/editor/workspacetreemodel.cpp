@@ -466,7 +466,6 @@ void WorkspaceTreeModel::updateCustomEntries() {
 
         if (!std::filesystem::is_directory(path)) continue;
 
-    
         auto section = std::make_unique<TreeItem>(path.generic_string(), Type::SubSection);
 
         std::filesystem::directory_iterator it(path);
